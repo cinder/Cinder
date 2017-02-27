@@ -7,9 +7,9 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	 * Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	 * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -125,15 +125,15 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 	Texture2dRef	getColorTexture();	
 	//! Returns a reference to the depth Texture2d of the FBO. Resolves multisampling and renders mipmaps if necessary. Returns an empty Ref if there is no Texture2d as a depth attachment.
 	Texture2dRef	getDepthTexture();
-	//! Returns a Texture2dRef attached at \a attachment (such as \c GL_COLOR_ATTACHMENT0). Resolves multisampling and renders mipmaps if necessary. Returns NULL if a Texture2d is not bound at \a attachment.
-	Texture2dRef	getTexture2d( GLenum attachment );
-	//! Returns a TextureBaseRef attached at \a attachment (such as \c GL_COLOR_ATTACHMENT0). Resolves multisampling and renders mipmaps if necessary. Returns NULL if a Texture is not bound at \a attachment.
-	TextureBaseRef	getTextureBase( GLenum attachment );
+	//! Returns a Texture2dRef attached at \a attachment (such as \c GL_COLOR_ATTACHMENT0). Resolves multisampling, and renders mipmaps if \a recomputeMipMaps is set. Returns NULL if a Texture2d is not bound at \a attachment.
+	Texture2dRef	getTexture2d( GLenum attachment, bool recomputeMipMaps = true );
+	//! Returns a TextureBaseRef attached at \a attachment (such as \c GL_COLOR_ATTACHMENT0). Resolves multisampling, and renders mipmaps if \a recomputeMipMaps is set. Returns NULL if a Texture is not bound at \a attachment.
+	TextureBaseRef	getTextureBase( GLenum attachment, bool recomputeMipMaps = true );
 	
-	//! Binds the color texture associated with an Fbo to its target. Optionally binds to a multitexturing unit when \a textureUnit is non-zero. Optionally binds to a multitexturing unit when \a textureUnit is non-zero. \a attachment specifies which color buffer in the case of multiple attachments.
-	void 			bindTexture( int textureUnit = 0, GLenum attachment = GL_COLOR_ATTACHMENT0 );
+	//! Binds the color texture associated with an Fbo to its target. Optionally binds to a multitexturing unit when \a textureUnit is non-zero. Optionally binds to a multitexturing unit when \a textureUnit is non-zero. \a attachment specifies which color buffer in the case of multiple attachments.  If \a recomputeMipMaps is set, the mip chain will be regenerated if the top level changed (default)
+	void 			bindTexture( int textureUnit = 0, GLenum attachment = GL_COLOR_ATTACHMENT0, bool recomputeMipMaps = true );
 	//! Unbinds the texture associated with an Fbo attachment
-	void			unbindTexture( int textureUnit = 0, GLenum attachment = GL_COLOR_ATTACHMENT0 );
+	void			unbindTexture( int textureUnit = 0, GLenum attachment = GL_COLOR_ATTACHMENT0, bool recomputeMipMaps = true );
 	//! Binds the Fbo as the currently active framebuffer, meaning it will receive the results of all subsequent rendering until it is unbound
 	void 			bindFramebuffer( GLenum target = GL_FRAMEBUFFER );
 	//! Unbinds the Fbo as the currently active framebuffer, restoring the primary context as the target for all subsequent rendering
@@ -335,8 +335,8 @@ class FboCubeMap : public Fbo {
 	//! Returns the view matrix appropriate for a given face (in the \c GL_TEXTURE_CUBE_MAP_POSITIVE_X family) looking from the position \a eyePos
 	mat4	calcViewMatrix( GLenum face, const vec3 &eyePos );
 
-	//! Returns a TextureCubeMapRef attached at \a attachment (default \c GL_COLOR_ATTACHMENT0). Resolves multisampling and renders mipmaps if necessary. Returns NULL if a TextureCubeMap is not bound at \a attachment.
-	TextureCubeMapRef	getTextureCubeMap( GLenum attachment = GL_COLOR_ATTACHMENT0 );
+	//! Returns a TextureCubeMapRef attached at \a attachment (default \c GL_COLOR_ATTACHMENT0). Resolves multisampling, and renders mipmaps if \a recomputeMipMaps is set. Returns NULL if a TextureCubeMap is not bound at \a attachment.
+	TextureCubeMapRef	getTextureCubeMap( GLenum attachment = GL_COLOR_ATTACHMENT0, bool recomputeMipMaps = true );
 	
   protected:
 	FboCubeMap( int32_t faceWidth, int32_t faceHeight, const Format &format, const TextureCubeMapRef &textureCubeMap );
