@@ -24,6 +24,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/app/linux/WindowImplLinux.h"
 #include "cinder/app/linux/AppImplLinux.h"
+#include "cinder/app/linux/PlatformLinux.h"
 
 namespace cinder { namespace app {
 
@@ -32,6 +33,10 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 {
 	mFullScreen = format.isFullScreen();
 	mDisplay = format.getDisplay();
+	
+	if( ! mDisplay )
+		mDisplay = Display::getMainDisplay();
+
 	mRenderer = format.getRenderer();
 
 	const auto& options = std::dynamic_pointer_cast<RendererGl>( mRenderer )->getOptions();
@@ -76,7 +81,8 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 
 	auto windowSize = format.getSize();
 	if( mFullScreen ) {
-		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), ::glfwGetPrimaryMonitor(), NULL );
+		cinder::app::DisplayLinux* displayLinux = dynamic_cast<cinder::app::DisplayLinux*>( mDisplay.get() );
+		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), displayLinux->getGlfwMonitor(), NULL );
 	}
 	else {
 		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), NULL, NULL );
