@@ -77,14 +77,15 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 		::glfwWindowHint( GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE );
 #endif
 
-    ::glfwWindowHint( GLFW_SAMPLES, options.getMsaa() );
+	::glfwWindowHint( GLFW_SAMPLES, options.getMsaa() );
 
-	auto windowSize = format.getSize();
 	if( mFullScreen ) {
 		cinder::app::DisplayLinux* displayLinux = dynamic_cast<cinder::app::DisplayLinux*>( mDisplay.get() );
+		auto windowSize = displayLinux->getSize();
 		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), displayLinux->getGlfwMonitor(), NULL );
 	}
 	else {
+		auto windowSize = format.getSize();
 		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), NULL, NULL );
 	}
 
