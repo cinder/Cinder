@@ -83,6 +83,8 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 		cinder::app::DisplayLinux* displayLinux = dynamic_cast<cinder::app::DisplayLinux*>( mDisplay.get() );
 		auto windowSize = displayLinux->getSize();
 		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), displayLinux->getGlfwMonitor(), NULL );
+		mWindowedSize = format.getSize();
+		mWindowedPos = format.getPos();
 	}
 	else {
 		auto windowSize = format.getSize();
@@ -104,7 +106,27 @@ WindowImplLinux::~WindowImplLinux()
 
 void WindowImplLinux::setFullScreen( bool fullScreen, const app::FullScreenOptions &options )
 {
-	// TODO: Find a way to do this w/o recreating 
+	if( fullScreen == mFullScreen )
+		return;
+
+	if( fullScreen ) {
+		// preserve these for potential return to windowed later
+		int x, y;
+		::glfwGetWindowPos( mGlfwWindow, &x, &y );
+		mWindowedPos = ivec2( x, y );
+		::glfwGetWindowSize( mGlfwWindow, &x, &y );
+		mWindowedSize = ivec2( x, y );
+
+		if( options.getDisplay() )
+			mDisplay = options.getDisplay();
+		cinder::app::DisplayLinux* displayLinux = dynamic_cast<cinder::app::DisplayLinux*>( mDisplay.get() );
+		::glfwSetWindowMonitor( mGlfwWindow, displayLinux->getGlfwMonitor(), 0, 0, mDisplay->getWidth(), mDisplay->getHeight(), GLFW_DONT_CARE );
+	}
+	else {
+		::glfwSetWindowMonitor( mGlfwWindow, NULL, mWindowedPos.x, mWindowedPos.y, mWindowedSize.x, mWindowedSize.y, GLFW_DONT_CARE );
+	}
+
+	mFullScreen = fullScreen;
 }
 
 ivec2 WindowImplLinux::getSize() const

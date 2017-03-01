@@ -102,6 +102,8 @@ protected:
 	bool            	mBorderless = false;
 	bool            	mAlwayOnTop = false;
 
+	ivec2			mWindowedSize, mWindowedPos; // used to preserve info when toggling fullscreen
+
 	DisplayRef			mDisplay;
 	RendererRef			mRenderer;
 
