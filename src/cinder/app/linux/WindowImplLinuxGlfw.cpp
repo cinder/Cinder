@@ -25,6 +25,7 @@
 #include "cinder/app/linux/WindowImplLinux.h"
 #include "cinder/app/linux/AppImplLinux.h"
 #include "cinder/app/linux/PlatformLinux.h"
+#include "cinder/Log.h"
 
 namespace cinder { namespace app {
 
@@ -179,11 +180,13 @@ const std::vector<TouchEvent::Touch>& WindowImplLinux::getActiveTouches() const
 
 void WindowImplLinux::setBorderless( bool borderless )
 {
+	CI_LOG_W( "Window::setBorderless() currently unimplemented in GLFW" );
 	// TODO: Find a way to do this w/o recreating 
 }
 
 void WindowImplLinux::setAlwaysOnTop( bool alwaysOnTop )
 {
+	CI_LOG_W( "Window::setAlwaysOnTop() currently unimplemented in GLFW" );
 	// TODO: Find a way to do this w/o recreating 
 }
 
