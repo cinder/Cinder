@@ -44,7 +44,7 @@ public:
   WindowImplLinux( const Window::Format &format, RendererRef sharedRenderer, AppImplLinux *appImpl );
   virtual ~WindowImplLinux();
 
-	virtual bool		isFullScreen() { return true; }
+	virtual bool		isFullScreen() { return mFullScreen; }
 	virtual void		setFullScreen( bool fullScreen, const app::FullScreenOptions &options );
 	virtual ivec2		getSize() const;
 	virtual void		setSize( const ivec2 &size );
@@ -98,6 +98,7 @@ protected:
 #endif
 
 	std::string     	mTitle;
+	bool				mFullScreen = false;
 	bool            	mBorderless = false;
 	bool            	mAlwayOnTop = false;
 
