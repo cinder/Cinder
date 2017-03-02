@@ -149,7 +149,7 @@ bool Area::operator<( const Area &aArea ) const
 	if ( y1 != aArea.y1 ) return y1 < aArea.y1;
 	if ( x2 != aArea.x2 ) return x2 < aArea.x2;
 	if ( y2 != aArea.y2 ) return y2 < aArea.y2;
-	
+
 	return false;
 }
 
@@ -172,7 +172,7 @@ Area Area::proportionalFit( const Area &srcArea, const Area &dstArea, bool cente
 			resultHeight = resultWidth * srcArea.getHeight() / srcArea.getWidth();
 		}
 	}
-	
+
 	Area resultArea( 0, 0, resultWidth, resultHeight );
 	if ( center )
 		resultArea.offset( ivec2( ( dstArea.getWidth() - resultWidth ) / 2, ( dstArea.getHeight() - resultHeight ) / 2 ) );
@@ -201,7 +201,7 @@ namespace {
 template<typename Vec2T>
 float calcDistanceSquared( const Area &area, const Vec2T &pt )
 {
-	float result = 0;
+	typename Vec2T::value_type result = 0;
 	if( pt.x < area.x1 )
 		result += ( area.x1 - pt.x ) * ( area.x1 - pt.x );
 	else if( pt.x > area.x2 )
@@ -211,7 +211,7 @@ float calcDistanceSquared( const Area &area, const Vec2T &pt )
 	else if( pt.y > area.y2 )
 		result += ( pt.y - area.y2 ) * ( pt.y - area.y2 );
 
-	return result;
+	return static_cast<float>( result );
 }
 
 template<typename Vec2T>
