@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include "cinder/Export.h"
 #include "cinder/audio/Buffer.h"
 
 #include <list>
