@@ -217,10 +217,10 @@ void flipHorizontal( SurfaceT<T> *surface )
 }
 
 #define flip_PROTOTYPES(r,data,T)\
-	CI_API_TEMPLATE template CI_API void flipVertical<T>( SurfaceT<T> *surface );\
-	CI_API_TEMPLATE template CI_API void flipVertical<T>( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface );\
-	CI_API_TEMPLATE template CI_API void flipVertical<T>( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel );\
-	CI_API_TEMPLATE template CI_API void flipHorizontal<T>( SurfaceT<T> *surface );
+	template CI_API void flipVertical<T>( SurfaceT<T> *surface );\
+	template CI_API void flipVertical<T>( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface );\
+	template CI_API void flipVertical<T>( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel );\
+	template CI_API void flipHorizontal<T>( SurfaceT<T> *surface );
 	
 BOOST_PP_SEQ_FOR_EACH( flip_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
 

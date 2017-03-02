@@ -611,8 +611,8 @@ void* ImageTargetSurface<T>::getRowPointer( int32_t row )
 	return reinterpret_cast<void*>( mSurface->getData( ivec2( 0, row ) ) );
 }
 
-CI_API_TEMPLATE template class CI_API SurfaceT<uint8_t>;
-CI_API_TEMPLATE template class CI_API SurfaceT<uint16_t>;
-CI_API_TEMPLATE template class CI_API SurfaceT<float>;
+template class CI_API SurfaceT<uint8_t>;
+template class CI_API SurfaceT<uint16_t>;
+template class CI_API SurfaceT<float>;
 
 } // namespace cinder

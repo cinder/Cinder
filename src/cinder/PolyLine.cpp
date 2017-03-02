@@ -344,7 +344,7 @@ std::vector<PolyLineT<T> > PolyLineT<T>::calcDifference( const std::vector<PolyL
 	return convertBoostGeometryPolygons<T>( output );
 }
 
-CI_API_TEMPLATE template class CI_API PolyLineT<vec2>;
-CI_API_TEMPLATE template class CI_API PolyLineT<dvec2>;
+template class CI_API PolyLineT<vec2>;
+template class CI_API PolyLineT<dvec2>;
 
 } // namespace cinder

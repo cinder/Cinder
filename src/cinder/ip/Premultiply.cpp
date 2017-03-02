@@ -117,7 +117,7 @@ void unpremultiply<float>( SurfaceT<float> *surface )
 
 
 #define premult_PROTOTYPES(r,data,T)\
-	CI_API_TEMPLATE template CI_API void premultiply( SurfaceT<T> *Surface );
+	template CI_API void premultiply( SurfaceT<T> *Surface );
 
 BOOST_PP_SEQ_FOR_EACH( premult_PROTOTYPES, ~, CHANNEL_TYPES )
 	

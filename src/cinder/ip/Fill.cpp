@@ -124,20 +124,20 @@ void fill( ChannelT<T> *channel, T value )
 }
 
 #define fill_PROTOTYPES(r,data,T)\
-	CI_API_TEMPLATE template CI_API void fill<T,uint8_t>( SurfaceT<T> *surface, const ColorT<uint8_t> &color, const Area &area ); \
-	CI_API_TEMPLATE template CI_API void fill<T,uint8_t>( SurfaceT<T> *surface, const ColorT<uint8_t> &color ); \
-	CI_API_TEMPLATE template CI_API void fill<T,uint8_t>( SurfaceT<T> *surface, const ColorAT<uint8_t> &color, const Area &area ); \
-	CI_API_TEMPLATE template CI_API void fill<T,uint8_t>( SurfaceT<T> *surface, const ColorAT<uint8_t> &color ); \
-	CI_API_TEMPLATE template CI_API void fill<T,uint16_t>( SurfaceT<T> *surface, const ColorT<uint16_t> &color, const Area &area ); \
-	CI_API_TEMPLATE template CI_API void fill<T,uint16_t>( SurfaceT<T> *surface, const ColorT<uint16_t> &color ); \
-	CI_API_TEMPLATE template CI_API void fill<T,uint16_t>( SurfaceT<T> *surface, const ColorAT<uint16_t> &color, const Area &area ); \
-	CI_API_TEMPLATE template CI_API void fill<T,uint16_t>( SurfaceT<T> *surface, const ColorAT<uint16_t> &color ); \
-	CI_API_TEMPLATE template CI_API void fill<T,float>( SurfaceT<T> *surface, const ColorT<float> &color, const Area &area ); \
-	CI_API_TEMPLATE template CI_API void fill<T,float>( SurfaceT<T> *surface, const ColorT<float> &color ); \
-	CI_API_TEMPLATE template CI_API void fill<T,float>( SurfaceT<T> *surface, const ColorAT<float> &color, const Area &area ); \
-	CI_API_TEMPLATE template CI_API void fill<T,float>( SurfaceT<T> *surface, const ColorAT<float> &color ); \
-	CI_API_TEMPLATE template CI_API void fill<T>( ChannelT<T> *channel, const T value, const Area &area ); \
-	CI_API_TEMPLATE template CI_API void fill<T>( ChannelT<T> *channel, const T value );
+	template CI_API void fill<T,uint8_t>( SurfaceT<T> *surface, const ColorT<uint8_t> &color, const Area &area ); \
+	template CI_API void fill<T,uint8_t>( SurfaceT<T> *surface, const ColorT<uint8_t> &color ); \
+	template CI_API void fill<T,uint8_t>( SurfaceT<T> *surface, const ColorAT<uint8_t> &color, const Area &area ); \
+	template CI_API void fill<T,uint8_t>( SurfaceT<T> *surface, const ColorAT<uint8_t> &color ); \
+	template CI_API void fill<T,uint16_t>( SurfaceT<T> *surface, const ColorT<uint16_t> &color, const Area &area ); \
+	template CI_API void fill<T,uint16_t>( SurfaceT<T> *surface, const ColorT<uint16_t> &color ); \
+	template CI_API void fill<T,uint16_t>( SurfaceT<T> *surface, const ColorAT<uint16_t> &color, const Area &area ); \
+	template CI_API void fill<T,uint16_t>( SurfaceT<T> *surface, const ColorAT<uint16_t> &color ); \
+	template CI_API void fill<T,float>( SurfaceT<T> *surface, const ColorT<float> &color, const Area &area ); \
+	template CI_API void fill<T,float>( SurfaceT<T> *surface, const ColorT<float> &color ); \
+	template CI_API void fill<T,float>( SurfaceT<T> *surface, const ColorAT<float> &color, const Area &area ); \
+	template CI_API void fill<T,float>( SurfaceT<T> *surface, const ColorAT<float> &color ); \
+	template CI_API void fill<T>( ChannelT<T> *channel, const T value, const Area &area ); \
+	template CI_API void fill<T>( ChannelT<T> *channel, const T value );
 
 BOOST_PP_SEQ_FOR_EACH( fill_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
 

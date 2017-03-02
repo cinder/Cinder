@@ -25,13 +25,10 @@
 
 #if defined( CINDER_SHARED_BUILD )
 	#define CI_API __declspec(dllexport)
-	#define CI_API_TEMPLATE
 #elif defined( CINDER_SHARED )
 	#define CI_API __declspec(dllimport)
-	#define CI_API_TEMPLATE
 #else
 	#define CI_API
-	#define CI_API_TEMPLATE
 #endif
 
 #if defined( CINDER_SHARED_BUILD ) || defined( CINDER_SHARED ) 
