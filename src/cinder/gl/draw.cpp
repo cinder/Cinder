@@ -445,7 +445,7 @@ void drawLine( const vec3 &a, const vec3 &b )
 	}
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
-	ctx->drawArrays( GL_LINES, 0, points.size() );
+	ctx->drawArrays( GL_LINES, 0, static_cast<int>( points.size() ) );
 	ctx->popVao();
 }
 
@@ -475,7 +475,7 @@ void drawLine( const vec2 &a, const vec2 &b )
 	}
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
-	ctx->drawArrays( GL_LINES, 0, points.size() );
+	ctx->drawArrays( GL_LINES, 0, static_cast<int>( points.size() ) );
 	ctx->popVao();
 }
 
@@ -573,7 +573,7 @@ class DefaultVboTarget : public geom::Target {
 		mReceivedAttribs.push_back( attr );
 	}
 
-	void copyIndices( geom::Primitive /*primitive*/, const uint32_t *sourceData, size_t numIndices, uint8_t requiredBytesPerIndex ) override
+	void copyIndices( geom::Primitive /*primitive*/, const uint32_t *sourceData, size_t numIndices, uint8_t /*requiredBytesPerIndex*/ ) override
 	{
 		if( numIndices == 0 )
 			return;
@@ -883,7 +883,7 @@ void drawHorizontalCross( const gl::TextureCubeMapRef &texture, const Rectf &rec
 
 void drawVerticalCross( const gl::TextureCubeMapRef &texture, const Rectf &rect, float lod )
 {
-	Rectf fullRect( 0, 0, texture->getWidth() * 3, texture->getHeight() * 4 );
+	Rectf fullRect( 0.0, 0.0, texture->getWidth() * 3, texture->getHeight() * 4 );
 	Rectf framedRect = fullRect.getCenteredFit( rect, true );
 	vec2 faceSize( framedRect.getWidth() / 3, framedRect.getHeight() / 4 );
 
