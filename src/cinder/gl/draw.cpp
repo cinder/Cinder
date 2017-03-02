@@ -1140,7 +1140,7 @@ void drawSolidCircle( const vec2 &center, float radius, int numSegments )
 
 	size_t dataSizeBytes = 0;
 
-	size_t vertsOffset, texCoordsOffset, normalsOffset;
+	size_t vertsOffset{}, texCoordsOffset{}, normalsOffset{};
 	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
 	if( posLoc >= 0 ) {
 		enableVertexAttribArray( posLoc );
