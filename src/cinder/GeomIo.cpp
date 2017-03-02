@@ -332,7 +332,7 @@ bool indicesInRange( const uint32_t *indices, size_t numIndices, T indexOffset )
 }
 
 template<>
-bool indicesInRange<uint32_t>( const uint32_t *indices, size_t numIndices, uint32_t indexOffset )
+bool indicesInRange<uint32_t>( const uint32_t *, size_t, uint32_t )
 {
 	return true;
 }
@@ -566,7 +566,7 @@ void Target::copyIndexData( const uint32_t *source, size_t numIndices, uint32_t 
 void Target::copyIndexData( const uint32_t *source, size_t numIndices, uint16_t *target )
 {
 	for( size_t v = 0; v < numIndices; ++v )
-		target[v] = source[v];
+		target[v] = static_cast<uint16_t>(source[v]);
 }
 
 uint8_t calcIndicesRequiredBytes( size_t numIndices )
@@ -4128,18 +4128,15 @@ size_t WireSphere::getNumVertices() const
 
 void WireSphere::loadInto( Target *target, const AttribSet & /*requestedAttribs*/ ) const
 {
-	size_t numVertices = getNumVertices();
-
-	std::vector<vec3> positions;
-	positions.resize( numVertices );
+	std::vector<vec3> positions( getNumVertices() );
 
 	vec3 *ptr = positions.data();
 
-	float angle = float( 2.0 * M_PI / mNumSegments );
+	const float angle = float( 2.0 * M_PI / mNumSegments );
 	for( int i = 1; i < mSubdivisionsHeight; ++i ) {
-		float f = float( i ) / mSubdivisionsHeight * 2.0f - 1.0f;
-		float radius = mRadius * glm::cos( f * float( M_PI / 2.0 ) );
-		vec3 center = mCenter + mRadius * vec3( 0, glm::sin( f * float( M_PI / 2.0 ) ), 0 );
+		const float f = float( i ) / mSubdivisionsHeight * 2.0f - 1.0f;
+		const float radius = mRadius * glm::cos( f * float( M_PI / 2.0 ) );
+		const vec3 center = mCenter + mRadius * vec3( 0, glm::sin( f * float( M_PI / 2.0 ) ), 0 );
 
 		*ptr++ = center + vec3( 0, 0, 1 ) * radius;
 		for( int j = 1; j < mNumSegments; ++j ) {
@@ -4151,14 +4148,14 @@ void WireSphere::loadInto( Target *target, const AttribSet & /*requestedAttribs*
 	}
 
 	if( mSubdivisionsAxis > 1 ) {
-		int semidiv = ( mNumSegments + 1 ) / 2;
-		float semi = float( M_PI / semidiv );
-		float angle = float( 2.0 * M_PI / mSubdivisionsAxis );
+		const int semidiv = ( mNumSegments + 1 ) / 2;
+		const float semi = float( M_PI / semidiv );
+		const float angle_subdiv = float( 2.0 * M_PI / mSubdivisionsAxis );
 
 		for( int i = 0; i < mSubdivisionsAxis; ++i ) {
 			*ptr++ = mCenter + vec3( 0, 1, 0 ) * mRadius;
 			for( int j = 1; j < semidiv; ++j ) {
-				vec3 v = mCenter + vec3( glm::sin( j * semi ) * glm::sin( i * angle ), glm::cos( j * semi ), glm::sin( j * semi ) * glm::cos( i * angle ) ) * mRadius;
+				vec3 v = mCenter + vec3( glm::sin( j * semi ) * glm::sin( i * angle_subdiv ), glm::cos( j * semi ), glm::sin( j * semi ) * glm::cos( i * angle_subdiv ) ) * mRadius;
 				*ptr++ = v;
 				*ptr++ = v;
 			}
@@ -4166,7 +4163,7 @@ void WireSphere::loadInto( Target *target, const AttribSet & /*requestedAttribs*
 		}
 	}
 
-	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), positions.size() );
 }
 
 
