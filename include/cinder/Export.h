@@ -23,19 +23,20 @@
 
 #pragma once
 
-#if defined( CINDER_DLL )
-	#ifdef  CINDER_EXPORTS
-		#define CI_API __declspec(dllexport)
-		#define CI_API_TEMPLATE
-	#else
-		#define CI_API __declspec(dllimport)
-		#define CI_API_TEMPLATE extern
-	#endif
+#if defined( CINDER_SHARED_BUILD )
+	#define CI_API __declspec(dllexport)
+	#define CI_API_TEMPLATE
+#elif defined( CINDER_SHARED )
+	#define CI_API __declspec(dllimport)
+	#define CI_API_TEMPLATE
+#else
+	#define CI_API
+	#define CI_API_TEMPLATE
+#endif
+
+#if defined( CINDER_SHARED_BUILD ) || defined( CINDER_SHARED ) 
 	// "needs to have dll-interface to be used by clients of class" warning
 	#pragma warning (disable: 4251)
 	// "non dll-interface class 'std::exception' used as base for dll-interface class" (Mostly for cinder::Exception)
 	#pragma warning (disable: 4275)
-#else
-	#define CI_API
-	#define CI_API_TEMPLATE
 #endif
