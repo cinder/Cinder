@@ -47,7 +47,7 @@ class CI_API TargetFile {
 	size_t getNumChannels() const	{ return mNumChannels; }
 
   protected:
-	TargetFile( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType )
+	TargetFile( size_t sampleRate, size_t numChannels, SampleType sampleType )
 		: mSampleRate( sampleRate ), mNumChannels( numChannels ), mSampleType( sampleType )
 	{}
 
