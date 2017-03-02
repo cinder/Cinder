@@ -28,12 +28,10 @@ lib/winrt/x64/cinder*.lib
 *.opensdf
 Debug/
 Release/
-Debug_DLL/
-Release_DLL/
 Debug_ANGLE/
 Release_ANGLE/
-Debug_DLL/
-Release_DLL/
+Debug_SHARED/
+Release_SHARED/
 ipch/
 **/vc2013/enc_temp_folder/**
 
