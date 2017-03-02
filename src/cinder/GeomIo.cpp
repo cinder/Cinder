@@ -3527,13 +3527,13 @@ void ExtrudeSpline::loadInto( Target *target, const AttribSet &requestedAttribs 
 // BSpline
 template<int D, typename T>
 BSpline::BSpline( const ci::BSpline<D,T> &spline, int subdivisions )
-	: mPositionDims( D )
+	: mPositionDims( static_cast<uint8_t>( D ) )
 {
 	CI_ASSERT( D >= 2 && D <= 4 );
-	
+
 	subdivisions = std::max( 2, subdivisions );
 	mNumVertices = subdivisions;
-	
+
 	mPositions.reserve( mNumVertices * D );
 	mNormals.reserve( mNumVertices );
 
@@ -3600,7 +3600,7 @@ void BSpline::loadInto( Target *target, const AttribSet & /*requestedAttribs*/ )
 	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNumVertices );
 }
 
-template BSpline::BSpline( const ci::BSpline<2,float>&, int );
+template BSpline::BSpline( const ci::BSpline<2, float>&, int );
 template BSpline::BSpline( const ci::BSpline<3, float>&, int );
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -4291,7 +4291,7 @@ void VertexNormalLines::process( SourceModsContext *ctx, const AttribSet &reques
 	const vec3 *positions = reinterpret_cast<const vec3*>( ctx->getAttribData( Attrib::POSITION ) );
 	const vec3 *attrib = reinterpret_cast<const vec3*>( ctx->getAttribData( mAttrib ) );
 	const float *texCoords = nullptr;
-	size_t texCoordDims = ctx->getAttribDims( Attrib::TEX_COORD_0 );
+	auto texCoordDims = ctx->getAttribDims( Attrib::TEX_COORD_0 );
 	if( texCoordDims > 0 )
 		texCoords = reinterpret_cast<const float*>( ctx->getAttribData( Attrib::TEX_COORD_0 ) );
 
