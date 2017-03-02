@@ -26,7 +26,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/gl/gl.h"
 
-#if ( defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE ) ) || defined( CINDER_LINUX )
+#if ( defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE ) ) || ( defined( CINDER_LINUX ) && ! defined( CINDER_GL_ES ) )
 
 #include "cinder/gl/BufferObj.h"
 

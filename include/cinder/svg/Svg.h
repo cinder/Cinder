@@ -65,47 +65,45 @@ typedef std::function<bool(const Node&, svg::Style *)> RenderVisitor;
 //! Base class from which Renderers are derived.
 class Renderer {
   public:
-	Renderer() {}
-	
-	virtual ~Renderer() {}
+	virtual ~Renderer() = default;
 
 	void	setVisitor( const std::function<bool(const Node&, svg::Style *)> &visitor );
-	
-	virtual	void	pushGroup( const Group &group, float opacity ) {}	
-	virtual void	popGroup() {}	
-	virtual void	drawPath( const svg::Path &path ) {}
-	virtual void	drawPolyline( const svg::Polyline &polyline ) {}
-	virtual void	drawPolygon( const svg::Polygon &polygon ) {}
-	virtual void	drawLine( const svg::Line &line ) {}
-	virtual void	drawRect( const svg::Rect &rect ) {}
-	virtual void	drawCircle( const svg::Circle &circle ) {}
-	virtual void	drawEllipse( const svg::Ellipse &ellipse ) {}
-	virtual void	drawImage( const svg::Image &image ) {}
-	virtual void	drawTextSpan( const svg::TextSpan &span ) {}
 
-	virtual void	pushMatrix( const mat3 &m ) {}
+	virtual	void	pushGroup( const Group & /*group*/, float /*opacity*/ ) {}
+	virtual void	popGroup() {}
+	virtual void	drawPath( const svg::Path & /*path*/ ) {}
+	virtual void	drawPolyline( const svg::Polyline & /*polyline*/ ) {}
+	virtual void	drawPolygon( const svg::Polygon & /*polygon*/ ) {}
+	virtual void	drawLine( const svg::Line & /*line*/ ) {}
+	virtual void	drawRect( const svg::Rect & /*rect*/ ) {}
+	virtual void	drawCircle( const svg::Circle & /*circle*/ ) {}
+	virtual void	drawEllipse( const svg::Ellipse & /*ellipse*/ ) {}
+	virtual void	drawImage( const svg::Image & /*image*/ ) {}
+	virtual void	drawTextSpan( const svg::TextSpan & /*span*/ ) {}
+
+	virtual void	pushMatrix( const mat3 & /*m*/ ) {}
 	virtual void	popMatrix() {}
-	virtual void	pushStyle( const svg::Style &style ) {}
-	virtual void	popStyle( const svg::Style &style ) {}	
-	virtual void	pushFill( const class Paint &paint ) {}
+	virtual void	pushStyle( const svg::Style & /*style*/ ) {}
+	virtual void	popStyle() {}
+	virtual void	pushFill( const class Paint & /*paint*/ ) {}
 	virtual void	popFill() {}
-	virtual void	pushStroke( const class Paint &paint ) {}
+	virtual void	pushStroke( const class Paint & /*paint*/ ) {}
 	virtual void	popStroke() {}
-	virtual void	pushFillOpacity( float opacity ) {}
+	virtual void	pushFillOpacity( float  /*opacity*/ ) {}
 	virtual void	popFillOpacity() {}
-	virtual void	pushStrokeOpacity( float opacity ) {}
+	virtual void	pushStrokeOpacity( float  /*opacity*/ ) {}
 	virtual void	popStrokeOpacity() {}
-	virtual void	pushStrokeWidth( float width ) {}
+	virtual void	pushStrokeWidth( float  /*width*/ ) {}
 	virtual void	popStrokeWidth() {}
-	virtual void	pushFillRule( FillRule rule ) {}
-	virtual void	popFillRule() {}	
-	virtual void	pushLineCap( LineCap lineCap ) {}
-	virtual void	popLineCap() {}	
-	virtual void	pushLineJoin( LineJoin lineJoin ) {}
+	virtual void	pushFillRule( FillRule  /*rule*/ ) {}
+	virtual void	popFillRule() {}
+	virtual void	pushLineCap( LineCap  /*lineCap*/ ) {}
+	virtual void	popLineCap() {}
+	virtual void	pushLineJoin(LineJoin  /*lineJoin*/ ) {}
 	virtual void	popLineJoin() {}
-	virtual void	pushTextPen( const vec2 &penPos ) {}
+	virtual void	pushTextPen(const vec2 &  /*penPos*/ ) {}
 	virtual void	popTextPen() {}
-	virtual void	pushTextRotation( float rotation ) {}
+	virtual void	pushTextRotation( float  /*rotation*/ ) {}
 	virtual void	popTextRotation() {}
 
 	bool		visit( const Node &node, svg::Style *style ) const {
@@ -114,11 +112,11 @@ class Renderer {
 		else
 			return true;
 	}
-	
+
   protected:
-  	// this is a shared_ptr to work around a bug in Clang 4.0
+	// this is a shared_ptr to work around a bug in Clang 4.0
 	std::shared_ptr<std::function<bool(const Node&, svg::Style *)> >		mVisitor;
-	
+
 	friend class svg::Node;
 };
 
@@ -331,7 +329,7 @@ class Node {
 	Style				calcInheritedStyle() const;
 
 	//! Returns whether the point \a pt is inside of the Node's shape.
-	virtual bool	containsPoint( const vec2 &pt ) const { return false; }
+	virtual bool	containsPoint( const vec2 & /*pt*/ ) const { return false; }
 	
 	//! Renders the node and its descendants.
 	void			render( Renderer &renderer ) const;
@@ -447,7 +445,7 @@ class Gradient : public Node {
 	bool			specifiesTransform() const { return mSpecifiesTransform; }
 	
   protected:
-	virtual void	renderSelf( Renderer &renderer ) const {}
+	virtual void	renderSelf( Renderer & /*renderer*/ ) const {}
 
 	void 		parse( const Node *parent, const XmlTree &xml );
 	void		copyAttributesFrom( const Gradient &rhs );

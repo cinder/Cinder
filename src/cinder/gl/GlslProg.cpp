@@ -1142,7 +1142,7 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 				string indexStr = name.substr( requestedNameLeftSquareBracket + 1, requestedNameRightSquareBracket - requestedNameLeftSquareBracket - 1 );
 				*resultLocation = resultUniform->mLoc + stoi( indexStr );
 			}
-			catch( std::logic_error &exc ) {
+			catch( std::logic_error & ) {
 				return nullptr;
 			}
 		}

@@ -114,7 +114,7 @@ b2 runtime-link=static address-model=64 debug-symbols=off optimization=space --w
          <p></p>
 <pre><code class="language-bash">
 ./bootstrap
-./b2 debug-symbols=off optimization=space --with-filesystem --with-system stage
+./b2 debug-symbols=off optimization=space --with-filesystem --with-system define=_GLIBCXX_USE_CXX11_ABI=0 stage
 </code></pre>
 
       </section>

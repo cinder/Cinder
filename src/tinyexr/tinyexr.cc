@@ -8992,10 +8992,7 @@ int ParseMultiChannelEXRHeaderFromMemory(EXRImage *exrImage,
     return -1;
   }
 
-  const char *buf = reinterpret_cast<const char *>(memory);
-
-  const char *head = &buf[0];
-  const char *marker = &buf[0];
+  const char *marker = reinterpret_cast<const char *>(memory);
 
   // Header check.
   {

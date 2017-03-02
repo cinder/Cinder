@@ -23,6 +23,7 @@
 #pragma once
 
 #include "cinder/Url.h"
+#include <vector>
 
 namespace cinder {
 
@@ -47,8 +48,7 @@ class IStreamUrlImplWinInet : public IStreamUrlImpl {
 	std::shared_ptr<void>		mSession, mConnection, mRequest;
 	
 	mutable bool			mIsFinished;
-	mutable uint8_t			*mBuffer; // todo - consider an exception-safe version of this
-	mutable int				mBufferSize;
+	mutable std::vector<uint8_t> mBuffer;
 	mutable int				mBufferOffset, mBufferedBytes;
 	mutable off_t			mBufferFileOffset;	// where in the file the buffer starts
 	static const int		DEFAULT_BUFFER_SIZE = 4096;

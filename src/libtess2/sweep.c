@@ -41,6 +41,14 @@
 #include "bucketalloc.h"
 #include "sweep.h"
 
+#if defined( __clang__ ) || defined( __GCC__ )
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
+#elif defined( _MSC_VER )
+	#pragma warning( push )
+	#pragma warning( disable : 4100)
+#endif
+
 #define TRUE 1
 #define FALSE 0
 
@@ -1333,3 +1341,10 @@ int tessComputeInterior( TESStesselator *tess )
 
 	return 1;
 }
+
+#if defined( __clang__ ) || defined( __GCC__ )
+	#pragma GCC diagnostic pop
+#elif defined(_MSC_VER)
+	#pragma warning(pop)
+#endif
+

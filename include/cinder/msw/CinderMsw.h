@@ -85,7 +85,7 @@ class ComOStream : public ::IStream
 
   // ISequentialStream Interface
   public:
-	virtual HRESULT STDMETHODCALLTYPE Read( void* pv, ULONG cb, ULONG* pcbRead ) { return E_NOTIMPL; }
+	virtual HRESULT STDMETHODCALLTYPE Read( void* /*pv*/, ULONG /*cb*/, ULONG* /*pcbRead*/ ) { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE Write( void const* pv, ULONG cb, ULONG* pcbWritten );
   // IStream Interface
   public:
@@ -97,7 +97,7 @@ class ComOStream : public ::IStream
 	virtual HRESULT STDMETHODCALLTYPE UnlockRegion( ULARGE_INTEGER, ULARGE_INTEGER, DWORD ) { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE Clone(IStream **) { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE Seek( LARGE_INTEGER liDistanceToMove, DWORD dwOrigin, ULARGE_INTEGER* lpNewFilePointer );
-	virtual HRESULT STDMETHODCALLTYPE Stat( STATSTG* pStatstg, DWORD grfStatFlag) { return E_NOTIMPL; }
+	virtual HRESULT STDMETHODCALLTYPE Stat( STATSTG* /*pStatstg*/, DWORD /*grfStatFlag*/) { return E_NOTIMPL; }
 
   private:
 	cinder::OStreamRef	mOStream;
@@ -117,7 +117,7 @@ public:
 	// ISequentialStream Interface
 public:
 	virtual HRESULT STDMETHODCALLTYPE Read( void* pv, ULONG cb, ULONG* pcbRead );
-	virtual HRESULT STDMETHODCALLTYPE Write( void const* pv, ULONG cb, ULONG* pcbWritten ) { return E_NOTIMPL; }
+	virtual HRESULT STDMETHODCALLTYPE Write( void const* /*pv*/, ULONG /*cb*/, ULONG* /*pcbWritten*/ ) { return E_NOTIMPL; }
 	// IStream Interface
 public:
 	virtual HRESULT STDMETHODCALLTYPE SetSize( ULARGE_INTEGER ) { return E_NOTIMPL; }

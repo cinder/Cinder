@@ -295,7 +295,7 @@ OSStatus MovieWriter::Obj::encodedFrameOutputCallback( void *refCon,
                    ICMCompressionSessionRef session, 
                    OSStatus err,
                    ICMEncodedFrameRef encodedFrame,
-                   void *reserved )
+                   void * /*reserved*/ )
 {
 	MovieWriter::Obj *obj = reinterpret_cast<MovieWriter::Obj*>( refCon );
 
@@ -435,7 +435,7 @@ bail:
 }
 
 namespace {
-extern "C" void destroyDataArrayU8( void *releaseRefCon, const void *baseAddress )
+extern "C" void destroyDataArrayU8( void * /*releaseRefCon*/, const void *baseAddress )
 {
 	delete [] (reinterpret_cast<uint8_t*>( const_cast<void*>( baseAddress ) ));
 }

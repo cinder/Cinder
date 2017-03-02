@@ -143,7 +143,7 @@ void CameraUi::mouseWheel( app::MouseEvent &event )
 	event.setHandled();
 }
 
-void CameraUi::mouseUp( const vec2 &mousePos )
+void CameraUi::mouseUp( const vec2 & /*mousePos*/ )
 {
 	mLastAction = ACTION_NONE;
 }

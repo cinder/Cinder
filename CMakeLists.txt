@@ -12,8 +12,8 @@ endif()
 # Project start
 project( cinder )
 
-option( CINDER_BUILD_SAMPLES "Build all samples." OFF )
-option( CINDER_BUILD_TESTS "Build all unit tests." OFF )
+option( CINDER_BUILD_TESTS "Build unit tests." OFF )
+option( CINDER_BUILD_ALL_SAMPLES "Build all samples." OFF )
 set( CINDER_BUILD_SAMPLE "" CACHE STRING "Build a specific sample by specifying its path relative to the samples directory (ex. '_opengl/Cube')." )
 
 set( CINDER_PATH      "${CMAKE_CURRENT_SOURCE_DIR}" )
@@ -39,7 +39,7 @@ endif()
 
 include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )
 
-if( CINDER_BUILD_SAMPLES )
+if( CINDER_BUILD_ALL_SAMPLES )
 	include( ${CINDER_CMAKE_DIR}/modules/findCMakeDirs.cmake )
 
 	set( allSamples "" )
