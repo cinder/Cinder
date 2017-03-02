@@ -407,7 +407,7 @@ vector<std::string> SourceFileMediaFoundation::getSupportedExtensions()
 // ----------------------------------------------------------------------------------------------------
 
 TargetFileMediaFoundation::TargetFileMediaFoundation( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension )
-	: TargetFile( dataTarget, sampleRate, numChannels, sampleType ), mStreamIndex( 0 )
+	: TargetFile( sampleRate, numChannels, sampleType ), mStreamIndex( 0 )
 {
 	MediaFoundationInitializer::initMediaFoundation();
 
