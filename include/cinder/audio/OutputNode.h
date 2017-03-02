@@ -32,7 +32,7 @@ typedef std::shared_ptr<class OutputNode>			OutputNodeRef;
 typedef std::shared_ptr<class OutputDeviceNode>		OutputDeviceNodeRef;
 
 //! Base class for Node's that consume an audio signal, for example speakers. It cannot have any outputs.
-class OutputNode : public Node {
+class CI_API OutputNode : public Node {
   public:
 	virtual ~OutputNode() {}
 
@@ -68,7 +68,7 @@ class OutputNode : public Node {
 //!
 //! You do not directly construct an OutputDeviceNode. Instead, you use the platform-defined method Context::createOutputDeviceNode().
 //! If number of channels hasn't been specified via Node::Format, defaults to `min( 2, getDevice()->getNumOutputChannels() )`.
-class OutputDeviceNode : public OutputNode {
+class CI_API OutputDeviceNode : public OutputNode {
   public:
 	virtual ~OutputDeviceNode() {}
 

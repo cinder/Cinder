@@ -31,7 +31,7 @@ namespace cinder { namespace audio {
 typedef std::shared_ptr<class Pan2dNode>		Pan2dNodeRef;
 
 //! Simple stereo panning using an equal power cross-fade. The panning position is specified by a single position between the left and right speakers.
-class Pan2dNode : public Node {
+class CI_API Pan2dNode : public Node {
   public:
 	//! Constructs a Pan2dNode. \note Format::channel() and Format::channelMode() are ignored and number of output channels is always 2.
 	Pan2dNode( const Format &format = Format() );

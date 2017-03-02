@@ -34,7 +34,7 @@ typedef std::shared_ptr<class DelayNode>		DelayNodeRef;
 //!
 //! Enables feedback if connected in a graph cycle.
 //! \note Restrictions: The current minimum delay length is one processing block. Restricts channel count to 1 (mixes down inputs).
-class DelayNode : public Node {
+class CI_API DelayNode : public Node {
   public:
 	//! Constructs a DelayNode with an optional \a format.
 	DelayNode( const Format &format = Format() );

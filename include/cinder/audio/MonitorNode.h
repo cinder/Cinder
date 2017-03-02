@@ -47,7 +47,7 @@ typedef std::shared_ptr<class MonitorSpectralNode>	MonitorSpectralNodeRef;
 //!
 //! \note Internally, a dsp::RingBuffer is used, which has a limited size. Once it fills up, more samples will not be written
 //! until space is made by calling getBuffer(). In practice, this isn't a problem since this method is normally called from within the update() or draw() loop.
-class MonitorNode : public NodeAutoPullable {
+class CI_API MonitorNode : public NodeAutoPullable {
   public:
 	struct Format : public Node::Format {
 		Format() : mWindowSize( 0 ) {}
@@ -94,7 +94,7 @@ class MonitorNode : public NodeAutoPullable {
 };
 
 //! A Scope that performs spectral (Fourier) analysis.
-class MonitorSpectralNode : public MonitorNode {
+class CI_API MonitorSpectralNode : public MonitorNode {
   public:
 	struct Format : public MonitorNode::Format {
 		Format() : MonitorNode::Format(), mFftSize( 0 ), mWindowType( dsp::WindowType::BLACKMAN ) {}
