@@ -24,13 +24,20 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/app/linux/WindowImplLinux.h"
 #include "cinder/app/linux/AppImplLinux.h"
+#include "cinder/app/linux/PlatformLinux.h"
+#include "cinder/Log.h"
 
 namespace cinder { namespace app {
 
 WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef sharedRenderer, AppImplLinux *appImpl )
 	: mAppImpl( appImpl )
 {
+	mFullScreen = format.isFullScreen();
 	mDisplay = format.getDisplay();
+	
+	if( ! mDisplay )
+		mDisplay = Display::getMainDisplay();
+
 	mRenderer = format.getRenderer();
 
 	const auto& options = std::dynamic_pointer_cast<RendererGl>( mRenderer )->getOptions();
@@ -71,10 +78,19 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 		::glfwWindowHint( GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE );
 #endif
 
-    ::glfwWindowHint( GLFW_SAMPLES, options.getMsaa() );
+	::glfwWindowHint( GLFW_SAMPLES, options.getMsaa() );
 
-	auto windowSize = format.getSize();
-	mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), NULL, NULL );
+	if( mFullScreen ) {
+		cinder::app::DisplayLinux* displayLinux = dynamic_cast<cinder::app::DisplayLinux*>( mDisplay.get() );
+		auto windowSize = displayLinux->getSize();
+		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), displayLinux->getGlfwMonitor(), NULL );
+		mWindowedSize = format.getSize();
+		mWindowedPos = format.getPos();
+	}
+	else {
+		auto windowSize = format.getSize();
+		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), NULL, NULL );
+	}
 
 	mRenderer->setup( mGlfwWindow, sharedRenderer );
 
@@ -91,7 +107,27 @@ WindowImplLinux::~WindowImplLinux()
 
 void WindowImplLinux::setFullScreen( bool fullScreen, const app::FullScreenOptions &options )
 {
-	// TODO: Find a way to do this w/o recreating 
+	if( fullScreen == mFullScreen )
+		return;
+
+	if( fullScreen ) {
+		// preserve these for potential return to windowed later
+		int x, y;
+		::glfwGetWindowPos( mGlfwWindow, &x, &y );
+		mWindowedPos = ivec2( x, y );
+		::glfwGetWindowSize( mGlfwWindow, &x, &y );
+		mWindowedSize = ivec2( x, y );
+
+		if( options.getDisplay() )
+			mDisplay = options.getDisplay();
+		cinder::app::DisplayLinux* displayLinux = dynamic_cast<cinder::app::DisplayLinux*>( mDisplay.get() );
+		::glfwSetWindowMonitor( mGlfwWindow, displayLinux->getGlfwMonitor(), 0, 0, mDisplay->getWidth(), mDisplay->getHeight(), GLFW_DONT_CARE );
+	}
+	else {
+		::glfwSetWindowMonitor( mGlfwWindow, NULL, mWindowedPos.x, mWindowedPos.y, mWindowedSize.x, mWindowedSize.y, GLFW_DONT_CARE );
+	}
+
+	mFullScreen = fullScreen;
 }
 
 ivec2 WindowImplLinux::getSize() const
@@ -144,11 +180,13 @@ const std::vector<TouchEvent::Touch>& WindowImplLinux::getActiveTouches() const
 
 void WindowImplLinux::setBorderless( bool borderless )
 {
+	CI_LOG_W( "Window::setBorderless() currently unimplemented in GLFW" );
 	// TODO: Find a way to do this w/o recreating 
 }
 
 void WindowImplLinux::setAlwaysOnTop( bool alwaysOnTop )
 {
+	CI_LOG_W( "Window::setAlwaysOnTop() currently unimplemented in GLFW" );
 	// TODO: Find a way to do this w/o recreating 
 }
 
