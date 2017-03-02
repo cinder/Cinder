@@ -541,7 +541,7 @@ glm::tvec2<T, glm::defaultp> getClosestPointQuadratic( const glm::tvec2<T, glm::
 	int solutions = solveCubic<T>( a, b, c, d, t );
 
 	T distance2 = std::numeric_limits<T>::max();
-	for( int i = 0; i < 3; ++i ) {
+	for( int i = 0; i < solutions; ++i ) {
 		T u = glm::clamp( t[i], T{0}, T{1} );
 		T v = T{1} - u;
 		glm::tvec2<T, glm::defaultp> p = controlPoints[0] * ( v*v ) + controlPoints[1] * ( T{2} * u*v ) + controlPoints[2] * ( u*u );

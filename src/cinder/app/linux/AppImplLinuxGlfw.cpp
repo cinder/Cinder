@@ -269,7 +269,7 @@ public:
 			int modifiers = getGlfwMouseButtons( glfwWindow ) | getGlfwKeyModifiersMouse( glfwWindow );
 
 			float wheelDelta = xoffset + yoffset;
-			MouseEvent event( getWindow(), 0, (int)mouseX, (int)mouseX, modifiers, wheelDelta , 0 );
+			MouseEvent event( getWindow(), 0, (int)mouseX, (int)mouseY, modifiers, wheelDelta , 0 );
 			cinderWindow->emitMouseWheel( &event );	
 		}
 	}

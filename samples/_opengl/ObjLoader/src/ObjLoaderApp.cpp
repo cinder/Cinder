@@ -40,8 +40,6 @@ class ObjLoaderApp : public App {
 
 void ObjLoaderApp::setup()
 {
-	std::cout << RES_8LBS_OBJ << std::endl;
-	
 #if defined( CINDER_GL_ES )
 	mGlsl = gl::GlslProg::create( loadAsset( "shader_es2.vert" ), loadAsset( "shader_es2.frag" ) );
 #else

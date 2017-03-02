@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\RotatingBox.cpp">
+    <ClCompile Include="..\src\CaptureCubeApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

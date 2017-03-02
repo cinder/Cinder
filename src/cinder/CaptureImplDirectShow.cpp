@@ -21,9 +21,7 @@
 */
 
 #include "cinder/CaptureImplDirectShow.h"
-#include <boost/noncopyable.hpp>
 
-#include <set>
 using namespace std;
 
 namespace cinder {
@@ -98,8 +96,8 @@ const vector<Capture::DeviceRef>& CaptureImplDirectShow::getDevices( bool forceR
 	static std::vector<Capture::DeviceRef>	devices;
 
 	if( firstCall || forceRefresh ) {
-		const int devCnt = getVideoInput().listDevices(true);
-		devices.resize(devCnt);
+		const int devCnt = getVideoInput().listDevices( true );
+		devices.resize( devCnt );
 		for ( int i = 0; i < devCnt; ++i ) {
 			devices[i] = std::make_shared<CaptureImplDirectShow::Device>( videoInput::getDeviceName( i ), i );
 		}

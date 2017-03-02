@@ -34,7 +34,7 @@ namespace cinder { namespace audio {
 void rampLinear( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd )
 {
 	for( size_t i = 0; i < count; i++ ) {
-		float factor( t );
+		auto factor = float( t );
 		array[i] = lerp( valueBegin, valueEnd, factor );
 		t += tIncr;
 	}
@@ -52,7 +52,7 @@ void rampInQuad( float *array, size_t count, double t, double tIncr, float value
 void rampOutQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd )
 {
 	for( size_t i = 0; i < count; i++ ) {
-		float factor( -t * ( t - 2 ) );
+		auto factor = float( -t * ( t - 2 ) );
 		array[i] = lerp( valueBegin, valueEnd, factor );
 		t += tIncr;
 	}
@@ -201,7 +201,7 @@ float Param::findDuration() const
 		return 0;
 	else {
 		const EventRef &event = mEvents.back();
-		return event->mTimeEnd - (float)ctx->getNumProcessedSeconds();
+		return static_cast<float>(event->mTimeEnd - ctx->getNumProcessedSeconds());
 	}
 }
 
@@ -257,7 +257,7 @@ bool Param::eval( double timeBegin, float *array, size_t arrayLength, size_t sam
 			// if we skipped over the last event, record its end value before erasing.
 			if( mEvents.size() == 1 && ! cancelled )
 				mValue = event.mValueEnd;
-			
+
 			eventIt = mEvents.erase( eventIt );
 			continue;
 		}

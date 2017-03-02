@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- Update title -->
+		<title>Preprocessor Platform Macros</title>
+
+		<!-- keywords used for searching -->
+		<meta name="keywords" content="guide, linux">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- reference to Cinder classes -->
+   		<!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+   		<!-- master stylesheet - these links will be replaced when compiled -->
+		<link rel="stylesheet" href="../../_assets/css/foundation.css">
+		<link rel="stylesheet" href="../../_assets/css/prism.css">
+		<link rel="stylesheet" href="../../_assets/css/style.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+		<!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+		
+	</head>
+
+	<body id="guide-contents" class="language-c++">
+
+		<!-- CONTENT STARTS HERE -->
+
+		<h1>Cinder Platforms</h1>
+
+		<center><img width="849" height="285" src="preproc-notes/platforms.svg" /></center>
+		
+		<section>
+			<h2>Platform Macros</h2>
+
+			<table>
+			<tr><td><b>Macro</b></td><td><b>Description</b></td></tr>
+			<tr><td><code>CINDER_CINDER</code></td><td>Defined on all Cinder platforms</td></tr>
+			<tr><td><code>CINDER_POSIX</code></td><td>Defined on all POSIX-derived platforms: macOS, iOS, Linux, and Android</td></tr>
+			<tr><td><code>CINDER_COCOA</code></td><td>Defined on macOS and iOS</td></tr>
+			<tr><td><code>CINDER_MAC</code></td><td>Defined on macOS only</td></tr>
+			<tr><td><code>CINDER_COCOA_TOUCH</code></td><td>Defined on iOS only</td></tr>
+			<tr><td><code>CINDER_LINUX</code></td><td>Defined on Linux only</td></tr>
+			<tr><td><code>CINDER_ANDROID</code></td><td>Defined on Android only</td></tr>
+			<tr><td><code>CINDER_MSW</code></td><td>Defined on Universal Windows Platform (UWP) and desktop Windows</td></tr>
+			<tr><td><code>CINDER_UWP</code></td><td>Defined on Universal Windows Platform (UWP) only</td></tr>
+			<tr><td><code>CINDER_MSW_DESKTOP</code></td><td>Defined on desktop Windows only</td></tr>
+			</table>
+		</section>
+
+		<section>
+			<h2>Linux-Specific Macros</h2>
+
+			<table>
+			<tr><td><b>Macro</b></td><td><b>Description</b></td></tr>
+			<tr><td><code>CINDER_LINUX_EGL_ONLY</code></td><td>Defined on platforms where EGL is used instead of GLFW</td></tr>
+			</table>
+		</section>
+
+		<section>
+			<h2>iOS-Specific Macros</h2>
+
+			<table>
+			<tr><td><b>Macro</b></td><td><b>Description</b></td></tr>
+			<tr><td><code>CINDER_COCOA_TOUCH_SIMULATOR</code></td><td>Defined on iOS Simulator only</td></tr>
+			<tr><td><code>CINDER_COCOA_TOUCH_DEVICE</code></td><td>Defined on iOS Device only</td></tr>
+			</table>
+		</section>
+
+		<!-- END CONTENT -->
+
+		<!-- Scripts -->
+		<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+		<!-- Place additional scripts here (optional) -->
+		<!-- <script type="text/javascript"></script> -->
+
+	</body>
+</html> 

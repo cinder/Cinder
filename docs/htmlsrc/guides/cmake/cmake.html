@@ -1,0 +1,145 @@
+<h1 id="overview">Overview</h1>
+<p>This document describes how you can build libcinder and your application using cmake. This is Cinder's officially supported build system on most POSIX platforms, though in general you can use cinder's cmake system on any platform. See the section on platform-specific notes for details.</p>
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+<h1 id="table-of-contents">Table of Contents</h1>
+<ul>
+<li><a href="#building-libcinder-with-cmake">Building libcinder with CMake</a><ul>
+<li><a href="#command-line-options">Command-line Options</a></li>
+</ul>
+</li>
+<li><a href="#building-your-application-with-cmake">Building your application with CMake</a><ul>
+<li><a href="#printing-verbose-information-when-building-your-application">Printing verbose information when building your application</a></li>
+</ul>
+</li>
+<li><a href="#cinderblocks-and-cmake">CinderBlocks and CMake</a><ul>
+<li><a href="#using-cinderblocks">Using CinderBlocks</a></li>
+<li><a href="#writing-cmake-support-for-a-cinderblock">Writing CMake support for a CinderBlock</a></li>
+</ul>
+</li>
+<li><a href="#using-clion-to-build-libcinder-and-your-application">Using CLion to build libcinder and your application</a><ul>
+<li><a href="#running-a-cinder-sample-directly-from-cinders-main-project">Running a Cinder sample directly from Cinder's main project.</a></li>
+</ul>
+</li>
+<li><a href="#structure-of-cinders-cmake-files">Structure of Cinder's CMake Files</a><ul>
+<li><a href="#configurecmake">configure.cmake</a></li>
+<li><a href="#configuring-libcinder">Configuring libcinder</a></li>
+</ul>
+</li>
+<li><a href="#cmake-best-practices">CMake Best Practices</a><ul>
+<li><a href="#assign-compiler-configurations-to-targets">Assign compiler configurations to targets</a></li>
+<li><a href="#keep-the-code-style-consistent">Keep the code style consistent</a></li>
+</ul>
+</li>
+<li><a href="#platform-specific-notes">Platform Specific Notes</a><ul>
+<li><a href="#microsoft-windows">Microsoft Windows</a></li>
+</ul>
+</li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+<h1 id="building-libcinder-with-cmake">Building libcinder with CMake</h1>
+<p>To build libcinder from the command line, first make sure you have CMake version 3.0 or later installed. Then the process is similar to most other cmake projects you may have used, for example you can do the following from within the main cinder repo path:</p>
+<pre><code>mkdir build
+cd build
+cmake ..
+make -j4
+</code></pre>
+
+<p>Upon completion, this will generate a static libcinder binary within the <code>$(CINDER_PATH)/lib</code> folder for your application to link against. By default you'll be building for Debug configuration, to build release you change the above <code>cmake</code> command to:</p>
+<pre><code>cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j4
+</code></pre>
+
+<p>The runtime output directory for different configurations will automatically end up within different folders (e.g. <code>lib/macosx/Debug/libcinder.a</code> and <code>lib/macosx/Release/libcinder.a</code>), so multiple configurations can live side by side.</p>
+<h3 id="command-line-options">Command-line Options</h3>
+<p>There are a few project configuration settings you can change by either editing the <code>CMakeCache.txt</code> file (or using some GUI to do this), or from the command line with the <code>-D</code> option. All settings related to cinder are prefixed with <code>CINDER_</code>. Some of the more common settings are listed below, take a look in the <code>CMakeCache.txt</code> file for a full and updated list.</p>
+<p><code>CINDER_VERBOSE</code>: prints out verbose information from within Cinder's CMake scripts during configuration.</p>
+<p><code>CINDER_TARGET</code>: Sets the target to compile to. This defaults to one appropriate for the current operating system, but in some cases, for example Android, you must set it manually (i.e. <code>cmake -DCINDER_TARGET=android ..</code>).</p>
+<p><code>CINDER_TARGET_GL</code>: Sets the target OpenGL version. Usually defaults to <code>ogl</code> (desktop modern OpenGL), but other valid options are <code>es2</code>, <code>es3</code>, and <code>es31</code>. These are useful when you are building for something like the Raspberry Pi.</p>
+<p><code>CINDER_BUILD_TESTS</code>: Builds the unit tests (You can then run the tests from the command line with <code>make test</code> / <code>make check</code>).</p>
+<p><code>CINDER_BUILD_SAMPLE</code>: Specify the name of a single sample to build, after libcinder successfully builds. It will end up in the current build folder. For example, adding the option <code>-DCINDER_BUILD_SAMPLE=BasicApp</code> will also build the BasicApp sample and place it at <code>build/Debug/BasicApp/BasicApp.app</code>.</p>
+<p><code>CINDER_BUILD_ALL_SAMPLES</code>: Specifying <code>True</code> here will tell CMake to try to build all of the samples within cinder's samples directory. Be prepared to wait a while.</p>
+<h1 id="building-your-application-with-cmake">Building your application with CMake</h1>
+<p>Often the best thing to do when adding CMake support to your own project is to look at one of the samples as a starting point. You'll find the <code>CMakeLists.txt</code> file will be at <code>proj/cmake/CMakeListst.txt</code>. You can still build it from the base directory of your project if you choose, with something like:</p>
+<pre><code>cd my_project
+mkdir build
+cd build
+cmake ../proj/cmake
+make -j4
+</code></pre>
+
+<p>To simplify configuring your project and the many platform-specific particulars, we use a utility function called <code>ci_make_app()</code>, which takes a number of arguments to build your application. For example, <a href="https://github.com/cinder/Cinder/blob/master/samples/_opengl/ObjLoader/proj/cmake/CMakeLists.txt">here</a> is the CMakeLists.txt file used for building the <code>_opengl/ObjLoader</code> sample:</p>
+<pre><code class="cmake">cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
+set( CMAKE_VERBOSE_MAKEFILE ON )
+
+project( opengl-ObjLoader )
+
+get_filename_component( CINDER_PATH &quot;${CMAKE_CURRENT_SOURCE_DIR}/../../../../..&quot; ABSOLUTE )
+get_filename_component( APP_PATH &quot;${CMAKE_CURRENT_SOURCE_DIR}/../../&quot; ABSOLUTE )
+
+include( &quot;${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake&quot; )
+
+ci_make_app(
+    APP_NAME    &quot;ObjLoader&quot;
+    CINDER_PATH ${CINDER_PATH}
+    SOURCES     ${APP_PATH}/src/ObjLoaderApp.cpp
+    INCLUDES    ${APP_PATH}/include
+    RESOURCES   ${APP_PATH}/../../data/models/8lbs.obj
+)
+</code></pre>
+
+<p>It is quite brief, but you can see that we've specified a number of common things necessary when building a custom application, such as source files and include paths.</p>
+<p>Arguments to <code>ci_make_app()</code> include:</p>
+<p><code>APP_NAME</code>: Defines the name of your application. Defaults to the current <code>${PROJECT_NAME}</code>.</p>
+<p><code>CINDER_PATH</code>: Relative path to cinder's root directory, used to find the <code>cinder</code> module via CMake's <code>find_package()</code> system. Required.</p>
+<p><code>SOURCES</code>: list of source files. Required.</p>
+<p><code>INCLUDES</code>: list of include directories</p>
+<p><code>ASSETS_PATH</code>: path to your assets folder (see explanation of assets <a href="https://libcinder.org/docs/guides/resources/index.html">here</a>. This will automatically be found if your project folder structure follows the standard pattern. Note that by default, this gets symlinked next to your built application, however specifying <code>-DCINDER_COPY_ASSETS=On</code> at the command line will cause the assets to be copied over instead.</p>
+<p><code>RESOURCES</code>: list of resources, which are handled in a platform specific manner (see explanation of resources <a href="https://libcinder.org/docs/guides/resources/index.html">here</a>.</p>
+<p><code>BLOCKS</code>: list of <a href="https://libcinder.org/docs/guides/cinder-blocks/index.html">CinderBlocks</a> that your application depends on. These can be specified by either a relative or absolute path, or by providing the name of one of the blocks that ships with cinder (e.g. lives in the <code>$(CINDER_PATH)/blocks</code> folder).</p>
+<p><code>LIBRARIES</code>: list of lib files to be linked (via <code>target_link_libraries()</code>).</p>
+<h3 id="printing-verbose-information-when-building-your-application">Printing verbose information when building your application</h3>
+<p><code>ci_make_app()</code> also respects the <code>CINDER_VERBOSE</code> variable, so if that is on then you will see much more configuration information.</p>
+<h1 id="cinderblocks-and-cmake">CinderBlocks and CMake</h1>
+<h3 id="using-cinderblocks">Using CinderBlocks</h3>
+<p>As mentioned above, you can provide a list of <a href="https://libcinder.org/docs/guides/cinder-blocks/index.html">CinderBlocks</a> to <code>ci_make_app()</code> <code>BLOCKS</code> argument, which will then attempt to first find the block by either relative or absolute path, and then within Cinder's <code>blocks</code> folder (by its name alone).</p>
+<h3 id="writing-cmake-support-for-a-cinderblock">Writing CMake support for a CinderBlock</h3>
+<p>The basic pattern we use for CinderBlock support is CMake's <a href="https://cmake.org/cmake/help/v3.0/manual/cmake-packages.7.html#config-file-packages">packages system</a>, specific the <code>Package Configuration File</code> variant. For a concrete example, take a look at the OSC block's <a href="https://github.com/cinder/Cinder/blob/master/blocks/OSC/proj/cmake/OSCConfig.cmake">OSCConfig.cmake</a> file.</p>
+<p>First and foremost, <code>ci_make_app()</code> finds a file by looking for it at a specific location, within the block's <code>proj/cmake/</code> folder, and you must use the block's name as the prefix to <code>*Config.cmake</code>. Then, we define that it is a library with the <code>add_library( OSC ${source_files} )</code> command, along with any other dependencies on the block.</p>
+<p>In the case of a header-only CinderBlock, there won't be a target, but you can still specify the include and library dependencies with <code>BLOCK_NAME_INCLUDE_DIRS</code> and <code>BLOCK_NAME_LIBRARIES</code>. Also note that, as in the case of the <a href="https://github.com/cinder/Cinder/blob/master/blocks/TUIO/proj/cmake/TUIOConfig.cmake">TUIO block</a>, a block configuration can specify that it depends on another block with CMake's <code>add_dependencies()</code>. </p>
+<h1 id="using-clion-to-build-libcinder-and-your-application">Using CLion to build libcinder and your application</h1>
+<p>Aside from the command line, you can also use <a href="https://www.jetbrains.com/clion/">JetBrains CLion</a> to build and work on both libcinder and your application. <code>CLion</code> is a sophisticated C++ IDE with many nice syntax features around context-aware searching and refactoring, so it makes for a nice environment to code on your Cinder tasks.</p>
+<p>To build libcinder with CLion, open the main Cinder path within the IDE, wait for the initial symbol indexing to finish, and select <code>Run -&gt; Build</code>. This will by default build the Debug configuration; to change that to Release, you can modify the CMakeCache.txt file (along with any other Cinder cache options) by navigating to the CMake panel at the bottom and finding the button on the left that says 'Open CMakeCache File', and changing the <code>CMAKE_BUILD_TYPE</code> setting to <code>Release</code> there.</p>
+<p>Note that by default, CLion will output build files into a folder called <code>cmake-build-debug</code>. If you want to change this to the usual <code>build</code>, which will automatically get ignored by Cinder's <code>.gitignore</code> file, then navigate to <code>Preferences -&gt; Build, Execution, Deployment</code>, and change the field called 'Generation path:' to 'build'.</p>
+<h3 id="running-a-cinder-sample-directly-from-cinders-main-project">Running a Cinder sample directly from Cinder's main project.</h3>
+<p>There are a couple CMakeCache.txt options that will allow you to conveniently build and run a sample that ships with Cinder alongside building the main library. First, you can set the option <code>CINDER_BUILD_SAMPLE</code> to any of the sample names (ex. <code>CINDER_BUILD_SAMPLE=_opengl/Cube</code>), and then you will be able to run that sample by selecting it in the the <code>Select/Run Configuration</code> drop-down in the top right. Alternatively, you could set <code>CINDER_BUILD_ALL_SAMPLES=On</code>, which will load the configurations for all Cinder samples, and you can then run any one of them from within the IDE.</p>
+<h1 id="structure-of-cinders-cmake-files">Structure of Cinder's CMake Files</h1>
+<p>This section provides an overview of how CMake build support is structured within the Cinder repo.</p>
+<p>Cinder's CMake scripts live in the common folder <a href="https://github.com/cinder/Cinder/tree/master/proj/cmake">proj/cmake</a>. The root <code>CMakeLists.txt</code> file is largely there so that it is easy to find, and so that our build configuration plays nicely with CMake-based IDEs like CLion.</p>
+<h3 id="configurecmake">configure.cmake</h3>
+<p>One of the first things that we do is to <code>include()</code> the common <a href="https://github.com/cinder/Cinder/blob/master/proj/cmake/configure.cmake"><code>configure.cmake</code></a> file, which is shared by Cinder, libraries that depend on Cinder, and applications. It defines some global variables such as:</p>
+<ul>
+<li><code>CINDER_TARGET</code>, if it hasn't been defined by the user. See above section on Command-line Options for details.</li>
+<li>A platform-specific variable: one of <code>CINDER_LINUX</code>, <code>CINDER_MAC</code>, <code>CINDER_MSW</code>, <code>CINDER_COCOA_TOUCH</code> or <code>CINDER_ANDROID</code>.</li>
+<li><code>CINDER_TARGET_GL</code>, if it hasn't been defined by the user. See above section on Command-line Options for details.</li>
+<li>Defines some useful OpenGL variables such as <code>CINDER_GL_CORE</code>, <code>CINDER_GL_ES</code>, etc. (see <code>configure.cmake</code> for the full list). </li>
+<li>Sets the <code>CMAKE_BUILD_TYPE</code> to <code>Debug</code> if the user hasn't specified one.</li>
+<li>Provides some shared cache options like <code>CINDER_VERBOSE</code>.</li>
+<li>Sets a couple variables, <code>CINDER_TARGET_SUBFOLDER</code> and <code>CINDER_LIB_DIRECTORY</code>, which define where the output binaries will be generated for each target.</li>
+</ul>
+<p>In short, <code>configure.cmake</code> is meant to provide a a place where common variables can be declared based on the same commands for any cinder-based project, including cinder itself.</p>
+<h3 id="configuring-libcinder">Configuring libcinder</h3>
+<p>The next thing we do is configure the platform independent aspects of the <code>cinder</code> target. These steps live in <a href="https://github.com/cinder/Cinder/blob/master/proj/cmake/libcinder_configure.cmake">libcinder_configure.cmake</a> and <a href="https://github.com/cinder/Cinder/blob/master/proj/cmake/libcinder_source_files.cmake">libcinder_source_files.cmake</a>. The platform-specific configuration is broken out into separate sources (ex. <a href="https://github.com/cinder/Cinder/blob/master/proj/cmake/platform_linux.cmake">platform_linux.cmake</a> to ease extending the build system to new platforms. This way you can see source files that only pertain to a specific platform by viewing its specific <code>platform_*.cmake</code> file.</p>
+<p>Finally, we create the actual <code>cinder</code> target within <a href="https://github.com/cinder/Cinder/blob/master/proj/cmake/libcinder_target.cmake">libcinder_target.cmake</a>, which among other things contains the commands to <code>add_libary( cinder ... )</code>. Also importantly, this file is responsible for exporting dependency information and creating a <code>cinderConfig.cmake</code> file that will later be used with <code>find_package()</code> by libraries and applications that depend on Cinder.</p>
+<h1 id="cmake-best-practices">CMake Best Practices</h1>
+<p>Below are some guidelines for how we've been working on the CMake build setup within Cinder, which are useful to read over if you plan on making contributions and want to streamline your pull requests.</p>
+<h4 id="assign-compiler-configurations-to-targets">Assign compiler configurations to targets</h4>
+<p>We try to 'leak' as little compiler configuration as possible. This means using things methods like, for example, <code>target_include_directories( target ... )</code> instead of the older <code>include_directories( ... )</code> and then relying on CMake's package system to apply the settings based on dependencies. This pertains to both developing on CMake for libcinder and CinderBlocks.</p>
+<h4 id="keep-the-code-style-consistent">Keep the code style consistent</h4>
+<p>As with all community projects, it makes things easier to keep a consistent style. CMake might be a funky language, but we've more or less developed our own readable way to write in it, which is based on the spacing described in Cinder's <a href="https://github.com/cinder/Cinder/blob/master/CONTRIBUTING.md#style-guide">styleguide</a> as much as possible.</p>
+<h1 id="platform-specific-notes">Platform Specific Notes</h1>
+<h3 id="microsoft-windows">Microsoft Windows</h3>
+<p>As of this writing, we do not support building from CMake-generated Makefiles on Windows, simply because the GCC toolchain is too difficult to set up there with a compiler that supports the features we need (C++11). The best approach there is to use the provided Visual Studio project files, as <a href="https://libcinder.org/docs/guides/windows-setup/index.html">explained here</a>. You can however generate new Visual Studio project files from CMake, if that suits your needs.</p>
