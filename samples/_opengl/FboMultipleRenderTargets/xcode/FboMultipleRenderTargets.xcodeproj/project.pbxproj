@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		005499631B1F5ED700968562 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 119C4DBA1B1EB8C1006563C5 /* assets */; };
 		006D72A8199531BD008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D72A6199531BD008149E2 /* AVFoundation.framework */; };
 		006D72A9199531BD008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D72A7199531BD008149E2 /* CoreMedia.framework */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
@@ -24,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		002AE8011E67BF3B00097803 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
 		006D72A6199531BD008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		006D72A7199531BD008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -117,6 +117,7 @@
 		29B97314FDCFA39411CA2CEA /* FboMultipleRenderTargets */ = {
 			isa = PBXGroup;
 			children = (
+				002AE8011E67BF3B00097803 /* assets */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -207,7 +208,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				005499631B1F5ED700968562 /* assets in Resources */,
 				11DAA43D1B1D870400D6D955 /* CinderApp.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -242,6 +242,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_NAME = FboMultipleRenderTargets;
+				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -265,6 +266,7 @@
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_NAME = FboMultipleRenderTargets;
 				STRIP_INSTALLED_PRODUCT = YES;
+				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
