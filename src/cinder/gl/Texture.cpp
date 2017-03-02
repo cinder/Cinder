@@ -1870,8 +1870,8 @@ std::vector<CubeMapFaceRegion> calcCubeMapHorizontalRegions( const ImageSourceRe
 	ivec2 faceSize( imageSource->getHeight(), imageSource->getHeight() );
 
 	for( uint8_t index = 0; index < 6; ++index ) {
-		Area area( index * faceSize.x, 0.0f, (index + 1) * faceSize.x, faceSize.y );
-		ivec2 offset( -index * faceSize.x, 0.0f );
+		Area area( index * faceSize.x, 0, (index + 1) * faceSize.x, faceSize.y );
+		ivec2 offset( -index * faceSize.x, 0 );
 		result.push_back( { area, offset, false } );
 	}
 
@@ -1884,8 +1884,8 @@ std::vector<CubeMapFaceRegion> calcCubeMapVerticalRegions( const ImageSourceRef 
 	ivec2 faceSize( imageSource->getWidth(), imageSource->getWidth() );
 
 	for( uint8_t index = 0; index < 6; ++index ) {
-		Area area( 0.0f, index * faceSize.x, faceSize.x, (index + 1) * faceSize.y );
-		ivec2 offset( 0.0f, -index * faceSize.y );
+		Area area( 0, index * faceSize.x, faceSize.x, (index + 1) * faceSize.y );
+		ivec2 offset( 0, -index * faceSize.y );
 		result.push_back( { area, offset, false } );
 	}
 
