@@ -422,8 +422,8 @@ AxisAlignedBox TriMesh::calcBoundingBox( const mat4 &transform ) const
 	if( mPositions.empty() )
 		return AxisAlignedBox( vec3(), vec3() );
 
-	const vec3 &temp = *(const vec3*)(&mPositions[0]);
-	vec3 min = vec3( transform * vec4( temp, 1 ) );
+	const vec3 &t1 = *(const vec3*)(&mPositions[0]);
+	vec3 min = vec3( transform * vec4( t1, 1 ) );
 	vec3 max = min;
 	for( size_t i = 0; i < mPositions.size() / 3; ++i ) {
 		const vec3 &temp = *(const vec3*)(&mPositions[i*3]);
@@ -468,7 +468,7 @@ void TriMesh::read( const DataSourceRef &dataSource )
 
 void TriMesh::write( const DataTargetRef &dataTarget, bool writeNormals, bool writeTangents ) const
 {
-	uint32_t mask = ~0;
+	uint32_t mask = ~0u;
 	if( ! writeNormals )
 		mask &= ~toMask( geom::NORMAL );
 	if( ! writeTangents )
@@ -761,7 +761,7 @@ void TriMesh::subdivide( int division, bool normalize )
 		return;
 
 	// keep track of newly added vertices (enough for a single subdivided triangle)
-	const uint32_t numVerticesPerTriangle = (division + 2) * (division + 1) / 2;
+	const int numVerticesPerTriangle = (division + 2) * (division + 1) / 2;
 	std::vector<uint32_t> indices(numVerticesPerTriangle);
 
 	// subdivide a single triangle at a time
@@ -1099,16 +1099,19 @@ void TriMesh::copyAttrib( geom::Attrib attr, uint8_t dims, size_t /*stride*/, co
 
 bool TriMesh::verticesEqual( uint32_t indexA, uint32_t indexB ) const
 {
-	const size_t numPositions = getNumVertices();
-
-	if( indexA >= numPositions || indexB >= numPositions )
-		return false;
+	{
+		const size_t numPositions = getNumVertices();
+		if (indexA >= numPositions || indexB >= numPositions)
+			return false;
+	}
 
 	// positions
-	const vec3 &a = *reinterpret_cast<const vec3*>(&mPositions[indexA*mPositionsDims]);
-	const vec3 &b = *reinterpret_cast<const vec3*>(&mPositions[indexB*mPositionsDims]);
-	if( distance2( a, b ) > FLT_EPSILON )
-		return false;
+	{
+		const vec3 &a = *reinterpret_cast<const vec3*>(&mPositions[indexA*mPositionsDims]);
+		const vec3 &b = *reinterpret_cast<const vec3*>(&mPositions[indexB*mPositionsDims]);
+		if (distance2(a, b) > FLT_EPSILON)
+			return false;
+	}
 
 	if( mColorsDims > 0 ) {
 		if( mColorsDims == 3 ) {
@@ -1259,7 +1262,9 @@ uint32_t TriMesh::toMask( geom::Attrib attrib )
 		case geom::CUSTOM_7:	return 0x00800000;
 		case geom::CUSTOM_8:	return 0x01000000;
 		case geom::CUSTOM_9:	return 0x02000000;
-		default: throw Exception( "TriMesh i/o error: Unexpected attrib" ); return 0;
+		default:
+			throw Exception( "TriMesh i/o error: Unexpected attrib" );
+			return 0;
 	}
 }
 
@@ -1287,7 +1292,9 @@ geom::Attrib TriMesh::fromMask( uint32_t attrib )
 		case 0x00800000: return geom::CUSTOM_7;
 		case 0x01000000: return geom::CUSTOM_8;
 		case 0x02000000: return geom::CUSTOM_9;
-		default: throw Exception( "TriMesh i/o error: Invalid mask" ); return geom::NUM_ATTRIBS;
+		default:
+			throw Exception( "TriMesh i/o error: Invalid mask" );
+			return geom::NUM_ATTRIBS;
 	}
 }
 
