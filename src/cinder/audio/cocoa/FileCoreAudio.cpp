@@ -148,7 +148,7 @@ vector<string> SourceFileCoreAudio::getSupportedExtensions()
 // ----------------------------------------------------------------------------------------------------
 
 TargetFileCoreAudio::TargetFileCoreAudio( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension )
-	: TargetFile( dataTarget, sampleRate, numChannels, sampleType )
+	: TargetFile( sampleRate, numChannels, sampleType )
 {
 	::CFURLRef targetUrl = ci::cocoa::createCfUrl( Url( dataTarget->getFilePath().string() ) );
 	::AudioFileTypeID fileType = getFileTypeIdFromExtension( extension );
