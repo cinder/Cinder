@@ -42,7 +42,7 @@
 
 #if ! defined( NDEBUG ) && ! defined( CI_DISABLE_ASSERTS )
 
-	#include "cinder/CinderExports.h"
+	#include "cinder/Export.h"
 	#include "cinder/CurrentFunction.h"
 	#include <cassert>
 
