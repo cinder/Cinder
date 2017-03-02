@@ -1,4 +1,4 @@
-#version 330
+#version 330 core
 
 in vec2		vTexCoord0;
 in vec2		vTexCoord1;
