@@ -906,9 +906,9 @@ vector<string> TextBox::calculateLineBreaks() const
 		int						mMaxWidth;
 		const Gdiplus::Font		*mFont;
 	};
-	std::function<void(const char *,size_t)> lineFn = LineProcessor( &result );		
-	lineBreakUtf8( mText.c_str(), LineMeasure( ( mSize.x > 0 ) ? mSize.x : MAX_SIZE, mFont ), lineFn );
-	
+	std::function<void(const char *,size_t)> lineFn = LineProcessor( &result );
+	lineBreakUtf8( mText.c_str(), LineMeasure( ( mSize.x > 0 ) ? mSize.x : static_cast<int>( MAX_SIZE ), mFont ), lineFn );
+
 	return result;
 }
 
@@ -937,7 +937,7 @@ vector<pair<uint16_t,vec2> > TextBox::measureGlyphs() const
 		gcpResults.lpCaretPos = NULL;
 		gcpResults.lpClass = NULL;
 
-		uint32_t bufferSize = std::max<uint32_t>( wideText.length() * 1.2, 16);		/* Initially guess number of chars plus a few */
+		uint32_t bufferSize = std::max( static_cast<uint32_t>( wideText.length() * 1.2 ), 16u);		/* Initially guess number of chars plus a few */
 		while( true ) {
 			if( glyphIndices ) {
 				free( glyphIndices );
@@ -954,7 +954,7 @@ vector<pair<uint16_t,vec2> > TextBox::measureGlyphs() const
 			gcpResults.lpDx = dx;
 			gcpResults.lpGlyphs = glyphIndices;
 
-			if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), (wchar_t*)&wideText[0], wideText.length(), 0,
+			if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), (wchar_t*)&wideText[0], static_cast<int>( wideText.length() ), 0,
 							&gcpResults, GCP_DIACRITIC | GCP_LIGATE | GCP_GLYPHSHAPE | GCP_REORDER ) ) {
 				return vector<pair<uint16_t,vec2> >(); // failure
 			}
