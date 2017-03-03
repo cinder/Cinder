@@ -305,6 +305,26 @@ TEST_CASE( "signals/Signals" )
 		}
 	}
 
+	SECTION( "Connection copy and assignment operators" )
+	{
+		// This one is mostly to test if the following builds successfully.
+		std::vector<signals::Connection>	connections;
+
+		for( auto connection : connections ) {
+			connection.disconnect();
+		}
+
+		Signal<void ()> sig;
+		int accum = 0;
+		auto slot = [&] { accum++; };
+
+		auto conn1 = sig.connect( slot );
+		auto conn2 = conn1;
+
+		sig.emit();
+		REQUIRE( accum == 1 );
+	}
+
 	SECTION( "ScopedConnection" )
 	{
 		Signal<void ()> sig;
