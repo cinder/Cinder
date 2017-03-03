@@ -185,7 +185,7 @@ set<Font::Glyph> getNecessaryGlyphs( const Font &font, const string &supportedCh
 		gcpResults.lpDx = 0;
 		gcpResults.lpGlyphs = glyphIndices;
 
-		if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), (wchar_t*)utf16.c_str(), utf16.length(), 0,
+		if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), (wchar_t*)utf16.c_str(), static_cast<int>( utf16.length() ), 0,
 						&gcpResults, GCP_LIGATE | GCP_DIACRITIC | GCP_GLYPHSHAPE | GCP_REORDER ) ) {
 			return set<Font::Glyph>(); // failure
 		}
@@ -218,8 +218,8 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ++glyphIt ) {
 		try {
 			Rectf bb = font.getGlyphBoundingBox( *glyphIt );
-			glyphExtents.x = std::max<int>( glyphExtents.x, bb.getWidth() );
-			glyphExtents.y = std::max<int>( glyphExtents.y, bb.getHeight() );
+			glyphExtents.x = std::max( glyphExtents.x, static_cast<int>( bb.getWidth() ));
+			glyphExtents.y = std::max( glyphExtents.y, static_cast<int>( bb.getHeight() ));
 		}
 		catch( FontGlyphFailureExc & ) {
 		}
@@ -270,7 +270,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 		}
 
 		// convert 6bit to 8bit gray
-		for( INT p = 0; p < dwBuffSize; ++p )
+		for( DWORD p = 0; p < dwBuffSize; ++p )
 			pBuff[p] = ((uint32_t)pBuff[p]) * 255 / 64;
 
 		int32_t alignedRowBytes = ( gm.gmBlackBoxX & 3 ) ? ( gm.gmBlackBoxX + 4 - ( gm.gmBlackBoxX & 3 ) ) : gm.gmBlackBoxX;
@@ -721,7 +721,7 @@ void TextureFont::drawString( const std::string &str, const vec2 &baseline, cons
 
 void TextureFont::drawString( const std::string &str, const Rectf &fitRect, const vec2 &offset, const DrawOptions &options )
 {
-	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, fitRect.getHeight() ).ligate( options.getLigate() );
+	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, static_cast<int>( fitRect.getHeight() ) ).ligate( options.getLigate() );
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
 #else
@@ -783,7 +783,7 @@ vector<pair<Font::Glyph,vec2> > TextureFont::getGlyphPlacements( const std::stri
 
 vector<pair<Font::Glyph,vec2> > TextureFont::getGlyphPlacements( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
 {
-	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, fitRect.getHeight() ).ligate( options.getLigate() );
+	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, static_cast<int>( fitRect.getHeight() ) ).ligate( options.getLigate() );
 	return tbox.measureGlyphs();
 }
 
