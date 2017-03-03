@@ -858,7 +858,7 @@ void drawCrossImpl( const gl::TextureCubeMapRef &texture, const vector<vec2> &po
 
 void drawHorizontalCross( const gl::TextureCubeMapRef &texture, const Rectf &rect, float lod )
 {
-	Rectf fullRect( 0, 0, texture->getWidth() * 4, texture->getHeight() * 3 );
+	Rectf fullRect( 0, 0, texture->getWidth() * 4.0f, texture->getHeight() * 3.0f );
 	Rectf framedRect = fullRect.getCenteredFit( rect, true );
 	vec2 faceSize( framedRect.getWidth() / 4, framedRect.getHeight() / 3 );
 
@@ -883,7 +883,7 @@ void drawHorizontalCross( const gl::TextureCubeMapRef &texture, const Rectf &rec
 
 void drawVerticalCross( const gl::TextureCubeMapRef &texture, const Rectf &rect, float lod )
 {
-	Rectf fullRect( 0.0, 0.0, texture->getWidth() * 3, texture->getHeight() * 4 );
+	Rectf fullRect( 0, 0, texture->getWidth() * 3.0f, texture->getHeight() * 4.0f );
 	Rectf framedRect = fullRect.getCenteredFit( rect, true );
 	vec2 faceSize( framedRect.getWidth() / 3, framedRect.getHeight() / 4 );
 
