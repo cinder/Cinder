@@ -206,12 +206,12 @@ T PolyLineT<T>::calcCentroid() const
 	double area = 0;
 	if( numPoints > 2 ) {
 		for( size_t i = 0; i < numPoints - 1; ++i ) {
-			double subExpr = mPoints[i].x * mPoints[i+1].y - mPoints[i+1].x * mPoints[i].y;
+			auto subExpr = mPoints[i].x * mPoints[i+1].y - mPoints[i+1].x * mPoints[i].y;
 			result.x += ( mPoints[i].x + mPoints[i+1].x ) * subExpr;
 			result.y += ( mPoints[i].y + mPoints[i+1].y ) * subExpr;
 			area += subExpr;
 		}
-		double subExpr = mPoints[numPoints-1].x * mPoints[0].y - mPoints[0].x * mPoints[numPoints-1].y;
+		auto subExpr = mPoints[numPoints-1].x * mPoints[0].y - mPoints[0].x * mPoints[numPoints-1].y;
 		result.x += ( mPoints[numPoints-1].x + mPoints[0].x ) * subExpr;
 		result.y += ( mPoints[numPoints-1].y + mPoints[0].y ) * subExpr;
 		area += subExpr;
