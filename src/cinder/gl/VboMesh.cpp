@@ -449,17 +449,17 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 						continue;
 					}
 				}
-				
+
 				uint32_t dataTypeBytes = 0;
 				switch ( vertAttribInfo.getDataType() ) {
 					case geom::DataType::FLOAT: dataTypeBytes = 4; break;
 					case geom::DataType::INTEGER: dataTypeBytes = 4; break;
 					case geom::DataType::DOUBLE: dataTypeBytes = 8; break;
 				}
-				
+
 				uint32_t numTimes = numLocationsExpected * shaderAttribCount;
 				size_t currentInnerOffset = 0;
-				for( int i = 0; i < numTimes; i++ ) {
+				for( uint32_t i = 0; i < numTimes; i++ ) {
 					ctx->enableVertexAttribArray( shaderLoc + i );
 					if( vertAttribInfo.getDataType() != geom::DataType::INTEGER )
 						ctx->vertexAttribPointer( shaderLoc + i, numDimsPerVertexPointer, GL_FLOAT, GL_FALSE, (GLsizei)vertAttribInfo.getStride(), (const void*)(vertAttribInfo.getOffset() + currentInnerOffset) );
