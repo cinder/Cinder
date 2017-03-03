@@ -32,8 +32,8 @@ std::shared_ptr<::WAVEFORMATEX> interleavedFloatWaveFormat( size_t sampleRate, s
 	::WAVEFORMATEXTENSIBLE *wfx = (::WAVEFORMATEXTENSIBLE *)calloc( 1, sizeof( ::WAVEFORMATEXTENSIBLE ) );
 
 	wfx->Format.wFormatTag				= WAVE_FORMAT_EXTENSIBLE ;
-	wfx->Format.nSamplesPerSec			= sampleRate;
-	wfx->Format.nChannels				= numChannels;
+	wfx->Format.nSamplesPerSec			= static_cast<DWORD>( sampleRate );
+	wfx->Format.nChannels				= static_cast<WORD>( numChannels );
 	wfx->Format.wBitsPerSample			= 32;
 	wfx->Format.nBlockAlign				= wfx->Format.nChannels * wfx->Format.wBitsPerSample / 8;
 	wfx->Format.nAvgBytesPerSec			= wfx->Format.nSamplesPerSec * wfx->Format.nBlockAlign;
