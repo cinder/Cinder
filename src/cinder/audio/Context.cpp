@@ -117,7 +117,7 @@ DeviceManager* Context::deviceManager()
 	#endif
 #elif defined( CINDER_ANDROID )
 		sDeviceManager.reset( new android::DeviceManagerOpenSl() );
-#elif defined( CINDER_LINUX ) 
+#elif defined( CINDER_LINUX )
 		sDeviceManager.reset( new linux::DeviceManagerPulseAudio() );
 #endif
 
@@ -296,7 +296,7 @@ void Context::removeAutoPulledNode( const NodeRef &node )
 void Context::schedule( double when, const NodeRef &node, bool enable, const std::function<void ()> &func )
 {
 	const uint64_t framesPerBlock = (uint64_t)getFramesPerBlock();
-	uint64_t eventFrameThreshold = timeToFrame( when, getSampleRate() );
+	uint64_t eventFrameThreshold = timeToFrame( when, static_cast<double>( getSampleRate() ) );
 
 	// Place the threshold back one block so we can process the block first, guarding against wrap around
 	if( eventFrameThreshold >= framesPerBlock )
