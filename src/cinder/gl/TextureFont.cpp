@@ -200,8 +200,7 @@ set<Font::Glyph> getNecessaryGlyphs( const Font &font, const string &supportedCh
 		}
 	}
 
-	for( UINT i = 0; i < gcpResults.nGlyphs; i++ )
-		result.insert( glyphIndices[i] );
+	result.insert( glyphIndices, glyphIndices + gcpResults.nGlyphs );
 
 	if( glyphIndices )
 		free( glyphIndices );
@@ -733,7 +732,7 @@ void TextureFont::drawString( const std::string &str, const Rectf &fitRect, cons
 
 void TextureFont::drawStringWrapped( const std::string &str, const Rectf &fitRect, const vec2 &offset, const DrawOptions &options )
 {
-	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() ).ligate( options.getLigate() );
+	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getSize() ).ligate( options.getLigate() );
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
 #else
@@ -771,7 +770,7 @@ vec2 TextureFont::measureString( const std::string &str, const DrawOptions &opti
 #if defined( CINDER_COCOA )
 vec2 TextureFont::measureStringWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
 {
-	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() ).ligate( options.getLigate() );
+	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getSize() ).ligate( options.getLigate() );
 	return tbox.measure();
 }
 #endif
@@ -790,7 +789,7 @@ vector<pair<Font::Glyph,vec2> > TextureFont::getGlyphPlacements( const std::stri
 
 vector<pair<Font::Glyph,vec2> > TextureFont::getGlyphPlacementsWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
 {
-	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() ).ligate( options.getLigate() );
+	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getSize() ).ligate( options.getLigate() );
 	return tbox.measureGlyphs();
 }
 
