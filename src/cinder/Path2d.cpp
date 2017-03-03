@@ -380,18 +380,19 @@ void Path2d::getSegmentRelativeT( float t, size_t *segment, float *relativeT ) c
 			*relativeT = 0;
 		return;
 	}
-	else if( t >= 1 ) {
+
+	if( t >= 1 ) {
 		*segment = mSegments.size() - 1;
 		if( relativeT )
 			*relativeT = 1;
 		return;
 	}
 
-	size_t totalSegments = mSegments.size();
-	float segParamLength = 1.0f / totalSegments;
-	*segment = t * totalSegments;
+	const size_t totalSegments = mSegments.size();
+	*segment = static_cast<size_t>( t * totalSegments ); // floor
 	if( relativeT )
-		*relativeT = ( t - *segment * segParamLength ) / segParamLength;
+		*relativeT = ( t * totalSegments - std::floor( t * totalSegments ) );
+
 }
 
 vec2 Path2d::getPosition( float t ) const
