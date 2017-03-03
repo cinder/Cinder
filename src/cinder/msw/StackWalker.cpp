@@ -430,7 +430,7 @@ public:
 */
 
 #pragma pack(push,8)
-typedef struct IMAGEHLP_MODULE64_V2 {
+struct IMAGEHLP_MODULE64_V2 {
     DWORD    SizeOfStruct;           // set to sizeof(IMAGEHLP_MODULE64)
     DWORD64  BaseOfImage;            // base load address of module
     DWORD    ImageSize;              // virtual size of the loaded module
