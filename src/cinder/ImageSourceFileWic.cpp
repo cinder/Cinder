@@ -121,10 +121,10 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 		mStream = msw::makeComShared( pIWICStream );
 		
 		mBuffer = dataSourceRef->getBuffer();
-		hr = mStream->InitializeFromMemory( reinterpret_cast<BYTE*>( mBuffer->getData() ), mBuffer->getSize() );
+		hr = mStream->InitializeFromMemory( reinterpret_cast<BYTE*>( mBuffer->getData() ), static_cast<DWORD>( mBuffer->getSize() ) );
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad( "Could not initialize WIC Stream." );
-		
+
 		hr = factory->CreateDecoderFromStream( mStream.get(), NULL, WICDecodeMetadataCacheOnDemand, &decoderP );
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad( "Could not create WIC Decoder from stream." );
