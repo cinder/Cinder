@@ -71,7 +71,7 @@ class CI_API GlslProg {
 	  private:
 		std::string		mName;
 		GLint			mCount = 0, mLoc = -1;
-		GLenum			mType = -1;
+		GLenum			mType = ~0u;
 		geom::Attrib	mSemantic = geom::Attrib::USER_DEFINED;
 
 		friend class GlslProg;
@@ -97,7 +97,7 @@ class CI_API GlslProg {
 	  private:
 		std::string		mName;
 		GLint			mCount = 0, mLoc = -1, mIndex = -1;
-		GLenum			mType = -1;
+		GLenum			mType = ~0u;
 		UniformSemantic mSemantic = UniformSemantic::UNIFORM_USER_DEFINED;
 		
 		//! Used internally for the value cache. Size of a single element.
