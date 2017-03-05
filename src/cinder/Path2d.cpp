@@ -367,10 +367,11 @@ void Path2d::removeSegment( size_t segment )
 
 void Path2d::getSegmentRelativeT( float t, size_t *segment, float *relativeT ) const
 {
-	if( mPoints.empty() ) {
+	if( mSegments.empty() ) {
 		*segment = 0;
 		if( relativeT )
 			*relativeT = 0;
+		return;
 	}
 
 	if( t <= 0 ) {
