@@ -19,23 +19,6 @@
 #endif /*CODEGEN_FUNCPTR*/
 #define CODEGEN_FUNCPTR WINAPI
 
-#if defined( CINDER_DLL )
-	#ifdef  CINDER_EXPORTS
-		#define CI_API __declspec(dllexport)
-		#define CI_API_TEMPLATE
-	#else
-		#define CI_API __declspec(dllimport)
-		#define CI_API_TEMPLATE extern
-	#endif
-	// "needs to have dll-interface to be used by clients of class" warning
-	#pragma warning (disable: 4251)
-	// "non dll-interface class 'std::exception' used as base for dll-interface class" (Mostly for cinder::Exception)
-	#pragma warning (disable: 4275)
-#else
-	#define CI_API
-	#define CI_API_TEMPLATE
-#endif
-
 #ifndef GL_LOAD_GEN_BASIC_OPENGL_TYPEDEFS
 #define GL_LOAD_GEN_BASIC_OPENGL_TYPEDEFS
 
