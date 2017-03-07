@@ -357,6 +357,18 @@ void ShaderPreprocessor::removeSearchDirectory( const fs::path &directory )
 
 void ShaderPreprocessor::addDefine( const std::string &define )
 {
+	string defineUntilSpace = define.substr( 0, define.find( ' ' ) );
+
+	for( auto &dd : mDefineDirectives ) {
+		size_t pos = dd.find( defineUntilSpace, 0 );
+		if( pos == 0 ) {
+			// replace existing define
+			dd = define;
+			return;
+		}
+	}
+
+	// define is unique, add it to list
 	mDefineDirectives.push_back( define );
 }
 
