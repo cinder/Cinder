@@ -357,8 +357,8 @@ void ShaderPreprocessor::removeSearchDirectory( const fs::path &directory )
 
 void ShaderPreprocessor::addDefine( const std::string &define )
 {
+	// Check if there are any existing defines with this symbol name, and if so replace it.
 	string defineUntilSpace = define.substr( 0, define.find( ' ' ) );
-
 	for( auto &dd : mDefineDirectives ) {
 		size_t pos = dd.find( defineUntilSpace, 0 );
 		if( pos == 0 ) {
@@ -374,7 +374,20 @@ void ShaderPreprocessor::addDefine( const std::string &define )
 
 void ShaderPreprocessor::addDefine( const std::string &define, const std::string &value )
 {
-	addDefine( define + " " + value );
+	string defineLine = define + " " + value;
+
+	// Check if there are any existing defines with this symbol name, and if so replace it.
+	for( auto &dd : mDefineDirectives ) {
+		size_t pos = dd.find( define, 0 );
+		if( pos == 0 ) {
+			// replace existing define
+			dd = defineLine;
+			return;
+		}
+	}
+
+	// define is unique, add it to list
+	mDefineDirectives.push_back( defineLine );
 }
 
 void ShaderPreprocessor::setDefines( const std::vector<std::string> &defines )
