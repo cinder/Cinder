@@ -127,7 +127,7 @@ function( ci_make_app )
 
 	# Ignore Specific Default Libraries
 	if( MSVC )
-		set_target_properties( ${ARG_APP_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
+		set_target_properties( ${ARG_APP_NAME} PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
 	endif()
 
 	# Blocks are first searched relative to the sample's CMakeLists.txt file, then within cinder's blocks folder
