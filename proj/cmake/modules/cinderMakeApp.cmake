@@ -127,7 +127,7 @@ function( ci_make_app )
 
 	# Ignore Specific Default Libraries
 	if( MSVC )
-		set_target_properties( ${ARG_APP_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
+		set_target_properties( ${ARG_APP_NAME} PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
 	endif()
 
 	# Blocks are first searched relative to the sample's CMakeLists.txt file, then within cinder's blocks folder
@@ -197,37 +197,14 @@ function( ci_make_app )
 
 			file( COPY "${ARG_ASSETS_PATH}" DESTINATION "${ASSETS_DEST_PATH}" )
 		else()
-			if( CINDER_MSW )
-				# Get OS dependent path to use in `execute_process`
-        		file( TO_NATIVE_PATH "${ASSETS_DEST_PATH}" link )
-        		file( TO_NATIVE_PATH "${ARG_ASSETS_PATH}" target )
-        		set( link_cmd cmd.exe /c mklink /D ${link} ${target} )
-				# make a windows symlink using mklink
-				execute_process(
-						COMMAND ${link_cmd}
-						RESULT_VARIABLE resultCode
-						ERROR_VARIABLE errorMessage
-				)
+			# make a symlink
+			execute_process(
+					COMMAND "${CMAKE_COMMAND}" "-E" "create_symlink" "${ARG_ASSETS_PATH}" "${ASSETS_DEST_PATH}"
+					RESULT_VARIABLE resultCode
+			)
 
-				if( NOT resultCode EQUAL 0 )
-				    message( WARNING "\nFailed to symlink '${ARG_ASSETS_PATH}' to '${ASSETS_DEST_PATH}', result: ${resultCode} error: ${errorMessage}" )
-					string( FIND "${errorMessage}" "not have sufficient privilege" found )
-					if( NOT found EQUAL 0 )
-						message( WARNING "\nRun termial as Administrator and try again!\n" )
-					endif()
-				endif()
-
-			else()
-				# make a symlink
-				execute_process(
-						COMMAND "${CMAKE_COMMAND}" "-E" "create_symlink" "${ARG_ASSETS_PATH}" "${ASSETS_DEST_PATH}"
-						RESULT_VARIABLE resultCode
-				)
-
-				if( NOT resultCode EQUAL 0 )
-				    message( WARNING "Failed to symlink '${ARG_ASSETS_PATH}' to '${ASSETS_DEST_PATH}', result: ${resultCode}" )
-				endif()
-				
+			if( NOT resultCode EQUAL 0 )
+			    message( WARNING "Failed to symlink '${ARG_ASSETS_PATH}' to '${ASSETS_DEST_PATH}', result: ${resultCode}" )
 			endif()
 		endif()
 	endif()
