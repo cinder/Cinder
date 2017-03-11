@@ -29,7 +29,7 @@
 namespace cinder {
 
 /** \brief A high-resolution timer class **/
-class Timer {
+class CI_API Timer {
   public:
 	//! Constructs a default timer which is initialized as stopped
 	Timer();

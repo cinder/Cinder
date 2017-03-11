@@ -30,10 +30,12 @@
 
 #pragma once
 
+#include "cinder/Export.h"
+
 namespace cinder {
 
 template<typename T>
-class BandedMatrix {
+class CI_API BandedMatrix {
  public:
 	BandedMatrix( int iSize, int iLBands, int iUBands );
 	BandedMatrix( const BandedMatrix& rkM );

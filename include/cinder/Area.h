@@ -35,7 +35,7 @@ namespace cinder {
 template<typename T>
 class RectT;
 
-class Area {
+class CI_API Area {
  public:
 	Area() {}
 	Area( const ivec2 &UL, const ivec2 &LR );
@@ -124,12 +124,12 @@ class Area {
 	static	Area zero()				{ return Area( 0, 0, 0, 0 ); }
 	static Area	proportionalFit( const Area &srcArea, const Area &dstArea, bool center, bool expand = false );
 
-	friend std::ostream& operator<<( std::ostream &o, const Area &area )
+	friend CI_API std::ostream& operator<<( std::ostream &o, const Area &area )
 	{
 		return o << "(" << area.x1 << ", " << area.y1 << ")-(" << area.x2 << ", " << area.y2 << ")";
 	}	
 };
 
-extern std::pair<Area,ivec2> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcArea, const Area &dstSurfaceBounds, const ivec2 &dstLT );
+extern CI_API std::pair<Area,ivec2> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcArea, const Area &dstSurfaceBounds, const ivec2 &dstLT );
 
 } // namespace cinder

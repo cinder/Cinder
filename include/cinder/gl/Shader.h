@@ -33,7 +33,7 @@ namespace cinder { namespace gl {
 
 namespace cinder { namespace gl {
 
-class ShaderDef {
+class CI_API ShaderDef {
   public:
 	ShaderDef();
 

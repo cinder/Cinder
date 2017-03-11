@@ -110,12 +110,12 @@ typedef	 signals::Signal<void( FileDropEvent & ),	CollectorEvent<FileDropEvent> 
 typedef	 signals::Signal<void()>														EventSignalWindow;
 
 //! Thrown when an operation is performed on a WindowRef which refers to an invalid Window
-class ExcInvalidWindow : public cinder::Exception {
+class CI_API ExcInvalidWindow : public cinder::Exception {
 	virtual const char * what() const throw() { return "Invalid Window"; }
 };
 
 //! Options passed when entering fullscreen.
-struct FullScreenOptions {
+struct CI_API FullScreenOptions {
 	FullScreenOptions() : mKioskMode( true ), mSecondaryDisplayBlanking( false ), mExclusive( false )
 	{}
 
@@ -142,7 +142,7 @@ struct FullScreenOptions {
 	bool		mKioskMode, mSecondaryDisplayBlanking, mExclusive;
 };
 
-class Window : public std::enable_shared_from_this<Window> {
+class CI_API Window : public std::enable_shared_from_this<Window> {
   public:
 	// Parameters for a Window, which are used to create the physical window by the App
 	struct Format {

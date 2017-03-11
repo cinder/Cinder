@@ -199,33 +199,33 @@ typedef void (CODEGEN_FUNCPTR * PFNGLPOLYGONOFFSETPROC)(GLfloat factor, GLfloat 
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXSUBIMAGE1DPROC)(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const GLvoid * pixels);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXSUBIMAGE2DPROC)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid * pixels);
 
-extern PFNGLBINDTEXTUREPROC _funcptr_glBindTexture;
+CI_API extern PFNGLBINDTEXTUREPROC _funcptr_glBindTexture;
 #define glBindTexture _funcptr_glBindTexture
-extern PFNGLCOPYTEXIMAGE1DPROC _funcptr_glCopyTexImage1D;
+CI_API extern PFNGLCOPYTEXIMAGE1DPROC _funcptr_glCopyTexImage1D;
 #define glCopyTexImage1D _funcptr_glCopyTexImage1D
-extern PFNGLCOPYTEXIMAGE2DPROC _funcptr_glCopyTexImage2D;
+CI_API extern PFNGLCOPYTEXIMAGE2DPROC _funcptr_glCopyTexImage2D;
 #define glCopyTexImage2D _funcptr_glCopyTexImage2D
-extern PFNGLCOPYTEXSUBIMAGE1DPROC _funcptr_glCopyTexSubImage1D;
+CI_API extern PFNGLCOPYTEXSUBIMAGE1DPROC _funcptr_glCopyTexSubImage1D;
 #define glCopyTexSubImage1D _funcptr_glCopyTexSubImage1D
-extern PFNGLCOPYTEXSUBIMAGE2DPROC _funcptr_glCopyTexSubImage2D;
+CI_API extern PFNGLCOPYTEXSUBIMAGE2DPROC _funcptr_glCopyTexSubImage2D;
 #define glCopyTexSubImage2D _funcptr_glCopyTexSubImage2D
-extern PFNGLDELETETEXTURESPROC _funcptr_glDeleteTextures;
+CI_API extern PFNGLDELETETEXTURESPROC _funcptr_glDeleteTextures;
 #define glDeleteTextures _funcptr_glDeleteTextures
-extern PFNGLDRAWARRAYSPROC _funcptr_glDrawArrays;
+CI_API extern PFNGLDRAWARRAYSPROC _funcptr_glDrawArrays;
 #define glDrawArrays _funcptr_glDrawArrays
-extern PFNGLDRAWELEMENTSPROC _funcptr_glDrawElements;
+CI_API extern PFNGLDRAWELEMENTSPROC _funcptr_glDrawElements;
 #define glDrawElements _funcptr_glDrawElements
-extern PFNGLGENTEXTURESPROC _funcptr_glGenTextures;
+CI_API extern PFNGLGENTEXTURESPROC _funcptr_glGenTextures;
 #define glGenTextures _funcptr_glGenTextures
-extern PFNGLGETPOINTERVPROC _funcptr_glGetPointerv;
+CI_API extern PFNGLGETPOINTERVPROC _funcptr_glGetPointerv;
 #define glGetPointerv _funcptr_glGetPointerv
-extern PFNGLISTEXTUREPROC _funcptr_glIsTexture;
+CI_API extern PFNGLISTEXTUREPROC _funcptr_glIsTexture;
 #define glIsTexture _funcptr_glIsTexture
-extern PFNGLPOLYGONOFFSETPROC _funcptr_glPolygonOffset;
+CI_API extern PFNGLPOLYGONOFFSETPROC _funcptr_glPolygonOffset;
 #define glPolygonOffset _funcptr_glPolygonOffset
-extern PFNGLTEXSUBIMAGE1DPROC _funcptr_glTexSubImage1D;
+CI_API extern PFNGLTEXSUBIMAGE1DPROC _funcptr_glTexSubImage1D;
 #define glTexSubImage1D _funcptr_glTexSubImage1D
-extern PFNGLTEXSUBIMAGE2DPROC _funcptr_glTexSubImage2D;
+CI_API extern PFNGLTEXSUBIMAGE2DPROC _funcptr_glTexSubImage2D;
 #define glTexSubImage2D _funcptr_glTexSubImage2D
 
 #ifdef __cplusplus

@@ -5,6 +5,8 @@
 #ifndef OPENGL_GEN_CORE_HPP
 #define OPENGL_GEN_CORE_HPP
 
+#include "cinder/Export.h"
+
 #include "_int_gl_type.hpp"
 #include "_int_gl_exts.hpp"
 

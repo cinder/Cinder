@@ -32,7 +32,7 @@ typedef std::shared_ptr<class Buffer>		BufferRef;
 typedef std::shared_ptr<class DataSource>	DataSourceRef;
 typedef std::shared_ptr<class DataTarget>	DataTargetRef;
 
-class Buffer {
+class CI_API Buffer {
   public:
 	//! Constructs an empty Buffer
 	Buffer();
@@ -79,7 +79,7 @@ class Buffer {
 	bool	mOwnsData;
 };
 
-Buffer compressBuffer( const Buffer &buffer, int8_t compressionLevel = DEFAULT_COMPRESSION_LEVEL, bool resizeResult = true );
-Buffer decompressBuffer( const Buffer &buffer, bool resizeResult = true, bool useGZip = false );
+CI_API Buffer compressBuffer( const Buffer &buffer, int8_t compressionLevel = DEFAULT_COMPRESSION_LEVEL, bool resizeResult = true );
+CI_API Buffer decompressBuffer( const Buffer &buffer, bool resizeResult = true, bool useGZip = false );
 
 } //namespace

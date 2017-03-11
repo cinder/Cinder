@@ -31,7 +31,7 @@
 
 namespace cinder {
 
-class Shape2d {
+class CI_API Shape2d {
   public:
 	void	moveTo( const vec2 &p );
 	void	moveTo( float x, float y ) { moveTo( vec2( x, y ) ); }

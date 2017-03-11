@@ -42,7 +42,7 @@
 
 namespace cinder {
 
-inline glm::mat4 transform2dTo3d( const glm::mat3 &m )
+CI_API inline glm::mat4 transform2dTo3d( const glm::mat3 &m )
 {
 	glm::mat4 result( glm::uninitialize );
 	result[0][0] = m[0][0];
@@ -68,7 +68,7 @@ inline glm::mat4 transform2dTo3d( const glm::mat3 &m )
 	return result;
 }
 
-glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir );
+CI_API glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir );
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Parallel Transport Frames
@@ -91,7 +91,7 @@ glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir );
 //  These are also called Parallel Transport Frames
 //    see Game Programming Gems 2, Section 2.5
 
-class ParallelTransport {
+class CI_API ParallelTransport {
   public:
 	ParallelTransport( const vec3 &firstPoint, const vec3 &secondPoint );
 
@@ -107,14 +107,14 @@ class ParallelTransport {
 };
 
 template<typename T>
-glm::tmat4x4<T,glm::defaultp> firstFrame(
+CI_API glm::tmat4x4<T,glm::defaultp> firstFrame(
 	const glm::tvec3<T,glm::defaultp> &firstPoint,
 	const glm::tvec3<T,glm::defaultp> &secondPoint, 
 	const glm::tvec3<T,glm::defaultp> &thirdPoint
 );
 
 template<typename T>
-glm::tmat4x4<T,glm::defaultp> nextFrame( 
+CI_API glm::tmat4x4<T,glm::defaultp> nextFrame( 
 	const glm::tmat4x4<T,glm::defaultp> &prevMatrix, 
 	const glm::tvec3<T,glm::defaultp> &prevPoint,
 	const glm::tvec3<T,glm::defaultp> &curPoint,
@@ -123,7 +123,7 @@ glm::tmat4x4<T,glm::defaultp> nextFrame(
 );
 			
 template<typename T>
-glm::tmat4x4<T,glm::defaultp> lastFrame( 
+CI_API glm::tmat4x4<T,glm::defaultp> lastFrame( 
 	const glm::tmat4x4<T,glm::defaultp> &prevMatrix, 
 	const glm::tvec3<T,glm::defaultp> &prevPoint, 
 	const glm::tvec3<T,glm::defaultp> &lastPoint 

@@ -27,7 +27,7 @@
 
 namespace cinder {
 
-class Rand {
+class CI_API Rand {
  public:
 	Rand() = default;
 
@@ -249,39 +249,39 @@ class Rand {
 };
 
 //! Resets the static random generator to the specific seed \a seedValue
-inline void randSeed( uint32_t seedValue ) { Rand::randSeed( seedValue ); }
+CI_API inline void randSeed( uint32_t seedValue ) { Rand::randSeed( seedValue ); }
 
 //! returns a random boolean value
-inline bool randBool() { return Rand::randBool(); }
+CI_API inline bool randBool() { return Rand::randBool(); }
 
 //! returns a random integer in the range [0,2147483647]
-inline int32_t randInt() { return Rand::randInt(); }
+CI_API inline int32_t randInt() { return Rand::randInt(); }
 
 //! returns a random integer in the range [0,v)
-inline int32_t randInt( int32_t v ) { return Rand::randInt( v ); }
+CI_API inline int32_t randInt( int32_t v ) { return Rand::randInt( v ); }
 
 //! returns a random integer in the range [a,b)
-inline int32_t randInt( int32_t a, int32_t b ) { return Rand::randInt( a, b ); }
+CI_API inline int32_t randInt( int32_t a, int32_t b ) { return Rand::randInt( a, b ); }
 
 //! returns a random float in the range [0.0f,1.0f]
-inline float randFloat() { return Rand::randFloat(); }
+CI_API inline float randFloat() { return Rand::randFloat(); }
 
 //! returns a random float in the range [0.0f,v]
-inline float randFloat( float v ) { return Rand::randFloat( v ); }
+CI_API inline float randFloat( float v ) { return Rand::randFloat( v ); }
 
 //! returns a random float in the range [a,b]
-inline float randFloat( float a, float b ) { return Rand::randFloat( a, b ); }
+CI_API inline float randFloat( float a, float b ) { return Rand::randFloat( a, b ); }
 
 //! returns a random float in the range [a,b] or the range [-b,-a]
-inline float randPosNegFloat( float a, float b ) { return Rand::randPosNegFloat( a, b ); }
+CI_API inline float randPosNegFloat( float a, float b ) { return Rand::randPosNegFloat( a, b ); }
 
 //! returns a random vec3 that represents a point on the unit sphere
-inline vec3 randVec3() { return Rand::randVec3(); }
+CI_API inline vec3 randVec3() { return Rand::randVec3(); }
 
 //! returns a random vec2 that represents a point on the unit circle
-inline vec2 randVec2() { return Rand::randVec2(); }
+CI_API inline vec2 randVec2() { return Rand::randVec2(); }
 
 //! returns a random float via Gaussian distribution with a mean of 0 and a standard deviation of 1.0
-inline float randGaussian() { return Rand::randGaussian(); }
+CI_API inline float randGaussian() { return Rand::randGaussian(); }
 
 } // namespace cinder

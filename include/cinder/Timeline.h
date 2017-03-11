@@ -39,7 +39,7 @@ namespace cinder {
 typedef std::shared_ptr<class Cue>			CueRef;
 typedef std::shared_ptr<class Timeline>		TimelineRef;
 	
-class Timeline : public TimelineItem {		
+class CI_API Timeline : public TimelineItem {		
   public:
 	//! Creates a new timeline, defaulted to infinite
 	static TimelineRef	create() { TimelineRef result( new Timeline() ); result->setInfinite( true ); return result; }
@@ -220,7 +220,7 @@ class Timeline : public TimelineItem {
 	Timeline& operator=( const Timeline &rhs ); // not defined to prevent copying
 };
 
-class Cue : public TimelineItem {
+class CI_API Cue : public TimelineItem {
   public:
 	Cue( const std::function<void ()> &fn, float atTime = 0 );
 

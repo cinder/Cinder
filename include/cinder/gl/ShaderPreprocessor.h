@@ -49,7 +49,7 @@ typedef signals::Signal<bool ( const fs::path &,std::string * )>	SignalIncludeHa
 //!
 //! Adding #define statements are also supported, and you can set the #version via `setVersion( int )`. If
 //! you are on OpenGL ES, then `" es"` will be appended to the version string.
-class ShaderPreprocessor {
+class CI_API ShaderPreprocessor {
   public:
 	ShaderPreprocessor();
 	//! \brief Parses and processes the shader source at \a sourcePath. If \a includedFiles is provided, this will be filled with paths to any files detected as `#include`ed. \return a preprocessed source string.
@@ -105,7 +105,7 @@ class ShaderPreprocessor {
 };
 
 //! Exception thrown when there is an error preprocessing the shader source in `ShaderPreprocessor`.
-class ShaderPreprocessorExc : public Exception {
+class CI_API ShaderPreprocessorExc : public Exception {
   public:
 	ShaderPreprocessorExc( const std::string &description ) : Exception( description )	{}
 };

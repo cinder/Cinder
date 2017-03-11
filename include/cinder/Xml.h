@@ -43,7 +43,7 @@ namespace rapidxml {
 
 namespace cinder {
 
-class XmlTree {
+class CI_API XmlTree {
   public:
 
 	//! \cond
@@ -51,7 +51,7 @@ class XmlTree {
 	//! \endcond
 
 	//! A const iterator over the children of an XmlTree.
-	class ConstIter {
+	class CI_API ConstIter {
 	  public:
 		//! \cond
 		ConstIter( const Container *sequence );
@@ -94,7 +94,7 @@ class XmlTree {
 	};
 
 	//! An iterator over the children of an XmlTree.	
-	class Iter : public XmlTree::ConstIter {
+	class CI_API Iter : public XmlTree::ConstIter {
 	  public:
 		//! \cond
 		Iter( Container *sequence )
@@ -135,7 +135,7 @@ class XmlTree {
 	};
 
 	//! XML attribute.
-	class Attr {
+	class CI_API Attr {
 	  public:
 		//! Constructs an XML attribute named \a name with the value \a value.
 		Attr( XmlTree *xml, const std::string &name, const std::string &value )
@@ -181,7 +181,7 @@ class XmlTree {
 	};
 
 	//! Options for XML parsing. Passed to the XmlTree constructor.
-	class ParseOptions {
+	class CI_API ParseOptions {
 	  public:
 		//! Default options. Disables parsing comments, enables collapsing CDATA, ignores data children.
 		ParseOptions() : mParseComments( false ), mCollapseCData( true ), mIgnoreDataChildren( true ) {}
@@ -361,16 +361,16 @@ class XmlTree {
 	void						setDocType( const std::string &docType ) { mDocType = docType; }
 
 	/** Streams the XmlTree \a xml to std::ostream \a out with standard formatting. **/
-	friend std::ostream& operator<<( std::ostream &out, const XmlTree &xml );
+	friend CI_API std::ostream& operator<<( std::ostream &out, const XmlTree &xml );
 	/** Writes this XmlTree to \a target with standard formatting. If \a createDocument is true then an implicit parent NODE_DOCUMENT is created when necessary and \a this is treated as the root element. **/
 	void						write( DataTargetRef target, bool createDocument = true );
 
 	//! Base class for XmlTree exceptions.
-	class Exception : public cinder::Exception {
+	class CI_API Exception : public cinder::Exception {
 	};
 	
 	//! Exception expressing the absence of an expected child node.
-	class ExcChildNotFound : public XmlTree::Exception {
+	class CI_API ExcChildNotFound : public XmlTree::Exception {
 	  public:
 		ExcChildNotFound( const XmlTree &node, const std::string &childPath ) throw();
 	  
@@ -381,7 +381,7 @@ class XmlTree {
 	};
 
 	//! Exception expressing the absence of an expected attribute.
-	class ExcAttrNotFound : public XmlTree::Exception {
+	class CI_API ExcAttrNotFound : public XmlTree::Exception {
 	  public:
 		ExcAttrNotFound( const XmlTree &node, const std::string &attrName ) throw();
 			  
@@ -392,7 +392,7 @@ class XmlTree {
 	};
 
 	//! Exception implying an XML node of an unknown type. Implies a low-level problem communicating with RapidXML.
-	class ExcUnknownNodeType : public cinder::Exception {
+	class CI_API ExcUnknownNodeType : public cinder::Exception {
 	};
 
 	//! Returns a shared_ptr to a RapidXML xml_document. If \a createDocument is true then an implicit parent NODE_DOCUMENT is created when necessary and \a this is treated as the root element.
@@ -415,7 +415,7 @@ class XmlTree {
 	static void		loadFromDataSource( DataSourceRef dataSource, XmlTree *result, const ParseOptions &parseOptions );
 };
 
-std::ostream& operator<<( std::ostream &out, const XmlTree &xml );
+CI_API std::ostream& operator<<( std::ostream &out, const XmlTree &xml );
 
 } // namespace cinder
 

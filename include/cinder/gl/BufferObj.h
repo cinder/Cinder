@@ -32,7 +32,7 @@ namespace cinder { namespace gl {
 
 typedef std::shared_ptr<class BufferObj>	BufferObjRef;
 
-class BufferObj {
+class CI_API BufferObj {
   public:
 	~BufferObj();
 	
@@ -106,9 +106,9 @@ class BufferObj {
 	GLenum				mUsage;
 	std::string			mLabel; // debug label
 	
-	friend std::ostream& operator<<( std::ostream &os, const BufferObj &rhs );
+	friend CI_API std::ostream& operator<<( std::ostream &os, const BufferObj &rhs );
 };
 
-std::ostream& operator<<( std::ostream &os, const BufferObj &rhs );
+CI_API std::ostream& operator<<( std::ostream &os, const BufferObj &rhs );
 	
 } }

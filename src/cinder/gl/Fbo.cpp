@@ -53,9 +53,6 @@ using namespace std;
 namespace cinder {
 namespace gl {
 
-GLint Fbo::sMaxSamples = -1;
-GLint Fbo::sMaxAttachments = -1;
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Renderbuffer
 RenderbufferRef Renderbuffer::create( int width, int height, GLenum internalFormat, int msaaSamples, int coverageSamples )
@@ -713,6 +710,7 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
 
 GLint Fbo::getMaxSamples()
 {
+	static GLint sMaxSamples = -1;
 #if ! defined( CINDER_GL_ES_2 )
 	if( sMaxSamples < 0 ) {
 		glGetIntegerv( GL_MAX_SAMPLES, &sMaxSamples);
@@ -731,6 +729,7 @@ GLint Fbo::getMaxSamples()
 
 GLint Fbo::getMaxAttachments()
 {
+	static GLint sMaxAttachments = -1;
 #if ! defined( CINDER_GL_ES_2 )
 	if( sMaxAttachments < 0 ) {
 		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &sMaxAttachments );

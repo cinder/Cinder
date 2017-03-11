@@ -1796,12 +1796,6 @@
     <ClInclude Include="..\..\include\cinder\gl\Ubo.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\jsoncpp\json\json.h">
-      <Filter>Header Files\jsoncpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\jsoncpp\json\json-forwards.h">
-      <Filter>Header Files\jsoncpp</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\cinder\Signals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -2230,6 +2224,15 @@
     </ClInclude>
     <ClInclude Include="..\..\include\freetype\config\ftstdlib.h">
       <Filter>Header Files\freetype\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\jsoncpp\json.h">
+      <Filter>Header Files\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\jsoncpp\json-forwards.h">
+      <Filter>Header Files\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\Export.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -30,7 +30,7 @@
 namespace cinder {
 
 template<typename T>
-class RectT {
+class CI_API RectT {
  public:
 	typedef glm::tvec2<T, glm::defaultp>	Vec2T;
 	typedef glm::tvec3<T, glm::defaultp>	Vec3T;
@@ -139,7 +139,7 @@ class RectT {
 
 	T			x1, y1, x2, y2;
 	
-	friend std::ostream& operator<<( std::ostream &o, const RectT &rect )
+	friend CI_API std::ostream& operator<<( std::ostream &o, const RectT &rect )
 	{
 		return o << "(" << rect.x1 << ", " << rect.y1 << ")-(" << rect.x2 << ", " << rect.y2 << ")";
 	}	
@@ -151,7 +151,7 @@ typedef RectT<double>	Rectd;
 
 
 // This class maps a rectangle into another rectangle
-class RectMapping {
+class CI_API RectMapping {
  public:
     RectMapping()
         : mSrcRect( 0, 0, 0, 0 ), mDstRect( 0, 0, 0, 0 ) {}

@@ -35,7 +35,7 @@ typedef std::shared_ptr<class BufferObj>	BufferObjRef;
 
 typedef std::shared_ptr<class TransformFeedbackObj> TransformFeedbackObjRef;
 
-class TransformFeedbackObj : public std::enable_shared_from_this<TransformFeedbackObj> {
+class CI_API TransformFeedbackObj : public std::enable_shared_from_this<TransformFeedbackObj> {
   public:
 	
 	static TransformFeedbackObjRef create();

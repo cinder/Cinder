@@ -49,7 +49,7 @@ typedef std::shared_ptr<class ChannelRouterNode>	ChannelRouterNodeRef;
 //! samplePlayer >> router->route( 1, 0, 1 );	// routes channel 1 of samplePlayer to router's channel 0, taking only one channel.
 //! \endcode
 //!
-class ChannelRouterNode : public Node {
+class CI_API ChannelRouterNode : public Node {
   public:
 	//! Constructs a ChannelRouterNode object, with an optional \a format.
 	ChannelRouterNode( const Format &format = Format() ) : Node( format )	{}
@@ -100,6 +100,6 @@ class ChannelRouterNode : public Node {
 };
 
 //! Enable routing connection syntax: \code input >> output->route( inputChannelIndex, outputChannelIndex, numChannels ); \endcode.  \return the output ChannelRouterNode after connection is made.
-const ChannelRouterNodeRef& operator>>( const NodeRef &input, const ChannelRouterNode::RouteConnector &route );
+CI_API const ChannelRouterNodeRef& operator>>( const NodeRef &input, const ChannelRouterNode::RouteConnector &route );
 
 } } // namespace cinder::audio

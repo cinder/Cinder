@@ -33,7 +33,7 @@
 
 namespace cinder {
 
-class Arcball {
+class CI_API Arcball {
  public:
 	Arcball()
 		: mCamera( nullptr ), mUseConstraint( false )

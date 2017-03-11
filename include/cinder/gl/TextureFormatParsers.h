@@ -28,9 +28,9 @@
 
 namespace cinder { namespace gl {
 
-void parseKtx( const DataSourceRef &dataSource, TextureData *resultData );
+CI_API void parseKtx( const DataSourceRef &dataSource, TextureData *resultData );
 #if ! defined( CINDER_GL_ES ) || defined( CINDER_GL_ANGLE )
-void parseDds( const DataSourceRef &dataSource, TextureData *resultData );
+CI_API void parseDds( const DataSourceRef &dataSource, TextureData *resultData );
 #endif
 
 

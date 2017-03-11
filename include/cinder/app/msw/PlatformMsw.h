@@ -29,7 +29,7 @@
 
 namespace cinder { namespace app {
 
-class PlatformMsw : public Platform {
+class CI_API PlatformMsw : public Platform {
   public:
 	PlatformMsw();
 	static PlatformMsw*		get() { return reinterpret_cast<PlatformMsw*>( Platform::get() ); }
@@ -75,7 +75,7 @@ class PlatformMsw : public Platform {
 };
 
 //! MSW-specific Exception for failed resource loading, reports windows resource id and type
-class ResourceLoadExcMsw : public ResourceLoadExc {
+class CI_API ResourceLoadExcMsw : public ResourceLoadExc {
   public:
 	ResourceLoadExcMsw( int mswID, const std::string &mswType );
 };
@@ -84,7 +84,7 @@ class ResourceLoadExcMsw : public ResourceLoadExc {
 
 namespace cinder {
 
-class DisplayMsw : public Display {
+class CI_API DisplayMsw : public Display {
   public:
 	std::string		getName() const override;
 

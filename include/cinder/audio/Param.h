@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include "cinder/Export.h"
 #include "cinder/audio/Buffer.h"
 
 #include <list>
@@ -48,7 +49,7 @@ void rampInQuad( float *array, size_t count, double t, double tIncr, float value
 void rampOutQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd );
 
 //! Class representing a sample-accurate parameter control instruction. \see Param::applyRamp(), Param::appendRamp()
-class Event {
+class CI_API Event {
   public:
 	double getTimeBegin()		const	{ return mTimeBegin; }
 	double getTimeEnd()			const	{ return mTimeEnd; }
@@ -93,7 +94,7 @@ class Event {
 //! \note Ramp Events should not overlap, or you may get discontinuities in the evaluated curve. This could potentially happen when
 //! using multiple appendRamp() calls. Instead, use applyRamp() and set Options::beginTime() accordingly, which will remove any
 //! Events that would otherwise be overlapping.
-class Param {
+class CI_API Param {
   public:
 
 	//! Optional parameters when applying or appending ramps. \see applyRamp() \see appendRamp()

@@ -29,7 +29,7 @@
 namespace cinder {
 
 //! Singleton representing the system's clipboard
-class Clipboard {
+class CI_API Clipboard {
   public:
 	//! Returns whether the clipboard contains a string
 	static bool			hasString();

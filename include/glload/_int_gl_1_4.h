@@ -29,19 +29,19 @@ typedef void (CODEGEN_FUNCPTR * PFNGLPOINTPARAMETERFVPROC)(GLenum pname, const G
 typedef void (CODEGEN_FUNCPTR * PFNGLPOINTPARAMETERIPROC)(GLenum pname, GLint param);
 typedef void (CODEGEN_FUNCPTR * PFNGLPOINTPARAMETERIVPROC)(GLenum pname, const GLint * params);
 
-extern PFNGLBLENDFUNCSEPARATEPROC _funcptr_glBlendFuncSeparate;
+CI_API extern PFNGLBLENDFUNCSEPARATEPROC _funcptr_glBlendFuncSeparate;
 #define glBlendFuncSeparate _funcptr_glBlendFuncSeparate
-extern PFNGLMULTIDRAWARRAYSPROC _funcptr_glMultiDrawArrays;
+CI_API extern PFNGLMULTIDRAWARRAYSPROC _funcptr_glMultiDrawArrays;
 #define glMultiDrawArrays _funcptr_glMultiDrawArrays
-extern PFNGLMULTIDRAWELEMENTSPROC _funcptr_glMultiDrawElements;
+CI_API extern PFNGLMULTIDRAWELEMENTSPROC _funcptr_glMultiDrawElements;
 #define glMultiDrawElements _funcptr_glMultiDrawElements
-extern PFNGLPOINTPARAMETERFPROC _funcptr_glPointParameterf;
+CI_API extern PFNGLPOINTPARAMETERFPROC _funcptr_glPointParameterf;
 #define glPointParameterf _funcptr_glPointParameterf
-extern PFNGLPOINTPARAMETERFVPROC _funcptr_glPointParameterfv;
+CI_API extern PFNGLPOINTPARAMETERFVPROC _funcptr_glPointParameterfv;
 #define glPointParameterfv _funcptr_glPointParameterfv
-extern PFNGLPOINTPARAMETERIPROC _funcptr_glPointParameteri;
+CI_API extern PFNGLPOINTPARAMETERIPROC _funcptr_glPointParameteri;
 #define glPointParameteri _funcptr_glPointParameteri
-extern PFNGLPOINTPARAMETERIVPROC _funcptr_glPointParameteriv;
+CI_API extern PFNGLPOINTPARAMETERIVPROC _funcptr_glPointParameteriv;
 #define glPointParameteriv _funcptr_glPointParameteriv
 
 #ifdef __cplusplus

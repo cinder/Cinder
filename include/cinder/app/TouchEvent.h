@@ -31,9 +31,9 @@
 namespace cinder { namespace app {
 
 //! Represents a touch event
-class TouchEvent : public Event {
+class CI_API TouchEvent : public Event {
   public:
-	class Touch {
+	class CI_API Touch {
 	  public:
 		Touch() {}
 		Touch( const vec2 &pos, const vec2 &prevPos, uint32_t id, double time, void *native )
@@ -92,13 +92,13 @@ class TouchEvent : public Event {
 	void					*mNative;
 };
 
-inline std::ostream& operator<<( std::ostream &out, const TouchEvent::Touch &touch )
+CI_API inline std::ostream& operator<<( std::ostream &out, const TouchEvent::Touch &touch )
 {
 	out << touch.getId() << ": " << touch.getPos() << " @ " << touch.getTime() << "s";
 	return out;
 }
 
-inline std::ostream& operator<<( std::ostream &out, const TouchEvent &event )
+CI_API inline std::ostream& operator<<( std::ostream &out, const TouchEvent &event )
 {
 	out << "{" << std::endl;
 	for( const auto &touch : event.getTouches() ) {
