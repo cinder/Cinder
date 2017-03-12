@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<!-- Update title -->
-		<title>Cinder on Ubuntu 14.04+</title>
+		<title>Cinder on Jetson TK1</title>
 
 		<!-- keywords used for searching -->
-		<meta name="keywords" content="guide, linux, ubuntu">
+		<meta name="keywords" content="guide, linux, jetson, tk1">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
 		<!-- reference to Cinder classes -->
@@ -25,45 +24,53 @@
 
 		<!-- CONTENT STARTS HERE -->
 
-		<h1>Ubuntu Notes</h1>
+		<h1>Jetson TK1 Notes</h1>
 		<h3 id="cmake">Requirements</h3>
 		<ul>
-			<li>Ubuntu 14.04+</li>
 			<li>CMake 3.0+</li>
 		</ul>
 		<h4 id="cmake">CMake</h4>
-		<p>To install CMake:</p>
-		<pre><code>sudo apt-get install cmake</code></pre>
-
-		<h4 id="clang">Clang</h4>
-		<p>Cinder on Linux supports building both libcinder and Cinder applications with either GCC or Clang, though Clang is recommended, and can be installed using:</p>
-		<pre><code>sudo apt-get install clang</code></pre>
-		<p>To set Clang as the default compiler, select <code>/usr/bin/clang++</code> when prompted by this command:
-		<pre><code>sudo update-alternatives --config c++</code></pre>
-		</p>
+		<p>Unfortunately the version of CMake packaged for Linux For Tegra (L4T) R21.5 is too old to build Cinder, so a newer one must be compiled from source. Perform the following from a temporary directory:</p>
+<pre><code>sudo apt-get install g++
+wget https://cmake.org/files/v3.7/cmake-3.7.2.tar.gz
+tar xvf cmake-cmake-3.7.2.tar.gz
+cd cmake-3.7.2
+./configure --prefix=/opt/local
+make -j 4
+sudo make install
+</code></pre>
+		
 		<h3 id="library-dependencies">Cinder Dependencies</h3>
 <pre><code>sudo apt-get install libxcursor-dev \
 libxrandr-dev \
 libxinerama-dev \
 libxi-dev \
 libgl1-mesa-dev \
-libglu1-mesa-dev \
+libgles2-mesa-dev \
 zlib1g-dev \
 libfontconfig1-dev \
-libmpg123-dev \
 libsndfile1 \
 libsndfile1-dev \
 libpulse-dev \
 libasound2-dev \
 libcurl4-gnutls-dev \
 libgstreamer1.0-dev \
-libgstreamer-plugins-bad1.0-dev \
 libgstreamer-plugins-base1.0-dev \
 gstreamer1.0-libav \
 gstreamer1.0-alsa \
-gstreamer1.0-pulseaudio \
-gstreamer1.0-plugins-bad
+gstreamer1.0-pulseaudio
 </code></pre>
+
+<p><strong>libmpg123-dev</strong> - L4T R21.5 does not have the package <code>libmpg123-dev</code>. The contents of the package must be built and installed locally. Perform the following from a temporary directory:</p>
+<pre><code>
+wget https://www.mpg123.de/download/mpg123-1.24.0.tar.bz2
+tar xvf mpg123-1.24.0.tar.bz2
+cd mpg123-1.24.0
+./configure --prefix=/opt/local
+make -j 4
+sudo make install
+</code></pre>
+<p>The example above uses <code>/opt/local</code> because the <code>find_package</code> scripts for CMake are set to look there for custom libraries.
 
 		<h1 id="building-cinder">Building Cinder</h1>
 		<h3 id="fetching-and-building-cinder">Fetching and Building Cinder</h3>
@@ -71,7 +78,7 @@ gstreamer1.0-plugins-bad
 cd Cinder
 mkdir build &amp;&amp; cd build
 cmake ..
-make -j 8
+make -j 4
 </code></pre>
 
 		<h1 id="building-and-running-basicapp">Building and Running BasicApp</h1>
@@ -85,8 +92,6 @@ make</code></pre>
 		<p>Starting from <code>samples/BasicApp/proj/cmake/build</code>:</p>
 		<pre><code>./Debug/BasicApp/BasicApp</code></pre>
 
-		<p>For building in Release mode you just have to add <code>-DCMAKE_BUILD_TYPE=Release</code> in the above cmake commands.<p>
-<pre><code>cmake .. -DCMAKE_BUILD_TYPE=Release</code></pre>
 		<!-- END CONTENT -->
 
 		<!-- Scripts -->
@@ -95,4 +100,4 @@ make</code></pre>
 		<!-- <script type="text/javascript"></script> -->
 
 	</body>
-</html> 
+</html>
