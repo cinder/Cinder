@@ -1,5 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/FileWatcher.h"	
 #include "cinder/ImageIo.h"
 #include "cinder/gl/gl.h"
 
@@ -50,12 +51,30 @@ void CubeMappingApp::setup()
 		console() << "Shader Failed (sky_box): " << e.what() << std::endl;
 	}
 #else
-	auto envMapGlsl = gl::GlslProg::create( loadAsset( "env_map.vert" ), loadAsset( "env_map.frag" ) );
-	auto skyBoxGlsl = gl::GlslProg::create( loadAsset( "sky_box.vert" ), loadAsset( "sky_box.frag" ) );
-	mTeapotBatch = gl::Batch::create( geom::Teapot().subdivisions( 7 ), envMapGlsl );
-	mTeapotBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
-	mSkyBoxBatch = gl::Batch::create( geom::Cube(), skyBoxGlsl );
-	mSkyBoxBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
+	// note: look in env_map.frag to optionally try out refraction instead of reflection.
+	fs::path envMapVert = "env_map.vert";
+	fs::path envMapFrag = "env_map.frag";
+	FileWatcher::instance()->watch( { envMapVert, envMapFrag }, [this, envMapVert, envMapFrag]( const WatchEvent &event ) {
+		try {
+			auto glsl = gl::GlslProg::create( loadAsset( envMapVert ), loadAsset( envMapFrag ) );
+			mTeapotBatch = gl::Batch::create( geom::Teapot().subdivisions( 7 ), glsl );
+			mTeapotBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
+
+			console() << "reloaded env map shader" << endl;
+		}
+		catch( const std::exception& e ) {
+			console() << "Shader Failed (env_map): " << e.what() << std::endl;
+		}
+	} );
+
+	try {
+		auto skyBoxGlsl = gl::GlslProg::create( loadAsset( "sky_box.vert" ), loadAsset( "sky_box.frag" ) );
+		mSkyBoxBatch = gl::Batch::create( geom::Cube(), skyBoxGlsl );
+		mSkyBoxBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
+	}
+	catch( const std::exception& e ) {
+		console() << "Shader Failed (env_map): " << e.what() << std::endl;
+	}
 #endif
 	
 	gl::enableDepthRead();
@@ -81,12 +100,14 @@ void CubeMappingApp::draw()
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::setMatrices( mCam );
 
-	mCubeMap->bind();
-	gl::pushMatrices();
+	if( mTeapotBatch ) {
+		mCubeMap->bind();
+		gl::pushMatrices();
 		gl::multModelMatrix( mObjectRotation );
 		gl::scale( vec3( 4 ) );
 		mTeapotBatch->draw();
-	gl::popMatrices();
+		gl::popMatrices();
+	}
 	
 	// draw sky box
 	gl::pushMatrices();
