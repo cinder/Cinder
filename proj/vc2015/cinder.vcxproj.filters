@@ -1062,6 +1062,9 @@
     <ClCompile Include="..\..\src\freetype\bdf\bdflib.c">
       <Filter>Source Files\freetype\bdf</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\cinder\FileWatcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\AntTweakBar\AntPerfTimer.h">
@@ -2232,6 +2235,9 @@
       <Filter>Header Files\jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\Export.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\FileWatcher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

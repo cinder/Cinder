@@ -753,6 +753,7 @@
     <ClCompile Include="..\..\src\cinder\DataTarget.cpp" />
     <ClCompile Include="..\..\src\cinder\Display.cpp" />
     <ClCompile Include="..\..\src\cinder\Exception.cpp" />
+    <ClCompile Include="..\..\src\cinder\FileWatcher.cpp" />
     <ClCompile Include="..\..\src\cinder\Font.cpp" />
     <ClCompile Include="..\..\src\cinder\Frustum.cpp" />
     <ClCompile Include="..\..\src\cinder\GeomIo.cpp" />
@@ -1102,6 +1103,7 @@
     <ClInclude Include="..\..\include\cinder\dx\HlslProg.h" />
     <ClInclude Include="..\..\include\cinder\dx\PlatformHelpers.h" />
     <ClInclude Include="..\..\include\cinder\Filesystem.h" />
+    <ClInclude Include="..\..\include\cinder\FileWatcher.h" />
     <ClInclude Include="..\..\include\cinder\Frustum.h" />
     <ClInclude Include="..\..\include\cinder\GeomIo.h" />
     <ClInclude Include="..\..\include\cinder\gl\Batch.h" />
