@@ -24,6 +24,7 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/DataTarget.cpp
 	${CINDER_SRC_DIR}/cinder/Display.cpp
 	${CINDER_SRC_DIR}/cinder/Exception.cpp
+	${CINDER_SRC_DIR}/cinder/FileWatcher.cpp
 	${CINDER_SRC_DIR}/cinder/Font.cpp
 	${CINDER_SRC_DIR}/cinder/Frustum.cpp
 	${CINDER_SRC_DIR}/cinder/GeomIo.cpp

@@ -403,6 +403,9 @@
 		118CA4241A9427F700841458 /* RendererImpl2dMacQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA40D1A9427F700841458 /* RendererImpl2dMacQuartz.mm */; };
 		118CA4331A9427F700841458 /* CinderViewMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4121A9427F700841458 /* CinderViewMac.mm */; };
 		118CA4391A9427F700841458 /* PlatformCocoa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4141A9427F700841458 /* PlatformCocoa.cpp */; };
+		11A38FB01E7769AC008C452D /* Export.h in Headers */ = {isa = PBXBuildFile; fileRef = 11A38FAE1E7769AC008C452D /* Export.h */; };
+		11A38FB11E7769AC008C452D /* FileWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 11A38FAF1E7769AC008C452D /* FileWatcher.h */; };
+		11A38FB31E7769CE008C452D /* FileWatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11A38FB21E7769CE008C452D /* FileWatcher.cpp */; };
 		11C6F75A1AA391E50001FA5C /* ShaderPreprocessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11C6F7591AA391E50001FA5C /* ShaderPreprocessor.cpp */; };
 		11FD37E41A8EDB9E002B6EA9 /* Signals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD37E31A8EDB9E002B6EA9 /* Signals.cpp */; };
 		277C2CF01366632B00178A29 /* Matrix22.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CEC1366632B00178A29 /* Matrix22.h */; };
@@ -2104,6 +2107,9 @@
 		118CA4651A9428BE00841458 /* AppImplMswScreenSaver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplMswScreenSaver.h; sourceTree = "<group>"; };
 		118CA4681A9428BE00841458 /* PlatformMsw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlatformMsw.h; sourceTree = "<group>"; };
 		118CA46A1A94296900841458 /* CinderViewMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CinderViewMac.h; sourceTree = "<group>"; };
+		11A38FAE1E7769AC008C452D /* Export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Export.h; sourceTree = "<group>"; };
+		11A38FAF1E7769AC008C452D /* FileWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWatcher.h; sourceTree = "<group>"; };
+		11A38FB21E7769CE008C452D /* FileWatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileWatcher.cpp; sourceTree = "<group>"; };
 		11C6F7591AA391E50001FA5C /* ShaderPreprocessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ShaderPreprocessor.cpp; path = gl/ShaderPreprocessor.cpp; sourceTree = "<group>"; };
 		11C6F75D1AA391FE0001FA5C /* ShaderPreprocessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ShaderPreprocessor.h; path = gl/ShaderPreprocessor.h; sourceTree = "<group>"; };
 		11C97C89192F0BD700A510B5 /* CurrentFunction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrentFunction.h; sourceTree = "<group>"; };
@@ -2638,7 +2644,9 @@
 				0071BD040FB9F4AD0092E7D6 /* Display.h */,
 				00A115381357F42400081873 /* Easing.h */,
 				0032FD2810BB46F500C63A9D /* Exception.h */,
+				11A38FAE1E7769AC008C452D /* Export.h */,
 				0062484D122F607500039A7A /* Filesystem.h */,
+				11A38FAF1E7769AC008C452D /* FileWatcher.h */,
 				009EEF0D0EB79A91003AB86B /* Filter.h */,
 				00C071B20FF16261004801EA /* Font.h */,
 				004172F914C9BE520070C0D1 /* Frustum.h */,
@@ -2725,6 +2733,7 @@
 				00BC898A10D2BE9400D6DC59 /* DataTarget.cpp */,
 				0071BD080FB9FA2C0092E7D6 /* Display.cpp */,
 				0032FD2A10BB472E00C63A9D /* Exception.cpp */,
+				11A38FB21E7769CE008C452D /* FileWatcher.cpp */,
 				00C071AF0FF16244004801EA /* Font.cpp */,
 				004172FE14C9BE760070C0D1 /* Frustum.cpp */,
 				0003F4721992D6A000647C8B /* GeomIo.cpp */,
@@ -4441,6 +4450,7 @@
 				00FFAED519DB5D330002CA8E /* ImageSourceFileRadiance.h in Headers */,
 				111A5EB1191F703D005C3166 /* codec_internal.h in Headers */,
 				B3EA3FA61DD0EEA900E34348 /* ftsnames.h in Headers */,
+				11A38FB01E7769AC008C452D /* Export.h in Headers */,
 				B3EA3F401DD0EEA900E34348 /* ftstdlib.h in Headers */,
 				B3EA40271DD0EEA900E34348 /* sfnt.h in Headers */,
 				0003F4631992D67300647C8B /* TextureFormatParsers.h in Headers */,
@@ -4480,6 +4490,7 @@
 				B3EA403C1DD0EEA900E34348 /* ttunpat.h in Headers */,
 				B3EA3FC41DD0EEA900E34348 /* ftdebug.h in Headers */,
 				001E3565115D5F14000C228C /* Xml.h in Headers */,
+				11A38FB11E7769AC008C452D /* FileWatcher.h in Headers */,
 				0003F4541992D67300647C8B /* Pbo.h in Headers */,
 				00B729E8115DAC2B00CD71B9 /* Timer.h in Headers */,
 				B3EA3F581DD0EEA900E34348 /* ftbzip2.h in Headers */,
@@ -5432,6 +5443,7 @@
 				111A5ED8191F703D005C3166 /* psy.c in Sources */,
 				43F78EF21516DAB700EB63B5 /* Json.cpp in Sources */,
 				B3EA40FA1DD0F13C00E34348 /* type1cid.c in Sources */,
+				11A38FB31E7769CE008C452D /* FileWatcher.cpp in Sources */,
 				111A5EE2191F703D005C3166 /* vorbisenc.c in Sources */,
 				118CA4211A9427F700841458 /* RendererImplGlMac.mm in Sources */,
 				0003F3DB1992D64100647C8B /* BufferObj.cpp in Sources */,
