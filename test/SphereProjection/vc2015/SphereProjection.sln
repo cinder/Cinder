@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SphereProjection", "SphereProjection.vcxproj", "{ED242DB0-E59A-49FB-837F-68E438CF169F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED242DB0-E59A-49FB-837F-68E438CF169F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ED242DB0-E59A-49FB-837F-68E438CF169F}.Debug|Win32.Build.0 = Debug|Win32
+		{ED242DB0-E59A-49FB-837F-68E438CF169F}.Release|Win32.ActiveCfg = Release|Win32
+		{ED242DB0-E59A-49FB-837F-68E438CF169F}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
