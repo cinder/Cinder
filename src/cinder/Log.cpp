@@ -428,10 +428,12 @@ protected:
 			case LEVEL_INFO:	return EVENTLOG_INFORMATION_TYPE;
 			case LEVEL_DEBUG:	return EVENTLOG_INFORMATION_TYPE;
 			case LEVEL_VERBOSE:	return EVENTLOG_INFORMATION_TYPE;
-			default: CI_ASSERT_NOT_REACHABLE();
+			default:
+				CI_ASSERT_NOT_REACHABLE();
+				return 0;
 		}
 	}
-	
+
 	HANDLE			mHLog;
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> mConverter;
 };

@@ -37,9 +37,23 @@ Connection::Connection( const std::shared_ptr<detail::Disconnector> &disconnecto
 {
 }
 
+Connection::Connection( const Connection &other )
+	: mDisconnector( other.mDisconnector ), mLink( other.mLink ), mPriority( other.mPriority )
+{
+}
+
 Connection::Connection( Connection &&other )
 	: mDisconnector( move( other.mDisconnector ) ), mLink( move( other.mLink ) ), mPriority( move( other.mPriority ) )
 {
+}
+
+Connection& Connection::operator=( const Connection &rhs )
+{
+	mDisconnector = rhs.mDisconnector;
+	mLink = rhs.mLink;
+	mPriority = rhs.mPriority;
+
+	return *this;
 }
 
 Connection& Connection::operator=( Connection &&rhs )

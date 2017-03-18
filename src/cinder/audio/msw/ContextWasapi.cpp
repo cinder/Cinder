@@ -308,7 +308,7 @@ void WasapiRenderClientImpl::renderAudio()
 		mOutputDeviceNode->renderInputs();
 
 	float *renderBuffer;
-	hr = mRenderClient->GetBuffer( numWriteFramesAvailable, (BYTE **)&renderBuffer );
+	hr = mRenderClient->GetBuffer( static_cast<UINT32>(numWriteFramesAvailable), (BYTE **)&renderBuffer );
 	CI_ASSERT( hr == S_OK );
 
 	DWORD bufferFlags = 0;
@@ -318,7 +318,7 @@ void WasapiRenderClientImpl::renderAudio()
 
 	mNumFramesBuffered -= numWriteFramesAvailable;
 
-	hr = mRenderClient->ReleaseBuffer( numWriteFramesAvailable, bufferFlags );
+	hr = mRenderClient->ReleaseBuffer( static_cast<UINT32>( numWriteFramesAvailable ), bufferFlags );
 	CI_ASSERT( hr == S_OK );
 }
 
