@@ -4557,7 +4557,7 @@ void Subdivide::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 	ctx->processUpstream( request );
 	
 	if( ctx->getPrimitive() != Primitive::TRIANGLES ) {
-		CI_LOG_E( "geom::PhongTessellate only supports TRIANGLES primitive." );
+		CI_LOG_E( "geom::Subdivide only supports TRIANGLES primitive." );
 		return;
 	}
 
