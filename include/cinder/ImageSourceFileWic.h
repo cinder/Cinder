@@ -54,7 +54,7 @@ class ImageSourceFileWic : public ImageSource {
 
 	std::shared_ptr<IWICBitmapFrameDecode>	mFrame;
 	std::shared_ptr<IWICStream>				mStream;
-	Buffer									mBuffer;
+	ci::BufferRef							mBuffer;
 	bool									mRequiresConversion;
 	int32_t									mRowBytes;
 	::GUID									mPixelFormat, mConvertPixelFormat;

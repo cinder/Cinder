@@ -40,9 +40,6 @@ namespace cinder {
 class CI_API ThreadSetup {
   public:
 	ThreadSetup() {
-#if defined( CINDER_MAC )
-		objc_registerThreadWithCollector();
-#endif
 	}
 	
 	~ThreadSetup() {	

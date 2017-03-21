@@ -987,7 +987,9 @@ Texture2d::Texture2d( int width, int height, Format format )
 	initParams( format, GL_RGBA, GL_UNSIGNED_BYTE );
 #endif
 
-	//initMaxMipmapLevel();
+	if( mMipmapping )
+		initMaxMipmapLevel();
+
 	env()->allocateTexStorage2d( mTarget, mMaxMipmapLevel + 1, mInternalFormat, width, height, format.isImmutableStorage(), format.getDataType() );
 }
 
