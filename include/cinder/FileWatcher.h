@@ -90,8 +90,12 @@ public:
 
 	//! Enables or disables file watching.
 	void	setWatchingEnabled( bool enable );
-	//! Returns whether file watching is enabled or disabled.
+	//! Returns whether file watching is enabled or disabled (\default true).
 	bool	isWatchingEnabled() const	{ return mWatchingEnabled; }
+	//! Enables or disables automatic updates by connecting to the App's update method (\default true). Requires an App instance. If false, you must explicitly call update() to receive WatchEvents.
+	void	setConnectToAppUpdateEnabled( bool enable );
+	//! Returns whether file watching is enabled or disabled.
+	bool	isConnectToAppUpdateEnabled() const	{ return mConnectToAppUpdateEnabled; }
 
 	//! Adds a single file at \a filePath to the watch list. Does not immediately call \a callback, but calls it whenever the file has been updated.
 	ci::signals::Connection watch( const ci::fs::path &filePath, const std::function<void ( const WatchEvent& )> &callback );
@@ -111,6 +115,10 @@ public:
 	//! Marks a file as inactive, but doesn't remove it from the watch list.
 	void disable( const ci::fs::path &filePath );
 
+	//! Processes any WatchEvents with modified files that need callbacks. By default, this is called automatically from from the App's update signal, if there is currently an App instance.
+	//! Callbacks will occur on the thread that this method is called from. If you wish to call this manually, first call `setConnectToAppUpdateEnabled( false )`.
+	void	update();
+
 	//! Returns the number of Watch instances being watched.
 	const size_t	getNumWatches() const	{ return mWatchList.size(); }
 	//! Returns the total number of watched files, taking into account the number of files being watched by a WatchMany
@@ -119,18 +127,18 @@ public:
 private:
 	FileWatcher();
 
-	void	startWatching();
-	void	stopWatching();
+	void	configureWatchPolling();
+	void	stopWatchPolling();
 	void	threadEntry();
-	void	update();
 
 	std::list<std::unique_ptr<Watch>>	mWatchList;
 	std::recursive_mutex				mMutex;
 	std::unique_ptr<std::thread>		mThread;
-	std::atomic<bool>					mWatchingEnabled = { true };
 	std::atomic<bool>					mThreadShouldQuit;
-	std::atomic<double>					mThreadUpdateInterval = { 0.02 };
-	ci::signals::Connection				mUpdateConn;
+	std::atomic<double>					mThreadUpdateInterval		= { 0.02 };
+	std::atomic<bool>					mWatchingEnabled			= { true };
+	std::atomic<bool>					mConnectToAppUpdateEnabled	= { true };
+	ci::signals::Connection				mConnectionAppUpdate;
 };
 
 //! Exception type thrown from errors within FileWatcher

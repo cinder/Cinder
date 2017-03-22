@@ -217,12 +217,11 @@ FileWatcherRef FileWatcher::create()
 
 FileWatcher::FileWatcher()
 {
-	startWatching();
 }
 
 FileWatcher::~FileWatcher()
 {
-	stopWatching();
+	stopWatchPolling();
 }
 
 void FileWatcher::setWatchingEnabled( bool enable )
@@ -232,9 +231,20 @@ void FileWatcher::setWatchingEnabled( bool enable )
 
 	mWatchingEnabled = enable;
 	if( enable )
-		instance()->startWatching();
+		instance()->configureWatchPolling();
 	else
-		instance()->stopWatching();
+		instance()->stopWatchPolling();
+}
+
+void FileWatcher::setConnectToAppUpdateEnabled( bool enable )
+{
+	if( mConnectToAppUpdateEnabled == enable )
+		return;
+
+	mConnectToAppUpdateEnabled = enable;
+
+	if( ! enable && mConnectionAppUpdate.isConnected() )
+		mConnectionAppUpdate.disconnect();
 }
 
 signals::Connection FileWatcher::watch( const fs::path &filePath, const function<void ( const WatchEvent& )> &callback )
@@ -265,6 +275,8 @@ signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const
 
 	if( options.mCallOnWatch )
 		watch->emitCallback();
+
+	configureWatchPolling();
 
 	return watch->connect( callback );
 }
@@ -303,18 +315,20 @@ void FileWatcher::disable( const fs::path &filePath )
 	}
 }
 
-void FileWatcher::startWatching()
+void FileWatcher::configureWatchPolling()
 {
-	if( app::App::get() && ! mUpdateConn.isConnected() )
-		mUpdateConn = app::App::get()->getSignalUpdate().connect( bind( &FileWatcher::update, this ) );
+	if( mConnectToAppUpdateEnabled && ! mConnectionAppUpdate.isConnected() && app::App::get() )
+		mConnectionAppUpdate = app::App::get()->getSignalUpdate().connect( bind( &FileWatcher::update, this ) );
 
-	mThreadShouldQuit = false;
-	mThread = make_unique<thread>( std::bind( &FileWatcher::threadEntry, this ) );
+	if( ! mThread ) {
+		mThreadShouldQuit = false;
+		mThread = make_unique<thread>( std::bind( &FileWatcher::threadEntry, this ) );
+	}
 }
 
-void FileWatcher::stopWatching()
+void FileWatcher::stopWatchPolling()
 {
-	mUpdateConn.disconnect();
+	mConnectionAppUpdate.disconnect();
 
 	mThreadShouldQuit = true;
 	if( mThread && mThread->joinable() ) {
