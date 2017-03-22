@@ -322,7 +322,7 @@ void FileWatcher::configureWatchPolling()
 
 	if( ! mThread ) {
 		mThreadShouldQuit = false;
-		mThread = make_unique<thread>( std::bind( &FileWatcher::threadEntry, this ) );
+		mThread.reset( new thread( std::bind( &FileWatcher::threadEntry, this ) ) ); 
 	}
 }
 
