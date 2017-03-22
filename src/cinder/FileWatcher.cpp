@@ -278,7 +278,7 @@ signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const
 
 	configureWatchPolling();
 
-	return watch->connect( callback );
+	return conn;
 }
 
 void FileWatcher::unwatch( const fs::path &filePath )
