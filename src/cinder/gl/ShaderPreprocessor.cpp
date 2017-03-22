@@ -247,7 +247,11 @@ void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::p
 
 	// append any #defines to the directives string
 	for( const auto &define : mDefineDirectives ) {
-		*directives += "#define " + define + "\n";
+		*directives += "#define " + define.first;
+		if( ! define.second.empty() )
+			*directives += " " + define.second;
+
+		*directives += "\n";
 	}
 
 	// if we've made any modifications, add a #line directive to ensure debug error statements are correct.
@@ -360,49 +364,46 @@ void ShaderPreprocessor::addDefine( const std::string &define )
 	// Check if there are any existing defines with this symbol name, and if so replace it.
 	string defineUntilSpace = define.substr( 0, define.find( ' ' ) );
 	for( auto &dd : mDefineDirectives ) {
-		size_t pos = dd.find( defineUntilSpace, 0 );
-		if( pos == 0 ) {
-			// replace existing define
-			dd = define;
+
+		if( dd.first == define ) {
+			dd.first = define;
+			dd.second = {};
 			return;
 		}
 	}
 
 	// define is unique, add it to list
-	mDefineDirectives.push_back( define );
+	mDefineDirectives.push_back( { define, {} } );
 }
 
 void ShaderPreprocessor::addDefine( const std::string &define, const std::string &value )
 {
-	string defineLine = define + " " + value;
+//	string defineLine = define + " " + value;
 
 	// Check if there are any existing defines with this symbol name, and if so replace it.
 	for( auto &dd : mDefineDirectives ) {
-		size_t pos = dd.find( define, 0 );
-		if( pos == 0 ) {
-			// replace existing define
-			dd = defineLine;
+		if( dd.first == define ) {
+			dd.first = define;
+			dd.second = value;
 			return;
 		}
 	}
 
 	// define is unique, add it to list
-	mDefineDirectives.push_back( defineLine );
+	mDefineDirectives.push_back( { define, value } );
 }
 
-void ShaderPreprocessor::setDefines( const std::vector<std::string> &defines )
+void ShaderPreprocessor::setDefines( const std::vector<std::pair<std::string, std::string>> &defines )
 {
 	mDefineDirectives = defines;
 }
 
 void ShaderPreprocessor::removeDefine( const std::string &define )
 {
-	mDefineDirectives.erase( remove( mDefineDirectives.begin(), mDefineDirectives.end(), define ), mDefineDirectives.end() );
-}
-
-void ShaderPreprocessor::removeDefine( const std::string &define, const std::string &value )
-{
-	removeDefine( define + " " + value );
+	mDefineDirectives.erase( remove_if( mDefineDirectives.begin(), mDefineDirectives.end(),
+		[&define]( const pair<string,string> &o ) {
+			return o.first == define;
+		} ), mDefineDirectives.end() );
 }
 
 void ShaderPreprocessor::clearDefines()

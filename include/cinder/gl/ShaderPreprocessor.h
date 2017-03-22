@@ -67,15 +67,13 @@ class CI_API ShaderPreprocessor {
 	//! Adds a define directive in the form of `define=value`
 	void	addDefine( const std::string &define, const std::string &value );
 	//! Specifies all define directives to add to the shader sources, overwriting any existing defines.
-	void	setDefines( const std::vector<std::string> &defines );
+	void	setDefines( const std::vector<std::pair<std::string, std::string>> &defines );
 	//! Returns all of the define directives to add to the shader sources.
-	const std::vector<std::string>&	getDefines() const	{ return mDefineDirectives; }
+	const std::vector<std::pair<std::string,std::string>>&	getDefines() const	{ return mDefineDirectives; }
 	//! Returns all of the define directives to add to the shader sources, modifiable version.
-	std::vector<std::string>&		getDefines()		{ return mDefineDirectives; }
+	std::vector<std::pair<std::string, std::string>>&		getDefines()		{ return mDefineDirectives; }
 	//! Removes a define directive
 	void	removeDefine( const std::string &define );
-	//! Removes a define directive in the form of `define=value`
-	void	removeDefine( const std::string &define, const std::string &value );
 	//! Clears all define directives
 	void	clearDefines();
 
@@ -101,7 +99,7 @@ class CI_API ShaderPreprocessor {
 	fs::path		findFullPath( const fs::path &includePath, const fs::path &currentPath );
 	
 	int								mVersion;
-	std::vector<std::string>		mDefineDirectives;
+	std::vector<std::pair<std::string,std::string>>		mDefineDirectives; // [macro, value]
 	std::vector<fs::path>			mSearchDirectories;
 	SignalIncludeHandler			mSignalInclude;
 
