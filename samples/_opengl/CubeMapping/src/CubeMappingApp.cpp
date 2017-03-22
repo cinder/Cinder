@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/FileWatcher.h"	
 #include "cinder/ImageIo.h"
+#include "cinder/Log.h"
 #include "cinder/gl/gl.h"
 
 using namespace ci;
@@ -17,7 +18,7 @@ class CubeMappingApp : public App {
 
 	gl::TextureCubeMapRef	mCubeMap;
 	gl::BatchRef			mTeapotBatch, mSkyBoxBatch;
-	mat4				mObjectRotation;
+	mat4					mObjectRotation;
 	CameraPersp				mCam;
 };
 
@@ -29,7 +30,7 @@ void CubeMappingApp::setup()
 		mCubeMap = gl::TextureCubeMap::create( loadImage( loadAsset( "env_map.jpg" ) ), gl::TextureCubeMap::Format().mipmap() );
 	}
 	catch( const std::exception& e ) {
-		console() << "loadImage error: " << e.what() << std::endl;
+		CI_LOG_EXCEPTION( "error loading cube map image.", e );
 	}
 
 #if defined( CINDER_GL_ES )
@@ -39,7 +40,7 @@ void CubeMappingApp::setup()
 		mTeapotBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
 	}
 	catch( const std::exception& e ) {
-		console() << "Shader Failed (env_map): " << e.what() << std::endl;
+		CI_LOG_EXCEPTION( "Shader Failed (env_map)", e );
 	}
 
 	try {
@@ -48,7 +49,7 @@ void CubeMappingApp::setup()
 		mSkyBoxBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
 	}
 	catch( const std::exception& e ) {
-		console() << "Shader Failed (sky_box): " << e.what() << std::endl;
+		CI_LOG_EXCEPTION( "Shader Failed (sky_box)", e );
 	}
 #else
 	// note: look in env_map.frag to optionally try out refraction instead of reflection.
@@ -60,10 +61,10 @@ void CubeMappingApp::setup()
 			mTeapotBatch = gl::Batch::create( geom::Teapot().subdivisions( 7 ), glsl );
 			mTeapotBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
 
-			console() << "reloaded env map shader" << endl;
+			CI_LOG_I( "loaded env_map shader" );
 		}
-		catch( const std::exception& e ) {
-			console() << "Shader Failed (env_map): " << e.what() << std::endl;
+		catch( const std::exception &e ) {
+			CI_LOG_EXCEPTION( "Shader Failed (env_map)", e );
 		}
 	} );
 
@@ -72,8 +73,8 @@ void CubeMappingApp::setup()
 		mSkyBoxBatch = gl::Batch::create( geom::Cube(), skyBoxGlsl );
 		mSkyBoxBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
 	}
-	catch( const std::exception& e ) {
-		console() << "Shader Failed (env_map): " << e.what() << std::endl;
+	catch( const std::exception &e ) {
+		CI_LOG_EXCEPTION( "Shader Failed (sky_box)", e );
 	}
 #endif
 	
