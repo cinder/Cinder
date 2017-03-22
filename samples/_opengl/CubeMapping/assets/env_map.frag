@@ -9,7 +9,7 @@ out vec4 	oColor;
 
 void main()
 {
-#if 0
+#if 1
 	// reflect the eye ray about the surface normal (all in world space)
 	vec3 lookup = reflect( EyeDirWorldSpace, normalize( NormalWorldSpace ) );
 #else
