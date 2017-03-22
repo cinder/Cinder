@@ -124,6 +124,11 @@ class CI_API FileWatcher : private Noncopyable {
 	//! Returns the total number of watched files, taking into account the number of files being watched by a WatchMany
 	const size_t	getNumWatchedFiles() const;
 
+	//! Sets the update time interval in seconds for the polling thread. \default is 0.02 seconds.
+	void		setThreadUpdateInterval( double seconds )	{ mThreadUpdateInterval = seconds; }
+	//! Returns the update time interval in seconds for the polling thread. \default is 0.02 seconds.
+	double		getThreadUpdateInterval() const				{ return mThreadUpdateInterval; }
+
   private:
 	FileWatcher();
 
