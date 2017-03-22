@@ -101,20 +101,24 @@ void CubeMappingApp::draw()
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::setMatrices( mCam );
 
+	// bind the cube map for both drawing the teapot and sky box
+	gl::ScopedTextureBind scopedTexBind( mCubeMap );
+
+	// draw teapot, using the cube map as an environment map
 	if( mTeapotBatch ) {
-		mCubeMap->bind();
-		gl::pushMatrices();
+		gl::ScopedModelMatrix modelScope;
 		gl::multModelMatrix( mObjectRotation );
 		gl::scale( vec3( 4 ) );
+
 		mTeapotBatch->draw();
-		gl::popMatrices();
 	}
 	
 	// draw sky box
-	gl::pushMatrices();
-		gl::scale( SKY_BOX_SIZE, SKY_BOX_SIZE, SKY_BOX_SIZE );
+	{
+		gl::ScopedModelMatrix modelScope;
+		gl::scale( vec3( SKY_BOX_SIZE ) );
 		mSkyBoxBatch->draw();
-	gl::popMatrices();		
+	}
 }
 
 CINDER_APP( CubeMappingApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )
