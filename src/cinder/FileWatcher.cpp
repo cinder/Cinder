@@ -36,7 +36,7 @@ namespace cinder {
 
 //! Base class for Watch types, which are returned from FileWatcher::load() and watch()
 class Watch : public std::enable_shared_from_this<Watch>, private Noncopyable {
-public:
+  public:
 	Watch( const std::vector<fs::path> &filePaths, bool needsCallback );
 
 	signals::Connection	connect( const function<void ( const WatchEvent& )> &callback )	{ return mSignalChanged.connect( callback ); }
@@ -67,7 +67,7 @@ public:
 
 	const std::vector<WatchItem>&	getItems() const	{ return mWatchItems; }
 
-private:
+  private:
 	bool mDiscarded = false;
 	bool mEnabled = true;
 	bool mNeedsCallback = false;

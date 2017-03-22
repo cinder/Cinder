@@ -42,21 +42,21 @@ typedef std::shared_ptr<class FileWatcher>	FileWatcherRef;
 
 //! Event type returned in callbacks when one more watched files have been modified.
 class WatchEvent {
-public:
-	WatchEvent( const std::vector<ci::fs::path> &filePaths )
+  public:
+	WatchEvent( const std::vector<fs::path> &filePaths )
 		: mModifiedFiles( filePaths )
 	{}
 
 	//! Returns the vector of absolute file paths which were dropped
-	const std::vector<ci::fs::path>&	getFiles() const								{ return mModifiedFiles; }
+	const std::vector<fs::path>&	getFiles() const								{ return mModifiedFiles; }
 	//! Returns the number of files dropped during the event
-	size_t								getNumFiles() const								{ return mModifiedFiles.size(); }
+	size_t							getNumFiles() const								{ return mModifiedFiles.size(); }
 	//! Returns the absolute filepath for file number \a index.
-	const								ci::fs::path& getFile( size_t index = 0 ) const	{ return mModifiedFiles.at( index ); }
+	const							fs::path& getFile( size_t index = 0 ) const		{ return mModifiedFiles.at( index ); }
 
-private:
+  private:
 
-	std::vector<ci::fs::path>	mModifiedFiles;
+	std::vector<fs::path>	mModifiedFiles;
 };
 
 //! FileMonitor provides a system for monitoring the filesystem for changes at runtime using callbacks.
@@ -68,8 +68,8 @@ private:
 //! \note any argument that takes an `fs::path` considers that operation to be global, that is any and all watches in place that
 //! include that file with be affected (examples are unwatch() and disable()). If you want to disable a single instance of a watch
 //! on a specific file, you can use the returned Connection's disable() or disconnect() methods.
-class CI_API FileWatcher : private ci::Noncopyable {
-public:
+class CI_API FileWatcher : private Noncopyable {
+  public:
 	~FileWatcher();
 
 	//! Optional parameters provided to watch()
@@ -91,29 +91,29 @@ public:
 	//! Enables or disables file watching.
 	void	setWatchingEnabled( bool enable );
 	//! Returns whether file watching is enabled or disabled (\default true).
-	bool	isWatchingEnabled() const	{ return mWatchingEnabled; }
+	bool	isWatchingEnabled() const				{ return mWatchingEnabled; }
 	//! Enables or disables automatic updates by connecting to the App's update method (\default true). Requires an App instance. If false, you must explicitly call update() to receive WatchEvents.
 	void	setConnectToAppUpdateEnabled( bool enable );
 	//! Returns whether file watching is enabled or disabled.
-	bool	isConnectToAppUpdateEnabled() const	{ return mConnectToAppUpdateEnabled; }
+	bool	isConnectToAppUpdateEnabled() const		{ return mConnectToAppUpdateEnabled; }
 
 	//! Adds a single file at \a filePath to the watch list. Does not immediately call \a callback, but calls it whenever the file has been updated.
-	ci::signals::Connection watch( const ci::fs::path &filePath, const std::function<void ( const WatchEvent& )> &callback );
+	signals::Connection watch( const fs::path &filePath, const std::function<void ( const WatchEvent& )> &callback );
 	//! Adds a single file at \a filePath to the watch list, with optional \a options.
-	ci::signals::Connection watch( const ci::fs::path &filePath, const Options &options, const std::function<void ( const WatchEvent& )> &callback );
+	signals::Connection watch( const fs::path &filePath, const Options &options, const std::function<void ( const WatchEvent& )> &callback );
 	//! Adds the files in \a filePaths to the watch list. Does not immediately call \a callback, but calls it whenever one of the files has been updated.
-	ci::signals::Connection watch( const std::vector<ci::fs::path> &filePaths, const std::function<void ( const WatchEvent& )> &callback );
+	signals::Connection watch( const std::vector<fs::path> &filePaths, const std::function<void ( const WatchEvent& )> &callback );
 	//! Adds the files in \a filePaths to the watch list, with optional \a options.
-	ci::signals::Connection watch( const std::vector<ci::fs::path> &filePaths, const Options &options, const std::function<void ( const WatchEvent& )> &callback );
+	signals::Connection watch( const std::vector<fs::path> &filePaths, const Options &options, const std::function<void ( const WatchEvent& )> &callback );
 
 	//! Removes any watches for \a filePath
-	void unwatch( const ci::fs::path &filePath );
+	void	unwatch( const fs::path &filePath );
 	//! Removes any watches for \a filePaths
-	void unwatch( const std::vector<ci::fs::path> &filePaths );
+	void	unwatch( const std::vector<fs::path> &filePaths );
 	//! Marks a file already in the watch list as active.
-	void enable( const ci::fs::path &filePath );
+	void	enable( const fs::path &filePath );
 	//! Marks a file as inactive, but doesn't remove it from the watch list.
-	void disable( const ci::fs::path &filePath );
+	void	disable( const fs::path &filePath );
 
 	//! Processes any WatchEvents with modified files that need callbacks. By default, this is called automatically from from the App's update signal, if there is currently an App instance.
 	//! Callbacks will occur on the thread that this method is called from. If you wish to call this manually, first call `setConnectToAppUpdateEnabled( false )`.
@@ -124,7 +124,7 @@ public:
 	//! Returns the total number of watched files, taking into account the number of files being watched by a WatchMany
 	const size_t	getNumWatchedFiles() const;
 
-private:
+  private:
 	FileWatcher();
 
 	void	configureWatchPolling();
@@ -138,12 +138,12 @@ private:
 	std::atomic<double>					mThreadUpdateInterval		= { 0.02 };
 	std::atomic<bool>					mWatchingEnabled			= { true };
 	std::atomic<bool>					mConnectToAppUpdateEnabled	= { true };
-	ci::signals::Connection				mConnectionAppUpdate;
+	signals::Connection					mConnectionAppUpdate;
 };
 
 //! Exception type thrown from errors within FileWatcher
-class CI_API FileWatcherException : public ci::Exception {
-public:
+class CI_API FileWatcherException : public Exception {
+  public:
 	FileWatcherException( const std::string &description )
 		: Exception( description )
 	{}
