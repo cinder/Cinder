@@ -13,7 +13,12 @@ const fs::path WATCH_FILE = "test_watch.txt";
 void updateFileWriteTime( const fs::path &file )
 {
 	auto fullFilePath = app::getAssetPath( WATCH_FILE );
+#if defined( CINDER_POSIX )
+	// TODO: remove this path, once std::filesystem is available accross the board
+	fs::last_write_time( fullFilePath, fs::last_write_time( fullFilePath ) + 1 );
+#else
 	fs::last_write_time( fullFilePath, fs::last_write_time( fullFilePath ) + 1s );
+#endif
 }
 
 void updateFileWatcher( FileWatcher *watcher )
