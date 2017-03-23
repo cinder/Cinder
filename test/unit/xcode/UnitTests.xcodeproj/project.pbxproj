@@ -10,6 +10,7 @@
 		000703221DEB7DE00086D6CA /* Path2dTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000703211DEB7DE00086D6CA /* Path2dTest.cpp */; };
 		114CE0E91E2F03930002A384 /* ShaderPreprocessorTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 114CE0E71E2F03930002A384 /* ShaderPreprocessorTest.cpp */; };
 		114CE0EA1E2F03930002A384 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 114CE0E81E2F03930002A384 /* Utilities.cpp */; };
+		117BC7781E836FDF003D8F25 /* FileWatcherTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 117BC7771E836FDF003D8F25 /* FileWatcherTest.cpp */; };
 		11E4FC491C26788A0082A67E /* BufferUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11E4FC441C26788A0082A67E /* BufferUnit.cpp */; };
 		11E4FC4D1C267DB70082A67E /* FftUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11E4FC451C26788A0082A67E /* FftUnit.cpp */; };
 		11E4FC4E1C26801E0082A67E /* RingBufferUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11E4FC471C26788A0082A67E /* RingBufferUnit.cpp */; };
@@ -62,6 +63,7 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		114CE0E71E2F03930002A384 /* ShaderPreprocessorTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderPreprocessorTest.cpp; sourceTree = "<group>"; };
 		114CE0E81E2F03930002A384 /* Utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utilities.cpp; sourceTree = "<group>"; };
+		117BC7771E836FDF003D8F25 /* FileWatcherTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileWatcherTest.cpp; sourceTree = "<group>"; };
 		11E4FC441C26788A0082A67E /* BufferUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BufferUnit.cpp; sourceTree = "<group>"; };
 		11E4FC451C26788A0082A67E /* FftUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FftUnit.cpp; sourceTree = "<group>"; };
 		11E4FC471C26788A0082A67E /* RingBufferUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RingBufferUnit.cpp; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 				11E4FC431C26788A0082A67E /* audio */,
 				9CA851BB1C1F74000049358B /* signals */,
 				9CA851B61C1F74000049358B /* Base64Test.cpp */,
+				117BC7771E836FDF003D8F25 /* FileWatcherTest.cpp */,
 				9CA851B81C1F74000049358B /* JsonTest.cpp */,
 				9CA851B91C1F74000049358B /* ObjLoaderTest.cpp */,
 				4989E06B1DB6889500503C9A /* PolyLineTest.cpp */,
@@ -286,6 +289,7 @@
 			files = (
 				9CA851C21C1F74000049358B /* ObjLoaderTest.cpp in Sources */,
 				9CA851C61C1F74000049358B /* TestMain.cpp in Sources */,
+				117BC7781E836FDF003D8F25 /* FileWatcherTest.cpp in Sources */,
 				9CA851C01C1F74000049358B /* Base64Test.cpp in Sources */,
 				9CA851C31C1F74000049358B /* RandTest.cpp in Sources */,
 				11E4FC4D1C267DB70082A67E /* FftUnit.cpp in Sources */,
@@ -308,7 +312,6 @@
 		9CC02E851BDE74AA00B5058A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -349,7 +352,6 @@
 		9CC02E861BDE74AA00B5058A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -387,7 +389,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CINDER_PATH = ../../..;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				ENABLE_TESTABILITY = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -405,7 +407,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CINDER_PATH = ../../..;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
