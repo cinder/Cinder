@@ -1,4 +1,4 @@
-### Cinder 0.9.1dev: [libcinder.org](http://libcinder.org)
+### Cinder 0.9.1: [libcinder.org](http://libcinder.org)
 
 <p align="center">
   <img src="https://libcinder.org/docs/_assets/images/cinder_logo.svg" alt="Cinder Logo" width="256" height="auto"/>
@@ -19,4 +19,4 @@ Cinder supports macOS, Windows, Linux, and iOS. It requires Xcode 6.0 or later f
 
 Cinder is released under the [Modified BSD License](docs/COPYING). Please visit [our website](https://libcinder.org) for more information.
 
-Also be sure to check the [User Forum](http://discourse.libcinder.org).
+Also be sure to check out the [User Forum](http://discourse.libcinder.org).
