@@ -13,7 +13,7 @@ def copyIgnore( path, names ):
     for name in names:
         if name == 'vc2013' and gCompiler != 'vc2013':
             result.append( name )
-        if name == 'vc2013_winrt' and gCompiler != 'vc2013':
+        if name == 'vc2015_winrt' and gCompiler != 'vc2013':
             result.append( name )
         elif name == 'vc2015' and gCompiler != 'vc2015':
             result.append( name )
@@ -29,7 +29,7 @@ def copyIgnore( path, names ):
             result.append( name )
         elif name == 'msw' and gCompiler == 'xcode':
             result.append( name )
-        elif name == 'winrt' and gCompiler == 'xcode':
+        elif name == 'msw-uwp' and gCompiler == 'xcode':
             result.append( name )
         elif gPlatform == 'mac' and name == 'TinderBox-Win':
             result.append( name )
@@ -38,6 +38,12 @@ def copyIgnore( path, names ):
         elif name == 'Readme.md':
             result.append( name )
         elif name == 'scripts':
+            result.append( name )
+        elif name == 'linux' and re.search( "lib", path ) != None:
+            result.append( name )
+        elif name == 'android':
+            result.append( name )
+        elif name == 'androidstudio':
             result.append( name )
         elif re.search( "libboost.*-vc120.*", name ) != None and gCompiler != 'vc2013':
             result.append( name )
@@ -72,21 +78,31 @@ elif sys.argv[2] == 'xcode':
     gCompiler = 'xcode'
     gPlatform = 'mac'
     outputDir = processExport( "mac", "xcode", sys.argv[1] )
-    os.chdir( outputDir + "xcode" )
+    os.chdir( outputDir + "proj/xcode" )
     os.system( "./fullbuild.sh" )
-    shutil.rmtree( outputDir + "xcode/build" )
-    os.chdir( outputDir + "lib" )
+    shutil.rmtree( outputDir + "proj/xcode/build" )
     # strip debug symbols
-    os.system( "strip -S -r *.a" )
+    os.chdir( outputDir + "lib/ios/Debug" )
+    os.system( "strip -S -r libcinder.a" )
+    os.chdir( outputDir + "lib/ios/Release" )
+    os.system( "strip -S -r libcinder.a" )
+    os.chdir( outputDir + "lib/ios-sim/Debug" )
+    os.system( "strip -S -r libcinder.a" )
+    os.chdir( outputDir + "lib/ios-sim/Release" )
+    os.system( "strip -S -r libcinder.a" )
+    os.chdir( outputDir + "lib/macosx/Debug" )
+    os.system( "strip -S -r libcinder.a" )
+    os.chdir( outputDir + "lib/macosx/Release" )
+    os.system( "strip -S -r libcinder.a" )
 elif sys.argv[2] == 'vc2013':
     gCompiler = 'vc2013'
     gPlatform = 'msw'
     outputDir = processExport( "vc2013", "vc2013", sys.argv[1] )
-    os.chdir( outputDir + "vc2013" )
+    os.chdir( outputDir + "proj\\vc2013" )
     os.system( "msbuild cinder.vcxproj /p:platform=win32 /p:configuration=debug" )
-    shutil.rmtree( outputDir + "vc2013\\Debug" )
+    shutil.rmtree( outputDir + "proj\\vc2013\\Debug" )
     os.system( "msbuild cinder.vcxproj /p:platform=win32 /p:configuration=release" )
-    shutil.rmtree( outputDir + "vc2013\\Release" )
+    shutil.rmtree( outputDir + "proj\\vc2013\\Release" )
 #    os.system( "msbuild cinder.vcxproj /p:platform=x64 /p:configuration=debug" )
 #    shutil.rmtree( outputDir + "vc2013\\x64\\Debug" )
 #    os.system( "msbuild cinder.vcxproj /p:platform=x64 /p:configuration=release" )
