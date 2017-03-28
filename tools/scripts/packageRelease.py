@@ -58,7 +58,9 @@ def printUsage():
 def processExport( outputName, compilerName, version ):
     print "creating a clean clone of cinder"
     baseDir = os.getcwd()
-    os.system( "git clone --recursive --depth 1 -b master . ../cinder_temp/" )
+    fileUrl = "file://" + baseDir
+    fileUrl.replace( os.sep, "/" )
+    os.system( "git clone --recursive --depth 1 -b master " + fileUrl + " .." + os.sep + "cinder_temp" )
     os.chdir( baseDir + os.sep + ".." + os.sep + "cinder_temp" )
     outputDir = baseDir + os.sep + ".." + os.sep + "cinder_" + version + "_" + outputName + os.sep
     print "performing selective copy to " + outputDir
@@ -100,14 +102,13 @@ elif sys.argv[2] == 'vc2013':
     outputDir = processExport( "vc2013", "vc2013", sys.argv[1] )
     os.chdir( outputDir + "proj\\vc2013" )
     os.system( "msbuild cinder.vcxproj /p:platform=win32 /p:configuration=debug" )
-    shutil.rmtree( outputDir + "proj\\vc2013\\Debug" )
     os.system( "msbuild cinder.vcxproj /p:platform=win32 /p:configuration=release" )
-    shutil.rmtree( outputDir + "proj\\vc2013\\Release" )
+    shutil.rmtree( outputDir + "proj\\vc2013\\build" )
 #    os.system( "msbuild cinder.vcxproj /p:platform=x64 /p:configuration=debug" )
 #    shutil.rmtree( outputDir + "vc2013\\x64\\Debug" )
 #    os.system( "msbuild cinder.vcxproj /p:platform=x64 /p:configuration=release" )
 #    shutil.rmtree( outputDir + "vc2013\\x64\\Release" )
-    cleanupMswLibDir( outputDir + "lib\\msw\\x86" )
+    cleanupMswLibDir( outputDir + "lib\\msw\\x86\\debug" )
 #    cleanupMswLibDir( outputDir + "lib\\msw\\x64" )
 elif sys.argv[2] == 'vc2015':
     gCompiler = 'vc2015'
