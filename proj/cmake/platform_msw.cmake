@@ -63,7 +63,6 @@ if( MSVC )
 	add_compile_options( /MP )
     # Static library flags
     set( CINDER_STATIC_LIBS_FLAGS_DEBUG     "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
-    set( CINDER_STATIC_LIBS_FLAGS_RELEASE   "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
    
     # Platform libraries 
     set( MSW_PLATFORM_LIBS "Ws2_32.lib wldap32.lib shlwapi.lib OpenGL32.lib wmvcore.lib Strmiids.lib Msimg32.lib" )
