@@ -1,4 +1,4 @@
-### Cinder 0.9.1: [libcinder.org](http://libcinder.org)
+### Cinder 0.9.2dev: [libcinder.org](http://libcinder.org)
 
 <p align="center">
   <img src="https://libcinder.org/docs/_assets/images/cinder_logo.svg" alt="Cinder Logo" width="256" height="auto"/>
