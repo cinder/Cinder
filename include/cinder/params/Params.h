@@ -40,7 +40,7 @@ namespace app {
 }
 
 namespace params {
-  
+
 typedef std::shared_ptr<class InterfaceGl>	InterfaceGlRef;
 
 //! Interface for adding params to your window.  Wraps AntTweakBar.
@@ -128,6 +128,8 @@ class InterfaceGl {
 
 		//!! Sets \a setterFn and \a getterFn as callbacks for this param. the target is ignored in this case.
 		Options&	accessors( const SetterFn &setterFn, const GetterFn &getterFn );
+		//!! Sets \a getterFn as callbacks for this param. the target is ignored in this case.
+		Options&	accessors(const GetterFn &getterFn);
 		//!! Sets an update function that will be called after the target param is updated.
 		Options&	updateFn( const UpdateFn &updateFn );
 
@@ -175,6 +177,9 @@ class InterfaceGl {
 	//! Adds a param to the interface with no target, but is instead accessed with \a setterFn and \a getterFn. \return Options<T> for chaining options to the param.
 	template <typename T>
 	Options<T>	addParam( const std::string &name, const std::function<void ( T )> &setterFn, const std::function<T ()> &getterFn );
+	//! Adds a read-only param to the interface with no target, but is accessed with \a getterFn. \return Options<T> for chaining options to the param.
+	template <typename T>
+	Options<T>	addParam(const std::string &name, const std::function<T()> &getterFn);
 
 	//! Adds enumerated parameter. The value corresponds to the indices of \a enumNames.
 	Options<int> addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, bool readOnly = false );
@@ -243,11 +248,13 @@ class InterfaceGl {
 	Options<T>	addParamImpl( const std::string &name, T *param, int type, bool readOnly );
 	template <class T>
 	void addParamCallbackImpl( const std::function<void (T)> &setter, const std::function<T ()> &getter, const Options<T> &options );
+	template <class T>
+	void addParamCallbackImpl(const std::function<T()> &getter, const Options<T> &options);
 
 	std::weak_ptr<app::Window>		mWindow;
 	std::shared_ptr<TwBar>			mBar;
 	int								mTwWindowId;
-	
+
 	std::map<std::string, std::shared_ptr<void> >	mStoredCallbacks; // key = name, value = memory managed pointer
 };
 
@@ -258,12 +265,30 @@ InterfaceGl::Options<T>	InterfaceGl::addParam( const std::string &name, const st
 }
 
 template <typename T>
+InterfaceGl::Options<T>	InterfaceGl::addParam(const std::string &name, const std::function<T()> &getterFn)
+{
+	return addParam<T>(name, nullptr).accessors(getterFn);
+}
+
+template <typename T>
 InterfaceGl::Options<T>& InterfaceGl::Options<T>::accessors( const SetterFn &setterFn, const GetterFn &getterFn )
 {
 	if( mTarget )
 		mParent->removeParam( getName() );
 
 	mParent->addParamCallbackImpl( setterFn, getterFn, *this );
+
+	reAddOptions();
+	return *this;
+}
+
+template <typename T>
+InterfaceGl::Options<T>& InterfaceGl::Options<T>::accessors(const GetterFn &getterFn)
+{
+	if (mTarget)
+		mParent->removeParam(getName());
+
+	mParent->addParamCallbackImpl(getterFn, *this);
 
 	reAddOptions();
 	return *this;
