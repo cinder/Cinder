@@ -334,6 +334,84 @@ class Icosahedron : public Source {
 	friend class WireIcosahedron;
 };
 
+class Tetrahedron : public Source {
+  public:
+    Tetrahedron();
+
+    // Enables colors. Disabled by default.
+    Tetrahedron&	colors( bool enable = true ) { mHasColors = enable; return *this; }
+    
+    size_t			getNumVertices() const override;
+    size_t			getNumIndices() const override;
+    Primitive		getPrimitive() const override { return Primitive::TRIANGLES; }
+    uint8_t			getAttribDims( Attrib attr ) const override;
+    AttribSet		getAvailableAttribs() const override;
+    void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+    Tetrahedron*	clone() const override { return new Tetrahedron( *this ); }
+
+  protected:
+    void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *colors, std::vector<vec2> *texcoords, std::vector<uint32_t> *indices ) const;
+
+    bool			mHasColors;
+    static float	sPositions[4*3];
+    static float	sTexCoords[12*2];
+    static uint32_t	sIndices[12];
+    
+    friend class WireTetrahedron;
+};
+
+class Octahedron : public Source {
+public:
+    Octahedron();
+
+    // Enables colors. Disabled by default.
+    Octahedron&	colors( bool enable = true ) { mHasColors = enable; return *this; }
+
+    size_t			getNumVertices() const override;
+    size_t			getNumIndices() const override;
+    Primitive		getPrimitive() const override { return Primitive::TRIANGLES; }
+    uint8_t			getAttribDims( Attrib attr ) const override;
+    AttribSet		getAvailableAttribs() const override;
+    void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+    Octahedron*		clone() const override { return new Octahedron( *this ); }
+
+protected:
+    void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *colors, std::vector<vec2> *texcoords, std::vector<uint32_t> *indices ) const;
+
+    bool			mHasColors;
+    static float	sPositions[6*3];
+    static float	sTexCoords[24*2];
+    static uint32_t	sIndices[24];
+
+    friend class WireOctahedron;
+};
+
+class Dodecahedron : public Source {
+public:
+    Dodecahedron();
+
+    // Enables colors. Disabled by default.
+    Dodecahedron &	colors( bool enable = true ) { mHasColors = enable; return *this; }
+
+    size_t			getNumVertices() const override;
+    size_t			getNumIndices() const override;
+    Primitive		getPrimitive() const override { return Primitive::TRIANGLES; }
+    uint8_t			getAttribDims( Attrib attr ) const override;
+    AttribSet		getAvailableAttribs() const override;
+    void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+    Dodecahedron *	clone() const override { return new Dodecahedron( *this ); }
+
+protected:
+    void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *colors, std::vector<vec2> *texcoords, std::vector<uint32_t> *indices ) const;
+
+    bool			mHasColors;
+    static float	sPositions[20*3];
+    static float	sTexCoords[108*2];
+    static uint32_t	sIndices[108];
+
+    friend class WireDodecahedron;
+};
+
 class Icosphere : public Source {
   public:
 	Icosphere();
@@ -1057,6 +1135,48 @@ class WireCone : public WireCylinder {
 	WireCone&	set( const vec3 &from, const vec3 &to ) { WireCylinder::set( from, to ); return *this; }
 
 	WireCone*	clone() const override { return new WireCone( *this ); }
+};
+
+class WireTetrahedron : public WireSource {
+public:
+    WireTetrahedron() {}
+
+    size_t				getNumVertices() const override;
+    void				loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+    WireTetrahedron*	clone() const override { return new WireTetrahedron( *this ); }
+
+protected:
+    void		calculate() const;
+
+    static std::vector<vec3>	sPositions;
+};
+
+class WireOctahedron : public WireSource {
+public:
+    WireOctahedron() {}
+
+    size_t				getNumVertices() const override;
+    void				loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+    WireOctahedron*		clone() const override { return new WireOctahedron( *this ); }
+
+protected:
+    void		calculate() const;
+
+    static std::vector<vec3>	sPositions;
+};
+
+class WireDodecahedron : public WireSource {
+public:
+    WireDodecahedron() {}
+
+    size_t				getNumVertices() const override;
+    void				loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+    WireDodecahedron*	clone() const override { return new WireDodecahedron( *this ); }
+
+protected:
+    void		calculate() const;
+
+    static std::vector<vec3>	sPositions;
 };
 
 class WireIcosahedron : public WireSource {
