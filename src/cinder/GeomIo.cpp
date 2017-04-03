@@ -1738,7 +1738,7 @@ void Circle::loadInto( Target *target, const AttribSet &/*requestedAttribs*/ ) c
 	normals.emplace_back( 0, 0, 1 );
 
 	// iterate the segments
-	const float tDelta = 1 / (float)mNumSubdivisions * 2.0f * 3.14159f;
+	const float tDelta = 1 / (float)mNumSubdivisions * float( M_PI * 2 );
 	float t = 0;
 	for( int s = 0; s <= mNumSubdivisions; s++ ) {
 		vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
@@ -1827,7 +1827,7 @@ void Ring::loadInto( Target *target, const AttribSet &/*requestedAttribs*/ ) con
 	float outerRadius = mRadius + 0.5f * mWidth;
 
 	// iterate the segments
-	const float tDelta = 1 / (float) mNumSubdivisions * 2.0f * 3.14159f;
+	const float tDelta = 1 / (float) mNumSubdivisions * float( M_PI * 2 );
 	float t = 0;
 	for( int s = 0; s <= mNumSubdivisions; s++ ) {
 		vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
