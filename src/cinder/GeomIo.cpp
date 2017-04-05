@@ -2736,7 +2736,7 @@ void Transform::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 	else if( ctx->getAttribDims( POSITION ) != 0 )
 		CI_LOG_W( "Unsupported dimension for geom::POSITION passed to geom::Transform" );
 	
-	// we'll make the sort of modification to our normals (if they're present)
+	// we'll make the same sort of modification to our normals (if they're present)
 	// using the inverse transpose of 'mTransform'
 	if( ctx->getAttribDims( NORMAL ) == 3 ) {
 		vec3* normals = reinterpret_cast<vec3*>( ctx->getAttribData( NORMAL ) );
@@ -2747,7 +2747,7 @@ void Transform::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 	else if( ctx->getAttribDims( NORMAL ) != 0 )
 		CI_LOG_W( "Unsupported dimension for geom::NORMAL passed to geom::Transform" );
 
-	// and finally, we'll make the sort of modification to our tangents (if they're present)
+	// we'll also make the same sort of modification to our tangents (if they're present)
 	// using the inverse transpose of 'mTransform'
 	if( ctx->getAttribDims( TANGENT ) == 3 ) {
 		vec3* tangents = reinterpret_cast<vec3*>( ctx->getAttribData( TANGENT ) );
@@ -2757,6 +2757,17 @@ void Transform::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 	}
 	else if( ctx->getAttribDims( TANGENT ) != 0 )
 		CI_LOG_W( "Unsupported dimension for geom::TANGENT passed to geom::Transform" );
+
+	// and finally, we'll make the same sort of modification to our bitangents (if they're present)
+	// using the inverse transpose of 'mTransform'
+	if( ctx->getAttribDims( BITANGENT ) == 3 ) {
+		vec3* bitangents = reinterpret_cast<vec3*>( ctx->getAttribData( BITANGENT ) );
+		mat3 bitangentsTransform = glm::transpose( inverse( mat3( mTransform ) ) );
+		for( size_t v = 0; v < numVertices; ++v )
+			bitangents[v] = normalize( bitangentsTransform * bitangents[v] );
+	}
+	else if( ctx->getAttribDims( BITANGENT ) != 0 )
+		CI_LOG_W( "Unsupported dimension for geom::BITANGENT passed to geom::Transform" );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
