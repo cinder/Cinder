@@ -30,7 +30,7 @@ namespace cinder { namespace app {
 typedef std::shared_ptr<class Window>		WindowRef;
 
 //! Base class for all Events
-class Event {
+class CI_API Event {
   public:
 	//! Returns whether this event has been marked as handled by one of its slots, terminating the normal iteration of the event's slots
 	bool		isHandled() const { return mHandled; }
@@ -54,7 +54,7 @@ class Event {
 
 //! A Collector for use with signals::Signal, which will keep the callback chain running until Event::isHandled() returns \a true.
 template<typename EventT>
-struct CollectorEvent {
+struct CI_API CollectorEvent {
 	typedef void	CollectorResult;
 
 	//! Default constructor, sets the internal EventT pointer to null.

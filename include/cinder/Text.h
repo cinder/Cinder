@@ -41,7 +41,7 @@ struct __CTLine;
 
 namespace cinder {
 
-class TextLayout {
+class CI_API TextLayout {
  public:
 	/*! \brief This is an abstract line
 	 
@@ -88,7 +88,7 @@ class TextLayout {
 	std::deque<std::shared_ptr<class Line> >		mLines;
 };
 
-class TextBox {
+class CI_API TextBox {
   public:
 	typedef enum Alignment { LEFT, CENTER, RIGHT } Alignment;
 	enum { GROW = 0 };

@@ -124,12 +124,12 @@ glm::tmat4x4<T,glm::defaultp> lastFrame(
 }
 
 // Explicitly declare the functions
-template mat4 firstFrame( const vec3 &firstPoint, const vec3 &secondPoint, const vec3 &thirdPoint );
-template mat4 nextFrame( const mat4 &prevMatrix, const vec3 &prevPoint, const vec3 &curPoint, vec3 prevTangent, vec3 curTangent );
-template mat4 lastFrame( const mat4 &prevMatrix, const vec3 &prevPoint, const vec3 &lastPoint );
-template dmat4 firstFrame( const dvec3 &firstPoint, const dvec3 &secondPoint, const dvec3 &thirdPoint );
-template dmat4 nextFrame( const dmat4 &prevMatrix, const dvec3 &prevPoint, const dvec3 &curPoint, dvec3 prevTangent, dvec3 curTangent );
-template dmat4 lastFrame( const dmat4 &prevMatrix, const dvec3 &prevPoint, const dvec3 &lastPoint );
+template CI_API mat4 firstFrame( const vec3 &firstPoint, const vec3 &secondPoint, const vec3 &thirdPoint );
+template CI_API mat4 nextFrame( const mat4 &prevMatrix, const vec3 &prevPoint, const vec3 &curPoint, vec3 prevTangent, vec3 curTangent );
+template CI_API mat4 lastFrame( const mat4 &prevMatrix, const vec3 &prevPoint, const vec3 &lastPoint );
+template CI_API dmat4 firstFrame( const dvec3 &firstPoint, const dvec3 &secondPoint, const dvec3 &thirdPoint );
+template CI_API dmat4 nextFrame( const dmat4 &prevMatrix, const dvec3 &prevPoint, const dvec3 &curPoint, dvec3 prevTangent, dvec3 curTangent );
+template CI_API dmat4 lastFrame( const dmat4 &prevMatrix, const dvec3 &prevPoint, const dvec3 &lastPoint );
 
 glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir )
 {

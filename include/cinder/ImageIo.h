@@ -42,7 +42,7 @@ typedef std::shared_ptr<class ImageLoader>		ImageLoaderRef;
 typedef std::shared_ptr<class ImageTarget>		ImageTargetRef;
 typedef std::shared_ptr<class ImageTargetFile>	ImageTargetFileRef;
 
-class ImageIo {
+class CI_API ImageIo {
   public:
 	typedef enum ColorModel { CM_RGB, CM_GRAY, CM_UNKNOWN } ColorModel;
 	typedef enum DataType { UINT8, UINT16, FLOAT32, FLOAT16, DATA_UNKNOWN } DataType;
@@ -83,7 +83,7 @@ class ImageIo {
 	ChannelOrder				mChannelOrder;
 };
 
-class ImageSource : public ImageIo {
+class CI_API ImageSource : public ImageIo {
   public:
 	ImageSource() : ImageIo(), mIsPremultiplied( false ), mPixelAspectRatio( 1 ), mCustomPixelInc( 0 ), mFrameCount( 1 ) {}
 	virtual ~ImageSource() {}  
@@ -154,7 +154,7 @@ class ImageSource : public ImageIo {
 	int8_t						mRowFuncSourceInc, mRowFuncTargetInc;
 };
 
-class ImageTarget : public ImageIo {
+class CI_API ImageTarget : public ImageIo {
   public:
 	virtual ~ImageTarget() {};
 
@@ -193,54 +193,54 @@ void loadImageAsync(const fs::path path, std::function<void (ImageSourceRef)> ca
 
 
 //! Loads an image from the file path \a path. Optional \a extension parameter allows specification of a file type. For example, "jpg" would force the file to load as a JPEG
-ImageSourceRef	loadImage( const fs::path &path, ImageSource::Options options = ImageSource::Options(), std::string extension = "" );
+CI_API ImageSourceRef	loadImage( const fs::path &path, ImageSource::Options options = ImageSource::Options(), std::string extension = "" );
 //! Loads an image from \a dataSource. Optional \a extension parameter allows specification of a file type. For example, "jpg" would force the file to load as a JPEG
-ImageSourceRef	loadImage( DataSourceRef dataSource, ImageSource::Options options = ImageSource::Options(), std::string extension = "" );
+CI_API ImageSourceRef	loadImage( DataSourceRef dataSource, ImageSource::Options options = ImageSource::Options(), std::string extension = "" );
 /** \brief Writes \a imageSource to \a dataTarget. Optional \a extension parameter allows specification of a file type. For example, "jpg" would force the file to load as a JPEG **/
-void			writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, ImageTarget::Options options = ImageTarget::Options(), std::string extension = "" );
+CI_API void				writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, ImageTarget::Options options = ImageTarget::Options(), std::string extension = "" );
 /** Writes \a imageSource to file path \a path. Optional \a extension parameter allows specification of a file type. For example, "jpg" would force the file to load as a JPEG
  * \note If \a path does not exist, the necessary directories are created automatically. **/
-void			writeImage( const fs::path &path, const ImageSourceRef &imageSource, ImageTarget::Options options = ImageTarget::Options(), std::string extension = "" );
+CI_API void				writeImage( const fs::path &path, const ImageSourceRef &imageSource, ImageTarget::Options options = ImageTarget::Options(), std::string extension = "" );
 /** \brief Writes \a imageSource to \a imageTarget. **/
-void			writeImage( ImageTargetRef imageTarget, const ImageSourceRef &imageSource );
+CI_API void				writeImage( ImageTargetRef imageTarget, const ImageSourceRef &imageSource );
 
-class ImageIoException : public Exception {
+class CI_API ImageIoException : public Exception {
   public:
 	ImageIoException( const std::string &description = "" ) : Exception( description ) {}
 };
 
-class ImageIoExceptionFailedLoad : public ImageIoException {
+class CI_API ImageIoExceptionFailedLoad : public ImageIoException {
   public:
 	ImageIoExceptionFailedLoad( const std::string &description = "" ) : ImageIoException( description ) {}
 };
 
-class ImageIoExceptionFailedWrite : public ImageIoException {
+class CI_API ImageIoExceptionFailedWrite : public ImageIoException {
   public:
 	ImageIoExceptionFailedWrite( const std::string &description = "" ) : ImageIoException( description ) {}
 };
 
-class ImageIoExceptionUnknownExtension : public ImageIoException {
+class CI_API ImageIoExceptionUnknownExtension : public ImageIoException {
   public:
 	ImageIoExceptionUnknownExtension( const std::string &description = "" ) : ImageIoException( description ) {}
 };
 
-class ImageIoExceptionIllegalColorModel : public ImageIoException {
+class CI_API ImageIoExceptionIllegalColorModel : public ImageIoException {
   public:
 	ImageIoExceptionIllegalColorModel( const std::string &description = "" ) : ImageIoException( description ) {}
 };
 
-class ImageIoExceptionIllegalDataType : public ImageIoException {
+class CI_API ImageIoExceptionIllegalDataType : public ImageIoException {
   public:
 	ImageIoExceptionIllegalDataType( const std::string &description = "" ) : ImageIoException( description ) {}
 };
 
-class ImageIoExceptionIllegalChannelOrder : public ImageIoException {
+class CI_API ImageIoExceptionIllegalChannelOrder : public ImageIoException {
   public:
 	ImageIoExceptionIllegalChannelOrder( const std::string &description = "" ) : ImageIoException( description ) {}
 };
 
 
-struct ImageIoRegistrar {
+struct CI_API ImageIoRegistrar {
 	typedef ImageSourceRef (*SourceCreationFunc)( DataSourceRef, ImageSource::Options options );
 	typedef ImageTargetRef (*TargetCreationFunc)( DataTargetRef, ImageSourceRef, ImageTarget::Options options, const std::string& );
 
@@ -254,7 +254,7 @@ struct ImageIoRegistrar {
 	
   private:
 	
-	struct Inst {
+	struct CI_API Inst {
 		void	registerSourceType( std::string extension, SourceCreationFunc func, int32_t priority );
 		void	registerSourceGeneric( SourceCreationFunc func, int32_t priority );
 		void	registerTargetType( std::string extension, TargetCreationFunc func, int32_t priority, const std::string &extensionData );		

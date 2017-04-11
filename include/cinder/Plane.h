@@ -34,7 +34,7 @@ namespace cinder {
 
 //! Represents a Plane, as a geometric primitive, useful in conducting tests in 3D space.
 template<typename T>
-class PlaneT {
+class CI_API PlaneT {
   public:
 	typedef glm::tvec3<T, glm::defaultp> Vec3T;
 
@@ -79,7 +79,7 @@ std::ostream& operator<<( std::ostream &o, const PlaneT<T> &p )
 }
 
 //! Exception type thrown when bad values are encountered.
-class PlaneExc : public Exception {
+class CI_API PlaneExc : public Exception {
   public:
 	PlaneExc()
 		: Exception( "Invalid parameters specified" )

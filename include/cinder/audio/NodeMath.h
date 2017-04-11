@@ -37,7 +37,7 @@ typedef std::shared_ptr<class MultiplyNode>		MultiplyNodeRef;
 typedef std::shared_ptr<class DivideNode>		DivideNodeRef;
 
 //! Base class for an arithmetic based Node.
-class MathNode : public Node {
+class CI_API MathNode : public Node {
   public:
 	//! Sets the current value to a constant \a value.
 	void setValue( float value )	{ mParam.setValue( value ); }
@@ -54,7 +54,7 @@ class MathNode : public Node {
 };
 
 //! Node for performing an addition operation on its input.
-class AddNode : public MathNode {
+class CI_API AddNode : public MathNode {
   public:
 	AddNode( const Format &format = Format() ) : MathNode( 0, format )	{}
 	AddNode( float initialValue, const Format &format = Format() )	: MathNode( initialValue, format )	{}
@@ -63,8 +63,8 @@ protected:
 	void process( Buffer *buffer ) override;
 };
 
-//! Node for performing a subtration operation on its input.
-class SubtractNode : public MathNode {
+//! Node for performing a subtraction operation on its input.
+class CI_API SubtractNode : public MathNode {
   public:
 	SubtractNode( const Format &format = Format() ) : MathNode( 0, format )	{}
 	SubtractNode( float initialValue, const Format &format = Format() )	: MathNode( initialValue, format )	{}
@@ -73,8 +73,8 @@ class SubtractNode : public MathNode {
 	void process( Buffer *buffer ) override;
 };
 
-//! Node for performing a mulitplication operation on its input.
-class MultiplyNode : public MathNode {
+//! Node for performing a multiplication operation on its input.
+class CI_API MultiplyNode : public MathNode {
   public:
 	MultiplyNode( const Format &format = Format() ) : MathNode( 0, format )	{}
 	MultiplyNode( float initialValue, const Format &format = Format() )	: MathNode( initialValue, format )	{}
@@ -84,7 +84,7 @@ class MultiplyNode : public MathNode {
 };
 
 //! Node for performing a division operation on its input.
-class DivideNode : public MathNode {
+class CI_API DivideNode : public MathNode {
   public:
 	DivideNode( const Format &format = Format() ) : MathNode( 0, format )	{}
 	DivideNode( float initialValue, const Format &format = Format() )	: MathNode( initialValue, format )	{}

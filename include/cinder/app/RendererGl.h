@@ -60,9 +60,9 @@ typedef std::shared_ptr<Context>		ContextRef;
 namespace cinder { namespace app {
 
 typedef std::shared_ptr<class RendererGl>	RendererGlRef;
-class RendererGl : public Renderer {
+class CI_API RendererGl : public Renderer {
   public:
-	struct Options {
+	struct CI_API Options {
 	  public:
 		Options() {
 #if defined( CINDER_COCOA_TOUCH )

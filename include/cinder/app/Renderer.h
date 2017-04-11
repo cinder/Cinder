@@ -73,7 +73,7 @@ typedef std::shared_ptr<Window>		WindowRef;
 class AppBase;
 
 typedef std::shared_ptr<class Renderer>		RendererRef;
-class Renderer {
+class CI_API Renderer {
  public:
 	virtual ~Renderer() {}
 	
@@ -160,7 +160,7 @@ class Renderer2d : public Renderer {
 
 #elif defined( CINDER_MSW_DESKTOP )
 
-class Renderer2d : public Renderer {
+class CI_API Renderer2d : public Renderer {
  public:
 	 Renderer2d( bool doubleBuffer = true, bool paintEvents = true );
  
@@ -205,7 +205,7 @@ class Renderer2d : public Renderer {
 
 #endif
 
-class ExcRenderer : public Exception {
+class CI_API ExcRenderer : public Exception {
   public:
 	ExcRenderer() {}
 	ExcRenderer( const std::string &description )
@@ -213,7 +213,7 @@ class ExcRenderer : public Exception {
 	{}
 };
 
-class ExcRendererAllocation : public ExcRenderer {
+class CI_API ExcRendererAllocation : public ExcRenderer {
   public:
 	ExcRendererAllocation() {}
 	ExcRendererAllocation( const std::string &description )

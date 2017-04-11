@@ -25,45 +25,45 @@
 namespace cinder { namespace ip {
 
 //! Blur \a surface in-place using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-void		stackBlur( Surface8u *surface, int radius );
+CI_API void			stackBlur( Surface8u *surface, int radius );
 //! Blur \a surface in-place in \a area using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-void		stackBlur( Surface8u *surface, const Area &area, int radius );
+CI_API void			stackBlur( Surface8u *surface, const Area &area, int radius );
 //! Create a blurred copy of \a surface using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-Surface8u	stackBlurCopy( const Surface8u &surface, int radius );
+CI_API Surface8u	stackBlurCopy( const Surface8u &surface, int radius );
 
 //! Blur \a channel in-place using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-void		stackBlur( Channel8u *channel, int radius );
+CI_API void			stackBlur( Channel8u *channel, int radius );
 //! Blur \a channel in-place in \a area using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-void		stackBlur( Channel8u *channel, const Area &area, int radius );
+CI_API void			stackBlur( Channel8u *channel, const Area &area, int radius );
 //! Create a blurred copy of \a channel using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-Channel8u	stackBlurCopy( const Channel8u &channel, int radius );
+CI_API Channel8u	stackBlurCopy( const Channel8u &channel, int radius );
 
 //! Blur \a surface in-place using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-void		stackBlur( Surface16u *surface, int radius );
+CI_API void			stackBlur( Surface16u *surface, int radius );
 //! Blur \a surface in-place in \a area using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-void		stackBlur( Surface16u *surface, const Area &area, int radius );
+CI_API void			stackBlur( Surface16u *surface, const Area &area, int radius );
 //! Create a blurred copy of \a surface using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-Surface16u	stackBlurCopy( const Surface16u &surface, int radius );
+CI_API Surface16u	stackBlurCopy( const Surface16u &surface, int radius );
 
 //! Blur \a channel in-place using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-void		stackBlur( Channel16u *channel, int radius );
+CI_API void			stackBlur( Channel16u *channel, int radius );
 //! Blur \a channel in-place in \a area using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-void		stackBlur( Channel16u *channel, const Area &area, int radius );
+CI_API void			stackBlur( Channel16u *channel, const Area &area, int radius );
 //! Create a blurred copy of \a channel using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-Channel16u	stackBlurCopy( const Channel16u &channel, int radius );
+CI_API Channel16u	stackBlurCopy( const Channel16u &channel, int radius );
 
 //! Blur \a surface in-place using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-void		stackBlur( Surface32f *surface, int radius );
+CI_API void			stackBlur( Surface32f *surface, int radius );
 //! Blur \a surface in-place in \a area using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-void		stackBlur( Surface32f *surface, const Area &area, int radius );
+CI_API void			stackBlur( Surface32f *surface, const Area &area, int radius );
 //! Create a blurred copy of \a surface using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-Surface32f	stackBlurCopy( const Surface32f &surface, int radius );
+CI_API Surface32f	stackBlurCopy( const Surface32f &surface, int radius );
 
 //! Blur \a channel in-place using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-void		stackBlur( Channel32f *channel, int radius );
+CI_API void			stackBlur( Channel32f *channel, int radius );
 //! Blur \a channel in-place in \a area using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-void		stackBlur( Channel32f *channel, const Area &area, int radius );
+CI_API void			stackBlur( Channel32f *channel, const Area &area, int radius );
 //! Create a blurred copy of \a channel using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
-Channel32f	stackBlurCopy( const Channel32f &channel, int radius );
+CI_API Channel32f	stackBlurCopy( const Channel32f &channel, int radius );
 
 } } // namespace cinder::ip

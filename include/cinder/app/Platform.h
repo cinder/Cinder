@@ -39,7 +39,7 @@ namespace cinder {
 
 namespace cinder { namespace app {
 
-class Platform {
+class CI_API Platform {
   public:
 	virtual ~Platform()	{}
 
@@ -150,7 +150,7 @@ class Platform {
 
 
 //! Exception for failed resource loading
-class ResourceLoadExc : public Exception {
+class CI_API ResourceLoadExc : public Exception {
   public:
 
 	ResourceLoadExc( const fs::path &resourcePath );
@@ -159,7 +159,7 @@ class ResourceLoadExc : public Exception {
 };
 
 //! Exception for failed asset loading
-class AssetLoadExc : public Exception {
+class CI_API AssetLoadExc : public Exception {
 public:
 	AssetLoadExc( const fs::path &relativePath );
 };

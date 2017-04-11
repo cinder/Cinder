@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeomSourceMods", "GeomSourceMods.vcxproj", "{8475FB66-5D6B-4001-AACA-D7172083CCAF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8475FB66-5D6B-4001-AACA-D7172083CCAF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8475FB66-5D6B-4001-AACA-D7172083CCAF}.Debug|Win32.Build.0 = Debug|Win32
+		{8475FB66-5D6B-4001-AACA-D7172083CCAF}.Release|Win32.ActiveCfg = Release|Win32
+		{8475FB66-5D6B-4001-AACA-D7172083CCAF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -36,7 +36,7 @@ namespace cinder { namespace gl {
 class Context;
 typedef std::shared_ptr<class Vao> VaoRef;
 
-class Vao : public std::enable_shared_from_this<Vao> {
+class CI_API Vao : public std::enable_shared_from_this<Vao> {
   public:
 	struct Layout;
 	
@@ -154,13 +154,13 @@ class Vao : public std::enable_shared_from_this<Vao> {
 	std::string						mLabel;
 
 	friend Context;
-	friend std::ostream& operator<<( std::ostream &lhs, const VaoRef &rhs );
-	friend std::ostream& operator<<( std::ostream &lhs, const Vao &rhs );
+	friend CI_API std::ostream& operator<<( std::ostream &lhs, const VaoRef &rhs );
+	friend CI_API std::ostream& operator<<( std::ostream &lhs, const Vao &rhs );
 };
 
 // Convenience method for dumping VAO contents to a std::ostream
-std::ostream& operator<<( std::ostream &lhs, const Vao &rhs );
+CI_API std::ostream& operator<<( std::ostream &lhs, const Vao &rhs );
 // Convenience method for dumping Vao::Layout contents to a std::ostream
-std::ostream& operator<<( std::ostream &lhs, const Vao::Layout &rhs );
+CI_API std::ostream& operator<<( std::ostream &lhs, const Vao::Layout &rhs );
 	
 } }

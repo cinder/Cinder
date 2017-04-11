@@ -28,17 +28,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMMATRIX3X4FVPROC)(GLint location, GLs
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMMATRIX4X2FVPROC)(GLint location, GLsizei count, GLboolean transpose, const GLfloat * value);
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMMATRIX4X3FVPROC)(GLint location, GLsizei count, GLboolean transpose, const GLfloat * value);
 
-extern PFNGLUNIFORMMATRIX2X3FVPROC _funcptr_glUniformMatrix2x3fv;
+CI_API extern PFNGLUNIFORMMATRIX2X3FVPROC _funcptr_glUniformMatrix2x3fv;
 #define glUniformMatrix2x3fv _funcptr_glUniformMatrix2x3fv
-extern PFNGLUNIFORMMATRIX2X4FVPROC _funcptr_glUniformMatrix2x4fv;
+CI_API extern PFNGLUNIFORMMATRIX2X4FVPROC _funcptr_glUniformMatrix2x4fv;
 #define glUniformMatrix2x4fv _funcptr_glUniformMatrix2x4fv
-extern PFNGLUNIFORMMATRIX3X2FVPROC _funcptr_glUniformMatrix3x2fv;
+CI_API extern PFNGLUNIFORMMATRIX3X2FVPROC _funcptr_glUniformMatrix3x2fv;
 #define glUniformMatrix3x2fv _funcptr_glUniformMatrix3x2fv
-extern PFNGLUNIFORMMATRIX3X4FVPROC _funcptr_glUniformMatrix3x4fv;
+CI_API extern PFNGLUNIFORMMATRIX3X4FVPROC _funcptr_glUniformMatrix3x4fv;
 #define glUniformMatrix3x4fv _funcptr_glUniformMatrix3x4fv
-extern PFNGLUNIFORMMATRIX4X2FVPROC _funcptr_glUniformMatrix4x2fv;
+CI_API extern PFNGLUNIFORMMATRIX4X2FVPROC _funcptr_glUniformMatrix4x2fv;
 #define glUniformMatrix4x2fv _funcptr_glUniformMatrix4x2fv
-extern PFNGLUNIFORMMATRIX4X3FVPROC _funcptr_glUniformMatrix4x3fv;
+CI_API extern PFNGLUNIFORMMATRIX4X3FVPROC _funcptr_glUniformMatrix4x3fv;
 #define glUniformMatrix4x3fv _funcptr_glUniformMatrix4x3fv
 
 #ifdef __cplusplus

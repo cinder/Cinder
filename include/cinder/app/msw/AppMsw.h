@@ -30,10 +30,10 @@ namespace cinder { namespace app {
 
 class AppImplMswBasic;
 
-class AppMsw : public AppBase {
+class CI_API AppMsw : public AppBase {
   public:
 	//! MSW-specific settings
-	class Settings : public AppBase::Settings {
+	class CI_API Settings : public AppBase::Settings {
 	  public:
 		Settings() : mMswConsoleEnabled( false )				{}
 

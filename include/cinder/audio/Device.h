@@ -35,7 +35,7 @@ namespace cinder { namespace audio {
 typedef std::shared_ptr<class Device> DeviceRef;
 
 //! Object representing a hardware audio device. There is only ever one device per hardware device reported by the system, for both input and output.
-class Device : public std::enable_shared_from_this<Device>, Noncopyable {
+class CI_API Device : public std::enable_shared_from_this<Device>, Noncopyable {
   public:
 	virtual ~Device() {}
 
@@ -106,7 +106,7 @@ class Device : public std::enable_shared_from_this<Device>, Noncopyable {
 };
 
 //! Platform-specific Singleton for managing hardware devices. Applications normally should not need to use this, but instead should use the equivalent methods from \a Device.
-class DeviceManager : private Noncopyable {
+class CI_API DeviceManager : private Noncopyable {
   public:
 	virtual ~DeviceManager() {}
 

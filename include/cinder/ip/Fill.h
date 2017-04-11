@@ -30,17 +30,17 @@
 namespace cinder { namespace ip {
 
 template<typename T, typename Y>
-void fill( SurfaceT<T> *surface, const ColorT<Y> &color );
+CI_API void fill( SurfaceT<T> *surface, const ColorT<Y> &color );
 template<typename T, typename Y>
-void fill( SurfaceT<T> *surface, const ColorT<Y> &color, const Area &area );
+CI_API void fill( SurfaceT<T> *surface, const ColorT<Y> &color, const Area &area );
 template<typename T, typename Y>
-void fill( SurfaceT<T> *surface, const ColorAT<Y> &color );
+CI_API void fill( SurfaceT<T> *surface, const ColorAT<Y> &color );
 template<typename T, typename Y>
-void fill( SurfaceT<T> *surface, const ColorAT<Y> &color, const Area &area );
+CI_API void fill( SurfaceT<T> *surface, const ColorAT<Y> &color, const Area &area );
 
 template<typename T>
-void fill( ChannelT<T> *channel, T value, const Area &area );
+CI_API void fill( ChannelT<T> *channel, T value, const Area &area );
 template<typename T>
-void fill( ChannelT<T> *channel, T value );
+CI_API void fill( ChannelT<T> *channel, T value );
 
 } } // namespace cinder::ip

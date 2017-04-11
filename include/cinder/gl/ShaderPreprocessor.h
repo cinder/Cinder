@@ -25,11 +25,18 @@
 
 #include "cinder/Exception.h"
 #include "cinder/Filesystem.h"
+#include "cinder/Signals.h"
 
 #include <set>
 #include <vector>
 
 namespace cinder { namespace gl {
+
+typedef std::shared_ptr<class ShaderPreprocessor>	ShaderPreprocessorRef;
+
+//! The Signal type used for for ShaderPreprocessor::getSignalInclude().
+//! The Connection interprets a path and, if it can handle the file then sets the contents of the string and returns true. Returns false if it cannot handle the specified path.
+typedef signals::Signal<bool ( const fs::path &,std::string * )>	SignalIncludeHandler;
 
 //! \brief Class for parsing and processing GLSL preprocessor directives.
 //!
@@ -42,7 +49,7 @@ namespace cinder { namespace gl {
 //!
 //! Adding #define statements are also supported, and you can set the #version via `setVersion( int )`. If
 //! you are on OpenGL ES, then `" es"` will be appended to the version string.
-class ShaderPreprocessor {
+class CI_API ShaderPreprocessor {
   public:
 	ShaderPreprocessor();
 	//! \brief Parses and processes the shader source at \a sourcePath. If \a includedFiles is provided, this will be filled with paths to any files detected as `#include`ed. \return a preprocessed source string.
@@ -57,26 +64,50 @@ class ShaderPreprocessor {
 
 	//! Adds a define directive
 	void	addDefine( const std::string &define );
-	//! Adds a define directive
+	//! Adds a define directive in the form of `define=value`
 	void	addDefine( const std::string &define, const std::string &value );
-	//! Specifies a series of define directives to add to the shader sources
-	void	setDefineDirectives( const std::vector<std::string> &defines );
-	//! Specifies the #version directive to add to the shader sources
+	//! Specifies all define directives to add to the shader sources, overwriting any existing defines.
+	void	setDefines( const std::vector<std::pair<std::string, std::string>> &defines );
+	//! Returns all of the define directives to add to the shader sources.
+	const std::vector<std::pair<std::string,std::string>>&	getDefines() const	{ return mDefineDirectives; }
+	//! Returns all of the define directives to add to the shader sources, modifiable version.
+	std::vector<std::pair<std::string, std::string>>&		getDefines()		{ return mDefineDirectives; }
+	//! Removes a define directive
+	void	removeDefine( const std::string &define );
+	//! Clears all define directives
+	void	clearDefines();
+
+	//! Specifies the #version directive to add to the shader sources (if it doesn't explicitly contain a `#version` directive).
 	void	setVersion( int version )	{ mVersion = version; }
+	//! Returns the version used for #version directives that was added with setVersion().
+	int		getVersion() const			{ return mVersion; }
 
+	//! If set to true, the name of the currently processed file will be used in `#line` directives. Not to glsl spec, but works on some graphics cards like NVidia.
+	void	setUseFilenameInLineDirectiveEnabled( bool enable )	{ mUseFilenameInLineDirective = enable; }
+	//! If true, the name of the currently processed file will be used in `#line` directives. Not to glsl spec, but works on some graphics cards like NVidia.
+	bool	isUseFilenameInLineDirectiveEnabled() const		{ return mUseFilenameInLineDirective; }
+
+	//! Returns a Signal that the user can connect to in order to handle custom includes.
+	SignalIncludeHandler& getSignalInclude()	{ return mSignalInclude; }
+	
   private:
-	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory, std::set<fs::path> &includeTree );
-	std::string		parseRecursive( const fs::path &path, const fs::path &currentDirectory, std::set<fs::path> &includeTree );
-	std::string		parseDirectives( const std::string &source );
+	void			parseDirectives( const std::string &source, const fs::path &sourcePath, std::string *directives, std::string *sourceBody, int *versionNumber, int *lineNumberStart );
+	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory, int lineNumberStart, int versionNumber, std::set<fs::path> &includeTree );
+	std::string		parseRecursive( const fs::path &path, const fs::path &currentDirectory, int versionNumber, std::set<fs::path> &includeTree );
+	std::string		readStream( std::istream &stream, const fs::path &sourcePath, int lineNumberStart, int versionNumber, std::set<fs::path> &includeTree );
+	std::string		getLineDirective( const fs::path &sourcePath, int lineNumber, int sourceStringNumber, int versionNumber ) const;
 	fs::path		findFullPath( const fs::path &includePath, const fs::path &currentPath );
-
+	
 	int								mVersion;
-	std::vector<std::string>		mDefineDirectives;
+	std::vector<std::pair<std::string,std::string>>		mDefineDirectives; // [macro, value]
 	std::vector<fs::path>			mSearchDirectories;
+	SignalIncludeHandler			mSignalInclude;
+
+	bool mUseFilenameInLineDirective;
 };
 
 //! Exception thrown when there is an error preprocessing the shader source in `ShaderPreprocessor`.
-class ShaderPreprocessorExc : public Exception {
+class CI_API ShaderPreprocessorExc : public Exception {
   public:
 	ShaderPreprocessorExc( const std::string &description ) : Exception( description )	{}
 };

@@ -28,10 +28,10 @@
 namespace cinder { namespace ip {
 
 /** Normalizes \a surface by scaling the maximum and minimum values to lie in the range \c [0,1] **/
-void hdrNormalize( Surface32f *surface );
+CI_API void hdrNormalize( Surface32f *surface );
 /** Normalizes \a channel by scaling the maximum and minimum values to lie in the range \c [0,1] **/
-void hdrNormalize( Channel32f *channel );
+CI_API void hdrNormalize( Channel32f *channel );
 /** Determines the minimum and maximum values of \a channel **/
-void getMinMax( const Channel32f &channel, float *resultMin, float *resultMax );
+CI_API void getMinMax( const Channel32f &channel, float *resultMin, float *resultMax );
 
 } } // namespace cinder::ip

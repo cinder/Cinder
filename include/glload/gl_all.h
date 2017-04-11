@@ -5,6 +5,8 @@
 #ifndef OPENGL_GEN_ALL_H
 #define OPENGL_GEN_ALL_H
 
+#include "cinder/Export.h"
+
 #include "_int_gl_type.h"
 #include "_int_gl_exts.h"
 
