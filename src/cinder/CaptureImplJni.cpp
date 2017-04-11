@@ -60,7 +60,7 @@ class SurfaceCache {
 	}
 
  private:
-	std::vector<std::shared_ptr<uint8_t>>	mSurfaceData;
+	std::vector<std::shared_ptr<uint8_t> >	mSurfaceData;
 	std::vector<bool>						mSurfaceUsed;
 	int32_t									mWidth, mHeight;
 	SurfaceChannelOrder						mSCO;

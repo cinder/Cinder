@@ -159,7 +159,7 @@ void resample( const vector<const ChannelT<T>*> &srcChannels, const FilterBase &
 	int32_t srcWidth = (int32_t)clippedSrcRect.getWidth(), srcHeight = (int32_t)clippedSrcRect.getHeight();
 	int32_t srcOffsetX = static_cast<int32_t>( floor( clippedSrcRect.getX1() ) );
 	int32_t srcOffsetY = static_cast<int32_t>( floor( clippedSrcRect.getY1() ) );
-	vector<pair<int32_t,unique_ptr<typename SCALETRAIT<T>::SUMT[]>>> linesBuffer;
+	vector<pair<int32_t,unique_ptr<typename SCALETRAIT<T>::SUMT[]> > > linesBuffer;
 
 	m.sx = dstWidth / (float)srcWidth;
 	m.sy = dstHeight / (float)srcHeight;

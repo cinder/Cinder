@@ -489,8 +489,8 @@ class Context {
 
 	std::map<ShaderDef,GlslProgRef>		mStockShaders;
 	
-	std::map<GLenum,std::vector<int>>	mBufferBindingStack;
-	std::map<GLenum,std::vector<int>>	mRenderbufferBindingStack;
+	std::map<GLenum,std::vector<int> >	mBufferBindingStack;
+	std::map<GLenum,std::vector<int> >	mRenderbufferBindingStack;
 	std::vector<const GlslProg*>		mGlslProgStack;
 	std::vector<Vao*>					mVaoStack;
 	
@@ -524,9 +524,9 @@ class Context {
 	std::vector<GLboolean>		mDepthMaskStack;
 	std::vector<GLenum>			mDepthFuncStack;
 	
-	std::map<GLenum,std::vector<GLboolean>>	mBoolStateStack;
-	// map<TextureUnit,map<TextureTarget,vector<Binding ID Stack>>>
-	std::map<uint8_t,std::map<GLenum,std::vector<GLint>>>	mTextureBindingStack;
+	std::map<GLenum,std::vector<GLboolean> >	mBoolStateStack;
+	// map<TextureUnit,map<TextureTarget,vector<Binding ID Stack> > >
+	std::map<uint8_t,std::map<GLenum,std::vector<GLint> > >	mTextureBindingStack;
 	std::vector<uint8_t>					mActiveTextureStack;
 	
 	VaoRef						mDefaultVao;
@@ -543,8 +543,8 @@ class Context {
 
 	std::shared_ptr<PlatformData>	mPlatformData;
 	
-	std::vector<std::pair<ivec2,ivec2>>		mViewportStack;
-	std::vector<std::pair<ivec2,ivec2>>		mScissorStack;
+	std::vector<std::pair<ivec2,ivec2> >		mViewportStack;
+	std::vector<std::pair<ivec2,ivec2> >		mScissorStack;
 
 	VaoRef						mImmVao; // Immediate-mode VAO
 	VboRef						mImmVbo; // Immediate-mode VBO

@@ -133,14 +133,14 @@ class GlslProg {
 		//! the stride between columns of a column-major matrix or rows of a row-major matrix,
 		//! in basic machine units, of each of the active uniforms, or zero for uniforms not
 		//! declared as an array.
-		std::map<GLenum, std::vector<GLint>> getActiveUniformInfo() const { return mActiveUniformInfo; }
+		std::map<GLenum, std::vector<GLint> > getActiveUniformInfo() const { return mActiveUniformInfo; }
 		
 	  private:
 		std::string				mName;
 		GLint					mDataSize = 0, mLoc = -1;
 		mutable GLint			mBlockBinding;
 		std::vector<Uniform>	mActiveUniforms;
-		std::map<GLenum, std::vector<GLint>> mActiveUniformInfo;
+		std::map<GLenum, std::vector<GLint> > mActiveUniformInfo;
 		
 		friend class GlslProg;
 	};

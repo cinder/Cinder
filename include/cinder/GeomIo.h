@@ -778,7 +778,7 @@ class Extrude : public Source {
 	std::shared_ptr<TriMesh>		mCap;
 	Rectf							mCapBounds;
 	
-	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
+	std::vector<std::vector<vec2> >	mPathSubdivisionPositions, mPathSubdivisionTangents;
 };
 
 class ExtrudeSpline : public Source {
@@ -818,7 +818,7 @@ class ExtrudeSpline : public Source {
 	Rectf							mCapBounds;
 	std::function<float(float)>		mThicknessFn;
 	
-	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
+	std::vector<std::vector<vec2> >	mPathSubdivisionPositions, mPathSubdivisionTangents;
 	std::vector<float>				mPathSubdivisionLengths;
 };
 
@@ -1479,7 +1479,7 @@ class SourceModsContext : public Target {
 	
 	size_t										mNumVertices;
 	std::map<Attrib,AttribInfo>					mAttribInfo;
-	std::map<Attrib,std::unique_ptr<float[]>>	mAttribData;
+	std::map<Attrib,std::unique_ptr<float[]> >	mAttribData;
 	std::map<Attrib,size_t>						mAttribCount;
 	
 	std::unique_ptr<uint32_t[]>				mIndices;
@@ -1539,7 +1539,7 @@ class SourceMods : public Source {
 	SourceMods&	operator&=( const SourceMods &sourceMods ) { append( sourceMods ); return *this; }
 	SourceMods&	operator&=( const Source &source ) { append( source ); return *this; }	
 	
-	const std::vector<std::unique_ptr<Modifier>>&	getModifiers() const { return mModifiers; }
+	const std::vector<std::unique_ptr<Modifier> >&	getModifiers() const { return mModifiers; }
 	const Source*									getSource() const { return mSourcePtr; }
 	//! Not generally useful. Use getSource() instead. Maps to nullptr when the SourceMods is not responsible for ownership.
 	const std::unique_ptr<Source>&					getSourceStorage() const { return mSourceStorage; }
@@ -1559,12 +1559,12 @@ class SourceMods : public Source {
 	
 	const Source* 							mSourcePtr; // null if we have children
 	std::unique_ptr<Source>					mSourceStorage; // null if we don't have ownership
-	std::vector<std::unique_ptr<Modifier>>	mModifiers;
+	std::vector<std::unique_ptr<Modifier> >	mModifiers;
 	
 	mutable bool							mVariablesCached;
 	mutable std::vector<Modifier::Params>	mParamsStack;
 	
-	std::vector<std::unique_ptr<SourceMods>>	mChildren;
+	std::vector<std::unique_ptr<SourceMods> >	mChildren;
 	
 	friend class SourceModsContext;
 };

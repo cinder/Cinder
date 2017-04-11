@@ -94,7 +94,7 @@ namespace std
 	};
 
 	template <typename T, glm::precision P>
-	struct hash<glm::tquat<T,P>>
+	struct hash<glm::tquat<T,P> >
 	{
 		GLM_FUNC_DECL size_t operator()(glm::tquat<T, P> const & q) const;
 	};

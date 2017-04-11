@@ -609,7 +609,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	ip::fill( &result, mBackgroundColor );
 
 	float currentY = (float)mVerticalBorder;
-	for( deque<shared_ptr<Line>>::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
 		float adjCurrentY = currentY + (*lineIt)->mAscent + (*lineIt)->mLeadingOffset;
 		(*lineIt)->render( result, adjCurrentY, (float)mHorizontalBorder, (float)pixelWidth );	
 		currentY += (*lineIt)->mHeight;
@@ -1113,7 +1113,7 @@ vector<string> TextBox::calculateLineBreaks( const std::map<Font::Glyph, Font::G
 	return result;
 }
 
-vector<pair<uint32_t,vec2>> TextBox::measureGlyphs( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics ) const
+vector<pair<uint32_t,vec2> > TextBox::measureGlyphs( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics ) const
 {
 	vector<pair<uint32_t,vec2> > result;
 

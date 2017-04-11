@@ -51,7 +51,7 @@ inline Platform::String^ string(const std::string& from)
 
 inline std::string string(Platform::String^ from)
 {
-  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+  std::wstring_convert<std::codecvt_utf8<wchar_t> > converter;
   return converter.to_bytes(from->Data());
 }
 

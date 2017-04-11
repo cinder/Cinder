@@ -123,24 +123,24 @@ class SurfaceT {
 	SurfaceT( SurfaceT &&rhs );
 
 	//! Creates a SurfaceRef of size \a width X \a height, with an optional \a alpha channel. The default value for \a channelOrder selects a platform default.
-	static std::shared_ptr<SurfaceT<T>>	create( int32_t width, int32_t height, bool alpha, SurfaceChannelOrder channelOrder = SurfaceChannelOrder::UNSPECIFIED )
-	{ return std::make_shared<SurfaceT<T>>( width, height, alpha, channelOrder ); }
+	static std::shared_ptr<SurfaceT<T> >	create( int32_t width, int32_t height, bool alpha, SurfaceChannelOrder channelOrder = SurfaceChannelOrder::UNSPECIFIED )
+	{ return std::make_shared<SurfaceT<T> >( width, height, alpha, channelOrder ); }
 
 	//! Creates a SurfaceRef of size \a width X \a height, with an optional \a alpha channel. \a constraints allows specification of channel order and rowBytes constraints as a function of width.
-	static std::shared_ptr<SurfaceT<T>>	create( int32_t width, int32_t height, bool alpha, const SurfaceConstraints &constraints )
-	{ return std::make_shared<SurfaceT<T>>( width, height, alpha, constraints ); }
+	static std::shared_ptr<SurfaceT<T> >	create( int32_t width, int32_t height, bool alpha, const SurfaceConstraints &constraints )
+	{ return std::make_shared<SurfaceT<T> >( width, height, alpha, constraints ); }
 
 	//! Creates a SurfaceRef from the memory pointed to by \a data. Does not assume ownership of the memory in \a data, which consequently should not be freed while the Surface is still in use.
-	static std::shared_ptr<SurfaceT<T>>	create( T *data, int32_t width, int32_t height, ptrdiff_t rowBytes, SurfaceChannelOrder channelOrder )
-	{ return std::make_shared<SurfaceT<T>>( data, width, height, rowBytes, channelOrder ); }
+	static std::shared_ptr<SurfaceT<T> >	create( T *data, int32_t width, int32_t height, ptrdiff_t rowBytes, SurfaceChannelOrder channelOrder )
+	{ return std::make_shared<SurfaceT<T> >( data, width, height, rowBytes, channelOrder ); }
 
 	//! Creates a SurfaceRef from an \a imageSource and optional \a constraints. Default value for \a alpha chooses one based on the contents of the ImageSource.
-	static std::shared_ptr<SurfaceT<T>>	create( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate )
-	{ return std::make_shared<SurfaceT<T>>( imageSource, constraints, alpha ); }
+	static std::shared_ptr<SurfaceT<T> >	create( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate )
+	{ return std::make_shared<SurfaceT<T> >( imageSource, constraints, alpha ); }
 
 	//! Creates s SurfaceRef which is a clone of the Surface \a surface, and with its own dataStore
-	static std::shared_ptr<SurfaceT<T>>	create( const SurfaceT<T> &surface )
-	{ return std::make_shared<SurfaceT<T>>( surface ); }
+	static std::shared_ptr<SurfaceT<T> >	create( const SurfaceT<T> &surface )
+	{ return std::make_shared<SurfaceT<T> >( surface ); }
 
 #if defined( CINDER_UWP )
 	/** \brief Constructs asynchronously a Surface from an images located at \a path. The loaded Surface is returned in \a surface.

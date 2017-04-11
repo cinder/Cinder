@@ -102,7 +102,7 @@ class AppWinRt : public AppBase {
 
 	static std::function<AppWinRt*()>	sAppFactoryFn;
 
-	std::vector<std::shared_ptr<WindowImplWinRt>>	mWindows;
+	std::vector<std::shared_ptr<WindowImplWinRt> >	mWindows;
 	WindowRef										mActiveWindow;
 
 	bool	mVisible, mShouldQuit;

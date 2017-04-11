@@ -630,7 +630,7 @@ public:
 	//! Alias function representing a message callback.
 	using ListenerFn = std::function<void( const Message &message )>;
 	//! Alias container for callbacks.
-	using Listeners = std::vector<std::pair<std::string, ListenerFn>>;
+	using Listeners = std::vector<std::pair<std::string, ListenerFn> >;
 	
 	//! Binds the underlying network socket. Should be called before executing communication operations.
 	void	bind() { bindImpl(); }

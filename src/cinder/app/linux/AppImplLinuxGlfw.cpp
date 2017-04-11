@@ -34,7 +34,7 @@ namespace cinder { namespace app {
 class GlfwCallbacks {
 public:
 	
-	static std::map<GLFWwindow*, std::pair<AppImplLinux*,WindowRef>> sWindowMapping;
+	static std::map<GLFWwindow*, std::pair<AppImplLinux*,WindowRef> > sWindowMapping;
 	static bool sCapsLockDown, sNumLockDown, sScrollLockDown;
 		
 	static void registerWindowEvents( GLFWwindow *glfwWindow, AppImplLinux* cinderAppImpl, const WindowRef& cinderWindow ) {
@@ -275,7 +275,7 @@ public:
 	}
 };
 
-std::map<GLFWwindow*, std::pair<AppImplLinux*,WindowRef>> GlfwCallbacks::sWindowMapping;
+std::map<GLFWwindow*, std::pair<AppImplLinux*,WindowRef> > GlfwCallbacks::sWindowMapping;
 bool GlfwCallbacks::sCapsLockDown = false;
 bool GlfwCallbacks::sNumLockDown = false;
 bool GlfwCallbacks::sScrollLockDown = false;

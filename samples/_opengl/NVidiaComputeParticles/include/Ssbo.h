@@ -34,7 +34,7 @@ protected:
 template<class T>
 class SsboT : public Ssbo { 
 public: 
-	typedef std::shared_ptr<SsboT<T>>	Ref;
+	typedef std::shared_ptr<SsboT<T> >	Ref;
 
 	//! Creates a shader storage buffer object with storage for \a allocationSize bytes, and filled with data \a data if it is not NULL.
 	static inline Ref	create( const std::vector<T> &data, GLenum usage = GL_STATIC_DRAW )
