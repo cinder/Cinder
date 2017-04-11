@@ -42,14 +42,15 @@
 
 #if ! defined( NDEBUG ) && ! defined( CI_DISABLE_ASSERTS )
 
+	#include "cinder/Export.h"
 	#include "cinder/CurrentFunction.h"
 	#include <cassert>
 
 	// defined in CinderAssert.cpp
 	namespace cinder { namespace detail {
-		void assertionFailedBreak( char const *expr, char const *function, char const *file, long line );
-		void assertionFailedMessageBreak( char const *expr, char const *msg, char const *function, char const *file, long line );
-		void assertionFailedMessageAbort( char const *expr, char const *msg, char const *function, char const *file, long line );
+		CI_API void assertionFailedBreak( char const *expr, char const *function, char const *file, long line );
+		CI_API void assertionFailedMessageBreak( char const *expr, char const *msg, char const *function, char const *file, long line );
+		CI_API void assertionFailedMessageAbort( char const *expr, char const *msg, char const *function, char const *file, long line );
 	} } // namespace cinder::detail
 
 	#if defined( CI_ASSERT_DEBUG_BREAK )

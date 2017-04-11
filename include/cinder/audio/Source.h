@@ -37,7 +37,7 @@ namespace dsp {
 }
 
 //! Base class that is used to load and read from an audio source.
-class Source : private Noncopyable {
+class CI_API Source : private Noncopyable {
   public:
 	virtual ~Source();
 
@@ -79,7 +79,7 @@ class Source : private Noncopyable {
 };
 
 //! Loads and reads from an audio file source.
-class SourceFile : public Source {
+class CI_API SourceFile : public Source {
   public:
 	//! Creates a new SourceFile from \a dataSource, with optional output samplerate.  If \a sampleRate equals 0 the native file's samplerate is used.
 	static std::unique_ptr<SourceFile> create( const DataSourceRef &dataSource, size_t sampleRate = 0 );

@@ -35,7 +35,7 @@ namespace cinder { namespace gl {
 class Ssbo;
 typedef std::shared_ptr<Ssbo>	SsboRef;
 
-class Ssbo : public BufferObj {
+class CI_API Ssbo : public BufferObj {
 public:
 	//! Creates a shader storage buffer object with storage for \a allocationSize bytes, and filled with data \a data if it is not NULL.
 	static inline SsboRef	create( GLsizeiptr allocationSize, const void *data = nullptr, GLenum usage = GL_STATIC_DRAW )

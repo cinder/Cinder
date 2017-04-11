@@ -31,7 +31,7 @@
 
 namespace cinder {
 
-class SvgRendererGl : public svg::Renderer {
+class CI_API SvgRendererGl : public svg::Renderer {
   public:
 	SvgRendererGl() : svg::Renderer() { 
 		mFillStack.push_back( svg::Paint( Color::black() ) );

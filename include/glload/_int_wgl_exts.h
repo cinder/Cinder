@@ -67,7 +67,7 @@ extern int wglext_OML_sync_control;
 
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLSETSTEREOEMITTERSTATE3DLPROC)(HDC hDC, UINT uState);
 
-extern PFNWGLSETSTEREOEMITTERSTATE3DLPROC _funcptr_wglSetStereoEmitterState3DL;
+CI_API extern PFNWGLSETSTEREOEMITTERSTATE3DLPROC _funcptr_wglSetStereoEmitterState3DL;
 #define wglSetStereoEmitterState3DL _funcptr_wglSetStereoEmitterState3DL
 
 #define WGL_GPU_CLOCK_AMD 0x21A4
@@ -91,23 +91,23 @@ typedef UINT (CODEGEN_FUNCPTR * PFNWGLGETGPUIDSAMDPROC)(UINT maxCount, UINT * id
 typedef INT (CODEGEN_FUNCPTR * PFNWGLGETGPUINFOAMDPROC)(UINT id, int property, GLenum dataType, UINT size, void * data);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLMAKEASSOCIATEDCONTEXTCURRENTAMDPROC)(HGLRC hglrc);
 
-extern PFNWGLBLITCONTEXTFRAMEBUFFERAMDPROC _funcptr_wglBlitContextFramebufferAMD;
+CI_API extern PFNWGLBLITCONTEXTFRAMEBUFFERAMDPROC _funcptr_wglBlitContextFramebufferAMD;
 #define wglBlitContextFramebufferAMD _funcptr_wglBlitContextFramebufferAMD
-extern PFNWGLCREATEASSOCIATEDCONTEXTAMDPROC _funcptr_wglCreateAssociatedContextAMD;
+CI_API extern PFNWGLCREATEASSOCIATEDCONTEXTAMDPROC _funcptr_wglCreateAssociatedContextAMD;
 #define wglCreateAssociatedContextAMD _funcptr_wglCreateAssociatedContextAMD
-extern PFNWGLCREATEASSOCIATEDCONTEXTATTRIBSAMDPROC _funcptr_wglCreateAssociatedContextAttribsAMD;
+CI_API extern PFNWGLCREATEASSOCIATEDCONTEXTATTRIBSAMDPROC _funcptr_wglCreateAssociatedContextAttribsAMD;
 #define wglCreateAssociatedContextAttribsAMD _funcptr_wglCreateAssociatedContextAttribsAMD
-extern PFNWGLDELETEASSOCIATEDCONTEXTAMDPROC _funcptr_wglDeleteAssociatedContextAMD;
+CI_API extern PFNWGLDELETEASSOCIATEDCONTEXTAMDPROC _funcptr_wglDeleteAssociatedContextAMD;
 #define wglDeleteAssociatedContextAMD _funcptr_wglDeleteAssociatedContextAMD
-extern PFNWGLGETCONTEXTGPUIDAMDPROC _funcptr_wglGetContextGPUIDAMD;
+CI_API extern PFNWGLGETCONTEXTGPUIDAMDPROC _funcptr_wglGetContextGPUIDAMD;
 #define wglGetContextGPUIDAMD _funcptr_wglGetContextGPUIDAMD
-extern PFNWGLGETCURRENTASSOCIATEDCONTEXTAMDPROC _funcptr_wglGetCurrentAssociatedContextAMD;
+CI_API extern PFNWGLGETCURRENTASSOCIATEDCONTEXTAMDPROC _funcptr_wglGetCurrentAssociatedContextAMD;
 #define wglGetCurrentAssociatedContextAMD _funcptr_wglGetCurrentAssociatedContextAMD
-extern PFNWGLGETGPUIDSAMDPROC _funcptr_wglGetGPUIDsAMD;
+CI_API extern PFNWGLGETGPUIDSAMDPROC _funcptr_wglGetGPUIDsAMD;
 #define wglGetGPUIDsAMD _funcptr_wglGetGPUIDsAMD
-extern PFNWGLGETGPUINFOAMDPROC _funcptr_wglGetGPUInfoAMD;
+CI_API extern PFNWGLGETGPUINFOAMDPROC _funcptr_wglGetGPUInfoAMD;
 #define wglGetGPUInfoAMD _funcptr_wglGetGPUInfoAMD
-extern PFNWGLMAKEASSOCIATEDCONTEXTCURRENTAMDPROC _funcptr_wglMakeAssociatedContextCurrentAMD;
+CI_API extern PFNWGLMAKEASSOCIATEDCONTEXTCURRENTAMDPROC _funcptr_wglMakeAssociatedContextCurrentAMD;
 #define wglMakeAssociatedContextCurrentAMD _funcptr_wglMakeAssociatedContextCurrentAMD
 
 #define WGL_BACK_COLOR_BUFFER_BIT_ARB 0x00000002
@@ -120,13 +120,13 @@ typedef VOID (CODEGEN_FUNCPTR * PFNWGLDELETEBUFFERREGIONARBPROC)(HANDLE hRegion)
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLRESTOREBUFFERREGIONARBPROC)(HANDLE hRegion, int x, int y, int width, int height, int xSrc, int ySrc);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLSAVEBUFFERREGIONARBPROC)(HANDLE hRegion, int x, int y, int width, int height);
 
-extern PFNWGLCREATEBUFFERREGIONARBPROC _funcptr_wglCreateBufferRegionARB;
+CI_API extern PFNWGLCREATEBUFFERREGIONARBPROC _funcptr_wglCreateBufferRegionARB;
 #define wglCreateBufferRegionARB _funcptr_wglCreateBufferRegionARB
-extern PFNWGLDELETEBUFFERREGIONARBPROC _funcptr_wglDeleteBufferRegionARB;
+CI_API extern PFNWGLDELETEBUFFERREGIONARBPROC _funcptr_wglDeleteBufferRegionARB;
 #define wglDeleteBufferRegionARB _funcptr_wglDeleteBufferRegionARB
-extern PFNWGLRESTOREBUFFERREGIONARBPROC _funcptr_wglRestoreBufferRegionARB;
+CI_API extern PFNWGLRESTOREBUFFERREGIONARBPROC _funcptr_wglRestoreBufferRegionARB;
 #define wglRestoreBufferRegionARB _funcptr_wglRestoreBufferRegionARB
-extern PFNWGLSAVEBUFFERREGIONARBPROC _funcptr_wglSaveBufferRegionARB;
+CI_API extern PFNWGLSAVEBUFFERREGIONARBPROC _funcptr_wglSaveBufferRegionARB;
 #define wglSaveBufferRegionARB _funcptr_wglSaveBufferRegionARB
 
 #define WGL_CONTEXT_DEBUG_BIT_ARB 0x00000001
@@ -139,7 +139,7 @@ extern PFNWGLSAVEBUFFERREGIONARBPROC _funcptr_wglSaveBufferRegionARB;
 
 typedef HGLRC (CODEGEN_FUNCPTR * PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC hDC, HGLRC hShareContext, const int * attribList);
 
-extern PFNWGLCREATECONTEXTATTRIBSARBPROC _funcptr_wglCreateContextAttribsARB;
+CI_API extern PFNWGLCREATECONTEXTATTRIBSARBPROC _funcptr_wglCreateContextAttribsARB;
 #define wglCreateContextAttribsARB _funcptr_wglCreateContextAttribsARB
 
 #define WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
@@ -154,7 +154,7 @@ extern PFNWGLCREATECONTEXTATTRIBSARBPROC _funcptr_wglCreateContextAttribsARB;
 
 typedef const char * (CODEGEN_FUNCPTR * PFNWGLGETEXTENSIONSSTRINGARBPROC)(HDC hdc);
 
-extern PFNWGLGETEXTENSIONSSTRINGARBPROC _funcptr_wglGetExtensionsStringARB;
+CI_API extern PFNWGLGETEXTENSIONSSTRINGARBPROC _funcptr_wglGetExtensionsStringARB;
 #define wglGetExtensionsStringARB _funcptr_wglGetExtensionsStringARB
 
 #define WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB 0x20A9
@@ -165,9 +165,9 @@ extern PFNWGLGETEXTENSIONSSTRINGARBPROC _funcptr_wglGetExtensionsStringARB;
 typedef HDC (CODEGEN_FUNCPTR * PFNWGLGETCURRENTREADDCARBPROC)();
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLMAKECONTEXTCURRENTARBPROC)(HDC hDrawDC, HDC hReadDC, HGLRC hglrc);
 
-extern PFNWGLGETCURRENTREADDCARBPROC _funcptr_wglGetCurrentReadDCARB;
+CI_API extern PFNWGLGETCURRENTREADDCARBPROC _funcptr_wglGetCurrentReadDCARB;
 #define wglGetCurrentReadDCARB _funcptr_wglGetCurrentReadDCARB
-extern PFNWGLMAKECONTEXTCURRENTARBPROC _funcptr_wglMakeContextCurrentARB;
+CI_API extern PFNWGLMAKECONTEXTCURRENTARBPROC _funcptr_wglMakeContextCurrentARB;
 #define wglMakeContextCurrentARB _funcptr_wglMakeContextCurrentARB
 
 #define WGL_SAMPLES_ARB 0x2042
@@ -188,15 +188,15 @@ typedef HDC (CODEGEN_FUNCPTR * PFNWGLGETPBUFFERDCARBPROC)(HPBUFFERARB hPbuffer);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLQUERYPBUFFERARBPROC)(HPBUFFERARB hPbuffer, int iAttribute, int * piValue);
 typedef int (CODEGEN_FUNCPTR * PFNWGLRELEASEPBUFFERDCARBPROC)(HPBUFFERARB hPbuffer, HDC hDC);
 
-extern PFNWGLCREATEPBUFFERARBPROC _funcptr_wglCreatePbufferARB;
+CI_API extern PFNWGLCREATEPBUFFERARBPROC _funcptr_wglCreatePbufferARB;
 #define wglCreatePbufferARB _funcptr_wglCreatePbufferARB
-extern PFNWGLDESTROYPBUFFERARBPROC _funcptr_wglDestroyPbufferARB;
+CI_API extern PFNWGLDESTROYPBUFFERARBPROC _funcptr_wglDestroyPbufferARB;
 #define wglDestroyPbufferARB _funcptr_wglDestroyPbufferARB
-extern PFNWGLGETPBUFFERDCARBPROC _funcptr_wglGetPbufferDCARB;
+CI_API extern PFNWGLGETPBUFFERDCARBPROC _funcptr_wglGetPbufferDCARB;
 #define wglGetPbufferDCARB _funcptr_wglGetPbufferDCARB
-extern PFNWGLQUERYPBUFFERARBPROC _funcptr_wglQueryPbufferARB;
+CI_API extern PFNWGLQUERYPBUFFERARBPROC _funcptr_wglQueryPbufferARB;
 #define wglQueryPbufferARB _funcptr_wglQueryPbufferARB
-extern PFNWGLRELEASEPBUFFERDCARBPROC _funcptr_wglReleasePbufferDCARB;
+CI_API extern PFNWGLRELEASEPBUFFERDCARBPROC _funcptr_wglReleasePbufferDCARB;
 #define wglReleasePbufferDCARB _funcptr_wglReleasePbufferDCARB
 
 #define WGL_ACCELERATION_ARB 0x2003
@@ -253,11 +253,11 @@ typedef BOOL (CODEGEN_FUNCPTR * PFNWGLCHOOSEPIXELFORMATARBPROC)(HDC hdc, const i
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLGETPIXELFORMATATTRIBFVARBPROC)(HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, const int * piAttributes, FLOAT * pfValues);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLGETPIXELFORMATATTRIBIVARBPROC)(HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, const int * piAttributes, int * piValues);
 
-extern PFNWGLCHOOSEPIXELFORMATARBPROC _funcptr_wglChoosePixelFormatARB;
+CI_API extern PFNWGLCHOOSEPIXELFORMATARBPROC _funcptr_wglChoosePixelFormatARB;
 #define wglChoosePixelFormatARB _funcptr_wglChoosePixelFormatARB
-extern PFNWGLGETPIXELFORMATATTRIBFVARBPROC _funcptr_wglGetPixelFormatAttribfvARB;
+CI_API extern PFNWGLGETPIXELFORMATATTRIBFVARBPROC _funcptr_wglGetPixelFormatAttribfvARB;
 #define wglGetPixelFormatAttribfvARB _funcptr_wglGetPixelFormatAttribfvARB
-extern PFNWGLGETPIXELFORMATATTRIBIVARBPROC _funcptr_wglGetPixelFormatAttribivARB;
+CI_API extern PFNWGLGETPIXELFORMATATTRIBIVARBPROC _funcptr_wglGetPixelFormatAttribivARB;
 #define wglGetPixelFormatAttribivARB _funcptr_wglGetPixelFormatAttribivARB
 
 #define WGL_TYPE_RGBA_FLOAT_ARB 0x21A0
@@ -300,11 +300,11 @@ typedef BOOL (CODEGEN_FUNCPTR * PFNWGLBINDTEXIMAGEARBPROC)(HPBUFFERARB hPbuffer,
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLRELEASETEXIMAGEARBPROC)(HPBUFFERARB hPbuffer, int iBuffer);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLSETPBUFFERATTRIBARBPROC)(HPBUFFERARB hPbuffer, const int * piAttribList);
 
-extern PFNWGLBINDTEXIMAGEARBPROC _funcptr_wglBindTexImageARB;
+CI_API extern PFNWGLBINDTEXIMAGEARBPROC _funcptr_wglBindTexImageARB;
 #define wglBindTexImageARB _funcptr_wglBindTexImageARB
-extern PFNWGLRELEASETEXIMAGEARBPROC _funcptr_wglReleaseTexImageARB;
+CI_API extern PFNWGLRELEASETEXIMAGEARBPROC _funcptr_wglReleaseTexImageARB;
 #define wglReleaseTexImageARB _funcptr_wglReleaseTexImageARB
-extern PFNWGLSETPBUFFERATTRIBARBPROC _funcptr_wglSetPbufferAttribARB;
+CI_API extern PFNWGLSETPBUFFERATTRIBARBPROC _funcptr_wglSetPbufferAttribARB;
 #define wglSetPbufferAttribARB _funcptr_wglSetPbufferAttribARB
 
 #define WGL_CONTEXT_RESET_ISOLATION_BIT_ARB 0x00000008
@@ -324,18 +324,18 @@ typedef GLboolean (CODEGEN_FUNCPTR * PFNWGLCREATEDISPLAYCOLORTABLEEXTPROC)(GLush
 typedef VOID (CODEGEN_FUNCPTR * PFNWGLDESTROYDISPLAYCOLORTABLEEXTPROC)(GLushort id);
 typedef GLboolean (CODEGEN_FUNCPTR * PFNWGLLOADDISPLAYCOLORTABLEEXTPROC)(const GLushort * table, GLuint length);
 
-extern PFNWGLBINDDISPLAYCOLORTABLEEXTPROC _funcptr_wglBindDisplayColorTableEXT;
+CI_API extern PFNWGLBINDDISPLAYCOLORTABLEEXTPROC _funcptr_wglBindDisplayColorTableEXT;
 #define wglBindDisplayColorTableEXT _funcptr_wglBindDisplayColorTableEXT
-extern PFNWGLCREATEDISPLAYCOLORTABLEEXTPROC _funcptr_wglCreateDisplayColorTableEXT;
+CI_API extern PFNWGLCREATEDISPLAYCOLORTABLEEXTPROC _funcptr_wglCreateDisplayColorTableEXT;
 #define wglCreateDisplayColorTableEXT _funcptr_wglCreateDisplayColorTableEXT
-extern PFNWGLDESTROYDISPLAYCOLORTABLEEXTPROC _funcptr_wglDestroyDisplayColorTableEXT;
+CI_API extern PFNWGLDESTROYDISPLAYCOLORTABLEEXTPROC _funcptr_wglDestroyDisplayColorTableEXT;
 #define wglDestroyDisplayColorTableEXT _funcptr_wglDestroyDisplayColorTableEXT
-extern PFNWGLLOADDISPLAYCOLORTABLEEXTPROC _funcptr_wglLoadDisplayColorTableEXT;
+CI_API extern PFNWGLLOADDISPLAYCOLORTABLEEXTPROC _funcptr_wglLoadDisplayColorTableEXT;
 #define wglLoadDisplayColorTableEXT _funcptr_wglLoadDisplayColorTableEXT
 
 typedef const char * (CODEGEN_FUNCPTR * PFNWGLGETEXTENSIONSSTRINGEXTPROC)();
 
-extern PFNWGLGETEXTENSIONSSTRINGEXTPROC _funcptr_wglGetExtensionsStringEXT;
+CI_API extern PFNWGLGETEXTENSIONSSTRINGEXTPROC _funcptr_wglGetExtensionsStringEXT;
 #define wglGetExtensionsStringEXT _funcptr_wglGetExtensionsStringEXT
 
 #define WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT 0x20A9
@@ -345,9 +345,9 @@ extern PFNWGLGETEXTENSIONSSTRINGEXTPROC _funcptr_wglGetExtensionsStringEXT;
 typedef HDC (CODEGEN_FUNCPTR * PFNWGLGETCURRENTREADDCEXTPROC)();
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLMAKECONTEXTCURRENTEXTPROC)(HDC hDrawDC, HDC hReadDC, HGLRC hglrc);
 
-extern PFNWGLGETCURRENTREADDCEXTPROC _funcptr_wglGetCurrentReadDCEXT;
+CI_API extern PFNWGLGETCURRENTREADDCEXTPROC _funcptr_wglGetCurrentReadDCEXT;
 #define wglGetCurrentReadDCEXT _funcptr_wglGetCurrentReadDCEXT
-extern PFNWGLMAKECONTEXTCURRENTEXTPROC _funcptr_wglMakeContextCurrentEXT;
+CI_API extern PFNWGLMAKECONTEXTCURRENTEXTPROC _funcptr_wglMakeContextCurrentEXT;
 #define wglMakeContextCurrentEXT _funcptr_wglMakeContextCurrentEXT
 
 #define WGL_SAMPLES_EXT 0x2042
@@ -369,15 +369,15 @@ typedef HDC (CODEGEN_FUNCPTR * PFNWGLGETPBUFFERDCEXTPROC)(HPBUFFEREXT hPbuffer);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLQUERYPBUFFEREXTPROC)(HPBUFFEREXT hPbuffer, int iAttribute, int * piValue);
 typedef int (CODEGEN_FUNCPTR * PFNWGLRELEASEPBUFFERDCEXTPROC)(HPBUFFEREXT hPbuffer, HDC hDC);
 
-extern PFNWGLCREATEPBUFFEREXTPROC _funcptr_wglCreatePbufferEXT;
+CI_API extern PFNWGLCREATEPBUFFEREXTPROC _funcptr_wglCreatePbufferEXT;
 #define wglCreatePbufferEXT _funcptr_wglCreatePbufferEXT
-extern PFNWGLDESTROYPBUFFEREXTPROC _funcptr_wglDestroyPbufferEXT;
+CI_API extern PFNWGLDESTROYPBUFFEREXTPROC _funcptr_wglDestroyPbufferEXT;
 #define wglDestroyPbufferEXT _funcptr_wglDestroyPbufferEXT
-extern PFNWGLGETPBUFFERDCEXTPROC _funcptr_wglGetPbufferDCEXT;
+CI_API extern PFNWGLGETPBUFFERDCEXTPROC _funcptr_wglGetPbufferDCEXT;
 #define wglGetPbufferDCEXT _funcptr_wglGetPbufferDCEXT
-extern PFNWGLQUERYPBUFFEREXTPROC _funcptr_wglQueryPbufferEXT;
+CI_API extern PFNWGLQUERYPBUFFEREXTPROC _funcptr_wglQueryPbufferEXT;
 #define wglQueryPbufferEXT _funcptr_wglQueryPbufferEXT
-extern PFNWGLRELEASEPBUFFERDCEXTPROC _funcptr_wglReleasePbufferDCEXT;
+CI_API extern PFNWGLRELEASEPBUFFERDCEXTPROC _funcptr_wglReleasePbufferDCEXT;
 #define wglReleasePbufferDCEXT _funcptr_wglReleasePbufferDCEXT
 
 #define WGL_ACCELERATION_EXT 0x2003
@@ -430,11 +430,11 @@ typedef BOOL (CODEGEN_FUNCPTR * PFNWGLCHOOSEPIXELFORMATEXTPROC)(HDC hdc, const i
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLGETPIXELFORMATATTRIBFVEXTPROC)(HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, int * piAttributes, FLOAT * pfValues);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)(HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, int * piAttributes, int * piValues);
 
-extern PFNWGLCHOOSEPIXELFORMATEXTPROC _funcptr_wglChoosePixelFormatEXT;
+CI_API extern PFNWGLCHOOSEPIXELFORMATEXTPROC _funcptr_wglChoosePixelFormatEXT;
 #define wglChoosePixelFormatEXT _funcptr_wglChoosePixelFormatEXT
-extern PFNWGLGETPIXELFORMATATTRIBFVEXTPROC _funcptr_wglGetPixelFormatAttribfvEXT;
+CI_API extern PFNWGLGETPIXELFORMATATTRIBFVEXTPROC _funcptr_wglGetPixelFormatAttribfvEXT;
 #define wglGetPixelFormatAttribfvEXT _funcptr_wglGetPixelFormatAttribfvEXT
-extern PFNWGLGETPIXELFORMATATTRIBIVEXTPROC _funcptr_wglGetPixelFormatAttribivEXT;
+CI_API extern PFNWGLGETPIXELFORMATATTRIBIVEXTPROC _funcptr_wglGetPixelFormatAttribivEXT;
 #define wglGetPixelFormatAttribivEXT _funcptr_wglGetPixelFormatAttribivEXT
 
 #define WGL_TYPE_RGBA_UNSIGNED_FLOAT_EXT 0x20A8
@@ -442,9 +442,9 @@ extern PFNWGLGETPIXELFORMATATTRIBIVEXTPROC _funcptr_wglGetPixelFormatAttribivEXT
 typedef int (CODEGEN_FUNCPTR * PFNWGLGETSWAPINTERVALEXTPROC)();
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLSWAPINTERVALEXTPROC)(int interval);
 
-extern PFNWGLGETSWAPINTERVALEXTPROC _funcptr_wglGetSwapIntervalEXT;
+CI_API extern PFNWGLGETSWAPINTERVALEXTPROC _funcptr_wglGetSwapIntervalEXT;
 #define wglGetSwapIntervalEXT _funcptr_wglGetSwapIntervalEXT
-extern PFNWGLSWAPINTERVALEXTPROC _funcptr_wglSwapIntervalEXT;
+CI_API extern PFNWGLSWAPINTERVALEXTPROC _funcptr_wglSwapIntervalEXT;
 #define wglSwapIntervalEXT _funcptr_wglSwapIntervalEXT
 
 #define WGL_DIGITAL_VIDEO_CURSOR_ALPHA_FRAMEBUFFER_I3D 0x2050
@@ -455,9 +455,9 @@ extern PFNWGLSWAPINTERVALEXTPROC _funcptr_wglSwapIntervalEXT;
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLGETDIGITALVIDEOPARAMETERSI3DPROC)(HDC hDC, int iAttribute, int * piValue);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLSETDIGITALVIDEOPARAMETERSI3DPROC)(HDC hDC, int iAttribute, const int * piValue);
 
-extern PFNWGLGETDIGITALVIDEOPARAMETERSI3DPROC _funcptr_wglGetDigitalVideoParametersI3D;
+CI_API extern PFNWGLGETDIGITALVIDEOPARAMETERSI3DPROC _funcptr_wglGetDigitalVideoParametersI3D;
 #define wglGetDigitalVideoParametersI3D _funcptr_wglGetDigitalVideoParametersI3D
-extern PFNWGLSETDIGITALVIDEOPARAMETERSI3DPROC _funcptr_wglSetDigitalVideoParametersI3D;
+CI_API extern PFNWGLSETDIGITALVIDEOPARAMETERSI3DPROC _funcptr_wglSetDigitalVideoParametersI3D;
 #define wglSetDigitalVideoParametersI3D _funcptr_wglSetDigitalVideoParametersI3D
 
 #define WGL_GAMMA_EXCLUDE_DESKTOP_I3D 0x204F
@@ -468,13 +468,13 @@ typedef BOOL (CODEGEN_FUNCPTR * PFNWGLGETGAMMATABLEPARAMETERSI3DPROC)(HDC hDC, i
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLSETGAMMATABLEI3DPROC)(HDC hDC, int iEntries, const USHORT * puRed, const USHORT * puGreen, const USHORT * puBlue);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLSETGAMMATABLEPARAMETERSI3DPROC)(HDC hDC, int iAttribute, const int * piValue);
 
-extern PFNWGLGETGAMMATABLEI3DPROC _funcptr_wglGetGammaTableI3D;
+CI_API extern PFNWGLGETGAMMATABLEI3DPROC _funcptr_wglGetGammaTableI3D;
 #define wglGetGammaTableI3D _funcptr_wglGetGammaTableI3D
-extern PFNWGLGETGAMMATABLEPARAMETERSI3DPROC _funcptr_wglGetGammaTableParametersI3D;
+CI_API extern PFNWGLGETGAMMATABLEPARAMETERSI3DPROC _funcptr_wglGetGammaTableParametersI3D;
 #define wglGetGammaTableParametersI3D _funcptr_wglGetGammaTableParametersI3D
-extern PFNWGLSETGAMMATABLEI3DPROC _funcptr_wglSetGammaTableI3D;
+CI_API extern PFNWGLSETGAMMATABLEI3DPROC _funcptr_wglSetGammaTableI3D;
 #define wglSetGammaTableI3D _funcptr_wglSetGammaTableI3D
-extern PFNWGLSETGAMMATABLEPARAMETERSI3DPROC _funcptr_wglSetGammaTableParametersI3D;
+CI_API extern PFNWGLSETGAMMATABLEPARAMETERSI3DPROC _funcptr_wglSetGammaTableParametersI3D;
 #define wglSetGammaTableParametersI3D _funcptr_wglSetGammaTableParametersI3D
 
 #define WGL_GENLOCK_SOURCE_DIGITAL_FIELD_I3D 0x2049
@@ -500,29 +500,29 @@ typedef BOOL (CODEGEN_FUNCPTR * PFNWGLGETGENLOCKSOURCEI3DPROC)(HDC hDC, UINT * u
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLISENABLEDGENLOCKI3DPROC)(HDC hDC, BOOL * pFlag);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLQUERYGENLOCKMAXSOURCEDELAYI3DPROC)(HDC hDC, UINT * uMaxLineDelay, UINT * uMaxPixelDelay);
 
-extern PFNWGLDISABLEGENLOCKI3DPROC _funcptr_wglDisableGenlockI3D;
+CI_API extern PFNWGLDISABLEGENLOCKI3DPROC _funcptr_wglDisableGenlockI3D;
 #define wglDisableGenlockI3D _funcptr_wglDisableGenlockI3D
-extern PFNWGLENABLEGENLOCKI3DPROC _funcptr_wglEnableGenlockI3D;
+CI_API extern PFNWGLENABLEGENLOCKI3DPROC _funcptr_wglEnableGenlockI3D;
 #define wglEnableGenlockI3D _funcptr_wglEnableGenlockI3D
-extern PFNWGLGENLOCKSAMPLERATEI3DPROC _funcptr_wglGenlockSampleRateI3D;
+CI_API extern PFNWGLGENLOCKSAMPLERATEI3DPROC _funcptr_wglGenlockSampleRateI3D;
 #define wglGenlockSampleRateI3D _funcptr_wglGenlockSampleRateI3D
-extern PFNWGLGENLOCKSOURCEDELAYI3DPROC _funcptr_wglGenlockSourceDelayI3D;
+CI_API extern PFNWGLGENLOCKSOURCEDELAYI3DPROC _funcptr_wglGenlockSourceDelayI3D;
 #define wglGenlockSourceDelayI3D _funcptr_wglGenlockSourceDelayI3D
-extern PFNWGLGENLOCKSOURCEEDGEI3DPROC _funcptr_wglGenlockSourceEdgeI3D;
+CI_API extern PFNWGLGENLOCKSOURCEEDGEI3DPROC _funcptr_wglGenlockSourceEdgeI3D;
 #define wglGenlockSourceEdgeI3D _funcptr_wglGenlockSourceEdgeI3D
-extern PFNWGLGENLOCKSOURCEI3DPROC _funcptr_wglGenlockSourceI3D;
+CI_API extern PFNWGLGENLOCKSOURCEI3DPROC _funcptr_wglGenlockSourceI3D;
 #define wglGenlockSourceI3D _funcptr_wglGenlockSourceI3D
-extern PFNWGLGETGENLOCKSAMPLERATEI3DPROC _funcptr_wglGetGenlockSampleRateI3D;
+CI_API extern PFNWGLGETGENLOCKSAMPLERATEI3DPROC _funcptr_wglGetGenlockSampleRateI3D;
 #define wglGetGenlockSampleRateI3D _funcptr_wglGetGenlockSampleRateI3D
-extern PFNWGLGETGENLOCKSOURCEDELAYI3DPROC _funcptr_wglGetGenlockSourceDelayI3D;
+CI_API extern PFNWGLGETGENLOCKSOURCEDELAYI3DPROC _funcptr_wglGetGenlockSourceDelayI3D;
 #define wglGetGenlockSourceDelayI3D _funcptr_wglGetGenlockSourceDelayI3D
-extern PFNWGLGETGENLOCKSOURCEEDGEI3DPROC _funcptr_wglGetGenlockSourceEdgeI3D;
+CI_API extern PFNWGLGETGENLOCKSOURCEEDGEI3DPROC _funcptr_wglGetGenlockSourceEdgeI3D;
 #define wglGetGenlockSourceEdgeI3D _funcptr_wglGetGenlockSourceEdgeI3D
-extern PFNWGLGETGENLOCKSOURCEI3DPROC _funcptr_wglGetGenlockSourceI3D;
+CI_API extern PFNWGLGETGENLOCKSOURCEI3DPROC _funcptr_wglGetGenlockSourceI3D;
 #define wglGetGenlockSourceI3D _funcptr_wglGetGenlockSourceI3D
-extern PFNWGLISENABLEDGENLOCKI3DPROC _funcptr_wglIsEnabledGenlockI3D;
+CI_API extern PFNWGLISENABLEDGENLOCKI3DPROC _funcptr_wglIsEnabledGenlockI3D;
 #define wglIsEnabledGenlockI3D _funcptr_wglIsEnabledGenlockI3D
-extern PFNWGLQUERYGENLOCKMAXSOURCEDELAYI3DPROC _funcptr_wglQueryGenlockMaxSourceDelayI3D;
+CI_API extern PFNWGLQUERYGENLOCKMAXSOURCEDELAYI3DPROC _funcptr_wglQueryGenlockMaxSourceDelayI3D;
 #define wglQueryGenlockMaxSourceDelayI3D _funcptr_wglQueryGenlockMaxSourceDelayI3D
 
 #define WGL_IMAGE_BUFFER_LOCK_I3D 0x00000002
@@ -533,13 +533,13 @@ typedef LPVOID (CODEGEN_FUNCPTR * PFNWGLCREATEIMAGEBUFFERI3DPROC)(HDC hDC, DWORD
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLDESTROYIMAGEBUFFERI3DPROC)(HDC hDC, LPVOID pAddress);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLRELEASEIMAGEBUFFEREVENTSI3DPROC)(HDC hDC, const LPVOID * pAddress, UINT count);
 
-extern PFNWGLASSOCIATEIMAGEBUFFEREVENTSI3DPROC _funcptr_wglAssociateImageBufferEventsI3D;
+CI_API extern PFNWGLASSOCIATEIMAGEBUFFEREVENTSI3DPROC _funcptr_wglAssociateImageBufferEventsI3D;
 #define wglAssociateImageBufferEventsI3D _funcptr_wglAssociateImageBufferEventsI3D
-extern PFNWGLCREATEIMAGEBUFFERI3DPROC _funcptr_wglCreateImageBufferI3D;
+CI_API extern PFNWGLCREATEIMAGEBUFFERI3DPROC _funcptr_wglCreateImageBufferI3D;
 #define wglCreateImageBufferI3D _funcptr_wglCreateImageBufferI3D
-extern PFNWGLDESTROYIMAGEBUFFERI3DPROC _funcptr_wglDestroyImageBufferI3D;
+CI_API extern PFNWGLDESTROYIMAGEBUFFERI3DPROC _funcptr_wglDestroyImageBufferI3D;
 #define wglDestroyImageBufferI3D _funcptr_wglDestroyImageBufferI3D
-extern PFNWGLRELEASEIMAGEBUFFEREVENTSI3DPROC _funcptr_wglReleaseImageBufferEventsI3D;
+CI_API extern PFNWGLRELEASEIMAGEBUFFEREVENTSI3DPROC _funcptr_wglReleaseImageBufferEventsI3D;
 #define wglReleaseImageBufferEventsI3D _funcptr_wglReleaseImageBufferEventsI3D
 
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLDISABLEFRAMELOCKI3DPROC)();
@@ -547,13 +547,13 @@ typedef BOOL (CODEGEN_FUNCPTR * PFNWGLENABLEFRAMELOCKI3DPROC)();
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLISENABLEDFRAMELOCKI3DPROC)(BOOL * pFlag);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLQUERYFRAMELOCKMASTERI3DPROC)(BOOL * pFlag);
 
-extern PFNWGLDISABLEFRAMELOCKI3DPROC _funcptr_wglDisableFrameLockI3D;
+CI_API extern PFNWGLDISABLEFRAMELOCKI3DPROC _funcptr_wglDisableFrameLockI3D;
 #define wglDisableFrameLockI3D _funcptr_wglDisableFrameLockI3D
-extern PFNWGLENABLEFRAMELOCKI3DPROC _funcptr_wglEnableFrameLockI3D;
+CI_API extern PFNWGLENABLEFRAMELOCKI3DPROC _funcptr_wglEnableFrameLockI3D;
 #define wglEnableFrameLockI3D _funcptr_wglEnableFrameLockI3D
-extern PFNWGLISENABLEDFRAMELOCKI3DPROC _funcptr_wglIsEnabledFrameLockI3D;
+CI_API extern PFNWGLISENABLEDFRAMELOCKI3DPROC _funcptr_wglIsEnabledFrameLockI3D;
 #define wglIsEnabledFrameLockI3D _funcptr_wglIsEnabledFrameLockI3D
-extern PFNWGLQUERYFRAMELOCKMASTERI3DPROC _funcptr_wglQueryFrameLockMasterI3D;
+CI_API extern PFNWGLQUERYFRAMELOCKMASTERI3DPROC _funcptr_wglQueryFrameLockMasterI3D;
 #define wglQueryFrameLockMasterI3D _funcptr_wglQueryFrameLockMasterI3D
 
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLBEGINFRAMETRACKINGI3DPROC)();
@@ -561,13 +561,13 @@ typedef BOOL (CODEGEN_FUNCPTR * PFNWGLENDFRAMETRACKINGI3DPROC)();
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLGETFRAMEUSAGEI3DPROC)(float * pUsage);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLQUERYFRAMETRACKINGI3DPROC)(DWORD * pFrameCount, DWORD * pMissedFrames, float * pLastMissedUsage);
 
-extern PFNWGLBEGINFRAMETRACKINGI3DPROC _funcptr_wglBeginFrameTrackingI3D;
+CI_API extern PFNWGLBEGINFRAMETRACKINGI3DPROC _funcptr_wglBeginFrameTrackingI3D;
 #define wglBeginFrameTrackingI3D _funcptr_wglBeginFrameTrackingI3D
-extern PFNWGLENDFRAMETRACKINGI3DPROC _funcptr_wglEndFrameTrackingI3D;
+CI_API extern PFNWGLENDFRAMETRACKINGI3DPROC _funcptr_wglEndFrameTrackingI3D;
 #define wglEndFrameTrackingI3D _funcptr_wglEndFrameTrackingI3D
-extern PFNWGLGETFRAMEUSAGEI3DPROC _funcptr_wglGetFrameUsageI3D;
+CI_API extern PFNWGLGETFRAMEUSAGEI3DPROC _funcptr_wglGetFrameUsageI3D;
 #define wglGetFrameUsageI3D _funcptr_wglGetFrameUsageI3D
-extern PFNWGLQUERYFRAMETRACKINGI3DPROC _funcptr_wglQueryFrameTrackingI3D;
+CI_API extern PFNWGLQUERYFRAMETRACKINGI3DPROC _funcptr_wglQueryFrameTrackingI3D;
 #define wglQueryFrameTrackingI3D _funcptr_wglQueryFrameTrackingI3D
 
 #define WGL_ACCESS_READ_ONLY_NV 0x00000000
@@ -583,26 +583,26 @@ typedef BOOL (CODEGEN_FUNCPTR * PFNWGLDXSETRESOURCESHAREHANDLENVPROC)(void * dxO
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLDXUNLOCKOBJECTSNVPROC)(HANDLE hDevice, GLint count, HANDLE * hObjects);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLDXUNREGISTEROBJECTNVPROC)(HANDLE hDevice, HANDLE hObject);
 
-extern PFNWGLDXCLOSEDEVICENVPROC _funcptr_wglDXCloseDeviceNV;
+CI_API extern PFNWGLDXCLOSEDEVICENVPROC _funcptr_wglDXCloseDeviceNV;
 #define wglDXCloseDeviceNV _funcptr_wglDXCloseDeviceNV
-extern PFNWGLDXLOCKOBJECTSNVPROC _funcptr_wglDXLockObjectsNV;
+CI_API extern PFNWGLDXLOCKOBJECTSNVPROC _funcptr_wglDXLockObjectsNV;
 #define wglDXLockObjectsNV _funcptr_wglDXLockObjectsNV
-extern PFNWGLDXOBJECTACCESSNVPROC _funcptr_wglDXObjectAccessNV;
+CI_API extern PFNWGLDXOBJECTACCESSNVPROC _funcptr_wglDXObjectAccessNV;
 #define wglDXObjectAccessNV _funcptr_wglDXObjectAccessNV
-extern PFNWGLDXOPENDEVICENVPROC _funcptr_wglDXOpenDeviceNV;
+CI_API extern PFNWGLDXOPENDEVICENVPROC _funcptr_wglDXOpenDeviceNV;
 #define wglDXOpenDeviceNV _funcptr_wglDXOpenDeviceNV
-extern PFNWGLDXREGISTEROBJECTNVPROC _funcptr_wglDXRegisterObjectNV;
+CI_API extern PFNWGLDXREGISTEROBJECTNVPROC _funcptr_wglDXRegisterObjectNV;
 #define wglDXRegisterObjectNV _funcptr_wglDXRegisterObjectNV
-extern PFNWGLDXSETRESOURCESHAREHANDLENVPROC _funcptr_wglDXSetResourceShareHandleNV;
+CI_API extern PFNWGLDXSETRESOURCESHAREHANDLENVPROC _funcptr_wglDXSetResourceShareHandleNV;
 #define wglDXSetResourceShareHandleNV _funcptr_wglDXSetResourceShareHandleNV
-extern PFNWGLDXUNLOCKOBJECTSNVPROC _funcptr_wglDXUnlockObjectsNV;
+CI_API extern PFNWGLDXUNLOCKOBJECTSNVPROC _funcptr_wglDXUnlockObjectsNV;
 #define wglDXUnlockObjectsNV _funcptr_wglDXUnlockObjectsNV
-extern PFNWGLDXUNREGISTEROBJECTNVPROC _funcptr_wglDXUnregisterObjectNV;
+CI_API extern PFNWGLDXUNREGISTEROBJECTNVPROC _funcptr_wglDXUnregisterObjectNV;
 #define wglDXUnregisterObjectNV _funcptr_wglDXUnregisterObjectNV
 
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLCOPYIMAGESUBDATANVPROC)(HGLRC hSrcRC, GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, HGLRC hDstRC, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei width, GLsizei height, GLsizei depth);
 
-extern PFNWGLCOPYIMAGESUBDATANVPROC _funcptr_wglCopyImageSubDataNV;
+CI_API extern PFNWGLCOPYIMAGESUBDATANVPROC _funcptr_wglCopyImageSubDataNV;
 #define wglCopyImageSubDataNV _funcptr_wglCopyImageSubDataNV
 
 #define WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_RGBA_NV 0x20B4
@@ -624,15 +624,15 @@ typedef BOOL (CODEGEN_FUNCPTR * PFNWGLENUMGPUDEVICESNVPROC)(HGPUNV hGpu, UINT iD
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLENUMGPUSFROMAFFINITYDCNVPROC)(HDC hAffinityDC, UINT iGpuIndex, HGPUNV * hGpu);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLENUMGPUSNVPROC)(UINT iGpuIndex, HGPUNV * phGpu);
 
-extern PFNWGLCREATEAFFINITYDCNVPROC _funcptr_wglCreateAffinityDCNV;
+CI_API extern PFNWGLCREATEAFFINITYDCNVPROC _funcptr_wglCreateAffinityDCNV;
 #define wglCreateAffinityDCNV _funcptr_wglCreateAffinityDCNV
-extern PFNWGLDELETEDCNVPROC _funcptr_wglDeleteDCNV;
+CI_API extern PFNWGLDELETEDCNVPROC _funcptr_wglDeleteDCNV;
 #define wglDeleteDCNV _funcptr_wglDeleteDCNV
-extern PFNWGLENUMGPUDEVICESNVPROC _funcptr_wglEnumGpuDevicesNV;
+CI_API extern PFNWGLENUMGPUDEVICESNVPROC _funcptr_wglEnumGpuDevicesNV;
 #define wglEnumGpuDevicesNV _funcptr_wglEnumGpuDevicesNV
-extern PFNWGLENUMGPUSFROMAFFINITYDCNVPROC _funcptr_wglEnumGpusFromAffinityDCNV;
+CI_API extern PFNWGLENUMGPUSFROMAFFINITYDCNVPROC _funcptr_wglEnumGpusFromAffinityDCNV;
 #define wglEnumGpusFromAffinityDCNV _funcptr_wglEnumGpusFromAffinityDCNV
-extern PFNWGLENUMGPUSNVPROC _funcptr_wglEnumGpusNV;
+CI_API extern PFNWGLENUMGPUSNVPROC _funcptr_wglEnumGpusNV;
 #define wglEnumGpusNV _funcptr_wglEnumGpusNV
 
 #define WGL_COLOR_SAMPLES_NV 0x20B9
@@ -644,11 +644,11 @@ typedef BOOL (CODEGEN_FUNCPTR * PFNWGLBINDVIDEODEVICENVPROC)(HDC hDC, unsigned i
 typedef int (CODEGEN_FUNCPTR * PFNWGLENUMERATEVIDEODEVICESNVPROC)(HDC hDC, HVIDEOOUTPUTDEVICENV * phDeviceList);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLQUERYCURRENTCONTEXTNVPROC)(int iAttribute, int * piValue);
 
-extern PFNWGLBINDVIDEODEVICENVPROC _funcptr_wglBindVideoDeviceNV;
+CI_API extern PFNWGLBINDVIDEODEVICENVPROC _funcptr_wglBindVideoDeviceNV;
 #define wglBindVideoDeviceNV _funcptr_wglBindVideoDeviceNV
-extern PFNWGLENUMERATEVIDEODEVICESNVPROC _funcptr_wglEnumerateVideoDevicesNV;
+CI_API extern PFNWGLENUMERATEVIDEODEVICESNVPROC _funcptr_wglEnumerateVideoDevicesNV;
 #define wglEnumerateVideoDevicesNV _funcptr_wglEnumerateVideoDevicesNV
-extern PFNWGLQUERYCURRENTCONTEXTNVPROC _funcptr_wglQueryCurrentContextNV;
+CI_API extern PFNWGLQUERYCURRENTCONTEXTNVPROC _funcptr_wglQueryCurrentContextNV;
 #define wglQueryCurrentContextNV _funcptr_wglQueryCurrentContextNV
 
 #define WGL_BIND_TO_TEXTURE_DEPTH_NV 0x20A3
@@ -668,25 +668,25 @@ typedef BOOL (CODEGEN_FUNCPTR * PFNWGLQUERYMAXSWAPGROUPSNVPROC)(HDC hDC, GLuint 
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLQUERYSWAPGROUPNVPROC)(HDC hDC, GLuint * group, GLuint * barrier);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLRESETFRAMECOUNTNVPROC)(HDC hDC);
 
-extern PFNWGLBINDSWAPBARRIERNVPROC _funcptr_wglBindSwapBarrierNV;
+CI_API extern PFNWGLBINDSWAPBARRIERNVPROC _funcptr_wglBindSwapBarrierNV;
 #define wglBindSwapBarrierNV _funcptr_wglBindSwapBarrierNV
-extern PFNWGLJOINSWAPGROUPNVPROC _funcptr_wglJoinSwapGroupNV;
+CI_API extern PFNWGLJOINSWAPGROUPNVPROC _funcptr_wglJoinSwapGroupNV;
 #define wglJoinSwapGroupNV _funcptr_wglJoinSwapGroupNV
-extern PFNWGLQUERYFRAMECOUNTNVPROC _funcptr_wglQueryFrameCountNV;
+CI_API extern PFNWGLQUERYFRAMECOUNTNVPROC _funcptr_wglQueryFrameCountNV;
 #define wglQueryFrameCountNV _funcptr_wglQueryFrameCountNV
-extern PFNWGLQUERYMAXSWAPGROUPSNVPROC _funcptr_wglQueryMaxSwapGroupsNV;
+CI_API extern PFNWGLQUERYMAXSWAPGROUPSNVPROC _funcptr_wglQueryMaxSwapGroupsNV;
 #define wglQueryMaxSwapGroupsNV _funcptr_wglQueryMaxSwapGroupsNV
-extern PFNWGLQUERYSWAPGROUPNVPROC _funcptr_wglQuerySwapGroupNV;
+CI_API extern PFNWGLQUERYSWAPGROUPNVPROC _funcptr_wglQuerySwapGroupNV;
 #define wglQuerySwapGroupNV _funcptr_wglQuerySwapGroupNV
-extern PFNWGLRESETFRAMECOUNTNVPROC _funcptr_wglResetFrameCountNV;
+CI_API extern PFNWGLRESETFRAMECOUNTNVPROC _funcptr_wglResetFrameCountNV;
 #define wglResetFrameCountNV _funcptr_wglResetFrameCountNV
 
 typedef void * (CODEGEN_FUNCPTR * PFNWGLALLOCATEMEMORYNVPROC)(GLsizei size, GLfloat readfreq, GLfloat writefreq, GLfloat priority);
 typedef void (CODEGEN_FUNCPTR * PFNWGLFREEMEMORYNVPROC)(void * pointer);
 
-extern PFNWGLALLOCATEMEMORYNVPROC _funcptr_wglAllocateMemoryNV;
+CI_API extern PFNWGLALLOCATEMEMORYNVPROC _funcptr_wglAllocateMemoryNV;
 #define wglAllocateMemoryNV _funcptr_wglAllocateMemoryNV
-extern PFNWGLFREEMEMORYNVPROC _funcptr_wglFreeMemoryNV;
+CI_API extern PFNWGLFREEMEMORYNVPROC _funcptr_wglFreeMemoryNV;
 #define wglFreeMemoryNV _funcptr_wglFreeMemoryNV
 
 #define WGL_NUM_VIDEO_CAPTURE_SLOTS_NV 0x20CF
@@ -698,15 +698,15 @@ typedef BOOL (CODEGEN_FUNCPTR * PFNWGLLOCKVIDEOCAPTUREDEVICENVPROC)(HDC hDc, HVI
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLQUERYVIDEOCAPTUREDEVICENVPROC)(HDC hDc, HVIDEOINPUTDEVICENV hDevice, int iAttribute, int * piValue);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLRELEASEVIDEOCAPTUREDEVICENVPROC)(HDC hDc, HVIDEOINPUTDEVICENV hDevice);
 
-extern PFNWGLBINDVIDEOCAPTUREDEVICENVPROC _funcptr_wglBindVideoCaptureDeviceNV;
+CI_API extern PFNWGLBINDVIDEOCAPTUREDEVICENVPROC _funcptr_wglBindVideoCaptureDeviceNV;
 #define wglBindVideoCaptureDeviceNV _funcptr_wglBindVideoCaptureDeviceNV
-extern PFNWGLENUMERATEVIDEOCAPTUREDEVICESNVPROC _funcptr_wglEnumerateVideoCaptureDevicesNV;
+CI_API extern PFNWGLENUMERATEVIDEOCAPTUREDEVICESNVPROC _funcptr_wglEnumerateVideoCaptureDevicesNV;
 #define wglEnumerateVideoCaptureDevicesNV _funcptr_wglEnumerateVideoCaptureDevicesNV
-extern PFNWGLLOCKVIDEOCAPTUREDEVICENVPROC _funcptr_wglLockVideoCaptureDeviceNV;
+CI_API extern PFNWGLLOCKVIDEOCAPTUREDEVICENVPROC _funcptr_wglLockVideoCaptureDeviceNV;
 #define wglLockVideoCaptureDeviceNV _funcptr_wglLockVideoCaptureDeviceNV
-extern PFNWGLQUERYVIDEOCAPTUREDEVICENVPROC _funcptr_wglQueryVideoCaptureDeviceNV;
+CI_API extern PFNWGLQUERYVIDEOCAPTUREDEVICENVPROC _funcptr_wglQueryVideoCaptureDeviceNV;
 #define wglQueryVideoCaptureDeviceNV _funcptr_wglQueryVideoCaptureDeviceNV
-extern PFNWGLRELEASEVIDEOCAPTUREDEVICENVPROC _funcptr_wglReleaseVideoCaptureDeviceNV;
+CI_API extern PFNWGLRELEASEVIDEOCAPTUREDEVICENVPROC _funcptr_wglReleaseVideoCaptureDeviceNV;
 #define wglReleaseVideoCaptureDeviceNV _funcptr_wglReleaseVideoCaptureDeviceNV
 
 #define WGL_BIND_TO_VIDEO_RGBA_NV 0x20C1
@@ -730,17 +730,17 @@ typedef BOOL (CODEGEN_FUNCPTR * PFNWGLRELEASEVIDEODEVICENVPROC)(HPVIDEODEV hVide
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLRELEASEVIDEOIMAGENVPROC)(HPBUFFERARB hPbuffer, int iVideoBuffer);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLSENDPBUFFERTOVIDEONVPROC)(HPBUFFERARB hPbuffer, int iBufferType, unsigned long * pulCounterPbuffer, BOOL bBlock);
 
-extern PFNWGLBINDVIDEOIMAGENVPROC _funcptr_wglBindVideoImageNV;
+CI_API extern PFNWGLBINDVIDEOIMAGENVPROC _funcptr_wglBindVideoImageNV;
 #define wglBindVideoImageNV _funcptr_wglBindVideoImageNV
-extern PFNWGLGETVIDEODEVICENVPROC _funcptr_wglGetVideoDeviceNV;
+CI_API extern PFNWGLGETVIDEODEVICENVPROC _funcptr_wglGetVideoDeviceNV;
 #define wglGetVideoDeviceNV _funcptr_wglGetVideoDeviceNV
-extern PFNWGLGETVIDEOINFONVPROC _funcptr_wglGetVideoInfoNV;
+CI_API extern PFNWGLGETVIDEOINFONVPROC _funcptr_wglGetVideoInfoNV;
 #define wglGetVideoInfoNV _funcptr_wglGetVideoInfoNV
-extern PFNWGLRELEASEVIDEODEVICENVPROC _funcptr_wglReleaseVideoDeviceNV;
+CI_API extern PFNWGLRELEASEVIDEODEVICENVPROC _funcptr_wglReleaseVideoDeviceNV;
 #define wglReleaseVideoDeviceNV _funcptr_wglReleaseVideoDeviceNV
-extern PFNWGLRELEASEVIDEOIMAGENVPROC _funcptr_wglReleaseVideoImageNV;
+CI_API extern PFNWGLRELEASEVIDEOIMAGENVPROC _funcptr_wglReleaseVideoImageNV;
 #define wglReleaseVideoImageNV _funcptr_wglReleaseVideoImageNV
-extern PFNWGLSENDPBUFFERTOVIDEONVPROC _funcptr_wglSendPbufferToVideoNV;
+CI_API extern PFNWGLSENDPBUFFERTOVIDEONVPROC _funcptr_wglSendPbufferToVideoNV;
 #define wglSendPbufferToVideoNV _funcptr_wglSendPbufferToVideoNV
 
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLGETMSCRATEOMLPROC)(HDC hdc, INT32 * numerator, INT32 * denominator);
@@ -750,17 +750,17 @@ typedef INT64 (CODEGEN_FUNCPTR * PFNWGLSWAPLAYERBUFFERSMSCOMLPROC)(HDC hdc, int 
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLWAITFORMSCOMLPROC)(HDC hdc, INT64 target_msc, INT64 divisor, INT64 remainder, INT64 * ust, INT64 * msc, INT64 * sbc);
 typedef BOOL (CODEGEN_FUNCPTR * PFNWGLWAITFORSBCOMLPROC)(HDC hdc, INT64 target_sbc, INT64 * ust, INT64 * msc, INT64 * sbc);
 
-extern PFNWGLGETMSCRATEOMLPROC _funcptr_wglGetMscRateOML;
+CI_API extern PFNWGLGETMSCRATEOMLPROC _funcptr_wglGetMscRateOML;
 #define wglGetMscRateOML _funcptr_wglGetMscRateOML
-extern PFNWGLGETSYNCVALUESOMLPROC _funcptr_wglGetSyncValuesOML;
+CI_API extern PFNWGLGETSYNCVALUESOMLPROC _funcptr_wglGetSyncValuesOML;
 #define wglGetSyncValuesOML _funcptr_wglGetSyncValuesOML
-extern PFNWGLSWAPBUFFERSMSCOMLPROC _funcptr_wglSwapBuffersMscOML;
+CI_API extern PFNWGLSWAPBUFFERSMSCOMLPROC _funcptr_wglSwapBuffersMscOML;
 #define wglSwapBuffersMscOML _funcptr_wglSwapBuffersMscOML
-extern PFNWGLSWAPLAYERBUFFERSMSCOMLPROC _funcptr_wglSwapLayerBuffersMscOML;
+CI_API extern PFNWGLSWAPLAYERBUFFERSMSCOMLPROC _funcptr_wglSwapLayerBuffersMscOML;
 #define wglSwapLayerBuffersMscOML _funcptr_wglSwapLayerBuffersMscOML
-extern PFNWGLWAITFORMSCOMLPROC _funcptr_wglWaitForMscOML;
+CI_API extern PFNWGLWAITFORMSCOMLPROC _funcptr_wglWaitForMscOML;
 #define wglWaitForMscOML _funcptr_wglWaitForMscOML
-extern PFNWGLWAITFORSBCOMLPROC _funcptr_wglWaitForSbcOML;
+CI_API extern PFNWGLWAITFORSBCOMLPROC _funcptr_wglWaitForSbcOML;
 #define wglWaitForSbcOML _funcptr_wglWaitForSbcOML
 
 #ifdef __cplusplus

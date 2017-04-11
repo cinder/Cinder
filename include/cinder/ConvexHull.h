@@ -30,10 +30,10 @@
 
 namespace cinder {
 
-PolyLine2f	calcConvexHull( const std::vector<vec2> &points );
-PolyLine2f	calcConvexHull( const vec2 *points, size_t numPoints );
-PolyLine2f	calcConvexHull( const Shape2d &shape );
-PolyLine2f	calcConvexHull( const Path2d &path );
-PolyLine2f	calcConvexHull( const PolyLine2f &polyLine );
+CI_API PolyLine2f	calcConvexHull( const std::vector<vec2> &points );
+CI_API PolyLine2f	calcConvexHull( const vec2 *points, size_t numPoints );
+CI_API PolyLine2f	calcConvexHull( const Shape2d &shape );
+CI_API PolyLine2f	calcConvexHull( const Path2d &path );
+CI_API PolyLine2f	calcConvexHull( const PolyLine2f &polyLine );
 
 } // namespace cinder

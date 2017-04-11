@@ -38,7 +38,7 @@ typedef std::shared_ptr<Batch>		BatchRef;
 class VertBatch;
 typedef std::shared_ptr<VertBatch>	VertBatchRef;
 
-class Batch {
+class CI_API Batch {
   public:
 	//! Maps a geom::Attrib to a named attribute in the GlslProg
 	typedef std::map<geom::Attrib,std::string> AttributeMapping;
@@ -100,7 +100,7 @@ class Batch {
 //! Allows simple creation of basic geometry in a style similar to OpenGL immediate mode.
 //! Can be used to construct a gl::Batch for better performance, or can draw() directly.
 //! Used with a series of calls to color(), normal(), and/or texCoord(), followed by a call to vertex(), per-vertex.
-class VertBatch : public geom::Source {
+class CI_API VertBatch : public geom::Source {
   public:
 	//! Constructs a VertBatch with primitive type \a primType. Default is \c GL_POINTS. If \a useContextDefaultBuffers is \c true, uses default buffers for the context, saving allocations; suitable for single draw.
 	VertBatch( GLenum primType = GL_POINTS, bool useContextDefaultBuffers = true );

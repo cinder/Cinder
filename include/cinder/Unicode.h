@@ -32,42 +32,42 @@
 
 namespace cinder {
 
-std::u16string	toUtf16( const char *utf8Str, size_t lengthInBytes = 0 );
-std::u16string	toUtf16( const std::string &utf8Str );
-std::u32string	toUtf32( const char *utf8Str, size_t lengthInBytes = 0 );
-std::u32string	toUtf32( const std::string &utf8Str );
+CI_API std::u16string	toUtf16( const char *utf8Str, size_t lengthInBytes = 0 );
+CI_API std::u16string	toUtf16( const std::string &utf8Str );
+CI_API std::u32string	toUtf32( const char *utf8Str, size_t lengthInBytes = 0 );
+CI_API std::u32string	toUtf32( const std::string &utf8Str );
 
-std::string		toUtf8( const char16_t *utf16Str, size_t lengthInBytes = 0 );
-std::string		toUtf8( const std::u16string &utf16Str );
+CI_API std::string		toUtf8( const char16_t *utf16Str, size_t lengthInBytes = 0 );
+CI_API std::string		toUtf8( const std::u16string &utf16Str );
 
-std::string		toUtf8( const char32_t *utf32str, size_t lengthInBytes = 0 );
-std::string		toUtf8( const std::u32string &utf32Str );
+CI_API std::string		toUtf8( const char32_t *utf32str, size_t lengthInBytes = 0 );
+CI_API std::string		toUtf8( const std::u32string &utf32Str );
 
-std::u16string	toUtf16( const std::u32string &utf32str );
-std::u32string	toUtf32( const std::u16string &utf16str );
+CI_API std::u16string	toUtf16( const std::u32string &utf32str );
+CI_API std::u32string	toUtf32( const std::u16string &utf16str );
 
 //! Returns the number of characters (not bytes) in the the UTF-8 string \a str. Optimize operation by supplying a non-default \a lengthInBytes of \a str.
-size_t		stringLengthUtf8( const char *str, size_t lengthInBytes = 0 );
+CI_API size_t	stringLengthUtf8( const char *str, size_t lengthInBytes = 0 );
 //!  Returns the UTF-32 code point of the next character in \a str, relative to the byte \a inOutByte. Increments \a inOutByte to be the first byte of the next character. Optimize operation by supplying a non-default \a lengthInBytes of \a str.
-uint32_t	nextCharUtf8( const char *str, size_t *inOutByte, size_t lengthInBytes = 0 );
+CI_API uint32_t	nextCharUtf8( const char *str, size_t *inOutByte, size_t lengthInBytes = 0 );
 //! Returns the index in bytes of the next character in \a str, advanced by \a numChars characters. Optimize operation by supplying a non-default \a lengthInBytes of \a str.
-size_t		advanceCharUtf8( const char *str, size_t numChars, size_t lengthInBytes = 0 );
+CI_API size_t	advanceCharUtf8( const char *str, size_t numChars, size_t lengthInBytes = 0 );
 
-void		lineBreakUtf8( const char *str, const std::function<bool(const char *, size_t)> &measureFn, const std::function<void(const char *,size_t)> &lineProcessFn );
+CI_API void		lineBreakUtf8( const char *str, const std::function<bool(const char *, size_t)> &measureFn, const std::function<void(const char *,size_t)> &lineProcessFn );
 
 //! Values returned by calcBreaksUtf8 and calcBreaksUtf16
 enum UnicodeBreaks { UNICODE_MUST_BREAK, UNICODE_ALLOW_BREAK, UNICODE_NO_BREAK, UNICODE_INSIDE_CHAR };
 
 //! Sets \a resultBreaks to be of the same length as the null-terminated UTF-8 string \a str with the values enumerated by UnicodeBreaks
-void		calcLinebreaksUtf8( const char *str, std::vector<uint8_t> *resultBreaks );
+CI_API void		calcLinebreaksUtf8( const char *str, std::vector<uint8_t> *resultBreaks );
 
 //! Sets \a resultBreaks to be of the same length as the UTF-8 string \a str with the values enumerated by UnicodeBreaks
-void		calcLinebreaksUtf8( const char *str, size_t strLength, std::vector<uint8_t> *resultBreaks );
+CI_API void		calcLinebreaksUtf8( const char *str, size_t strLength, std::vector<uint8_t> *resultBreaks );
 
 //! Sets \a resultBreaks to be of the same length as the null-terminated UTF-16 string \a str with the values enumerated by UnicodeBreaks
-void		calcLinebreaksUtf16( const uint16_t *str, std::vector<uint8_t> *resultBreaks );
+CI_API void		calcLinebreaksUtf16( const uint16_t *str, std::vector<uint8_t> *resultBreaks );
 
 //! Sets \a resultBreaks to be of the same length as the UTF-16 string \a str with the values enumerated by UnicodeBreaks
-void		calcLinebreaksUtf16( const uint16_t *str, size_t strLength, std::vector<uint8_t> *resultBreaks );
+CI_API void		calcLinebreaksUtf16( const uint16_t *str, size_t strLength, std::vector<uint8_t> *resultBreaks );
 
 }

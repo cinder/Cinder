@@ -47,7 +47,7 @@ typedef enum {
 	LEVEL_FATAL
 } Level;
 
-struct Location {
+struct CI_API Location {
 	Location() {}
 
 	Location( const std::string &functionName, const std::string &fileName, const size_t &lineNumber )
@@ -63,7 +63,7 @@ private:
 	size_t		mLineNumber;
 };
 
-struct Metadata {
+struct CI_API Metadata {
 
 	std::string toString() const;
 
@@ -71,13 +71,13 @@ struct Metadata {
 	Location	mLocation;
 };
 
-extern std::ostream& operator<<( std::ostream &os, const Location &rhs );
-extern std::ostream& operator<<( std::ostream &lhs, const Level &rhs );
+CI_API extern std::ostream& operator<<( std::ostream &os, const Location &rhs );
+CI_API extern std::ostream& operator<<( std::ostream &lhs, const Level &rhs );
 
 //! Logger is the base class all logging objects are derived from.
 //!
 //! \see LoggerConsole, LoggerFile, LoggerFileRotating
-class Logger : private Noncopyable {
+class CI_API Logger : private Noncopyable {
   public:
 	virtual ~Logger()	{}
 
@@ -98,7 +98,7 @@ class Logger : private Noncopyable {
 typedef std::shared_ptr<Logger>	LoggerRef;
 
 //! LoggerConsole prints log messages in the application console window.
-class LoggerConsole : public Logger {
+class CI_API LoggerConsole : public Logger {
   public:
 	void write( const Metadata &meta, const std::string &text ) override;
 };
@@ -106,7 +106,7 @@ class LoggerConsole : public Logger {
 //! \brief LoggerFile will write log messages to a specified file.
 //!
 //! LoggerFile will write to a specified file, either appending to or overwriting that file at application startup.
-class LoggerFile : public Logger {
+class CI_API LoggerFile : public Logger {
   public:
 	//! LoggerFile writes to a single log file.  File appending is configurable.
 	//! If \p filePath is empty, uses the default ('%cinder.log' next to app binary)
@@ -129,7 +129,7 @@ class LoggerFile : public Logger {
 };
 
 //! LoggerFileRotating will write log messages to a file that is rotated at midnight.
-class LoggerFileRotating : public LoggerFile {
+class CI_API LoggerFileRotating : public LoggerFile {
 public:
 	
 	//! Creates a rotating log file that will rotate when the first logging event occurs after midnight.
@@ -147,7 +147,7 @@ protected:
 };
 	
 //! LoggerBreakpoint doesn't actually print anything, but triggers a breakpoint on log events above a specified threshold.
-class LoggerBreakpoint : public Logger {
+class CI_API LoggerBreakpoint : public Logger {
   public:
 	LoggerBreakpoint( Level triggerLevel = LEVEL_ERROR )
 		: mTriggerLevel( triggerLevel )
@@ -164,7 +164,7 @@ class LoggerBreakpoint : public Logger {
 
 //! LoggerSystem rovides 'system' logging support. Uses syslog on platforms that have it, on MSW uses Windows Event Logging.
 //! \note Does nothing on WinRT.
-class LoggerSystem : public Logger {
+class CI_API LoggerSystem : public Logger {
 public:
 	LoggerSystem();
 	virtual ~LoggerSystem();
@@ -191,7 +191,7 @@ protected:
 //! \brief LogManager manages a stack of all active Loggers.
 //!
 //! LogManager's default state contains a single LoggerConsole.  LogManager allows for adding and removing Loggers via their pointer values.
-class LogManager {
+class CI_API LogManager {
 public:
 	// Returns a pointer to the shared instance. To enable logging during shutdown, this instance is leaked at shutdown.
 	static LogManager* instance()	{ return sInstance; }
@@ -234,7 +234,7 @@ protected:
 	static LogManager 				*sInstance;
 };
 	
-struct Entry {
+struct CI_API Entry {
 	// TODO: move &&location
 	Entry( Level level, const Location &location );
 	~Entry();
@@ -261,7 +261,7 @@ private:
 // Freestanding functions
 
 //! The global manager for logging, used to manipulate the Logger stack. Provides thread safety amongst the Loggers.
-LogManager* manager();
+CI_API LogManager* manager();
 
 //! Creates and returns a new logger of type LoggerT, adding it to the current Logger stack.
 template<typename LoggerT, typename... Args>

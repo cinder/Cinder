@@ -605,11 +605,6 @@ Primitive Target::determineCombinedPrimitive( Primitive a, Primitive b )
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Rect
-//float Rect::sPositions[4*2] = { 0.5f,-0.5f,	-0.5f,-0.5f,	0.5f,0.5f,	-0.5f,0.5f };
-//float Rect::sColors[4*3] = { 1, 0, 1,	0, 0, 1,	1, 1, 1,	0, 1, 1 };
-//float Rect::sTexCoords[4*2] = { 1, 1,		0, 1,		1, 0,		0, 0 };
-const float Rect::sNormals[4*3] = {0, 0, 1,	0, 0, 1,	0, 0, 1,	0, 0, 1 };
-const float Rect::sTangents[4*3] = {0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0 };
 
 Rect::Rect()
 	: mHasColors( false )
@@ -659,18 +654,26 @@ Rect& Rect::texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2
 	return *this;
 }
 
+//float Rect::sPositions[4*2] = { 0.5f,-0.5f,	-0.5f,-0.5f,	0.5f,0.5f,	-0.5f,0.5f };
+//float Rect::sColors[4*3] = { 1, 0, 1,	0, 0, 1,	1, 1, 1,	0, 1, 1 };
+//float Rect::sTexCoords[4*2] = { 1, 1,		0, 1,		1, 0,		0, 0 };
+namespace {
+	const float sRectNormals[4*3] = {0, 0, 1,	0, 0, 1,	0, 0, 1,	0, 0, 1 };
+	const float sRectTangents[4*3] = {0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0 };
+}
+
 void Rect::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	if( requestedAttribs.count( Attrib::POSITION ) )
 		target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)mPositions.data(), 4 );
 	if( requestedAttribs.count( Attrib::NORMAL ) )
-		target->copyAttrib( Attrib::NORMAL, 3, 0, sNormals, 4 );
+		target->copyAttrib( Attrib::NORMAL, 3, 0, sRectNormals, 4 );
 	if( requestedAttribs.count( Attrib::TEX_COORD_0 ) )
 		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)mTexCoords.data(), 4 );
 	if( requestedAttribs.count( Attrib::COLOR ) )
 		target->copyAttrib( Attrib::COLOR, 4, 0, (const float*)mColors.data(), 4 );
 	if( requestedAttribs.count( Attrib::TANGENT ) )
-		target->copyAttrib( Attrib::TANGENT, 3, 0, sTangents, 4 );
+		target->copyAttrib( Attrib::TANGENT, 3, 0, sRectTangents, 4 );
 }
 
 uint8_t	Rect::getAttribDims( Attrib attr ) const
@@ -5155,9 +5158,9 @@ void SourceModsContext::clearIndices()
 ///////////////////////////////////////////////////////////////////////////////////////
 // Modifier
 
-template class AttribFn<float,float>;	template class AttribFn<float,vec2>;	template class AttribFn<float,vec3>;	template class AttribFn<float,vec4>;
-template class AttribFn<vec2,float>;	template class AttribFn<vec2,vec2>;		template class AttribFn<vec2,vec3>;		template class AttribFn<vec2,vec4>;
-template class AttribFn<vec3,float>;	template class AttribFn<vec3,vec2>;		template class AttribFn<vec3,vec3>;		template class AttribFn<vec3,vec4>;
-template class AttribFn<vec4,float>;	template class AttribFn<vec4,vec2>;		template class AttribFn<vec4,vec3>;		template class AttribFn<vec4,vec4>;
+template class CI_API AttribFn<float,float>;	template class CI_API AttribFn<float,vec2>;		template class CI_API AttribFn<float,vec3>;		template class CI_API AttribFn<float,vec4>;
+template class CI_API AttribFn<vec2,float>;		template class CI_API AttribFn<vec2,vec2>;		template class CI_API AttribFn<vec2,vec3>;		template class CI_API AttribFn<vec2,vec4>;
+template class CI_API AttribFn<vec3,float>;		template class CI_API AttribFn<vec3,vec2>;		template class CI_API AttribFn<vec3,vec3>;		template class CI_API AttribFn<vec3,vec4>;
+template class CI_API AttribFn<vec4,float>;		template class CI_API AttribFn<vec4,vec2>;		template class CI_API AttribFn<vec4,vec3>;		template class CI_API AttribFn<vec4,vec4>;
 
 } } // namespace cinder::geom

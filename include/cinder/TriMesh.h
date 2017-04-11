@@ -39,9 +39,9 @@ namespace cinder {
 
 typedef std::shared_ptr<class TriMesh>		TriMeshRef;
 	
-class TriMesh : public geom::Source {
+class CI_API TriMesh : public geom::Source {
  public:
-	class Format {
+	class CI_API Format {
 	  public:
 		Format();
 		

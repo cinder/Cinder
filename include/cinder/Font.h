@@ -52,7 +52,7 @@ namespace cinder {
 class FontObj;
 
 //! Represents an instance of a font at a point size. \ImplShared
-class Font {
+class CI_API Font {
  public:
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	
 	typedef uint32_t		Glyph;
@@ -61,7 +61,7 @@ class Font {
 	};
 #else
 	typedef uint16_t		Glyph;	
-	struct GlyphMetrics {};
+	struct CI_API GlyphMetrics {};
 #endif
 
 	/** \brief constructs a null Font **/
@@ -123,7 +123,7 @@ class Font {
 	//@}
 };
 
-class FontLoadFailedExc : public cinder::Exception {
+class CI_API FontLoadFailedExc : public cinder::Exception {
   public:
 	FontLoadFailedExc() throw() {}
 	FontLoadFailedExc( const std::string &fontName ) throw();
@@ -132,7 +132,7 @@ class FontLoadFailedExc : public cinder::Exception {
 	char mMessage[2048];	
 };
 
-class FontInvalidNameExc : public cinder::Exception {
+class CI_API FontInvalidNameExc : public cinder::Exception {
   public:
 	FontInvalidNameExc() throw() {}
 	FontInvalidNameExc( const std::string &fontName ) throw();
@@ -141,7 +141,7 @@ class FontInvalidNameExc : public cinder::Exception {
 	char mMessage[2048];	
 };
 
-class FontGlyphFailureExc : public cinder::Exception {
+class CI_API FontGlyphFailureExc : public cinder::Exception {
 };
 
 } // namespace cinder

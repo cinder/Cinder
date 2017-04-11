@@ -27,7 +27,7 @@
 
 namespace cinder {
 
-class Ray {
+class CI_API Ray {
   public:
 	Ray() {}
 	Ray( const vec3 &aOrigin, const vec3 &aDirection ) : mOrigin( aOrigin ) { setDirection( aDirection ); }

@@ -35,7 +35,7 @@ namespace cinder {
 class Sphere;
 
 //! Base Camera class, which manages the projection and view matrices for a 3-dimensional scene, as well as providing mapping functionality.
-class Camera {
+class CI_API Camera {
   public:
 	virtual ~Camera() {}
 
@@ -176,7 +176,7 @@ class Camera {
 };
 
 //! A perspective Camera.
-class CameraPersp : public Camera {
+class CI_API CameraPersp : public Camera {
   public:
 	//! Creates a default camera with eyePoint at ( 28, 21, 28 ), looking at the origin, 35deg vertical field-of-view and a 1.333 aspect ratio.
 	CameraPersp();
@@ -228,7 +228,7 @@ class CameraPersp : public Camera {
 };
 
 //! An orthographic Camera.
-class CameraOrtho : public Camera {
+class CI_API CameraOrtho : public Camera {
   public:
 	CameraOrtho();
 	CameraOrtho( float left, float right, float bottom, float top, float nearPlane, float farPlane );
@@ -242,7 +242,7 @@ class CameraOrtho : public Camera {
 };
 
 //! A Camera used for stereoscopic displays.
-class CameraStereo : public CameraPersp {
+class CI_API CameraStereo : public CameraPersp {
   public:
 	CameraStereo() 
 		: mConvergence( 1.0f ), mEyeSeparation( 0.05f ), mIsStereo( false ), mIsLeft( true ) {}

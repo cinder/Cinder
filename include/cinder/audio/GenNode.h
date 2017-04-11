@@ -40,7 +40,7 @@ typedef std::shared_ptr<class GenOscNode>			GenOscNodeRef;
 typedef std::shared_ptr<class GenPulseNode>			GenPulseNodeRef;
 
 //! Base class for InputNode's that generate audio samples. Gen's are always mono channel.
-class GenNode : public InputNode {
+class CI_API GenNode : public InputNode {
   public:
 	//! Sets the frequency in hertz to a constant value of \a freq.
 	void setFreq( float freq )		{ mFreq.setValue( freq ); }
@@ -65,7 +65,7 @@ class GenNode : public InputNode {
 };
 
 //! Noise generator. \note The frequency parameter is ignored.
-class GenNoiseNode : public GenNode {
+class CI_API GenNoiseNode : public GenNode {
   public:
 	//! Constructs a GenNoiseNode with optional \a format.
 	GenNoiseNode( const Format &format = Format() ) : GenNode( format ) {}
@@ -75,7 +75,7 @@ class GenNoiseNode : public GenNode {
 };
 
 //! Phase generator, i.e. ramping waveform that runs from 0 to 1.
-class GenPhasorNode : public GenNode {
+class CI_API GenPhasorNode : public GenNode {
   public:
 	//! Constructs a GenPhasorNode with optional \a format.
 	GenPhasorNode( const Format &format = Format() ) : GenNode( format ) {}
@@ -86,7 +86,7 @@ class GenPhasorNode : public GenNode {
 };
 
 //! Sine waveform generator.
-class GenSineNode : public GenNode {
+class CI_API GenSineNode : public GenNode {
   public:
 	GenSineNode( const Format &format = Format() ) : GenNode( format )	{}
 	GenSineNode( float freq, const Format &format = Format() ) : GenNode( freq, format ) {}
@@ -96,7 +96,7 @@ class GenSineNode : public GenNode {
 };
 
 //! Triangle waveform generator.
-class GenTriangleNode : public GenNode {
+class CI_API GenTriangleNode : public GenNode {
   public:
 	GenTriangleNode( const Format &format = Format() );
 	GenTriangleNode( float freq, const Format &format = Format() );
@@ -115,7 +115,7 @@ class GenTriangleNode : public GenNode {
 };
 
 //! Basic table-lookup oscillator. \note aliasing will occur at higher frequencies, in this case refer to GenOscNode which is more robust.
-class GenTableNode : public GenNode {
+class CI_API GenTableNode : public GenNode {
   public:
 	GenTableNode( const Format &format = Format() )	: GenNode( format )		{}
 	GenTableNode( float freq, const Format &format = Format() ) : GenNode( freq, format )	{}
@@ -133,7 +133,7 @@ class GenTableNode : public GenNode {
 };
 
 //! General purpose, band-limited oscillator using wavetable lookup.
-class GenOscNode : public GenNode {
+class CI_API GenOscNode : public GenNode {
   public:
 	GenOscNode( const Format &format = Format() );
 	GenOscNode( float freq, const Format &format = Format() );
@@ -160,7 +160,7 @@ class GenOscNode : public GenNode {
 };
 
 //! Pulse waveform generator with variable pulse width. Based on wavetable lookup of two band-limited sawtooth waveforms, subtracted from each other.
-class GenPulseNode : public GenNode {
+class CI_API GenPulseNode : public GenNode {
   public:
 	GenPulseNode( const Format &format = Format() );
 	GenPulseNode( float freq, const Format &format = Format() );

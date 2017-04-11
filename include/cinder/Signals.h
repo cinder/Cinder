@@ -28,6 +28,7 @@
 
 #include "cinder/CinderAssert.h"
 #include "cinder/Noncopyable.h"
+#include "cinder/Export.h"
 
 #include <functional>
 #include <memory>
@@ -100,7 +101,7 @@ struct SignalBase : private Noncopyable {
 };
 
 //! Helper class for disconnecting Connections.
-struct Disconnector : private Noncopyable {
+struct CI_API Disconnector : private Noncopyable {
 	//! Constructs a new Disconnector, which is owned by \a signal.
 	Disconnector( SignalBase *signal );
 	//! Instructs the owning signal to disconnect \a link, which resides within priority group \a priority.
@@ -117,7 +118,7 @@ struct Disconnector : private Noncopyable {
 // ----------------------------------------------------------------------------------------------------
 
 //! Connection is returned from Signal::connect(), which can be used to disconnect the callback slot.
-class Connection {
+class CI_API Connection {
   public:
 	Connection();
 	Connection( const std::shared_ptr<detail::Disconnector> &disconnector, detail::SignalLinkBase *link, int priority );
@@ -145,7 +146,7 @@ class Connection {
 };
 
 //! ScopedConnection can be captured from Signal::connect() to limit the connection lifetime to the current scope, after which Connection::disconnect() will be called.
-class ScopedConnection : public Connection, private Noncopyable {
+class CI_API ScopedConnection : public Connection, private Noncopyable {
   public:
 	ScopedConnection();
 	~ScopedConnection();
@@ -159,7 +160,7 @@ class ScopedConnection : public Connection, private Noncopyable {
 // ----------------------------------------------------------------------------------------------------
 
 //! Maintains a list of Connections and calls disconnect on them when it is destroyed. Non-copyable.
-class ConnectionList : private Noncopyable {
+class CI_API ConnectionList : private Noncopyable {
   public:
 	~ConnectionList();
 

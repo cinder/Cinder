@@ -31,7 +31,7 @@ namespace cinder
 typedef std::shared_ptr<class TimelineItem>	TimelineItemRef;
 
 //! Base interface for anything that can go on a Timeline
-class TimelineItem : public std::enable_shared_from_this<TimelineItem>
+class CI_API TimelineItem : public std::enable_shared_from_this<TimelineItem>
 {
   public:
 	TimelineItem( class Timeline *parent = 0 );

@@ -44,7 +44,7 @@ typedef std::shared_ptr<class VoiceSamplePlayerNode> VoiceSamplePlayerNodeRef;
 //! Underneath, playback is managed by a Node, which can be retrieved via the virtual getNode() method to
 //! perform more complex tasks.
 //!
-class Voice {
+class CI_API Voice {
   public:
 	//! Optional parameters passed into Voice::create() methods.
 	struct Options {
@@ -118,7 +118,7 @@ class Voice {
 //! Depending on the size of the specified file, playback will either be done in-memory (with BufferPlayerNode)
 //! or streaming (with FilePlayerNode). The maximum frames for in-memory playback can be specified with Voice::Options::maxFramesForBufferPlayback()
 //! Create with Voice::create( const SourceFileRef &sourceFile, const Options &options )
-class VoiceSamplePlayerNode : public Voice {
+class CI_API VoiceSamplePlayerNode : public Voice {
   public:
 
 	NodeRef getInputNode() const override			{ return mNode; }
@@ -136,7 +136,7 @@ class VoiceSamplePlayerNode : public Voice {
 };
 
 //! Concrete Voice for processing audio with a callback function. \see CallbackProcessorFn
-class VoiceCallbackProcessor : public Voice {
+class CI_API VoiceCallbackProcessor : public Voice {
   public:
 	NodeRef getInputNode() const override			{ return mNode; }
 

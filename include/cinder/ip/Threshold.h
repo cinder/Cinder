@@ -31,34 +31,34 @@ namespace cinder { namespace ip {
 
 //! Thresholds \a surface setting any values below \a value to zero and any values above to unity inside the Area \a area
 template<typename T>
-void threshold( SurfaceT<T> *surface, T value, const Area &area );
+CI_API void threshold( SurfaceT<T> *surface, T value, const Area &area );
 //! Thresholds \a surface setting any values below \a value to zero and any values above to unity
 template<typename T>
-void threshold( SurfaceT<T> *surface, T value );
+CI_API void threshold( SurfaceT<T> *surface, T value );
 //! Thresholds \a srcSurface setting any values below \a value to zero and any values above to unity and storing the result in \a dstSurface
 template<typename T>
-void threshold( const SurfaceT<T> &srcSurface, T value, SurfaceT<T> *dstSurface );
+CI_API void threshold( const SurfaceT<T> &srcSurface, T value, SurfaceT<T> *dstSurface );
 //! Thresholds \a srcChannel setting any values below \a value to zero and any values above to unity and storing the result in \a dstChannel
 template<typename T>
-void threshold( const ChannelT<T> &srcSurface, T value, ChannelT<T> *dstSurface );
+CI_API void threshold( const ChannelT<T> &srcSurface, T value, ChannelT<T> *dstSurface );
 //! Thresholds \a srcChannel using an adaptive thresholding algorithm which considers a window of size \a windowSize pixels and stores the result in \a dstChannel.
 /** Implements the algorithm described in "Adaptive Thresholding Using the Integral Image" by Bradley & Roth. The srcSurface.getWidth() / 8 is a good default for \a windowSize and 0.15 is for \a percentageDelta **/
 template<typename T>
-void adaptiveThreshold( const ChannelT<T> &srcChannel, int32_t windowSize, float percentageDelta, ChannelT<T> *dstChannel );
+CI_API void adaptiveThreshold( const ChannelT<T> &srcChannel, int32_t windowSize, float percentageDelta, ChannelT<T> *dstChannel );
 //! Thresholds \a srcChannel using an adaptive thresholding algorithm which considers a window of size \a windowSize pixels.
 /** Implements the algorithm described in "Adaptive Thresholding Using the Integral Image" by Bradley & Roth. The srcSurface.getWidth() / 8 is a good default for \a windowSize and 0.15 is for \a percentageDelta **/
 template<typename T>
-void adaptiveThreshold( ChannelT<T> *channel, int32_t windowSize, float percentageDelta );
+CI_API void adaptiveThreshold( ChannelT<T> *channel, int32_t windowSize, float percentageDelta );
 //! Thresholds \a srcChannel using an adaptive thresholding algorithm which considers a window of size \a windowSize pixels. Equivalent to calling adaptiveThreshold with a 0 for percentageDelta
 /** Implements the algorithm described in "Adaptive Thresholding Using the Integral Image" by Bradley & Roth. The srcSurface.getWidth() / 8 is a good default for \a windowSize **/
 template<typename T>
-void adaptiveThresholdZero( ChannelT<T> *channel, int32_t windowSize );
+CI_API void adaptiveThresholdZero( ChannelT<T> *channel, int32_t windowSize );
 
 template<typename T>
-void adaptiveThresholdZero( const ChannelT<T> &srcChannel, int32_t windowSize, ChannelT<T> *dstChannel );
+CI_API void adaptiveThresholdZero( const ChannelT<T> &srcChannel, int32_t windowSize, ChannelT<T> *dstChannel );
 
 template<typename T>
-class AdaptiveThresholdT {
+class CI_API AdaptiveThresholdT {
   public:
 	AdaptiveThresholdT()	{}
 	//! Uses \a channel as source, but not assume ownership

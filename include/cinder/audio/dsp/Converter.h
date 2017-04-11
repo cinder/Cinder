@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include "cinder/Export.h"
 #include "cinder/audio/Buffer.h"
 
 #include <memory>
@@ -31,7 +32,7 @@
 namespace cinder { namespace audio { namespace dsp {
 
 //! A platform-specific converter that supports samplerate and channel conversion.
-class Converter {
+class CI_API Converter {
   public:
 	//! If \a destSampleRate is 0, it is set to match \a sourceSampleRate. If \a destNumChannels is 0, it is set to match \a sourceNumChannels.
 	static std::unique_ptr<Converter> create( size_t sourceSampleRate, size_t destSampleRate, size_t sourceNumChannels, size_t destNumChannels, size_t sourceMaxFramesPerBlock );
@@ -59,12 +60,12 @@ class Converter {
 };
 
 //! Mixes \a numFrames frames of \a sourceBuffer to \a destBuffer's layout, replacing its content. Channel up or down mixing is applied if necessary.
-void mixBuffers( const Buffer *sourceBuffer, Buffer *destBuffer, size_t numFrames );
+CI_API void mixBuffers( const Buffer *sourceBuffer, Buffer *destBuffer, size_t numFrames );
 //! Mixes \a sourceBuffer to \a destBuffer's layout, replacing its content. Channel up or down mixing is applied if necessary. Unequal frame counts are permitted (the minimum size will be used).
 inline void mixBuffers( const Buffer *sourceBuffer, Buffer *destBuffer )	{ mixBuffers( sourceBuffer, destBuffer, std::min( sourceBuffer->getNumFrames(), destBuffer->getNumFrames() ) ); }
 
 //! Sums \a numFrames frames of \a sourceBuffer into \a destBuffer. Channel up or down mixing is applied if necessary.
-void sumBuffers( const Buffer *sourceBuffer, Buffer *destBuffer, size_t numFrames );
+CI_API void sumBuffers( const Buffer *sourceBuffer, Buffer *destBuffer, size_t numFrames );
 //! Sums \a sourceBuffer into \a destBuffer. Channel up or down mixing is applied if necessary. Unequal frame counts are permitted (the minimum size will be used).
 inline void sumBuffers( const Buffer *sourceBuffer, Buffer *destBuffer )	{ sumBuffers( sourceBuffer, destBuffer, std::min( sourceBuffer->getNumFrames(), destBuffer->getNumFrames() ) ); }
 

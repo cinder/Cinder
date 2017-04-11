@@ -450,7 +450,7 @@ std::ostream& operator<< ( std::ostream& o, const RectT<T>& rect )
 	return o << "(" << rect.x1 << ", " << rect.y1 << ")-(" << rect.x2 << ", " << rect.y2 << ")";
 }
 
-template class RectT<float>;
-template class RectT<double>;
+template class CI_API RectT<float>;
+template class CI_API RectT<double>;
 
 } // namespace cinder

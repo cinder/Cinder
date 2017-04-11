@@ -342,7 +342,7 @@ void BandedMatrix<T>::deallocate()
     }
 }
 
-template class BandedMatrix<float>;
-template class BandedMatrix<double>;
+template class CI_API BandedMatrix<float>;
+template class CI_API BandedMatrix<double>;
 
 } // namespace cinder

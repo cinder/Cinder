@@ -68,6 +68,8 @@
 
 #endif /*GL_LOAD_GEN_BASIC_OPENGL_TYPEDEFS*/
 
+#include "cinder/Export.h"
+
 #include <stddef.h>
 #ifndef GLEXT_64_TYPES_DEFINED
 /* This code block is duplicated in glxext.h, so must be protected */
