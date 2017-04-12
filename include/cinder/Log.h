@@ -210,7 +210,7 @@ public:
 	void removeLogger( const LoggerRef& logger );
 	//! Returns a vector of Loggers of a specifc type.
 	template<typename LoggerT>
-	std::vector<std::shared_ptr<LoggerT>> getLoggers();
+	std::vector<std::shared_ptr<LoggerT> > getLoggers();
 	//! Returns a vector of LoggerRef that contains all active loggers
 	std::vector<LoggerRef> getAllLoggers();
 	//! Returns the mutex used for thread safe logging.
@@ -307,9 +307,9 @@ std::shared_ptr<LoggerT> LogManager::makeOrGetLogger( Args&&... args )
 }
 	
 template<typename LoggerT>
-std::vector<std::shared_ptr<LoggerT>> LogManager::getLoggers()
+std::vector<std::shared_ptr<LoggerT> > LogManager::getLoggers()
 {
-	std::vector<std::shared_ptr<LoggerT>> result;
+	std::vector<std::shared_ptr<LoggerT> > result;
 
 	std::lock_guard<std::mutex> lock( manager()->getMutex() );
 	for( const auto &logger : mLoggers ) {

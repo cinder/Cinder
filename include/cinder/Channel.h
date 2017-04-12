@@ -58,24 +58,24 @@ class CI_API ChannelT {
 	operator ImageSourceRef() const;
 
 	//! Allocates and owns a contiguous block of memory that is sizeof(T) * width * height
-	static std::shared_ptr<ChannelT<T>> create( int32_t width, int32_t height )
-	{ return std::make_shared<ChannelT<T>>( width, height ); }
+	static std::shared_ptr<ChannelT<T> > create( int32_t width, int32_t height )
+	{ return std::make_shared<ChannelT<T> >( width, height ); }
 	
 	//! Does not allocate or own memory pointed to by \a data
-	static std::shared_ptr<ChannelT<T>> create( int32_t width, int32_t height, ptrdiff_t rowBytes, uint8_t increment, T *data )
-	{ return std::make_shared<ChannelT<T>>( width, height, rowBytes, increment, data ); }
+	static std::shared_ptr<ChannelT<T> > create( int32_t width, int32_t height, ptrdiff_t rowBytes, uint8_t increment, T *data )
+	{ return std::make_shared<ChannelT<T> >( width, height, rowBytes, increment, data ); }
 	
 	//! Does not allocate memory pointed to by \a data but holds a reference to \a dataStore
-	static std::shared_ptr<ChannelT<T>> create( int32_t width, int32_t height, ptrdiff_t rowBytes, uint8_t increment, T *data, const std::shared_ptr<T> &dataStore )
-	{ return std::make_shared<ChannelT<T>>( width, height, rowBytes, increment, data, dataStore ); }
+	static std::shared_ptr<ChannelT<T> > create( int32_t width, int32_t height, ptrdiff_t rowBytes, uint8_t increment, T *data, const std::shared_ptr<T> &dataStore )
+	{ return std::make_shared<ChannelT<T> >( width, height, rowBytes, increment, data, dataStore ); }
 	
 	//! Creates a clone of \a rhs. Data is always stored planar regardless of the increment of \a rhs.
-	static std::shared_ptr<ChannelT<T>> create( const ChannelT &rhs )
-	{ return std::make_shared<ChannelT<T>>( rhs ); }
+	static std::shared_ptr<ChannelT<T> > create( const ChannelT &rhs )
+	{ return std::make_shared<ChannelT<T> >( rhs ); }
 	
 	//! Creates a ChannelT by loading from an ImageSource \a imageSource
-	static std::shared_ptr<ChannelT<T>> create( const ImageSourceRef &imageSource )
-	{ return std::make_shared<ChannelT<T>>( imageSource ); }
+	static std::shared_ptr<ChannelT<T> > create( const ImageSourceRef &imageSource )
+	{ return std::make_shared<ChannelT<T> >( imageSource ); }
 	
 
 	//! Returns a new Channel which is a duplicate. If \a copyPixels the pixel values are copied, otherwise the clone's pixels remain uninitialized.

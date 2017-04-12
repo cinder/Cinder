@@ -1252,13 +1252,13 @@ namespace TupleDetail {
 }
 
 template<typename ...Types>
-struct StringMaker<std::tuple<Types...>> {
+struct StringMaker<std::tuple<Types...> > {
 
     static std::string convert( const std::tuple<Types...>& tuple )
     {
         std::ostringstream os;
         os << '{';
-        TupleDetail::ElementPrinter<std::tuple<Types...>>::print( tuple, os );
+        TupleDetail::ElementPrinter<std::tuple<Types...> >::print( tuple, os );
         os << " }";
         return os.str();
     }

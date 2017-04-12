@@ -1580,7 +1580,7 @@ gl::TextureRef Texture2dCache::cache( const Surface8u &originalData )
 		mIntermediateSurface->copyFrom( originalData, originalData.getBounds() );
 
 	// find an available slot and update that if possible
-	for( vector<pair<int,TextureRef>>::iterator texIt = mTextures.begin(); texIt != mTextures.end(); ++texIt ) {
+	for( vector<pair<int,TextureRef> >::iterator texIt = mTextures.begin(); texIt != mTextures.end(); ++texIt ) {
 		if( texIt->first == -1 ) { // this texture is available, let's use it!
 			texIt->second->update( surfaceData );
 			texIt->first = mNextId++;

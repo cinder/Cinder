@@ -257,8 +257,8 @@ void VboMesh::Layout::allocate( size_t numVertices, geom::BufferLayout *resultBu
 // VboMesh
 VboMeshRef VboMesh::create( const geom::Source &source )
 {
-	// Pass an empty std::vector<pair<Layout,VboRef>> to imply we want to pull data from the Source
-	return VboMeshRef( new VboMesh( source, std::vector<pair<Layout,VboRef>>(), VboRef() ) );
+	// Pass an empty std::vector<pair<Layout,VboRef> > to imply we want to pull data from the Source
+	return VboMeshRef( new VboMesh( source, std::vector<pair<Layout,VboRef> >(), VboRef() ) );
 }
 
 VboMeshRef VboMesh::create( const geom::Source &source, const geom::AttribSet &requestedAttribs )
@@ -273,19 +273,19 @@ VboMeshRef VboMesh::create( const geom::Source &source, const geom::AttribSet &r
 
 VboMeshRef VboMesh::create( const geom::Source &source, const std::vector<VboMesh::Layout> &vertexArrayLayouts )
 {
-	std::vector<std::pair<VboMesh::Layout,VboRef>> layoutVbos;
+	std::vector<std::pair<VboMesh::Layout,VboRef> > layoutVbos;
 	for( const auto &vertexArrayLayout : vertexArrayLayouts )
 		layoutVbos.push_back( std::make_pair( vertexArrayLayout, (VboRef)nullptr ) );
 
 	return VboMeshRef( new VboMesh( source, layoutVbos, nullptr ) );
 }
 
-VboMeshRef VboMesh::create( const geom::Source &source, const std::vector<std::pair<VboMesh::Layout,VboRef>> &vertexArrayLayouts, const VboRef &indexVbo )
+VboMeshRef VboMesh::create( const geom::Source &source, const std::vector<std::pair<VboMesh::Layout,VboRef> > &vertexArrayLayouts, const VboRef &indexVbo )
 {
 	return VboMeshRef( new VboMesh( source, vertexArrayLayouts, indexVbo ) );
 }
 
-VboMeshRef VboMesh::create( uint32_t numVertices, GLenum glPrimitive, const std::vector<pair<geom::BufferLayout,VboRef>> &vertexArrayBuffers, uint32_t numIndices, GLenum indexType, const VboRef &indexVbo )
+VboMeshRef VboMesh::create( uint32_t numVertices, GLenum glPrimitive, const std::vector<pair<geom::BufferLayout,VboRef> > &vertexArrayBuffers, uint32_t numIndices, GLenum indexType, const VboRef &indexVbo )
 {
 	return VboMeshRef( new VboMesh( numVertices, numIndices, glPrimitive, indexType, vertexArrayBuffers, indexVbo ) );
 }
@@ -295,7 +295,7 @@ VboMeshRef VboMesh::create( uint32_t numVertices, GLenum glPrimitive, const std:
 	return VboMeshRef( new VboMesh( numVertices, numIndices, glPrimitive, indexType, vertexArrayLayouts, indexVbo ) );
 }
 
-VboMesh::VboMesh( const geom::Source &source, std::vector<pair<Layout,VboRef>> vertexArrayBuffers, const VboRef &indexArrayVbo )
+VboMesh::VboMesh( const geom::Source &source, std::vector<pair<Layout,VboRef> > vertexArrayBuffers, const VboRef &indexArrayVbo )
 {
 	// An empty vertexArrayBuffers implies we should just pull whatever attribs the Source is pushing. We arrived here from VboMesh::create( Source& )
 	if( vertexArrayBuffers.empty() ) {
@@ -344,7 +344,7 @@ VboMesh::VboMesh( const geom::Source &source, std::vector<pair<Layout,VboRef>> v
 	target.copyBuffers();
 }
 
-VboMesh::VboMesh( uint32_t numVertices, uint32_t numIndices, GLenum glPrimitive, GLenum indexType, const std::vector<pair<geom::BufferLayout,VboRef>> &vertexArrayBuffers, const VboRef &indexVbo )
+VboMesh::VboMesh( uint32_t numVertices, uint32_t numIndices, GLenum glPrimitive, GLenum indexType, const std::vector<pair<geom::BufferLayout,VboRef> > &vertexArrayBuffers, const VboRef &indexVbo )
 	: mNumVertices( numVertices ), mNumIndices( numIndices ), mGlPrimitive( glPrimitive ), mIndexType( indexType ), mVertexArrayVbos( vertexArrayBuffers ), mIndices( indexVbo )
 {
 // @TODO: Find a better way to handle this
@@ -814,7 +814,7 @@ void VboMesh::echoVertexRange( std::ostream &os, size_t startIndex, size_t endIn
 void VboMesh::echoVertices( std::ostream &os, const vector<uint32_t> &indices, bool printIndices )
 {
 	vector<string> attribSemanticNames;
-	vector<vector<string>> attribData;
+	vector<vector<string> > attribData;
 	vector<size_t> attribColLengths;
 	vector<string> attribColLeadingSpaceStrings;
 

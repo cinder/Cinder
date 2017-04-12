@@ -65,7 +65,7 @@ enum InterfaceOrientation {
 };
 
 //! Signal used for retrieving the supported orientations. \t BitwiseAndEventCombiner is used so that any connection can forbid a certain orientation.
-typedef	signals::Signal<uint32_t (), signals::CollectorBitwiseAnd<uint32_t>>		EventSignalSupportedOrientations;	
+typedef	signals::Signal<uint32_t (), signals::CollectorBitwiseAnd<uint32_t> >		EventSignalSupportedOrientations;
 #endif
 
 typedef	signals::Signal<bool (), signals::CollectorBooleanAnd>						EventSignalShouldQuit;
