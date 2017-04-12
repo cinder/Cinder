@@ -72,7 +72,7 @@ class AppWinRt : public AppBase {
 	//! \cond
 	// Called from WinMain (in CINDER_APP_WINRT macro)
 	template<typename AppT>
-	static void main( ::Platform::Array<::Platform::String^>^ args, const RendererRef &defaultRenderer, const SettingsFn &settingsFn = SettingsFn() );
+	static void main(const RendererRef &defaultRenderer, ::Platform::Array<::Platform::String^>^ args, const SettingsFn &settingsFn = SettingsFn());
 
 	static void	executeLaunch( const std::function<AppWinRt*()> &appFactoryFn );
 	//! \endcond
@@ -112,7 +112,7 @@ class AppWinRt : public AppBase {
 };
 
 template<typename AppT>
-void AppWinRt::main( ::Platform::Array<::Platform::String^>^ args, const RendererRef &defaultRenderer, const SettingsFn &settingsFn )
+void AppWinRt::main( const RendererRef &defaultRenderer, ::Platform::Array<::Platform::String^>^ args, const SettingsFn &settingsFn )
 {
 	AppBase::prepareLaunch();
 
@@ -128,11 +128,15 @@ void AppWinRt::main( ::Platform::Array<::Platform::String^>^ args, const Rendere
 
 } } // namespace cinder::app
 
+template< typename AppType, typename RendererType, typename ...Args >
+void launch( const char*, Args... args ) {
+	cinder::app::RendererRef renderer( new RendererType );
+	cinder::app::AppWinRt::main<AppType>( renderer, args... );
+}
 
 #define CINDER_APP_WINRT( APP, RENDERER, ... )													\
 [::Platform::MTAThread]																			\
 int main( ::Platform::Array<::Platform::String^>^ args ) {										\
-	cinder::app::RendererRef renderer( new RENDERER );											\
-	cinder::app::AppWinRt::main<APP>( args, renderer, ##__VA_ARGS__ );							\
+	cinder::app::launch< APP, RENDERER >( "", args, ##__VA_ARGS__ );							\
 	return 0;																					\
 }
