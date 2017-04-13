@@ -375,6 +375,9 @@ std::vector<std::shared_ptr<LoggerT>> LogManager::getLoggers()
 	#define CI_LOG_F( stream )	((void)0)
 #endif
 
+//! Special logging macro for assertsions.
+#define CI_LOG_A( function, file, line, stream )  ::cinder::log::Entry( ::cinder::log::LEVEL_FATAL, ::cinder::log::Location( function, file, line ) ) << stream
+
 //! Debug macro to simplify logging an exception, which also prints the exception type
 #define CI_LOG_EXCEPTION( str, exc )	\
 {										\

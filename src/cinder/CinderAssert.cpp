@@ -24,6 +24,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Breakpoint.h"
+#include "cinder/Log.h"
 
 #include <iostream>
 
@@ -36,13 +37,13 @@ namespace cinder { namespace detail {
 
 void assertionFailedBreak( char const *expr, char const *function, char const *file, long line )
 {
-	std::cerr << "*** Assertion Failed (break) *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << std::endl;
+	CI_LOG_A( function, file, line, "*** Assertion Failed (break) *** | expression: ( " << expr << " )" );
 	CI_BREAKPOINT();
 }
 
 void assertionFailedMessageBreak( char const *expr, char const *msg, char const *function, char const *file, long line )
 {
-	std::cerr << "*** Assertion Failed (break) *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << "\n\tmessage: " << msg << std::endl;
+	CI_LOG_A( function, file, line, "*** Assertion Failed (break) *** | expression: ( " << expr << " ) message: " << msg );
 	CI_BREAKPOINT();
 }
 
