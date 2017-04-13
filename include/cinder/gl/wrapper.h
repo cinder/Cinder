@@ -218,6 +218,8 @@ CI_API inline void scale( float x, float y, float z ) { scale( vec3( x, y, z ) )
 CI_API inline void scale( const ci::vec2 &v ) { scale( vec3( v.x, v.y, 1 ) ); }
 //! Scales the Model matrix by (\a x,\a y, 1)
 CI_API inline void scale( float x, float y ) { scale( vec3( x, y, 1 ) ); }
+//! Scales the Model matrix by (\a s,\a s,\a s)
+CI_API inline void scale( float s ) { scale( vec3( s, s, s ) ); }
 
 //! Translates the Model matrix by \a v
 CI_API void translate( const ci::vec3 &v );
