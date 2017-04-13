@@ -45,7 +45,7 @@ namespace cinder {
  * \endcode
 **/
 
-class ObjLoader : public geom::Source {
+class CI_API ObjLoader : public geom::Source {
   public:
 	/**Constructs and does the parsing of the file
 	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
@@ -157,9 +157,9 @@ class ObjLoader : public geom::Source {
 };
 
 //! Writes \a source to a new OBJ file to \a dataTarget.
-void		writeObj( const DataTargetRef &dataTarget, const geom::Source &source, bool includeNormals = true, bool includeTexCoords = true );
+CI_API void			writeObj( const DataTargetRef &dataTarget, const geom::Source &source, bool includeNormals = true, bool includeTexCoords = true );
 //! Writes \a source to a new OBJ file to \a dataTarget.
-inline void	writeObj( const DataTargetRef &dataTarget, const geom::SourceRef &source, bool includeNormals = true, bool includeTexCoords = true )
+CI_API inline void	writeObj( const DataTargetRef &dataTarget, const geom::SourceRef &source, bool includeNormals = true, bool includeTexCoords = true )
 {
 	writeObj( dataTarget, *source, includeNormals, includeTexCoords );
 }

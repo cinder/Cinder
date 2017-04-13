@@ -348,18 +348,18 @@ void AdaptiveThresholdT<T>::calculate( int32_t windowSize, float percentageDelta
 	}
 }
 
-template class AdaptiveThresholdT<uint8_t>;
-template class AdaptiveThresholdT<float>;
+template class CI_API AdaptiveThresholdT<uint8_t>;
+template class CI_API AdaptiveThresholdT<float>;
 
 #define threshold_PROTOTYPES(r,data,T)\
-	template void threshold( SurfaceT<T> *surface, T value ); \
-	template void threshold( SurfaceT<T> *surface, T value, const Area &area ); \
-	template void threshold( const SurfaceT<T> &srcSurface, T value, SurfaceT<T> *dstSurface );\
-	template void threshold( const ChannelT<T> &srcChannel, T value, ChannelT<T> *dstChannel );\
-	template void adaptiveThreshold( const ChannelT<T> &srcChannel, int32_t windowSize, float percentageDelta, ChannelT<T> *dstChannel ); \
-	template void adaptiveThreshold( ChannelT<T> *channel, int32_t windowSize, float percentageDelta ); \
-	template void adaptiveThresholdZero( ChannelT<T> *channel, int32_t windowSize ); \
-	template void adaptiveThresholdZero( const ChannelT<T> &srcChannel, int32_t windowSize, ChannelT<T> *dstChannel );
+	template CI_API void threshold( SurfaceT<T> *surface, T value ); \
+	template CI_API void threshold( SurfaceT<T> *surface, T value, const Area &area ); \
+	template CI_API void threshold( const SurfaceT<T> &srcSurface, T value, SurfaceT<T> *dstSurface );\
+	template CI_API void threshold( const ChannelT<T> &srcChannel, T value, ChannelT<T> *dstChannel );\
+	template CI_API void adaptiveThreshold( const ChannelT<T> &srcChannel, int32_t windowSize, float percentageDelta, ChannelT<T> *dstChannel ); \
+	template CI_API void adaptiveThreshold( ChannelT<T> *channel, int32_t windowSize, float percentageDelta ); \
+	template CI_API void adaptiveThresholdZero( ChannelT<T> *channel, int32_t windowSize ); \
+	template CI_API void adaptiveThresholdZero( const ChannelT<T> &srcChannel, int32_t windowSize, ChannelT<T> *dstChannel );
 
 BOOST_PP_SEQ_FOR_EACH( threshold_PROTOTYPES, ~, (uint8_t) )
 

@@ -33,9 +33,9 @@ namespace cinder {
 
 typedef std::shared_ptr<class Serial>		SerialRef;
 
-class Serial : private Noncopyable {
+class CI_API Serial : private Noncopyable {
   public:
-	class Device {
+	class CI_API Device {
 	  public:
 		Device() {}
 		Device( const std::string &nameAndPath ) : mName( nameAndPath ), mPath( nameAndPath ) {}
@@ -99,42 +99,42 @@ class Serial : private Noncopyable {
 	static std::vector<Serial::Device>	sDevices;
 };
 	
-class SerialExc : public Exception {
+class CI_API SerialExc : public Exception {
   public:
 	SerialExc( const std::string &description )
 		: Exception( description )
 	{}
 };
 
-class SerialExcOpenFailed : public SerialExc {
+class CI_API SerialExcOpenFailed : public SerialExc {
   public:
 	SerialExcOpenFailed()
 		: SerialExc( "Serial failed to open." )
 	{}
 };
 
-class SerialExcDeviceEnumerationFailed : public SerialExc {
+class CI_API SerialExcDeviceEnumerationFailed : public SerialExc {
   public:
 	SerialExcDeviceEnumerationFailed()
 		: SerialExc( "Serial device enumeration failed." )
 	{}
 };
 
-class SerialExcReadFailure : public SerialExc {
+class CI_API SerialExcReadFailure : public SerialExc {
   public:
 	SerialExcReadFailure()
 		: SerialExc( "Serial failed to read." )
 	{}
 };
 
-class SerialExcWriteFailure : public SerialExc {
+class CI_API SerialExcWriteFailure : public SerialExc {
   public:
 	SerialExcWriteFailure()
 		: SerialExc( "Serial failed to write." )
 	{}
 };
 
-class SerialTimeoutExc : public SerialExc {	
+class CI_API SerialTimeoutExc : public SerialExc {	
   public:
 	SerialTimeoutExc()
 		: SerialExc( "Serial timed out." )

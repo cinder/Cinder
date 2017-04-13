@@ -40,7 +40,7 @@
 namespace cinder {
 
 template<typename T>
-class FrustumT {
+class CI_API FrustumT {
   public:
 	enum FrustumSection { NEAR, FAR, LEFT, RIGHT, TOP, BOTTOM };
 

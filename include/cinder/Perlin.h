@@ -27,7 +27,7 @@
 
 namespace cinder {
 
-class Perlin
+class CI_API Perlin
 {
  public:
 	Perlin( uint8_t aOctaves = 4 );

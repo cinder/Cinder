@@ -661,8 +661,8 @@ T BSpline<D,T>::getSpeed( float t ) const
 }
 
 // explicit template instantiations
-template class BSpline<2,float>;
-template class BSpline<3,float>;
-template class BSpline<4,float>;
+template class CI_API BSpline<2,float>;
+template class CI_API BSpline<3,float>;
+template class CI_API BSpline<4,float>;
 
 } // namespace cinder

@@ -61,7 +61,7 @@ typedef std::shared_ptr<class TextureCubeMap>	TextureCubeMapRef;
 class Pbo;
 typedef std::shared_ptr<Pbo>					PboRef;
 
-class TextureBase {
+class CI_API TextureBase {
   public:
 	virtual ~TextureBase();
 
@@ -152,7 +152,7 @@ class TextureBase {
 	//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 	void				setLabel( const std::string &label );
 
-	struct Format {			
+	struct CI_API Format {			
 		//! Specifies the texture's target. The default is \c GL_TEXTURE_2D
 		void	setTarget( GLenum target ) { mTarget = target; }
 		//! Sets the texture's target to be \c GL_TEXTURE_RECTANGLE. Not available in OpenGL ES.
@@ -313,22 +313,22 @@ class TextureBase {
 	std::array<GLint,4>	mSwizzleMask;
 	std::string			mLabel; // debugging label
 	
-	friend std::ostream& operator<<( std::ostream &os, const TextureBase &rhs );
+	friend CI_API std::ostream& operator<<( std::ostream &os, const TextureBase &rhs );
 };
 
-std::ostream& operator<<( std::ostream &os, const TextureBase &rhs );
+CI_API std::ostream& operator<<( std::ostream &os, const TextureBase &rhs );
 
-class TextureData {
+class CI_API TextureData {
   public:
 	//! Represents a face of a texture; typically 1 Face per Level; CubeMaps have 6.
-	struct Face {
+	struct CI_API Face {
   		GLsizei						dataSize;
 		size_t						offset;
 //		std::shared_ptr<uint8_t>	dataStore;
 	};
 
 	//! Represents a single mip-level, composed of 1 or more Faces
-	struct Level {
+	struct CI_API Level {
 		GLsizei						width, height, depth;
 
 		size_t						getNumFaces() const { return mFaces.size(); }
@@ -404,9 +404,9 @@ class TextureData {
 };
 
 #if ! defined( CINDER_GL_ES )
-class Texture1d : public TextureBase {
+class CI_API Texture1d : public TextureBase {
   public:
-	struct Format : public TextureBase::Format {
+	struct CI_API Format : public TextureBase::Format {
 		//! Default constructor, sets the target to \c GL_TEXTURE_1D, wrap to \c GL_CLAMP, disables mipmapping, the internal format to "automatic"
 		Format() : TextureBase::Format() { mTarget = GL_TEXTURE_1D; }
 
@@ -465,9 +465,9 @@ class Texture1d : public TextureBase {
 
 #endif // ! defined( CINDER_GL_ES )
 
-class Texture2d : public TextureBase {
+class CI_API Texture2d : public TextureBase {
   public:
-	struct Format : public TextureBase::Format {
+	struct CI_API Format : public TextureBase::Format {
 		//! Default constructor, sets the target to \c GL_TEXTURE_2D, wrap to \c GL_CLAMP, disables mipmapping, the internal format to "automatic"
 		Format() : TextureBase::Format(), mLoadTopDown( false ) {}
 
@@ -637,9 +637,9 @@ class Texture2d : public TextureBase {
 };
 
 #if ! defined( CINDER_GL_ES_2 )
-class Texture3d : public TextureBase {
+class CI_API Texture3d : public TextureBase {
   public:
-	struct Format : public TextureBase::Format {
+	struct CI_API Format : public TextureBase::Format {
 		//! Default constructor, sets the target to \c GL_TEXTURE_3D, wrap to \c GL_CLAMP, disables mipmapping, the internal format to "automatic"
 		Format() : TextureBase::Format() { mTarget = GL_TEXTURE_3D; }
 
@@ -698,10 +698,10 @@ class Texture3d : public TextureBase {
 };
 #endif // ! defined( CINDER_GL_ES_2 )
 
-class TextureCubeMap : public TextureBase
+class CI_API TextureCubeMap : public TextureBase
 {
   public:
-  	struct Format : public TextureBase::Format {
+  	struct CI_API Format : public TextureBase::Format {
 		//! Default constructor, sets the target to \c GL_TEXTURE_CUBE_MAP, wrap to \c GL_CLAMP_TO_EDGE, disables mipmapping, the internal format to "automatic"
 		Format();
 
@@ -773,7 +773,7 @@ class TextureCubeMap : public TextureBase
 
 typedef std::shared_ptr<class Texture2dCache> Texture2dCacheRef;
 
-class Texture2dCache : public std::enable_shared_from_this<Texture2dCache>
+class CI_API Texture2dCache : public std::enable_shared_from_this<Texture2dCache>
 {
   public:
 	static Texture2dCacheRef create();
@@ -795,33 +795,33 @@ class Texture2dCache : public std::enable_shared_from_this<Texture2dCache>
 	std::vector<std::pair<int,TextureRef>>	mTextures;
 };
 
-class SurfaceConstraintsGLTexture : public SurfaceConstraints {
+class CI_API SurfaceConstraintsGLTexture : public SurfaceConstraints {
   public:
 	virtual SurfaceChannelOrder getChannelOrder( bool alpha ) const { return ( alpha ) ? SurfaceChannelOrder::BGRA : SurfaceChannelOrder::BGR; }
 	virtual ptrdiff_t			getRowBytes( int32_t requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { return requestedWidth * elementSize * sco.getPixelInc(); }
 };
 
-class KtxParseExc : public Exception {
+class CI_API KtxParseExc : public Exception {
   public:	
 	KtxParseExc( const std::string &description ) : Exception( description )	{}
 };
 
-class DdsParseExc : public Exception {
+class CI_API DdsParseExc : public Exception {
   public:	
 	DdsParseExc( const std::string &description ) : Exception( description )	{}
 };
 
-class TextureDataExc : public Exception {
+class CI_API TextureDataExc : public Exception {
   public:	
 	TextureDataExc( const std::string &description ) : Exception( description )	{}
 };
 
-class TextureResizeExc : public TextureDataExc {
+class CI_API TextureResizeExc : public TextureDataExc {
   public:
 	TextureResizeExc( const std::string &description, const ivec2 &updateSize, const ivec2 &textureSize );
 };
 
-class TextureDataStoreTooSmallExc : public Exception {
+class CI_API TextureDataStoreTooSmallExc : public Exception {
   public:
 	TextureDataStoreTooSmallExc() {}
 

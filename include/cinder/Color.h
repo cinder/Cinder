@@ -38,7 +38,7 @@ typedef	enum {
 } ColorModel;
 
 template<typename T>
-class ColorT
+class CI_API ColorT
 {
   public:
 	T		r, g, b;
@@ -165,7 +165,7 @@ class ColorT
 // ColorAT
 
 template<typename T>
-class ColorAT {
+class CI_API ColorAT {
  public: 
 	T		r,g,b,a;
 
@@ -322,10 +322,10 @@ template<typename T, typename Y> inline ColorT<T>  operator*( Y s, const ColorT<
 template<typename T, typename Y> inline ColorAT<T> operator*( Y s, const ColorAT<T>& c ) { return ColorAT<T>( s*c.r, s*c.g, s*c.b, s*c.a ); }
 
 // Free Functions
-extern ColorT<float> hsvToRgb( const vec3 &hsv );
-extern vec3 rgbToHsv( const ColorT<float> &c );
+extern CI_API ColorT<float> hsvToRgb( const vec3 &hsv );
+extern CI_API vec3 rgbToHsv( const ColorT<float> &c );
 //! Converts the named colors of the SVG spec http://en.wikipedia.org/wiki/Web_colors#X11_color_names to sRGB Color8u. If \a found is non-NULL, it's set to whether the name was located. Returns black on failure.
-extern ColorT<uint8_t> svgNameToRgb( const char *svgName, bool *found = NULL );
+extern CI_API ColorT<uint8_t> svgNameToRgb( const char *svgName, bool *found = NULL );
 
 // These are designed to mimic GLM
 template<typename T>
@@ -470,10 +470,10 @@ inline ColorAT<uint8_t> ColorAT<uint8_t>::lerp( uint8_t fact, const ColorAT<uint
 }
 
 
-extern std::ostream& operator<<( std::ostream &lhs, const ColorT<float> &rhs );
-extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<float> &rhs );
-extern std::ostream& operator<<( std::ostream &lhs, const ColorT<uint8_t> &rhs );
-extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<uint8_t> &rhs );
+CI_API extern std::ostream& operator<<( std::ostream &lhs, const ColorT<float> &rhs );
+CI_API extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<float> &rhs );
+CI_API extern std::ostream& operator<<( std::ostream &lhs, const ColorT<uint8_t> &rhs );
+CI_API extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<uint8_t> &rhs );
 
 typedef ColorT<float>		Colorf;
 typedef ColorT<double>		Colord;

@@ -177,8 +177,10 @@ void Renderer::setVisitor( const function<bool(const Node&, svg::Style *)> &visi
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Statics
-Paint Style::sPaintNone = svg::Paint();
-Paint Style::sPaintBlack = svg::Paint( Color::black() );
+namespace {
+	const Paint sPaintNone = svg::Paint();
+	const Paint sPaintBlack = svg::Paint( Color::black() );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Paint
@@ -322,6 +324,15 @@ void Style::clear()
 	mSpecifiesFontFamilies = mSpecifiesFontSize = mSpecifiesFontWeight = false;
 	mSpecifiesVisible = false;
 	mDisplayNone = false;
+}
+
+const Paint& Style::getFillDefault() 
+{ 
+	return sPaintBlack; 
+}
+const Paint& Style::getStrokeDefault() 
+{ 
+	return sPaintNone; 
 }
 
 const std::vector<std::string>&	Style::getFontFamiliesDefault()

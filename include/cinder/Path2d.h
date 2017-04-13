@@ -32,7 +32,7 @@
 
 namespace cinder {
 
-class Path2d {
+class CI_API Path2d {
  public:
 	Path2d() {}
 	explicit Path2d( const BSpline2f &spline, float subdivisionStep = 0.01f );
@@ -148,7 +148,7 @@ class Path2d {
 	friend class Shape2d;
 	friend class Path2dCalcCache;
 	
-	friend std::ostream& operator<<( std::ostream &out, const Path2d &p );
+	friend CI_API std::ostream& operator<<( std::ostream &out, const Path2d &p );
   private:
 	void	arcHelper( const vec2 &center, float radius, float startRadians, float endRadians, bool forward );
 	void	arcSegmentAsCubicBezier( const vec2 &center, float radius, float startRadians, float endRadians );
@@ -166,7 +166,7 @@ class Path2d {
 	std::vector<SegmentType>	mSegments;
 };
 
-inline std::ostream& operator<<( std::ostream &out, const Path2d &p )
+CI_API inline std::ostream& operator<<( std::ostream &out, const Path2d &p )
 {
 	if( p.mPoints.empty() )
 		return out;
@@ -197,7 +197,7 @@ inline std::ostream& operator<<( std::ostream &out, const Path2d &p )
 }
 
 //! Accelerates the calculation of various operations on Path2d. Useful if doing repeated calculations, otherwise just use Path2d member functions.
-class Path2dCalcCache {
+class CI_API Path2dCalcCache {
   public:
 	Path2dCalcCache( const Path2d &path );
 	
@@ -217,7 +217,7 @@ class Path2dCalcCache {
 	std::vector<float>	mSegmentLengths;
 };
 
-class Path2dExc : public Exception {
+class CI_API Path2dExc : public Exception {
 };
 
 } // namespace cinder

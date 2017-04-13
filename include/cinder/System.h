@@ -33,7 +33,7 @@ namespace cinder {
 
 /** \brief Queries system software and hardware capabilities of the computer.
 	Values are cached so there is low overhead in calling these functions more than once. **/
-class System {
+class CI_API System {
   public:
 	//! Returns whether the system supports the SSE2 instruction set.
 	static bool			hasSse2();
@@ -74,7 +74,7 @@ class System {
 #endif
 	
 	//! Represents a single Network Adapter of the system
-	class NetworkAdapter {
+	class CI_API NetworkAdapter {
 	  public:
 		const std::string&	getName() const { return mName; }
 		const std::string&	getIpAddress() const { return mIpAddress; }
@@ -116,16 +116,16 @@ class System {
 #endif 
 };
 
-inline std::ostream& operator<<( std::ostream &outp, const System::NetworkAdapter &adapter )
+CI_API inline std::ostream& operator<<( std::ostream &outp, const System::NetworkAdapter &adapter )
 {
 	outp << adapter.getName() << std::string(": IP: ") << adapter.getIpAddress() << " Subnet: " << adapter.getSubnetMask();
 	return outp;
 }
 
-class SystemExc : public Exception {
+class CI_API SystemExc : public Exception {
 };
 
-class SystemExcFailedQuery : public SystemExc {
+class CI_API SystemExcFailedQuery : public SystemExc {
 };
 
 } // namespace cinder

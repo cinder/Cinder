@@ -37,7 +37,7 @@ namespace cinder {
 
 typedef std::shared_ptr<class Display> 	DisplayRef;
 
-class Display {
+class CI_API Display {
   public:
 	Display() : mArea( Area::zero() ), mBitsPerPixel( 0 ), mContentScale( 1.0f ), mName( "" ), mNameDirty ( true ) {}
 	virtual ~Display() {}
@@ -76,7 +76,7 @@ class Display {
 	//! Returns the Area which spans all Displays
 	static Area								getSpanningArea();
 	
-	friend std::ostream& operator<<( std::ostream &o, const Display &display )
+	friend CI_API std::ostream& operator<<( std::ostream &o, const Display &display )
 	{
 		return o << display.mArea << " @ " << display.mBitsPerPixel << "bpp @ scale " << display.mContentScale;
 	}	

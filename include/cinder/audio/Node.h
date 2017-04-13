@@ -56,7 +56,7 @@ typedef std::shared_ptr<class Node>				NodeRef;
 //! initialize() is called, uninitialize() is called before a Node is deallocated or channel counts change.
 //!
 //! \see InputNode, OutputNode
-class Node : public std::enable_shared_from_this<Node>, private Noncopyable {
+class CI_API Node : public std::enable_shared_from_this<Node>, private Noncopyable {
   public:
 	//! Used to specifiy how the corresponding channels are to be resolved between two connected Node's,
 	//! based on either a Node's input (the default), it's output, or specified by user.
@@ -255,7 +255,7 @@ inline const NodeRef& operator>>( const NodeRef &input, const NodeRef &output )
 }
 
 //! a Node that can be pulled without being connected to any outputs.
-class NodeAutoPullable : public Node {
+class CI_API NodeAutoPullable : public Node {
   public:
 	virtual ~NodeAutoPullable();
 
@@ -275,7 +275,7 @@ class NodeAutoPullable : public Node {
 };
 
 //! RAII-style utility class to set a \a Node's enabled state and have it restored at the end of the current scope block.
-struct ScopedEnableNode {
+struct CI_API ScopedEnableNode {
 	//! Constructs an object that will store \a node's enabled state and restore it at the end of the current scope.
 	ScopedEnableNode( const NodeRef &node );
 	//! Constructs an object that will set \a node's enabled state to \a enable and restore it to the original state at the end of the current scope.
@@ -286,7 +286,7 @@ struct ScopedEnableNode {
 	bool		mWasEnabled;
 };
 
-class NodeCycleExc : public AudioExc {
+class CI_API NodeCycleExc : public AudioExc {
   public:
 	NodeCycleExc( const NodeRef &sourceNode, const NodeRef &destNode );
 };

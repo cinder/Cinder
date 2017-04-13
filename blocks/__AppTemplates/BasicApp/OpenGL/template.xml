@@ -26,11 +26,11 @@
 		<resource type="ICON" id="1">resources/cinder_app_icon.ico</resource>
 	</platform>
 	<platform os="winrt">
-		<file replaceContents="true">vc2013_winrt/Package.appxmanifest</file>
-		<file>vc2013_winrt/VisualAssets/Logo.png</file>
-		<file>vc2013_winrt/VisualAssets/SmallLogo.png</file>
-		<file>vc2013_winrt/VisualAssets/SplashScreen.png</file>
-		<file>vc2013_winrt/VisualAssets/StoreLogo.png</file>
+		<file replaceContents="true">vc2015_uwp/Package.appxmanifest</file>
+		<file>vc2015_uwp/VisualAssets/Logo.png</file>
+		<file>vc2015_uwp/VisualAssets/SmallLogo.png</file>
+		<file>vc2015_uwp/VisualAssets/SplashScreen.png</file>
+		<file>vc2015_uwp/VisualAssets/StoreLogo.png</file>
 	</platform>	
 </template>
 </cinder>

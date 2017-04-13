@@ -314,9 +314,9 @@ ColorT<uint8_t> svgNameToRgb( const char *name, bool *found )
 	return Color8u( 0, 0, 0 );
 }
 
-template class ColorT<float>;
-template class ColorT<uint8_t>;
-template class ColorAT<float>;
-template class ColorAT<uint8_t>;
+template class CI_API ColorT<float>;
+template class CI_API ColorT<uint8_t>;
+template class CI_API ColorAT<float>;
+template class CI_API ColorAT<uint8_t>;
 
 } // namespace cinder

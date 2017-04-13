@@ -29,7 +29,7 @@
 namespace cinder{ namespace app{
 
 //! Represents a keyboard event
-class KeyEvent : public Event {
+class CI_API KeyEvent : public Event {
   public:
 	KeyEvent() : Event()
 	{}

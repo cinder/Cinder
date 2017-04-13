@@ -43,7 +43,7 @@ class DeviceManager;
 //! which is the only hardware-facing Context.
 //!
 //! All Node's are created using the Context, which is necessary for thread synchronization.
-class Context : public std::enable_shared_from_this<Context> {
+class CI_API Context : public std::enable_shared_from_this<Context> {
   public:
 	virtual ~Context();
 
@@ -198,7 +198,7 @@ inline Context* master()	{ return Context::master(); }
 
 
 //! RAII-style utility class to set a \a Context's enabled state and have it restored at the end of the current scope block.
-struct ScopedEnableContext {
+struct CI_API  ScopedEnableContext {
 	//! Constructs an object that will store \a context's enabled state and restore it at the end of the current scope.
 	ScopedEnableContext( Context *context );
 	//! Constructs an object that will set \a context's enabled state to \a enable and restore it to the original state at the end of the current scope.

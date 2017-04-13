@@ -35,7 +35,7 @@
 
 namespace cinder {
 
-class StreamBase : private Noncopyable {
+class CI_API StreamBase : private Noncopyable {
  public:
 	virtual ~StreamBase() {}
 	
@@ -77,7 +77,7 @@ class StreamBase : private Noncopyable {
 	bool					mDeleteOnDestroy;
 };
 
-class OStream : public virtual StreamBase {
+class CI_API OStream : public virtual StreamBase {
  public:
 	virtual ~OStream() {}
 
@@ -104,7 +104,7 @@ class OStream : public virtual StreamBase {
 
 typedef std::shared_ptr<class OStream>	OStreamRef;
 
-class IStreamCinder : public virtual StreamBase {
+class CI_API IStreamCinder : public virtual StreamBase {
  public:
 	virtual ~IStreamCinder() {};
 
@@ -140,7 +140,7 @@ class IStreamCinder : public virtual StreamBase {
 typedef std::shared_ptr<IStreamCinder>		IStreamRef;
 
 
-class IoStream : public IStreamCinder, public OStream {
+class CI_API IoStream : public IStreamCinder, public OStream {
  public:
 	IoStream() : IStreamCinder(), OStream() {}
 	virtual ~IoStream() {}
@@ -150,7 +150,7 @@ typedef std::shared_ptr<IoStream>		IoStreamRef;
 
 typedef std::shared_ptr<class IStreamFile>	IStreamFileRef;
 
-class IStreamFile : public IStreamCinder {
+class CI_API IStreamFile : public IStreamCinder {
  public:
 	//! Creates a new IStreamFileRef from a C-style file pointer \a FILE as returned by fopen(). If \a ownsFile the returned stream will destroy the stream upon its own destruction.
 	static IStreamFileRef create( FILE *file, bool ownsFile = true, int32_t defaultBufferSize = 2048 );
@@ -223,7 +223,7 @@ class IStreamAndroidAsset : public IStreamCinder {
 
 typedef std::shared_ptr<class OStreamFile>	OStreamFileRef;
 
-class OStreamFile : public OStream {
+class CI_API OStreamFile : public OStream {
   public:
 	//! Creates a new OStreamFileRef from a C-style file pointer \a FILE as returned by fopen(). If \a ownsFile the returned stream will destroy the stream upon its own destruction.
 	static OStreamFileRef	create( FILE *file, bool ownsFile = true );
@@ -248,7 +248,7 @@ class OStreamFile : public OStream {
 
 typedef std::shared_ptr<class IoStreamFile>		IoStreamFileRef;
 
-class IoStreamFile : public IoStream {
+class CI_API IoStreamFile : public IoStream {
  public:
 	//! Creates a new IoStreamFileRef from a C-style file pointer \a FILE as returned by fopen(). If \a ownsFile the returned stream will destroy the stream upon its own destruction.
 	static IoStreamFileRef create( FILE *file, bool ownsFile = true, int32_t defaultBufferSize = 2048 );
@@ -283,7 +283,7 @@ class IoStreamFile : public IoStream {
 };
 
 typedef std::shared_ptr<class IStreamMem>	IStreamMemRef;
-class IStreamMem : public IStreamCinder {
+class CI_API IStreamMem : public IStreamCinder {
  public:
 	//! Creates a new IStreamMemRef from the memory pointed to by \a data which is of size \a size bytes.
 	static IStreamMemRef		create( const void *data, size_t size );
@@ -317,7 +317,7 @@ class IStreamMem : public IStreamCinder {
 
 typedef std::shared_ptr<class OStreamMem>		OStreamMemRef;
 
-class OStreamMem : public OStream {
+class CI_API OStreamMem : public OStream {
  public:
 	static OStreamMemRef		create( size_t bufferSizeHint = 4096 ) { return std::shared_ptr<OStreamMem>( new OStreamMem( bufferSizeHint ) ); }
 
@@ -341,7 +341,7 @@ class OStreamMem : public OStream {
 
 
 // This class is a utility to save and restore a stream's state
-class IStreamStateRestore {
+class CI_API IStreamStateRestore {
  public:
 	IStreamStateRestore( IStreamCinder &aStream ) : mStream( aStream ), mOffset( aStream.tell() ) {}
 	~IStreamStateRestore()
@@ -374,7 +374,7 @@ IStreamAndroidAssetRef	loadAndroidAssetStream( const fs::path &path );
 
 
 // Stream exception
-class StreamExc : public Exception {
+class CI_API StreamExc : public Exception {
   public:
 	StreamExc() throw() {}
 	StreamExc( const std::string &fontName ) throw();
@@ -383,7 +383,7 @@ class StreamExc : public Exception {
 	char mMessage[2048];		
 };
 
-class StreamExcOutOfMemory : public StreamExc {
+class CI_API StreamExcOutOfMemory : public StreamExc {
 };
 
 

@@ -85,7 +85,7 @@ void PlaneT<T>::set( T a, T b, T c, T d )
 	mDistance = d / length;
 }
 
-template class PlaneT<float>;
-template class PlaneT<double>;
+template class CI_API PlaneT<float>;
+template class CI_API PlaneT<double>;
 
 } // namespace cinder

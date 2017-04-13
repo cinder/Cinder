@@ -32,6 +32,7 @@
 #include <set>
 
 #include "cinder/gl/wrapper.h"
+#include "cinder/gl/ShaderPreprocessor.h"
 #include "cinder/Vector.h"
 #include "cinder/Matrix.h"
 #include "cinder/DataSource.h"
@@ -46,13 +47,13 @@
 namespace cinder { namespace gl {
 	
 typedef std::shared_ptr<class GlslProg> GlslProgRef;
-	
+
 class UniformValueCache;
 class ShaderPreprocessor;
 
-class GlslProg {
+class CI_API GlslProg {
   public:
-	struct Attribute {
+	struct CI_API Attribute {
 		//! Returns a const reference of the name as defined in the Vertex Shader.
 		const std::string&	getName() const { return mName; }
 		//! Returns the number of attributes expected by the Vertex Shader. mCount will be
@@ -76,7 +77,7 @@ class GlslProg {
 		friend class GlslProg;
 	};
 	
-	struct Uniform {
+	struct CI_API Uniform {
 		//! Returns a const reference of the name as defined inside the Glsl.
 		const std::string&	getName() const { return mName; }
 		//! Returns the number of uniforms expected by the Glsl. mCount will be
@@ -109,7 +110,7 @@ class GlslProg {
 	
 #if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 
-	struct UniformBlock {
+	struct CI_API UniformBlock {
 		
 		//! Returns a const reference of the name as defined inside the Glsl.
 		const std::string&	getName() const { return mName; }
@@ -149,7 +150,7 @@ class GlslProg {
 
 #if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
-	struct TransformFeedbackVaryings {
+	struct CI_API TransformFeedbackVaryings {
 		
 		//! Returns a const reference of the name as defined inside the Glsl.
 		const std::string&	getName() const { return mName; }
@@ -169,7 +170,7 @@ class GlslProg {
 
 #endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
-	struct Format {
+	struct CI_API Format {
 		//! Defaults to specifying location 0 for the \c geom::Attrib::POSITION semantic
 		Format();
 		
@@ -252,25 +253,25 @@ class GlslProg {
 		Format&		attribLocation( geom::Attrib attr, GLint location );
 
 		//! Returns whether preprocessing is enabled or not, e.g. `#include` statements. \default true.
-		bool		isPreprocessingEnabled() const				{ return mPreprocessingEnabled; }
-		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
-		void		setPreprocessingEnabled( bool enable )		{ mPreprocessingEnabled = enable; }
-		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
-		Format&		preprocess( bool enable )					{ mPreprocessingEnabled = enable; return *this; }
-		//! Specifies a define directive to add to the shader sources
+		bool		isPreprocessingEnabled() const;
+		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements. \default true.
+		void		setPreprocessingEnabled( bool enable );
+		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements. \default true.
+		Format&		preprocess( bool enable )					{ setPreprocessingEnabled( enable );; return *this; }
+		//! Sets the ShaderPreprocessor that will be used when loading shader sources and enables preprocessing. Any preprocessing settings that were previously set on this Format will be ignored.
+		Format&		preprocessor( const gl::ShaderPreprocessorRef &preprocessor )	{ mPreprocessor = preprocessor; return *this; }
+		//! Returns a shared pointer to the ShaderPreprocessor that will be used when loading shader sources, if preprocessing is enabled (or a null pointer otherwise).
+		const ShaderPreprocessorRef&	getPreprocessor() const	{ return mPreprocessor; }
+		//! Adds a define directive to the ShaderPreprocessor, which will be prepended to the shader sources
 		Format&		define( const std::string &define );
-		//! Specifies a define directive to add to the shader sources
+		//! Adds a define directive to the ShaderPreprocessor, which will be prepended to the shader sources
 		Format&		define( const std::string &define, const std::string &value );
-		//! Specifies a series of define directives to add to the shader sources
-		Format&		defineDirectives( const std::vector<std::string> &defines );
-		//! Specifies the #version directive to add to the shader sources
+		//! Returns the define directives that the ShaderPreprocessor will prepend to shader sources.
+		std::vector<std::string> getDefineDirectives() const;
+		//! Specifies the #version directive that the ShaderPreprocessor will add to shader sources, if they don't contain an explicit `#version` string.
 		Format&		version( int version );
-		//! Returns the version number associated with this GlslProg, or 0 if none was speciefied.
-		int	getVersion() const										{ return mVersion; }
-		//! Returns the list of `#define` directives.
-		const std::vector<std::string>& getDefineDirectives() const { return mDefineDirectives; }
-		//! Adds a custom search directory to the ShaderPreprocessor's search list.
-		Format&	addPreprocessorSearchDirectory( const fs::path &dir )	{ mPreprocessorSearchDirectories.push_back( dir ); return *this; }
+		//! Returns the #version directive that the ShaderPreprocessor will add to shader sources, if they don't contain an explicit `#version` string.
+		int	getVersion() const;
 		
 		//! Returns the debugging label associated with the Program.
 		const std::string&	getLabel() const { return mLabel; }
@@ -321,13 +322,8 @@ class GlslProg {
 
 		std::vector<Attribute>			mAttributes;
 		std::vector<Uniform>			mUniforms;
-
-		std::vector<std::string>		mDefineDirectives;
-		int								mVersion;
-		
-		bool							mPreprocessingEnabled;
 		std::string						mLabel;
-		std::vector<fs::path>			mPreprocessorSearchDirectories;
+		ShaderPreprocessorRef			mPreprocessor;
 
 		friend class		GlslProg;
 	};
@@ -476,8 +472,7 @@ class GlslProg {
 	GlslProg( const Format &format );
 
 	void			bindImpl() const;
-	void			loadShader( const std::string &shaderSource, const fs::path &shaderPath, GLint shaderType );
-	void			attachShaders();
+	GLuint			loadShader( const std::string &shaderSource, const fs::path &shaderPath, GLint shaderType, const ShaderPreprocessorRef &preprocessor );
 	void			link();
 	
 	//! Caches all active Attributes after linking.
@@ -567,30 +562,31 @@ class GlslProg {
 	mutable std::set<std::string>			mLoggedUniformNames;
 	mutable std::set<int>					mLoggedUniformLocations;
 	std::string								mLabel; // debug label
-	std::unique_ptr<ShaderPreprocessor>		mShaderPreprocessor;
 	std::vector<fs::path>					mShaderPreprocessorIncludedFiles;
 
 	friend class Context;
-	friend std::ostream& operator<<( std::ostream &os, const GlslProg &rhs );
+	friend CI_API std::ostream& operator<<( std::ostream &os, const GlslProg &rhs );
 };
 
-class GlslProgExc : public cinder::gl::Exception {
+CI_API std::ostream& operator<<( std::ostream &os, const GlslProg &rhs );
+
+class CI_API GlslProgExc : public cinder::gl::Exception {
   public:
 	GlslProgExc()	{}
 	GlslProgExc( const std::string &description ) : cinder::gl::Exception( description )	{}
 };
 
-class GlslProgCompileExc : public GlslProgExc {
+class CI_API GlslProgCompileExc : public GlslProgExc {
   public:
 	GlslProgCompileExc( const std::string &log, GLint shaderType );
 };
 
-class GlslProgLinkExc : public GlslProgExc {
+class CI_API GlslProgLinkExc : public GlslProgExc {
   public:
 	GlslProgLinkExc( const std::string &log ) : GlslProgExc( log ) {}
 };
 
-class GlslNullProgramExc : public GlslProgExc {
+class CI_API GlslNullProgramExc : public GlslProgExc {
   public:
 	virtual const char* what() const throw()
 	{

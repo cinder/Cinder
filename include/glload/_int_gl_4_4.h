@@ -16,23 +16,23 @@ typedef void (CODEGEN_FUNCPTR * PFNGLBUFFERSTORAGEPROC)(GLenum target, GLsizeipt
 typedef void (CODEGEN_FUNCPTR * PFNGLCLEARTEXIMAGEPROC)(GLuint texture, GLint level, GLenum format, GLenum type, const void * data);
 typedef void (CODEGEN_FUNCPTR * PFNGLCLEARTEXSUBIMAGEPROC)(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void * data);
 
-extern PFNGLBINDBUFFERSBASEPROC _funcptr_glBindBuffersBase;
+CI_API extern PFNGLBINDBUFFERSBASEPROC _funcptr_glBindBuffersBase;
 #define glBindBuffersBase _funcptr_glBindBuffersBase
-extern PFNGLBINDBUFFERSRANGEPROC _funcptr_glBindBuffersRange;
+CI_API extern PFNGLBINDBUFFERSRANGEPROC _funcptr_glBindBuffersRange;
 #define glBindBuffersRange _funcptr_glBindBuffersRange
-extern PFNGLBINDIMAGETEXTURESPROC _funcptr_glBindImageTextures;
+CI_API extern PFNGLBINDIMAGETEXTURESPROC _funcptr_glBindImageTextures;
 #define glBindImageTextures _funcptr_glBindImageTextures
-extern PFNGLBINDSAMPLERSPROC _funcptr_glBindSamplers;
+CI_API extern PFNGLBINDSAMPLERSPROC _funcptr_glBindSamplers;
 #define glBindSamplers _funcptr_glBindSamplers
-extern PFNGLBINDTEXTURESPROC _funcptr_glBindTextures;
+CI_API extern PFNGLBINDTEXTURESPROC _funcptr_glBindTextures;
 #define glBindTextures _funcptr_glBindTextures
-extern PFNGLBINDVERTEXBUFFERSPROC _funcptr_glBindVertexBuffers;
+CI_API extern PFNGLBINDVERTEXBUFFERSPROC _funcptr_glBindVertexBuffers;
 #define glBindVertexBuffers _funcptr_glBindVertexBuffers
-extern PFNGLBUFFERSTORAGEPROC _funcptr_glBufferStorage;
+CI_API extern PFNGLBUFFERSTORAGEPROC _funcptr_glBufferStorage;
 #define glBufferStorage _funcptr_glBufferStorage
-extern PFNGLCLEARTEXIMAGEPROC _funcptr_glClearTexImage;
+CI_API extern PFNGLCLEARTEXIMAGEPROC _funcptr_glClearTexImage;
 #define glClearTexImage _funcptr_glClearTexImage
-extern PFNGLCLEARTEXSUBIMAGEPROC _funcptr_glClearTexSubImage;
+CI_API extern PFNGLCLEARTEXSUBIMAGEPROC _funcptr_glClearTexSubImage;
 #define glClearTexSubImage _funcptr_glClearTexSubImage
 
 #ifdef __cplusplus

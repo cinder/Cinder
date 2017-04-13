@@ -63,7 +63,7 @@ class ExcChildNotFound;
 typedef std::function<bool(const Node&, svg::Style *)> RenderVisitor;
 
 //! Base class from which Renderers are derived.
-class Renderer {
+class CI_API Renderer {
   public:
 	virtual ~Renderer() = default;
 
@@ -121,7 +121,7 @@ class Renderer {
 };
 
 //! SVG Value/Unit pair
-class Value {
+class CI_API Value {
   public:
 	enum Unit { USER, PX, PERCENT, PT, PC, MM, CM, INCH, EM, EX };
 	
@@ -142,7 +142,7 @@ class Value {
 };
 
 //! SVG Paint specification for fill or stroke, including solids and gradients
-class Paint {
+class CI_API Paint {
   public:
 	enum { NONE, COLOR, LINEAR_GRADIENT, RADIAL_GRADIENT };
 	
@@ -178,7 +178,7 @@ class Paint {
 };
 
 //! SVG Style for a node. Corresponds to SVG Styling: http://www.w3.org/TR/SVG/styling.html
-class Style {
+class CI_API Style {
   public:
 	Style();
 	Style( const XmlTree &xml, const Node *parent );
@@ -192,13 +192,13 @@ class Style {
 	void				unspecifyFill() { mSpecifiesFill = false; }
 	const Paint&		getFill() const { return mFill; }
 	void				setFill( const Paint &fill ) { mSpecifiesFill = true; mFill = fill; }
-	static const Paint&	getFillDefault() { return sPaintBlack; }
+	static const Paint&	getFillDefault();
 
 	bool				specifiesStroke() const { return mSpecifiesStroke; }
 	void				unspecifyStroke() { mSpecifiesStroke = false; }
 	const Paint&		getStroke() const { return mStroke; }
 	void				setStroke( const Paint &stroke ) { mSpecifiesStroke = true; mStroke = stroke; }
-	static const Paint&	getStrokeDefault() { return sPaintNone; }
+	static const Paint&	getStrokeDefault();
 
 	bool			specifiesOpacity() const { return mSpecifiesOpacity; }
 	void			unspecifyOpacity() { mSpecifiesOpacity = false; }
@@ -302,13 +302,10 @@ class Style {
 	
 	// visibility
 	bool			mSpecifiesVisible, mVisible, mDisplayNone;
-	
-  private:
-  	static Paint	sPaintNone, sPaintBlack;
 };
 
 //! Base class for an element of an SVG Document
-class Node {
+class CI_API Node {
   public:
 	Node( const Node *parent ) : mParent( parent ),  mSpecifiesTransform( false ), mBoundingBoxCached( false ) {}
 	virtual ~Node() {}
@@ -427,11 +424,11 @@ class Node {
 };
 
 //! Base class for SVG Gradients. See SVG Gradients: http://www.w3.org/TR/SVG/pservers.html#Gradients
-class Gradient : public Node {
+class CI_API Gradient : public Node {
   public:
   	Gradient( const Node *parent, const XmlTree &xml );
 	
-	class Stop {
+	class CI_API Stop {
 	  public:
 	  	Stop( const Node *parent, const XmlTree &xml );
 		
@@ -459,7 +456,7 @@ class Gradient : public Node {
 };
 
 //! SVG Linear gradient
-class LinearGradient : public Gradient {
+class CI_API LinearGradient : public Gradient {
   public:
 	LinearGradient( const Node *parent, const XmlTree &xml );
 	
@@ -472,7 +469,7 @@ class LinearGradient : public Gradient {
 };
 
 //! SVG Radial gradient
-class RadialGradient : public Gradient {
+class CI_API RadialGradient : public Gradient {
   public:
 	RadialGradient( const Node *parent, const XmlTree &xml );
 	
@@ -486,7 +483,7 @@ class RadialGradient : public Gradient {
 };
 
 //! SVG Circle element: http://www.w3.org/TR/SVG/shapes.html#CircleElement
-class Circle : public Node {
+class CI_API Circle : public Node {
   public:
 	Circle( const Node *parent ) : Node( parent ) {}
 	Circle( const Node *parent, const XmlTree &xml );
@@ -507,7 +504,7 @@ class Circle : public Node {
 };
 
 //! SVG Ellipse element: http://www.w3.org/TR/SVG/shapes.html#EllipseElement
-class Ellipse : public Node {
+class CI_API Ellipse : public Node {
   public:
 	Ellipse( const Node *parent ) : Node( parent ) {}
 	Ellipse( const Node *parent, const XmlTree &xml );
@@ -529,7 +526,7 @@ class Ellipse : public Node {
 };
 
 //! SVG Path element: http://www.w3.org/TR/SVG/paths.html#PathElement
-class Path : public Node {
+class CI_API Path : public Node {
   public:
 	Path( const Node *parent ) : Node( parent ) {}
 	Path( const Node *parent, const XmlTree &xml );
@@ -549,7 +546,7 @@ class Path : public Node {
 };
 
 //! SVG Line element: http://www.w3.org/TR/SVG/shapes.html#LineElement
-class Line : public Node {
+class CI_API Line : public Node {
   public:
 	Line( const Node *parent ) : Node( parent ) {}
 	Line( const Node *parent, const XmlTree &xml );
@@ -567,7 +564,7 @@ class Line : public Node {
 };
 
 //! SVG Rect element: http://www.w3.org/TR/SVG/shapes.html#RectElement
-class Rect : public Node {
+class CI_API Rect : public Node {
   public:
 	Rect( const Node *parent ) : Node( parent ) {}
 	Rect( const Node *parent, const XmlTree &xml );
@@ -586,7 +583,7 @@ class Rect : public Node {
 };
 
 //! SVG Polygon Element: http://www.w3.org/TR/SVG/shapes.html#PolygonElement
-class Polygon : public Node {
+class CI_API Polygon : public Node {
   public:
 	Polygon( const Node *parent ) : Node( parent ) {}
 	Polygon( const Node *parent, const XmlTree &xml );
@@ -606,7 +603,7 @@ class Polygon : public Node {
 };
 
 //! SVG Polyline Element: http://www.w3.org/TR/SVG/shapes.html#PolylineElement
-class Polyline : public Node {
+class CI_API Polyline : public Node {
   public:
 	Polyline( const Node *parent ) : Node( parent ) {}
 	Polyline( const Node *parent, const XmlTree &xml );
@@ -626,7 +623,7 @@ class Polyline : public Node {
 };
 
 //! SVG Use Element, which instantiates a different element: http://www.w3.org/TR/SVG/struct.html#UseElement
-class Use : public Node {
+class CI_API Use : public Node {
   public:
 	Use( const Node *parent, const XmlTree &xml );
 	
@@ -644,7 +641,7 @@ class Use : public Node {
 };
 
 //! SVG Image Element. Represents an unpremultiplied bitmap. http://www.w3.org/TR/SVG/struct.html#ImageElement
-class Image : public Node {
+class CI_API Image : public Node {
   public:
 	Image( const Node *parent, const XmlTree &xml );
 
@@ -667,9 +664,9 @@ class Image : public Node {
 typedef std::shared_ptr<TextSpan>	TextSpanRef;
 
 //! SVG tspan Element. Generally owned by a svg::Text Node. http://www.w3.org/TR/SVG/text.html#TSpanElement
-class TextSpan : public Node {
+class CI_API TextSpan : public Node {
   public:
-	class Attributes {
+	class CI_API Attributes {
 	  public:
 		Attributes() {}
 		Attributes( const XmlTree &xml );
@@ -710,7 +707,7 @@ class TextSpan : public Node {
 };
 
 //! SVG Text element. http://www.w3.org/TR/SVG/text.html#TextElement
-class Text : public Node {
+class CI_API Text : public Node {
   public:
   	Text( const Node *parent, const XmlTree &xml );
 
@@ -726,7 +723,7 @@ class Text : public Node {
 };
 
 //! Represents a group of SVG elements. http://www.w3.org/TR/SVG/struct.html#Groups
-class Group : public Node, private Noncopyable {
+class CI_API Group : public Node, private Noncopyable {
   public:
 	Group( const Node *parent ) : Node( parent ) {}
 	Group( const Node *parent, const XmlTree &xml );
@@ -776,7 +773,7 @@ class Group : public Node, private Noncopyable {
 
 typedef std::shared_ptr<Doc>	DocRef;
 //! Represents an SVG Document. See SVG Document Structure http://www.w3.org/TR/SVG/struct.html
-class Doc : public Group {
+class CI_API Doc : public Group {
   public:
 	Doc() : Group( 0 ), mWidth( 0 ), mHeight( 0 ) {}
 	Doc( const fs::path &filePath );
@@ -819,22 +816,22 @@ class Doc : public Group {
 };
 
 //! SVG Exception base-class
-class Exc : public Exception
+class CI_API Exc : public Exception
 {};
 
-class ValueExc : public Exc
+class CI_API ValueExc : public Exc
 {};
 
-class FloatParseExc : public Exc
+class CI_API FloatParseExc : public Exc
 {};
 
-class PathParseExc : public Exc
+class CI_API PathParseExc : public Exc
 {};
 
-class TransformParseExc : public Exc
+class CI_API TransformParseExc : public Exc
 {};
 
-class ExcChildNotFound : public Exc {
+class CI_API ExcChildNotFound : public Exc {
   public:
 	ExcChildNotFound( const std::string &child );
 };
