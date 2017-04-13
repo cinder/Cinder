@@ -202,6 +202,28 @@ void TriMesh::loadInto( geom::Target *target, const geom::AttribSet &requestedAt
 		target->copyIndices( geom::Primitive::TRIANGLES, mIndices.data(), getNumIndices(), 4 /* bytes per index */ );
 }
 
+void TriMesh::reserveVertices( size_t numVertices )
+{
+	if( mPositionsDims > 0 )
+		mPositions.reserve( mPositionsDims * numVertices );
+	if( mColorsDims > 0 )
+		mColors.reserve( mColorsDims * numVertices );
+	if( mTexCoords0Dims > 0 )
+		mTexCoords0.reserve( mTexCoords0Dims * numVertices );
+	if( mTexCoords1Dims > 0 )
+		mTexCoords1.reserve( mTexCoords1Dims * numVertices );
+	if( mTexCoords2Dims > 0 )
+		mTexCoords2.reserve( mTexCoords2Dims * numVertices );
+	if( mTexCoords3Dims > 0 )
+		mTexCoords3.reserve( mTexCoords3Dims * numVertices );
+	if( mNormalsDims > 0 )
+		mNormals.reserve( numVertices );
+	if( mTangentsDims > 0 )
+		mTangents.reserve( numVertices );
+	if( mBitangentsDims > 0 )
+		mBitangents.reserve( numVertices );
+}
+
 void TriMesh::clear()
 {
 	mPositions.clear();
@@ -267,6 +289,33 @@ void TriMesh::appendColors( const ColorA *rgbas, size_t num )
 {
 	assert( mColorsDims == 4 );
 	mColors.insert( mColors.end(), (const float*)rgbas, (const float*)rgbas + num * 4 );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// appendTexCoords*( float )
+
+void TriMesh::appendTexCoords0( const float *texCoords, size_t num )
+{
+	assert( mTexCoords0Dims == 1 );
+	mTexCoords0.insert( mTexCoords0.end(), (const float*)texCoords, (const float*)texCoords + num * 1 );
+}
+
+void TriMesh::appendTexCoords1( const float *texCoords, size_t num )
+{
+	assert( mTexCoords1Dims == 1 );
+	mTexCoords1.insert( mTexCoords1.end(), (const float*)texCoords, (const float*)texCoords + num * 1 );
+}
+
+void TriMesh::appendTexCoords2( const float *texCoords, size_t num )
+{
+	assert( mTexCoords2Dims == 1 );
+	mTexCoords2.insert( mTexCoords2.end(), (const float*)texCoords, (const float*)texCoords + num * 1 );
+}
+
+void TriMesh::appendTexCoords3( const float *texCoords, size_t num )
+{
+	assert( mTexCoords3Dims == 1 );
+	mTexCoords3.insert( mTexCoords3.end(), (const float*)texCoords, (const float*)texCoords + num * 1 );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -792,6 +841,12 @@ void TriMesh::subdivide( int division, bool normalize )
 					indices[n++] = (uint32_t)getNumVertices();
 
 					// lambda closures for bilinear interpolation. TODO: make private templated function to reduce code reduncancy
+					auto lerpBilinear1 = [&] (const float &a, const float &b, const float &c) {
+						const float d = mix( a, c, j * rcp );
+						const float e = mix( b, c, j * rcp );
+						return mix( d, e, i * div );
+					};
+					
 					auto lerpBilinear2 = [&] (const vec2 &a, const vec2 &b, const vec2 &c) {
 						const vec2 d = mix( a, c, j * rcp );
 						const vec2 e = mix( b, c, j * rcp );
@@ -867,7 +922,13 @@ void TriMesh::subdivide( int division, bool normalize )
 					}
 
 					if( hasTexCoords0() ) {
-						if( mTexCoords0Dims == 2 ) {
+						if( mTexCoords0Dims == 1 ) {
+							const float &v0 = *(const float*)(&mTexCoords0[index0*1]);
+							const float &v1 = *(const float*)(&mTexCoords0[index1*1]);
+							const float &v2 = *(const float*)(&mTexCoords0[index2*1]);
+							appendTexCoord0( lerpBilinear1( v0, v1, v2 ) );
+						}
+						else if( mTexCoords0Dims == 2 ) {
 							const vec2 &v0 = *(const vec2*)(&mTexCoords0[index0*2]);
 							const vec2 &v1 = *(const vec2*)(&mTexCoords0[index1*2]);
 							const vec2 &v2 = *(const vec2*)(&mTexCoords0[index2*2]);
@@ -888,7 +949,13 @@ void TriMesh::subdivide( int division, bool normalize )
 					}
 
 					if( hasTexCoords1() ) {
-						if( mTexCoords1Dims == 2 ) {
+						if( mTexCoords1Dims == 1 ) {
+							const float &v0 = *(const float*)(&mTexCoords1[index0*1]);
+							const float &v1 = *(const float*)(&mTexCoords1[index1*1]);
+							const float &v2 = *(const float*)(&mTexCoords1[index2*1]);
+							appendTexCoord1( lerpBilinear1( v0, v1, v2 ) );
+						}
+						else if( mTexCoords1Dims == 2 ) {
 							const vec2 &v0 = *(const vec2*)(&mTexCoords1[index0*2]);
 							const vec2 &v1 = *(const vec2*)(&mTexCoords1[index1*2]);
 							const vec2 &v2 = *(const vec2*)(&mTexCoords1[index2*2]);
@@ -909,7 +976,13 @@ void TriMesh::subdivide( int division, bool normalize )
 					}
 
 					if( hasTexCoords2() ) {
-						if( mTexCoords2Dims == 2 ) {
+						if( mTexCoords2Dims == 1 ) {
+							const float &v0 = *(const float*)(&mTexCoords2[index0*1]);
+							const float &v1 = *(const float*)(&mTexCoords2[index1*1]);
+							const float &v2 = *(const float*)(&mTexCoords2[index2*1]);
+							appendTexCoord2( lerpBilinear1( v0, v1, v2 ) );
+						}
+						else if( mTexCoords2Dims == 2 ) {
 							const vec2 &v0 = *(const vec2*)(&mTexCoords2[index0*2]);
 							const vec2 &v1 = *(const vec2*)(&mTexCoords2[index1*2]);
 							const vec2 &v2 = *(const vec2*)(&mTexCoords2[index2*2]);
@@ -930,7 +1003,13 @@ void TriMesh::subdivide( int division, bool normalize )
 					}
 
 					if( hasTexCoords3() ) {
-						if( mTexCoords3Dims == 2 ) {
+						if( mTexCoords3Dims == 1 ) {
+							const float &v0 = *(const float*)(&mTexCoords3[index0*1]);
+							const float &v1 = *(const float*)(&mTexCoords3[index1*1]);
+							const float &v2 = *(const float*)(&mTexCoords3[index2*1]);
+							appendTexCoord3( lerpBilinear1( v0, v1, v2 ) );
+						}
+						else if( mTexCoords3Dims == 2 ) {
 							const vec2 &v0 = *(const vec2*)(&mTexCoords3[index0*2]);
 							const vec2 &v1 = *(const vec2*)(&mTexCoords3[index1*2]);
 							const vec2 &v2 = *(const vec2*)(&mTexCoords3[index2*2]);
@@ -1133,7 +1212,13 @@ bool TriMesh::verticesEqual( uint32_t indexA, uint32_t indexB ) const
 	}
 
 	if( mTexCoords0Dims > 0 ) {
-		if( mTexCoords0Dims == 2 ) {
+		if( mTexCoords0Dims == 1 ) {
+			const float &a = *reinterpret_cast<const float*>(&mTexCoords0[indexA*mTexCoords0Dims]);
+			const float &b = *reinterpret_cast<const float*>(&mTexCoords0[indexB*mTexCoords0Dims]);
+			if( distance2( a, b ) > FLT_EPSILON )
+			return false;
+		}
+		else if( mTexCoords0Dims == 2 ) {
 			const vec2 &a = *reinterpret_cast<const vec2*>(&mTexCoords0[indexA*mTexCoords0Dims]);
 			const vec2 &b = *reinterpret_cast<const vec2*>(&mTexCoords0[indexB*mTexCoords0Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
@@ -1154,7 +1239,13 @@ bool TriMesh::verticesEqual( uint32_t indexA, uint32_t indexB ) const
 	}
 
 	if( mTexCoords1Dims > 0 ) {
-		if( mTexCoords1Dims == 2 ) {
+		if( mTexCoords1Dims == 1 ) {
+			const float &a = *reinterpret_cast<const float*>(&mTexCoords1[indexA*mTexCoords1Dims]);
+			const float &b = *reinterpret_cast<const float*>(&mTexCoords1[indexB*mTexCoords1Dims]);
+			if( distance2( a, b ) > FLT_EPSILON )
+			return false;
+		}
+		else if( mTexCoords1Dims == 2 ) {
 			const vec2 &a = *reinterpret_cast<const vec2*>(&mTexCoords1[indexA*mTexCoords1Dims]);
 			const vec2 &b = *reinterpret_cast<const vec2*>(&mTexCoords1[indexB*mTexCoords1Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
@@ -1175,7 +1266,13 @@ bool TriMesh::verticesEqual( uint32_t indexA, uint32_t indexB ) const
 	}
 
 	if( mTexCoords2Dims > 0 ) {
-		if( mTexCoords2Dims == 2 ) {
+		if( mTexCoords2Dims == 1 ) {
+			const float &a = *reinterpret_cast<const float*>(&mTexCoords2[indexA*mTexCoords2Dims]);
+			const float &b = *reinterpret_cast<const float*>(&mTexCoords2[indexB*mTexCoords2Dims]);
+			if( distance2( a, b ) > FLT_EPSILON )
+			return false;
+		}
+		else if( mTexCoords2Dims == 2 ) {
 			const vec2 &a = *reinterpret_cast<const vec2*>(&mTexCoords2[indexA*mTexCoords2Dims]);
 			const vec2 &b = *reinterpret_cast<const vec2*>(&mTexCoords2[indexB*mTexCoords2Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
@@ -1196,7 +1293,13 @@ bool TriMesh::verticesEqual( uint32_t indexA, uint32_t indexB ) const
 	}
 
 	if( mTexCoords3Dims > 0 ) {
-		if( mTexCoords3Dims == 2 ) {
+		if( mTexCoords3Dims == 1 ) {
+			const float &a = *reinterpret_cast<const float*>(&mTexCoords3[indexA*mTexCoords3Dims]);
+			const float &b = *reinterpret_cast<const float*>(&mTexCoords3[indexB*mTexCoords3Dims]);
+			if( distance2( a, b ) > FLT_EPSILON )
+			return false;
+		}
+		else if( mTexCoords3Dims == 2 ) {
 			const vec2 &a = *reinterpret_cast<const vec2*>(&mTexCoords3[indexA*mTexCoords3Dims]);
 			const vec2 &b = *reinterpret_cast<const vec2*>(&mTexCoords3[indexB*mTexCoords3Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )

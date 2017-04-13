@@ -81,6 +81,10 @@ class CI_API TriMesh : public geom::Source {
 	void			loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
 	geom::Source*	clone() const override { return new TriMesh( *this ); }
 	
+	void		reserveVertices( size_t numVertices );
+	void		reserveIndices( size_t numIndices ) { mIndices.reserve( numIndices ); }
+	void		reserveTriangles( size_t numTriangles ) { reserveIndices( numTriangles * 3 ); }
+
 	void		clear();
 	
 	bool		hasNormals() const { return ! mNormals.empty(); }
@@ -130,6 +134,17 @@ class CI_API TriMesh : public geom::Source {
 	void		appendColorRgba( const ColorA &color ) { appendColors( &color, 1 ); }
 
 	//! Synonym for appendTexCoord0; appends a texture coordinate for unit 0
+	void		appendTexCoord( const float v ) { appendTexCoords0( &v, 1 ); }
+	//!	appends a 1D texture coordinate for unit 0
+	void		appendTexCoord0( const float &v ) { appendTexCoords0( &v, 1 ); }
+	//! appends a 1D texture coordinate for unit 1
+	void		appendTexCoord1( const float &v ) { appendTexCoords1( &v, 1 ); }
+	//! appends a 1D texture coordinate for unit 2
+	void		appendTexCoord2( const float &v ) { appendTexCoords2( &v, 1 ); }
+	//! appends a 1D texture coordinate for unit 3
+	void		appendTexCoord3( const float &v ) { appendTexCoords3( &v, 1 ); }
+
+	//! Synonym for appendTexCoord0; appends a texture coordinate for unit 0
 	void		appendTexCoord( const vec2 &v ) { appendTexCoords0( &v, 1 ); }
 	//!	appends a 2D texture coordinate for unit 0
 	void		appendTexCoord0( const vec2 &v ) { appendTexCoords0( &v, 1 ); }
@@ -163,6 +178,15 @@ class CI_API TriMesh : public geom::Source {
 	//! Appends multiple RGBA colors to the TriMesh
 	void		appendColors( const ColorA *rgbas, size_t num );
 	
+	//! Appends multiple 1D texcoords for unit 0
+	void		appendTexCoords0( const float *texCoords, size_t num );
+	//! Appends multiple 1D texcoords for unit 1
+	void		appendTexCoords1( const float *texCoords, size_t num );
+	//! Appends multiple 1D texcoords for unit 2
+	void		appendTexCoords2( const float *texCoords, size_t num );
+	//! Appends multiple 1D texcoords for unit 3
+	void		appendTexCoords3( const float *texCoords, size_t num );
+
 	//! Appends multiple 2D texcoords for unit 0
 	void		appendTexCoords0( const vec2 *texCoords, size_t num );
 	//! Appends multiple 2D texcoords for unit 1
