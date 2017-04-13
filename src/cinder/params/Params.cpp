@@ -79,6 +79,7 @@ void pushGlState()
 	ctx->pushGlslProg();
 	ctx->pushViewport();
 	ctx->pushScissor();
+	ctx->pushDepthRange();
 	ctx->pushLineWidth();
 	ctx->pushActiveTexture();
 	ctx->pushBlendFuncSeparate();
@@ -113,6 +114,7 @@ void popGlState()
 	ctx->popBlendFuncSeparate( true );
 	ctx->popActiveTexture( true );
 	ctx->popLineWidth( true );
+	ctx->popDepthRange( true );
 	ctx->popScissor( true );
 	ctx->popViewport( true );
 	ctx->popGlslProg( true );

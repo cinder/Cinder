@@ -280,6 +280,15 @@ struct CI_API ScopedDepthWrite : private Noncopyable {
 	Context		*mCtx;
 };
 
+//! Scopes state of depth range
+struct CI_API ScopedDepthRange : private Noncopyable {
+	ScopedDepthRange( double nearVal, double farVal );
+	~ScopedDepthRange();
+	
+  private:
+	Context		*mCtx;
+};
+
 //! Scopes state of Renderbuffer binding
 struct CI_API ScopedRenderbuffer : private Noncopyable {
 	ScopedRenderbuffer( const RenderbufferRef &renderBuffer );

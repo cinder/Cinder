@@ -396,6 +396,19 @@ ScopedDepthWrite::~ScopedDepthWrite()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedDepthRange
+ScopedDepthRange::ScopedDepthRange( double nearVal, double farVal )
+	: mCtx( gl::context() )
+{
+	mCtx->pushDepthRange( nearVal, farVal );
+}
+
+ScopedDepthRange::~ScopedDepthRange()
+{
+	mCtx->popDepthRange();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedRenderbuffer
 ScopedRenderbuffer::ScopedRenderbuffer( const RenderbufferRef &renderBuffer )
 	: mCtx( gl::context() )

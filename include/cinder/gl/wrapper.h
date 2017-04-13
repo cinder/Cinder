@@ -159,6 +159,9 @@ CI_API void enableDepthWrite( bool enable = true );
 //! Enables or disables writing to and reading / testing from depth buffer
 CI_API inline void enableDepth( bool enable = true ) { enableDepthRead( enable ); enableDepthWrite( enable ); }
 
+//! Sets the depth range.
+CI_API void depthRange( double nearVal, double farVal );
+
 //! Enables or disables the stencil test operation, which controls reading and writing to the stencil buffer. Analagous to `glEnable( GL_STENCIL_TEST, enable );`
 CI_API void enableStencilTest( bool enable = true );
 //! Disables the stencil test operation. Analagous to `glEnable( GL_STENCIL_TEST, false );`

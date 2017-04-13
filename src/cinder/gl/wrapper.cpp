@@ -387,6 +387,12 @@ void disableDepthWrite()
 	ctx->depthMask( GL_FALSE );
 }
 
+void depthRange( double nearVal, double farVal )
+{
+	auto ctx = gl::context();
+	ctx->depthRange( nearVal, farVal );
+}
+
 void enableStencilTest( bool enable )
 {
     gl::enable( GL_STENCIL_TEST, enable );

@@ -360,6 +360,18 @@ class CI_API Context {
 	//! Returns the depth buffer comparison function, either \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL or \c GL_ALWAYS.
 	GLenum		getDepthFunc();
 
+	//! Set the depth range. Analogous to glDepthRange().
+	void						depthRange( double nearVal, double farVal );
+	//! Pushes and sets the current depth range.
+	void						pushDepthRange( double nearVal, double farVal );
+	//! Duplicates and pushes the current depth range.
+	void						pushDepthRange();
+	//! Sets the current depth range. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void						popDepthRange( bool forceRestore = false );
+	//! Returns the current depth range.
+	std::pair<double, double>	getDepthRange();
+
+
 #if ! defined( CINDER_GL_ES )
 	//! Sets the current polygon rasterization mode. \a face must be \c GL_FRONT_AND_BACK. \c GL_POINT, \c GL_LINE & \c GL_FILL are legal values for \a mode.
 	void		polygonMode( GLenum face, GLenum mode );
@@ -521,9 +533,10 @@ class CI_API Context {
 	std::vector<GLenum>			mPolygonModeStack;
 #endif
 
-	std::vector<GLboolean>		mDepthMaskStack;
-	std::vector<GLenum>			mDepthFuncStack;
-	
+	std::vector<GLboolean>					mDepthMaskStack;
+	std::vector<GLenum>						mDepthFuncStack;
+	std::vector<std::pair<double,double>>	mDepthRangeStack;
+
 	std::map<GLenum,std::vector<GLboolean>>	mBoolStateStack;
 	// map<TextureUnit,map<TextureTarget,vector<Binding ID Stack>>>
 	std::map<uint8_t,std::map<GLenum,std::vector<GLint>>>	mTextureBindingStack;
