@@ -476,10 +476,12 @@ extern std::ostream& operator<<( std::ostream &lhs, const ColorT<uint8_t> &rhs )
 extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<uint8_t> &rhs );
 
 typedef ColorT<float>		Colorf;
+typedef ColorT<double>		Colord;
 typedef Colorf				Color;
 typedef ColorT<uint8_t>		Color8u;
 typedef ColorAT<float>		ColorA;
 typedef ColorAT<float>		ColorAf;
+typedef ColorAT<double>		ColorAd;
 typedef ColorAT<uint8_t>	ColorA8u;
 
 
