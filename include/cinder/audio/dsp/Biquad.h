@@ -64,7 +64,7 @@ namespace cinder { namespace audio { namespace dsp {
 //! frequency is 0 - 1 normalized, resonance and dbGain are in decibels. Q is a
 //! unitless quality factor.
 //!
-class Biquad {
+class CI_API Biquad {
   public:
 	Biquad();
     virtual ~Biquad();

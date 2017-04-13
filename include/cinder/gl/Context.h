@@ -56,9 +56,9 @@ class Renderbuffer;
 
 class TextureBase;
 
-class Context {
+class CI_API Context {
   public:
-	struct PlatformData {
+	struct CI_API PlatformData {
 		PlatformData() : mDebug( false ), mObjectTracking( false ), mDebugLogSeverity( 0 ), mDebugBreakSeverity( 0 )
 		{}
 
@@ -572,7 +572,7 @@ class Context {
 	friend class				Texture2d;
 };
 
-class ExcContextAllocation : public Exception {
+class CI_API ExcContextAllocation : public Exception {
 };
 
 } } // namespace cinder::gl

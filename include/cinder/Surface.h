@@ -54,7 +54,7 @@ typedef SurfaceT<float> Surface32f;
 typedef std::shared_ptr<Surface32f>	Surface32fRef;
 
 //! Specifies the in-memory ordering of the channels of a Surface.
-class SurfaceChannelOrder {
+class CI_API SurfaceChannelOrder {
   public:
 	SurfaceChannelOrder() : mCode( UNSPECIFIED ), mRed( INVALID ), mGreen( INVALID ), mBlue( INVALID ), mAlpha( INVALID ), mPixelInc( INVALID ) {}
 	SurfaceChannelOrder( int aCode );
@@ -88,7 +88,7 @@ class SurfaceChannelOrder {
 };
 
 //! Base class for defining the properties of a Surface necessary to be interoperable with different APIs
-class SurfaceConstraints {
+class CI_API SurfaceConstraints {
  public:
 	virtual ~SurfaceConstraints() {}
 
@@ -96,7 +96,7 @@ class SurfaceConstraints {
 	virtual ptrdiff_t			getRowBytes( int32_t requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { return requestedWidth * elementSize * sco.getPixelInc(); }
 };
 
-class SurfaceConstraintsDefault : public SurfaceConstraints {
+class CI_API SurfaceConstraintsDefault : public SurfaceConstraints {
 };
 
 typedef std::shared_ptr<class ImageSource> ImageSourceRef;
@@ -104,7 +104,7 @@ typedef std::shared_ptr<class ImageTarget> ImageTargetRef;
 
 template<typename T>
 //! An in-memory representation of an image. \ImplShared
-class SurfaceT {
+class CI_API SurfaceT {
   public:
 	//! A null Surface.
 	SurfaceT();
@@ -273,7 +273,7 @@ class SurfaceT {
   public:
 	
 	//! Convenience class for iterating the pixels of a Surface.
-	class Iter {
+	class CI_API Iter {
 	 public:
 		Iter( SurfaceT<T> &SurfaceT, const Area &area ) 
 			: mRedOff( SurfaceT.getRedOffset() ), mGreenOff( SurfaceT.getGreenOffset() ), 
@@ -369,7 +369,7 @@ class SurfaceT {
 	};
 
 	//! Convenience class for iterating the pixels of a Surface. The iteration is \c const, performing read-only operations on the Surface.
-	class ConstIter {
+	class CI_API ConstIter {
 	 public:
 		ConstIter( const Iter &iter ) {
 			mRedOff = iter.mRedOff;
@@ -494,13 +494,13 @@ class SurfaceT {
 	ConstIter	getIter( const Area &area ) const { return ConstIter( *this, area ); }
 };
 
-class SurfaceExc : public Exception {
+class CI_API SurfaceExc : public Exception {
 	virtual const char* what() const throw() {
 		return "Surface exception";
 	}
 };
 
-class SurfaceConstraintsExc : public SurfaceExc {
+class CI_API SurfaceConstraintsExc : public SurfaceExc {
 	virtual const char* what() const throw() {
 		return "Surface exception: does not conform to expected SurfaceConstraints";
 	}

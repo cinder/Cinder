@@ -32,7 +32,7 @@ namespace cinder { namespace gl {
 
 typedef std::shared_ptr<class Sync>		SyncRef;
 
-class Sync {
+class CI_API Sync {
   public:
 	//! Analogous to glFenceSync().
 	static SyncRef	create( GLenum condition = GL_SYNC_GPU_COMMANDS_COMPLETE, GLbitfield flags = 0 );

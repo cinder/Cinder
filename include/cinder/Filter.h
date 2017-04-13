@@ -26,7 +26,7 @@
 
 namespace cinder {
 
-class FilterBase {
+class CI_API FilterBase {
  public:
 	FilterBase( float aSupport ) : mSupport( aSupport ) {}
 	virtual ~FilterBase() {};
@@ -40,7 +40,7 @@ class FilterBase {
 };
 
 // box, pulse, nearest-neighbor, Fourier window, 1st order (constant) b-spline 
-class FilterBox : public FilterBase {
+class CI_API FilterBox : public FilterBase {
  public:
 	FilterBox( float aSupport = 0.5f ) : FilterBase( aSupport ) {}
 	
@@ -52,7 +52,7 @@ class FilterBox : public FilterBase {
 };
 
 // triangle, Bartlett window, 2nd order (linear) b-spline
-class FilterTriangle : public FilterBase {
+class CI_API FilterTriangle : public FilterBase {
  public:
 	FilterTriangle( float aSupport = 1.0f ) : FilterBase( aSupport ) {}
 	
@@ -65,7 +65,7 @@ class FilterTriangle : public FilterBase {
 };
 
 // 3rd order (quadratic) b-spline
-class FilterQuadratic : public FilterBase {
+class CI_API FilterQuadratic : public FilterBase {
  public:
 	FilterQuadratic( float aSupport = 1.5f ) : FilterBase( aSupport ) {}
 	
@@ -81,7 +81,7 @@ class FilterQuadratic : public FilterBase {
 };
 
 // 4th order (cubic) b-spline
-class FilterCubic : public FilterBase {
+class CI_API FilterCubic : public FilterBase {
  public:
 	FilterCubic( float aSupport = 2.0f ) : FilterBase( aSupport ) {}
 	
@@ -98,7 +98,7 @@ class FilterCubic : public FilterBase {
 };
 
 // Catmull-Rom spline, Overhauser spline
-class FilterCatmullRom : public FilterBase {
+class CI_API FilterCatmullRom : public FilterBase {
  public:
 	FilterCatmullRom( float aSupport = 2.0f ) : FilterBase( aSupport ) {}
 	
@@ -114,7 +114,7 @@ class FilterCatmullRom : public FilterBase {
 
 // Mitchell & Netravali's two-parameter cubic
 // see Mitchell&Netravali, "Reconstruction Filters in Computer Graphics", SIGGRAPH 88
-class FilterMitchell : public FilterBase {
+class CI_API FilterMitchell : public FilterBase {
  public:
 	FilterMitchell( float aSupport = 2.0f, float b = 0.3333333333f, float c = 0.3333333333f ) : FilterBase( aSupport ) {
 	    mP0 = ( 6.0f - 2.0f * b ) / 6.0f;
@@ -141,7 +141,7 @@ class FilterMitchell : public FilterBase {
 };
 
 // sinc filter, windowed by blackman
-class FilterSincBlackman : public FilterBase {
+class CI_API FilterSincBlackman : public FilterBase {
  public:
 	FilterSincBlackman( float aSupport = 4.0f ) : FilterBase( aSupport ) {}
 	
@@ -154,7 +154,7 @@ class FilterSincBlackman : public FilterBase {
 };
 
 // sinc filter, windowed by blackman
-class FilterGaussian : public FilterBase {
+class CI_API FilterGaussian : public FilterBase {
  public:
 	FilterGaussian( float aSupport = 1.25f ) : FilterBase( aSupport ) {}
 	
@@ -164,7 +164,7 @@ class FilterGaussian : public FilterBase {
 };
 
 #if ! defined( CINDER_COCOA_TOUCH )
-class FilterBesselBlackman : public FilterBase {
+class CI_API FilterBesselBlackman : public FilterBase {
  public:
 	FilterBesselBlackman( float aSupport = 3.2383f ) : FilterBase( aSupport ) {}
 	

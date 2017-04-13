@@ -36,7 +36,7 @@ typedef std::shared_ptr<class ImageSource> ImageSourceRef;
 
 //! A single channel of image data, either a color channel of a Surface or a grayscale image. \ImplShared
 template<typename T>
-class ChannelT {	 
+class CI_API ChannelT {	 
  public:
 	//! An null Channel.
 	ChannelT();
@@ -128,7 +128,7 @@ class ChannelT {
 	std::shared_ptr<T>	getDataStore() const { return mDataStore; }
 
 	/*! Convenience class for iterating the pixels of a Channel. */
-	class Iter {
+	class CI_API Iter {
 	 public:
 		Iter( ChannelT<T> &channelT, const Area &area ) 
 			: mInc( channelT.getIncrement() ), mRowInc( channelT.getRowBytes() )
@@ -197,7 +197,7 @@ class ChannelT {
 	};
 
 	//! Convenience class for iterating the pixels of a Channel. The iteration is \c const, performing read-only operations on the Channel.
-	class ConstIter {
+	class CI_API ConstIter {
 	 public:
 		ConstIter( const ChannelT<T> &channelT, const Area &area ) 
 			: mInc( channelT.getIncrement() ), mRowInc( channelT.getRowBytes() )

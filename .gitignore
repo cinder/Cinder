@@ -30,6 +30,8 @@ Debug/
 Release/
 Debug_ANGLE/
 Release_ANGLE/
+Debug_Shared/
+Release_Shared/
 ipch/
 **/vc2013/enc_temp_folder/**
 

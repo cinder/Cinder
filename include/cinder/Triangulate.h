@@ -33,7 +33,7 @@ struct TESStesselator;
 namespace cinder {
 
 //! Converts an arbitrary Shape2d into a TriMesh2d
-class Triangulator {
+class CI_API Triangulator {
   public:
 	typedef enum Winding { WINDING_ODD, WINDING_NONZERO, WINDING_POSITIVE, WINDING_NEGATIVE, WINDING_ABS_GEQ_TWO } Winding;
 
@@ -60,7 +60,7 @@ class Triangulator {
 	//! Performs the tesselation, returning a TriMesh2d
 	TriMeshRef	createMesh( Winding winding = WINDING_ODD );
 	
-	class Exception : public cinder::Exception {
+	class CI_API Exception : public cinder::Exception {
 	};
 	
   protected:	

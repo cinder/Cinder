@@ -24,11 +24,12 @@
 
 #include <exception>
 #include <string>
+#include "cinder/Export.h"
 
 namespace cinder {
 
 //! All exceptions thrown in cinder derive from cinder::Exception
-class Exception : public std::exception {
+class CI_API Exception : public std::exception {
   public:
 	Exception();
 	Exception( const std::string &description );

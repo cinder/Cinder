@@ -1,0 +1,5 @@
+#include "../include/Resources.h"
+
+1	ICON	"..\\..\\..\\data\\cinder_app_icon.ico"
+
+RES_8LBS_OBJ

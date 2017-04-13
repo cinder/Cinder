@@ -50,43 +50,43 @@ typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISQUERYPROC)(GLuint id);
 typedef void * (CODEGEN_FUNCPTR * PFNGLMAPBUFFERPROC)(GLenum target, GLenum access);
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLUNMAPBUFFERPROC)(GLenum target);
 
-extern PFNGLBEGINQUERYPROC _funcptr_glBeginQuery;
+CI_API extern PFNGLBEGINQUERYPROC _funcptr_glBeginQuery;
 #define glBeginQuery _funcptr_glBeginQuery
-extern PFNGLBINDBUFFERPROC _funcptr_glBindBuffer;
+CI_API extern PFNGLBINDBUFFERPROC _funcptr_glBindBuffer;
 #define glBindBuffer _funcptr_glBindBuffer
-extern PFNGLBUFFERDATAPROC _funcptr_glBufferData;
+CI_API extern PFNGLBUFFERDATAPROC _funcptr_glBufferData;
 #define glBufferData _funcptr_glBufferData
-extern PFNGLBUFFERSUBDATAPROC _funcptr_glBufferSubData;
+CI_API extern PFNGLBUFFERSUBDATAPROC _funcptr_glBufferSubData;
 #define glBufferSubData _funcptr_glBufferSubData
-extern PFNGLDELETEBUFFERSPROC _funcptr_glDeleteBuffers;
+CI_API extern PFNGLDELETEBUFFERSPROC _funcptr_glDeleteBuffers;
 #define glDeleteBuffers _funcptr_glDeleteBuffers
-extern PFNGLDELETEQUERIESPROC _funcptr_glDeleteQueries;
+CI_API extern PFNGLDELETEQUERIESPROC _funcptr_glDeleteQueries;
 #define glDeleteQueries _funcptr_glDeleteQueries
-extern PFNGLENDQUERYPROC _funcptr_glEndQuery;
+CI_API extern PFNGLENDQUERYPROC _funcptr_glEndQuery;
 #define glEndQuery _funcptr_glEndQuery
-extern PFNGLGENBUFFERSPROC _funcptr_glGenBuffers;
+CI_API extern PFNGLGENBUFFERSPROC _funcptr_glGenBuffers;
 #define glGenBuffers _funcptr_glGenBuffers
-extern PFNGLGENQUERIESPROC _funcptr_glGenQueries;
+CI_API extern PFNGLGENQUERIESPROC _funcptr_glGenQueries;
 #define glGenQueries _funcptr_glGenQueries
-extern PFNGLGETBUFFERPARAMETERIVPROC _funcptr_glGetBufferParameteriv;
+CI_API extern PFNGLGETBUFFERPARAMETERIVPROC _funcptr_glGetBufferParameteriv;
 #define glGetBufferParameteriv _funcptr_glGetBufferParameteriv
-extern PFNGLGETBUFFERPOINTERVPROC _funcptr_glGetBufferPointerv;
+CI_API extern PFNGLGETBUFFERPOINTERVPROC _funcptr_glGetBufferPointerv;
 #define glGetBufferPointerv _funcptr_glGetBufferPointerv
-extern PFNGLGETBUFFERSUBDATAPROC _funcptr_glGetBufferSubData;
+CI_API extern PFNGLGETBUFFERSUBDATAPROC _funcptr_glGetBufferSubData;
 #define glGetBufferSubData _funcptr_glGetBufferSubData
-extern PFNGLGETQUERYOBJECTIVPROC _funcptr_glGetQueryObjectiv;
+CI_API extern PFNGLGETQUERYOBJECTIVPROC _funcptr_glGetQueryObjectiv;
 #define glGetQueryObjectiv _funcptr_glGetQueryObjectiv
-extern PFNGLGETQUERYOBJECTUIVPROC _funcptr_glGetQueryObjectuiv;
+CI_API extern PFNGLGETQUERYOBJECTUIVPROC _funcptr_glGetQueryObjectuiv;
 #define glGetQueryObjectuiv _funcptr_glGetQueryObjectuiv
-extern PFNGLGETQUERYIVPROC _funcptr_glGetQueryiv;
+CI_API extern PFNGLGETQUERYIVPROC _funcptr_glGetQueryiv;
 #define glGetQueryiv _funcptr_glGetQueryiv
-extern PFNGLISBUFFERPROC _funcptr_glIsBuffer;
+CI_API extern PFNGLISBUFFERPROC _funcptr_glIsBuffer;
 #define glIsBuffer _funcptr_glIsBuffer
-extern PFNGLISQUERYPROC _funcptr_glIsQuery;
+CI_API extern PFNGLISQUERYPROC _funcptr_glIsQuery;
 #define glIsQuery _funcptr_glIsQuery
-extern PFNGLMAPBUFFERPROC _funcptr_glMapBuffer;
+CI_API extern PFNGLMAPBUFFERPROC _funcptr_glMapBuffer;
 #define glMapBuffer _funcptr_glMapBuffer
-extern PFNGLUNMAPBUFFERPROC _funcptr_glUnmapBuffer;
+CI_API extern PFNGLUNMAPBUFFERPROC _funcptr_glUnmapBuffer;
 #define glUnmapBuffer _funcptr_glUnmapBuffer
 
 #ifdef __cplusplus

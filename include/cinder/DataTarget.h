@@ -32,7 +32,7 @@ namespace cinder {
 
 typedef std::shared_ptr<class DataTarget>	DataTargetRef;
 
-class DataTarget { 
+class CI_API DataTarget { 
   public:
 	virtual bool	providesFilePath() = 0;
 	virtual bool	providesUrl() = 0;
@@ -60,7 +60,7 @@ class DataTarget {
 
 typedef std::shared_ptr<class DataTargetPath>	DataTargetPathRef;
 
-class DataTargetPath : public DataTarget {
+class CI_API DataTargetPath : public DataTarget {
   public:
 	static DataTargetPathRef	createRef( const fs::path &path );
 	
@@ -78,7 +78,7 @@ class DataTargetPath : public DataTarget {
 
 typedef std::shared_ptr<class DataTargetStream>	DataTargetStreamRef;
 
-class DataTargetStream : public DataTarget {
+class CI_API DataTargetStream : public DataTarget {
   public:
 	static DataTargetStreamRef	createRef( OStreamRef stream );
 
@@ -94,6 +94,6 @@ class DataTargetStream : public DataTarget {
 };
 
 //! Returns a DataTarget to file path \a path, and optionally creates any necessary directories when \a createParents is \c true.
-DataTargetPathRef writeFile( const fs::path &path, bool createParents = true );
+CI_API DataTargetPathRef writeFile( const fs::path &path, bool createParents = true );
 
 } // namespace cinder

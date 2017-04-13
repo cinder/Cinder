@@ -34,7 +34,7 @@
 
 namespace cinder {
 
-class BSplineBasis {
+class CI_API BSplineBasis {
  public:
 	BSplineBasis();
 
@@ -99,7 +99,7 @@ class BSplineBasis {
 };
 
 template<int D, typename T>
-class BSpline {
+class CI_API BSpline {
   public:
 	typedef typename VECDIM<D, T>::TYPE	VecT;
 	// Construction and destruction.  The caller is responsible for deleting

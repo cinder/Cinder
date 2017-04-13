@@ -74,7 +74,7 @@ inline dquat tweenLerp( const dquat &start, const dquat &end, float time )
 }
 
 
-class TweenBase : public TimelineItem {
+class CI_API TweenBase : public TimelineItem {
   public:
 	typedef std::function<void ()>		StartFn;
 	typedef std::function<void ()>		FinishFn;
@@ -102,7 +102,7 @@ class TweenBase : public TimelineItem {
 	void			setReverseFinishFn( FinishFn reverseFinishFn ) { mReverseFinishFunction = reverseFinishFn; }
 	FinishFn		getReverseFinishFn() const { return mReverseFinishFunction; }
 	
-	class Options {
+	class CI_API Options {
 	  protected:
 		Options( TimelineRef timeline )
 			: mTimeline( timeline )
@@ -296,7 +296,7 @@ class FnTweenRef : public TweenRef<T> {
 	{}
 };
 
-class AnimBase {
+class CI_API AnimBase {
   public:
   	//! removes self from Timeline
 	void 	stop();

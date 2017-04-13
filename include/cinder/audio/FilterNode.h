@@ -37,7 +37,7 @@ typedef std::shared_ptr<class FilterHighPassNode>		FilterHighPassNodeRef;
 typedef std::shared_ptr<class FilterBandPassNode>		FilterBandPassNodeRef;
 
 //! General class for filtering nodes based on a biquad (two pole, two zero) filter.
-class FilterBiquadNode : public Node {
+class CI_API FilterBiquadNode : public Node {
   public:
 	//! The modes that are available as 'preset' coefficients, which set the frequency response to a common type of filter.
 	enum class Mode { LOWPASS, HIGHPASS, BANDPASS, LOWSHELF, HIGHSHELF, PEAKING, ALLPASS, NOTCH, CUSTOM };

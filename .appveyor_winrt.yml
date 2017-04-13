@@ -1,0 +1,22 @@
+#version: 1.0.{build}
+
+build:
+  parallel: true
+  project: proj/vc2015_winrt/cinder.sln
+
+platform:
+    - x64
+    - ARM
+    - x86
+
+configuration:
+  - Debug
+  - Release
+
+image: 
+  - Visual Studio 2015
+
+install:
+  - git submodule update --init --recursive
+
+clone_depth: 10

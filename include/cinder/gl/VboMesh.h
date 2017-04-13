@@ -39,9 +39,9 @@ namespace cinder { namespace gl {
 class VboMesh;
 typedef std::shared_ptr<VboMesh> VboMeshRef;
 	
-class VboMesh {
+class CI_API VboMesh {
   public:
-	class Layout {
+	class CI_API Layout {
 	  public:
 		Layout() : mUsage( GL_STATIC_DRAW ), mInterleave( true ) {}
 
@@ -135,7 +135,7 @@ class VboMesh {
 	void		bufferIndices( size_t dataSizeBytes, const void *data );
 
 #if defined( CINDER_GL_ES_3 ) || (! defined( CINDER_GL_ANGLE ))
-	class MappedAttribBase {
+	class CI_API MappedAttribBase {
 	  public:
 		//! Must be called before object is destructed.
 		void		unmap();
@@ -210,7 +210,7 @@ class VboMesh {
 	};
 
 	template<typename T>
-	class MappedAttrib : public MappedAttribBase {
+	class CI_API MappedAttrib : public MappedAttribBase {
 	  public:
 		T&			operator*()			{ return *(reinterpret_cast<T*>( mPtr )); }
 		const T&	operator*() const	{ return *(reinterpret_cast<const T*>( mPtr )); }

@@ -68,7 +68,7 @@ typedef std::shared_ptr<GlslProg>		GlslProgRef;
 class Context;
 typedef std::shared_ptr<Context>		ContextRef;
 
-class Environment {
+class CI_API Environment {
   public:
 	virtual void			initializeFunctionPointers() = 0;
 	
@@ -138,7 +138,7 @@ struct PlatformDataAngle : public Context::PlatformData {
 };
 
 #elif defined( CINDER_MSW ) // normal MSW desktop GL
-struct PlatformDataMsw : public Context::PlatformData {
+struct CI_API PlatformDataMsw : public Context::PlatformData {
 	PlatformDataMsw( HGLRC glrc, HDC dc )
 		: mGlrc( glrc ), mDc( dc )
 	{}

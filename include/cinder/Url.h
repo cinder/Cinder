@@ -30,7 +30,7 @@
 
 namespace cinder {
 
-class Url {
+class CI_API Url {
  public:
 	Url() {}
 	//! Constructs a URL from a string. If \a isEscaped is false, automatically calls Url::encode(). Assumes UTF-8 input.
@@ -48,13 +48,13 @@ class Url {
 	std::string		mStr;
 };
 
-inline std::ostream& operator<<( std::ostream &out, const Url &url )
+CI_API inline std::ostream& operator<<( std::ostream &out, const Url &url )
 {
 	out << url.str();
 	return out;
 }
 
-inline std::istream& operator>>( std::istream &is, Url &url )
+CI_API inline std::istream& operator>>( std::istream &is, Url &url )
 {
 	std::string temp;
 	is >> temp;
@@ -63,7 +63,7 @@ inline std::istream& operator>>( std::istream &is, Url &url )
 }
 
 //! Options for loadUrl() to dictate caching and timeout behavior
-class UrlOptions {
+class CI_API UrlOptions {
   public:
   	UrlOptions( bool ignoreCache = false, float timeoutSeconds = 30.0f )
 		: mIgnoreCache( ignoreCache ), mTimeout( timeoutSeconds )
@@ -85,7 +85,7 @@ class UrlOptions {
 
 //! \cond
 // This is an abstract base class for implementing IStreamUrl
-class IStreamUrlImpl {
+class CI_API IStreamUrlImpl {
   protected:
 	IStreamUrlImpl( const std::string &user, const std::string &password, const UrlOptions &options )
 		: mUser( user ), mPassword( password ), mOptions( options ) {}
@@ -116,7 +116,7 @@ class IStreamUrlImpl {
 typedef std::shared_ptr<class IStreamUrl>	IStreamUrlRef;
 
 /** \warning IStreamUrl does not currently support proper random access **/
-class IStreamUrl : public IStreamCinder {
+class CI_API IStreamUrl : public IStreamCinder {
   public:
 	//! Creates a new IStreamUrlRef from the Url \a url with an optional login and password
 	static IStreamUrlRef		create( const Url &url, const std::string &user = "", const std::string &password = "", const UrlOptions &options = UrlOptions() );
@@ -146,7 +146,7 @@ IStreamUrlRef		loadUrlStream( const Url &url, const UrlOptions &options = UrlOpt
 IStreamUrlRef		loadUrlStream( const std::string &url, const std::string &user = "", const std::string &password = "", const UrlOptions &options = UrlOptions() );
 
 //! Exception for failed Url loading
-class UrlLoadExc : public Exception {
+class CI_API UrlLoadExc : public Exception {
   public:
 	UrlLoadExc( int statusCode, const std::string &message );
 

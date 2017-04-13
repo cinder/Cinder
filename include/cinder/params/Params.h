@@ -44,7 +44,7 @@ namespace params {
 typedef std::shared_ptr<class InterfaceGl>	InterfaceGlRef;
 
 //! Interface for adding params to your window.  Wraps AntTweakBar.
-class InterfaceGl {
+class CI_API InterfaceGl {
   public:
 	//! Creates and returns an InterfaceGl referenced by \a title and with \a size dimensions. Optionally takes \a color.
 	static InterfaceGlRef create( const std::string &title, const ivec2 &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
@@ -59,7 +59,7 @@ class InterfaceGl {
 	InterfaceGl( const cinder::app::WindowRef &window, const std::string &title, const ivec2 &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 
 	//! Base class for chainable options. \see Options<T>.
-	class OptionsBase {
+	class CI_API OptionsBase {
 	  public:
 		const std::string&	getName() const				{ return mName; }
 		void*				getVoidPtr() const			{ return mVoidPtr; }
@@ -97,7 +97,7 @@ class InterfaceGl {
 
 	//! Provides chainable options, returned from addParam().
 	template <typename T>
-	class Options : public OptionsBase {
+	class CI_API Options : public OptionsBase {
   	  public:
 		Options( const std::string &name, T *target, int type, InterfaceGl *parent );
 

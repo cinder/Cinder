@@ -35,7 +35,7 @@
 namespace cinder { namespace app {
 
 //! Represents a file-drop event, typically received from Windows Explorer or Mac OS X Finder
-class FileDropEvent : public Event {
+class CI_API FileDropEvent : public Event {
   public:
 	FileDropEvent( WindowRef win, int aX, int aY, const std::vector<fs::path> &aFiles )
 		: Event( win ), mX( aX ), mY( aY ), mFiles( aFiles )
@@ -60,7 +60,7 @@ class FileDropEvent : public Event {
 	std::vector<fs::path>		mFiles;
 };
 
-inline std::ostream& operator<<( std::ostream &os, const FileDropEvent &event )
+CI_API inline std::ostream& operator<<( std::ostream &os, const FileDropEvent &event )
 {
 //	os << event.getPos() << ": ";
 	os << "{" << std::endl;

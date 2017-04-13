@@ -34,7 +34,7 @@ namespace cinder {
 
 typedef std::shared_ptr<class DataSource>	DataSourceRef;
 
-class DataSource { 
+class CI_API DataSource { 
   public:
 	virtual bool	isFilePath() = 0;
 	virtual bool	isUrl() = 0;
@@ -65,7 +65,7 @@ class DataSource {
 
 typedef std::shared_ptr<class DataSourcePath>	DataSourcePathRef;
 
-class DataSourcePath : public DataSource {
+class CI_API DataSourcePath : public DataSource {
   public:
 	static DataSourcePathRef	create( const fs::path &path );
 
@@ -106,12 +106,12 @@ class DataSourceAndroidAsset : public DataSource {
 #endif
 
 
-DataSourceRef	loadFile( const fs::path &path );
+CI_API DataSourceRef loadFile( const fs::path &path );
 
 #if ! defined( CINDER_UWP )
 typedef std::shared_ptr<class DataSourceUrl>	DataSourceUrlRef;
 
-class DataSourceUrl : public DataSource {
+class CI_API DataSourceUrl : public DataSource {
   public:
 	static DataSourceUrlRef	create( const Url &Url, const UrlOptions &options = UrlOptions() );
 
@@ -132,12 +132,12 @@ class DataSourceUrl : public DataSource {
 };
 #endif // if !defined( CINDER_UWP )
 
-DataSourceRef			loadUrl( const Url &Url, const UrlOptions &options = UrlOptions() );
-inline DataSourceRef	loadUrl( const std::string &urlString, const UrlOptions &options = UrlOptions() ) { return loadUrl( Url( urlString ), options ); }
+CI_API DataSourceRef		loadUrl( const Url &Url, const UrlOptions &options = UrlOptions() );
+CI_API inline DataSourceRef	loadUrl( const std::string &urlString, const UrlOptions &options = UrlOptions() ) { return loadUrl( Url( urlString ), options ); }
 
 typedef std::shared_ptr<class DataSourceBuffer>	DataSourceBufferRef;
 
-class DataSourceBuffer : public DataSource {
+class CI_API DataSourceBuffer : public DataSource {
   public:
 	static DataSourceBufferRef		create( const BufferRef &buffer, const fs::path &filePathHint = "" );
 

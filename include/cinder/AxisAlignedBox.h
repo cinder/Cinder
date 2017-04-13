@@ -29,7 +29,7 @@
 
 namespace cinder {
 
-class AxisAlignedBox {
+class CI_API AxisAlignedBox {
 public:
 	AxisAlignedBox() : mCenter( 0 ), mExtents( 0 ) {}
 	AxisAlignedBox( const vec3 &min, const vec3 &max ) { set( min, max ); }

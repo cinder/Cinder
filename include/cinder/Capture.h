@@ -58,7 +58,7 @@ namespace cinder {
 
 typedef std::shared_ptr<class Capture>	CaptureRef;
 
-class Capture {
+class CI_API Capture {
   public:
 	class Device;
 	typedef std::shared_ptr<Device> DeviceRef;
@@ -113,7 +113,7 @@ class Capture {
 #endif
 
 	// This is an abstract base class for implementing platform specific devices
-	class Device {
+	class CI_API Device {
 	 public:
 		virtual ~Device() {}
 		//! Returns the human-readable name of the device.
@@ -151,13 +151,13 @@ class Capture {
 #endif
 };
 
-class CaptureExc : public Exception {
+class CI_API CaptureExc : public Exception {
 };
 
-class CaptureExcInitFail : public CaptureExc {
+class CI_API CaptureExcInitFail : public CaptureExc {
 };
 
-class CaptureExcInvalidChannelOrder : public CaptureExc {
+class CI_API CaptureExcInvalidChannelOrder : public CaptureExc {
 };
 
 } //namespace cinder
