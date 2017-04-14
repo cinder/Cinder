@@ -53,6 +53,11 @@ using std::uint32_t;
 using std::int64_t;
 using std::uint64_t;
 
+typedef int8_t sint8_t;
+typedef int16_t sint16_t;
+typedef int32_t sint32_t;
+typedef int64_t sint64_t;
+
 #define CINDER_CINDER
 
 #if defined( _WIN32 ) || defined( __WIN32__ ) || defined( WIN32 )
