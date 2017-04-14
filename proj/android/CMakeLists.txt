@@ -439,7 +439,6 @@ set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH} )
 include_directories( 
     ${CINDER_INC_DIR} 
     ${CINDER_INC_DIR}/freetype
-    ${CINDER_INC_DIR}/jsoncpp
     ${CINDER_INC_DIR}/oggvorbis
     ${CINDER_SRC_DIR}/linebreak
     ${CINDER_SRC_DIR}/libtess2
@@ -665,7 +664,6 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/ImageSourceFileStbImage.cpp
     ${CINDER_SRC_DIR}/cinder/ImageTargetFileStbImage.cpp
     ${CINDER_SRC_DIR}/cinder/ImageFileTinyExr.cpp
-    ${CINDER_SRC_DIR}/cinder/Json.cpp
     ${CINDER_SRC_DIR}/cinder/Log.cpp
     ${CINDER_SRC_DIR}/cinder/Matrix.cpp
     ${CINDER_SRC_DIR}/cinder/ObjLoader.cpp
@@ -694,8 +692,6 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/UrlImplJni.cpp
     ${CINDER_SRC_DIR}/cinder/Utilities.cpp
     ${CINDER_SRC_DIR}/cinder/Xml.cpp
-
-    ${CINDER_SRC_DIR}/jsoncpp/jsoncpp.cpp
 
     ${CINDER_SRC_DIR}/freetype/bdf/bdf.c
     ${CINDER_SRC_DIR}/freetype/cff/cff.c

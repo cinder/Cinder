@@ -10,7 +10,6 @@ include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
 set( SOURCES
 	${UNIT_DIR}/src/Base64Test.cpp
-	${UNIT_DIR}/src/JsonTest.cpp
 	${UNIT_DIR}/src/ObjLoaderTest.cpp
 	${UNIT_DIR}/src/RandTest.cpp
 	${UNIT_DIR}/src/SystemTest.cpp

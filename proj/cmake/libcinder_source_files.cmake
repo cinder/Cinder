@@ -32,7 +32,6 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/ImageSourceFileRadiance.cpp
 	${CINDER_SRC_DIR}/cinder/ImageSourceFileStbImage.cpp
 	${CINDER_SRC_DIR}/cinder/ImageTargetFileStbImage.cpp
-	${CINDER_SRC_DIR}/cinder/Json.cpp
 	${CINDER_SRC_DIR}/cinder/Log.cpp
 	${CINDER_SRC_DIR}/cinder/Matrix.cpp
 	${CINDER_SRC_DIR}/cinder/ObjLoader.cpp
@@ -221,17 +220,6 @@ list( APPEND CINDER_SRC_FILES               ${SRC_SET_GLLOAD} )
 source_group( "thirdparty\\glload" FILES    ${SRC_SET_GLLOAD} )
 
 endif()
-
-# ----------------------------------------------------------------------------------------------------------------------
-# jsoncpp
-# ----------------------------------------------------------------------------------------------------------------------
-
-list( APPEND SRC_SET_JSONCPP
-	${CINDER_SRC_DIR}/jsoncpp/jsoncpp.cpp
-)
-
-list( APPEND CINDER_SRC_FILES               ${SRC_SET_JSONCPP} )
-source_group( "thirdparty\\jsoncpp" FILES   ${SRC_SET_JSONCPP} )
 
 # ----------------------------------------------------------------------------------------------------------------------
 # linebreak

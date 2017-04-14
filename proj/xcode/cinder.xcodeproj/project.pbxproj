@@ -198,9 +198,6 @@
 		008CE8430E94679D00644A05 /* Area.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 008CE8410E94679D00644A05 /* Area.cpp */; };
 		008CE84D0E9467C200644A05 /* ChanTraits.h in Headers */ = {isa = PBXBuildFile; fileRef = 008CE84A0E9467C200644A05 /* ChanTraits.h */; };
 		008CE8540E94693900644A05 /* Area.h in Headers */ = {isa = PBXBuildFile; fileRef = 008CE8530E94693900644A05 /* Area.h */; };
-		008FCFF31A7497C600A86EC4 /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 008FCFF21A7497C600A86EC4 /* jsoncpp.cpp */; };
-		008FCFF81A7497DA00A86EC4 /* json-forwards.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FCFF61A7497DA00A86EC4 /* json-forwards.h */; };
-		008FCFFB1A7497DA00A86EC4 /* json.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FCFF71A7497DA00A86EC4 /* json.h */; };
 		0091D8F10E81B9110029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F00E81B9110029341E /* OpenGL.framework */; };
 		0094F3460F6A120800EBED1B /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0094F3450F6A120800EBED1B /* ScreenSaver.framework */; };
 		009987160F79CFE20042F211 /* CinderCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 009987150F79CFE20042F211 /* CinderCocoa.h */; };
@@ -528,7 +525,6 @@
 		27C1006A1BD16D4800AF387F /* VaoImplSoftware.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3D51992D64100647C8B /* VaoImplSoftware.cpp */; };
 		27C1006B1BD16D4800AF387F /* Trim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00419C6D11057CC6007EC9AD /* Trim.cpp */; };
 		27C1006C1BD16D4800AF387F /* TextureFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3CD1992D64100647C8B /* TextureFont.cpp */; };
-		27C1006D1BD16D4800AF387F /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 008FCFF21A7497C600A86EC4 /* jsoncpp.cpp */; };
 		27C1006E1BD16D4800AF387F /* registry.c in Sources */ = {isa = PBXBuildFile; fileRef = 111A5E8C191F703D005C3166 /* registry.c */; };
 		27C1006F1BD16D4800AF387F /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0049C1B61010E5B10015B4B9 /* Renderer.cpp */; };
 		27C100701BD16D4800AF387F /* fftsg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F8F191F72AE005C3166 /* fftsg.cpp */; };
@@ -581,7 +577,6 @@
 		27C1009F1BD16D4800AF387F /* EnvironmentEs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */; };
 		27C100A01BD16D4800AF387F /* Plane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0041730214C9BE8E0070C0D1 /* Plane.cpp */; };
 		27C100A11BD16D4800AF387F /* info.c in Sources */ = {isa = PBXBuildFile; fileRef = 111A5E68191F703D005C3166 /* info.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
-		27C100A21BD16D4800AF387F /* Json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EF11516DAB700EB63B5 /* Json.cpp */; };
 		27C100A31BD16D4800AF387F /* psy.c in Sources */ = {isa = PBXBuildFile; fileRef = 111A5E8A191F703D005C3166 /* psy.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		27C100A41BD16D4800AF387F /* Pbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C91992D64100647C8B /* Pbo.cpp */; };
 		27C100A51BD16D4800AF387F /* Svg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 008B43A714F5F8F800B55B07 /* Svg.cpp */; };
@@ -622,7 +617,6 @@
 		27C100C91BD16D4800AF387F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA40880FA8C13A00AADC07 /* AudioToolbox.framework */; };
 		27C100CA1BD16D4800AF387F /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408A0FA8C13A00AADC07 /* AudioUnit.framework */; };
 		27C100CB1BD16D4800AF387F /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408C0FA8C13A00AADC07 /* CoreAudio.framework */; };
-		27C1FE231BD0AE3400AF387F /* json.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FCFF71A7497DA00A86EC4 /* json.h */; };
 		27C1FE241BD0AE3400AF387F /* Query.h in Headers */ = {isa = PBXBuildFile; fileRef = B0245F5819BEDF3200BC878D /* Query.h */; };
 		27C1FE251BD0AE3400AF387F /* TextureFormatParsers.h in Headers */ = {isa = PBXBuildFile; fileRef = 0003F4341992D67300647C8B /* TextureFormatParsers.h */; };
 		27C1FE261BD0AE3400AF387F /* Cinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 00241A0C0E80375A004D34EB /* Cinder.h */; };
@@ -748,7 +742,6 @@
 		27C1FE9E1BD0AE3400AF387F /* AvfWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 007364D51AC0B8EC00A3C155 /* AvfWriter.h */; };
 		27C1FE9F1BD0AE3400AF387F /* Easing.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A115381357F42400081873 /* Easing.h */; };
 		27C1FEA01BD0AE3400AF387F /* AvfUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 006D706019942C31008149E2 /* AvfUtils.h */; };
-		27C1FEA11BD0AE3400AF387F /* json-forwards.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FCFF61A7497DA00A86EC4 /* json-forwards.h */; };
 		27C1FEA21BD0AE3400AF387F /* Timeline.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A121DA1362774F00081873 /* Timeline.h */; };
 		27C1FEA31BD0AE3400AF387F /* ImageSourceFileRadiance.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FFAED419DB5D330002CA8E /* ImageSourceFileRadiance.h */; };
 		27C1FEA41BD0AE3400AF387F /* TimelineItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A121DB1362774F00081873 /* TimelineItem.h */; };
@@ -756,7 +749,6 @@
 		27C1FEA61BD0AE3400AF387F /* Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 005C0CE814CBB3DB00A12CD2 /* Base64.h */; };
 		27C1FEA71BD0AE3400AF387F /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 004172F914C9BE520070C0D1 /* Frustum.h */; };
 		27C1FEA81BD0AE3400AF387F /* Plane.h in Headers */ = {isa = PBXBuildFile; fileRef = 0014407E14CDB8D900D99000 /* Plane.h */; };
-		27C1FEA91BD0AE3400AF387F /* Json.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F78EF51516DAE200EB63B5 /* Json.h */; };
 		27C1FEAA1BD0AE3400AF387F /* ConcurrentCircularBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0059BD32151CF5540063F095 /* ConcurrentCircularBuffer.h */; };
 		27C1FEAB1BD0AE3400AF387F /* Svg.h in Headers */ = {isa = PBXBuildFile; fileRef = 008B439A14F5F39100B55B07 /* Svg.h */; };
 		27C1FEAC1BD0AE3400AF387F /* SvgGl.h in Headers */ = {isa = PBXBuildFile; fileRef = 008B439C14F5F39100B55B07 /* SvgGl.h */; };
@@ -865,7 +857,6 @@
 		27C1FF141BD0AE3400AF387F /* VaoImplSoftware.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3D51992D64100647C8B /* VaoImplSoftware.cpp */; };
 		27C1FF151BD0AE3400AF387F /* Trim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00419C6D11057CC6007EC9AD /* Trim.cpp */; };
 		27C1FF161BD0AE3400AF387F /* TextureFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3CD1992D64100647C8B /* TextureFont.cpp */; };
-		27C1FF171BD0AE3400AF387F /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 008FCFF21A7497C600A86EC4 /* jsoncpp.cpp */; };
 		27C1FF181BD0AE3400AF387F /* registry.c in Sources */ = {isa = PBXBuildFile; fileRef = 111A5E8C191F703D005C3166 /* registry.c */; };
 		27C1FF191BD0AE3400AF387F /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0049C1B61010E5B10015B4B9 /* Renderer.cpp */; };
 		27C1FF1A1BD0AE3400AF387F /* fftsg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F8F191F72AE005C3166 /* fftsg.cpp */; };
@@ -924,7 +915,6 @@
 		27C1FF4F1BD0AE3400AF387F /* Plane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0041730214C9BE8E0070C0D1 /* Plane.cpp */; };
 		27C1FF501BD0AE3400AF387F /* MonitorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 114B7552192B2F9800E30153 /* MonitorNode.cpp */; };
 		27C1FF511BD0AE3400AF387F /* Dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F8C191F72AE005C3166 /* Dsp.cpp */; };
-		27C1FF521BD0AE3400AF387F /* Json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EF11516DAB700EB63B5 /* Json.cpp */; };
 		27C1FF531BD0AE3400AF387F /* Svg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 008B43A714F5F8F800B55B07 /* Svg.cpp */; };
 		27C1FF541BD0AE3400AF387F /* RendererGl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006D703F19940F25008149E2 /* RendererGl.cpp */; };
 		27C1FF551BD0AE3400AF387F /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3CC1992D64100647C8B /* Texture.cpp */; };
@@ -965,7 +955,6 @@
 		27C1FF7F1BD16D4800AF387F /* Matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 00241AB00E830DBA004D34EB /* Matrix.h */; };
 		27C1FF801BD16D4800AF387F /* Quaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = 00241AB10E830DBA004D34EB /* Quaternion.h */; };
 		27C1FF811BD16D4800AF387F /* TextureFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 0003F4331992D67300647C8B /* TextureFont.h */; };
-		27C1FF821BD16D4800AF387F /* json.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FCFF71A7497DA00A86EC4 /* json.h */; };
 		27C1FF831BD16D4800AF387F /* Shader.h in Headers */ = {isa = PBXBuildFile; fileRef = 0003F4301992D67300647C8B /* Shader.h */; };
 		27C1FF841BD16D4800AF387F /* Rand.h in Headers */ = {isa = PBXBuildFile; fileRef = 00241AB20E830DBA004D34EB /* Rand.h */; };
 		27C1FF851BD16D4800AF387F /* registry.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E8D191F703D005C3166 /* registry.h */; };
@@ -987,7 +976,6 @@
 		27C1FF951BD16D4800AF387F /* Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F3BD1F0EBF89B700382AC1 /* Utilities.h */; };
 		27C1FF961BD16D4800AF387F /* lpc.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E6D191F703D005C3166 /* lpc.h */; };
 		27C1FF971BD16D4800AF387F /* Fbo.h in Headers */ = {isa = PBXBuildFile; fileRef = 0003F42C1992D67300647C8B /* Fbo.h */; };
-		27C1FF981BD16D4800AF387F /* json-forwards.h in Headers */ = {isa = PBXBuildFile; fileRef = 008FCFF61A7497DA00A86EC4 /* json-forwards.h */; };
 		27C1FF991BD16D4800AF387F /* lookup.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E6A191F703D005C3166 /* lookup.h */; };
 		27C1FF9A1BD16D4800AF387F /* CinderCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 009987150F79CFE20042F211 /* CinderCocoa.h */; };
 		27C1FF9B1BD16D4800AF387F /* PolyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EE46D0F7A9F6700F17CB1 /* PolyLine.h */; };
@@ -1082,7 +1070,6 @@
 		27C1FFF41BD16D4800AF387F /* CameraUi.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FF554C1AEADF9C0085071E /* CameraUi.h */; };
 		27C1FFF51BD16D4800AF387F /* Plane.h in Headers */ = {isa = PBXBuildFile; fileRef = 0014407E14CDB8D900D99000 /* Plane.h */; };
 		27C1FFF61BD16D4800AF387F /* QuickTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 006D706219942C31008149E2 /* QuickTime.h */; };
-		27C1FFF71BD16D4800AF387F /* Json.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F78EF51516DAE200EB63B5 /* Json.h */; };
 		27C1FFF81BD16D4800AF387F /* lsp.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E6F191F703D005C3166 /* lsp.h */; };
 		27C1FFF91BD16D4800AF387F /* BufferTexture.h in Headers */ = {isa = PBXBuildFile; fileRef = 0003F4281992D67300647C8B /* BufferTexture.h */; };
 		27C1FFFA1BD16D4800AF387F /* ConcurrentCircularBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0059BD32151CF5540063F095 /* ConcurrentCircularBuffer.h */; };
@@ -1095,8 +1082,6 @@
 		43C432401450A8DA0095B260 /* CinderMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43C4323F1450A8DA0095B260 /* CinderMath.cpp */; };
 		43ED0FDF12209488003AEB0B /* UrlImplCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */; };
 		43ED0FE31220949A003AEB0B /* UrlImplCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 43ED0FE11220949A003AEB0B /* UrlImplCocoa.h */; };
-		43F78EF21516DAB700EB63B5 /* Json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EF11516DAB700EB63B5 /* Json.cpp */; };
-		43F78EF61516DAE200EB63B5 /* Json.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F78EF51516DAE200EB63B5 /* Json.h */; };
 		5391FE660E95CB01002A13D5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D6A5FE840307C02AAC07 /* AppKit.framework */; };
 		B0245F5919BEDF3200BC878D /* Query.h in Headers */ = {isa = PBXBuildFile; fileRef = B0245F5819BEDF3200BC878D /* Query.h */; };
 		B06DE70319C74935008B9E1B /* Query.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B06DE70219C74935008B9E1B /* Query.cpp */; };
@@ -1787,9 +1772,6 @@
 		008CE8410E94679D00644A05 /* Area.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Area.cpp; sourceTree = "<group>"; };
 		008CE84A0E9467C200644A05 /* ChanTraits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChanTraits.h; sourceTree = "<group>"; };
 		008CE8530E94693900644A05 /* Area.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Area.h; sourceTree = "<group>"; };
-		008FCFF21A7497C600A86EC4 /* jsoncpp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = jsoncpp.cpp; path = ../../src/jsoncpp/jsoncpp.cpp; sourceTree = "<group>"; };
-		008FCFF61A7497DA00A86EC4 /* json-forwards.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "json-forwards.h"; path = "../../include/jsoncpp/json/json-forwards.h"; sourceTree = "<group>"; };
-		008FCFF71A7497DA00A86EC4 /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json.h; path = ../../include/jsoncpp/json/json.h; sourceTree = "<group>"; };
 		0091D8F00E81B9110029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		0094F3450F6A120800EBED1B /* ScreenSaver.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenSaver.framework; path = /System/Library/Frameworks/ScreenSaver.framework; sourceTree = "<absolute>"; };
 		009987150F79CFE20042F211 /* CinderCocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CinderCocoa.h; path = cocoa/CinderCocoa.h; sourceTree = "<group>"; };
@@ -2121,8 +2103,6 @@
 		43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchEvent.h; path = app/TouchEvent.h; sourceTree = "<group>"; };
 		43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UrlImplCocoa.mm; sourceTree = "<group>"; };
 		43ED0FE11220949A003AEB0B /* UrlImplCocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UrlImplCocoa.h; sourceTree = "<group>"; };
-		43F78EF11516DAB700EB63B5 /* Json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Json.cpp; sourceTree = "<group>"; };
-		43F78EF51516DAE200EB63B5 /* Json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Json.h; sourceTree = "<group>"; };
 		5391FD670E957646002A13D5 /* KeyEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEvent.h; path = app/KeyEvent.h; sourceTree = "<group>"; };
 		B0245F5819BEDF3200BC878D /* Query.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Query.h; path = gl/Query.h; sourceTree = "<group>"; };
 		B06DE70219C74935008B9E1B /* Query.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Query.cpp; path = gl/Query.cpp; sourceTree = "<group>"; };
@@ -2479,16 +2459,6 @@
 			name = src;
 			sourceTree = "<group>";
 		};
-		005B02F4152CD13C00F2C237 /* jsoncpp */ = {
-			isa = PBXGroup;
-			children = (
-				008FCFF61A7497DA00A86EC4 /* json-forwards.h */,
-				008FCFF71A7497DA00A86EC4 /* json.h */,
-				008FCFF21A7497C600A86EC4 /* jsoncpp.cpp */,
-			);
-			name = jsoncpp;
-			sourceTree = "<group>";
-		};
 		006D705F19942C1E008149E2 /* qtime */ = {
 			isa = PBXGroup;
 			children = (
@@ -2651,7 +2621,6 @@
 				27BE4DC41DA9E4B900DE84C8 /* ImageSourceFileStbImage.h */,
 				00BC89F110D2EA2200D6DC59 /* ImageTargetFileQuartz.h */,
 				27BE4DC51DA9E4B900DE84C8 /* ImageTargetFileStbImage.h */,
-				43F78EF51516DAE200EB63B5 /* Json.h */,
 				0003F47A1992DA7C00647C8B /* Log.h */,
 				00241AB00E830DBA004D34EB /* Matrix.h */,
 				277C2CEC1366632B00178A29 /* Matrix22.h */,
@@ -2736,7 +2705,6 @@
 				111FBA811B1C1B2000A23DDB /* ImageSourcePng.cpp */,
 				00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */,
 				111FBA7F1B1C1B2000A23DDB /* ImageTargetFileStbImage.cpp */,
-				43F78EF11516DAB700EB63B5 /* Json.cpp */,
 				0003F47E1992DA9A00647C8B /* Log.cpp */,
 				00241ABD0E830DD5004D34EB /* Matrix.cpp */,
 				002DFD500FA5600900E45AE0 /* ObjLoader.cpp */,
@@ -3318,7 +3286,6 @@
 				11316E581B28AC1300BD8783 /* tinyexr */,
 				0003F4861992EA4C00647C8B /* glload */,
 				003ADB661038970C00ACF6F2 /* AntTweakBar */,
-				005B02F4152CD13C00F2C237 /* jsoncpp */,
 				0034C31B151A5B9F003F2E30 /* linebreak */,
 				00A113F51355369A00081873 /* libtess2 */,
 				007CE1F1127BB11200799071 /* rapidxml */,
@@ -3795,7 +3762,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27C1FE231BD0AE3400AF387F /* json.h in Headers */,
 				27C1FE241BD0AE3400AF387F /* Query.h in Headers */,
 				27C1FE251BD0AE3400AF387F /* TextureFormatParsers.h in Headers */,
 				27C1FE261BD0AE3400AF387F /* Cinder.h in Headers */,
@@ -4013,7 +3979,6 @@
 				27C1FE9F1BD0AE3400AF387F /* Easing.h in Headers */,
 				27C1FEA01BD0AE3400AF387F /* AvfUtils.h in Headers */,
 				B3EA3F771DD0EEA900E34348 /* ftgxval.h in Headers */,
-				27C1FEA11BD0AE3400AF387F /* json-forwards.h in Headers */,
 				B3EA401C1DD0EEA900E34348 /* svttcmap.h in Headers */,
 				27C1FEA21BD0AE3400AF387F /* Timeline.h in Headers */,
 				27C1FEA31BD0AE3400AF387F /* ImageSourceFileRadiance.h in Headers */,
@@ -4029,7 +3994,6 @@
 				27C1FEA71BD0AE3400AF387F /* Frustum.h in Headers */,
 				B3EA400D1DD0EEA900E34348 /* svpostnm.h in Headers */,
 				27C1FEA81BD0AE3400AF387F /* Plane.h in Headers */,
-				27C1FEA91BD0AE3400AF387F /* Json.h in Headers */,
 				B3EA3FE91DD0EEA900E34348 /* internal.h in Headers */,
 				27C1FEAA1BD0AE3400AF387F /* ConcurrentCircularBuffer.h in Headers */,
 				B3EA401F1DD0EEA900E34348 /* svtteng.h in Headers */,
@@ -4066,7 +4030,6 @@
 				B3EA3FF31DD0EEA900E34348 /* svbdf.h in Headers */,
 				B3EA3FA51DD0EEA900E34348 /* ftsizes.h in Headers */,
 				B3EA3F961DD0EEA900E34348 /* ftmoderr.h in Headers */,
-				27C1FF821BD16D4800AF387F /* json.h in Headers */,
 				B3EA40141DD0EEA900E34348 /* svpscmap.h in Headers */,
 				B3EA3F7B1DD0EEA900E34348 /* ftgzip.h in Headers */,
 				00523AF51D49BEC400BE2DAF /* CinderFrameworkView.h in Headers */,
@@ -4103,7 +4066,6 @@
 				27C1FF951BD16D4800AF387F /* Utilities.h in Headers */,
 				27C1FF961BD16D4800AF387F /* lpc.h in Headers */,
 				27C1FF971BD16D4800AF387F /* Fbo.h in Headers */,
-				27C1FF981BD16D4800AF387F /* json-forwards.h in Headers */,
 				27C1FF991BD16D4800AF387F /* lookup.h in Headers */,
 				27C1FF9A1BD16D4800AF387F /* CinderCocoa.h in Headers */,
 				B3EA401A1DD0EEA900E34348 /* svsfnt.h in Headers */,
@@ -4262,7 +4224,6 @@
 				27C1FFF41BD16D4800AF387F /* CameraUi.h in Headers */,
 				27C1FFF51BD16D4800AF387F /* Plane.h in Headers */,
 				27C1FFF61BD16D4800AF387F /* QuickTime.h in Headers */,
-				27C1FFF71BD16D4800AF387F /* Json.h in Headers */,
 				B3EA3FC01DD0EEA900E34348 /* autohint.h in Headers */,
 				B3EA3F811DD0EEA900E34348 /* ftincrem.h in Headers */,
 				B3EA3F421DD0EEA900E34348 /* ftstdlib.h in Headers */,
@@ -4404,7 +4365,6 @@
 				EAC3D1A91011F2E700FFBC9E /* Serial.h in Headers */,
 				B3EA3F7C1DD0EEA900E34348 /* ftimage.h in Headers */,
 				003ADB621038846A00ACF6F2 /* Params.h in Headers */,
-				008FCFFB1A7497DA00A86EC4 /* json.h in Headers */,
 				003ADB7F1038973700ACF6F2 /* TwBar.h in Headers */,
 				111A5EEC191F703D005C3166 /* fft4g.h in Headers */,
 				003ADB801038973700ACF6F2 /* AntPerfTimer.h in Headers */,
@@ -4512,7 +4472,6 @@
 				003133A4129EB85D009DC098 /* Blend.h in Headers */,
 				B3EA3FAF1DD0EEA900E34348 /* ftsystem.h in Headers */,
 				0003F4661992D67300647C8B /* TransformFeedbackObj.h in Headers */,
-				008FCFF81A7497DA00A86EC4 /* json-forwards.h in Headers */,
 				B322C47F1DC7DC7100D2E661 /* inffixed.h in Headers */,
 				B3EA3FE51DD0EEA900E34348 /* ftvalid.h in Headers */,
 				0003F4691992D67300647C8B /* Vao.h in Headers */,
@@ -4571,7 +4530,6 @@
 				111A5EBC191F703D005C3166 /* lpc.h in Headers */,
 				111A5EEF191F703D005C3166 /* r8bconf.h in Headers */,
 				0014407F14CDB8D900D99000 /* Plane.h in Headers */,
-				43F78EF61516DAE200EB63B5 /* Json.h in Headers */,
 				0059BD33151CF5540063F095 /* ConcurrentCircularBuffer.h in Headers */,
 				B3EA40181DD0EEA900E34348 /* svsfnt.h in Headers */,
 				111A5ECE191F703D005C3166 /* setup_11.h in Headers */,
@@ -4669,7 +4627,7 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastUpgradeCheck = 0830;
 			};
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "cinder" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -4826,7 +4784,6 @@
 				27C1006A1BD16D4800AF387F /* VaoImplSoftware.cpp in Sources */,
 				27C1006B1BD16D4800AF387F /* Trim.cpp in Sources */,
 				27C1006C1BD16D4800AF387F /* TextureFont.cpp in Sources */,
-				27C1006D1BD16D4800AF387F /* jsoncpp.cpp in Sources */,
 				27C1006E1BD16D4800AF387F /* registry.c in Sources */,
 				27C1006F1BD16D4800AF387F /* Renderer.cpp in Sources */,
 				27C100701BD16D4800AF387F /* fftsg.cpp in Sources */,
@@ -4903,7 +4860,6 @@
 				27C100A11BD16D4800AF387F /* info.c in Sources */,
 				B3EA40CA1DD0F04700E34348 /* autofit.c in Sources */,
 				B3EA406B1DD0EF8300E34348 /* winfnt.c in Sources */,
-				27C100A21BD16D4800AF387F /* Json.cpp in Sources */,
 				27C100A31BD16D4800AF387F /* psy.c in Sources */,
 				27C100A41BD16D4800AF387F /* Pbo.cpp in Sources */,
 				B3EA40FC1DD0F13C00E34348 /* type1cid.c in Sources */,
@@ -5078,7 +5034,6 @@
 				27C1FF141BD0AE3400AF387F /* VaoImplSoftware.cpp in Sources */,
 				27C1FF151BD0AE3400AF387F /* Trim.cpp in Sources */,
 				27C1FF161BD0AE3400AF387F /* TextureFont.cpp in Sources */,
-				27C1FF171BD0AE3400AF387F /* jsoncpp.cpp in Sources */,
 				27C1FF181BD0AE3400AF387F /* registry.c in Sources */,
 				27C1FF191BD0AE3400AF387F /* Renderer.cpp in Sources */,
 				27C1FF1A1BD0AE3400AF387F /* fftsg.cpp in Sources */,
@@ -5162,7 +5117,6 @@
 				27C1FF4F1BD0AE3400AF387F /* Plane.cpp in Sources */,
 				27C1FF501BD0AE3400AF387F /* MonitorNode.cpp in Sources */,
 				27C1FF511BD0AE3400AF387F /* Dsp.cpp in Sources */,
-				27C1FF521BD0AE3400AF387F /* Json.cpp in Sources */,
 				27C1FF531BD0AE3400AF387F /* Svg.cpp in Sources */,
 				27C1FF541BD0AE3400AF387F /* RendererGl.cpp in Sources */,
 				27C1FF551BD0AE3400AF387F /* Texture.cpp in Sources */,
@@ -5273,7 +5227,6 @@
 				00D2F1860F8D8ACD00A7189A /* Perlin.cpp in Sources */,
 				00D2F6F70F9189C000A7189A /* Sphere.cpp in Sources */,
 				002DFC080FA50D1600E45AE0 /* TriMesh.cpp in Sources */,
-				008FCFF31A7497C600A86EC4 /* jsoncpp.cpp in Sources */,
 				002DFD510FA5600900E45AE0 /* ObjLoader.cpp in Sources */,
 				111A5FB9191F72AE005C3166 /* Context.cpp in Sources */,
 				0003F4231992D64100647C8B /* VboMesh.cpp in Sources */,
@@ -5430,7 +5383,6 @@
 				004172FF14C9BE760070C0D1 /* Frustum.cpp in Sources */,
 				0041730314C9BE8E0070C0D1 /* Plane.cpp in Sources */,
 				111A5ED8191F703D005C3166 /* psy.c in Sources */,
-				43F78EF21516DAB700EB63B5 /* Json.cpp in Sources */,
 				B3EA40FA1DD0F13C00E34348 /* type1cid.c in Sources */,
 				111A5EE2191F703D005C3166 /* vorbisenc.c in Sources */,
 				118CA4211A9427F700841458 /* RendererImplGlMac.mm in Sources */,
@@ -5475,7 +5427,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD)";
 				CHECKED_STL = "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
@@ -5516,7 +5467,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
@@ -5560,17 +5510,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OBJC_CALL_CXX_CDTORS = YES;
@@ -5590,6 +5544,7 @@
 					../../include/oggvorbis,
 				);
 				OBJROOT = build/;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				USER_HEADER_SEARCH_PATHS = "../../include ../../src/oggvorbis/vorbis ../../src/r8brain";
 			};
@@ -5599,13 +5554,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
@@ -5659,7 +5617,7 @@
 					../../include/freetype,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -5701,7 +5659,7 @@
 					../../include/freetype,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
@@ -5742,7 +5700,7 @@
 					../../include/freetype,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					../../lib/ios/libboost_filesystem.a,
@@ -5785,7 +5743,7 @@
 					../../include/freetype,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
