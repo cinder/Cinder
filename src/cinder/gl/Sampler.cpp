@@ -23,7 +23,7 @@
 
 #include "cinder/gl/Sampler.h"
 #include "cinder/gl/Environment.h"
-#include "cinder/gl/Scoped.h"
+#include "cinder/gl/scoped.h"
 #include "cinder/gl/Context.h"
 
 #if defined( CINDER_GL_HAS_SAMPLERS )

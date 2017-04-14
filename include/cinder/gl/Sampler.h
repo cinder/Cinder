@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "cinder/gl/Platform.h"
+#include "cinder/gl/platform.h"
 #include "cinder/Color.h"
 #include <array>
 
