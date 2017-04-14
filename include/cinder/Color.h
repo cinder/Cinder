@@ -477,9 +477,11 @@ CI_API extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<uint8_t
 
 typedef ColorT<float>		Colorf;
 typedef Colorf				Color;
+typedef ColorT<double>		Colord;
 typedef ColorT<uint8_t>		Color8u;
 typedef ColorAT<float>		ColorA;
 typedef ColorAT<float>		ColorAf;
+typedef ColorAT<double>		ColorAd;
 typedef ColorAT<uint8_t>	ColorA8u;
 
 
