@@ -1569,6 +1569,7 @@
 		C7BA408D0FA8C13A00AADC07 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408C0FA8C13A00AADC07 /* CoreAudio.framework */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		D8A5A81A19BFDE8700811132 /* CaptureImplAvFoundation.mm in Sources */ = {isa = PBXBuildFile; fileRef = C7FA5FC112124A790065683B /* CaptureImplAvFoundation.mm */; };
+		E023DBE21EA17E0C00A3C59D /* svmetric.h in Headers */ = {isa = PBXBuildFile; fileRef = E023DBE11EA17E0C00A3C59D /* svmetric.h */; };
 		EAC3D1A91011F2E700FFBC9E /* Serial.h in Headers */ = {isa = PBXBuildFile; fileRef = EAC3D1A81011F2E700FFBC9E /* Serial.h */; };
 		EAC3D1AD1011F3AC00FFBC9E /* Serial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAC3D1AB1011F3AC00FFBC9E /* Serial.cpp */; };
 /* End PBXBuildFile section */
@@ -2279,6 +2280,7 @@
 		C7FA5FC512124B1C0065683B /* CaptureImplAvFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureImplAvFoundation.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libcinder.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		E023DBE11EA17E0C00A3C59D /* svmetric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = svmetric.h; sourceTree = "<group>"; };
 		EAC3D1A81011F2E700FFBC9E /* Serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serial.h; sourceTree = "<group>"; };
 		EAC3D1AB1011F3AC00FFBC9E /* Serial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Serial.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -3473,6 +3475,7 @@
 				B3EA3F1D1DD0EEA900E34348 /* svgldict.h */,
 				B3EA3F1E1DD0EEA900E34348 /* svgxval.h */,
 				B3EA3F1F1DD0EEA900E34348 /* svkern.h */,
+				E023DBE11EA17E0C00A3C59D /* svmetric.h */,
 				B3EA3F201DD0EEA900E34348 /* svmm.h */,
 				B3EA3F211DD0EEA900E34348 /* svotval.h */,
 				B3EA3F221DD0EEA900E34348 /* svpfr.h */,
@@ -4406,6 +4409,7 @@
 				0003F4631992D67300647C8B /* TextureFormatParsers.h in Headers */,
 				B3EA3FD31DD0EEA900E34348 /* ftobjs.h in Headers */,
 				B3EA3FF71DD0EEA900E34348 /* svfntfmt.h in Headers */,
+				E023DBE21EA17E0C00A3C59D /* svmetric.h in Headers */,
 				00BC89F210D2EA2200D6DC59 /* ImageTargetFileQuartz.h in Headers */,
 				009C864A10F3D5CB006B6861 /* ImageIo.h in Headers */,
 				111A5EC5191F703D005C3166 /* psych_11.h in Headers */,
