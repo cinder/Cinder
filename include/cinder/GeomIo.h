@@ -143,6 +143,7 @@ class CI_API Source {
 	virtual size_t		getNumVertices() const = 0;
 	virtual size_t		getNumIndices() const = 0;
 	virtual Primitive	getPrimitive() const = 0;
+	virtual bool		hasAttrib( Attrib attrib ) const { return getAttribDims( attrib ) > 0; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const = 0;
 	virtual AttribSet	getAvailableAttribs() const = 0;
 	
@@ -160,7 +161,8 @@ class CI_API Source {
 
 class CI_API Target {
   public:
-	virtual uint8_t		getAttribDims( Attrib attr ) const = 0;	
+	virtual bool		hasAttrib( Attrib attrib ) const { return getAttribDims( attrib ) > 0; }
+	virtual uint8_t		getAttribDims( Attrib attr ) const = 0;
 
 	virtual void	copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) = 0;
 	virtual void	copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) = 0;
