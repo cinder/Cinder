@@ -35,6 +35,10 @@ typedef std::shared_ptr<class Vao>				VaoRef;
 typedef std::shared_ptr<class BufferObj>		BufferObjRef;
 typedef std::shared_ptr<class Fbo>				FboRef;
 typedef std::shared_ptr<class Renderbuffer>		RenderbufferRef;
+#if defined( CINDER_GL_HAS_SAMPLERS )
+class Sampler;
+typedef std::shared_ptr<Sampler>			SamplerRef;
+#endif
 
 struct CI_API ScopedVao : private Noncopyable {
 	ScopedVao( Vao *vao );
@@ -168,6 +172,19 @@ struct CI_API ScopedTextureBind : private Noncopyable {
 	GLenum		mTarget;
 	uint8_t		mTextureUnit;
 };
+
+#if defined( CINDER_GL_HAS_SAMPLERS )
+struct CI_API ScopedSamplerBind : private Noncopyable {
+	ScopedSamplerBind( GLuint samplerId, uint8_t textureUnit = 0 );
+	ScopedSamplerBind( const Sampler &sampler, uint8_t textureUnit = 0 );
+	ScopedSamplerBind( const SamplerRef &sampler, uint8_t textureUnit = 0 );
+	~ScopedSamplerBind();
+	
+  private:
+	Context		*mCtx;
+	uint8_t		mTextureUnit;
+};
+#endif // defined( CINDER_GL_HAS_SAMPLERS )
 	
 struct CI_API ScopedScissor : private Noncopyable {
 	//! Implicitly enables scissor test
