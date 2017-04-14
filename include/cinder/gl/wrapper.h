@@ -124,7 +124,7 @@ CI_API void enable( GLenum state, bool enable = true );
 CI_API inline void disable( GLenum state ) { enable( state, false ); }
 
 //! Enables or disables blending state as governed by \c GL_BLEND but does not modify blend function.
-CI_API void enableBlending( bool enable = false );
+CI_API void enableBlending( bool enable = true );
 //! Disables blending state via \c GL_BLEND, but does not modify blend function
 CI_API inline void disableBlending() { enableBlending( false ); }
 //! Enables blending via \c GL_BLEND and sets the blend function to unpremultiplied alpha blending when \p enable is \c true; otherwise disables blending without modifying the blend function.
