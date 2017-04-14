@@ -24,6 +24,8 @@
 
 #pragma once
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include "glm/gtc/type_ptr.hpp"
 
 #include "glm/gtx/io.hpp"
