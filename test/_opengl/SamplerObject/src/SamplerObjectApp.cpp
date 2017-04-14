@@ -12,15 +12,15 @@ class SamplerObjectApp : public App {
 	void setup() override;
 	void draw() override;
 	
-	gl::TextureRef		mTex;
-	gl::Sampler			mSampler1;
-	gl::SamplerRef		mSampler2; // test both stack and heap allocated
+	gl::TextureRef				mTex;
+	unique_ptr<gl::Sampler>		mSampler1;
+	gl::SamplerRef				mSampler2;
 };
 
 void SamplerObjectApp::setup()
 {
 	mTex = gl::Texture::create( ip::checkerboard( 16, 16, 4 ), gl::Texture::Format().magFilter( GL_NEAREST ) );
-	mSampler1 = gl::Sampler( gl::Sampler::Format().magFilter( GL_LINEAR ).minFilter( GL_LINEAR ) );
+	mSampler1 = unique_ptr<gl::Sampler>( new gl::Sampler( gl::Sampler::Format().magFilter( GL_LINEAR ).minFilter( GL_LINEAR ) ) );
 	mSampler2 = gl::Sampler::create();
 	mSampler2->setMagFilter( GL_NEAREST );
 }
@@ -33,7 +33,7 @@ void SamplerObjectApp::draw()
 	gl::draw( mTex, Rectf( 0, 0, 160, 160 ) );
 	// left half should be linear as dictated by sampler
 	{
-		gl::ScopedSamplerBind sampler_( mSampler1 );
+		gl::ScopedSamplerBind sampler_( *mSampler1 );
 		gl::draw( mTex, Rectf( 160, 0, 320, 160 ) );
 	}
 }
