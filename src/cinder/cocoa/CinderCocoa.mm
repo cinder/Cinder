@@ -84,9 +84,6 @@ void SafeNsData::safeRelease( const NSData *ptr )
 
 SafeNsAutoreleasePool::SafeNsAutoreleasePool()
 {
-#if defined( CINDER_MAC )
-	objc_registerThreadWithCollector();
-#endif	
 	[NSThread currentThread]; // register this thread with garbage collection
 	mPool = [[NSAutoreleasePool alloc] init];
 }
