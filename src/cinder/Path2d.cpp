@@ -37,7 +37,14 @@ using std::vector;
 
 namespace cinder {
 
-const int Path2d::sSegmentTypePointCounts[] = { 0, 1, 2, 3, 0 };
+namespace { // helpers defined below
+	void chopQuadAt( const vec2 src[3], vec2 dst[5], float t );
+	void trimQuadAt( const vec2 src[3], vec2 dst[3], float t0, float t1 );
+	void chopCubicAt( const vec2 src[4], vec2 dst[7], float t );
+	void trimCubicAt( const vec2 src[4], vec2 dst[4], float t0, float t1 );
+}
+
+const int Path2d::sSegmentTypePointCounts[] = { 0, 1, 2, 3, 0 }; // MOVETO, LINETO, QUADTO, CUBICTO, CLOSE
 
 Path2d::Path2d( const BSpline2f &spline, float subdivisionStep )
 {
@@ -350,7 +357,16 @@ void Path2d::reverse()
         if( mSegments.size() > 2 )
             std::reverse( mSegments.begin() + 1, mSegments.end() );
     }
+}
 
+void Path2d::appendSegment( SegmentType segmentType, const vec2 *points )
+{
+	mSegments.push_back( segmentType );
+	// we only copy all of the segments points when we are empty. ie lineto -> line when we are empty
+	if( mPoints.empty() )
+		std::copy( &points[0], &points[sSegmentTypePointCounts[segmentType]+1], std::back_inserter( mPoints ) );
+	else
+		std::copy( &points[1], &points[sSegmentTypePointCounts[segmentType]+1], std::back_inserter( mPoints ) );
 }
 
 void Path2d::removeSegment( size_t segment )
@@ -724,6 +740,104 @@ Path2d Path2d::transformed( const mat3 &matrix ) const
 	return result;
 }
 
+namespace { // getSubPath helpers
+void appendChopped( const Path2d &source, size_t segment, float segRelT, bool secondHalf, Path2d *result )
+{
+	auto sourceSegments = source.getSegments();
+	auto sourcePoints = source.getPoints();
+	// iterate to first point of segment
+	size_t firstPoint = 0;
+	for( size_t s = 0; s < segment; ++s )
+		firstPoint += Path2d::sSegmentTypePointCounts[sourceSegments[s]];
+
+	vec2 temp[7];
+	switch( sourceSegments[segment] ) {
+		case Path2d::LINETO:
+			if( ! secondHalf ) {
+				temp[0] = sourcePoints[firstPoint];
+				temp[1] = sourcePoints[firstPoint] + segRelT * ( sourcePoints[firstPoint+1] - sourcePoints[firstPoint] );
+				result->appendSegment( sourceSegments[segment], &temp[0] );
+			}
+			else {
+				temp[0] = sourcePoints[firstPoint] + segRelT * ( sourcePoints[firstPoint+1] - sourcePoints[firstPoint] );
+				temp[1] = sourcePoints[firstPoint+1];
+				result->appendSegment( sourceSegments[segment], &temp[0] );
+			}
+		break;
+		case Path2d::QUADTO:
+			chopQuadAt( &sourcePoints[firstPoint], temp, segRelT );
+			result->appendSegment( sourceSegments[segment], ( secondHalf ) ? &temp[2] : &temp[0] );
+		break;
+		case Path2d::CUBICTO:
+			chopCubicAt( &sourcePoints[firstPoint], temp, segRelT );
+			result->appendSegment( sourceSegments[segment], ( secondHalf ) ? &temp[3] : &temp[0] );
+		break;
+		default:
+			throw Path2dExc();
+	}
+}
+
+void append( const Path2d &source, size_t segment, Path2d *result )
+{
+	auto sourceSegments = source.getSegments();
+	auto sourcePoints = source.getPoints();
+	size_t firstPoint = 0;
+	for( size_t s = 0; s < segment; ++s )
+		firstPoint += Path2d::sSegmentTypePointCounts[sourceSegments[s]];
+
+	result->appendSegment( sourceSegments[segment], &sourcePoints[firstPoint] );
+}
+} // getSubPath helpers
+
+Path2d Path2d::getSubPath( float startT, float endT ) const
+{
+	if( mSegments.empty() )
+		return Path2d();
+
+	float startRelT, endRelT;
+	size_t startSegment, endSegment;
+	getSegmentRelativeT( startT, &startSegment, &startRelT );
+	getSegmentRelativeT( endT, &endSegment, &endRelT );
+
+	Path2d result;
+	// startT and endT are the same segment
+	if( startSegment == endSegment ) {
+		// iterate to first point of the segment
+		size_t firstPoint = 0;
+		for( size_t s = 0; s < startSegment; ++s )
+			firstPoint += sSegmentTypePointCounts[mSegments[s]];
+
+		result.mSegments.push_back( mSegments[startSegment] );
+		switch( mSegments[startSegment] ) {
+			case LINETO: // trim line
+				result.mPoints.push_back( mPoints[firstPoint] + startRelT * ( mPoints[firstPoint+1] - mPoints[firstPoint] ) );
+				result.mPoints.push_back( mPoints[firstPoint] + endRelT * ( mPoints[firstPoint+1] - mPoints[firstPoint] ) ); 
+			break;
+			case QUADTO:
+				result.mPoints.resize( 3 );
+				trimQuadAt( &mPoints[firstPoint], result.mPoints.data(), startRelT, endRelT );
+			break;
+			case CUBICTO:
+				result.mPoints.resize( 4 );
+				trimCubicAt( &mPoints[firstPoint], result.mPoints.data(), startRelT, endRelT );
+			break;
+			default:
+				throw Path2dExc();
+		}
+	}
+	else {
+		// append first segment chopped at startRelT
+		appendChopped( *this, startSegment, startRelT, true, &result );
+		// append all intermediate segments
+		for( size_t s = startSegment + 1; s < endSegment; ++s )
+			append( *this, s, &result );
+		// append last segment chopped at endRelT
+		appendChopped( *this, endSegment, endRelT, false, &result );
+	}
+
+	return result;
+}
+
 Rectf Path2d::calcBoundingBox() const
 {
 	auto result = Rectf( vec2(), vec2() );
@@ -921,6 +1035,7 @@ int validUnitDivide( float numer, float denom, float* ratio )
     return 1;
 }
 
+// Subdivides quadratic curve at 't'. First segment is ( dst[0], dst[1], dst[2] ), second is ( dst[2], dst[3], dst[4] )
 void chopQuadAt( const vec2 src[3], vec2 dst[5], float t )
 {
 	vec2 p0 = src[0];
@@ -936,6 +1051,18 @@ void chopQuadAt( const vec2 src[3], vec2 dst[5], float t )
 	dst[2] = lerp( p01, p12, tt );
 	dst[3] = p12;
 	dst[4] = p2;
+}
+
+// Trims quadratic curve starting at 't0' and ending at 't1'.
+void trimQuadAt( const vec2 src[3], vec2 dst[3], float t0, float t1 )
+{
+	float it0 = 1 - t0;
+	float it1 = 1 - t1;
+	dst[0] = src[0]*(it0*it0) + src[1]*(2*t0*it0) + src[2]*(t0*t0);
+	vec2 m = it0 * src[1] + t0 * src[2];
+	float u1 = ( t1 - t0 ) / ( 1 - t0 );
+	dst[1] = (1 - u1) * dst[0] + u1 * m;
+	dst[2] = src[0]*(it1*it1) + src[1]*(2*t1*it1) + src[2]*(t1*t1);
 }
 
 //Q = -1/2 (B + sign(B) sqrt[B*B - 4*A*C])
@@ -995,20 +1122,21 @@ void findMinMaxX( const vec2 pts[], float* minPtr, float* maxPtr) {
     *maxPtr = maxX;
 }
 
+// Subdivides cubic curve at 't'. First segment is ( dst[0], dst[1], dst[2], dst[3] ), second is ( dst[3], dst[4], dst[5], dst[6] )
 void chopCubicAt( const vec2 src[4], vec2 dst[7], float t )
 {
-	vec2    p0 = src[0];
-	vec2    p1 = src[1];
-	vec2    p2 = src[2];
-	vec2    p3 = src[3];
-	vec2    tt( t );
+	vec2 p0 = src[0];
+	vec2 p1 = src[1];
+	vec2 p2 = src[2];
+	vec2 p3 = src[3];
+	vec2 tt( t );
 
-	vec2    ab = lerp( p0, p1, tt );
-	vec2    bc = lerp( p1, p2, tt );
-	vec2    cd = lerp( p2, p3, tt );
-	vec2    abc = lerp( ab, bc, tt );
-	vec2    bcd = lerp( bc, cd, tt );
-	vec2    abcd = lerp( abc, bcd, tt );
+	vec2 ab = lerp( p0, p1, tt );
+	vec2 bc = lerp( p1, p2, tt );
+	vec2 cd = lerp( p2, p3, tt );
+	vec2 abc = lerp( ab, bc, tt );
+	vec2 bcd = lerp( bc, cd, tt );
+	vec2 abcd = lerp( abc, bcd, tt );
 
 	dst[0] = src[0];
 	dst[1] = ab;
@@ -1019,10 +1147,27 @@ void chopCubicAt( const vec2 src[4], vec2 dst[7], float t )
 	dst[6] = src[3];
 }
 
+// Trims cubic curve starting at 't0' and ending at 't1'.
+void trimCubicAt( const vec2 src[4], vec2 dst[4], float t0, float t1 )
+{
+	float u0 = 1.0f - t0;
+	float u1 = 1.0f - t1;
+
+	vec2 qa =  src[0]*u0*u0 + src[1]*2.0f*t0*u0 + src[2]*t0*t0;
+	vec2 qb =  src[0]*u1*u1 + src[1]*2.0f*t1*u1 + src[2]*t1*t1;
+	vec2 qc = src[1]*u0*u0 + src[2]*2.0f*t0*u0 + src[3]*t0*t0;
+	vec2 qd = src[1]*u1*u1 + src[2]*2.0f*t1*u1 + src[3]*t1*t1;
+
+	dst[0] = qa*u0 + qc*t0;
+	dst[1] = qa*u1 + qc*t1;
+	dst[2] = qb*u0 + qd*t0;
+	dst[3] = qb*u1 + qd*t1;
+}
+
 void chopCubicAt( const vec2 src[4], vec2 dst[], const float tValues[], int roots )
 {
 	if( roots == 0 ) { // nothing to chop
-		memcpy(dst, src, 4*sizeof(vec2));
+		memcpy( dst, src, 4 * sizeof(vec2) );
 	}
 	else {
 		float t = tValues[0];
