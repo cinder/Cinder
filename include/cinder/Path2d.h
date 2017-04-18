@@ -87,6 +87,8 @@ class CI_API Path2d {
 	//! Returns a copy transformed by \a matrix.
 	Path2d		transformed( const mat3 &matrix ) const;
 
+	//! Returns a subsection of the Path2d starting from \a startT to \a endT, which lie in the range <tt>[0,1]</tt>.
+	Path2d		getSubPath( float startT, float endT ) const;
 
 	const std::vector<vec2>&	getPoints() const { return mPoints; }
 	std::vector<vec2>&			getPoints() { return mPoints; }
@@ -102,7 +104,9 @@ class CI_API Path2d {
 	const std::vector<SegmentType>&	getSegments() const { return mSegments; }
 	std::vector<SegmentType>&		getSegments() { return mSegments; }
 
-	void			removeSegment( size_t segment );
+	//! Appends a new segment of type \a segmentType to the Path2d. \a points must contain an appropriate number of points for the segment type. Note that while the first point for the segment is always required, it will only be used when the Path2d is initially empty.
+	void	appendSegment( SegmentType segmentType, const vec2 *points );
+	void	removeSegment( size_t segment );
 	
 	//! Returns the bounding box around all control points. As with Shape2d, note this is not necessarily the bounding box of the Path's shape.
 	Rectf	calcBoundingBox() const;

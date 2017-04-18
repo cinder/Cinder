@@ -328,7 +328,7 @@ void draw( const TextureRef &texture, const vec2 &dstOffset )
 
 void draw( const Path2d &path, float approximationScale )
 {
-	if( path.getNumSegments() == 0 )
+	if( path.getNumSegments() == 0 || path.getNumPoints() == 0 )
 		return;
 
 	auto ctx = context();
