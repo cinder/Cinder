@@ -141,7 +141,7 @@ ScopedBlend::~ScopedBlend()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedGlslProg
-ScopedGlslProg::ScopedGlslProg( GlslProgRef& prog )
+ScopedGlslProg::ScopedGlslProg( const GlslProgRef& prog )
 	: mCtx( gl::context() )
 {
 	mCtx->pushGlslProg( prog.get() );
