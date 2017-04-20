@@ -340,11 +340,6 @@ void logicOp( GLenum mode )
 }
 #endif
 
-void enableDepthRead( bool enable )
-{
-	gl::enable( GL_DEPTH_TEST, enable );
-}
-
 void enableDepthWrite( bool enable )
 {
 	gl::context()->depthMask( enable ? GL_TRUE : GL_FALSE );
@@ -358,26 +353,6 @@ void depthRange( double nearVal, double farVal )
 void polygonOffset( float factor, float units )
 {
 	gl::context()->polygonOffset( factor, units );
-}
-
-void enablePolygonOffsetPoint( bool enable )
-{
-	gl::enable( GL_POLYGON_OFFSET_POINT, enable );
-}
-
-void enablePolygonOffsetLine( bool enable )
-{
-	gl::enable( GL_POLYGON_OFFSET_LINE, enable );
-}
-
-void enablePolygonOffsetFill( bool enable )
-{
-	gl::enable( GL_POLYGON_OFFSET_FILL, enable );
-}
-
-void enableStencilTest( bool enable )
-{
-    gl::enable( GL_STENCIL_TEST, enable );
 }
 
 void setMatrices( const ci::Camera& cam )

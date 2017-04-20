@@ -153,7 +153,7 @@ CI_API void logicOp( GLenum mode );
 #endif
 
 //! Enables or disables reading / testing from depth buffer; analogous to setting \c GL_DEPTH_TEST to \p enable
-CI_API void enableDepthRead( bool enable = true );
+CI_API inline void enableDepthRead( bool enable = true ) { gl::enable( GL_DEPTH_TEST, enable ); }
 //! Disables reading / testing from the depth buffer. Disables \c GL_DEPTH_TEST
 CI_API inline void disableDepthRead() { enableDepthRead( false ); }
 //! Enables or disables writing to depth buffer; analogous to calling glDepthMask( \p enable ); Note that reading must also be enabled for writing to have any effect.
@@ -169,20 +169,20 @@ CI_API void depthRange( double nearVal, double farVal );
 //! Sets the polygon offset.
 CI_API void polygonOffset( float factor, float units );
 //! Enables the polygon offset for points.
-CI_API void enablePolygonOffsetPoint( bool enable = true );
+CI_API inline void enablePolygonOffsetPoint( bool enable = true ) { gl::enable( GL_POLYGON_OFFSET_POINT, enable ); }
 //! Disables the polygon offset for points.
 CI_API inline void disablePolygonOffsetPoint() { enablePolygonOffsetPoint( false ); }
 //! Enables the polygon offset for lines.
-CI_API void enablePolygonOffsetLine( bool enable = true );
+CI_API inline void enablePolygonOffsetLine( bool enable = true ) { gl::enable( GL_POLYGON_OFFSET_LINE, enable ); }
 //! Disables the polygon offset for lines.
 CI_API inline void disablePolygonOffsetLine() { enablePolygonOffsetLine( false ); }
 //! Enables the polygon offset for polygons.
-CI_API void enablePolygonOffsetFill( bool enable = true );
+CI_API inline void enablePolygonOffsetFill( bool enable = true ) { gl::enable( GL_POLYGON_OFFSET_FILL, enable ); }
 //! Disables the polygon offset for polygons.
 CI_API inline void disablePolygonOffsetFill() { enablePolygonOffsetFill( false ); }
 
 //! Enables or disables the stencil test operation, which controls reading and writing to the stencil buffer. Analagous to `glEnable( GL_STENCIL_TEST, enable );`
-CI_API void enableStencilTest( bool enable = true );
+CI_API inline void enableStencilTest( bool enable = true ) { gl::enable( GL_STENCIL_TEST, enable ); }
 //! Disables the stencil test operation. Analagous to `glEnable( GL_STENCIL_TEST, false );`
 CI_API inline void disableStencilTest() { enableStencilTest( false ); }
  
