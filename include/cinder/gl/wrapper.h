@@ -66,6 +66,7 @@ CI_API class Context* context();
 CI_API class Environment* env();
 
 CI_API void enableVerticalSync( bool enable = true );
+CI_API inline void disableVerticalSync() { enableVerticalSync( false ); }
 CI_API bool isVerticalSyncEnabled();
 
 CI_API GLenum getError();
