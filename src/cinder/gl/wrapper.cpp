@@ -25,6 +25,7 @@
 #include "cinder/gl/Environment.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/scoped.h"
+#include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
 
 #if defined( CINDER_MSW )
@@ -43,7 +44,9 @@ namespace cinder { namespace gl {
 
 Context* context()
 {
-	return Context::getCurrent();
+	auto ctx = Context::getCurrent();
+	CI_ASSERT( ctx );
+	return ctx;
 }
 
 void enableVerticalSync( bool enable )
