@@ -152,14 +152,14 @@ CI_API void enableLogicOp( bool enable = true );
 CI_API void logicOp( GLenum mode );
 #endif
 
-//! Disables reading / testing from the depth buffer. Disables \c GL_DEPTH_TEST
-CI_API inline void disableDepthRead() { enableDepthRead( false ); }
-//! Disables writing to depth buffer; analogous to calling glDepthMask( GL_FALSE );
-CI_API inline void disableDepthWrite() { enableDepthWrite( false ); }
 //! Enables or disables reading / testing from depth buffer; analogous to setting \c GL_DEPTH_TEST to \p enable
 CI_API void enableDepthRead( bool enable = true );
+//! Disables reading / testing from the depth buffer. Disables \c GL_DEPTH_TEST
+CI_API inline void disableDepthRead() { enableDepthRead( false ); }
 //! Enables or disables writing to depth buffer; analogous to calling glDepthMask( \p enable ); Note that reading must also be enabled for writing to have any effect.
 CI_API void enableDepthWrite( bool enable = true );
+//! Disables writing to depth buffer; analogous to calling glDepthMask( GL_FALSE );
+CI_API inline void disableDepthWrite() { enableDepthWrite( false ); }
 //! Enables or disables writing to and reading / testing from depth buffer
 CI_API inline void enableDepth( bool enable = true ) { enableDepthRead( enable ); enableDepthWrite( enable ); }
 
