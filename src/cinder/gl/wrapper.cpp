@@ -315,32 +315,16 @@ void enable( GLenum state, bool enable )
 	ctx->enable( state, enable );
 }
 
+void setBlendingMode( GLenum sfactor, GLenum dfactor )
+{
+	auto ctx = gl::context();
+	ctx->blendFunc( sfactor, dfactor );
+}
+
 void enableBlending( bool enable )
 {
 	auto ctx = gl::context();
 	ctx->enable( GL_BLEND, enable );
-}
-
-void enableAlphaBlending( bool enable )
-{
-	auto ctx = gl::context();
-	ctx->enable( GL_BLEND );
-	if( enable )
-		ctx->blendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-}
-
-void enableAlphaBlendingPremult()
-{
-	auto ctx = gl::context();
-	ctx->enable( GL_BLEND );
-	ctx->blendFunc( GL_ONE, GL_ONE_MINUS_SRC_ALPHA );
-}
-
-void enableAdditiveBlending()
-{
-	auto ctx = gl::context();
-	ctx->enable( GL_BLEND );
-	ctx->blendFunc( GL_SRC_ALPHA, GL_ONE );
 }
 
 void enableFaceCulling( bool enable )

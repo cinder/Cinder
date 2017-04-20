@@ -124,18 +124,19 @@ CI_API inline void scissor( const ivec2 &position, const ivec2 &size ) { scissor
 CI_API void enable( GLenum state, bool enable = true );
 CI_API inline void disable( GLenum state ) { enable( state, false ); }
 
-//! Enables or disables blending state as governed by \c GL_BLEND but does not modify blend function.
+//! Sets the blend function using the source and destination factors.
+CI_API void setBlendingMode( GLenum sfactor, GLenum dfactor );
+//! Sets the blend function to unpremultiplied alpha blending.
+CI_API inline void setAlphaBlendingMode() { setBlendingMode( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ); }
+//! Sets the blend function to premultiplied alpha blending.
+CI_API inline void setAlphaBlendingPremultMode() { setBlendingMode( GL_ONE, GL_ONE_MINUS_SRC_ALPHA ); }
+//! Sets the blend function to additive blending.
+CI_API inline void setAdditiveBlendingMode() { setBlendingMode( GL_SRC_ALPHA, GL_ONE ); }
+
+//! Enables or disables blending state as governed by \c GL_BLEND.
 CI_API void enableBlending( bool enable = true );
-//! Disables blending state via \c GL_BLEND, but does not modify blend function
+//! Disables blending state via \c GL_BLEND.
 CI_API inline void disableBlending() { enableBlending( false ); }
-//! Enables blending via \c GL_BLEND and sets the blend function to unpremultiplied alpha blending when \p enable is \c true; otherwise disables blending without modifying the blend function.
-CI_API void enableAlphaBlending( bool enable = true );
-//! Enables blending via \c GL_BLEND and sets the blend function to premultiplied alpha blending
-CI_API void enableAlphaBlendingPremult();
-//! Disables blending state as governed by \c GL_BLEND but does not modify blend function.. Deprecated; prefer disableBlending()
-CI_API inline void disableAlphaBlending() { disableBlending(); }
-//! Enables \c GL_BLEND and sets the blend function to additive blending
-CI_API void enableAdditiveBlending();
 
 //! Specifies whether polygons are culled. Equivalent to calling enable( \c GL_CULL_FACE, \a enable ). Specify front or back faces with gl::cullFace().
 CI_API void enableFaceCulling( bool enable = true );

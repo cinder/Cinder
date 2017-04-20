@@ -1290,11 +1290,6 @@ GLboolean Context::getBoolState( GLenum cap )
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // BlendFunc
-void Context::blendFunc( GLenum sfactor, GLenum dfactor )
-{
-	blendFuncSeparate( sfactor, dfactor, sfactor, dfactor );
-}
-
 void Context::blendFuncSeparate( GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha )
 {
 	bool needsChange = setStackState<GLint>( mBlendSrcRgbStack, srcRGB );

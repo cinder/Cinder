@@ -315,7 +315,7 @@ class CI_API Context {
 	void		setBoolState( GLenum cap, GLboolean value, const std::function<void(GLboolean)> &setter );
 
 	//! Analogous glBlendFunc(). Consider using a ScopedBlend instead.
-	void		blendFunc( GLenum sfactor, GLenum dfactor );
+	inline void blendFunc( GLenum sfactor, GLenum dfactor ) { blendFuncSeparate( sfactor, dfactor, sfactor, dfactor ); }
 	//! Analogous to glBlendFuncSeparate(). Consider using a ScopedBlend instead.
 	void		blendFuncSeparate( GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
 	//! Analogous to glBlendFuncSeparate, but pushes values rather than replaces them
