@@ -393,6 +393,42 @@ void depthRange( double nearVal, double farVal )
 	ctx->depthRange( nearVal, farVal );
 }
 
+void polygonOffset( float factor, float units )
+{
+	auto ctx = gl::context();
+	ctx->polygonOffset( factor, units );
+}
+
+void enablePolygonOffsetPoint( bool enable )
+{
+	gl::enable( GL_POLYGON_OFFSET_POINT, enable );
+}
+
+void disablePolygonOffsetPoint()
+{
+	gl::disable( GL_POLYGON_OFFSET_POINT );
+}
+
+void enablePolygonOffsetLine( bool enable )
+{
+	gl::enable( GL_POLYGON_OFFSET_LINE, enable );
+}
+
+void disablePolygonOffsetLine()
+{
+	gl::disable( GL_POLYGON_OFFSET_LINE );
+}
+
+void enablePolygonOffsetFill( bool enable )
+{
+	gl::enable( GL_POLYGON_OFFSET_FILL, enable );
+}
+
+void disablePolygonOffsetFill()
+{
+	gl::disable( GL_POLYGON_OFFSET_FILL );
+}
+
 void enableStencilTest( bool enable )
 {
     gl::enable( GL_STENCIL_TEST, enable );

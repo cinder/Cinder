@@ -371,6 +371,16 @@ class CI_API Context {
 	//! Returns the current depth range.
 	std::pair<double, double>	getDepthRange();
 
+	//! Set the polygon offset. Analogous to glPolygonOffset().
+	void						polygonOffset( float factor, float units );
+	//! Pushes and sets the current polygon offset.
+	void						pushPolygonOffset( float factor, float units );
+	//! Duplicates and pushes the current polygon offset.
+	void						pushPolygonOffset();
+	//! Sets the current polygon offset. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void						popPolygonOffset( bool forceRestore = false );
+	//! Returns the current polygon offset.
+	std::pair<float, float>		getPolygonOffset();
 
 #if ! defined( CINDER_GL_ES )
 	//! Sets the current polygon rasterization mode. \a face must be \c GL_FRONT_AND_BACK. \c GL_POINT, \c GL_LINE & \c GL_FILL are legal values for \a mode.
@@ -536,6 +546,7 @@ class CI_API Context {
 	std::vector<GLboolean>					mDepthMaskStack;
 	std::vector<GLenum>						mDepthFuncStack;
 	std::vector<std::pair<double,double>>	mDepthRangeStack;
+	std::vector<std::pair<float,float>>		mPolygonOffsetStack;
 
 	std::map<GLenum,std::vector<GLboolean>>	mBoolStateStack;
 	// map<TextureUnit,map<TextureTarget,vector<Binding ID Stack>>>

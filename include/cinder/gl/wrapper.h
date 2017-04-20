@@ -162,6 +162,21 @@ CI_API inline void enableDepth( bool enable = true ) { enableDepthRead( enable )
 //! Sets the depth range.
 CI_API void depthRange( double nearVal, double farVal );
 
+//! Sets the polygon offset.
+CI_API void polygonOffset( float factor, float units );
+//! Enables the polygon offset for points.
+CI_API void enablePolygonOffsetPoint( bool enable = true );
+//! Disables the polygon offset for points.
+CI_API void disablePolygonOffsetPoint();
+//! Enables the polygon offset for lines.
+CI_API void enablePolygonOffsetLine( bool enable = true );
+//! Disables the polygon offset for lines.
+CI_API void disablePolygonOffsetLine();
+//! Enables the polygon offset for polygons.
+CI_API void enablePolygonOffsetFill( bool enable = true );
+//! Disables the polygon offset for polygons.
+CI_API void disablePolygonOffsetFill();
+
 //! Enables or disables the stencil test operation, which controls reading and writing to the stencil buffer. Analagous to `glEnable( GL_STENCIL_TEST, enable );`
 CI_API void enableStencilTest( bool enable = true );
 //! Disables the stencil test operation. Analagous to `glEnable( GL_STENCIL_TEST, false );`

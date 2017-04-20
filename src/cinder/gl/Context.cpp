@@ -1551,6 +1551,50 @@ std::pair<double, double> Context::getDepthRange()
 	return mDepthRangeStack.back();
 }
 
+//////////////////////////////////////////////////////////////////
+// PolygonOffset
+void Context::polygonOffset( float factor, float units )
+{
+	if( setStackState( mPolygonOffsetStack, std::pair<float, float>( factor, units ) ) )
+		glPolygonOffset( factor, units );
+}
+
+void Context::pushPolygonOffset( float factor, float units )
+{
+	if( pushStackState( mPolygonOffsetStack, std::pair<float, float>( factor, units ) ) )
+		glPolygonOffset( factor, units );
+}
+
+void Context::pushPolygonOffset()
+{
+	pushStackState( mPolygonOffsetStack, getPolygonOffset() );
+}
+
+void Context::popPolygonOffset( bool forceRestore )
+{
+	if( mPolygonOffsetStack.empty() )
+		CI_LOG_E( "PolygonOffset stack underflow" );
+	else if( popStackState( mPolygonOffsetStack ) || forceRestore ) {
+		auto polygonOffset = getPolygonOffset();
+		glPolygonOffset( polygonOffset.first, polygonOffset.second );
+	}
+}
+
+std::pair<float, float> Context::getPolygonOffset()
+{
+	if( mPolygonOffsetStack.empty() ) {
+		GLfloat factor, units;
+		glGetFloatv( GL_POLYGON_OFFSET_FACTOR, &factor );
+		glGetFloatv( GL_POLYGON_OFFSET_UNITS, &units );
+
+		// push twice to account for inevitable pop to follow
+		mPolygonOffsetStack.push_back( std::pair<float, float>( factor, units ) );
+		mPolygonOffsetStack.push_back( std::pair<float, float>( factor, units ) );
+	}
+
+	return mPolygonOffsetStack.back();
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 // PolygonMode
 #if ! defined( CINDER_GL_ES )
