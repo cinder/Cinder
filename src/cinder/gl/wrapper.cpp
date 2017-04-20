@@ -307,6 +307,11 @@ void enable( GLenum state, bool enable )
 	gl::context()->enable( state, enable );
 }
 
+bool isEnabled( GLenum state )
+{
+	return gl::context()->isEnabled( state );
+}
+
 void setBlendingMode( GLenum sfactor, GLenum dfactor )
 {
 	gl::context()->blendFunc( sfactor, dfactor );

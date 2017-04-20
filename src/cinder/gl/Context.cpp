@@ -31,6 +31,7 @@
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/ConstantConversions.h"
 #include "cinder/gl/scoped.h"
+#include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
 #include "cinder/Utilities.h"
 #include "cinder/Breakpoint.h"
@@ -1270,6 +1271,13 @@ void Context::popBoolState( GLenum cap, bool forceRestore )
 void Context::enable( GLenum cap, GLboolean value )
 {
 	setBoolState( cap, value );
+}
+
+bool Context::isEnabled( GLenum cap ) const
+{
+	const GLboolean result = glIsEnabled( cap );
+	CI_ASSERT( GL_TRUE == result || GL_FALSE == result );
+	return GL_TRUE == result;
 }
 
 GLboolean Context::getBoolState( GLenum cap )

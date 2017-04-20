@@ -309,6 +309,8 @@ class CI_API Context {
 	void		popBoolState( GLenum cap, bool forceRestore = false );
 	//! Synonym for setBoolState(). Enables or disables OpenGL capability \a cap.
 	void		enable( GLenum cap, GLboolean value = true );
+	//! Determines if an OpenGL capability \a cap is enabled.  Calls glIsEnabled() directly.
+	bool		isEnabled( GLenum cap ) const;
 	//! Analogous to glIsEnabled(). Returns whether a given OpenGL capability is enabled or not
 	GLboolean	getBoolState( GLenum cap );
 	//! Enables or disables OpenGL capability \a cap. Calls \a setter rather than glEnable or glDisable. Not generally necessary to call directly.

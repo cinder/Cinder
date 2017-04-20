@@ -123,6 +123,7 @@ CI_API inline void scissor( const ivec2 &position, const ivec2 &size ) { scissor
 	
 CI_API void enable( GLenum state, bool enable = true );
 CI_API inline void disable( GLenum state ) { enable( state, false ); }
+CI_API bool isEnabled( GLenum state );
 
 //! Sets the blend function using the source and destination factors.
 CI_API void setBlendingMode( GLenum sfactor, GLenum dfactor );
