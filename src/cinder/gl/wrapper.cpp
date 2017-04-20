@@ -200,8 +200,7 @@ void bindStockShader( const class ShaderDef &shaderDef )
 
 void setDefaultShaderVars()
 {
-	auto ctx = gl::context();
-	ctx->setDefaultShaderVars();
+	gl::context()->setDefaultShaderVars();
 }
 
 void clear( const ColorA& color, bool clearDepthBuffer )
@@ -252,8 +251,7 @@ void colorMask( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha 
 
 void depthMask( GLboolean flag )
 {
-    auto ctx = gl::context();
-	ctx->depthMask( flag );
+    gl::context()->depthMask( flag );
 }
 
 void stencilFunc( GLenum func, GLint ref, GLuint mask )
@@ -280,20 +278,17 @@ std::pair<ivec2, ivec2> getViewport()
 
 void viewport( const std::pair<ivec2, ivec2> positionAndSize )
 {
-	auto ctx = gl::context();
-	ctx->viewport( positionAndSize );
+	gl::context()->viewport( positionAndSize );
 }
 
 void pushViewport( const std::pair<ivec2, ivec2> positionAndSize )
 {
-	auto ctx = gl::context();
-	ctx->pushViewport( positionAndSize );
+	gl::context()->pushViewport( positionAndSize );
 }
 
 void popViewport()
 {
-	auto ctx = gl::context();
-	ctx->popViewport();
+	gl::context()->popViewport();
 }
 
 std::pair<ivec2, ivec2> getScissor()
@@ -305,26 +300,22 @@ std::pair<ivec2, ivec2> getScissor()
 
 void scissor( const std::pair<ivec2, ivec2> positionAndSize )
 {
-	auto ctx = gl::context();
-	ctx->setScissor( positionAndSize );
+	gl::context()->setScissor( positionAndSize );
 }
 
 void enable( GLenum state, bool enable )
 {
-	auto ctx = gl::context();
-	ctx->enable( state, enable );
+	gl::context()->enable( state, enable );
 }
 
 void setBlendingMode( GLenum sfactor, GLenum dfactor )
 {
-	auto ctx = gl::context();
-	ctx->blendFunc( sfactor, dfactor );
+	gl::context()->blendFunc( sfactor, dfactor );
 }
 
 void enableBlending( bool enable )
 {
-	auto ctx = gl::context();
-	ctx->enable( GL_BLEND, enable );
+	gl::context()->enable( GL_BLEND, enable );
 }
 
 void enableFaceCulling( bool enable )
@@ -356,20 +347,17 @@ void enableDepthRead( bool enable )
 
 void enableDepthWrite( bool enable )
 {
-	auto ctx = gl::context();
-	ctx->depthMask( enable ? GL_TRUE : GL_FALSE );
+	gl::context()->depthMask( enable ? GL_TRUE : GL_FALSE );
 }
 
 void depthRange( double nearVal, double farVal )
 {
-	auto ctx = gl::context();
-	ctx->depthRange( nearVal, farVal );
+	gl::context()->depthRange( nearVal, farVal );
 }
 
 void polygonOffset( float factor, float units )
 {
-	auto ctx = gl::context();
-	ctx->polygonOffset( factor, units );
+	gl::context()->polygonOffset( factor, units );
 }
 
 void enablePolygonOffsetPoint( bool enable )
@@ -486,20 +474,17 @@ void popMatrices()
 
 void multModelMatrix( const ci::mat4& mtx )
 {
-	auto ctx = gl::context();
-	ctx->getModelMatrixStack().back() *= mtx;
+	gl::context()->getModelMatrixStack().back() *= mtx;
 }
 
 void multViewMatrix( const ci::mat4& mtx )
 {
-	auto ctx = gl::context();
-	ctx->getViewMatrixStack().back() *= mtx;
+	gl::context()->getViewMatrixStack().back() *= mtx;
 }
 
 void multProjectionMatrix( const ci::mat4& mtx )
 {
-	auto ctx = gl::context();
-	ctx->getProjectionMatrixStack().back() *= mtx;
+	gl::context()->getProjectionMatrixStack().back() *= mtx;
 }
 
 mat4 getModelMatrix()
@@ -616,8 +601,7 @@ void setMatricesWindow( const ci::ivec2& screenSize, bool originUpperLeft )
 
 void rotate( const quat &quat )
 {
-	auto ctx = gl::context();
-	ctx->getModelMatrixStack().back() *= toMat4( quat );
+	gl::context()->getModelMatrixStack().back() *= toMat4( quat );
 }
 
 void rotate( float angleRadians, const vec3 &axis )
@@ -630,14 +614,12 @@ void rotate( float angleRadians, const vec3 &axis )
 
 void scale( const ci::vec3& v )
 {
-	auto ctx = gl::context();
-	ctx->getModelMatrixStack().back() *= glm::scale( v );
+	gl::context()->getModelMatrixStack().back() *= glm::scale( v );
 }
 
 void translate( const ci::vec3& v )
 {
-	auto ctx = gl::context();
-	ctx->getModelMatrixStack().back() *= glm::translate( v );
+	gl::context()->getModelMatrixStack().back() *= glm::translate( v );
 }
 
 vec3 windowToObjectCoord( const mat4 &modelMatrix, const ci::vec2 &coordinate, float z )
@@ -675,8 +657,7 @@ vec2 objectToWindowCoord( const mat4 &modelMatrix, const ci::vec3 &coordinate )
 
 void begin( GLenum mode )
 {
-	auto ctx = gl::context();
-	ctx->immediate().begin( mode );
+	gl::context()->immediate().begin( mode );
 }
 
 void end()
@@ -701,34 +682,29 @@ void end()
 #if ! defined( CINDER_GL_ES_2 )
 void bindBufferBase( GLenum target, int index, BufferObjRef buffer )
 {
-	auto ctx = gl::context();
-	ctx->bindBufferBase( target, index, buffer );
+	gl::context()->bindBufferBase( target, index, buffer );
 }
 #endif // ! defined( CINDER_GL_ES_2 )
 
 #if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 void beginTransformFeedback( GLenum primitiveMode )
 {
-	auto ctx = gl::context();
-	ctx->beginTransformFeedback( primitiveMode );
+	gl::context()->beginTransformFeedback( primitiveMode );
 }
 
 void pauseTransformFeedback()
 {
-	auto ctx = gl::context();
-	ctx->pauseTransformFeedback();
+	gl::context()->pauseTransformFeedback();
 }
 
 void resumeTransformFeedback()
 {
-	auto ctx = gl::context();
-	ctx->resumeTransformFeedback();
+	gl::context()->resumeTransformFeedback();
 }
 
 void endTransformFeedback()
 {
-	auto ctx = gl::context();
-	ctx->endTransformFeedback();
+	gl::context()->endTransformFeedback();
 }
 #endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
@@ -748,74 +724,62 @@ void patchParameterfv( GLenum pname, GLfloat *value )
 
 void color( float r, float g, float b )
 {
-	auto ctx = gl::context();
-	ctx->setCurrentColor( ColorAf( r, g, b, 1.0f ) );
+	gl::context()->setCurrentColor( ColorAf( r, g, b, 1.0f ) );
 }
 
 void color( float r, float g, float b, float a )
 {
-	auto ctx = gl::context();
-	ctx->setCurrentColor( ColorAf( r, g, b, a ) );
+	gl::context()->setCurrentColor( ColorAf( r, g, b, a ) );
 }
 
 void color( const ci::Color &c )
 {
-	auto ctx = gl::context();
-	ctx->setCurrentColor( c );
+	gl::context()->setCurrentColor( c );
 }
 
 void color( const ci::ColorA &c )
 {
-	auto ctx = gl::context();
-	ctx->setCurrentColor( c );
+	gl::context()->setCurrentColor( c );
 }
 
 void color( const ci::Color8u &c )
 {
-	auto ctx = gl::context();
-	ctx->setCurrentColor( c );
+	gl::context()->setCurrentColor( c );
 }
 
 void color( const ci::ColorA8u &c )
 {
-	auto ctx = gl::context();
-	ctx->setCurrentColor( c );
+	gl::context()->setCurrentColor( c );
 }
 
 void texCoord( float s, float t )
 {
-	auto ctx = gl::context();
-	ctx->immediate().texCoord( s, t );
+	gl::context()->immediate().texCoord( s, t );
 }
 
 void texCoord( float s, float t, float r )
 {
-	auto ctx = gl::context();
-	ctx->immediate().texCoord( s, t, r );
+	gl::context()->immediate().texCoord( s, t, r );
 }
 
 void texCoord( float s, float t, float r, float q )
 {
-	auto ctx = gl::context();
-	ctx->immediate().texCoord( s, t, r, q );
+	gl::context()->immediate().texCoord( s, t, r, q );
 }
 
 void texCoord( const ci::vec2 &v )
 {
-	auto ctx = gl::context();
-	ctx->immediate().texCoord( v.x, v.y );
+	gl::context()->immediate().texCoord( v.x, v.y );
 }
 
 void texCoord( const ci::vec3 &v )
 {
-	auto ctx = gl::context();
-	ctx->immediate().texCoord( v );
+	gl::context()->immediate().texCoord( v );
 }
 
 void texCoord( const ci::vec4 &v )
 {
-	auto ctx = gl::context();
-	ctx->immediate().texCoord( v );
+	gl::context()->immediate().texCoord( v );
 }
 
 void vertex( float x, float y )
@@ -857,8 +821,7 @@ void vertex( const ci::vec4 &v )
 #if ! defined( CINDER_GL_ES )
 void polygonMode( GLenum face, GLenum mode )
 {
-	auto ctx = gl::context();
-	ctx->polygonMode( face, mode );
+	gl::context()->polygonMode( face, mode );
 }
 
 void enableWireframe()
