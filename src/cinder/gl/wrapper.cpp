@@ -462,20 +462,17 @@ void multProjectionMatrix( const ci::mat4& mtx )
 
 mat4 getModelMatrix()
 {
-	auto ctx = gl::context();
-	return ctx->getModelMatrixStack().back();
+	return gl::context()->getModelMatrixStack().back();
 }
 
 mat4 getViewMatrix()
 {
-	auto ctx = gl::context();
-	return ctx->getViewMatrixStack().back();
+	return gl::context()->getViewMatrixStack().back();
 }
 
 mat4 getProjectionMatrix()
 {
-	auto ctx = gl::context();
-	return ctx->getProjectionMatrixStack().back();
+	return gl::context()->getProjectionMatrixStack().back();
 }
 
 mat4 getModelView()
@@ -809,8 +806,7 @@ void disableWireframe()
 
 bool isWireframeEnabled()
 {
-	auto ctx = gl::context();
-	return ctx->getPolygonMode( GL_FRONT_AND_BACK ) == GL_LINE;
+	return gl::context()->getPolygonMode( GL_FRONT_AND_BACK ) == GL_LINE;
 }
 
 #endif // ! defined( CINDER_GL_ES )
