@@ -188,7 +188,7 @@ std::string getVendorString()
 
 GlslProgRef& getStockShader( const class ShaderDef &shader )
 {
-	return context()->getStockShader( shader );
+	return gl::context()->getStockShader( shader );
 }
 
 void bindStockShader( const class ShaderDef &shaderDef )
@@ -271,9 +271,7 @@ void stencilMask( GLuint mask )
 
 std::pair<ivec2, ivec2> getViewport()
 {
-	auto ctx = gl::context();
-	auto view = ctx->getViewport();
-	return view;
+	return gl::context()->getViewport();
 }
 
 void viewport( const std::pair<ivec2, ivec2> positionAndSize )
@@ -293,9 +291,7 @@ void popViewport()
 
 std::pair<ivec2, ivec2> getScissor()
 {
-	auto ctx = gl::context();
-	auto scissor = ctx->getScissor();
-	return scissor;
+	return gl::context()->getScissor();
 }
 
 void scissor( const std::pair<ivec2, ivec2> positionAndSize )
@@ -357,7 +353,7 @@ void polygonOffset( float factor, float units )
 
 void setMatrices( const ci::Camera& cam )
 {
-	auto ctx = context();
+	auto ctx = gl::context();
 	ctx->getViewMatrixStack().back() = cam.getViewMatrix();
 	ctx->getProjectionMatrixStack().back() = cam.getProjectionMatrix();
 	ctx->getModelMatrixStack().back() = mat4();
@@ -365,75 +361,69 @@ void setMatrices( const ci::Camera& cam )
 
 void setModelMatrix( const ci::mat4 &m )
 {
-	auto ctx = context();
-	ctx->getModelMatrixStack().back() = m;
+	gl::context()->getModelMatrixStack().back() = m;
 }
 
 void setViewMatrix( const ci::mat4 &m )
 {
-	auto ctx = context();
-	ctx->getViewMatrixStack().back() = m;
+	gl::context()->getViewMatrixStack().back() = m;
 }
 
 void setProjectionMatrix( const ci::mat4 &m )
 {
-	auto ctx = context();
-	ctx->getProjectionMatrixStack().back() = m;
+	gl::context()->getProjectionMatrixStack().back() = m;
 }
 
 void pushModelMatrix()
 {
-	auto ctx = context();
+	auto ctx = gl::context();
 	ctx->getModelMatrixStack().push_back( ctx->getModelMatrixStack().back() );
 }
 
 void popModelMatrix()
 {
-	auto ctx = context();
-	ctx->getModelMatrixStack().pop_back();
+	gl::context()->getModelMatrixStack().pop_back();
 }
 
 void pushViewMatrix()
 {
-	auto ctx = context();
+	auto ctx = gl::context();
 	ctx->getViewMatrixStack().push_back( ctx->getViewMatrixStack().back() );
 }
 
 void popViewMatrix()
 {
-	auto ctx = context();
-	ctx->getViewMatrixStack().pop_back();
+	gl::context()->getViewMatrixStack().pop_back();
 }
 
 void pushProjectionMatrix()
 {
-	auto ctx = context();
+	auto ctx = gl::context();
 	ctx->getProjectionMatrixStack().push_back( ctx->getProjectionMatrixStack().back() );
 }
 
 void popProjectionMatrix()
 {
-	auto ctx = context();
-	ctx->getProjectionMatrixStack().pop_back();
+	gl::context()->getProjectionMatrixStack().pop_back();
 }
 
 void pushModelView()
 {
-	auto ctx = context();
+	auto ctx = gl::context();
 	ctx->getModelMatrixStack().push_back( ctx->getModelMatrixStack().back() );
 	ctx->getViewMatrixStack().push_back( ctx->getViewMatrixStack().back() );
 }
 
 void popModelView()
 {
-	auto ctx = context();
+	auto ctx = gl::context();
 	ctx->getModelMatrixStack().pop_back();
 	ctx->getViewMatrixStack().pop_back();
 }
 
 void pushMatrices()
 {
-	auto ctx = context();
+	auto ctx = gl::context();
 	ctx->getModelMatrixStack().push_back( ctx->getModelMatrixStack().back() );
 	ctx->getViewMatrixStack().push_back( ctx->getViewMatrixStack().back() );
 	ctx->getProjectionMatrixStack().push_back( ctx->getProjectionMatrixStack().back() );
@@ -441,7 +431,7 @@ void pushMatrices()
 
 void popMatrices()
 {
-	auto ctx = context();
+	auto ctx = gl::context();
 	ctx->getModelMatrixStack().pop_back();
 	ctx->getViewMatrixStack().pop_back();
 	ctx->getProjectionMatrixStack().pop_back();
@@ -482,13 +472,13 @@ mat4 getProjectionMatrix()
 
 mat4 getModelView()
 {
-	auto ctx = context();
+	auto ctx = gl::context();
 	return ctx->getViewMatrixStack().back() * ctx->getModelMatrixStack().back();
 }
 
 mat4 getModelViewProjection()
 {
-	auto ctx = context();
+	auto ctx = gl::context();
 	return ctx->getProjectionMatrixStack().back() * ctx->getViewMatrixStack().back() * ctx->getModelMatrixStack().back();
 }
 
