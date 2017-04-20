@@ -153,9 +153,9 @@ CI_API void logicOp( GLenum mode );
 #endif
 
 //! Disables reading / testing from the depth buffer. Disables \c GL_DEPTH_TEST
-CI_API void disableDepthRead();
+CI_API inline void disableDepthRead() { enableDepthRead( false ); }
 //! Disables writing to depth buffer; analogous to calling glDepthMask( GL_FALSE );
-CI_API void disableDepthWrite();
+CI_API inline void disableDepthWrite() { enableDepthWrite( false ); }
 //! Enables or disables reading / testing from depth buffer; analogous to setting \c GL_DEPTH_TEST to \p enable
 CI_API void enableDepthRead( bool enable = true );
 //! Enables or disables writing to depth buffer; analogous to calling glDepthMask( \p enable ); Note that reading must also be enabled for writing to have any effect.
@@ -171,20 +171,20 @@ CI_API void polygonOffset( float factor, float units );
 //! Enables the polygon offset for points.
 CI_API void enablePolygonOffsetPoint( bool enable = true );
 //! Disables the polygon offset for points.
-CI_API void disablePolygonOffsetPoint();
+CI_API inline void disablePolygonOffsetPoint() { enablePolygonOffsetPoint( false ); }
 //! Enables the polygon offset for lines.
 CI_API void enablePolygonOffsetLine( bool enable = true );
 //! Disables the polygon offset for lines.
-CI_API void disablePolygonOffsetLine();
+CI_API inline void disablePolygonOffsetLine() { enablePolygonOffsetLine( false ); }
 //! Enables the polygon offset for polygons.
 CI_API void enablePolygonOffsetFill( bool enable = true );
 //! Disables the polygon offset for polygons.
-CI_API void disablePolygonOffsetFill();
+CI_API inline void disablePolygonOffsetFill() { enablePolygonOffsetFill( false ); }
 
 //! Enables or disables the stencil test operation, which controls reading and writing to the stencil buffer. Analagous to `glEnable( GL_STENCIL_TEST, enable );`
 CI_API void enableStencilTest( bool enable = true );
 //! Disables the stencil test operation. Analagous to `glEnable( GL_STENCIL_TEST, false );`
-CI_API void disableStencilTest();
+CI_API inline void disableStencilTest() { enableStencilTest( false ); }
  
 //! Sets the View and Projection matrices based on a Camera
 CI_API void setMatrices( const ci::Camera &cam );

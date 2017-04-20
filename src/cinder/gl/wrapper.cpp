@@ -349,11 +349,6 @@ void logicOp( GLenum mode )
 }
 #endif
 
-void disableDepthRead()
-{
-	gl::disable( GL_DEPTH_TEST );
-}
-
 void enableDepthRead( bool enable )
 {
 	gl::enable( GL_DEPTH_TEST, enable );
@@ -363,12 +358,6 @@ void enableDepthWrite( bool enable )
 {
 	auto ctx = gl::context();
 	ctx->depthMask( enable ? GL_TRUE : GL_FALSE );
-}
-
-void disableDepthWrite()
-{
-	auto ctx = gl::context();
-	ctx->depthMask( GL_FALSE );
 }
 
 void depthRange( double nearVal, double farVal )
@@ -388,19 +377,9 @@ void enablePolygonOffsetPoint( bool enable )
 	gl::enable( GL_POLYGON_OFFSET_POINT, enable );
 }
 
-void disablePolygonOffsetPoint()
-{
-	gl::disable( GL_POLYGON_OFFSET_POINT );
-}
-
 void enablePolygonOffsetLine( bool enable )
 {
 	gl::enable( GL_POLYGON_OFFSET_LINE, enable );
-}
-
-void disablePolygonOffsetLine()
-{
-	gl::disable( GL_POLYGON_OFFSET_LINE );
 }
 
 void enablePolygonOffsetFill( bool enable )
@@ -408,19 +387,9 @@ void enablePolygonOffsetFill( bool enable )
 	gl::enable( GL_POLYGON_OFFSET_FILL, enable );
 }
 
-void disablePolygonOffsetFill()
-{
-	gl::disable( GL_POLYGON_OFFSET_FILL );
-}
-
 void enableStencilTest( bool enable )
 {
     gl::enable( GL_STENCIL_TEST, enable );
-}
-
-void disableStencilTest()
-{
-    gl::disable( GL_STENCIL_TEST );
 }
 
 void setMatrices( const ci::Camera& cam )
