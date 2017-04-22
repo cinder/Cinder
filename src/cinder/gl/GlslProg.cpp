@@ -675,6 +675,16 @@ GlslProg::AttribSemanticMap& GlslProg::getDefaultAttribNameToSemanticMap()
 		sDefaultAttribNameToSemanticMap["ciColor"] = geom::Attrib::COLOR;
 		sDefaultAttribNameToSemanticMap["ciBoneIndex"] = geom::Attrib::BONE_INDEX;
 		sDefaultAttribNameToSemanticMap["ciBoneWeight"] = geom::Attrib::BONE_WEIGHT;
+		sDefaultAttribNameToSemanticMap["ciCustom0"] = geom::Attrib::CUSTOM_0;
+		sDefaultAttribNameToSemanticMap["ciCustom1"] = geom::Attrib::CUSTOM_1;
+		sDefaultAttribNameToSemanticMap["ciCustom2"] = geom::Attrib::CUSTOM_2;
+		sDefaultAttribNameToSemanticMap["ciCustom3"] = geom::Attrib::CUSTOM_3;
+		sDefaultAttribNameToSemanticMap["ciCustom4"] = geom::Attrib::CUSTOM_4;
+		sDefaultAttribNameToSemanticMap["ciCustom5"] = geom::Attrib::CUSTOM_5;
+		sDefaultAttribNameToSemanticMap["ciCustom6"] = geom::Attrib::CUSTOM_6;
+		sDefaultAttribNameToSemanticMap["ciCustom7"] = geom::Attrib::CUSTOM_7;
+		sDefaultAttribNameToSemanticMap["ciCustom8"] = geom::Attrib::CUSTOM_8;
+		sDefaultAttribNameToSemanticMap["ciCustom9"] = geom::Attrib::CUSTOM_9;
 		initialized = true;
 	}
 	
