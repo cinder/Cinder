@@ -28,7 +28,6 @@
 
 #include "cinder/Color.h"
 #include "cinder/Vector.h"
-#include "cinder/TriMesh.h"
 #include "cinder/GeomIo.h"
 
 #include <iosfwd>
