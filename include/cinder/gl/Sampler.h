@@ -131,6 +131,7 @@ class CI_API Sampler {
 		friend class Sampler;
 	};
 
+	//! Default-constructs an uninitialized Sampler
 	Sampler();
 	Sampler( const Format &format );
 	Sampler( Sampler &&rhs );

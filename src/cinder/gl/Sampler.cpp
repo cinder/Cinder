@@ -31,9 +31,8 @@
 namespace cinder { namespace gl {
 
 Sampler::Sampler()
+	: mId( 0 ), mFormat()
 {
-	glGenSamplers( 1, &mId );
-	initParams();
 }
 
 Sampler::Sampler( const Format &format )
