@@ -209,9 +209,9 @@ class CI_API Path2dCalcCache {
 	float			getLength() const { return mLength; }
 
 	//! Calculates the t-value corresponding to \a relativeTime in the range [0,1) within epsilon of \a tolerance. For example, \a relativeTime of 0.5f returns the t-value corresponding to half the length. \a maxIterations dictates the number of refinement loop iterations allowed, setting an upper bound for worst-case performance.
-	float			calcNormalizedTime( float relativeTime, bool wrap = true, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
+	float			calcNormalizedTime( float relativeTime, bool wrap = false, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
 	//! Calculates a t-value corresponding to arc length \a distance. If \a wrap then the t-value loops inside the 0-1 range as \a distance exceeds the arc length.
-	float			calcTimeForDistance( float distance, bool wrap = true, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
+	float			calcTimeForDistance( float distance, bool wrap = false, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
 	//! Returns the point on the curve at parameter \a t, which lies in the range <tt>[0,1]</tt>
 	vec2			getPosition( float t ) const { return mPath.getPosition( t ); }
 
