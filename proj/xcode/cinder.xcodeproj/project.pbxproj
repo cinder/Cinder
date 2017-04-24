@@ -1674,7 +1674,7 @@
 		002F8F74103AFEBF0077CB91 /* System.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = System.cpp; sourceTree = "<group>"; };
 		003133A3129EB85D009DC098 /* Blend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Blend.h; path = ip/Blend.h; sourceTree = "<group>"; };
 		0031D7B81E9FCF5400668F15 /* Sampler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Sampler.h; path = gl/Sampler.h; sourceTree = "<group>"; };
-		0031D7B91E9FE45100668F15 /* Sampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sampler.cpp; path = ../../src/cinder/gl/Sampler.cpp; sourceTree = "<group>"; };
+		0031D7B91E9FE45100668F15 /* Sampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sampler.cpp; path = gl/Sampler.cpp; sourceTree = "<group>"; };
 		0032FD2810BB46F500C63A9D /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Exception.h; sourceTree = "<group>"; };
 		0032FD2A10BB472E00C63A9D /* Exception.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Exception.cpp; sourceTree = "<group>"; };
 		0034C310151A5752003F2E30 /* Unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unicode.h; sourceTree = "<group>"; };
@@ -2856,13 +2856,12 @@
 				0003F42F1992D67300647C8B /* Pbo.h */,
 				116C061E1ABD2BE8004D8297 /* platform.h */,
 				B0245F5819BEDF3200BC878D /* Query.h */,
-				116C061F1ABD2BE8004D8297 /* scoped.h */,
 				0031D7B81E9FCF5400668F15 /* Sampler.h */,
+				116C061F1ABD2BE8004D8297 /* scoped.h */,
 				0003F4301992D67300647C8B /* Shader.h */,
 				11C6F75D1AA391FE0001FA5C /* ShaderPreprocessor.h */,
 				0003F4311992D67300647C8B /* Sync.h */,
 				0003F4321992D67300647C8B /* Texture.h */,
-				0031D7B91E9FE45100668F15 /* Sampler.cpp */,
 				0003F4331992D67300647C8B /* TextureFont.h */,
 				0003F4341992D67300647C8B /* TextureFormatParsers.h */,
 				0003F4351992D67300647C8B /* TransformFeedbackObj.h */,
@@ -2891,6 +2890,7 @@
 				0003F3C81992D64100647C8B /* GlslProg.cpp */,
 				0003F3C91992D64100647C8B /* Pbo.cpp */,
 				B06DE70219C74935008B9E1B /* Query.cpp */,
+				0031D7B91E9FE45100668F15 /* Sampler.cpp */,
 				116C06221ABD2C06004D8297 /* scoped.cpp */,
 				0003F3CA1992D64100647C8B /* Shader.cpp */,
 				11C6F7591AA391E50001FA5C /* ShaderPreprocessor.cpp */,
