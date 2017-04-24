@@ -714,6 +714,9 @@
     <ClCompile Include="..\..\src\cinder\gl\Pbo.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\cinder\gl\Sampler.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\cinder\gl\Shader.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
@@ -1725,6 +1728,9 @@
       <Filter>Header Files\gl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\gl\Pbo.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\gl\Sampler.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\gl\Shader.h">

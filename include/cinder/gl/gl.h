@@ -35,6 +35,7 @@
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Pbo.h"
 #include "cinder/gl/Query.h"
+#include "cinder/gl/Sampler.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/ShaderPreprocessor.h"
 #include "cinder/gl/Ssbo.h"

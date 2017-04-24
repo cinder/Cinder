@@ -469,6 +469,9 @@
     <ClInclude Include="..\..\include\cinder\gl\scoped.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\cinder\gl\Sampler.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\cinder\gl\Shader.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
@@ -994,6 +997,9 @@
       <Filter>Source Files\gl</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\gl\scoped.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\gl\Sampler.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\gl\Shader.cpp">

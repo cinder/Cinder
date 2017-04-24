@@ -85,6 +85,9 @@
 		002F8F73103AFD9A0077CB91 /* System.h in Headers */ = {isa = PBXBuildFile; fileRef = 002F8F71103AFD9A0077CB91 /* System.h */; };
 		002F8F76103AFEBF0077CB91 /* System.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 002F8F74103AFEBF0077CB91 /* System.cpp */; };
 		003133A4129EB85D009DC098 /* Blend.h in Headers */ = {isa = PBXBuildFile; fileRef = 003133A3129EB85D009DC098 /* Blend.h */; };
+		0031D7BA1E9FE45100668F15 /* Sampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0031D7B91E9FE45100668F15 /* Sampler.cpp */; };
+		0031D7BB1E9FE45100668F15 /* Sampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0031D7B91E9FE45100668F15 /* Sampler.cpp */; };
+		0031D7BC1E9FE45100668F15 /* Sampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0031D7B91E9FE45100668F15 /* Sampler.cpp */; };
 		0032FD2910BB46F500C63A9D /* Exception.h in Headers */ = {isa = PBXBuildFile; fileRef = 0032FD2810BB46F500C63A9D /* Exception.h */; };
 		0032FD2B10BB472E00C63A9D /* Exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0032FD2A10BB472E00C63A9D /* Exception.cpp */; };
 		0034C311151A5752003F2E30 /* Unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = 0034C310151A5752003F2E30 /* Unicode.h */; };
@@ -1656,6 +1659,8 @@
 		002F8F71103AFD9A0077CB91 /* System.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = System.h; sourceTree = "<group>"; };
 		002F8F74103AFEBF0077CB91 /* System.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = System.cpp; sourceTree = "<group>"; };
 		003133A3129EB85D009DC098 /* Blend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Blend.h; path = ip/Blend.h; sourceTree = "<group>"; };
+		0031D7B81E9FCF5400668F15 /* Sampler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Sampler.h; path = gl/Sampler.h; sourceTree = "<group>"; };
+		0031D7B91E9FE45100668F15 /* Sampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sampler.cpp; path = ../../src/cinder/gl/Sampler.cpp; sourceTree = "<group>"; };
 		0032FD2810BB46F500C63A9D /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Exception.h; sourceTree = "<group>"; };
 		0032FD2A10BB472E00C63A9D /* Exception.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Exception.cpp; sourceTree = "<group>"; };
 		0034C310151A5752003F2E30 /* Unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unicode.h; sourceTree = "<group>"; };
@@ -2822,10 +2827,12 @@
 				116C061E1ABD2BE8004D8297 /* platform.h */,
 				B0245F5819BEDF3200BC878D /* Query.h */,
 				116C061F1ABD2BE8004D8297 /* scoped.h */,
+				0031D7B81E9FCF5400668F15 /* Sampler.h */,
 				0003F4301992D67300647C8B /* Shader.h */,
 				11C6F75D1AA391FE0001FA5C /* ShaderPreprocessor.h */,
 				0003F4311992D67300647C8B /* Sync.h */,
 				0003F4321992D67300647C8B /* Texture.h */,
+				0031D7B91E9FE45100668F15 /* Sampler.cpp */,
 				0003F4331992D67300647C8B /* TextureFont.h */,
 				0003F4341992D67300647C8B /* TextureFormatParsers.h */,
 				0003F4351992D67300647C8B /* TransformFeedbackObj.h */,
@@ -4811,6 +4818,7 @@
 				27C1007B1BD16D4800AF387F /* Ray.cpp in Sources */,
 				27C1007C1BD16D4800AF387F /* AppImplCocoaTouch.mm in Sources */,
 				27C1007D1BD16D4800AF387F /* block.c in Sources */,
+				0031D7BC1E9FE45100668F15 /* Sampler.cpp in Sources */,
 				27C1007E1BD16D4800AF387F /* QuickTimeImplAvf.mm in Sources */,
 				27C1007F1BD16D4800AF387F /* Query.cpp in Sources */,
 				27C100801BD16D4800AF387F /* lsp.c in Sources */,
@@ -5061,6 +5069,7 @@
 				27C1FF251BD0AE3400AF387F /* UrlImplCocoa.mm in Sources */,
 				27C1FF261BD0AE3400AF387F /* AppImplCocoaTouch.mm in Sources */,
 				27C1FF271BD0AE3400AF387F /* block.c in Sources */,
+				0031D7BB1E9FE45100668F15 /* Sampler.cpp in Sources */,
 				27C1FF281BD0AE3400AF387F /* QuickTimeImplAvf.mm in Sources */,
 				27C1FF291BD0AE3400AF387F /* Query.cpp in Sources */,
 				27C1FF2A1BD0AE3400AF387F /* lsp.c in Sources */,
@@ -5263,6 +5272,7 @@
 				B3EA40B21DD0F00900E34348 /* ftstroke.c in Sources */,
 				003ADB65103884C800ACF6F2 /* Params.cpp in Sources */,
 				003ADB971038974A00ACF6F2 /* TwMgr.cpp in Sources */,
+				0031D7BA1E9FE45100668F15 /* Sampler.cpp in Sources */,
 				003ADB981038974A00ACF6F2 /* TwPrecomp.cpp in Sources */,
 				111A5FC2191F72AE005C3166 /* Biquad.cpp in Sources */,
 				003ADB9A1038974A00ACF6F2 /* TwFonts.cpp in Sources */,

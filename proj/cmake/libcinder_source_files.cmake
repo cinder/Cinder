@@ -141,6 +141,7 @@ list( APPEND SRC_SET_CINDER_GL
 	${CINDER_SRC_DIR}/cinder/gl/Pbo.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Query.cpp
 	${CINDER_SRC_DIR}/cinder/gl/scoped.cpp
+	${CINDER_SRC_DIR}/cinder/gl/Sampler.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Shader.cpp
 	${CINDER_SRC_DIR}/cinder/gl/ShaderPreprocessor.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Sync.cpp
