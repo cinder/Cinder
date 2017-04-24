@@ -1033,6 +1033,59 @@ uint8_t Context::getActiveTexture()
 }
 
 //////////////////////////////////////////////////////////////////
+// SamplerBinding
+#if defined( CINDER_GL_HAS_SAMPLERS )
+void Context::bindSampler( uint8_t textureUnit, GLuint samplerId )
+{
+	GLuint prevValue = getSamplerBinding( textureUnit );
+	if( prevValue != samplerId ) {
+		mSamplerBindingStack[textureUnit].back() = samplerId;
+		glBindSampler( textureUnit, samplerId );
+	}
+}
+
+void Context::pushSamplerBinding( uint8_t textureUnit, GLuint samplerId )
+{
+	GLuint prevSampler = getSamplerBinding( textureUnit );
+	mSamplerBindingStack[textureUnit].push_back( samplerId );
+	if( prevSampler != samplerId )
+		glBindSampler( textureUnit, samplerId );
+}
+
+void Context::popSamplerBinding( uint8_t textureUnit, bool forceRestore )
+{
+	if( mSamplerBindingStack.size() <= textureUnit || mSamplerBindingStack[textureUnit].empty() ) {
+		CI_LOG_E( "Stack underflow popping sampler binding on unit " << textureUnit );
+		return;
+	}
+
+	GLuint prevSampler = getSamplerBinding( textureUnit );
+	mSamplerBindingStack[textureUnit].pop_back();
+	if( mSamplerBindingStack[textureUnit].empty() )
+		CI_LOG_E( "Stack underflow popping sampler binding on unit " << textureUnit );
+	else if( (mSamplerBindingStack[textureUnit].back() != prevSampler) || forceRestore )
+		glBindSampler( textureUnit, mSamplerBindingStack[textureUnit].back() ); 
+}
+
+GLuint Context::getSamplerBinding( uint8_t textureUnit )
+{
+	if( textureUnit >= mSamplerBindingStack.size() )
+		mSamplerBindingStack.resize( textureUnit + 1 );
+
+	if( mSamplerBindingStack[textureUnit].empty() ) {
+		GLint queriedInt = 0;
+		ScopedActiveTexture actScp( textureUnit );
+		glGetIntegerv( GL_SAMPLER_BINDING, &queriedInt );
+		// push twice to allow for a pop later to not lead to an empty stack
+		mSamplerBindingStack[textureUnit].push_back( (GLuint)queriedInt ); 
+		mSamplerBindingStack[textureUnit].push_back( (GLuint)queriedInt );
+	}
+
+	return mSamplerBindingStack[textureUnit].back();
+}
+#endif // defined( CINDER_GL_HAS_SAMPLERS )
+
+//////////////////////////////////////////////////////////////////
 // Framebuffers
 void Context::bindFramebuffer( GLenum target, GLuint framebuffer )
 {
