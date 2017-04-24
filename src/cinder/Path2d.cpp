@@ -32,6 +32,7 @@
 #include "cinder/Path2d.h"
 
 #include <algorithm>
+#include <iterator>
 
 using std::vector;
 
@@ -405,7 +406,7 @@ void Path2d::getSegmentRelativeT( float t, size_t *segment, float *relativeT ) c
 
 	size_t totalSegments = mSegments.size();
 	float segParamLength = 1.0f / totalSegments;
-	*segment = t * totalSegments;
+	*segment = static_cast<size_t>( t * totalSegments );
 	if( relativeT )
 		*relativeT = ( t - *segment * segParamLength ) / segParamLength;
 }
