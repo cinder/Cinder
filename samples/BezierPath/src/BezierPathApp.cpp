@@ -20,7 +20,6 @@ class Path2dApp : public App {
 	void draw();
 	
 	Path2d	mPath;
-	Path2d	mSubPath1, mSubPath2;
 	int		mTrackedPoint;
 };
 
@@ -37,10 +36,6 @@ void Path2dApp::mouseDown( MouseEvent event )
 
 	console() << mPath << std::endl;	
 	console() << "Length: " << mPath.calcLength() << std::endl;
-	mSubPath1 = mPath.getSubPath( 0, 0.3f );
-	mSubPath2 = mPath.getSubPath( 0.3f, 1.0f );
-	mSubPath1.transform( glm::translate( mat3(), vec2( 0 ) ) );
-	mSubPath2.transform( glm::translate( mat3(), vec2( 0 ) ) );
 }
 
 void Path2dApp::mouseDrag( MouseEvent event )
@@ -83,12 +78,7 @@ void Path2dApp::mouseDrag( MouseEvent event )
 	}
 	
 	console() << mPath << std::endl;
-	console() << "Length: " << mPath.calcLength() << std::endl;
-	mSubPath1 = mPath.getSubPath( 0, 0.3f );
-	console() << mSubPath1 << std::endl;
-	mSubPath2 = mPath.getSubPath( 0.3f, 1.0f );
-	mSubPath1.transform( glm::translate( mat3(), vec2( 0 ) ) );
-	mSubPath2.transform( glm::translate( mat3(), vec2( 0 ) ) );
+	console() << "Length: " << mPath.calcLength() << std::endl;	
 }
 
 void Path2dApp::mouseUp( MouseEvent event )
@@ -102,50 +92,37 @@ void Path2dApp::keyDown( KeyEvent event )
 		mPath.clear();
 }
 
-Path2d calcQuadSub( const Path2d &p, float t0, float t1 )
-{
-	Path2d result;
-	result.moveTo( p.getPosition( t0 ) );
-	vec2 i0 = (1 - t0) * p.getPoint( 1 ) + t0 * p.getPoint( 2 );
-	float u1 = ( t1 - t0 ) / ( 1 - t0 );
-	vec2 i1 = (1 - u1) * p.getPosition( t0 ) + u1 * i0;
-	result.quadTo( i1, p.getPosition( t1 ) );
-	return result;
-}
-
 void Path2dApp::draw()
 {
 	gl::clear( Color( 0.0f, 0.1f, 0.2f ) );
 	
-Path2d p;
-p.moveTo( 100, 200 + getElapsedSeconds() + 10 );
-p.quadTo( 180, 20, 300, 300 );
-gl::draw( p );
-gl::color( Color( 1, 1, 0 ) );
-float t0 = 0.1f, t1 = 0.3f + fmod( getElapsedSeconds(), 0.7f );
-gl::drawSolidCircle( p.getPosition( t0 ), 2.5f );
-gl::drawSolidCircle( p.getPosition( t1 ), 2.5f );
-
-gl::color( Color( 0, 1, 0 ) );
-gl::draw( calcQuadSub( p, t0, t1 ) );
-
 	// draw the control points
 	gl::color( Color( 1, 1, 0 ) );
 	for( size_t p = 0; p < mPath.getNumPoints(); ++p )
 		gl::drawSolidCircle( mPath.getPoint( p ), 2.5f );
 
+	// draw the precise bounding box
+	if( mPath.getNumSegments() > 1 ) {
+		gl::color( ColorA( 0, 1, 1, 0.2f ) );
+		gl::drawSolidRect( mPath.calcPreciseBoundingBox() );
+	}
+
 	// draw the curve itself
 	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
 	gl::draw( mPath );
 	
-	if( mPath.getNumSegments() >= 1 ) {
-		gl::lineWidth( 4.0f );
-		gl::color( 0.9f, 0.2f, 0.3f );
-		gl::draw( mSubPath1 );
-		gl::color( 0.1f, 0.9f, 0.3f );
-		gl::draw( mSubPath2 );
+	if( mPath.getNumSegments() > 1 ) {	
+		// draw some tangents
+		gl::color( Color( 0.2f, 0.9f, 0.2f ) );	
+		for( float t = 0; t < 1; t += 0.2f )
+			gl::drawLine( mPath.getPosition( t ), mPath.getPosition( t ) + normalize( mPath.getTangent( t ) ) * 80.0f );
+		
+		// draw circles at 1/4, 2/4 and 3/4 the length
+		gl::color( ColorA( 0.2f, 0.9f, 0.9f, 0.5f ) );
+		for( float t = 0.25f; t < 1.0f; t += 0.25f )
+			gl::drawSolidCircle( mPath.getPosition( mPath.calcNormalizedTime( t ) ), 5.0f );
 	}
 }
 
 
-CINDER_APP( Path2dApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )
+CINDER_APP( Path2dApp, RendererGl )
