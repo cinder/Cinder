@@ -150,4 +150,14 @@ TEST_CASE("Path2d")
 		REQUIRE( p.calcDistance( vec2( 400.0f, 270.0f ) ) == Approx( 51.2251847f ) ); // second control point; closest is ( 360.310f, 237.616f ); 
 		REQUIRE( glm::distance( p.calcClosestPoint( vec2( 400.0f, 270.0f ) ), vec2( 360.310f, 237.616f ) ) == Approx( 0 ).epsilon( 0.001 ) ); // second control point
 	}
+
+	SECTION("calcNormalizedTime")
+	{
+		// test pathological case of 0-length
+		Path2d p;
+		p.moveTo( 50, 50 );
+		p.lineTo( 50, 50 );
+		float t = p.calcNormalizedTime( 0.5f );
+		REQUIRE( glm::distance( p.getPosition( t ), vec2( 50, 50 ) ) == Approx( 0 ).epsilon( 0.001 ) );
+	}
 }
