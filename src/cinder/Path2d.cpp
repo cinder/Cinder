@@ -1688,6 +1688,9 @@ float Path2d::calcNormalizedTime( float relativeTime, bool wrap, float tolerance
 	}
 
 	float targetLength = calcLength() * math<float>::clamp( relativeTime, 0.0f, 1.0f );
+	// test for 0-length Path2d
+	if( targetLength < 0.0001f )
+		return 0;
 
 	int currentSegment = 0;
 	float currentSegmentLength = calcSegmentLength( 0 );
