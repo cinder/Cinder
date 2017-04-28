@@ -34,8 +34,6 @@
 #include "cinder/Filesystem.h"
 #include "cinder/Exception.h"
 
-#include <boost/logic/tribool.hpp>
-
 namespace cinder {
 
 template<typename T>
@@ -114,8 +112,10 @@ class CI_API SurfaceT {
 	SurfaceT( int32_t width, int32_t height, bool alpha, const SurfaceConstraints &constraints );
 	//! Constructs a surface from the memory pointed to by \a data. Does not assume ownership of the memory in \a data, which consequently should not be freed while the Surface is still in use.
 	SurfaceT( T *data, int32_t width, int32_t height, ptrdiff_t rowBytes, SurfaceChannelOrder channelOrder );
-	//! Constructs a Surface from an \a imageSource and optional \a constraints. Default value for \a alpha chooses one based on the contents of the ImageSource.
-	SurfaceT( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
+	//! Constructs a Surface from an \a imageSource and optional \a constraints. Includes alpha channel if one is present in the ImageSource.
+	SurfaceT( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault() );
+	//! Constructs a Surface from an \a imageSource and optional \a constraints. Includes alpha channel based on \a alpha.
+	SurfaceT( ImageSourceRef imageSource, const SurfaceConstraints &constraints, bool alpha );
 
 	//! Creates a clone of \a rhs. Matches rowBytes and channel order of \a rhs, but creates its own dataStore.
 	SurfaceT( const SurfaceT &rhs );
@@ -134,8 +134,12 @@ class CI_API SurfaceT {
 	static std::shared_ptr<SurfaceT<T>>	create( T *data, int32_t width, int32_t height, ptrdiff_t rowBytes, SurfaceChannelOrder channelOrder )
 	{ return std::make_shared<SurfaceT<T>>( data, width, height, rowBytes, channelOrder ); }
 
-	//! Creates a SurfaceRef from an \a imageSource and optional \a constraints. Default value for \a alpha chooses one based on the contents of the ImageSource.
-	static std::shared_ptr<SurfaceT<T>>	create( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate )
+	//! Creates a SurfaceRef from an \a imageSource and optional \a constraints. Includes alpha channel if one is present in the ImageSource.
+	static std::shared_ptr<SurfaceT<T>>	create( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault() )
+	{ return std::make_shared<SurfaceT<T>>( imageSource, constraints ); }
+
+	//! Creates a SurfaceRef from an \a imageSource and optional \a constraints. Includes alpha channel based on \a alpha.
+	static std::shared_ptr<SurfaceT<T>>	create( ImageSourceRef imageSource, const SurfaceConstraints &constraints, bool alpha )
 	{ return std::make_shared<SurfaceT<T>>( imageSource, constraints, alpha ); }
 
 	//! Creates s SurfaceRef which is a clone of the Surface \a surface, and with its own dataStore
@@ -146,7 +150,8 @@ class CI_API SurfaceT {
 	/** \brief Constructs asynchronously a Surface from an images located at \a path. The loaded Surface is returned in \a surface.
 		If you are creating a Surface from an image that is located outside of the WinRT Windows Store App folder, you must use this method.
 	**/
-	static void loadImageAsync(const fs::path path, SurfaceT &surface, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
+	static void loadImageAsync(const fs::path path, SurfaceT &surface, const SurfaceConstraints &constraints = SurfaceConstraintsDefault() );
+	static void loadImageAsync(const fs::path path, SurfaceT &surface, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), bool alpha = true );
 #endif
 
 	SurfaceT<T>&	operator=( const SurfaceT<T> &rhs );
@@ -253,7 +258,7 @@ class CI_API SurfaceT {
 	//! Returns an averaged color for the Area defined by \a area
 	ColorT<T>	areaAverage( const Area &area ) const;
   private:
-	void init( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
+	void init( ImageSourceRef imageSource, const SurfaceConstraints &constraints, bool alpha );
 
 	void	copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset );
 	void	copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset );
