@@ -1,34 +1,5 @@
-///////////////////////////////////////////////////////////////////////////////////
-/// OpenGL Mathematics (glm.g-truc.net)
-///
-/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
-/// Permission is hereby granted, free of charge, to any person obtaining a copy
-/// of this software and associated documentation files (the "Software"), to deal
-/// in the Software without restriction, including without limitation the rights
-/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-/// copies of the Software, and to permit persons to whom the Software is
-/// furnished to do so, subject to the following conditions:
-/// 
-/// The above copyright notice and this permission notice shall be included in
-/// all copies or substantial portions of the Software.
-/// 
-/// Restrictions:
-///		By making use of the Software for military purposes, you choose to make
-///		a Bunny unhappy.
-/// 
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-/// THE SOFTWARE.
-///
 /// @ref core
 /// @file glm/detail/func_exponential.inl
-/// @date 2008-08-03 / 2011-06-15
-/// @author Christophe Riccio
-///////////////////////////////////////////////////////////////////////////////////
 
 #include "func_vector_relational.hpp"
 #include "_vectorize.hpp"
@@ -49,7 +20,7 @@ namespace detail
 		}
 #	endif
 
-	template <typename T, precision P, template <class, precision> class vecType, bool isFloat = true>
+	template <typename T, precision P, template <class, precision> class vecType, bool isFloat, bool Aligned>
 	struct compute_log2
 	{
 		GLM_FUNC_QUALIFIER static vecType<T, P> call(vecType<T, P> const & vec)
@@ -58,7 +29,16 @@ namespace detail
 		}
 	};
 
-	template <template <class, precision> class vecType, typename T, precision P>
+	template <template <class, precision> class vecType, typename T, precision P, bool Aligned>
+	struct compute_sqrt
+	{
+		GLM_FUNC_QUALIFIER static vecType<T, P> call(vecType<T, P> const & x)
+		{
+			return detail::functor1<T, T, P, vecType>::call(std::sqrt, x);
+		}
+	};
+
+	template <template <class, precision> class vecType, typename T, precision P, bool Aligned>
 	struct compute_inversesqrt
 	{
 		GLM_FUNC_QUALIFIER static vecType<T, P> call(vecType<T, P> const & x)
@@ -67,8 +47,8 @@ namespace detail
 		}
 	};
 		
-	template <template <class, precision> class vecType>
-	struct compute_inversesqrt<vecType, float, lowp>
+	template <template <class, precision> class vecType, bool Aligned>
+	struct compute_inversesqrt<vecType, float, lowp, Aligned>
 	{
 		GLM_FUNC_QUALIFIER static vecType<float, lowp> call(vecType<float, lowp> const & x)
 		{
@@ -133,7 +113,7 @@ namespace detail
 	template <typename T, precision P, template <typename, precision> class vecType>
 	GLM_FUNC_QUALIFIER vecType<T, P> log2(vecType<T, P> const & x)
 	{
-		return detail::compute_log2<T, P, vecType, std::numeric_limits<T>::is_iec559>::call(x);
+		return detail::compute_log2<T, P, vecType, std::numeric_limits<T>::is_iec559, detail::is_aligned<P>::value>::call(x);
 	}
 
 	// sqrt
@@ -142,7 +122,7 @@ namespace detail
 	GLM_FUNC_QUALIFIER vecType<T, P> sqrt(vecType<T, P> const & x)
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559, "'sqrt' only accept floating-point inputs");
-		return detail::functor1<T, T, P, vecType>::call(sqrt, x);
+		return detail::compute_sqrt<vecType, T, P, detail::is_aligned<P>::value>::call(x);
 	}
 
 	// inversesqrt
@@ -156,6 +136,11 @@ namespace detail
 	GLM_FUNC_QUALIFIER vecType<T, P> inversesqrt(vecType<T, P> const & x)
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559, "'inversesqrt' only accept floating-point inputs");
-		return detail::compute_inversesqrt<vecType, T, P>::call(x);
+		return detail::compute_inversesqrt<vecType, T, P, detail::is_aligned<P>::value>::call(x);
 	}
 }//namespace glm
+
+#if GLM_ARCH != GLM_ARCH_PURE && GLM_HAS_UNRESTRICTED_UNIONS
+#	include "func_exponential_simd.inl"
+#endif
+
