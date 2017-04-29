@@ -1,20 +1,8 @@
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Created : 2009-05-07
-// Updated : 2009-05-07
-// Licence : This source is under MIT License
-// File    : glm/gtx/simd_vec4.inl
-///////////////////////////////////////////////////////////////////////////////////////////////////
+/// @ref gtx_simd_vec4
+/// @file glm/gtx/simd_vec4.inl
 
 namespace glm{
 namespace detail{
-
-template <int Value>
-struct shuffle_mask
-{
-	enum{value = Value};
-};
 
 //////////////////////////////////////
 // Implicit basic constructors
@@ -167,21 +155,21 @@ GLM_FUNC_QUALIFIER fvec4SIMD& fvec4SIMD::operator--()
 //////////////////////////////////////
 // Swizzle operators
 
-template <comp X, comp Y, comp Z, comp W>
+template <comp X_, comp Y_, comp Z_, comp W_>
 GLM_FUNC_QUALIFIER fvec4SIMD fvec4SIMD::swizzle() const
 {
 	__m128 Data = _mm_shuffle_ps(
 		this->Data, this->Data, 
-		shuffle_mask<(W << 6) | (Z << 4) | (Y << 2) | (X << 0)>::value);
+		shuffle_mask<(W_ << 6) | (Z_ << 4) | (Y_ << 2) | (X_ << 0)>::value);
 	return fvec4SIMD(Data);
 }
 
-template <comp X, comp Y, comp Z, comp W>
+template <comp X_, comp Y_, comp Z_, comp W_>
 GLM_FUNC_QUALIFIER fvec4SIMD& fvec4SIMD::swizzle()
 {
 	this->Data = _mm_shuffle_ps(
 		this->Data, this->Data, 
-		shuffle_mask<(W << 6) | (Z << 4) | (Y << 2) | (X << 0)>::value);
+		shuffle_mask<(W_ << 6) | (Z_ << 4) | (Y_ << 2) | (X_ << 0)>::value);
 	return *this;
 }
 
