@@ -194,7 +194,7 @@ size_t IStreamFile::readDataImpl( void *t, size_t size )
 		return size;
 	}
 	else if ( ( mBufferFileOffset < mBufferOffset ) && ( mBufferOffset < mBufferFileOffset + (off_t)mBufferSize ) ) { // partially inside
-		size_t amountInBuffer = ( mBufferFileOffset + mBufferSize ) - mBufferOffset;
+		size_t amountInBuffer = static_cast<size_t>( ( mBufferFileOffset + mBufferSize ) - mBufferOffset );
 		memcpy( t, mBuffer.get() + ( mBufferOffset - mBufferFileOffset ), amountInBuffer );
 		mBufferOffset += amountInBuffer;
 		return amountInBuffer + readDataImpl( reinterpret_cast<uint8_t*>( t ) + amountInBuffer, size - amountInBuffer );
@@ -427,7 +427,7 @@ void OStreamFile::seekAbsolute( off_t absoluteOffset )
 
 void OStreamFile::seekRelative( off_t relativeOffset )
 {
-	fseek( mFile, relativeOffset, SEEK_CUR );
+	std::fseek( mFile, static_cast<long>( relativeOffset ), SEEK_CUR );
 }
 
 void OStreamFile::IOWrite( const void *t, size_t size )
@@ -520,7 +520,7 @@ size_t IoStreamFile::readDataImpl( void *t, size_t size )
 		return size;
 	}
 	else if ( ( mBufferFileOffset < mBufferOffset ) && ( mBufferOffset < mBufferFileOffset + (off_t)mBufferSize ) ) { // partially inside
-		size_t amountInBuffer = ( mBufferFileOffset + mBufferSize ) - mBufferOffset;
+		size_t amountInBuffer = static_cast<size_t>( ( mBufferFileOffset + mBufferSize ) - mBufferOffset );
 		memcpy( t, mBuffer.get() + ( mBufferOffset - mBufferFileOffset ), amountInBuffer );
 		mBufferOffset += amountInBuffer;
 		return amountInBuffer + readDataImpl( reinterpret_cast<uint8_t*>( t ) + amountInBuffer, size - amountInBuffer );
@@ -584,7 +584,7 @@ void IStreamMem::seekAbsolute( off_t absoluteOffset )
 {
 	if( absoluteOffset < 0 )
 		absoluteOffset = mDataSize + absoluteOffset;
-	mOffset = absoluteOffset;
+	mOffset = static_cast<size_t>( absoluteOffset );
 	if( absoluteOffset > static_cast<off_t>( mDataSize ) )
 		throw StreamExc();
 }
@@ -635,7 +635,7 @@ void OStreamMem::seekAbsolute( off_t absoluteOffset )
 			mDataSize *= 2;
 		mBuffer = realloc( mBuffer, mDataSize );
 	}
-	mOffset = absoluteOffset;
+	mOffset = static_cast<size_t>( absoluteOffset );
 }
 
 void OStreamMem::seekRelative( off_t relativeOffset )
@@ -724,12 +724,12 @@ void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size
 	if( fileSize > std::numeric_limits<off_t>::max() )
 		throw StreamExcOutOfMemory();
 	
-	*resultData = std::shared_ptr<uint8_t>( (uint8_t*)malloc( fileSize ), free );
+	*resultData = std::shared_ptr<uint8_t>( (uint8_t*)malloc( static_cast<size_t>( fileSize ) ), free );
 	if( ! (*resultData ) )
 		throw StreamExcOutOfMemory();
 
 	*resultDataSize = static_cast<size_t>( fileSize );
-	is->readDataAvailable( resultData->get(), fileSize );
+	is->readDataAvailable( resultData->get(), static_cast<size_t>( fileSize ) );
 }
 
 BufferRef loadStreamBuffer( IStreamRef is )
@@ -744,7 +744,7 @@ BufferRef loadStreamBuffer( IStreamRef is )
 	
 	if( fileSize ) { // sometimes fileSize will be zero for a stream that doesn't know how big it is
 		auto result = std::make_shared<Buffer>( fileSize );
-		is->readDataAvailable( result->getData(), fileSize );
+		is->readDataAvailable( result->getData(), static_cast<size_t>( fileSize ) );
 
 		return result;
 	}
