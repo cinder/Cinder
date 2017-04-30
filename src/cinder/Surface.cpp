@@ -276,7 +276,7 @@ SurfaceT<T>::SurfaceT( ImageSourceRef imageSource, const SurfaceConstraints &con
 template<typename T>
 void SurfaceT<T>::loadImageAsync(const fs::path path, SurfaceT &surface, const SurfaceConstraints &constraints )
 {
-	loadImageAsync( path, surface, constraints, surface.hasAlpha() )
+	loadImageAsync( path, surface, constraints, surface.hasAlpha() );
 }
 
 template<typename T>
