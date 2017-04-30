@@ -849,7 +849,6 @@ void RoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &reque
 		float angle = (float)(corner * M_PI / 2.0f);
 		vec2 cornerCenter( cornerCenterVerts[corner] );
 		vec2 cornerTexCoord( cornerCenterTexCoords[corner] );
-		vec4 cornerColor( mColors[corner] );
 		for( int s = 0; s <= mSubdivisions; s++ ) {
 			auto cosVal = math<float>::cos( angle );
 			auto sinVal = math<float>::sin( angle );
