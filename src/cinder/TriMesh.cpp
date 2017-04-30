@@ -1109,7 +1109,7 @@ bool TriMesh::verticesEqual( uint32_t indexA, uint32_t indexB ) const
 	{
 		const vec3 &a = *reinterpret_cast<const vec3*>(&mPositions[indexA*mPositionsDims]);
 		const vec3 &b = *reinterpret_cast<const vec3*>(&mPositions[indexB*mPositionsDims]);
-		if (distance2(a, b) > FLT_EPSILON)
+		if( distance2( a, b ) > FLT_EPSILON)
 			return false;
 	}
 
