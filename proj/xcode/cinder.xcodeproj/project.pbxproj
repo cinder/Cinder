@@ -420,9 +420,9 @@
 		27BE4DCC1DA9E4DD00DE84C8 /* ImageTargetFileStbImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111FBA7F1B1C1B2000A23DDB /* ImageTargetFileStbImage.cpp */; };
 		27BE4DCD1DA9E4DE00DE84C8 /* ImageTargetFileStbImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111FBA7F1B1C1B2000A23DDB /* ImageTargetFileStbImage.cpp */; };
 		27BE4DCE1DA9E4DF00DE84C8 /* ImageTargetFileStbImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111FBA7F1B1C1B2000A23DDB /* ImageTargetFileStbImage.cpp */; };
-		27BE4DCF1DA9E4FC00DE84C8 /* ImageSourceFileStbImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111FBA7E1B1C1B2000A23DDB /* ImageSourceFileStbImage.cpp */; };
-		27BE4DD01DA9E4FC00DE84C8 /* ImageSourceFileStbImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111FBA7E1B1C1B2000A23DDB /* ImageSourceFileStbImage.cpp */; };
-		27BE4DD11DA9E4FD00DE84C8 /* ImageSourceFileStbImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111FBA7E1B1C1B2000A23DDB /* ImageSourceFileStbImage.cpp */; };
+		27BE4DCF1DA9E4FC00DE84C8 /* ImageSourceFileStbImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111FBA7E1B1C1B2000A23DDB /* ImageSourceFileStbImage.cpp */; settings = {COMPILER_FLAGS = "-Wno-unused-function"; }; };
+		27BE4DD01DA9E4FC00DE84C8 /* ImageSourceFileStbImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111FBA7E1B1C1B2000A23DDB /* ImageSourceFileStbImage.cpp */; settings = {COMPILER_FLAGS = "-Wno-unused-function"; }; };
+		27BE4DD11DA9E4FD00DE84C8 /* ImageSourceFileStbImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111FBA7E1B1C1B2000A23DDB /* ImageSourceFileStbImage.cpp */; settings = {COMPILER_FLAGS = "-Wno-unused-function"; }; };
 		27C100001BD16D4800AF387F /* highlevel.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E67191F703D005C3166 /* highlevel.h */; };
 		27C100011BD16D4800AF387F /* SvgGl.h in Headers */ = {isa = PBXBuildFile; fileRef = 008B439C14F5F39100B55B07 /* SvgGl.h */; };
 		27C100021BD16D4800AF387F /* QuickTimeGlImplLegacy.h in Headers */ = {isa = PBXBuildFile; fileRef = 006D706519942C31008149E2 /* QuickTimeGlImplLegacy.h */; };
