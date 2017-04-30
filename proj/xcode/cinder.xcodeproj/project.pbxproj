@@ -237,7 +237,7 @@
 		00A1140E1355369A00081873 /* priorityq.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A113FF1355369A00081873 /* priorityq.h */; };
 		00A1140F1355369A00081873 /* sweep.c in Sources */ = {isa = PBXBuildFile; fileRef = 00A114001355369A00081873 /* sweep.c */; };
 		00A114101355369A00081873 /* sweep.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A114011355369A00081873 /* sweep.h */; };
-		00A114111355369A00081873 /* tess.c in Sources */ = {isa = PBXBuildFile; fileRef = 00A114021355369A00081873 /* tess.c */; };
+		00A114111355369A00081873 /* tess.c in Sources */ = {isa = PBXBuildFile; fileRef = 00A114021355369A00081873 /* tess.c */; settings = {COMPILER_FLAGS = "-Wno-unused-function"; }; };
 		00A114121355369A00081873 /* tess.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A114031355369A00081873 /* tess.h */; };
 		00A114131355369A00081873 /* tesselator.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A114041355369A00081873 /* tesselator.h */; };
 		00A115391357F42400081873 /* Easing.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A115381357F42400081873 /* Easing.h */; };
@@ -393,7 +393,7 @@
 		111A6010191F72AE005C3166 /* Voice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5FA5191F72AE005C3166 /* Voice.cpp */; };
 		111A6013191F72AE005C3166 /* WaveTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5FA6191F72AE005C3166 /* WaveTable.cpp */; };
 		11316E571B28ABE900BD8783 /* ImageFileTinyExr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11316E561B28ABE900BD8783 /* ImageFileTinyExr.cpp */; };
-		11316E5A1B28AC1300BD8783 /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
+		11316E5A1B28AC1300BD8783 /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; settings = {COMPILER_FLAGS = "-Wno-conversion -Wno-unused-variable"; }; };
 		114B7553192B2F9800E30153 /* MonitorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 114B7552192B2F9800E30153 /* MonitorNode.cpp */; };
 		114B7557192B2FB400E30153 /* MonitorNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 114B7556192B2FB400E30153 /* MonitorNode.h */; };
 		116C06271ABD2C06004D8297 /* scoped.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06221ABD2C06004D8297 /* scoped.cpp */; };
@@ -432,7 +432,7 @@
 		27C100061BD16D4800AF387F /* CaptureImplCocoaDummy.h in Headers */ = {isa = PBXBuildFile; fileRef = 00E5A41B163F5A2B00AACB3A /* CaptureImplCocoaDummy.h */; };
 		27C100071BD16D4800AF387F /* ConvexHull.h in Headers */ = {isa = PBXBuildFile; fileRef = 00782613171CD91400B47F9C /* ConvexHull.h */; };
 		27C100091BD16D4800AF387F /* ImageFileTinyExr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11316E561B28ABE900BD8783 /* ImageFileTinyExr.cpp */; };
-		27C1000A1BD16D4800AF387F /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
+		27C1000A1BD16D4800AF387F /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; settings = {COMPILER_FLAGS = "-Wno-conversion -Wno-unused-variable"; }; };
 		27C1000B1BD16D4800AF387F /* DeviceManagerAudioSession.mm in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F82191F72AE005C3166 /* DeviceManagerAudioSession.mm */; };
 		27C1000C1BD16D4800AF387F /* Context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F85191F72AE005C3166 /* Context.cpp */; };
 		27C1000D1BD16D4800AF387F /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00241ABC0E830DD5004D34EB /* Camera.cpp */; };
@@ -569,7 +569,7 @@
 		27C100901BD16D4800AF387F /* wrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06231ABD2C06004D8297 /* wrapper.cpp */; };
 		27C100911BD16D4800AF387F /* ConverterR8brain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F8B191F72AE005C3166 /* ConverterR8brain.cpp */; };
 		27C100921BD16D4800AF387F /* window.c in Sources */ = {isa = PBXBuildFile; fileRef = 111A5E96191F703D005C3166 /* window.c */; };
-		27C100931BD16D4800AF387F /* tess.c in Sources */ = {isa = PBXBuildFile; fileRef = 00A114021355369A00081873 /* tess.c */; };
+		27C100931BD16D4800AF387F /* tess.c in Sources */ = {isa = PBXBuildFile; fileRef = 00A114021355369A00081873 /* tess.c */; settings = {COMPILER_FLAGS = "-Wno-unused-function"; }; };
 		27C100941BD16D4800AF387F /* Voice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5FA5191F72AE005C3166 /* Voice.cpp */; };
 		27C100951BD16D4800AF387F /* CinderMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43C4323F1450A8DA0095B260 /* CinderMath.cpp */; };
 		27C100961BD16D4800AF387F /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C31992D64100647C8B /* Environment.cpp */; };
@@ -769,7 +769,7 @@
 		27C1FEB01BD0AE3400AF387F /* ConvexHull.h in Headers */ = {isa = PBXBuildFile; fileRef = 00782613171CD91400B47F9C /* ConvexHull.h */; };
 		27C1FEB11BD0AE3400AF387F /* codebook.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E61191F703D005C3166 /* codebook.h */; };
 		27C1FEB31BD0AE3400AF387F /* ImageFileTinyExr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11316E561B28ABE900BD8783 /* ImageFileTinyExr.cpp */; };
-		27C1FEB41BD0AE3400AF387F /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
+		27C1FEB41BD0AE3400AF387F /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; settings = {COMPILER_FLAGS = "-Wno-conversion -Wno-unused-variable"; }; };
 		27C1FEB51BD0AE3400AF387F /* DeviceManagerAudioSession.mm in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F82191F72AE005C3166 /* DeviceManagerAudioSession.mm */; };
 		27C1FEB61BD0AE3400AF387F /* Context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F85191F72AE005C3166 /* Context.cpp */; };
 		27C1FEB71BD0AE3400AF387F /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00241ABC0E830DD5004D34EB /* Camera.cpp */; };
@@ -910,7 +910,7 @@
 		27C1FF3E1BD0AE3400AF387F /* sweep.c in Sources */ = {isa = PBXBuildFile; fileRef = 00A114001355369A00081873 /* sweep.c */; };
 		27C1FF3F1BD0AE3400AF387F /* Voice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5FA5191F72AE005C3166 /* Voice.cpp */; };
 		27C1FF401BD0AE3400AF387F /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C31992D64100647C8B /* Environment.cpp */; };
-		27C1FF411BD0AE3400AF387F /* tess.c in Sources */ = {isa = PBXBuildFile; fileRef = 00A114021355369A00081873 /* tess.c */; };
+		27C1FF411BD0AE3400AF387F /* tess.c in Sources */ = {isa = PBXBuildFile; fileRef = 00A114021355369A00081873 /* tess.c */; settings = {COMPILER_FLAGS = "-Wno-unused-function"; }; };
 		27C1FF421BD0AE3400AF387F /* CinderMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43C4323F1450A8DA0095B260 /* CinderMath.cpp */; };
 		27C1FF431BD0AE3400AF387F /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A121E61362778200081873 /* Timeline.cpp */; };
 		27C1FF441BD0AE3400AF387F /* TimelineItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A121E71362778200081873 /* TimelineItem.cpp */; };
@@ -1131,12 +1131,12 @@
 		B322C46D1DC7DC7100D2E661 /* gzlib.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4431DC7DC7100D2E661 /* gzlib.c */; };
 		B322C46E1DC7DC7100D2E661 /* gzlib.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4431DC7DC7100D2E661 /* gzlib.c */; };
 		B322C46F1DC7DC7100D2E661 /* gzlib.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4431DC7DC7100D2E661 /* gzlib.c */; };
-		B322C4701DC7DC7100D2E661 /* gzread.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4441DC7DC7100D2E661 /* gzread.c */; };
-		B322C4711DC7DC7100D2E661 /* gzread.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4441DC7DC7100D2E661 /* gzread.c */; };
-		B322C4721DC7DC7100D2E661 /* gzread.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4441DC7DC7100D2E661 /* gzread.c */; };
-		B322C4731DC7DC7100D2E661 /* gzwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4451DC7DC7100D2E661 /* gzwrite.c */; };
-		B322C4741DC7DC7100D2E661 /* gzwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4451DC7DC7100D2E661 /* gzwrite.c */; };
-		B322C4751DC7DC7100D2E661 /* gzwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4451DC7DC7100D2E661 /* gzwrite.c */; };
+		B322C4701DC7DC7100D2E661 /* gzread.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4441DC7DC7100D2E661 /* gzread.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
+		B322C4711DC7DC7100D2E661 /* gzread.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4441DC7DC7100D2E661 /* gzread.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
+		B322C4721DC7DC7100D2E661 /* gzread.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4441DC7DC7100D2E661 /* gzread.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
+		B322C4731DC7DC7100D2E661 /* gzwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4451DC7DC7100D2E661 /* gzwrite.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
+		B322C4741DC7DC7100D2E661 /* gzwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4451DC7DC7100D2E661 /* gzwrite.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
+		B322C4751DC7DC7100D2E661 /* gzwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4451DC7DC7100D2E661 /* gzwrite.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		B322C4761DC7DC7100D2E661 /* infback.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4461DC7DC7100D2E661 /* infback.c */; };
 		B322C4771DC7DC7100D2E661 /* infback.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4461DC7DC7100D2E661 /* infback.c */; };
 		B322C4781DC7DC7100D2E661 /* infback.c in Sources */ = {isa = PBXBuildFile; fileRef = B322C4461DC7DC7100D2E661 /* infback.c */; };
@@ -1541,9 +1541,9 @@
 		B3EA40BE1DD0F00900E34348 /* ftwinfnt.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40811DD0F00900E34348 /* ftwinfnt.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		B3EA40BF1DD0F00900E34348 /* ftwinfnt.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40811DD0F00900E34348 /* ftwinfnt.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		B3EA40C01DD0F00900E34348 /* ftwinfnt.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40811DD0F00900E34348 /* ftwinfnt.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
-		B3EA40C31DD0F02900E34348 /* smooth.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40C21DD0F02900E34348 /* smooth.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
-		B3EA40C41DD0F02900E34348 /* smooth.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40C21DD0F02900E34348 /* smooth.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
-		B3EA40C51DD0F02900E34348 /* smooth.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40C21DD0F02900E34348 /* smooth.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
+		B3EA40C31DD0F02900E34348 /* smooth.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40C21DD0F02900E34348 /* smooth.c */; settings = {COMPILER_FLAGS = "-Wno-conversion -Wno-unused-function"; }; };
+		B3EA40C41DD0F02900E34348 /* smooth.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40C21DD0F02900E34348 /* smooth.c */; settings = {COMPILER_FLAGS = "-Wno-conversion -Wno-unused-function"; }; };
+		B3EA40C51DD0F02900E34348 /* smooth.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40C21DD0F02900E34348 /* smooth.c */; settings = {COMPILER_FLAGS = "-Wno-conversion -Wno-unused-function"; }; };
 		B3EA40C81DD0F04700E34348 /* autofit.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40C71DD0F04700E34348 /* autofit.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		B3EA40C91DD0F04700E34348 /* autofit.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40C71DD0F04700E34348 /* autofit.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		B3EA40CA1DD0F04700E34348 /* autofit.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40C71DD0F04700E34348 /* autofit.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
