@@ -1999,7 +1999,7 @@ TextureCubeMapRef TextureCubeMap::createFromKtx( const DataSourceRef &dataSource
 	return TextureCubeMap::create( textureData, format );
 }
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES ) || defined( CINDER_GL_ANGLE )
 TextureCubeMapRef TextureCubeMap::createFromDds( const DataSourceRef &dataSource, const Format &format )
 {
 #if ! defined( CINDER_GL_ES )
