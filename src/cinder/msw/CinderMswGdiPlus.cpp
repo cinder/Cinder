@@ -27,7 +27,7 @@
 namespace cinder { namespace msw {
 
 Surface8u convertGdiplusBitmap( Gdiplus::Bitmap &bitmap )
-{	
+{
 	Gdiplus::BitmapData bitmapData;
 	Gdiplus::Rect rect( 0, 0, bitmap.GetWidth(), bitmap.GetHeight() );
 
@@ -40,7 +40,7 @@ Surface8u convertGdiplusBitmap( Gdiplus::Bitmap &bitmap )
 		sco = ( flags & Gdiplus::ImageFlagsHasAlpha ) ? SurfaceChannelOrder::BGRA : SurfaceChannelOrder::BGR;
 		requestedFormat = ( flags & Gdiplus::ImageFlagsHasAlpha ) ? PixelFormat32bppARGB : PixelFormat24bppRGB;
 	}
-	
+
 	bitmap.LockBits( &rect, Gdiplus::ImageLockModeRead, requestedFormat, &bitmapData );
 	Surface8u result( bitmap.GetWidth(), bitmap.GetHeight(), sco.hasAlpha(), sco );
 
@@ -89,12 +89,12 @@ Gdiplus::Bitmap* createGdiplusBitmap( const Surface8u &surface )
 {
 	if( ( surface.getRowBytes() % 4 ) != 0 )
 		throw SurfaceConstraintsExc();
-		
+
 	Gdiplus::PixelFormat pf = surfaceChannelOrderToGdiplusPixelFormat( surface.getChannelOrder(), surface.isPremultiplied() );
 	if( pf == PixelFormatUndefined )
 		throw SurfaceConstraintsExc();
-	
-	return new Gdiplus::Bitmap( surface.getWidth(), surface.getHeight(), surface.getRowBytes(), pf, (BYTE*)surface.getData() );
+
+	return new Gdiplus::Bitmap( surface.getWidth(), surface.getHeight(), static_cast<INT>( surface.getRowBytes() ), pf, (BYTE*)surface.getData() );
 }
 
 } } // namespace cinder::msw
