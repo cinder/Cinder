@@ -425,7 +425,9 @@ RendererRef AppImplLinux::findSharedRenderer( const RendererRef &searchRenderer 
 
 	for( const auto &win : mWindows ) {
 		RendererRef renderer = win->getRenderer();
-		if( renderer && ( typeid(*renderer) == typeid(*searchRenderer) ) ) {
+		auto rendererPtr = renderer.get();
+		auto searchRendererPtr = searchRenderer.get();
+		if( renderer && ( typeid(*rendererPtr) == typeid(*searchRendererPtr) ) ) {
 			return renderer;
 		}
 	}
