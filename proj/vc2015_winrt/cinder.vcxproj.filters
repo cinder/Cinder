@@ -1122,49 +1122,49 @@
     <ClCompile Include="..\..\src\cinder\ip\Trim.cpp">
       <Filter>Source Files\ip</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\adler32.c">
+    <ClCompile Include="..\..\src\zlib\adler32.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\compress.c">
+    <ClCompile Include="..\..\src\zlib\compress.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\crc32.c">
+    <ClCompile Include="..\..\src\zlib\crc32.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\deflate.c">
+    <ClCompile Include="..\..\src\zlib\deflate.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\gzclose.c">
+    <ClCompile Include="..\..\src\zlib\gzclose.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\gzlib.c">
+    <ClCompile Include="..\..\src\zlib\gzlib.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\gzread.c">
+    <ClCompile Include="..\..\src\zlib\gzread.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\gzwrite.c">
+    <ClCompile Include="..\..\src\zlib\gzwrite.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\infback.c">
+    <ClCompile Include="..\..\src\zlib\infback.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\inffast.c">
+    <ClCompile Include="..\..\src\zlib\inffast.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\inflate.c">
+    <ClCompile Include="..\..\src\zlib\inflate.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\inftrees.c">
+    <ClCompile Include="..\..\src\zlib\inftrees.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\trees.c">
+    <ClCompile Include="..\..\src\zlib\trees.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\uncompr.c">
+    <ClCompile Include="..\..\src\zlib\uncompr.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\zutil.c">
+    <ClCompile Include="..\..\src\zlib\zutil.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\tinyexr\tinyexr.cc">
