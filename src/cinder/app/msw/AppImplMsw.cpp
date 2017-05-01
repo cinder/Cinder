@@ -377,7 +377,7 @@ void WindowImplMsw::createWindow( const ivec2 &windowSize, const std::string &ti
 	std::wstring wideTitle = msw::toWideString( title ); 
 
 	// Create The Window
-	if( ! ( mWnd = ::CreateWindowEx( mWindowExStyle,						// Extended Style For The Window
+	if( 0 == ( mWnd = ::CreateWindowEx( mWindowExStyle,						// Extended Style For The Window
 		WINDOWED_WIN_CLASS_NAME,
 		wideTitle.c_str(),						// Window Title
 		mWindowStyle,					// Required Window Style
@@ -699,8 +699,8 @@ WCHAR mapVirtualKey( WPARAM wParam )
 
 	// the control key messes up the ToAscii result, so we zero it out
 	keyboardState[VK_CONTROL] = 0;
-	
-	int resultLength = ::ToUnicode( wParam, ::MapVirtualKey( wParam, 0 ), keyboardState, result, 4, 0 );
+
+	int resultLength = ::ToUnicode( static_cast<UINT>( wParam ), ::MapVirtualKey( static_cast<UINT>( wParam ), 0 ), keyboardState, result, 4, 0 );
 	if( resultLength >= 1 )
 		return result[0];
 	else
@@ -822,8 +822,8 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_SYSKEYDOWN:
 		case WM_KEYDOWN: {
 			WCHAR c = mapVirtualKey( wParam );
-			KeyEvent event( impl->getWindow(), KeyEvent::translateNativeKeyCode( prepNativeKeyCode( (int)wParam ) ), 
-							c, c, prepKeyEventModifiers(), (int)wParam );
+			KeyEvent event( impl->getWindow(), KeyEvent::translateNativeKeyCode( prepNativeKeyCode( wParam ) ),
+							c, static_cast<char>( c ), prepKeyEventModifiers(), static_cast<unsigned int>(wParam) );
 			impl->getWindow()->emitKeyDown( &event );
 			if ( event.isHandled() )
 				return 0;
@@ -832,8 +832,8 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_SYSKEYUP:
 		case WM_KEYUP: {
 			WCHAR c = mapVirtualKey( wParam );
-			KeyEvent event( impl->getWindow(), KeyEvent::translateNativeKeyCode( prepNativeKeyCode( (int)wParam ) ), 
-							c, c, prepKeyEventModifiers(), (int)wParam );
+			KeyEvent event( impl->getWindow(), KeyEvent::translateNativeKeyCode( prepNativeKeyCode( wParam ) ),
+							c, static_cast<char>( c ), prepKeyEventModifiers(), static_cast<unsigned int>( wParam ) );
 			impl->getWindow()->emitKeyUp( &event );
 			if ( event.isHandled() )
 				return 0;
@@ -1028,16 +1028,16 @@ BlankingWindow::BlankingWindow( DisplayRef display )
 	windowRect.right = displayArea.getX2();
 	windowRect.top = displayArea.getY1();
 	windowRect.bottom = displayArea.getY2();
-	
+
 	UINT windowExStyle = WS_EX_APPWINDOW;
 	UINT windowStyle = WS_POPUP;
 
 	::AdjustWindowRectEx( &windowRect, windowStyle, FALSE, windowExStyle );		// Adjust Window To True Requested Size
 
-	std::wstring unicodeTitle = L""; 
+	std::wstring unicodeTitle = L"";
 
 	// Create The Window
-	if( ! ( mWnd = ::CreateWindowEx( windowExStyle,						// Extended Style For The Window
+	if( 0 == (( mWnd = ::CreateWindowEx( windowExStyle,						// Extended Style For The Window
 		BLANKING_WINDOW_CLASS_NAME,
 		unicodeTitle.c_str(),
 		windowStyle,					// Required Window Style
@@ -1047,7 +1047,7 @@ BlankingWindow::BlankingWindow( DisplayRef display )
 		NULL,								// No Parent Window
 		NULL,								// No Menu
 		::GetModuleHandle( NULL ),
-		reinterpret_cast<LPVOID>( this ) )) )
+		reinterpret_cast<LPVOID>( this ) ) )) )
 	{
 		//killWindow();							// Reset The Display
 		return;

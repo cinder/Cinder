@@ -298,6 +298,8 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	//! Returns the multiplier (typically 2 on high-density (Retina) displays, 1 otherwise) mapping points to pixels
 	float	getContentScale() const;
 	//! Returns a scalar mapped from points to pixels by multiplying by getContentScale()
+	int32_t	toPixels( int32_t s ) const { return static_cast<int32_t>( s * getContentScale() ); }
+	//! Returns a scalar mapped from points to pixels by multiplying by getContentScale()
 	float	toPixels( float s ) const { return s * getContentScale(); }
 	//! Returns a vec2 mapped from points to pixels by multiplying by getContentScale()
 	vec2	toPixels( vec2 s ) const { return s * getContentScale(); }
@@ -309,6 +311,8 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	Rectf	toPixels( const Rectf &a ) const { return a * getContentScale(); }
 	//! Returns a scalar mapped from pixels to points by dividing by getContentScale()
 	float	toPoints( float s ) const { return s / getContentScale(); }
+	//! Returns a scalar mapped from points to pixels by multiplying by getContentScale()
+	int32_t	toPoints( int32_t s ) const { return static_cast<int32_t>( s / getContentScale() ); }
 	//! Returns a vec2 mapped from pixels to points by dividing by getContentScale()
 	vec2	toPoints( vec2 s ) const { return s / getContentScale(); }
 	//! Returns a ivec2 mapped from pixels to points by dividing by getContentScale()

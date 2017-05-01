@@ -98,23 +98,6 @@ System::System()
 
 #if defined( CINDER_COCOA )
 
-static std::string getSysCtlString( const std::string &key )
-{  
-	size_t len = 0;  
-	int error;
-	// Initial call with NULL queries the required length
-	error = sysctlbyname( key.c_str(), NULL, &len, NULL, 0 );
-	if( error )
-		throw SystemExcFailedQuery();
-	// make a string big enough
-	std::unique_ptr<char[]> str( new char[len] );
-	// call again, this time actually getting the value
-	error = sysctlbyname( key.c_str(), str.get(), &len, NULL, 0 );
-	if( error )
-		throw SystemExcFailedQuery();
-	return std::string( str.get() );
-}  
-
 template<typename T>  
 static T getSysCtlValue( const std::string &key )
 {
