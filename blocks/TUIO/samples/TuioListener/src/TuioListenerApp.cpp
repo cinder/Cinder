@@ -54,6 +54,7 @@ void TuioClientApp::setup()
 	// Create your osc receiver with whatever configuration needed. In this case we'll open it up
 	// with the Default Tuio Port - 3333.
 	mOscReceiver = std::make_shared<osc::ReceiverUdp>( tuio::Receiver::DEFAULT_TUIO_PORT );
+
 	// Create the Tuio Receiver passing the Osc Receiver's pointer. 
 	mTuio = std::make_shared<tuio::Receiver>( mOscReceiver.get() );
 	// Add your tuio callbacks.

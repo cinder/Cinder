@@ -210,7 +210,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "iPhoneTestGl-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"$(CINDER_PATH)/lib/libcinder-iphone_d.a",
 					"-lz",
@@ -242,7 +242,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "iPhoneTestGl-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone_d.a";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a";
 				PRODUCT_NAME = iPhoneTestGl;
