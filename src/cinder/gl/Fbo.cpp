@@ -493,8 +493,7 @@ void Fbo::initMultisample( const Format &format )
 Texture2dRef Fbo::getColorTexture()
 {
 	auto attachedTextureIt = mAttachmentsTexture.find( GL_COLOR_ATTACHMENT0 );
-	auto attachedTexturePtr = ( attachedTextureIt != mAttachmentsTexture.end() ) ? attachedTextureIt->second.get() : nullptr;
-	if( attachedTextureIt != mAttachmentsTexture.end() && ( typeid(*attachedTexturePtr) == typeid(Texture2d) ) ) {
+	if( attachedTextureIt != mAttachmentsTexture.end() && ( typeid(*attachedTextureIt->second) == typeid(Texture2d) ) ) {
 		resolveTextures();
 		updateMipmaps( GL_COLOR_ATTACHMENT0 );
 		return static_pointer_cast<Texture2d>( attachedTextureIt->second );
@@ -518,8 +517,7 @@ Texture2dRef Fbo::getDepthTexture()
 			result = attachedTextureIt->second;
 	}
 #endif
-	auto resultPtr = result.get();
-	if( result && ( typeid(*resultPtr) == typeid(Texture2d) ) ) {
+	if( result && ( typeid(*result) == typeid(Texture2d) ) ) {
 		resolveTextures();
 		updateMipmaps( attachedTextureIt->first );
         return static_pointer_cast<Texture2d>( result );
@@ -764,8 +762,7 @@ Surface8u Fbo::readPixels8u( const Area &area, GLenum attachment ) const
 		auto attachedTextureIt = mAttachmentsTexture.find( attachment );	
 		// a texture attachment can be either of type Texture2d or TextureCubeMap but this only makes sense for the former
 		if( attachedTextureIt != mAttachmentsTexture.end() ) {
-			auto attachedTexturePtr = attachedTextureIt->second.get();
-			if( typeid(*attachedTexturePtr) == typeid(Texture2d) )
+			if( typeid(*(attachedTextureIt->second)) == typeid(Texture2d) )
 				attachmentBounds = static_cast<const Texture2d*>( attachedTextureIt->second.get() )->getBounds();
 			else
 				CI_LOG_W( "Reading from an unsupported texture attachment" );	

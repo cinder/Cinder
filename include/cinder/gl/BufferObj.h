@@ -101,7 +101,7 @@ class CI_API BufferObj {
 	BufferObj( GLenum target, GLsizeiptr allocationSize, const void *data, GLenum usage );
 	
 	GLuint				mId;
-	GLsizeiptr			mSize;
+	size_t				mSize;
 	GLenum				mTarget;
 	GLenum				mUsage;
 	std::string			mLabel; // debug label

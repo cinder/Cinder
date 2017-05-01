@@ -730,12 +730,8 @@ Rectf Font::getGlyphBoundingBox( Glyph glyphIndex ) const
     if( bytesGlyph == GDI_ERROR )
 		throw FontGlyphFailureExc();
 
-	return Rectf(
-		static_cast<float>( metrics.gmptGlyphOrigin.x ),
-		static_cast<float>( metrics.gmptGlyphOrigin.y ),
-		static_cast<float>( metrics.gmptGlyphOrigin.x + metrics.gmBlackBoxX ),
-		static_cast<float>( metrics.gmptGlyphOrigin.y + metrics.gmBlackBoxY )
-	);
+	return Rectf( metrics.gmptGlyphOrigin.x, metrics.gmptGlyphOrigin.y,
+			metrics.gmptGlyphOrigin.x + metrics.gmBlackBoxX, metrics.gmptGlyphOrigin.y + (int)metrics.gmBlackBoxY );
 }
 
 #elif defined( CINDER_UWP )  || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
@@ -909,10 +905,10 @@ FontObj::FontObj( const string &aName, float aSize )
 	::CFRelease( fullName );
 #elif defined( CINDER_MSW_DESKTOP )
 	FontManager::instance(); // force GDI+ init
-	static_assert( sizeof(wchar_t) == 2 ,"Following code assumes wchar_t is the same as char16_t");
+	assert( sizeof(wchar_t) == 2 );
 	std::u16string faceName = toUtf16( mName );
-
-	mHfont = ::CreateFont( static_cast<int>( -mSize * 72 / 96 ), 0, 0, 0, FW_DONTCARE, false, false, false,
+    
+	mHfont = ::CreateFont( -mSize * 72 / 96, 0, 0, 0, FW_DONTCARE, false, false, false,
 						DEFAULT_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
 						ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
 						(wchar_t*)faceName.c_str() );
@@ -1109,7 +1105,7 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 	Gdiplus::PrivateFontCollection privateFontCollection;
 
 	ci::BufferRef buffer = dataSource->getBuffer();
-	privateFontCollection.AddMemoryFont( buffer->getData(), static_cast<INT>( buffer->getSize() ) );
+	privateFontCollection.AddMemoryFont( buffer->getData(), buffer->getSize() );
 
 	// How many font families are in the private collection?
 	count = privateFontCollection.GetFamilyCount();
@@ -1143,7 +1139,7 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 	// now that we know the name thanks to GDI+, let's load the HFONT
 	// this is only because we can't seem to get the LOGFONT -> HFONT to work down in finishSetup
 	DWORD numFonts = 0;
-	::AddFontMemResourceEx( buffer->getData(), static_cast<DWORD>( buffer->getSize() ), 0, &numFonts );
+	::AddFontMemResourceEx( buffer->getData(), buffer->getSize(), 0, &numFonts );
 	if( numFonts < 1 )
 		throw FontInvalidNameExc();
 

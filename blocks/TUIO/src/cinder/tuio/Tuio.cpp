@@ -15,11 +15,6 @@ using namespace asio;
 using namespace asio::ip;
 
 namespace cinder { namespace  tuio {
-
-const uint16_t Receiver::DEFAULT_TUIO_PORT;
-// default threshold for a frame ID being old enough to imply a new source
-const uint32_t Receiver::DEFAULT_PAST_FRAME_THRESHOLD;
-
 	
 namespace detail {
 	

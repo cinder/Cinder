@@ -75,8 +75,7 @@
 
 	// if we've been passed a context to share with, replace our NSOpenGLContext with a new one that shares
 	if( sharedRenderer ) {
-		auto sharedRendererPtr = sharedRenderer.get();
-		assert( typeid( *sharedRendererPtr ) == typeid( cinder::app::RendererGl ) );
+		assert( typeid( *sharedRenderer ) == typeid( cinder::app::RendererGl ) );
 		NSOpenGLContext *newContext = [[NSOpenGLContext alloc] initWithFormat:fmt shareContext:sharedRenderer->getNsOpenGlContext()];
 		[mView setOpenGLContext:newContext];
 		[newContext release];

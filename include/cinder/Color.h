@@ -125,11 +125,7 @@ class CI_API ColorT
 
 	ColorT<T> lerp( float fact, const ColorT<T> &d ) const
 	{
-		return ColorT<T>(
-			static_cast<T>( r + ( d.r - r ) * fact ),
-			static_cast<T>( g + ( d.g - g ) * fact ),
-			static_cast<T>( b + ( d.b - b ) * fact )
-			);
+		return ColorT<T>( r + ( d.r - r ) * fact, g + ( d.g - g ) * fact, b + ( d.b - b ) * fact );
 	}
 
 	static ColorT<T> max()

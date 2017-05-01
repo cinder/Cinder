@@ -43,7 +43,7 @@ void rampLinear( float *array, size_t count, double t, double tIncr, float value
 void rampInQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd )
 {
 	for( size_t i = 0; i < count; i++ ) {
-		auto factor = static_cast<float>( t * t );
+		float factor( t * t );
 		array[i] = lerp( valueBegin, valueEnd, factor );
 		t += tIncr;
 	}

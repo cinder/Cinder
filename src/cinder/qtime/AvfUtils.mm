@@ -275,7 +275,7 @@ Handle createPointerDataRefWithExtensions( void *data, size_t dataSize, const st
 }
 */
 	
-void CVPixelBufferDealloc( void* refcon )
+static void CVPixelBufferDealloc( void* refcon )
 {
 	::CVBufferRelease( (CVPixelBufferRef)(refcon) );
 }

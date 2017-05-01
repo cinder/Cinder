@@ -181,7 +181,7 @@ vec3 ColorAT<T>::get( ColorModel cm ) const
 template<typename T>
 void ColorAT<T>::set( ColorModel cm, const vec4 &v )
 {
-	a = static_cast<T>( v.w );
+	a = v.w;
 
 	switch( cm ) {
 		case CM_HSV: {

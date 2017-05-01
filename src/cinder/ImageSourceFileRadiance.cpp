@@ -136,7 +136,7 @@ namespace {
 float convertComponent( int expo, int val )
 {
 	float v = val / 256.0f;
-	float d = powf( 2.0f, static_cast<float>( expo ) );
+	float d = powf( 2.0f, expo );
 	return v * d;
 }
 
