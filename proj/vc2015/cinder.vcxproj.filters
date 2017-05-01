@@ -888,49 +888,49 @@
     <ClCompile Include="..\..\src\cinder\ImageSourceFileStbImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\zutil.c">
+    <ClCompile Include="..\..\src\zlib\zutil.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\uncompr.c">
+    <ClCompile Include="..\..\src\zlib\uncompr.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\trees.c">
+    <ClCompile Include="..\..\src\zlib\trees.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\inftrees.c">
+    <ClCompile Include="..\..\src\zlib\inftrees.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\inflate.c">
+    <ClCompile Include="..\..\src\zlib\inflate.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\inffast.c">
+    <ClCompile Include="..\..\src\zlib\inffast.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\infback.c">
+    <ClCompile Include="..\..\src\zlib\infback.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\gzwrite.c">
+    <ClCompile Include="..\..\src\zlib\gzwrite.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\gzread.c">
+    <ClCompile Include="..\..\src\zlib\gzread.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\gzlib.c">
+    <ClCompile Include="..\..\src\zlib\gzlib.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\gzclose.c">
+    <ClCompile Include="..\..\src\zlib\gzclose.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\deflate.c">
+    <ClCompile Include="..\..\src\zlib\deflate.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\crc32.c">
+    <ClCompile Include="..\..\src\zlib\crc32.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\compress.c">
+    <ClCompile Include="..\..\src\zlib\compress.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\zlib-1.2.8\adler32.c">
+    <ClCompile Include="..\..\src\zlib\adler32.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\freetype\bdf\bdf.c">
@@ -1931,37 +1931,37 @@
     <ClInclude Include="..\..\include\cinder\ImageSourceFileStbImage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\zlib-1.2.8\zutil.h">
+    <ClInclude Include="..\..\src\zlib\zutil.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\zlib-1.2.8\zlib.h">
+    <ClInclude Include="..\..\src\zlib\zlib.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\zlib-1.2.8\zconf.h">
+    <ClInclude Include="..\..\src\zlib\zconf.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\zlib-1.2.8\trees.h">
+    <ClInclude Include="..\..\src\zlib\trees.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\zlib-1.2.8\inftrees.h">
+    <ClInclude Include="..\..\src\zlib\inftrees.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\zlib-1.2.8\inflate.h">
+    <ClInclude Include="..\..\src\zlib\inflate.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\zlib-1.2.8\inffixed.h">
+    <ClInclude Include="..\..\src\zlib\inffixed.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\zlib-1.2.8\inffast.h">
+    <ClInclude Include="..\..\src\zlib\inffast.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\zlib-1.2.8\gzguts.h">
+    <ClInclude Include="..\..\src\zlib\gzguts.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\zlib-1.2.8\deflate.h">
+    <ClInclude Include="..\..\src\zlib\deflate.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\zlib-1.2.8\crc32.h">
+    <ClInclude Include="..\..\src\zlib\crc32.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\freetype\freetype.h">
