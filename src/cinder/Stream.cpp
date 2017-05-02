@@ -525,7 +525,7 @@ size_t IoStreamFile::readDataImpl( void *t, size_t size )
 		mBufferOffset += amountInBuffer;
 		return amountInBuffer + readDataImpl( reinterpret_cast<uint8_t*>( t ) + amountInBuffer, size - amountInBuffer );
 	}
-	else if( size > mDefaultBufferSize ) { // entirely outside of buffer, and too big to buffer anyway
+	else if( size > (size_t)mDefaultBufferSize ) { // entirely outside of buffer, and too big to buffer anyway
 		fseek( mFile, static_cast<long>( mBufferOffset ), SEEK_SET );
 		size_t bytesRead = fread( t, 1, size, mFile );
 		mBufferOffset += bytesRead;

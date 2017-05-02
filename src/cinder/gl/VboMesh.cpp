@@ -870,7 +870,7 @@ void VboMesh::echoVertices( std::ostream &os, const vector<uint32_t> &indices, b
 		int numSpaces = std::max<int>( (int)(colStartCharIndex - ss.str().length()), 0 );
 		// center string
 		numSpaces += std::max<int>( (int)(attribColLengths[a] - (attribSemanticNames[a].length()+2)) / 2, 0 );
-		for( size_t s = 0; s < numSpaces; s++ )
+		for( int s = 0; s < numSpaces; s++ )
 			ss << " ";
 		ss << "<" << attribSemanticNames[a] << "> ";
 	}
@@ -897,7 +897,7 @@ void VboMesh::echoVertices( std::ostream &os, const vector<uint32_t> &indices, b
 			int numSpaces = std::max<int>( (int)(colStartCharIndex - ss.str().length()), 0 );
 			// center string
 			numSpaces += std::max<int>( (int)(attribColLengths[a] - attribData[a][v].length()) / 2, 0 );
-			for( size_t s = 0; s < numSpaces; s++ )
+			for( int s = 0; s < numSpaces; s++ )
 				ss << " ";
 			ss << attribData[a][v];
 		}
