@@ -26,14 +26,6 @@
 #include "cinder/Breakpoint.h"
 #include "cinder/Log.h"
 
- // TODO: remove headers below
-#include <iostream>
-
-#if defined( CINDER_ANDROID )
-#include <android/log.h>
-#include <sstream>
-#endif
-
 namespace cinder { namespace detail {
 
 void assertionFailedAbort( char const *expr, char const *function, char const *file, long line )
