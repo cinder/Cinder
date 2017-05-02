@@ -43,11 +43,6 @@ matrix:
       env:
         - TOOL="xcode-osx"
         - DESCRIPTION=OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode6.4
-      env:
-        - TOOL="xcode-osx"
-        - DESCRIPTION=OS X build/test via Xcode"
 
     # iOS Xcode
     - os: osx
@@ -67,11 +62,6 @@ matrix:
         - DESCRIPTION=OS X build/test via Xcode"
     - os: osx
       osx_image: xcode7.3
-      env:
-        - TOOL="xcode-ios"
-        - DESCRIPTION=OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode6.4
       env:
         - TOOL="xcode-ios"
         - DESCRIPTION=OS X build/test via Xcode"
@@ -97,11 +87,6 @@ matrix:
       env:
         - TOOL="xcode-ios-sim"
         - DESCRIPTION=OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode6.4
-      env:
-        - TOOL="xcode-ios-sim"
-        - DESCRIPTION=OS X build/test via Xcode"
 
     # OS X CMake
     - os: osx
@@ -121,11 +106,6 @@ matrix:
         - DESCRIPTION="OS X build/test via CMake"
     - os: osx
       osx_image: xcode7.3
-      env:
-        - TOOL="cmake" 
-        - DESCRIPTION="OS X build/test via CMake"
-    - os: osx
-      osx_image: xcode6.4
       env:
         - TOOL="cmake" 
         - DESCRIPTION="OS X build/test via CMake"
