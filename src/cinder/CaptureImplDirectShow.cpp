@@ -82,7 +82,7 @@ static videoInput& getVideoInput()
 
 bool CaptureImplDirectShow::Device::checkAvailable() const
 {
-	return ( mUniqueId >=0 ) && ( mUniqueId < CaptureImplDirectShow::getDevices().size() ) && ( ! getVideoInput().isDeviceSetup( mUniqueId ) );
+	return ( mUniqueId >=0 ) && ( mUniqueId < (int)CaptureImplDirectShow::getDevices().size() ) && ( ! getVideoInput().isDeviceSetup( mUniqueId ) );
 }
 
 bool CaptureImplDirectShow::Device::isConnected() const

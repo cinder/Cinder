@@ -28,7 +28,6 @@
 	#endif
 #endif
 
-#define GLM_FORCE_SIZE_FUNC
 #include "glm/fwd.hpp"
 
 #include <cstdint>

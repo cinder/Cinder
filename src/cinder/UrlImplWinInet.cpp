@@ -197,7 +197,7 @@ void IStreamUrlImplWinInet::fillBuffer( int wantBytes ) const
 		return;
 	
 	// if we want more bytes than will fit in the rest of the buffer, let's make some room
-	if( wantBytes > mBuffer.size() - mBufferedBytes ) {
+	if( wantBytes > (int)mBuffer.size() - mBufferedBytes ) {
 		memmove( mBuffer.data(), mBuffer.data() + mBufferOffset, mBufferedBytes - mBufferOffset );
 		mBufferedBytes -= mBufferOffset;
 		mBufferFileOffset += mBufferOffset;
@@ -205,7 +205,7 @@ void IStreamUrlImplWinInet::fillBuffer( int wantBytes ) const
 	}
 	
 	// now if we've made all the room there is to make, and we still aren't big enough, reallocate
-	if( wantBytes > mBuffer.size() - mBufferedBytes ) {
+	if( wantBytes > (int)mBuffer.size() - mBufferedBytes ) {
 		mBuffer.resize( mBufferedBytes + wantBytes );
 	}
 	
