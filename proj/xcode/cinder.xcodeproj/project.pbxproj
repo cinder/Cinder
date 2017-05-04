@@ -5455,7 +5455,6 @@
 					../../include,
 					../../include/macosx/png,
 					../../include/macosx/cairo,
-					../../include/jsoncpp,
 					../../include/oggvorbis,
 					../../include/freetype,
 				);
@@ -5497,7 +5496,6 @@
 					../../include,
 					../../include/macosx/png,
 					../../include/macosx/cairo,
-					../../include/jsoncpp,
 					../../include/oggvorbis,
 					../../include/freetype,
 				);
@@ -5550,7 +5548,6 @@
 					../../include,
 					../../include/macosx/png,
 					../../include/macosx/cairo,
-					../../include/jsoncpp,
 					../../include/oggvorbis,
 				);
 				OBJROOT = build/;
@@ -5593,7 +5590,6 @@
 					../../include,
 					../../include/macosx/png,
 					../../include/macosx/cairo,
-					../../include/jsoncpp,
 					../../include/oggvorbis,
 				);
 				OBJROOT = build/;
@@ -5622,7 +5618,6 @@
 					../../include,
 					../../include/macosx/png,
 					../../include/macosx/cairo,
-					../../include/jsoncpp,
 					../../include/oggvorbis,
 					../../include/freetype,
 				);
@@ -5664,7 +5659,6 @@
 					../../include,
 					../../include/macosx/png,
 					../../include/macosx/cairo,
-					../../include/jsoncpp,
 					../../include/oggvorbis,
 					../../include/freetype,
 				);
@@ -5705,7 +5699,6 @@
 					../../include,
 					../../include/macosx/png,
 					../../include/macosx/cairo,
-					../../include/jsoncpp,
 					../../include/oggvorbis,
 					../../include/freetype,
 				);
@@ -5748,7 +5741,6 @@
 					../../include,
 					../../include/macosx/png,
 					../../include/macosx/cairo,
-					../../include/jsoncpp,
 					../../include/oggvorbis,
 					../../include/freetype,
 				);
