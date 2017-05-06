@@ -3599,8 +3599,8 @@ void BSpline::loadInto( Target *target, const AttribSet & /*requestedAttribs*/ )
 	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNumVertices );
 }
 
-template BSpline::BSpline( const ci::BSpline<2, float>&, int );
-template BSpline::BSpline( const ci::BSpline<3, float>&, int );
+template CI_API BSpline::BSpline( const ci::BSpline<2, float>&, int );
+template CI_API BSpline::BSpline( const ci::BSpline<3, float>&, int );
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // WireCapsule
