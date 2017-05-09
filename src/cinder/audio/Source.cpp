@@ -35,6 +35,8 @@
  	#include "cinder/audio/linux/FileAudioLoader.h"
 #endif
 
+#include <cmath>
+
 using namespace std;
 
 namespace cinder { namespace audio {

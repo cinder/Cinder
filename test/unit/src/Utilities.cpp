@@ -4,8 +4,30 @@
 #include "cinder/Utilities.h"
 #include "cinder/app/App.h"
 
+#include <iostream>
+
 using namespace std;
 using namespace ci;
+
+struct CustomType {
+	CustomType() {}
+	CustomType( int v ) : var( v ) {}
+	bool operator==( const CustomType &rhs ) { return rhs.var == var; }
+
+	int var;
+};
+
+std::ostream& operator<<( std::ostream &o, CustomType const &t )
+{
+	o << t.var;
+	return o;
+}
+
+std::istream& operator>>( std::istream &i, CustomType &t )
+{
+	i >> t.var;
+	return i;
+}
 
 TEST_CASE( "Utilities" )
 {
@@ -29,6 +51,24 @@ TEST_CASE( "Utilities" )
 		for( int i = 0; i < 1000; ++i )
 			dSum += dd[i];
 		REQUIRE( dSum == sum );
+	}
+
+	SECTION( "toString / fromString" )
+	{
+		REQUIRE( toString( 123 ) == string( "123" ) );
+		REQUIRE( toString( 123.45 ) == string( "123.45" ) );
+		REQUIRE( toString( 123.45f ) == string( "123.45" ) );
+		REQUIRE( toString( "hello" ) == string( "hello" ) );
+		REQUIRE( toString( CustomType( 123 ) ) == string( "123" ) );
+
+		REQUIRE( fromString<int>( "123" ) == 123 );
+		REQUIRE( fromString<float>( "123.45" ) == Approx( 123.45f ) );
+		REQUIRE( fromString<double>( "123.45" ) == Approx( 123.45 ) );
+		REQUIRE( fromString<string>( "hello" ) == string( "hello" ) );
+		REQUIRE( fromString<CustomType>( "123" ) == CustomType( 123 ) );
+		
+		string s( "http://libcinder.org" );
+		REQUIRE( fromString<Url>( s ).str() == Url( "http://libcinder.org" ).str() );
 	}
 
 	SECTION( "string load / write" )

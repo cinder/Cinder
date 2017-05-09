@@ -534,7 +534,7 @@ JsonTree* JsonTree::getNodePtr( const string &relativePath, bool caseSensitive, 
         // The key is numeric
 		if( isIndex( *pathIt ) ) {
             // Find child which uses this index as its key
-			uint32_t index = boost::lexical_cast<int32_t>( *pathIt );
+			uint32_t index = std::stoi( *pathIt );
 			uint32_t i = 0;
 			for ( node = curNode->getChildren().begin(); node != curNode->getChildren().end(); ++node, i++ ) {
 				if ( i == index ) {
