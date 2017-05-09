@@ -24,6 +24,11 @@ matrix:
 
     # OS X Xcode
     - os: osx
+      osx_image: xcode8.3
+      env: 
+        - TOOL="xcode-osx"
+        - DESCRIPTION="OS X build/test via Xcode"
+    - os: osx
       osx_image: xcode8.2
       env: 
         - TOOL="xcode-osx"
@@ -45,6 +50,11 @@ matrix:
         - DESCRIPTION=OS X build/test via Xcode"
 
     # iOS Xcode
+    - os: osx
+      osx_image: xcode8.3
+      env: 
+        - TOOL="xcode-ios"
+        - DESCRIPTION="OS X build/test via Xcode"
     - os: osx
       osx_image: xcode8.2
       env: 
@@ -68,6 +78,11 @@ matrix:
 
     # iOS-Sim Xcode
     - os: osx
+      osx_image: xcode8.3
+      env: 
+        - TOOL="xcode-ios-sim"
+        - DESCRIPTION="OS X build/test via Xcode"
+    - os: osx
       osx_image: xcode8.2
       env: 
         - TOOL="xcode-ios-sim"
@@ -89,6 +104,11 @@ matrix:
         - DESCRIPTION=OS X build/test via Xcode"
 
     # OS X CMake
+    - os: osx
+      osx_image: xcode8.3
+      env:
+        - TOOL="cmake" 
+        - DESCRIPTION="OS X build/test via CMake"
     - os: osx
       osx_image: xcode8.2
       env:
