@@ -516,7 +516,6 @@ ScopedFrontFace::~ScopedFrontFace()
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedDebugGroup
 #if defined( CINDER_GL_HAS_KHR_DEBUG )
-
 ScopedDebugGroup::ScopedDebugGroup( const std::string &message )
 {
 	pushDebugGroup( message );
@@ -533,7 +532,6 @@ ScopedDebugGroup::~ScopedDebugGroup()
 {
 	popDebugGroup();
 }
-
 #endif
 
 } } // namespace cinder::gl
