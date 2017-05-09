@@ -513,4 +513,27 @@ ScopedFrontFace::~ScopedFrontFace()
 	mCtx->popFrontFace();
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedDebugGroup
+#if defined( CINDER_GL_HAS_KHR_DEBUG )
+
+ScopedDebugGroup::ScopedDebugGroup( const std::string &message )
+{
+	pushDebugGroup( message );
+}
+ScopedDebugGroup::ScopedDebugGroup( GLuint id, const std::string &message )
+{
+	pushDebugGroup( id, message );
+}
+ScopedDebugGroup::ScopedDebugGroup( GLenum source, GLuint id, const std::string &message )
+{
+	pushDebugGroup( source, id, message ); 
+}
+ScopedDebugGroup::~ScopedDebugGroup()
+{
+	popDebugGroup();
+}
+
+#endif
+
 } } // namespace cinder::gl
