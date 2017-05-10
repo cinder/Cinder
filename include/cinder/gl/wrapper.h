@@ -358,6 +358,18 @@ CI_API ivec3	getMaxComputeWorkGroupCount();
 CI_API ivec3	getMaxComputeWorkGroupSize();
 #endif
 
+// Debug
+#if defined( CINDER_GL_HAS_KHR_DEBUG )
+//! Pushes a named debug group into the command stream
+CI_API void pushDebugGroup( const std::string &message );
+//! Pushes a named debug group into the command stream with an id
+CI_API void pushDebugGroup( GLuint id, const std::string &message );
+//! Pushes a named debug group into the command stream with an id and a message source
+CI_API void pushDebugGroup( GLenum source, GLuint id, const std::string &message );
+//! Pops the active debug group
+CI_API void popDebugGroup();
+#endif
+
 class CI_API Exception : public cinder::Exception {
   public:
 	Exception()	{}

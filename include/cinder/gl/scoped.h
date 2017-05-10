@@ -340,5 +340,16 @@ struct CI_API ScopedFrontFace : private Noncopyable {
 	Context		*mCtx;
 };
 
+#if defined( CINDER_GL_HAS_KHR_DEBUG )
+
+//! Scopes debug group message
+struct CI_API ScopedDebugGroup : private Noncopyable {
+	ScopedDebugGroup( const std::string &message );
+	ScopedDebugGroup( GLuint id, const std::string &message );
+	ScopedDebugGroup( GLenum source, GLuint id, const std::string &message );
+	~ScopedDebugGroup();
+};
+
+#endif
 
 } } // namespace cinder::gl
