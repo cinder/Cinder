@@ -38,7 +38,8 @@
 	#include <android/log.h>
  	#define TAG "cinder"
 #elif defined( CINDER_LINUX )
-    #include <syslog.h>
+	#include <syslog.h>
+	#include <limits.h>
 #endif
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
