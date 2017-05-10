@@ -66,7 +66,7 @@ namespace cinder { namespace cocoa {
 typedef std::shared_ptr<struct __CFString> SafeCfString;
 
 //! Represents an exception-safe Cocoa NSString which behaves like a shared_ptr but can implicitly cast itself to NSString*
-class SafeNsString {
+class CI_API SafeNsString {
   public:
 	SafeNsString() {}
 	//! Creates a SafeNsString using an existing NSString. This constructor automatically increments the retain count.
@@ -84,7 +84,7 @@ class SafeNsString {
 };
 
 //! Represents an exception-safe Cocoa NSData which behaves like a shared_ptr but can implicitly cast itself to NSData*
-class SafeNsData {
+class CI_API SafeNsData {
   public:
 	SafeNsData() {}
 	//! Creates a SafeNsData using an existing cinder::Buffer. The SafeNsData retains a copy of the buffer in order to prevent its deletion
@@ -100,7 +100,7 @@ class SafeNsData {
 };
 
 //! Represents an exception-safe NSAutoreleasePool. Replaces the global NSAutoreleasePool for its lifetime
-class SafeNsAutoreleasePool {
+class CI_API SafeNsAutoreleasePool {
   public:
 	SafeNsAutoreleasePool();
 	~SafeNsAutoreleasePool();
@@ -110,50 +110,50 @@ class SafeNsAutoreleasePool {
 };
 
 //! Safely release a CoreFoundation object, testing for null before calling CFRelease. Designed to be used as the deleter of a shared_ptr.
-void safeCfRelease( const CFTypeRef cfRef );
+void CI_API safeCfRelease( const CFTypeRef cfRef );
 
 //! Safely release a Cocoa object, testing for null before calling [nsObject release]. Designed to be used as the deleter of a shared_ptr.
-void safeCocoaRelease( void *nsObject );
+void CI_API safeCocoaRelease( void *nsObject );
 
 /** \brief Creates a CGBitmapContext that represents a cinder::Surface8u. Users must call CGContextRelease() to free the result.
 	\note CGBitmapContexts only support premultiplied alpha **/
-CGContextRef createCgBitmapContext( const Surface8u &surface );
+CGContextRef CI_API createCgBitmapContext( const Surface8u &surface );
 
 //! Returns the current CoreGraphics context for the active window. Requires the current Renderer to be a Renderer2d. Does not need to be released.
-CGContextRef getWindowContext();
+CGContextRef CI_API getWindowContext();
 
 #if defined( CINDER_MAC )
 /** \brief Converts an NSBitmapImageRep into a cinder::Surface8u
 	If \a assumeOwnership the result will take ownership of \a rep and will destroy it upon the Surface's own destruction automatically.
 	\return a Surface8u which wraps the NSBitmapImageRep but does not own the data. **/
-Surface8uRef convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwnership = false );
+Surface8uRef CI_API convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwnership = false );
 #endif
 
 //! Converts a CFStringRef into std::string with UTF8 encoding.
-std::string convertCfString( CFStringRef str );
+std::string CI_API convertCfString( CFStringRef str );
 //! Converts a std::string into a CFStringRef. Assumes UTF8 encoding. User must call CFRelease() to free the result.
-CFStringRef	createCfString( const std::string &str );
+CFStringRef	CI_API createCfString( const std::string &str );
 //! Converts a std::string into an exception-safe CFString pointer. Assumes UTF8 encoding. The deleter is set to free the string when appropriate.
-SafeCfString createSafeCfString( const std::string &str );
+SafeCfString CI_API createSafeCfString( const std::string &str );
 //! Converts a NSString into a std::string with UTF8 encoding.
-std::string	convertNsString( NSString *str );
+std::string	CI_API convertNsString( NSString *str );
 //! Converts a cinder::URL into a CFURLRef. User must call CFRelease() to free the result.
-CFURLRef createCfUrl( const cinder::Url &url );
+CFURLRef CI_API createCfUrl( const cinder::Url &url );
 
 //! Converts a std::string to a CFAttributedStringRef with attributes set for \a font and \a color. Assumes UTF8 encoding. User must call CFRelease() to free the result. Returns NULL on failure.
-CFAttributedStringRef createCfAttributedString( const std::string &str, const cinder::Font &font, const ColorA &color );
+CFAttributedStringRef CI_API createCfAttributedString( const std::string &str, const cinder::Font &font, const ColorA &color );
 //! Converts a std::string to a CFAttributedStringRef with attributes set for \a font and \a color. If \a ligate then ligatures will be used. Assumes UTF8 encoding. User must call CFRelease() to free the result. Returns NULL on failure.
-CFAttributedStringRef createCfAttributedString( const std::string &str, const cinder::Font &font, const ColorA &color, bool ligate );
+CFAttributedStringRef CI_API createCfAttributedString( const std::string &str, const cinder::Font &font, const ColorA &color, bool ligate );
 
 //! Converts a cinder::Color to CGColor. User must call CGColorRelease() to free the result.
-CGColorRef createCgColor( const Color &color );
+CGColorRef CI_API createCgColor( const Color &color );
 //! Converts a cinder::ColorA to CGColor. User must call CGColorRelease() to free the result.
-CGColorRef createCgColor( const ColorA &color );
+CGColorRef CI_API createCgColor( const ColorA &color );
 
 //! Converts a cinder::Area to a CGRect.
-CGRect createCgRect( const Area &area );
+CGRect CI_API createCgRect( const Area &area );
 //! Converts a CGRect to a cinder::Area
-Area CgRectToArea( const CGRect &rect );
+Area CI_API CgRectToArea( const CGRect &rect );
 
 //! Creates a Cocoa CGSize from a cinder::ivec2
 inline CGSize createCgSize( const ivec2 &s ) { CGSize result; result.width = s.x; result.height = s.y; return result; }
@@ -161,21 +161,21 @@ inline CGSize createCgSize( const ivec2 &s ) { CGSize result; result.width = s.x
 inline CGSize createCgSize( const vec2 &s ) { CGSize result; result.width = s.x; result.height = s.y; return result; }
 
 //! Converts a CGPathRef to a cinder::Shape2d. If \a flipVertical then the path will be flipped vertically.
-void convertCgPath( CGPathRef cgPath, Shape2d *resultShape, bool flipVertical = true );
+void CI_API convertCgPath( CGPathRef cgPath, Shape2d *resultShape, bool flipVertical = true );
 
 #if defined( CINDER_MAC )
 /** \brief Translates a cinder::SurfaceChannelOrder into the pixel formats of a CoreVideo buffer
 	\return -1 on failure, else a constant as defined in <CoreVideo/CVPixelBuffer.h> **/
-int getCvPixelFormatTypeFromSurfaceChannelOrder( const SurfaceChannelOrder &sco );
+int CI_API getCvPixelFormatTypeFromSurfaceChannelOrder( const SurfaceChannelOrder &sco );
 #endif
 
 //! Creates a CFDataRef from a cinder::Buffer \a buffer. The result does not copy or assume ownership of the data and should be freed using CFRelease().
-CFDataRef createCfDataRef( const cinder::Buffer &buffer );
+CFDataRef CI_API createCfDataRef( const cinder::Buffer &buffer );
 
 
 typedef std::shared_ptr<class ImageSourceCgImage> ImageSourceCgImageRef;
 
-class ImageSourceCgImage : public ImageSource {
+class CI_API ImageSourceCgImage : public ImageSource {
   public:
 	//! Retains (and later releases) \a imageRef
 	static ImageSourceCgImageRef	createRef( ::CGImageRef imageRef, ImageSource::Options options = ImageSource::Options() );
@@ -194,12 +194,12 @@ class ImageSourceCgImage : public ImageSource {
 	uint16_t					m16BitPackedRedOffset, m16BitPackedGreenOffset, m16BitPackedBlueOffset;
 };
 
-ImageSourceCgImageRef createImageSource( ::CGImageRef imageRef, ImageSource::Options = ImageSource::Options() );
+ImageSourceCgImageRef CI_API createImageSource( ::CGImageRef imageRef, ImageSource::Options = ImageSource::Options() );
 
 
 typedef std::shared_ptr<class ImageTargetCgImage> ImageTargetCgImageRef;
 
-class ImageTargetCgImage : public ImageTarget {
+class CI_API ImageTargetCgImage : public ImageTarget {
   public:
 	static ImageTargetCgImageRef createRef( ImageSourceRef imageSource, ImageTarget::Options options );
 	~ImageTargetCgImage();
@@ -220,17 +220,17 @@ class ImageTargetCgImage : public ImageTarget {
 };
 
 //! Loads an ImageSource into a new CGImageRef. Release the result with ::CGImageRelease.
-::CGImageRef createCgImage( ImageSourceRef imageSource, ImageTarget::Options = ImageTarget::Options() );
+::CGImageRef CI_API createCgImage( ImageSourceRef imageSource, ImageTarget::Options = ImageTarget::Options() );
 
 //! Returns a Surface8u that represents \a pixelBufferRef. Decrements the retain count on \a pixelBufferRef on destruction.
-Surface8uRef convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef );
+Surface8uRef CI_API convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef );
 
 } } // namespace cinder::cocoa
 
 namespace cinder {
 
 //! \cond
-class SurfaceConstraintsCgBitmapContext : public cinder::SurfaceConstraints {
+class CI_API SurfaceConstraintsCgBitmapContext : public cinder::SurfaceConstraints {
  public:
 	virtual SurfaceChannelOrder getChannelOrder( bool alpha ) const;
 	virtual ptrdiff_t			getRowBytes( int32_t requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const;
