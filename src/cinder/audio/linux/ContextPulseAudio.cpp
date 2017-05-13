@@ -338,11 +338,12 @@ void OutputStream::start( std::function<void(size_t, void*)> sourceFn )
 	pa_context_state_t contextState = pa_context_get_state( mContext->mPaContext );
 	pa_stream_state_t streamState = pa_stream_get_state( mPaStream );
 	if( ( PA_CONTEXT_READY != contextState ) && ( PA_STREAM_READY != streamState ) ) {
-		// TODO: report error or warning here
+		CI_LOG_E( "failed to get context state" );
+		// TODO: improve errir reporting here
 		return;
 	}
 
-	 // Uncork (resume) the stream.
+	// Uncork (resume) the stream.
 	pa_operation* op = pa_stream_cork( mPaStream, 0, &Stream::successCallback, static_cast<void*>( this ) );
 	pulse::waitForOperationCompletion( mContext->mPaMainLoop, op );	
 }
@@ -353,9 +354,8 @@ void OutputStream::stop()
 
 	mSourceFn = nullptr;
 
-	// Flush the stream prior to cork, doing so after will cause hangs.  Write
-	// callbacks are suspended while inside pa_threaded_mainloop_lock() so this
-	// is all thread safe.
+	// Flush the stream prior to cork, doing so after will cause hangs. Write callbacks
+	// are suspended while inside pa_threaded_mainloop_lock() so this is all thread safe.
 	pa_operation* op = pa_stream_flush( mPaStream, &Stream::successCallback, static_cast<void*>( this ) );
 	pulse::waitForOperationCompletion( mContext->mPaMainLoop, op );
 
@@ -364,7 +364,7 @@ void OutputStream::stop()
 }
 
 void OutputStream::writeCallback( pa_stream* stream, size_t requestedBytes, void* userData )
-{	
+{
 	OutputStream* thisObj = static_cast<OutputStream*>( userData );
 
 	void* buffer = nullptr;
@@ -400,13 +400,33 @@ struct InputStream : public Stream {
 	void close();
 	void start();
 	void stop();
+	void enqueueSamples( pa_stream *s, size_t nbytes );
 
 	static void readCallback( pa_stream *stream, size_t nbytes, void *userData );
+
+	ci::audio::BufferDynamic                    mReadBuffer;
+	std::vector<ci::audio::dsp::RingBuffer>     mRingBuffers;
+	size_t								        mNumFramesBuffered = 0;
 };
 
 InputStream::InputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock )
 	: Stream( context, numChannels, sampleRate, framesPerBlock )
 {
+	mBytesPerSample = sizeof( float );
+	mBytesPerFrame  = mNumChannels * mBytesPerSample;
+	mBytesPerBuffer = mFramesPerBlock * mBytesPerFrame;
+
+	// Allocate a big enough buffer size that will accomodate most hardware.
+	// TODO: allocate this dynamically based on current latency settings
+	const size_t kBufferSizeBytes = 32768;
+	size_t numFrames = ( kBufferSizeBytes / mBytesPerSample ) + mFramesPerBlock + 1;
+	const size_t ringBufferSize = numFrames * mNumChannels;
+	mRingBuffers.resize( numChannels );
+	for( auto &ringBuffer : mRingBuffers ) {
+		ringBuffer.resize( ringBufferSize );
+	}
+
+	mReadBuffer.setSize( framesPerBlock, numChannels );
 }
 
 InputStream::~InputStream()
@@ -423,10 +443,6 @@ std::unique_ptr<InputStream> InputStream::create( Context* context, size_t numCh
 
 void InputStream::open()
 {
-	mBytesPerSample = sizeof( float );
-	mBytesPerFrame  = mNumChannels * mBytesPerSample;
-	mBytesPerBuffer = mFramesPerBlock * mBytesPerFrame;
-
 	pa_sample_spec sampleSpec;
 	sampleSpec.format 	= PA_SAMPLE_FLOAT32LE;
 	sampleSpec.rate 	= mSampleRate;
@@ -481,7 +497,16 @@ void InputStream::open()
 
 void InputStream::close()
 {
-	// TODO: implement
+	pulse::ScopedLock scopedLock( mContext->mPaMainLoop );
+
+	pa_operation* op = pa_stream_flush( mPaStream, &Stream::successCallback, static_cast<void*>( this ) );
+	pulse::waitForOperationCompletion( mContext->mPaMainLoop, op );
+
+	pa_stream_disconnect( mPaStream );
+	pa_stream_set_read_callback( mPaStream, nullptr, nullptr );
+	pa_stream_set_state_callback( mPaStream, nullptr, nullptr );
+	pa_stream_unref( mPaStream );
+	mPaStream = nullptr;
 }
 
 void InputStream::start()
@@ -506,25 +531,35 @@ void InputStream::start()
 
 void InputStream::stop()
 {
-	// TODO: implement
+	pulse::ScopedLock scopedLock( mContext->mPaMainLoop );
+
+	// Flush the stream prior to cork, doing so after will cause hangs. Write callbacks
+	// are suspended while inside pa_threaded_mainloop_lock() so this is all thread safe.
+	pa_operation* op = pa_stream_flush( mPaStream, &Stream::successCallback, static_cast<void*>( this ) );
+	pulse::waitForOperationCompletion( mContext->mPaMainLoop, op );
+
+	op = pa_stream_cork( mPaStream, 1, &Stream::successCallback, static_cast<void*>( this ) );
+	pulse::waitForOperationCompletion( mContext->mPaMainLoop, op );
 }
 
 // static
 void InputStream::readCallback( pa_stream *s, size_t nbytes, void *userData )
 {
 	InputStream *inputStream = (InputStream *)userData;
+	inputStream->enqueueSamples( s, nbytes );
+}
 
-	CI_ASSERT( nbytes % inputStream->mBytesPerFrame == 0 );
-
-	int availableFrames = nbytes / inputStream->mBytesPerFrame;
+void InputStream::enqueueSamples( pa_stream *s, size_t nbytes )
+{
+	CI_ASSERT( nbytes % mBytesPerFrame == 0 );
 
 	// TODO: use the result of pa_stream_readable_size here?
-	// - need to understand what pa_stream_peak's params are
+	// - can use it to check if there is enough room in the ringbuffer left to write to
 	while( pa_stream_readable_size( s ) > 0 ) {
 		const void *data;
 
-		if( pa_stream_peek(s, &data, &nbytes ) < 0 ) {
-			auto errorStr = pa_strerror( pa_context_errno( inputStream->mContext->mPaContext ) );
+		if( pa_stream_peek( s, &data, &nbytes ) < 0 ) {
+			auto errorStr = pa_strerror( pa_context_errno( mContext->mPaContext ) );
 			CI_LOG_E( "pa_stream_peek() failed: " << errorStr );
 			CI_ASSERT_NOT_REACHABLE();
 			return;
@@ -532,7 +567,27 @@ void InputStream::readCallback( pa_stream *s, size_t nbytes, void *userData )
 
 		CI_ASSERT( nbytes > 0 );
 
-		// TODO: write data to a ringbuffer that will be consumed in InpudeDeviceNode's process method
+		const size_t numFramesRead = nbytes / mBytesPerFrame;
+
+		// resize mReadBuffer if necessary
+		mReadBuffer.setSize( numFramesRead, mNumChannels );
+
+		// de-interleave and write data to a ringbuffer that will be consumed in InpudeDeviceNode's process method
+		ci::audio::dsp::deinterleave( (const float *)data, mReadBuffer.getData(), numFramesRead, mNumChannels, numFramesRead );
+
+		size_t framesBuffered = 0;
+		for( size_t ch = 0; ch < mRingBuffers.size(); ch++ ) {
+			if( mRingBuffers[ch].write( mReadBuffer.getChannel( ch ), numFramesRead ) ) {
+				// only set this to non-zero if we succeeded at writing to the ringbuffer
+				framesBuffered = numFramesRead;
+			}
+			else {
+				CI_LOG_W( "RingBuffer full for channel: " << ch );
+				//mParent->markOverrun(); // TODO: re-enable once this is collapsed into node impl
+			}
+		}
+
+		mNumFramesBuffered += framesBuffered;
 
 #if 0 // (from pacat.c's stream_read_callback())
 		/* If there is a hole in the stream, we generate silence, except
@@ -614,7 +669,7 @@ struct OutputDeviceNodePulseAudioImpl {
 			mParent->renderInputs();
 		}
 
-		// Now change the lgoic back to samples
+		// Now change the logic back to samples
 		bool readSuccess = mRingBuffer->read( (float*)buffer, numSamplesToFill );
 		CI_ASSERT( readSuccess ); // since this is sync read / write, the read should always succeed.
 
@@ -645,13 +700,6 @@ struct InputDeviceNodePulseAudioImpl {
 	{
 		mPulseStream = pulse::InputStream::create( mPulseContext, numChannels, sampleRate, framesPerBlock );
 		mPulseStream->open();
-
-		// Allocate a big enough buffer size that will accomodate most hardware. This is a workaround
-		// since pa_stream_writable_size always seems to return 0.
-		const size_t kBufferSizeBytes = 32768;
-		size_t numFrames = ( kBufferSizeBytes / mPulseStream->mBytesPerSample ) + mPulseStream->mFramesPerBlock + 1;
-		const size_t ringBufferSize = numFrames * mPulseStream->mNumChannels;
-		mRingBuffer.reset( new dsp::RingBuffer( ringBufferSize ) );
 	}
 
 	void destroyPlayer()
@@ -682,30 +730,11 @@ struct InputDeviceNodePulseAudioImpl {
 		mPulseStream->stop();
 	}
 
-	void enqueueSamples( size_t numSamplesToFill, void* buffer )
-	{
-		//// Change the logic to use frames here instead of samples
-		//size_t numFramesToFill = numSamplesToFill / mPulseStream->mNumChannels;
-		//
-		//while( mNumFramesBuffered < numFramesToFill ) {
-		//	mParent->renderInputs();
-		//}
-		//
-		//// Now change the lgoic back to samples
-		//bool readSuccess = mRingBuffer->read( (float*)buffer, numSamplesToFill );
-		//CI_ASSERT( readSuccess ); // since this is sync read / write, the read should always succeed.
-		//
-		//mNumFramesBuffered -= numFramesToFill;
-	}
-
 	InputDeviceNodePulseAudio*    			mParent = nullptr;
 	std::weak_ptr<ContextPulseAudio>		mCinderContext;
 
 	pulse::Context*			                mPulseContext = nullptr;
 	std::unique_ptr<pulse::InputStream>	    mPulseStream;
-
-	std::unique_ptr<dsp::RingBuffer>		mRingBuffer;
-	size_t									mNumFramesBuffered = 0;
 };
 
 // ----------------------------------------------------------------------------------------------------
@@ -800,8 +829,6 @@ void InputDeviceNodePulseAudio::initialize()
 	const size_t numChannels = getNumChannels();
 
 	mImpl->initStream( numChannels, getSampleRate(), framesPerBlock );
-
-	//mInterleavedBuffer = BufferInterleaved( framesPerBlock, numChannels );
 }
 
 void InputDeviceNodePulseAudio::uninitialize()
@@ -821,7 +848,19 @@ void InputDeviceNodePulseAudio::disableProcessing()
 
 void InputDeviceNodePulseAudio::process( Buffer *buffer )
 {
-	// TODO: fill buffer  with recorded samples
+	const size_t framesNeeded = buffer->getNumFrames();
+	if( mImpl->mPulseStream->mNumFramesBuffered < framesNeeded ) {
+//		CI_LOG_W( "not enough frames buffered, need: " << framesNeeded << ", have: " << mImpl->mNumFramesBuffered );
+		markUnderrun();
+		return;
+	}
+
+	for( size_t ch = 0; ch < getNumChannels(); ch++ ) {
+		bool readSuccess = mImpl->mPulseStream->mRingBuffers[ch].read( buffer->getChannel( ch ), framesNeeded );
+		CI_ASSERT( readSuccess );
+	}
+
+	mImpl->mPulseStream->mNumFramesBuffered -= framesNeeded;
 }
 
 // ----------------------------------------------------------------------------------------------------
