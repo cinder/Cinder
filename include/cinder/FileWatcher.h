@@ -125,6 +125,7 @@ class CI_API FileWatcher : private Noncopyable {
 	const size_t	getNumWatchedFiles() const;
 
 	//! Sets the update time interval in seconds for the polling thread. \default is 0.02 seconds.
+	//! \note Setting the interval too low potentially blocks callbacks from occuring.  See \see cinder::FileWatcher::update
 	void		setThreadUpdateInterval( double seconds )	{ mThreadUpdateInterval = seconds; }
 	//! Returns the update time interval in seconds for the polling thread. \default is 0.02 seconds.
 	double		getThreadUpdateInterval() const				{ return mThreadUpdateInterval; }
@@ -133,12 +134,13 @@ class CI_API FileWatcher : private Noncopyable {
 	FileWatcher();
 
 	void	configureWatchPolling();
+	void	connectAppUpdate();
 	void	stopWatchPolling();
 	void	threadEntry();
 
 	std::list<std::unique_ptr<Watch>>	mWatchList;
-	std::recursive_mutex				mMutex;
-	std::unique_ptr<std::thread>		mThread;
+	mutable std::recursive_mutex		mMutex;
+	std::thread							mThread;
 	std::atomic<bool>					mThreadShouldQuit;
 	std::atomic<double>					mThreadUpdateInterval		= { 0.02 };
 	std::atomic<bool>					mWatchingEnabled			= { true };

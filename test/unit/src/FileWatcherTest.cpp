@@ -21,14 +21,18 @@ void updateFileWriteTime( const fs::path &file )
 #endif
 }
 
-void updateFileWatcher( FileWatcher *watcher )
+void updateFileWatcher( FileWatcher *watcher, double timeoutSeconds, std::function<bool (FileWatcher *watcher)> func )
 {
-	// sleep this thread at least long enough for the FileWatcher's polling thread to mark the Watch as modified
-	double sleepDuration = watcher->getThreadUpdateInterval() * 5;
-	this_thread::sleep_for( chrono::duration<double>( sleepDuration ) );
-
-	// explicitly call update, which will emit callbacks for the modified file
-	watcher->update();
+    // check for update twice per thread loop
+    double watcherInterval = watcher->getThreadUpdateInterval();
+    int loops = timeoutSeconds / watcherInterval * 4;
+    for( int i=0; i<loops; ++i ) {
+        this_thread::sleep_for( chrono::duration<double>( watcherInterval / 4 ) );
+        watcher->update();
+        if( func( watcher ) ) {
+            break;
+        }
+    }
 }
 
 TEST_CASE( "FileWatcher" )
@@ -50,8 +54,13 @@ TEST_CASE( "FileWatcher" )
 		REQUIRE( FileWatcher::instance()->getNumWatchedFiles() == 1 );
 
 		updateFileWriteTime( WATCH_FILE );
-		updateFileWatcher( FileWatcher::instance().get() );
-
+        auto test = [&numCallbacksFired](FileWatcher *watcher) -> bool {
+            return watcher->getNumWatches() == 1 &&
+                   watcher->getNumWatchedFiles() == 1 &&
+                   numCallbacksFired == 2;
+        };
+		updateFileWatcher( FileWatcher::instance().get(), 5, test );
+        
 		REQUIRE( numCallbacksFired == 2 );
 		REQUIRE( FileWatcher::instance()->getNumWatches() == 1 );
 		REQUIRE( FileWatcher::instance()->getNumWatchedFiles() == 1 );
@@ -74,8 +83,12 @@ TEST_CASE( "FileWatcher" )
 		REQUIRE( watcher->getNumWatches() == 1 );
 		REQUIRE( watcher->getNumWatchedFiles() == 1 );
 
-		updateFileWriteTime( WATCH_FILE );
-		updateFileWatcher( watcher.get() );
+        updateFileWriteTime( WATCH_FILE );
+        
+        auto test = [&numCallbacksFired](FileWatcher *watcher) -> bool {
+            return numCallbacksFired == 2;
+        };
+        updateFileWatcher( watcher.get(), 5, test );
 
 		REQUIRE( numCallbacksFired == 2 );
 		REQUIRE( watcher->getNumWatches() == 1 );
@@ -93,9 +106,13 @@ TEST_CASE( "FileWatcher" )
 		} );
 
 		REQUIRE( numCallbacksFired == 0 );
+        
+        updateFileWriteTime( WATCH_FILE );
 
-		updateFileWriteTime( WATCH_FILE );
-		updateFileWatcher( watcher.get() );
+        auto test = [&numCallbacksFired](FileWatcher *watcher) -> bool {
+            return numCallbacksFired == 1;
+        };
+        updateFileWatcher( watcher.get(), 5, test );
 
 		REQUIRE( numCallbacksFired == 1 );
 	}
@@ -117,7 +134,13 @@ TEST_CASE( "FileWatcher" )
 		watcher->unwatch( WATCH_FILE );
 
 		updateFileWriteTime( WATCH_FILE );
-		updateFileWatcher( watcher.get() );
+        auto test = [](FileWatcher *watcher) -> bool {
+            // wait the whole time
+            return false;
+        };
+        // only wait 2 seconds so we don't hang unit tests
+        updateFileWatcher( watcher.get(), 2, test );
+
 
 		REQUIRE( numCallbacksFired == 1 );
 		REQUIRE( watcher->getNumWatches() == 0 );
