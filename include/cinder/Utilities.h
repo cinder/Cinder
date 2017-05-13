@@ -32,8 +32,7 @@
 #include "cinder/Url.h"
 #include "cinder/DataSource.h"
 #include "cinder/DataTarget.h"
-#undef check
-#include <boost/lexical_cast.hpp>
+#include <sstream>
 
 namespace cinder {
 
@@ -71,12 +70,11 @@ inline char getPathSeparator() { return '/'; }
 CI_API std::map<std::string, std::string> getEnvironmentVariables();
 
 template<typename T>
-inline std::string toString( const T &t ) { return boost::lexical_cast<std::string>( t ); }
+std::string toString( const T &t ) { std::ostringstream ss; ss << t; return ss.str(); }
+
 template<typename T>
-inline T fromString( const std::string &s ) { return boost::lexical_cast<T>( s ); }
-// This specialization seems to only be necessary with more recent versions of Boost
-template<>
-inline Url fromString( const std::string &s ) { return Url( s ); }
+T fromString( const std::string &s ) { std::stringstream ss; ss << s; T temp; ss >> temp; return temp; }
+
 #if defined(CINDER_COCOA_TOUCH)
 // Necessary because boost::lexical_cast crashes when trying to convert a string to a double on iOS
 template<>
