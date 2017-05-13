@@ -99,7 +99,9 @@ Context::Context()
 		throw AudioContextExc( "Could not create PulseAudio threaded mainloop" );
 	}
 
-	pa_threaded_mainloop_set_name( mPaMainLoop, "cinder::audio::linux (PulseAudio)" );
+#if PA_API_VERSION >= 5
+	pa_threaded_mainloop_set_name( mPaMainLoop, "cinder::audio (PulseAudio)" );
+#endif
 
 	if( 0 != pa_threaded_mainloop_start( mPaMainLoop ) ) {
 		throw AudioContextExc( "Could not start PulseAudio threaded mainloop" );
