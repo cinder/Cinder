@@ -24,39 +24,44 @@
 #include "cinder/Cinder.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Breakpoint.h"
-
-#include <iostream>
-
-#if defined( CINDER_ANDROID )
-#include <android/log.h>
-#include <sstream>
-#endif
+#include "cinder/Log.h"
 
 namespace cinder { namespace detail {
 
+void assertionFailedAbort( char const *expr, char const *function, char const *file, long line )
+{
+	{
+		log::Entry entry( log::LEVEL_FATAL, log::Location( function, file, line ) );
+		entry << "*** Assertion Failed *** | expression: ( " << expr << " )";
+	}
+	std::abort();
+}
+
+void assertionFailedMessageAbort( char const *expr, char const *msg, char const *function, char const *file, long line )
+{
+	{
+		log::Entry entry( log::LEVEL_FATAL, log::Location( function, file, line ) );
+		entry << "*** Assertion Failed *** | expression: ( " << expr << " ), message: " << msg;
+	}
+	std::abort();
+}
+
 void assertionFailedBreak( char const *expr, char const *function, char const *file, long line )
 {
-	std::cerr << "*** Assertion Failed (break) *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << std::endl;
+	{
+		log::Entry entry( log::LEVEL_FATAL, log::Location( function, file, line ) );
+		entry << "*** Assertion Failed (break) *** | expression: ( " << expr << " )";
+	}
 	CI_BREAKPOINT();
 }
 
 void assertionFailedMessageBreak( char const *expr, char const *msg, char const *function, char const *file, long line )
 {
-	std::cerr << "*** Assertion Failed (break) *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << "\n\tmessage: " << msg << std::endl;
+	{
+		log::Entry entry( log::LEVEL_FATAL, log::Location( function, file, line ) );
+		entry << "*** Assertion Failed (break) *** | expression: ( " << expr << " ), message: " << msg;
+	}
 	CI_BREAKPOINT();
-}
-
-void assertionFailedMessageAbort( char const *expr, char const *msg, char const *function, char const *file, long line )
-{
-#if defined( CINDER_ANDROID )
-	std::stringstream ss;
-	ss << "*** Assertion Failed *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << "\n\tmessage: " << msg << std::endl;
-	__android_log_print( ANDROID_LOG_FATAL, "cinder", ss.str().c_str() );
-	std::terminate();
-#else
-	std::cerr << "*** Assertion Failed *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << "\n\tmessage: " << msg << std::endl;
-	std::abort();
-#endif
 }
 
 } } // namespace cinder::detail
