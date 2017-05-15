@@ -582,26 +582,12 @@ void InputStream::enqueueSamples( pa_stream *s, size_t nbytes )
 				framesBuffered = numFramesRead;
 			}
 			else {
-				CI_LOG_W( "RingBuffer full for channel: " << ch );
+				//CI_LOG_W( "RingBuffer full for channel: " << ch );
 				//mParent->markOverrun(); // TODO: re-enable once this is collapsed into node impl
 			}
 		}
 
 		mNumFramesBuffered += framesBuffered;
-
-#if 0 // (from pacat.c's stream_read_callback())
-		/* If there is a hole in the stream, we generate silence, except
-		 * if it's a passthrough stream in which case we skip the hole. */
-		if (data || !(flags & PA_STREAM_PASSTHROUGH)) {
-			buffer = pa_xrealloc(buffer, buffer_length + nbytes);
-			if (data)
-				memcpy((uint8_t *) buffer + buffer_length, data, nbytes);
-			else
-				pa_silence_memory((uint8_t *) buffer + buffer_length, nbytes, &sample_spec);
-
-			buffer_length += length;
-		}
-#endif
 		pa_stream_drop( s );
 	}
 
@@ -714,9 +700,6 @@ struct InputDeviceNodePulseAudioImpl {
 			return;
 		}
 
-		//auto sourceFn = std::bind( &InputDeviceNodePulseAudioImpl::enqueueSamples, this, std::placeholders::_1, std::placeholders::_2 );
-		//mPulseStream->start( sourceFn );
-
 		mPulseStream->start();
 	}
 
@@ -748,7 +731,7 @@ OutputDeviceNodePulseAudio::OutputDeviceNodePulseAudio( const DeviceRef &device,
 
 void OutputDeviceNodePulseAudio::destroyPulseObjects()
 {
-	disableProcessing();		
+	disableProcessing();
 	uninitialize();	
 }
 
@@ -874,15 +857,13 @@ ContextPulseAudio::ContextPulseAudio()
 
 ContextPulseAudio::~ContextPulseAudio()
 {
-	// Disable and shutdown devices so there's no segfault on exits
-	for( auto& deviceNode : mInputDeviceNodes ) {
-		auto deviceNodePulseAudio = std::dynamic_pointer_cast<InputDeviceNodePulseAudio>( deviceNode );
-		//deviceNodePulseAudio->destroyPulseObjects();
-	}
-
-	for( auto& deviceNode : mOutputDeviceNodes ) {
-		auto deviceNodePulseAudio = std::dynamic_pointer_cast<OutputDeviceNodePulseAudio>( deviceNode );
-		deviceNodePulseAudio->destroyPulseObjects();
+	// uninit any device nodes before the pulse context is destroyed
+	for( auto& deviceNode : mDeviceNodes ) {
+		auto node = deviceNode.lock();
+		if( node ) {
+			node->disable();
+			uninitializeNode( node );
+		}
 	}
 }
 
@@ -890,7 +871,7 @@ OutputDeviceNodeRef	ContextPulseAudio::createOutputDeviceNode( const DeviceRef &
 {
 	auto thisRef = std::dynamic_pointer_cast<ContextPulseAudio>( shared_from_this() );
 	auto result = makeNode( new OutputDeviceNodePulseAudio( device, format, thisRef ) );
-	mOutputDeviceNodes.push_back( result );
+	mDeviceNodes.push_back( result );
 	return result;
 }
 
@@ -898,7 +879,7 @@ InputDeviceNodeRef ContextPulseAudio::createInputDeviceNode( const DeviceRef &de
 {
 	auto thisRef = std::dynamic_pointer_cast<ContextPulseAudio>( shared_from_this() );
 	auto result = makeNode( new InputDeviceNodePulseAudio( device, format, thisRef ) );
-	mInputDeviceNodes.push_back( result );
+	mDeviceNodes.push_back( result );
 	return result;
 }
 

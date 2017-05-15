@@ -94,9 +94,7 @@ class ContextPulseAudio : public Context {
 	pulse::Context*     getPulseContext()   { return mPulseContext.get(); }
 
   private:
-	std::vector<OutputDeviceNodeRef>	mOutputDeviceNodes;
-	std::vector<InputDeviceNodeRef>		mInputDeviceNodes;
-
+	std::vector<std::weak_ptr<Node>>	mDeviceNodes;
 	std::unique_ptr<pulse::Context>     mPulseContext;
 };	
 
