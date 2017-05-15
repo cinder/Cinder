@@ -287,13 +287,18 @@ void OutputStream::open()
 		pa_stream_set_write_callback( mPaStream, &OutputStream::writeCallback, static_cast<void*>( this ) );
 
 		pa_buffer_attr bufferAttr;
-		bufferAttr.maxlength	= static_cast<uint32_t>(-1);
-		bufferAttr.minreq		= mBytesPerBuffer / 2;
-		bufferAttr.prebuf		= static_cast<uint32_t>(-1);
-		bufferAttr.tlength		= mBytesPerBuffer * 3;
-		bufferAttr.fragsize		= static_cast<uint32_t>(-1);
+		bufferAttr.maxlength	= uint32_t( mFramesPerBlock * mBytesPerFrame );
+		bufferAttr.minreq		= UINT32_MAX;
+		bufferAttr.prebuf		= 0;
+		bufferAttr.tlength		= bufferAttr.maxlength;
+		bufferAttr.fragsize		= UINT32_MAX;
 
-		pa_stream_flags_t streamFlags = pa_stream_flags_t( PA_STREAM_START_CORKED | PA_STREAM_AUTO_TIMING_UPDATE | PA_STREAM_INTERPOLATE_TIMING );
+		pa_stream_flags_t streamFlags = pa_stream_flags_t(
+				PA_STREAM_START_CORKED |
+				PA_STREAM_AUTO_TIMING_UPDATE |
+				PA_STREAM_INTERPOLATE_TIMING |
+				PA_STREAM_ADJUST_LATENCY );
+
 		int status = pa_stream_connect_playback( mPaStream, mDeviceName.c_str(), &bufferAttr, streamFlags, nullptr, nullptr );
 		if( status ) {
 			throw AudioContextExc( "Could not connect PulseAudio output stream playback" );	
@@ -468,13 +473,18 @@ void InputStream::open()
 		pa_stream_set_read_callback( mPaStream, &InputStream::readCallback, static_cast<void*>( this ) );
 
 		pa_buffer_attr bufferAttr;
-		bufferAttr.maxlength	= static_cast<uint32_t>(-1);
-		bufferAttr.minreq		= mBytesPerBuffer / 2;
-		bufferAttr.prebuf		= static_cast<uint32_t>(-1);
-		bufferAttr.tlength		= mBytesPerBuffer * 3;
-		bufferAttr.fragsize		= static_cast<uint32_t>(-1);
+		bufferAttr.maxlength	= UINT32_MAX;
+		bufferAttr.minreq		= UINT32_MAX;
+		bufferAttr.prebuf		= 0;
+		bufferAttr.tlength		= UINT32_MAX;
+		bufferAttr.fragsize		= uint32_t( mFramesPerBlock * mBytesPerFrame );
 
-		pa_stream_flags_t streamFlags = pa_stream_flags_t( PA_STREAM_START_CORKED | PA_STREAM_AUTO_TIMING_UPDATE | PA_STREAM_INTERPOLATE_TIMING );
+		pa_stream_flags_t streamFlags = pa_stream_flags_t(
+				PA_STREAM_START_CORKED |
+				PA_STREAM_AUTO_TIMING_UPDATE |
+				PA_STREAM_INTERPOLATE_TIMING |
+				PA_STREAM_ADJUST_LATENCY );
+
 		int status = pa_stream_connect_record( mPaStream, mDeviceName.c_str(), &bufferAttr, streamFlags );
 		if( status ) {
 			throw AudioContextExc( "Could not connect PulseAudio output stream playback" );
