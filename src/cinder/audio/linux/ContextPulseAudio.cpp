@@ -99,7 +99,7 @@ Context::Context()
 		throw AudioContextExc( "Could not create PulseAudio threaded mainloop" );
 	}
 
-#if PA_MAJOR >= 5
+#if PA_CHECK_VERSION( 5, 0, 0 )
 	pa_threaded_mainloop_set_name( mPaMainLoop, "cinder::audio (PulseAudio)" );
 #endif
 
@@ -185,21 +185,22 @@ struct Stream {
 	size_t 		mNumChannels 	= 0;
 	size_t 		mSampleRate 	= 0;
 	size_t		mFramesPerBlock	= 0;
+	std::string	mDeviceName;
 
 	size_t 		mBytesPerSample	= 0;
 	size_t 		mBytesPerFrame	= 0;
 	size_t		mBytesPerBuffer	= 0;
 
 
-	Stream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock );
+	Stream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock, const std::string &deviceName );
 	virtual ~Stream();
 
 	static void notifyCallback( pa_stream *stream, void* userData );
 	static void successCallback( pa_stream *stream, int success, void* userData );
 };
 
-Stream::Stream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock  )
-	: mContext( context ), mNumChannels( numChannels ), mSampleRate( sampleRate ), mFramesPerBlock( framesPerBlock )
+Stream::Stream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock, const std::string &deviceName )
+	: mContext( context ), mNumChannels( numChannels ), mSampleRate( sampleRate ), mFramesPerBlock( framesPerBlock ), mDeviceName( deviceName )
 {
 }
 
@@ -223,7 +224,7 @@ void Stream::successCallback( pa_stream *stream, int success, void* userData )
 struct OutputStream : public Stream {
 	std::function<void(size_t, void*)>	mSourceFn;
 
-	OutputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock );
+	OutputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock, const std::string &deviceName );
 	virtual ~OutputStream();
 
 	static std::unique_ptr<OutputStream> create( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock );
@@ -236,8 +237,8 @@ struct OutputStream : public Stream {
 	static void writeCallback( pa_stream* stream, size_t requestedBytes, void* userData );
 };
 
-OutputStream::OutputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock )
-	: Stream( context, numChannels, sampleRate, framesPerBlock )
+OutputStream::OutputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock, const std::string &deviceName )
+	: Stream( context, numChannels, sampleRate, framesPerBlock, deviceName )
 {
 }
 
@@ -247,11 +248,11 @@ OutputStream::~OutputStream()
 	close();
 }
 
-std::unique_ptr<OutputStream> OutputStream::create( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock )
-{
-	std::unique_ptr<OutputStream> result = std::unique_ptr<OutputStream>( new OutputStream( context, numChannels, sampleRate, framesPerBlock ) );
-	return result;	
-}
+//std::unique_ptr<OutputStream> OutputStream::create( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock )
+//{
+//	std::unique_ptr<OutputStream> result = std::unique_ptr<OutputStream>( new OutputStream( context, numChannels, sampleRate, framesPerBlock ) );
+//	return result;
+//}
 
 void OutputStream::open()
 {
@@ -293,7 +294,7 @@ void OutputStream::open()
 		bufferAttr.fragsize		= static_cast<uint32_t>(-1);
 
 		pa_stream_flags_t streamFlags = pa_stream_flags_t( PA_STREAM_START_CORKED | PA_STREAM_AUTO_TIMING_UPDATE | PA_STREAM_INTERPOLATE_TIMING );
-		int status = pa_stream_connect_playback( mPaStream, nullptr, &bufferAttr, streamFlags, nullptr, nullptr );
+		int status = pa_stream_connect_playback( mPaStream, mDeviceName.c_str(), &bufferAttr, streamFlags, nullptr, nullptr );
 		if( status ) {
 			throw AudioContextExc( "Could not connect PulseAudio output stream playback" );	
 		}
@@ -391,7 +392,7 @@ void OutputStream::writeCallback( pa_stream* stream, size_t requestedBytes, void
 //!
 struct InputStream : public Stream {
 
-	InputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock );
+	InputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock, const std::string &deviceName );
 	virtual ~InputStream();
 
 	static std::unique_ptr<InputStream> create( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock );
@@ -409,8 +410,8 @@ struct InputStream : public Stream {
 	size_t								        mNumFramesBuffered = 0;
 };
 
-InputStream::InputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock )
-	: Stream( context, numChannels, sampleRate, framesPerBlock )
+InputStream::InputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock, const std::string &deviceName )
+	: Stream( context, numChannels, sampleRate, framesPerBlock, deviceName )
 {
 	mBytesPerSample = sizeof( float );
 	mBytesPerFrame  = mNumChannels * mBytesPerSample;
@@ -435,11 +436,11 @@ InputStream::~InputStream()
 	close();
 }
 
-std::unique_ptr<InputStream> InputStream::create( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock )
-{
-	std::unique_ptr<InputStream> result = std::unique_ptr<InputStream>( new InputStream( context, numChannels, sampleRate, framesPerBlock ) );
-	return result;	
-}
+//std::unique_ptr<InputStream> InputStream::create( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock )
+//{
+//	std::unique_ptr<InputStream> result = std::unique_ptr<InputStream>( new InputStream( context, numChannels, sampleRate, framesPerBlock ) );
+//	return result;
+//}
 
 void InputStream::open()
 {
@@ -474,7 +475,7 @@ void InputStream::open()
 		bufferAttr.fragsize		= static_cast<uint32_t>(-1);
 
 		pa_stream_flags_t streamFlags = pa_stream_flags_t( PA_STREAM_START_CORKED | PA_STREAM_AUTO_TIMING_UPDATE | PA_STREAM_INTERPOLATE_TIMING );
-		int status = pa_stream_connect_record( mPaStream, nullptr, &bufferAttr, streamFlags );
+		int status = pa_stream_connect_record( mPaStream, mDeviceName.c_str(), &bufferAttr, streamFlags );
 		if( status ) {
 			throw AudioContextExc( "Could not connect PulseAudio output stream playback" );
 		}
@@ -615,7 +616,7 @@ struct OutputDeviceNodePulseAudioImpl {
 
 	void initPlayer( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
 	{
-		mPulseStream = pulse::OutputStream::create( mPulseContext, numChannels, sampleRate, framesPerBlock );
+		mPulseStream = std::make_unique<pulse::OutputStream>( mPulseContext, numChannels, sampleRate, framesPerBlock, mParent->getDevice()->getName() );
 		mPulseStream->open();
 
 		// Allocate a big enough buffer size that will accomodate most hardware. This is a workaround
@@ -690,7 +691,7 @@ struct InputDeviceNodePulseAudioImpl {
 
 	void initStream( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
 	{
-		mPulseStream = pulse::InputStream::create( mPulseContext, numChannels, sampleRate, framesPerBlock );
+		mPulseStream = std::make_unique<pulse::InputStream>( mPulseContext, numChannels, sampleRate, framesPerBlock, mParent->getDevice()->getName() );
 		mPulseStream->open();
 	}
 
