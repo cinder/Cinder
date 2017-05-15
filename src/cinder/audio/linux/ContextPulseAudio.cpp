@@ -572,8 +572,14 @@ void InputStream::enqueueSamples( pa_stream *s, size_t nbytes )
 		// resize mReadBuffer if necessary
 		mReadBuffer.setSize( numFramesRead, mNumChannels );
 
-		// de-interleave and write data to a ringbuffer that will be consumed in InpudeDeviceNode's process method
-		ci::audio::dsp::deinterleave( (const float *)data, mReadBuffer.getData(), numFramesRead, mNumChannels, numFramesRead );
+		if( data ) {
+			// de-interleave and write data to a ringbuffer that will be consumed in InpudeDeviceNode's process method
+			ci::audio::dsp::deinterleave( (const float *)data, mReadBuffer.getData(), numFramesRead, mNumChannels, numFramesRead );
+		}
+		else {
+			// there is a hole in the stream, generate silence
+			mReadBuffer.zero();
+		}
 
 		size_t framesBuffered = 0;
 		for( size_t ch = 0; ch < mRingBuffers.size(); ch++ ) {
