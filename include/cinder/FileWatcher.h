@@ -70,6 +70,7 @@ class WatchEvent {
 //! on a specific file, you can use the returned Connection's disable() or disconnect() methods.
 class CI_API FileWatcher : private Noncopyable {
   public:
+	FileWatcher();
 	~FileWatcher();
 
 	//! Optional parameters provided to watch()
@@ -84,9 +85,7 @@ class CI_API FileWatcher : private Noncopyable {
 	};
 
 	//! Returns the global instance of FileWatcher
-	static const FileWatcherRef&	instance();
-	//! Creates and returns a new FileWatcher within a shared_ptr.
-	static FileWatcherRef			create(); 
+	static FileWatcher&	instance();
 
 	//! Enables or disables file watching.
 	void	setWatchingEnabled( bool enable );
@@ -131,7 +130,6 @@ class CI_API FileWatcher : private Noncopyable {
 	double		getThreadUpdateInterval() const				{ return mThreadUpdateInterval; }
 
   private:
-	FileWatcher();
 
 	void	configureWatchPolling();
 	void	connectAppUpdate();

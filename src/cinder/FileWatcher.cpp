@@ -227,19 +227,10 @@ void Watch::emitCallback()
 // ----------------------------------------------------------------------------------------------------
 
 // static
-const FileWatcherRef& FileWatcher::instance()
+FileWatcher& FileWatcher::instance()
 {
-	static FileWatcherRef sInstance;
-	if( ! sInstance )
-		sInstance = create();
-
+	static FileWatcher sInstance;
 	return sInstance;
-}
-
-// static
-FileWatcherRef FileWatcher::create()
-{
-	return FileWatcherRef( new FileWatcher );
 }
 
 FileWatcher::FileWatcher()

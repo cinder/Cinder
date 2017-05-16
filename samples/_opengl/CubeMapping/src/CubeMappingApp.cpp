@@ -56,7 +56,7 @@ void CubeMappingApp::setup()
 	fs::path envMapVert = "env_map.vert";
 	fs::path envMapFrag = "env_map.frag";
 	vector<fs::path> teapotShaders = { "env_map.vert", "env_map.frag" }; 
-	FileWatcher::instance()->watch( teapotShaders, [this, teapotShaders]( const WatchEvent &event ) { 
+	FileWatcher::instance().watch( teapotShaders, [this, teapotShaders]( const WatchEvent &event ) {
 		try {
 			auto glsl = gl::GlslProg::create( loadAsset( teapotShaders[0] ), loadAsset( teapotShaders[1] ) ); 
 			mTeapotBatch = gl::Batch::create( geom::Teapot().subdivisions( 7 ), glsl );
