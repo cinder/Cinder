@@ -735,12 +735,6 @@ OutputDeviceNodePulseAudio::OutputDeviceNodePulseAudio( const DeviceRef &device,
 {
 }
 
-void OutputDeviceNodePulseAudio::destroyPulseObjects()
-{
-	disableProcessing();
-	uninitialize();	
-}
-
 void OutputDeviceNodePulseAudio::initialize()
 {
 	const size_t sampleRate = getOutputSampleRate();

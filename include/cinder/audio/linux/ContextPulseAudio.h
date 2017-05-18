@@ -53,10 +53,6 @@ class OutputDeviceNodePulseAudio : public OutputDeviceNode {
 	BufferInterleaved									mInterleavedBuffer;
 
 	friend struct OutputDeviceNodePulseAudioImpl;
-
-  private:
-	void destroyPulseObjects();
-	friend class ContextPulseAudio;
 };
 
 class InputDeviceNodePulseAudio : public InputDeviceNode {
@@ -72,14 +68,9 @@ class InputDeviceNodePulseAudio : public InputDeviceNode {
 	void process( Buffer *buffer )	override;
 
   private:
-
 	std::unique_ptr<InputDeviceNodePulseAudioImpl>   mImpl;
 
 	friend struct InputDeviceNodePulseAudioImpl;
-
-  private:
-	void destroyPulseObjects();
-	friend class ContextPulseAudio;
 };
 
 class ContextPulseAudio : public Context {
