@@ -813,7 +813,9 @@ void InputDeviceNodePulseAudio::initialize()
 
 	mImpl->initStream( numChannels, getSampleRate(), framesPerBlock );
 	mImpl->mPulseStream->mMarkOverrunFn = [this] {
-		markOverrun();
+		auto ctx = getContext(); // don't report if the overrun happens when we're shutting down.
+		if( ctx )
+			markOverrun();
 	};
 }
 
