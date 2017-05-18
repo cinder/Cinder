@@ -61,6 +61,7 @@ struct CI_API CHANTRAIT<uint16_t>
 	static uint16_t convert( half_float v )							{ return static_cast<uint16_t>( glm::clamp( halfToFloat( v ), 0.0f, 1.0f ) * 65535 ); }
 	static uint16_t convert( float v )								{ return static_cast<uint16_t>( glm::clamp( v, 0.0f, 1.0f ) * 65535 ); }
 	static uint16_t grayscale( uint16_t r, uint16_t g, uint16_t b ) { return static_cast<uint16_t>( ( r * 6966 + g * 23436 + b * 2366 ) >> 15 ); } // luma coefficients from Rec. 709
+	static uint16_t premultiply( uint8_t c, uint8_t a )				{ return static_cast<uint16_t>( a * c / 65535 ); }
 };
 
 template<>
