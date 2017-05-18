@@ -26,7 +26,6 @@
 #include "cinder/audio/dsp/RingBuffer.h"
 #include "cinder/Log.h"
 
-#include <iostream>
 #include <pulse/pulseaudio.h>
 
 namespace pulse {
@@ -248,12 +247,6 @@ OutputStream::~OutputStream()
 	close();
 }
 
-//std::unique_ptr<OutputStream> OutputStream::create( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock )
-//{
-//	std::unique_ptr<OutputStream> result = std::unique_ptr<OutputStream>( new OutputStream( context, numChannels, sampleRate, framesPerBlock ) );
-//	return result;
-//}
-
 void OutputStream::open()
 {
 	mBytesPerSample = sizeof( float );
@@ -413,6 +406,7 @@ struct InputStream : public Stream {
 	ci::audio::BufferDynamic                    mReadBuffer;
 	std::vector<ci::audio::dsp::RingBuffer>     mRingBuffers;
 	size_t								        mNumFramesBuffered = 0;
+	std::function<void ()>                      mMarkOverrunFn;
 };
 
 InputStream::InputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock, const std::string &deviceName )
@@ -440,12 +434,6 @@ InputStream::~InputStream()
 	stop();
 	close();
 }
-
-//std::unique_ptr<InputStream> InputStream::create( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock )
-//{
-//	std::unique_ptr<InputStream> result = std::unique_ptr<InputStream>( new InputStream( context, numChannels, sampleRate, framesPerBlock ) );
-//	return result;
-//}
 
 void InputStream::open()
 {
@@ -600,7 +588,8 @@ void InputStream::enqueueSamples( pa_stream *s, size_t nbytes )
 			}
 			else {
 				//CI_LOG_W( "RingBuffer full for channel: " << ch );
-				//mParent->markOverrun(); // TODO: re-enable once this is collapsed into node impl
+				if( mMarkOverrunFn )
+					mMarkOverrunFn();
 			}
 		}
 
@@ -829,6 +818,9 @@ void InputDeviceNodePulseAudio::initialize()
 	const size_t numChannels = getNumChannels();
 
 	mImpl->initStream( numChannels, getSampleRate(), framesPerBlock );
+	mImpl->mPulseStream->mMarkOverrunFn = [this] {
+		markOverrun();
+	};
 }
 
 void InputDeviceNodePulseAudio::uninitialize()
