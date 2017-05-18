@@ -252,8 +252,6 @@ namespace cinder { namespace audio { namespace linux {
 
 DeviceManagerPulseAudio::DeviceManagerPulseAudio()
 {
-	parseDevices( DeviceInfo::INPUT );
-	parseDevices( DeviceInfo::OUTPUT );
 }
 
 DeviceManagerPulseAudio::~DeviceManagerPulseAudio()
