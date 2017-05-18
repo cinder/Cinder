@@ -38,7 +38,7 @@ using namespace ci;
 static gl::TextureFontRef getTestWidgetTexFont() {
 	static gl::TextureFontRef sTestWidgetTexFont;
 	if( ! sTestWidgetTexFont )
-		sTestWidgetTexFont = gl::TextureFont::create( Font( Font::getDefault().getName(), 22 ) );
+		sTestWidgetTexFont = gl::TextureFont::create( ci::Font( ci::Font::getDefault().getName(), 22 ) );
 	return sTestWidgetTexFont;
 }
 
