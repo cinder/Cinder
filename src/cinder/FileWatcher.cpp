@@ -306,7 +306,7 @@ void FileWatcher::unwatch( const fs::path &filePath )
 {
 	auto fullPath = findFullFilePath( filePath );
 
-	lock_guard<recursive_mutex> lock(mMutex);
+	lock_guard<recursive_mutex> lock( mMutex );
 	for( auto &watch : mWatchList ) {
 		watch->unwatch( fullPath );
 	}
@@ -314,7 +314,7 @@ void FileWatcher::unwatch( const fs::path &filePath )
 
 void FileWatcher::unwatch( const vector<fs::path> &filePaths )
 {
-	lock_guard<recursive_mutex> lock(mMutex);
+	lock_guard<recursive_mutex> lock( mMutex );
 	for( const auto &filePath : filePaths ) {
 		unwatch( filePath );
 	}
@@ -324,7 +324,7 @@ void FileWatcher::enable( const fs::path &filePath )
 {
 	auto fullPath = findFullFilePath( filePath );
 
-	lock_guard<recursive_mutex> lock(mMutex);
+	lock_guard<recursive_mutex> lock( mMutex );
 	for( auto &watch : mWatchList ) {
 		watch->setEnabled( true, fullPath );
 	}
@@ -334,7 +334,7 @@ void FileWatcher::disable( const fs::path &filePath )
 {
 	auto fullPath = findFullFilePath( filePath );
 
-	lock_guard<recursive_mutex> lock(mMutex);
+	lock_guard<recursive_mutex> lock( mMutex );
 	for( auto &watch : mWatchList ) {
 		watch->setEnabled( false, fullPath );
 	}
