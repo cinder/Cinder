@@ -25,6 +25,7 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/BufferObj.h"
 #include "cinder/gl/Fbo.h"
+#include "cinder/gl/Sampler.h"
 #include "cinder/CinderAssert.h"
 
 using namespace std;
@@ -269,6 +270,34 @@ ScopedTextureBind::~ScopedTextureBind()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedSamplerBind
+#if defined( CINDER_GL_HAS_SAMPLERS )
+ScopedSamplerBind::ScopedSamplerBind( GLuint samplerId, uint8_t textureUnit )
+	: mCtx( gl::context() ), mTextureUnit( textureUnit )
+{
+	mCtx->pushSamplerBinding( textureUnit, samplerId );
+}
+
+ScopedSamplerBind::ScopedSamplerBind( const Sampler &sampler, uint8_t textureUnit )
+	: mCtx( gl::context() ), mTextureUnit( textureUnit )
+{
+	mCtx->pushSamplerBinding( textureUnit, sampler.getId() );
+}
+
+ScopedSamplerBind::ScopedSamplerBind( const SamplerRef &sampler, uint8_t textureUnit )
+	: mCtx( gl::context() ), mTextureUnit( textureUnit )
+{
+	mCtx->pushSamplerBinding( textureUnit, sampler->getId() );
+}
+
+ScopedSamplerBind::~ScopedSamplerBind()
+{
+	mCtx->popSamplerBinding( mTextureUnit );
+}
+#endif // defined( CINDER_GL_HAS_SAMPLERS )
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedScissor
 ScopedScissor::ScopedScissor( const ivec2 &lowerLeftPosition, const ivec2 &dimension )
 	: mCtx( gl::context() )
@@ -483,5 +512,26 @@ ScopedFrontFace::~ScopedFrontFace()
 {
 	mCtx->popFrontFace();
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedDebugGroup
+#if defined( CINDER_GL_HAS_KHR_DEBUG )
+ScopedDebugGroup::ScopedDebugGroup( const std::string &message )
+{
+	pushDebugGroup( message );
+}
+ScopedDebugGroup::ScopedDebugGroup( GLuint id, const std::string &message )
+{
+	pushDebugGroup( id, message );
+}
+ScopedDebugGroup::ScopedDebugGroup( GLenum source, GLuint id, const std::string &message )
+{
+	pushDebugGroup( source, id, message ); 
+}
+ScopedDebugGroup::~ScopedDebugGroup()
+{
+	popDebugGroup();
+}
+#endif
 
 } } // namespace cinder::gl

@@ -42,11 +42,11 @@ typedef std::shared_ptr<class Event>			EventRef;
 typedef std::function<void ( float *, size_t, double, double, float, float )>	RampFn;
 
 //! Array-based linear ramping function.
-void rampLinear( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd );
+void CI_API rampLinear( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd );
 //! Array-based quadradic (t^2) ease-in ramping function.
-void rampInQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd );
+void CI_API rampInQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd );
 //! Array-based quadradic (t^2) ease-out ramping function.
-void rampOutQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd );
+void CI_API rampOutQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd );
 
 //! Class representing a sample-accurate parameter control instruction. \see Param::applyRamp(), Param::appendRamp()
 class CI_API Event {

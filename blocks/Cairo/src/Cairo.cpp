@@ -2041,7 +2041,7 @@ class SvgRendererCairo : public svg::Renderer {
 
 		mCtx.moveTo( mTextPenStack.back() );
 		// we can use a text path when the rotate is empty
-		if( abs(mTextRotationStack.back()) < 0.0001f ) {
+		if( fabs(mTextRotationStack.back()) < 0.0001f ) {
 			mCtx.textPath( span.getString() );
 			mTextPenStack.back() = mCtx.getCurrentPoint();
 		}

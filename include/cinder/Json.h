@@ -227,8 +227,8 @@ class CI_API JsonTree {
 	{
 		try {
 			return fromString<T>( mValue );
-		} catch ( boost::bad_lexical_cast &) {
-			throw ExcNonConvertible( * this );
+		} catch( ... ) {
+			throw ExcNonConvertible( *this );
 		}
 		return (T)0; // Unreachable. Prevents warning.
 	}

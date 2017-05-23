@@ -35,12 +35,9 @@
 			<center><img class="shadow" width="626" height="449" src="msw_notes/vc_target.png" /></center>
 		</section>
 
-
 		<section>
 			<h2>Development Requirements</h2>
-			<p>Cinder supports Visual Studio 2013 and 2015, including the free <em>Community</em> editions of both. As of this writing Cinder ships with only VC 2013 projects, but these can be used with 2015 without modification. Furthermore, the v140 toolset is fully supported, meaning you can optionally upgrade to the native 2015 toolset. If you do so, you'll want to make sure you've built Cinder with the same.</p>
-			
-			<p>Visual C++ 2013 and 2015 have two toolsets (roughly, <em>compilers</em>) associated with them. For VC 2013 they are <em>v120</em> and <em>v120_xp</em>. For VC 2015 they are <em>v140</em> and <em>v140_xp</em>. The non-XP variants are able to target Windows Vista and later. In order to target Windows XP, you'll need to use one of the <em>_xp</em> compilers, in addition to setting <code>_WIN32_WINNT=x0502</code>. Please note that this path is not officially supported, and in particular Cinder's built-in audio will not function. However for advanced users this can be made to work.</p>			
+			<p>Cinder supports Visual Studio 2015 and Visual Studio 2017, including the free <em>Community</em> editions of both. As of this writing Cinder ships with only VC 2015 projects, but these can be used with 2017 without modification. Furthermore, the v141 toolset is fully supported, meaning you can optionally upgrade to the native 2017 toolset. If you do so, you'll want to make sure you've built Cinder with the same.</p>
 		</section>
 
 		<section>
@@ -48,13 +45,12 @@
 			<p>In addition to the normal <em>Debug</em> and <em>Release</em> build configurations, Cinder also ships with <em>Debug_ANGLE</em> and <em>Release_ANGLE</em> variants. <a href="https://code.google.com/p/angleproject/">ANGLE</a>, which stands for Almost Native Graphics Library, is an implementation of OpenGL ES in terms of DirectX. This can be useful for supporting machines where OpenGL drivers can't be guaranteed or are of poorer quality than DirectX. TinderBox can setup your project to use ANGLE.</p>
 		</section>
 
-
 		<section>
-			<h2>(Advanced) Defining preprocessor flags from outside of the Cinder repo</h2>
-			<p>In some instances, it can be useful to modify libcinder's preprocessor flags without requiring direct modification of its project. For example, tying your application to a specific version of Cinder via a git submodule. Some common cases include the <ci>CI_MIN_LOG_LEVEL</ci>, as described in <a href="../logging/index.html">this guide</a>, and compile time macros that adjust the way that <ci>CI_ASSERT()</ci> works.</p>
+			<h2>External Preprocessor Definitions (Advanced)</h2>
+			<p>In some instances, it can be useful to modify libcinder's preprocessor flags without requiring direct modification of its project. This is particularly useful when using Cinder in a project via a git submodule. Some common cases include the <ci>CI_MIN_LOG_LEVEL</ci>, as described in <a href="../logging/index.html">this guide</a>, and compile time macros that adjust the way that <ci>CI_ASSERT()</ci> works.</p>
 
 			<ul>
-			<li>To enable this, you need to add cinder.vcxproj to your main project's solution file. This is can be a usefl thing to do in its own right when working on a large project, as it allows you direct navigation of Cinder's codebase from within your application.
+			<li>To use this technique you need to add cinder.vcxproj to your main project's solution file. This can be convenient in its own right when working on a large project, as it allows direct navigation of Cinder's codebase from within your application.
 			</li>
 			<li>cinder.vcxproj is configured to search for a file called <code>CinderMswUserDefines.h</code>, which will be added as a "Forced Include File", i.e. its contents will be prepended to every source file built in libcinder. The first place that cinder.vcxproj searches for this file is in the same directory as your project's solution (.sln) file, which lives outside of the Cinder repository. If you don't provide a <code>CinderMswUserDefines.h</code> file, the empty default at <code>include\cinder\msw</code> will be used. To override this default, create a <code>CinderMswUserDefines.h</code> file in the same directory as your project's .sln file, and add the preprocessor directives to that. You can also add this same setting to any vcxproj file that you want to make use of the same preprocessor adjustments. Here's a screen capture of what that looks like:
 				<center><img class="shadow" width="626" height="449" src="msw_notes/forced_includes.png" /></center>

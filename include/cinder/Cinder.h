@@ -28,7 +28,6 @@
 	#endif
 #endif
 
-#define GLM_FORCE_SIZE_FUNC
 #include "glm/fwd.hpp"
 
 #include <cstdint>
@@ -36,8 +35,8 @@
 //  CINDER_VERSION % 100 is the patch level
 //  CINDER_VERSION / 100 % 1000 is the minor version
 //  CINDER_VERSION / 100000 is the major version
-#define CINDER_VERSION		901
-#define CINDER_VERSION_STR	"0.9.1dev"
+#define CINDER_VERSION		902
+#define CINDER_VERSION_STR	"0.9.2dev"
 
 #if ! defined( ASIO_STANDALONE )
 #define ASIO_STANDALONE 1

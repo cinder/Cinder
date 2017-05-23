@@ -57,6 +57,37 @@ TEST_CASE( "ShaderPreprocessor" )
 		REQUIRE( result.find( "#define SOMEVAR 2" ) != string::npos );
 	}
 
+	SECTION( "test remove define" )
+	{
+		gl::ShaderPreprocessor preprocessor;
+		preprocessor.addDefine( "BLARG" );
+		preprocessor.addDefine( "SOMEVAR", "2" );
+
+		preprocessor.removeDefine( "BLARG" );
+		preprocessor.removeDefine( "SOMEVAR" );
+
+		REQUIRE( preprocessor.getDefines().size() == 0 );
+
+		const string result = preprocessor.parse( app::getAssetPath( "shader_preprocessor/simple.frag" ) );
+
+		REQUIRE( result.find( "#define BLARG" ) == string::npos );
+		REQUIRE( result.find( "#define SOMEVAR 2" ) == string::npos );
+	}
+	
+	SECTION( "test overwrite define" )
+	{
+		gl::ShaderPreprocessor preprocessor;
+		preprocessor.addDefine( "SOMEVAR", "1" );
+		preprocessor.addDefine( "SOMEVAR", "2" );
+
+		REQUIRE( preprocessor.getDefines().size() == 1 );
+
+		const string result = preprocessor.parse( app::getAssetPath( "shader_preprocessor/simple.frag" ) );
+
+		REQUIRE( result.find( "#define SOMEVAR 1" ) == string::npos );
+		REQUIRE( result.find( "#define SOMEVAR 2" ) != string::npos );
+	}
+
 	SECTION( "test nested includes" )
 	{
 		gl::ShaderPreprocessor preprocessor;

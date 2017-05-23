@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -26,13 +26,13 @@
 #include "cinder/CinderAssert.h"
 
 namespace cinder { namespace gl {
-	
+
 #if ! defined( CINDER_GL_ES )
 /////////////////////////////////////////////////////////////////////////////////
 // Query
 
 Query::Query( GLuint target )
-	: mTarget( target ), mId( 0 ) 
+	: mTarget( target ), mId( 0 )
 {
 	glGenQueries( 1, &mId );
 }
@@ -63,7 +63,7 @@ bool Query::isReady() const
 
 bool Query::isValid() const
 {
-	return glIsQuery( mId );
+	return !! glIsQuery( mId );
 }
 
 GLint Query::getValueInt() const
@@ -125,7 +125,7 @@ QueryTimeSwappedRef QueryTimeSwapped::create()
 {
 	return QueryTimeSwappedRef( new QueryTimeSwapped );
 }
-	
+
 QueryTimeSwapped::QueryTimeSwapped()
 	: mSwapIndex( 0 ), mIsStopped( true )
 {
@@ -154,7 +154,7 @@ void QueryTimeSwapped::swap()
 {
 	mSwapIndex = 1 - mSwapIndex;
 }
-	
+
 uint64_t QueryTimeSwapped::getElapsedNanoseconds() const
 {
 	if( ! mIsStopped ) {

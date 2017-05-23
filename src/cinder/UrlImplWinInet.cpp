@@ -197,7 +197,7 @@ void IStreamUrlImplWinInet::fillBuffer( int wantBytes ) const
 		return;
 	
 	// if we want more bytes than will fit in the rest of the buffer, let's make some room
-	if( wantBytes > mBuffer.size() - mBufferedBytes ) {
+	if( wantBytes > (int)mBuffer.size() - mBufferedBytes ) {
 		memmove( mBuffer.data(), mBuffer.data() + mBufferOffset, mBufferedBytes - mBufferOffset );
 		mBufferedBytes -= mBufferOffset;
 		mBufferFileOffset += mBufferOffset;
@@ -205,7 +205,7 @@ void IStreamUrlImplWinInet::fillBuffer( int wantBytes ) const
 	}
 	
 	// now if we've made all the room there is to make, and we still aren't big enough, reallocate
-	if( wantBytes > mBuffer.size() - mBufferedBytes ) {
+	if( wantBytes > (int)mBuffer.size() - mBufferedBytes ) {
 		mBuffer.resize( mBufferedBytes + wantBytes );
 	}
 	
@@ -231,26 +231,26 @@ void IStreamUrlImplWinInet::fillBuffer( int wantBytes ) const
 
 void IStreamUrlImplWinInet::IORead( void *dest, size_t size )
 {
-	fillBuffer( size );
-	
+	fillBuffer( static_cast<int>( size ) );
+
 	// check if theres data in the buffer - if not fillBuffer() either errored or EOF
 	if( bufferDataRemaining() < (off_t)size )
 		throw StreamExc();
 
 	memcpy( dest, mBuffer.data() + mBufferOffset, size );
-	mBufferOffset += size;
+	mBufferOffset += static_cast<int>( size );
 }
 
 size_t IStreamUrlImplWinInet::readDataAvailable( void *dest, size_t maxSize )
 {
-	fillBuffer( maxSize );
-	
+	fillBuffer( static_cast<int>( maxSize ) );
+
 	if( bufferDataRemaining() < (off_t)maxSize )
 		maxSize = bufferDataRemaining();
-		
+
 	memcpy( dest, mBuffer.data() + mBufferOffset, maxSize );
-	
-	mBufferOffset += maxSize;
+
+	mBufferOffset += static_cast<int>( maxSize );
 	return maxSize;
 }
 

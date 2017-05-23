@@ -1,33 +1,5 @@
-///////////////////////////////////////////////////////////////////////////////////
-/// OpenGL Mathematics (glm.g-truc.net)
-///
-/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
-/// Permission is hereby granted, free of charge, to any person obtaining a copy
-/// of this software and associated documentation files (the "Software"), to deal
-/// in the Software without restriction, including without limitation the rights
-/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-/// copies of the Software, and to permit persons to whom the Software is
-/// furnished to do so, subject to the following conditions:
-/// 
-/// The above copyright notice and this permission notice shall be included in
-/// all copies or substantial portions of the Software.
-/// 
-/// Restrictions:
-///		By making use of the Software for military purposes, you choose to make
-///		a Bunny unhappy.
-/// 
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-/// THE SOFTWARE.
-///
 /// @ref gtc_quaternion
 /// @file glm/gtc/quaternion.hpp
-/// @date 2009-05-21 / 2012-12-20
-/// @author Christophe Riccio
 ///
 /// @see core (dependence)
 /// @see gtc_half_float (dependence)
@@ -35,11 +7,10 @@
 ///
 /// @defgroup gtc_quaternion GLM_GTC_quaternion
 /// @ingroup gtc
-/// 
+///
 /// @brief Defines a templated quaternion type and several quaternion operations.
-/// 
+///
 /// <glm/gtc/quaternion.hpp> need to be included to use these functionalities.
-///////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
@@ -50,7 +21,7 @@
 #include "../vec4.hpp"
 #include "../gtc/constants.hpp"
 
-#if(defined(GLM_MESSAGES) && !defined(GLM_EXT_INCLUDED))
+#if GLM_MESSAGES == GLM_MESSAGES_ENABLED && !defined(GLM_EXT_INCLUDED)
 #	pragma message("GLM: GLM_GTC_quaternion extension included")
 #endif
 
@@ -67,50 +38,61 @@ namespace glm
 		typedef tquat<T, P> type;
 		typedef T value_type;
 
-#		ifdef GLM_META_PROG_HELPERS
-			static GLM_RELAXED_CONSTEXPR length_t components = 4;
-			static GLM_RELAXED_CONSTEXPR precision prec = P;
-#		endif//GLM_META_PROG_HELPERS
-
 		// -- Data --
 
-		T x, y, z, w;
+#		if GLM_HAS_ALIGNED_TYPE
+#			if GLM_COMPILER & GLM_COMPILER_GCC
+#				pragma GCC diagnostic push
+#				pragma GCC diagnostic ignored "-Wpedantic"
+#			endif
+#			if GLM_COMPILER & GLM_COMPILER_CLANG
+#				pragma clang diagnostic push
+#				pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
+#				pragma clang diagnostic ignored "-Wnested-anon-types"
+#			endif
+		
+			union
+			{
+				struct { T x, y, z, w;};
+				typename detail::storage<T, sizeof(T) * 4, detail::is_aligned<P>::value>::type data;
+			};
+		
+#			if GLM_COMPILER & GLM_COMPILER_CLANG
+#				pragma clang diagnostic pop
+#			endif
+#			if GLM_COMPILER & GLM_COMPILER_GCC
+#				pragma GCC diagnostic pop
+#			endif
+#		else
+			T x, y, z, w;
+#		endif
 
 		// -- Component accesses --
 
-#		ifdef GLM_FORCE_SIZE_FUNC
-			typedef size_t size_type;
-			/// Return the count of components of a quaternion
-			GLM_FUNC_DECL GLM_CONSTEXPR size_type size() const;
+		typedef length_t length_type;
+		/// Return the count of components of a quaternion
+		GLM_FUNC_DECL static length_type length(){return 4;}
 
-			GLM_FUNC_DECL T & operator[](size_type i);
-			GLM_FUNC_DECL T const & operator[](size_type i) const;
-#		else
-			typedef length_t length_type;
-			/// Return the count of components of a quaternion
-			GLM_FUNC_DECL GLM_CONSTEXPR length_type length() const;
-
-			GLM_FUNC_DECL T & operator[](length_type i);
-			GLM_FUNC_DECL T const & operator[](length_type i) const;
-#		endif//GLM_FORCE_SIZE_FUNC
+		GLM_FUNC_DECL T & operator[](length_type i);
+		GLM_FUNC_DECL T const & operator[](length_type i) const;
 
 		// -- Implicit basic constructors --
 
-		GLM_FUNC_DECL tquat() GLM_DEFAULT_CTOR;
-		GLM_FUNC_DECL tquat(tquat<T, P> const & q) GLM_DEFAULT;
+		GLM_FUNC_DECL GLM_CONSTEXPR tquat() GLM_DEFAULT_CTOR;
+		GLM_FUNC_DECL GLM_CONSTEXPR tquat(tquat<T, P> const & q) GLM_DEFAULT;
 		template <precision Q>
-		GLM_FUNC_DECL tquat(tquat<T, Q> const & q);
+		GLM_FUNC_DECL GLM_CONSTEXPR tquat(tquat<T, Q> const & q);
 
 		// -- Explicit basic constructors --
 
-		GLM_FUNC_DECL explicit tquat(ctor);
-		GLM_FUNC_DECL explicit tquat(T const & s, tvec3<T, P> const & v);
-		GLM_FUNC_DECL tquat(T const & w, T const & x, T const & y, T const & z);
+		GLM_FUNC_DECL GLM_CONSTEXPR_CTOR explicit tquat(ctor);
+		GLM_FUNC_DECL GLM_CONSTEXPR tquat(T const & s, tvec3<T, P> const & v);
+		GLM_FUNC_DECL GLM_CONSTEXPR tquat(T const & w, T const & x, T const & y, T const & z);
 
 		// -- Conversion constructors --
 
 		template <typename U, precision Q>
-		GLM_FUNC_DECL GLM_EXPLICIT tquat(tquat<U, Q> const & q);
+		GLM_FUNC_DECL GLM_CONSTEXPR GLM_EXPLICIT tquat(tquat<U, Q> const & q);
 
 		/// Explicit conversion operators
 #		if GLM_HAS_EXPLICIT_CONVERSION_OPERATORS
@@ -124,12 +106,12 @@ namespace glm
 		/// @param v A second normalized axis
 		/// @see gtc_quaternion
 		/// @see http://lolengine.net/blog/2013/09/18/beautiful-maths-quaternion-from-vectors
-		GLM_FUNC_DECL explicit tquat(tvec3<T, P> const & u,	tvec3<T, P> const & v);
+		GLM_FUNC_DECL tquat(tvec3<T, P> const & u, tvec3<T, P> const & v);
 
 		/// Build a quaternion from euler angles (pitch, yaw, roll), in radians.
-		GLM_FUNC_DECL explicit tquat(tvec3<T, P> const & eulerAngles);
-		GLM_FUNC_DECL explicit tquat(tmat3x3<T, P> const & m);
-		GLM_FUNC_DECL explicit tquat(tmat4x4<T, P> const & m);
+		GLM_FUNC_DECL GLM_EXPLICIT tquat(tvec3<T, P> const & eulerAngles);
+		GLM_FUNC_DECL GLM_EXPLICIT tquat(tmat3x3<T, P> const & m);
+		GLM_FUNC_DECL GLM_EXPLICIT tquat(tmat4x4<T, P> const & m);
 
 		// -- Unary arithmetic operators --
 
@@ -139,6 +121,8 @@ namespace glm
 		GLM_FUNC_DECL tquat<T, P> & operator=(tquat<U, P> const & m);
 		template <typename U>
 		GLM_FUNC_DECL tquat<T, P> & operator+=(tquat<U, P> const & q);
+		template <typename U>
+		GLM_FUNC_DECL tquat<T, P> & operator-=(tquat<U, P> const & q);
 		template <typename U>
 		GLM_FUNC_DECL tquat<T, P> & operator*=(tquat<U, P> const & q);
 		template <typename U>
@@ -183,6 +167,14 @@ namespace glm
 
 	template <typename T, precision P>
 	GLM_FUNC_DECL tquat<T, P> operator/(tquat<T, P> const & q, T const & s);
+
+	// -- Boolean operators --
+
+	template <typename T, precision P>
+	GLM_FUNC_DECL bool operator==(tquat<T, P> const & q1, tquat<T, P> const & q2);
+
+	template <typename T, precision P>
+	GLM_FUNC_DECL bool operator!=(tquat<T, P> const & q1, tquat<T, P> const & q2);
 
 	/// Returns the length of the quaternion.
 	/// 
@@ -259,7 +251,7 @@ namespace glm
 	template <typename T, precision P>
 	GLM_FUNC_DECL tquat<T, P> rotate(tquat<T, P> const & q, T const & angle, tvec3<T, P> const & axis);
 
-	/// Returns euler angles, yitch as x, yaw as y, roll as z.
+	/// Returns euler angles, pitch as x, yaw as y, roll as z.
 	/// The result is expressed in radians if GLM_FORCE_RADIANS is defined or degrees otherwise.
 	/// 
 	/// @see gtc_quaternion
@@ -376,6 +368,29 @@ namespace glm
 	/// @see gtc_quaternion
 	template <typename T, precision P>
 	GLM_FUNC_DECL tvec4<bool, P> notEqual(tquat<T, P> const & x, tquat<T, P> const & y);
+
+	/// Returns true if x holds a NaN (not a number)
+	/// representation in the underlying implementation's set of
+	/// floating point representations. Returns false otherwise,
+	/// including for implementations with no NaN
+	/// representations.
+	/// 
+	/// /!\ When using compiler fast math, this function may fail.
+	/// 
+	/// @tparam genType Floating-point scalar or vector types.
+	template <typename T, precision P>
+	GLM_FUNC_DECL tvec4<bool, P> isnan(tquat<T, P> const & x);
+
+	/// Returns true if x holds a positive infinity or negative
+	/// infinity representation in the underlying implementation's
+	/// set of floating point representations. Returns false
+	/// otherwise, including for implementations with no infinity
+	/// representations.
+	/// 
+	/// @tparam genType Floating-point scalar or vector types.
+	template <typename T, precision P>
+	GLM_FUNC_DECL tvec4<bool, P> isinf(tquat<T, P> const & x);
+
 	/// @}
 } //namespace glm
 

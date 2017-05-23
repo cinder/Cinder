@@ -49,7 +49,7 @@ bool dictionarySetPixelBufferOptions( unsigned int width, unsigned int height, b
 CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool alpha );
 
 //! Designed to be the deallocator for surfaces returned by convertToPixelBufferToSurface
-static void CVPixelBufferDealloc( void *refcon );
+void CVPixelBufferDealloc( void *refcon );
 //! Makes a cinder::Surface form a CVPixelBufferRef, setting a proper deallocation function to free the CVPixelBufferRef upon the destruction of the Surface::Obj
 Surface8uRef convertCvPixelBufferToSurface( CVPixelBufferRef pixelBufferRef );
 

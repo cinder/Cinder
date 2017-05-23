@@ -33,7 +33,7 @@
 
 namespace cinder { namespace app {
 
-class AppMac : public AppBase {
+class CI_API AppMac : public AppBase {
   public:
 	typedef std::function<void ( Settings *settings )>	SettingsFn;
 

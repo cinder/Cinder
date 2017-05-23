@@ -1,4 +1,4 @@
-### Cinder 0.9.1dev: [libcinder.org](http://libcinder.org)
+### Cinder 0.9.2dev: [libcinder.org](http://libcinder.org)
 
 <p align="center">
   <img src="https://libcinder.org/docs/_assets/images/cinder_logo.svg" alt="Cinder Logo" width="256" height="auto"/>
@@ -15,8 +15,8 @@ You might also prefer one of our [pre-packaged downloads](https://libcinder.org/
 
 Cinder [guides](https://libcinder.org/docs/branch/master/guides/index.html) and [reference documentation](https://libcinder.org/docs/branch/master/reference/index.html) are available on the website.
 
-Cinder supports macOS, Windows, Linux, and iOS. It requires Xcode 6.0 or later for development on the Mac, and Visual C++ 2013 or later on Windows.
+Cinder supports macOS, Windows, Linux, and iOS. It requires Xcode 7.1 or later for development on the Mac, and Visual C++ 2015 or later on Windows.
 
 Cinder is released under the [Modified BSD License](docs/COPYING). Please visit [our website](https://libcinder.org) for more information.
 
-Also be sure to check the [User Forum](http://discourse.libcinder.org).
+Also be sure to check out the [User Forum](http://discourse.libcinder.org).

@@ -152,7 +152,7 @@ class CI_API TextureBase {
 	//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 	void				setLabel( const std::string &label );
 
-	struct CI_API Format {			
+	struct CI_API Format {
 		//! Specifies the texture's target. The default is \c GL_TEXTURE_2D
 		void	setTarget( GLenum target ) { mTarget = target; }
 		//! Sets the texture's target to be \c GL_TEXTURE_RECTANGLE. Not available in OpenGL ES.

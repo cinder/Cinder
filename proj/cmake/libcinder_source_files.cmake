@@ -143,6 +143,7 @@ list( APPEND SRC_SET_CINDER_GL
 	${CINDER_SRC_DIR}/cinder/gl/Pbo.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Query.cpp
 	${CINDER_SRC_DIR}/cinder/gl/scoped.cpp
+	${CINDER_SRC_DIR}/cinder/gl/Sampler.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Shader.cpp
 	${CINDER_SRC_DIR}/cinder/gl/ShaderPreprocessor.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Sync.cpp
@@ -368,21 +369,21 @@ if( NOT CINDER_FREETYPE_USE_SYSTEM )
 endif() # ! CINDER_FREETYPE_USE_SYSTEM
 
 list( APPEND SRC_SET_ZLIB
-	${CINDER_SRC_DIR}/zlib-1.2.8/adler32.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/compress.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/crc32.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/deflate.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/gzclose.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/gzlib.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/gzread.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/gzwrite.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/infback.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/inffast.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/inflate.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/inftrees.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/trees.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/uncompr.c
-	${CINDER_SRC_DIR}/zlib-1.2.8/zutil.c
+	${CINDER_SRC_DIR}/zlib/adler32.c
+	${CINDER_SRC_DIR}/zlib/compress.c
+	${CINDER_SRC_DIR}/zlib/crc32.c
+	${CINDER_SRC_DIR}/zlib/deflate.c
+	${CINDER_SRC_DIR}/zlib/gzclose.c
+	${CINDER_SRC_DIR}/zlib/gzlib.c
+	${CINDER_SRC_DIR}/zlib/gzread.c
+	${CINDER_SRC_DIR}/zlib/gzwrite.c
+	${CINDER_SRC_DIR}/zlib/infback.c
+	${CINDER_SRC_DIR}/zlib/inffast.c
+	${CINDER_SRC_DIR}/zlib/inflate.c
+	${CINDER_SRC_DIR}/zlib/inftrees.c
+	${CINDER_SRC_DIR}/zlib/trees.c
+	${CINDER_SRC_DIR}/zlib/uncompr.c
+	${CINDER_SRC_DIR}/zlib/zutil.c
 )
 
 list( APPEND CINDER_SRC_FILES           ${SRC_SET_ZLIB}	)

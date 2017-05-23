@@ -278,6 +278,17 @@ class CI_API Context {
 	//! Returns the active texture unit with values relative to \c 0, \em not GL_TEXTURE0
 	uint8_t		getActiveTexture();
 
+#if defined( CINDER_GL_HAS_SAMPLERS )
+	//! Analogous to glBindSampler( \a textureUnit, \a samplerId )
+	void		bindSampler( uint8_t textureUnit, GLuint samplerId );
+	//! Duplicates and pushes the sampler binding for \a textureUnit, setting it to \a samplerId
+	void		pushSamplerBinding( uint8_t textureUnit, GLuint samplerId );
+	//! Pops the sampler binding \a textureUnit. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void		popSamplerBinding( uint8_t textureUnit, bool forceRestore = false );
+	//! Returns the current sampler binding \a textureUnit. If not cached, queries the GL for the current value (and caches it).
+	GLuint		getSamplerBinding( uint8_t textureUnit );
+#endif // defined( CINDER_GL_HAS_SAMPLERS )
+
 	//! Analogous to glBindFramebuffer()
 	void		bindFramebuffer( const FboRef &fbo, GLenum target = GL_FRAMEBUFFER );
 	//! Analogous to glBindFramebuffer(). Prefer the FboRef variant when possible. This does not allow gl::Fbo to mark itself as needing multisample resolution.
@@ -528,6 +539,10 @@ class CI_API Context {
 	// map<TextureUnit,map<TextureTarget,vector<Binding ID Stack>>>
 	std::map<uint8_t,std::map<GLenum,std::vector<GLint>>>	mTextureBindingStack;
 	std::vector<uint8_t>					mActiveTextureStack;
+	
+#if defined( CINDER_GL_HAS_SAMPLERS )
+	std::vector<std::vector<GLuint>>	mSamplerBindingStack;
+#endif	
 	
 	VaoRef						mDefaultVao;
 	VboRef						mDefaultArrayVbo[4], mDefaultElementVbo;

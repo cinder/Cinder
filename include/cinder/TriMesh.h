@@ -301,7 +301,7 @@ class CI_API TriMesh : public geom::Source {
 	//! Fills this TriMesh with the data from a binary file, which was created with TriMesh::write().
 	void		read( const DataSourceRef &dataSource );
 	//! Writes this TriMesh out to a binary data file.
-	void		write( const DataTargetRef &dataTarget ) const { write( dataTarget, ~0 ); }
+	void		write( const DataTargetRef &dataTarget ) const { write( dataTarget, ~0u ); }
 	//! Writes this TriMesh out to a binary data file. If \a writeNormals or \a writeTangents is \c true, normals and/or tangents are written to the file.
 	void		write( const DataTargetRef &dataTarget, bool writeNormals, bool writeTangents ) const;
 	//! Writes this TriMesh out to a binary data file. You can specify which attributes to write by supplying a list of \a attribs.

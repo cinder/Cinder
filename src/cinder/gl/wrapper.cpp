@@ -999,6 +999,27 @@ ivec3 getMaxComputeWorkGroupSize()
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
+// debug groups
+#if defined( CINDER_GL_HAS_KHR_DEBUG )
+void pushDebugGroup( const std::string &message )
+{
+	glPushDebugGroup( GL_DEBUG_SOURCE_APPLICATION, 0, -1, message.c_str() );
+}
+void pushDebugGroup( GLuint id, const std::string &message )
+{
+	glPushDebugGroup( GL_DEBUG_SOURCE_APPLICATION, id, -1, message.c_str() );
+}
+void pushDebugGroup( GLenum source, GLuint id, const std::string &message )
+{
+	glPushDebugGroup( source, id, -1, message.c_str() );
+}
+void popDebugGroup()
+{
+	glPopDebugGroup();
+}
+#endif
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 // toGL conversion functions
 GLenum toGl( geom::Primitive prim )
 {

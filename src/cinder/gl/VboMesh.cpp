@@ -449,17 +449,17 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 						continue;
 					}
 				}
-				
+
 				uint32_t dataTypeBytes = 0;
 				switch ( vertAttribInfo.getDataType() ) {
 					case geom::DataType::FLOAT: dataTypeBytes = 4; break;
 					case geom::DataType::INTEGER: dataTypeBytes = 4; break;
 					case geom::DataType::DOUBLE: dataTypeBytes = 8; break;
 				}
-				
+
 				uint32_t numTimes = numLocationsExpected * shaderAttribCount;
 				size_t currentInnerOffset = 0;
-				for( int i = 0; i < numTimes; i++ ) {
+				for( uint32_t i = 0; i < numTimes; i++ ) {
 					ctx->enableVertexAttribArray( shaderLoc + i );
 					if( vertAttribInfo.getDataType() != geom::DataType::INTEGER )
 						ctx->vertexAttribPointer( shaderLoc + i, numDimsPerVertexPointer, GL_FLOAT, GL_FALSE, (GLsizei)vertAttribInfo.getStride(), (const void*)(vertAttribInfo.getOffset() + currentInnerOffset) );
@@ -870,7 +870,7 @@ void VboMesh::echoVertices( std::ostream &os, const vector<uint32_t> &indices, b
 		int numSpaces = std::max<int>( (int)(colStartCharIndex - ss.str().length()), 0 );
 		// center string
 		numSpaces += std::max<int>( (int)(attribColLengths[a] - (attribSemanticNames[a].length()+2)) / 2, 0 );
-		for( size_t s = 0; s < numSpaces; s++ )
+		for( int s = 0; s < numSpaces; s++ )
 			ss << " ";
 		ss << "<" << attribSemanticNames[a] << "> ";
 	}
@@ -897,7 +897,7 @@ void VboMesh::echoVertices( std::ostream &os, const vector<uint32_t> &indices, b
 			int numSpaces = std::max<int>( (int)(colStartCharIndex - ss.str().length()), 0 );
 			// center string
 			numSpaces += std::max<int>( (int)(attribColLengths[a] - attribData[a][v].length()) / 2, 0 );
-			for( size_t s = 0; s < numSpaces; s++ )
+			for( int s = 0; s < numSpaces; s++ )
 				ss << " ";
 			ss << attribData[a][v];
 		}

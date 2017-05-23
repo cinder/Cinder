@@ -1,36 +1,8 @@
-///////////////////////////////////////////////////////////////////////////////////
-/// OpenGL Mathematics (glm.g-truc.net)
-///
-/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
-/// Permission is hereby granted, free of charge, to any person obtaining a copy
-/// of this software and associated documentation files (the "Software"), to deal
-/// in the Software without restriction, including without limitation the rights
-/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-/// copies of the Software, and to permit persons to whom the Software is
-/// furnished to do so, subject to the following conditions:
-/// 
-/// The above copyright notice and this permission notice shall be included in
-/// all copies or substantial portions of the Software.
-/// 
-/// Restrictions:
-///		By making use of the Software for military purposes, you choose to make
-///		a Bunny unhappy.
-/// 
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-/// THE SOFTWARE.
-///
 /// @ref gtx_matrix_decompose
 /// @file glm/gtx/matrix_decompose.inl
-/// @date 2014-08-29 / 2014-08-29
-/// @author Christophe Riccio
-///////////////////////////////////////////////////////////////////////////////////
 
-namespace glm
+namespace glm{
+namespace detail
 {
 	/// Make a linear combination of two vectors and return the result.
 	// result = (a * ascl) + (b * bscl)
@@ -44,24 +16,15 @@ namespace glm
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER void v3Scale(tvec3<T, P> & v, T desiredLength)
+	GLM_FUNC_QUALIFIER tvec3<T, P> scale(tvec3<T, P> const& v, T desiredLength)
 	{
-		T len = glm::length(v);
-		if(len != 0)
-		{
-			T l = desiredLength / len;
-			v[0] *= l;
-			v[1] *= l;
-			v[2] *= l;
-		}
+		return v * desiredLength / length(v);
 	}
+}//namespace detail
 
-	/**
-	* Matrix decompose
-	* http://www.opensource.apple.com/source/WebCore/WebCore-514/platform/graphics/transforms/TransformationMatrix.cpp
-	* Decomposes the mode matrix to translations,rotation scale components
-	* 
-	*/
+	// Matrix decompose
+	// http://www.opensource.apple.com/source/WebCore/WebCore-514/platform/graphics/transforms/TransformationMatrix.cpp
+	// Decomposes the mode matrix to translations,rotation scale components
 
 	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER bool decompose(tmat4x4<T, P> const & ModelMatrix, tvec3<T, P> & Scale, tquat<T, P> & Orientation, tvec3<T, P> & Translation, tvec3<T, P> & Skew, tvec4<T, P> & Perspective)
@@ -131,26 +94,26 @@ namespace glm
 		// Compute X scale factor and normalize first row.
 		Scale.x = length(Row[0]);// v3Length(Row[0]);
 
-		v3Scale(Row[0], static_cast<T>(1));
+		Row[0] = detail::scale(Row[0], static_cast<T>(1));
 
 		// Compute XY shear factor and make 2nd row orthogonal to 1st.
 		Skew.z = dot(Row[0], Row[1]);
-		Row[1] = combine(Row[1], Row[0], static_cast<T>(1), -Skew.z);
+		Row[1] = detail::combine(Row[1], Row[0], static_cast<T>(1), -Skew.z);
 
 		// Now, compute Y scale and normalize 2nd row.
 		Scale.y = length(Row[1]);
-		v3Scale(Row[1], static_cast<T>(1));
+		Row[1] = detail::scale(Row[1], static_cast<T>(1));
 		Skew.z /= Scale.y;
 
 		// Compute XZ and YZ shears, orthogonalize 3rd row.
 		Skew.y = glm::dot(Row[0], Row[2]);
-		Row[2] = combine(Row[2], Row[0], static_cast<T>(1), -Skew.y);
+		Row[2] = detail::combine(Row[2], Row[0], static_cast<T>(1), -Skew.y);
 		Skew.x = glm::dot(Row[1], Row[2]);
-		Row[2] = combine(Row[2], Row[1], static_cast<T>(1), -Skew.x);
+		Row[2] = detail::combine(Row[2], Row[1], static_cast<T>(1), -Skew.x);
 
 		// Next, get Z scale and normalize 3rd row.
 		Scale.z = length(Row[2]);
-		v3Scale(Row[2], static_cast<T>(1));
+		Row[2] = detail::scale(Row[2], static_cast<T>(1));
 		Skew.y /= Scale.z;
 		Skew.x /= Scale.z;
 
@@ -162,7 +125,7 @@ namespace glm
 		{
 			for(length_t i = 0; i < 3; i++)
 			{
-				Scale.x *= static_cast<T>(-1);
+				Scale[i] *= static_cast<T>(-1);
 				Row[i] *= static_cast<T>(-1);
 			}
 		}

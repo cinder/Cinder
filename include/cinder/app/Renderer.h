@@ -124,7 +124,7 @@ class CI_API Renderer {
 
 typedef std::shared_ptr<class Renderer2d>	Renderer2dRef;
 #if defined( CINDER_COCOA )
-class Renderer2d : public Renderer {
+class CI_API Renderer2d : public Renderer {
   public:
   	Renderer2d();
 	
@@ -193,7 +193,7 @@ class CI_API Renderer2d : public Renderer {
 
 #elif defined( CINDER_ANDROID )
 
-class Renderer2d : public Renderer {
+class CI_API Renderer2d : public Renderer {
  public:
     Renderer2d();
 

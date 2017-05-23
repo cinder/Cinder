@@ -100,14 +100,13 @@ struct CI_API AttribInfo {
 	uint8_t		getByteSize() const { if( mDataType == geom::DataType::DOUBLE ) return mDims * 8; else return mDims * 4; }
 
   protected:
-	Attrib		mAttrib;
-	DataType	mDataType;
-	int32_t		mDims;
 	size_t		mStride;
 	size_t		mOffset;
 	uint32_t	mInstanceDivisor;
-}; 
-
+	Attrib		mAttrib;
+	DataType	mDataType;
+	int8_t		mDims;
+};
 
 class CI_API BufferLayout {
   public:
@@ -843,7 +842,7 @@ class CI_API BSpline : public Source {
 	template<typename T>
 	void init( const ci::BSpline<4,T> &spline, int subdivisions );
 
-	int						mPositionDims;
+	uint8_t					mPositionDims;
 	size_t					mNumVertices;
 	std::vector<float>		mPositions;
 	std::vector<vec3>		mNormals;
@@ -1299,13 +1298,13 @@ class CI_API Constant : public Modifier {
 	Modifier*	clone() const override { return new geom::Constant( *this ); }
 	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
 	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;
-	
+
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 
   protected:
 	geom::Attrib	mAttrib;
 	vec4			mValue;
-	int				mDims;
+	uint8_t			mDims;
 };
 
 //! Maps an attribute as a function of another attribute. Valid types are: float, vec2, vec3, vec4

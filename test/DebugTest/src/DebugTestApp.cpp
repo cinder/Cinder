@@ -5,7 +5,7 @@
 #include "cinder/Log.h"
 #include <sstream>
 
-#define CI_ASSERT_DEBUG_BREAK
+//#define CI_ASSERT_DEBUG_BREAK
 #include "cinder/CinderAssert.h"
 
 using namespace ci;

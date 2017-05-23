@@ -1,41 +1,12 @@
-///////////////////////////////////////////////////////////////////////////////////
-/// OpenGL Mathematics (glm.g-truc.net)
-///
-/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
-/// Permission is hereby granted, free of charge, to any person obtaining a copy
-/// of this software and associated documentation files (the "Software"), to deal
-/// in the Software without restriction, including without limitation the rights
-/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-/// copies of the Software, and to permit persons to whom the Software is
-/// furnished to do so, subject to the following conditions:
-/// 
-/// The above copyright notice and this permission notice shall be included in
-/// all copies or substantial portions of the Software.
-/// 
-/// Restrictions:
-///		By making use of the Software for military purposes, you choose to make
-///		a Bunny unhappy.
-/// 
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-/// THE SOFTWARE.
-///
 /// @ref gtc_ulp
 /// @file glm/gtc/ulp.inl
-/// @date 2011-03-07 / 2012-04-07
-/// @author Christophe Riccio
-///////////////////////////////////////////////////////////////////////////////////
+///
 /// Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
 ///
 /// Developed at SunPro, a Sun Microsystems, Inc. business.
 /// Permission to use, copy, modify, and distribute this
 /// software is freely granted, provided that this notice
 /// is preserved.
-///////////////////////////////////////////////////////////////////////////////////
 
 #include "../detail/type_int.hpp"
 #include <cmath>
@@ -232,7 +203,7 @@ namespace glm
 	GLM_FUNC_QUALIFIER vecType<T, P> next_float(vecType<T, P> const & x)
 	{
 		vecType<T, P> Result(uninitialize);
-		for(detail::component_count_t i = 0; i < detail::component_count(Result); ++i)
+		for(length_t i = 0, n = Result.length(); i < n; ++i)
 			Result[i] = next_float(x[i]);
 		return Result;
 	}
@@ -267,7 +238,7 @@ namespace glm
 	GLM_FUNC_QUALIFIER vecType<T, P> prev_float(vecType<T, P> const & x)
 	{
 		vecType<T, P> Result(uninitialize);
-		for(detail::component_count_t i = 0; i < detail::component_count(Result); ++i)
+		for(length_t i = 0, n = Result.length(); i < n; ++i)
 			Result[i] = prev_float(x[i]);
 		return Result;
 	}
@@ -285,7 +256,7 @@ namespace glm
 	GLM_FUNC_QUALIFIER vecType<T, P> next_float(vecType<T, P> const & x, vecType<uint, P> const & ulps)
 	{
 		vecType<T, P> Result(uninitialize);
-		for(detail::component_count_t i = 0; i < detail::component_count(Result); ++i)
+		for(length_t i = 0, n = Result.length(); i < n; ++i)
 			Result[i] = next_float(x[i], ulps[i]);
 		return Result;
 	}
@@ -303,7 +274,7 @@ namespace glm
 	GLM_FUNC_QUALIFIER vecType<T, P> prev_float(vecType<T, P> const & x, vecType<uint, P> const & ulps)
 	{
 		vecType<T, P> Result(uninitialize);
-		for(detail::component_count_t i = 0; i < detail::component_count(Result); ++i)
+		for(length_t i = 0, n = Result.length(); i < n; ++i)
 			Result[i] = prev_float(x[i], ulps[i]);
 		return Result;
 	}
@@ -343,7 +314,7 @@ namespace glm
 	GLM_FUNC_QUALIFIER vecType<uint, P> float_distance(vecType<T, P> const & x, vecType<T, P> const & y)
 	{
 		vecType<uint, P> Result(uninitialize);
-		for(detail::component_count_t i = 0; i < detail::component_count(Result); ++i)
+		for(length_t i = 0, n = Result.length(); i < n; ++i)
 			Result[i] = float_distance(x[i], y[i]);
 		return Result;
 	}

@@ -23,7 +23,6 @@
 #include "cinder/ip/Premultiply.h"
 #include "cinder/ChanTraits.h"
 
-#include <boost/preprocessor/seq.hpp>
 #include <algorithm>
 
 namespace cinder { namespace ip {
@@ -114,12 +113,8 @@ void unpremultiply<float>( SurfaceT<float> *surface )
 	}	
 }
 
-
-
-#define premult_PROTOTYPES(r,data,T)\
-	template CI_API void premultiply( SurfaceT<T> *Surface );
-
-BOOST_PP_SEQ_FOR_EACH( premult_PROTOTYPES, ~, CHANNEL_TYPES )
-	
+template CI_API void premultiply( SurfaceT<uint8_t> *Surface );
+template CI_API void premultiply( SurfaceT<uint16_t> *Surface );
+template CI_API void premultiply( SurfaceT<float> *Surface );	
 
 } } // namespace cinder::ip

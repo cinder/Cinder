@@ -63,26 +63,13 @@ if( MSVC )
 	add_compile_options( /MP )
     # Static library flags
     set( CINDER_STATIC_LIBS_FLAGS_DEBUG     "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
-    set( CINDER_STATIC_LIBS_FLAGS_RELEASE   "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
    
     # Platform libraries 
     set( MSW_PLATFORM_LIBS "Ws2_32.lib wldap32.lib shlwapi.lib OpenGL32.lib wmvcore.lib Strmiids.lib Msimg32.lib" )
 
     set( MSW_SUBFOLDER "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
     # Static library debug depends
-    set( CINDER_STATIC_LIBS_DEPENDS_DEBUG   "${MSW_PLATFORM_LIBS} ${MSW_SUBFOLDER}/zlib.lib" )
+    set( CINDER_STATIC_LIBS_DEPENDS_DEBUG   "${MSW_PLATFORM_LIBS}" )
     # Static library release depends
-    set( CINDER_STATIC_LIBS_DEPENDS_RELEASE "${MSW_PLATFORM_LIBS} ${MSW_SUBFOLDER}/zlib.lib" )
-
-    # Glob debug boost libs
-    file( GLOB MSW_BOOST_LIBS "${MSW_SUBFOLDER}/libboost*-sgd-*.lib" )
-    foreach( BOOST_LIB ${MSW_BOOST_LIBS} )
-        set( CINDER_STATIC_LIBS_DEPENDS_DEBUG "${CINDER_STATIC_LIBS_DEPENDS_DEBUG} ${BOOST_LIB}" )
-    endforeach()
-
-    # Glob release boost libs
-    file( GLOB MSW_BOOST_LIBS "${MSW_SUBFOLDER}/libboost*-s-*.lib" )
-    foreach( BOOST_LIB ${MSW_BOOST_LIBS} )
-        set( CINDER_STATIC_LIBS_DEPENDS_RELEASE "${CINDER_STATIC_LIBS_DEPENDS_RELEASE} ${BOOST_LIB}" )
-    endforeach()
+    set( CINDER_STATIC_LIBS_DEPENDS_RELEASE "${MSW_PLATFORM_LIBS}" )
 endif()

@@ -407,7 +407,7 @@ vector<std::string> SourceFileMediaFoundation::getSupportedExtensions()
 // ----------------------------------------------------------------------------------------------------
 
 TargetFileMediaFoundation::TargetFileMediaFoundation( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension )
-	: TargetFile( dataTarget, sampleRate, numChannels, sampleType ), mStreamIndex( 0 )
+	: TargetFile( sampleRate, numChannels, sampleType ), mStreamIndex( 0 )
 {
 	MediaFoundationInitializer::initMediaFoundation();
 
@@ -423,9 +423,9 @@ TargetFileMediaFoundation::TargetFileMediaFoundation( const DataTargetRef &dataT
 	mSinkWriter = ci::msw::makeComUnique( sinkWriter );
 
 	mSampleSize = getBytesPerSample( mSampleType );
-	const UINT32 bitsPerSample = 8 * mSampleSize;
-	const WORD blockAlignment = mNumChannels * mSampleSize;
-	const DWORD averageBytesPerSecond = mSampleRate * blockAlignment;
+	const auto bitsPerSample = 8 * mSampleSize;
+	const auto blockAlignment = mNumChannels * mSampleSize;
+	const auto averageBytesPerSecond = mSampleRate * blockAlignment;
 
 	// Set the output media type.
 
@@ -441,19 +441,19 @@ TargetFileMediaFoundation::TargetFileMediaFoundation( const DataTargetRef &dataT
 	hr = mediaType->SetGUID( MF_MT_SUBTYPE, audioFormat );
 	CI_ASSERT( hr == S_OK );
 
-	hr = mediaType->SetUINT32( MF_MT_AUDIO_SAMPLES_PER_SECOND, (UINT32)mSampleRate );
+	hr = mediaType->SetUINT32( MF_MT_AUDIO_SAMPLES_PER_SECOND, static_cast<UINT32>( mSampleRate ) );
 	CI_ASSERT( hr == S_OK );
 
-	hr = mediaType->SetUINT32( MF_MT_AUDIO_BITS_PER_SAMPLE, bitsPerSample );
+	hr = mediaType->SetUINT32( MF_MT_AUDIO_BITS_PER_SAMPLE, static_cast<UINT32>( bitsPerSample ) );
 	CI_ASSERT( hr == S_OK );
 
-	hr = mediaType->SetUINT32( MF_MT_AUDIO_BLOCK_ALIGNMENT, blockAlignment );
+	hr = mediaType->SetUINT32( MF_MT_AUDIO_BLOCK_ALIGNMENT, static_cast<UINT32>( blockAlignment ) );
 	CI_ASSERT( hr == S_OK );
 
-	hr = mediaType->SetUINT32( MF_MT_AUDIO_AVG_BYTES_PER_SECOND, averageBytesPerSecond );
+	hr = mediaType->SetUINT32( MF_MT_AUDIO_AVG_BYTES_PER_SECOND, static_cast<UINT32>( averageBytesPerSecond ) );
 	CI_ASSERT( hr == S_OK );
 
-	hr = mediaType->SetUINT32( MF_MT_AUDIO_NUM_CHANNELS, (UINT32)mNumChannels );
+	hr = mediaType->SetUINT32( MF_MT_AUDIO_NUM_CHANNELS, static_cast<UINT32>( mNumChannels ) );
 	CI_ASSERT( hr == S_OK );
 
 	hr = mediaType->SetUINT32( MF_MT_ALL_SAMPLES_INDEPENDENT, 1 );
@@ -499,7 +499,7 @@ void TargetFileMediaFoundation::performWrite( const Buffer *buffer, size_t numFr
 
 	// create media buffer and fill with audio samples.
 
-	DWORD bufferSizeBytes = numFrames * buffer->getNumChannels() * mSampleSize;
+	const DWORD bufferSizeBytes = static_cast<DWORD>( numFrames * buffer->getNumChannels() * mSampleSize );
 	::IMFMediaBuffer *mediaBuffer;
 	hr = ::MFCreateMemoryBuffer( bufferSizeBytes, &mediaBuffer );
 	CI_ASSERT( hr == S_OK );
