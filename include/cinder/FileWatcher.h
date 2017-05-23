@@ -70,6 +70,7 @@ class WatchEvent {
 //! on a specific file, you can use the returned Connection's disable() or disconnect() methods.
 class CI_API FileWatcher : private Noncopyable {
   public:
+	FileWatcher();
 	~FileWatcher();
 
 	//! Optional parameters provided to watch()
@@ -84,9 +85,7 @@ class CI_API FileWatcher : private Noncopyable {
 	};
 
 	//! Returns the global instance of FileWatcher
-	static const FileWatcherRef&	instance();
-	//! Creates and returns a new FileWatcher within a shared_ptr.
-	static FileWatcherRef			create(); 
+	static FileWatcher&	instance();
 
 	//! Enables or disables file watching.
 	void	setWatchingEnabled( bool enable );
@@ -125,20 +124,21 @@ class CI_API FileWatcher : private Noncopyable {
 	const size_t	getNumWatchedFiles() const;
 
 	//! Sets the update time interval in seconds for the polling thread. \default is 0.02 seconds.
+	//! \note Setting the interval too low potentially blocks callbacks from occuring.  See \see cinder::FileWatcher::update
 	void		setThreadUpdateInterval( double seconds )	{ mThreadUpdateInterval = seconds; }
 	//! Returns the update time interval in seconds for the polling thread. \default is 0.02 seconds.
 	double		getThreadUpdateInterval() const				{ return mThreadUpdateInterval; }
 
   private:
-	FileWatcher();
 
 	void	configureWatchPolling();
+	void	connectAppUpdate();
 	void	stopWatchPolling();
 	void	threadEntry();
 
 	std::list<std::unique_ptr<Watch>>	mWatchList;
-	std::recursive_mutex				mMutex;
-	std::unique_ptr<std::thread>		mThread;
+	mutable std::recursive_mutex		mMutex;
+	std::thread							mThread;
 	std::atomic<bool>					mThreadShouldQuit;
 	std::atomic<double>					mThreadUpdateInterval		= { 0.02 };
 	std::atomic<bool>					mWatchingEnabled			= { true };
