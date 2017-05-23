@@ -23,7 +23,7 @@
 
 #include "cinder/FileWatcher.h"
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/Log.h"
 
 //#define LOG_UPDATE( stream )	CI_LOG_I( stream )
@@ -264,7 +264,7 @@ void FileWatcher::setConnectToAppUpdateEnabled( bool enable )
 	if( ! mConnectToAppUpdateEnabled && mConnectionAppUpdate.isConnected() )
 		mConnectionAppUpdate.disconnect();
 	
-	if( mConnectToAppUpdateEnabled && ! mConnectionAppUpdate.isConnected() && app::App::get() )
+	if( mConnectToAppUpdateEnabled && ! mConnectionAppUpdate.isConnected() && app::AppBase::get() )
 		connectAppUpdate();
 }
 
@@ -342,12 +342,12 @@ void FileWatcher::disable( const fs::path &filePath )
 
 void FileWatcher::connectAppUpdate()
 {
-	mConnectionAppUpdate = app::App::get()->getSignalUpdate().connect( bind( &FileWatcher::update, this ) );
+	mConnectionAppUpdate = app::AppBase::get()->getSignalUpdate().connect( bind( &FileWatcher::update, this ) );
 }
 
 void FileWatcher::configureWatchPolling()
 {
-	if( mConnectToAppUpdateEnabled && ! mConnectionAppUpdate.isConnected() && app::App::get() )
+	if( mConnectToAppUpdateEnabled && ! mConnectionAppUpdate.isConnected() && app::AppBase::get() )
 		connectAppUpdate();
 
 	if( ! mThread.joinable() ) {
