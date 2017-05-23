@@ -149,7 +149,7 @@ Watch::Watch( const vector<fs::path> &filePaths, bool needsCallback )
 	if( needsCallback ) {
 		// mark all files as modified, using the full path we just resolved.
 		for( const auto &item : mWatchItems )
-			mModifiedFilePaths.emplace_back( item.mFilePath );
+			mModifiedFilePaths.push_back( item.mFilePath );
 
 		setNeedsCallback( true );
 	}
