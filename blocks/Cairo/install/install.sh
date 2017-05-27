@@ -1,37 +1,74 @@
 #!/bin/bash
+# break on all errors
+set -e 
 
-lower_case=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+#########################
+## usage help function 
+#########################
 
-if [ -z $1 ]; then 
-	echo Need to provide platform. Possible platforms are linux, macosx, ios. Exiting!
+show_help()
+{
+	echo
+	echo "Usage: $0 [options...]"
+	echo 
+	echo "OPTIONS:"
+	echo "    -p,  --platform     Platform to build on (macosx, ios, linux)"
+	echo "    -wp, --with-pango   Flag to build with glib functionality. Must have GLIB_LIBS env var."
+	echo "    -pp, --pango-path   Path to pango install. Installs cairo libs there."
+	echo
+	echo "EXAMPLES:"
+	echo "    ./install.sh -platform=ios"
+	echo
+}
+
+#########################
+## options 
+#########################
+
+for i in "$@"
+do
+case $i in
+  -p=*|--platform=*)
+	  PLATFORM="${i#*=}"
+	  shift
+	  ;;
+  -wp|--with-pango)
+	  WITH_PANGO=true
+	  shift
+	  ;;
+  -pl=*|--pango-lib=*)
+	  PANGO_DIR="${i#*=}"
+	  shift
+	  ;;
+  -h|--help)
+	  show_help
+	  exit
+	  ;;
+  *)
+	  # unknown
+	  ;;
+esac
+done
+
+if [ -z "$PLATFORM" ]; then 
+	echo "Error: Need to provide platform. -h for help"
 	exit 
 fi 
-
-WITH_PANGO=false
-PANGO_DIR=""
-if [ -z $2 ]; then
-  echo Building without Glib functionality.
-  else
-    if [ -z "${GLIB_LIBS:?false}" ]; then
-      echo "Chose with-pango but GLIB flags not present. Use Cinder-Pango to get Glib in the correct place. Exiting!"
-      exit
-    fi
-    export glib_CFLAGS=$GLIB_CFLAGS
-    export glib_LIBS=$GLIB_LIBS
-  if [ -z $3  ]; then
-    echo "Error: Need Pango lib location. Exiting!"
-    exit
-  fi
-  PANGO_DIR=${3}
-  if [ ! -d ${PANGO_DIR} ]; then
-    echo "Can't find pango at...${PANGO_DIR}. Exiting!"
-    exit
-  fi
+if [ $WITH_PANGO ]; then
+  if [ -z "${GLIB_LIBS}" ] || [ -z "$PANGO_DIR" ]; then
+		echo "Error: Chose --with-pango without supplying GLIB_LIBS env var or pango install directory. -h for help"
+		exit
+	fi
+	if [ ! -d ${PANGO_DIR} ]; then
+		echo "Error: Pango directory doesn't exist... ${PANGO_DIR}."
+		exit
+	fi
+  	export glib_CFLAGS=$GLIB_CFLAGS
+  	export glib_LIBS=$GLIB_LIBS
   echo "Configured to run with Pango"
-  WITH_PANGO=true
 fi
 
-
+PLATFORM_LOWER=$(echo "$PLATFORM" | tr '[:upper:]' '[:lower:]')
 
 #########################
 ## create prefix dirs
@@ -60,18 +97,18 @@ mkdir -p $PREFIX_CAIRO
 #########################
 
 FINAL_PATH=`pwd`/..
-if [ $WITH_PANGO = true ]; then
+if [ $WITH_PANGO ]; then
   FINAL_PATH=${PANGO_DIR}
 fi
 
-FINAL_LIB_PATH=${FINAL_PATH}/lib/${lower_case}
-if [ $WITH_PANGO = false ]; then
+FINAL_LIB_PATH=${FINAL_PATH}/lib/${PLATFORM_LOWER}
+if [ $WITH_PANGO ]; then
   rm -rf ${FINAL_LIB_PATH}
   mkdir -p ${FINAL_LIB_PATH}
 fi
 
-FINAL_INCLUDE_PATH=${FINAL_PATH}/include/${lower_case}
-if [ $WITH_PANGO = false ]; then
+FINAL_INCLUDE_PATH=${FINAL_PATH}/include/${PLATFORM_LOWER}
+if [ $WITH_PANGO ]; then
   rm -rf ${FINAL_INCLUDE_PATH}
   mkdir -p ${FINAL_INCLUDE_PATH}
 fi
@@ -132,21 +169,12 @@ buildLinux()
 ## downloading libs
 #########################
 
-downloadZlib()
-{
-	echo Downloading zlib...
-	curl http://zlib.net/zlib-1.2.8.tar.gz -o zlib.tar.gz > /dev/null
-	tar -xf zlib.tar.gz
-	mv zlib-* zlib
-	rm zlib.tar.gz
-	echo Finished Downloading zlib...
-}
-
 downloadLibPng() 
 {
 	echo Downloading libpng...
-	curl ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng16/libpng-1.6.26.tar.gz -o libpng.tar.gz > /dev/null
-	tar -xf libpng.tar.gz 
+	curl ftp://ftp-osl.osuosl.org/pub/libpng/src/libpng16/libpng-1.6.29.tar.xz -o libpng.tar.xz 
+	echo `ls`
+  tar -xf libpng.tar.xz 
 	mv libpng-* libpng
 	rm libpng.tar.gz 
 	echo Finished downloading libpng...
@@ -155,7 +183,7 @@ downloadLibPng()
 downloadLibPixman() 
 {
 	echo Downloading pixman...
-	curl https://www.cairographics.org/releases/pixman-0.34.0.tar.gz -o pixman.tar.gz > /dev/null
+	curl https://www.cairographics.org/releases/pixman-0.34.0.tar.gz -o pixman.tar.gz 
 	tar -xf pixman.tar.gz
 	mv pixman-* pixman 
 	rm pixman.tar.gz 
@@ -165,11 +193,11 @@ downloadLibPixman()
 downloadLibCairo() 
 {
 	echo Downloading cairo...
-	curl https://www.cairographics.org/releases/cairo-1.14.6.tar.xz -o cairo.tar.xz > /dev/null
+	curl https://www.cairographics.org/releases/cairo-1.18.6.tar.xz -o cairo.tar.xz 
 	tar -xf cairo.tar.xz 
 	mv cairo-* cairo 
 	rm cairo.tar.xz 
-  if [ "${lower_case}" = "ios" ]; then
+  if [ "${PLATFORM_LOWER}" = "ios" ]; then
     echo In the harfbuzz change...
     # Many of these edits are based on this patch which hasn't been merged in...
     # https://bugs.freedesktop.org/show_bug.cgi?id=97895 
@@ -287,7 +315,7 @@ buildCairo()
 echoFlags()
 {
 	echo "==================================================================="
-	echo "Environment for ${lower_case}..."
+	echo "Environment for ${PLATFORM_LOWER}..."
 	echo -e "\t CXX:      ${CXX}"
 	echo -e "\t CC:       ${CC}"
 	echo -e "\t CFLAGS:   ${CFLAGS}"
@@ -308,6 +336,7 @@ cd tmp
 downloadLibPng
 downloadLibPixman
 downloadLibCairo
+exit
 
 ## Set up flags used by the builds
 export PNG_CFLAGS="-I${FINAL_INCLUDE_PATH}" 
@@ -318,8 +347,8 @@ export pixman_CFLAGS="-I${FINAL_INCLUDE_PATH}/pixman-1"
 export pixman_LIBS="-L${FINAL_LIB_PATH} -lpixman-1"
 export PKG_CONFIG_PATH="${PREFIX_LIBPNG}/lib/pkgconfig:${PREFIX_PIXMAN}/lib/pkgconfig"
 
-echo "Building cairo for {$lower_case}"
-if [ "${lower_case}" = "mac" ] || [ "${lower_case}" = "macosx" ]; # Destop OSX path
+echo "Building cairo for {$PLATFORM_LOWER}"
+if [ "${PLATFORM_LOWER}" = "mac" ] || [ "${PLATFORM_LOWER}" = "macosx" ]; # Destop OSX path
 then
   export CXX="$(xcrun -find -sdk macosx clang++) -Wno-enum-conversion"
   export CC="$(xcrun -find -sdk macosx clang) -Wno-enum-conversion"
@@ -332,7 +361,7 @@ then
 	##################################
 
 	CINDER_DIR=`pwd`/../../../..
-	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/Release
+	CINDER_LIB_DIR=${CINDER_DIR}/lib/${PLATFORM_LOWER}/Release
 	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
 
   if [ ! -f "${CINDER_LIB_DIR}/libcinder.a" ]; then
@@ -345,7 +374,7 @@ then
 
 	echoFlags
 	buildOSX
-elif [ "${lower_case}" = "linux" ]; # Linux path
+elif [ "${PLATFORM_LOWER}" = "linux" ]; # Linux path
 then
   export CXX="clang++ -Wno-enum-conversion"
   export CC="clang -Wno-enum-conversion"
@@ -358,7 +387,7 @@ then
 	##################################
 
 	CINDER_DIR=`pwd`/../../../.. 
-	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/x86_64/ogl/Release
+	CINDER_LIB_DIR=${CINDER_DIR}/lib/${PLATFORM_LOWER}/x86_64/ogl/Release
 	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
 
   if [ ! -f "${CINDER_LIB_DIR}/libcinder.a" ]; then
@@ -371,7 +400,7 @@ then
 	
 	echoFlags
 	buildLinux
-elif [ "${lower_case}" = "ios" ]; # iOS path
+elif [ "${PLATFORM_LOWER}" = "ios" ]; # iOS path
 then
   ARCH="arm64"
   HOST="arm-apple-darwin"
@@ -397,7 +426,7 @@ then
 	##################################
 
 	CINDER_DIR=`pwd`/../../../..
-	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/Release
+	CINDER_LIB_DIR=${CINDER_DIR}/lib/${PLATFORM_LOWER}/Release
 	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
 	
   if [ ! -f "${CINDER_LIB_DIR}/libcinder.a" ]; then
