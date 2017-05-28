@@ -73,6 +73,21 @@ fi
 
 PLATFORM_LOWER=$(echo "$PLATFORM" | tr '[:upper:]' '[:lower:]')
 
+#######################################
+## use cinder to link freetype and zlib
+#######################################
+
+CINDER_DIR=`pwd`/../../..
+CINDER_LIB_DIR=${CINDER_DIR}/lib/${PLATFORM_LOWER}/Release
+CINDER_INCLUDE_PATH=${CINDER_DIR}/include/
+  
+if [ ! -f "${CINDER_LIB_DIR}/libcinder.a" ]; then
+  cd $CINDER_LIB_DIR
+  echo `ls`
+  echo "Need to build release version of cinder to run this install. Cairo needs Freetype and Zlib. Exiting!"
+  exit
+fi
+
 #########################
 ## create prefix dirs
 #########################
@@ -108,13 +123,15 @@ if [ $WITH_PANGO ]; then
 fi
 
 FINAL_LIB_PATH=${FINAL_PATH}/lib/${PLATFORM_LOWER}
-if [ $WITH_PANGO ]; then
+if [ -z ${WITH_PANGO} ]; then
+  echo creating directories
   rm -rf ${FINAL_LIB_PATH}
   mkdir -p ${FINAL_LIB_PATH}
 fi
 
 FINAL_INCLUDE_PATH=${FINAL_PATH}/include/${PLATFORM_LOWER}
-if [ $WITH_PANGO ]; then
+if [ -z ${WITH_PANGO} ]; then
+  echo creating other directories
   rm -rf ${FINAL_INCLUDE_PATH}
   mkdir -p ${FINAL_INCLUDE_PATH}
 fi
@@ -208,16 +225,17 @@ downloadLibCairo()
 	mv cairo-* cairo 
 	rm cairo.tar.xz 
   if [ "${PLATFORM_LOWER}" = "ios" ]; then
-    echo In the harfbuzz change...
+    echo Editing cairo for ios...
     # Many of these edits are based on this patch which hasn't been merged in...
     # https://bugs.freedesktop.org/show_bug.cgi?id=97895 
+    
     export LC_CTYPE=C 
     export LANG=C
     sed -i -e 's=ApplicationServices/ApplicationServices.h=CoreGraphics/CoreGraphics.h=' cairo/configure
     sed -i -e 's=-framework ApplicationServices=-framework CoreGraphics=' cairo/configure
     sed -i -e 's=#include <ApplicationServices/ApplicationServices.h>=#include <CoreGraphics/CoreGraphics.h>\
 #include <CoreText/CoreText.h>=' cairo/src/cairo-quartz.h
-    gtac cairo/src/cairo-quartz.h | sed '/cairo_quartz_font_face_create_for_atsu_font_id (ATSUFontID font_id);/{N;d;N;d;N;d;}' | gtac > cairo/src/temp.h; mv cairo/src/temp.h cairo/src/cairo-quartz.h
+    tail -r cairo/src/cairo-quartz.h | sed '/cairo_quartz_font_face_create_for_atsu_font_id (ATSUFontID font_id);/{N;d;N;d;N;d;}' | tail -r > cairo/src/temp.h; mv cairo/src/temp.h cairo/src/cairo-quartz.h
     sed -i -e 's|static ATSFontRef (\*FMGetATSFontRefFromFontPtr) (FMFont iFont) = NULL;||' cairo/src/cairo-quartz-font.c
     sed -i -e 's|FMGetATSFontRefFromFontPtr = dlsym(RTLD_DEFAULT, "FMGetATSFontRefFromFont");||' cairo/src/cairo-quartz-font.c
     # This is dirty and inoptimal but couldn't figure out another way to do it.
@@ -264,7 +282,8 @@ buildLibPng()
   make -j 8
 	make install
 	make clean
- 	
+  
+  echo "Now copying to ${FINAL_INCLUDE_PATH}"  
 	cp -r ${PREFIX}/include/* ${FINAL_INCLUDE_PATH}
 	cp ${PREFIX}/lib/*.a ${FINAL_LIB_PATH}
 
@@ -351,18 +370,6 @@ downloadLibPng
 downloadLibPixman
 downloadLibCairo
 
-##################################
-## we use cinder to link freetype
-##################################
-
-CINDER_DIR=`pwd`/../../../..
-CINDER_LIB_DIR=${CINDER_DIR}/lib/${PLATFORM_LOWER}/Release
-CINDER_INCLUDE_PATH=${CINDER_DIR}/include/
-  
-if [ ! -f "${CINDER_LIB_DIR}/libcinder.a" ]; then
-  echo "Need to build release version of cinder to run this install. Cairo needs Freetype. Exiting!"
-  exit
-fi
 
 export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
 export FREETYPE_CFLAGS="-I${CINDER_INCLUDE_PATH}/freetype -I${CINDER_INCLUDE_PATH}"
