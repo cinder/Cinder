@@ -63,9 +63,12 @@ if [ $WITH_PANGO ]; then
 		echo "Error: Pango directory doesn't exist... ${PANGO_DIR}."
 		exit
 	fi
-  	export glib_CFLAGS=$GLIB_CFLAGS
-  	export glib_LIBS=$GLIB_LIBS
-  echo "Configured to run with Pango"
+  export glib_CFLAGS=$GLIB_CFLAGS
+  export glib_LIBS=$GLIB_LIBS
+  echo "Configured to build with Glib."
+fi
+if [ -z `which pkg-config` ]; then
+  INSTALL_PKG_CONFIG=true
 fi
 
 PLATFORM_LOWER=$(echo "$PLATFORM" | tr '[:upper:]' '[:lower:]')
@@ -74,11 +77,14 @@ PLATFORM_LOWER=$(echo "$PLATFORM" | tr '[:upper:]' '[:lower:]')
 ## create prefix dirs
 #########################
 
+rm -rf tmp 
+mkdir tmp 
+
 PREFIX_BASE_DiR=`pwd`/tmp
 
-PREFIX_LIBZ=${PREFIX_BASE_DiR}/libz_install
-rm -rf $PREFIX_LIBZ
-mkdir -p $PREFIX_LIBZ
+PREFIX_PKG_CONFIG=${PREFIX_BASE_DiR}/pkg_config_install
+rm -rf $PREFIX_PKG_CONFIG
+mkdir -p $PREFIX_PKG_CONFIG
 
 PREFIX_LIBPNG=${PREFIX_BASE_DiR}/libpng_install
 rm -rf $PREFIX_LIBPNG
@@ -137,11 +143,6 @@ buildOSX()
 {
 	echo Setting up OSX environment...
 	
-  # On osx, i want to make sure the zlib version, we use
-if [ $WITH_PANGO = false ]; then
-  downloadZlib
-	buildZlib
-fi
 	buildLibPng
 	buildPixman 
 	
@@ -169,14 +170,23 @@ buildLinux()
 ## downloading libs
 #########################
 
+downloadPkgConfig()
+{
+  echo Downloading pkg-config...
+  curl https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz -o pkg-config.tar.gz
+  tar -xf pkg-config.tar.gz
+  mv pkg-config-* pkg-config
+  rm pkg-config.tar.gz
+  echo Finished downloading pkg-config
+}
+
 downloadLibPng() 
 {
 	echo Downloading libpng...
 	curl ftp://ftp-osl.osuosl.org/pub/libpng/src/libpng16/libpng-1.6.29.tar.xz -o libpng.tar.xz 
-	echo `ls`
   tar -xf libpng.tar.xz 
 	mv libpng-* libpng
-	rm libpng.tar.gz 
+	rm libpng.tar.xz 
 	echo Finished downloading libpng...
 }
 
@@ -193,7 +203,7 @@ downloadLibPixman()
 downloadLibCairo() 
 {
 	echo Downloading cairo...
-	curl https://www.cairographics.org/releases/cairo-1.18.6.tar.xz -o cairo.tar.xz 
+	curl https://www.cairographics.org/releases/cairo-1.14.8.tar.xz -o cairo.tar.xz 
 	tar -xf cairo.tar.xz 
 	mv cairo-* cairo 
 	rm cairo.tar.xz 
@@ -221,18 +231,20 @@ downloadLibCairo()
 ## building libs
 #########################
 
-buildZlib()
+buildPkgConfig()
 {
- 	cd zlib
-	echo "Building zlib, and installing $1"
-	
-	./configure --prefix=${PREFIX_LIBZ}
+  cd pkg-config
+  echo "Building pkg-config, and installing $1"
+  PREFIX=$PREFIX_PKG_CONFIG
+  HOST=$1
+  ./configure --disable-shared --prefix=${PREFIX} --with-internal-glib
+  
+  make -j 8
+  make install
+  make clean
 
-	make -j 6
-	make install
-	make clean
-
-	cd ..	
+  export PKG_CONFIG=${PREFIX_PKG_CONFIG}/bin/pkg-config
+  cd ..
 }
 
 buildLibPng()
@@ -249,7 +261,7 @@ buildLibPng()
 		./configure --host=${HOST} --disable-shared --prefix=${PREFIX} 
 	fi
 
-  make -j 6
+  make -j 8
 	make install
 	make clean
  	
@@ -268,14 +280,14 @@ buildPixman()
  	if [ -z "$HOST" ]; then 
 		./configure --disable-shared --prefix=${PREFIX}
 	else	
-		./configure --host=${HOST} --disable-shared --prefix=${PREFIX} 
+		./configure --host=${HOST} --disable-shared --prefix=${PREFIX}
 	fi
 
   sed -i -e 's/region_test_OBJECTS = region-test.$(OBJEXT)/region_test_OBJECTS = region-test.$(OBJEXT) utils.$(OBJEXT)/g' test/Makefile
   sed -i -e 's/scaling_helpers_test_OBJECTS = scaling-helpers-test.$(OBJEXT)/scaling_helpers_test_OBJECTS = scaling-helpers-test.$(OBJEXT) utils.$(OBJEXT)/g' test/Makefile
 
-  make -j 6
-	make install
+  make -j 8
+  make install 
 	make clean
  	
 	cp -r ${PREFIX}/include/* ${FINAL_INCLUDE_PATH}
@@ -298,7 +310,7 @@ buildCairo()
 		./configure --host=${HOST} --disable-shared --enable-static --prefix=${PREFIX} $OPTIONS
 	fi
   
-	make -j 6
+	make -j 8
 	make install
 	make clean
  		
@@ -328,21 +340,41 @@ echoFlags()
 ## program
 #########################
 
-# Create working directory
-rm -rf tmp 
-mkdir tmp 
 cd tmp
+
+if [ $INSTALL_PKG_CONFIG ]; then
+  downloadPkgConfig
+  buildPkgConfig
+fi
 
 downloadLibPng
 downloadLibPixman
 downloadLibCairo
-exit
+
+##################################
+## we use cinder to link freetype
+##################################
+
+CINDER_DIR=`pwd`/../../../..
+CINDER_LIB_DIR=${CINDER_DIR}/lib/${PLATFORM_LOWER}/Release
+CINDER_INCLUDE_PATH=${CINDER_DIR}/include/
+  
+if [ ! -f "${CINDER_LIB_DIR}/libcinder.a" ]; then
+  echo "Need to build release version of cinder to run this install. Cairo needs Freetype. Exiting!"
+  exit
+fi
+
+export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
+export FREETYPE_CFLAGS="-I${CINDER_INCLUDE_PATH}/freetype -I${CINDER_INCLUDE_PATH}"
+
+export LIBZ_LIBS="-L${CINDER_LIB_DIR} -lcinder"
+export LIBZ_CFLAGS="-I${CINDER_DIR}/src/zlib"
 
 ## Set up flags used by the builds
 export PNG_CFLAGS="-I${FINAL_INCLUDE_PATH}" 
-export PNG_LIBS="-L${FINAL_LIB_PATH} -lpng -lz" 
-export png_LIBS="-L${FINAL_LIB_PATH} -lpng"
+export PNG_LIBS="-L${FINAL_LIB_PATH} -lpng ${LIBZ_LIBS}" 
 export png_CFLAGS="-I${FINAL_INCLUDE_PATH}" 
+export png_LIBS="-L${FINAL_LIB_PATH} -lpng"
 export pixman_CFLAGS="-I${FINAL_INCLUDE_PATH}/pixman-1"
 export pixman_LIBS="-L${FINAL_LIB_PATH} -lpixman-1"
 export PKG_CONFIG_PATH="${PREFIX_LIBPNG}/lib/pkgconfig:${PREFIX_PIXMAN}/lib/pkgconfig"
@@ -350,53 +382,22 @@ export PKG_CONFIG_PATH="${PREFIX_LIBPNG}/lib/pkgconfig:${PREFIX_PIXMAN}/lib/pkgc
 echo "Building cairo for {$PLATFORM_LOWER}"
 if [ "${PLATFORM_LOWER}" = "mac" ] || [ "${PLATFORM_LOWER}" = "macosx" ]; # Destop OSX path
 then
-  export CXX="$(xcrun -find -sdk macosx clang++) -Wno-enum-conversion"
-  export CC="$(xcrun -find -sdk macosx clang) -Wno-enum-conversion"
+  PLATFORM_LOWER="macosx"
+  export CXX="$(xcrun -find -sdk macosx clang++) -Wno-everything"
+  export CC="$(xcrun -find -sdk macosx clang) -Wno-everything"
   export CFLAGS="-O3 -pthread ${CFLAGS}"
   export CXXFLAGS="-O3 -pthread ${CXXFLAGS}"
   export LDFLAGS="-stdlib=libc++ -framework CoreText -framework CoreFoundation -framework CoreGraphics  ${LDFLAGS}"
-
-	##################################
-	## we use cinder to link freetype
-	##################################
-
-	CINDER_DIR=`pwd`/../../../..
-	CINDER_LIB_DIR=${CINDER_DIR}/lib/${PLATFORM_LOWER}/Release
-	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
-
-  if [ ! -f "${CINDER_LIB_DIR}/libcinder.a" ]; then
-    echo "Need to build release version of cinder to run this install. Cairo needs Freetype. Exiting!"
-    exit
-  fi
-
-	export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
-	export FREETYPE_CFLAGS="-I${CINDER_FREETYPE_INCLUDE_PATH}/freetype -I${CINDER_FREETYPE_INCLUDE_PATH}"
-
-	echoFlags
+	
+  echoFlags
 	buildOSX
 elif [ "${PLATFORM_LOWER}" = "linux" ]; # Linux path
 then
-  export CXX="clang++ -Wno-enum-conversion"
-  export CC="clang -Wno-enum-conversion"
+  export CXX="clang++ -w" 
+  export CC="clang -w"
   export CFLAGS="-O3 -pthread ${CFLAGS}"
   export CXXFLAGS="-O3 -pthread ${CXXFLAGS}"
   export LDFLAGS="-stdlib=libc++  ${LDFLAGS}"
-	
-	##################################
-	## we use cinder to link freetype
-	##################################
-
-	CINDER_DIR=`pwd`/../../../.. 
-	CINDER_LIB_DIR=${CINDER_DIR}/lib/${PLATFORM_LOWER}/x86_64/ogl/Release
-	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
-
-  if [ ! -f "${CINDER_LIB_DIR}/libcinder.a" ]; then
-    echo "Need to build release version of cinder to run this install. Cairo needs Freetype. Exiting!"
-    exit
-  fi
-
-	export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
-	export FREETYPE_CFLAGS="-I${CINDER_FREETYPE_INCLUDE_PATH}/freetype -I${CINDER_FREETYPE_INCLUDE_PATH}"
 	
 	echoFlags
 	buildLinux
@@ -409,8 +410,8 @@ then
   export IOS_SDK="${IOS_PLATFORM_DEVELOPER}/SDKs/$(ls ${IOS_PLATFORM_DEVELOPER}/SDKs | sort -r | head -n1)"
   echo $IOS_SDK
   export XCODE_DEVELOPER=`xcode-select --print-path`
-  export CXX="$(xcrun -find -sdk iphoneos clang++) -Wno-enum-conversion"
-  export CC="$(xcrun -find -sdk iphoneos clang) -Wno-enum-conversion"
+  export CXX="$(xcrun -find -sdk iphoneos clang++) -Wno-enum-conversion -Wunused-const-variable"
+  export CC="$(xcrun -find -sdk iphoneos clang) -Wno-enum-conversion -Wunused-const-variable"
 
   export CPPFLAGS="-isysroot ${IOS_SDK} -I${IOS_SDK}/usr/include -arch ${ARCH} -mios-version-min=8.0"
   export CFLAGS="-O3 -pthread ${CFLAGS}"
@@ -421,26 +422,10 @@ then
   export LDFLAGS="-stdlib=libc++ -isysroot ${IOS_SDK} -L${FINAL_LIB_PATH} -L${IOS_SDK}/usr/lib -arch ${ARCH} -mios-version-min=8.0 -framework CoreText -framework CoreFoundation -framework CoreGraphics  ${LDFLAGS}"
   export PNG_LIBS="-L${IOS_SDK}/usr/lib ${PNG_LIBS}"
 
-	##################################
-	## we use cinder to link freetype
-	##################################
-
-	CINDER_DIR=`pwd`/../../../..
-	CINDER_LIB_DIR=${CINDER_DIR}/lib/${PLATFORM_LOWER}/Release
-	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
-	
-  if [ ! -f "${CINDER_LIB_DIR}/libcinder.a" ]; then
-    echo "Need to build release version of cinder to run this install. Cairo needs Freetype. Exiting!"
-    exit
-  fi
-	
-  export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
-	export FREETYPE_CFLAGS="-I${CINDER_FREETYPE_INCLUDE_PATH}/freetype -I${CINDER_FREETYPE_INCLUDE_PATH}"
-	
 	echoFlags
 	buildIos
 else
-	echo "Unkown selection: ${1}"
+	echo "Unkown selection: ${PLATFORM_LOWER}"
 	echo "usage: ./install.sh [platform]"
 	echo "accepted platforms are macosx, linux, ios"
 	exit 1
