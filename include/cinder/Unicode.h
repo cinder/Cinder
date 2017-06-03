@@ -29,6 +29,9 @@
 #include <string>
 #include <functional>
 #include <vector>
+#include <algorithm> 
+#include <cctype>
+#include <locale>
 
 namespace cinder {
 
@@ -69,5 +72,87 @@ CI_API void		calcLinebreaksUtf16( const uint16_t *str, std::vector<uint8_t> *res
 
 //! Sets \a resultBreaks to be of the same length as the UTF-16 string \a str with the values enumerated by UnicodeBreaks
 CI_API void		calcLinebreaksUtf16( const uint16_t *str, size_t strLength, std::vector<uint8_t> *resultBreaks );
+
+//! Trims white space from the start.
+inline void ltrim( std::u32string &s )
+{
+	s.erase( s.begin(), std::find_if( s.begin(), s.end(), std::not1( std::ptr_fun<int, int>( std::isspace ) ) ) );
+}
+
+//! Trims white space from the end.
+inline void rtrim( std::u32string &s )
+{
+	s.erase( std::find_if( s.rbegin(), s.rend(), std::not1( std::ptr_fun<int, int>( std::isspace ) ) ).base(), s.end() );
+}
+
+//! Trims white space from both ends.
+inline void trim( std::u32string &s )
+{
+	rtrim( s );
+	ltrim( s );
+}
+
+//! Trims white space from the start and returns the trimmed string.
+inline std::u32string ltrimmed( std::u32string s )
+{
+	ltrim( s );
+	return s;
+}
+
+//! Trims white space from the end and returns the trimmed string.
+inline std::u32string rtrimmed( std::u32string s )
+{
+	rtrim( s );
+	return s;
+}
+
+//! Trims white space from both ends and returns the trimmed string.
+inline std::u32string trimmed( std::u32string s )
+{
+	rtrim( s );
+	ltrim( s );
+	return s;
+}
+
+//! Trims white space from the start.
+inline void ltrim( std::u16string &s )
+{
+	s.erase( s.begin(), std::find_if( s.begin(), s.end(), std::not1( std::ptr_fun<int, int>( std::isspace ) ) ) );
+}
+
+//! Trims white space from the end.
+inline void rtrim( std::u16string &s )
+{
+	s.erase( std::find_if( s.rbegin(), s.rend(), std::not1( std::ptr_fun<int, int>( std::isspace ) ) ).base(), s.end() );
+}
+
+//! Trims white space from both ends.
+inline void trim( std::u16string &s )
+{
+	rtrim( s );
+	ltrim( s );
+}
+
+//! Trims white space from the start and returns the trimmed string.
+inline std::u16string ltrimmed( std::u16string s )
+{
+	ltrim( s );
+	return s;
+}
+
+//! Trims white space from the end and returns the trimmed string.
+inline std::u16string rtrimmed( std::u16string s )
+{
+	rtrim( s );
+	return s;
+}
+
+//! Trims white space from both ends and returns the trimmed string.
+inline std::u16string trimmed( std::u16string s )
+{
+	rtrim( s );
+	ltrim( s );
+	return s;
+}
 
 }

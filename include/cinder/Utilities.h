@@ -28,6 +28,11 @@
 #include <vector>
 #include <map>
 
+#include <algorithm> 
+#include <functional> 
+#include <cctype>
+#include <locale>
+
 #include "cinder/Cinder.h"
 #include "cinder/Url.h"
 #include "cinder/DataSource.h"
@@ -50,6 +55,46 @@ CI_API void launchWebBrowser( const Url &url );
 CI_API std::vector<std::string> split( const std::string &str, char separator, bool compress = true );
 //! Returns a vector of substrings split by the characters in \a separators. <tt>split( "one, two, three", " ," ) -> [ "one", "two", "three" ]</tt> If \a compress is TRUE, it will consider consecutive separators as one.
 CI_API std::vector<std::string> split( const std::string &str, const std::string &separators, bool compress = true );
+
+//! Trims white space from the start.
+inline void ltrim( std::string &s )
+{
+	s.erase( s.begin(), std::find_if( s.begin(), s.end(), std::not1( std::ptr_fun<int, int>( std::isspace ) ) ) );
+}
+
+//! Trims white space from the end.
+inline void rtrim( std::string &s )
+{
+	s.erase( std::find_if( s.rbegin(), s.rend(), std::not1( std::ptr_fun<int, int>( std::isspace ) ) ).base(), s.end() );
+}
+
+//! Trims white space from both ends.
+inline void trim( std::string &s )
+{
+	rtrim( s );
+	ltrim( s );
+}
+
+//! Trims white space from the start and returns the trimmed string.
+inline std::string ltrimmed( std::string s )
+{
+	ltrim( s );
+	return s;
+}
+
+//! Trims white space from the end and returns the trimmed string.
+inline std::string rtrimmed( std::string s )
+{
+	rtrim( s );
+	return s;
+}
+
+//! Trims white space from both ends and returns the trimmed string.
+inline std::string trimmed( std::string s )
+{
+	trim( s );
+	return s;
+}
 
 //! Loads the contents of \a dataSource and returns it as a std::string
 CI_API std::string loadString( const DataSourceRef &dataSource );
