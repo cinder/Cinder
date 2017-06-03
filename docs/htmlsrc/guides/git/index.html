@@ -67,6 +67,14 @@ cd xcode
 ./fullbuild.sh
 </code></pre>
 			
+			<p>Note: You may need to install the boost, libogg, and libvorbis libraries. If so, you will also need to specify the path to the installed library headers on the command line using the <em>HEADER_SEARCH_PATHS</em>flag. E.g. if using homebrew:</p>
+			
+<pre><code class="language-bash">
+brew install boost libogg libvorbis
+cd xcode
+./fullbuild.sh HEADER_SEARCH_PATHS="/usr/local/include"
+</code></pre>
+			
 			<img class="center rounded shadow" width="500" src="images/mac_build.png" />
 			
 		</section>
