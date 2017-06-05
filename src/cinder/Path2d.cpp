@@ -1522,7 +1522,10 @@ int Path2d::calcWinding( const ci::vec2 &pt, int *onCurveCount ) const
 			case Path2d::CUBICTO:
 				w += windingCubic( &(mPoints[firstPoint]), pt, onCurveCount );
 			break;
+			case Path2d::CLOSE: // closed is always assumed and is handled below
+			break;
 			default:
+				throw Path2dExc();
 			break;
 		}
 
