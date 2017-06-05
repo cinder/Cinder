@@ -1,4 +1,4 @@
-if( NOT TARGET OSC )
+if( NOT TARGET Cairo )
 	get_filename_component( CAIRO_PATH "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE )
 	get_filename_component( CINDER_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../.." ABSOLUTE )
 
