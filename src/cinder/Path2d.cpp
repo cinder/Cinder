@@ -781,7 +781,7 @@ void appendChopped( const Path2d &source, size_t segment, float segRelT, bool se
 				temp[0] = sourcePoints[firstPoint] + segRelT * ( sourcePoints[0] - sourcePoints[firstPoint] );
 				temp[1] = sourcePoints[0];
 			}
-			result->appendSegment( sourceSegments[segment], &temp[0] );
+			result->appendSegment( Path2d::LINETO, &temp[0] );
 		break;
 		default:
 			throw Path2dExc();
@@ -818,23 +818,26 @@ Path2d Path2d::getSubPath( float startT, float endT ) const
 		for( size_t s = 0; s < startSegment; ++s )
 			firstPoint += sSegmentTypePointCounts[mSegments[s]];
 
-		result.mSegments.push_back( mSegments[startSegment] );
 		switch( mSegments[startSegment] ) {
 			case LINETO: // trim line
 				result.mPoints.push_back( mPoints[firstPoint] + startRelT * ( mPoints[firstPoint+1] - mPoints[firstPoint] ) );
 				result.mPoints.push_back( mPoints[firstPoint] + endRelT * ( mPoints[firstPoint+1] - mPoints[firstPoint] ) ); 
+				result.mSegments.push_back( LINETO );
 			break;
 			case QUADTO:
 				result.mPoints.resize( 3 );
 				trimQuadAt( &mPoints[firstPoint], result.mPoints.data(), startRelT, endRelT );
+				result.mSegments.push_back( QUADTO );
 			break;
 			case CUBICTO:
 				result.mPoints.resize( 4 );
 				trimCubicAt( &mPoints[firstPoint], result.mPoints.data(), startRelT, endRelT );
+				result.mSegments.push_back( CUBICTO );
 			break;
 			case CLOSE:
 				result.mPoints.push_back( mPoints[firstPoint] + startRelT * ( mPoints[0] - mPoints[firstPoint] ) );
-				result.mPoints.push_back( mPoints[firstPoint] + endRelT * ( mPoints[0] - mPoints[firstPoint] ) ); 
+				result.mPoints.push_back( mPoints[firstPoint] + endRelT * ( mPoints[0] - mPoints[firstPoint] ) );
+				result.mSegments.push_back( LINETO );
 			break;
 			default:
 				throw Path2dExc();
