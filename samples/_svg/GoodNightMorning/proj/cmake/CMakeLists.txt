@@ -10,5 +10,7 @@ include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
 ci_make_app(
 	SOURCES     ${APP_PATH}/src/GoodNightMorningApp.cpp
+				${APP_PATH}/src/TweetStream.cpp
 	CINDER_PATH ${CINDER_PATH}
+	BLOCKS		Cairo
 )
