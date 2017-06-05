@@ -19,7 +19,7 @@ bool subPathHelper( const Path2d &p, float start, float end )
 TEST_CASE("Path2d")
 {
 	// getSubPath()
-		SECTION("getSubPath: Single Segment")
+	SECTION("getSubPath: Single Segment")
 	{
 		Path2d line;
 		line.moveTo( 50, 50 ); line.lineTo( 150, 150 );
@@ -51,6 +51,12 @@ TEST_CASE("Path2d")
 		REQUIRE( subPathHelper( p2, 0.2f, 1.0f ) );
 		REQUIRE( subPathHelper( p2, 0.0f, 0.7f ) );
 
+		Path2d p2b;
+		p2b.moveTo( 50, 50 ); p2b.lineTo( 123, 345 ); p2b.lineTo( 77, 88 ); p2b.close();
+		REQUIRE( subPathHelper( p2, 0.3f, 0.7f ) );
+		REQUIRE( subPathHelper( p2, 0.2f, 1.0f ) );
+		REQUIRE( subPathHelper( p2, 0.0f, 0.7f ) );
+
 		Path2d p3;
 		p3.moveTo( 50, 50 ); p3.lineTo( 123, 345 ); p3.curveTo( 77, 88, 111, 121, 99, 144 );
 		REQUIRE( subPathHelper( p3, 0.3f, 0.7f ) );
@@ -76,7 +82,9 @@ TEST_CASE("Path2d")
 					break;
 				}
 			}
-			std::cout << p4 << std::endl;   
+			if( r1.nextBool() )
+				p4.close();
+			console() << p4 << std::endl;  
 			REQUIRE( subPathHelper( p4, 0.3f, 0.7f ) );
 			REQUIRE( subPathHelper( p4, 0.2f, 1.0f ) );
 			REQUIRE( subPathHelper( p4, 0.0f, 0.7f ) );			
