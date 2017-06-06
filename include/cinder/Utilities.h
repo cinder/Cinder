@@ -75,6 +75,9 @@ std::string toString( const T &t ) { std::ostringstream ss; ss << t; return ss.s
 template<typename T>
 T fromString( const std::string &s ) { std::stringstream ss; ss << s; T temp; ss >> temp; return temp; }
 
+template<>
+inline std::string fromString( const std::string &s ) { return s; }
+
 #if defined(CINDER_COCOA_TOUCH)
 // Necessary because boost::lexical_cast crashes when trying to convert a string to a double on iOS
 template<>
