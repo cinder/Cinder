@@ -234,9 +234,12 @@
 	#if defined( GL_KHR_debug ) && ( CINDER_GL_ES_VERSION <= CINDER_GL_ES_VERSION_3_1 )
 		#define CINDER_GL_HAS_KHR_DEBUG
 		#if ! defined( CINDER_GL_ANGLE )
-			#define GL_BUFFER 		GL_BUFFER_KHR
-			#define GL_SHADER 		GL_SHADER_KHR
-			#define GL_PROGRAM 		GL_PROGRAM_KHR
+			#define GL_BUFFER 			GL_BUFFER_KHR
+			#define GL_SHADER 			GL_SHADER_KHR
+			#define GL_PROGRAM 			GL_PROGRAM_KHR
+			#define GL_DEBUG_SOURCE_APPLICATION	GL_DEBUG_SOURCE_APPLICATION_KHR
+			#define glPushDebugGroup		glPushDebugGroupKHR
+			#define glPopDebugGroup			glPopDebugGroupKHR
 		#endif
 	#endif
 #else

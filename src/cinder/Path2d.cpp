@@ -757,13 +757,12 @@ void appendChopped( const Path2d &source, size_t segment, float segRelT, bool se
 			if( ! secondHalf ) {
 				temp[0] = sourcePoints[firstPoint];
 				temp[1] = sourcePoints[firstPoint] + segRelT * ( sourcePoints[firstPoint+1] - sourcePoints[firstPoint] );
-				result->appendSegment( sourceSegments[segment], &temp[0] );
 			}
 			else {
 				temp[0] = sourcePoints[firstPoint] + segRelT * ( sourcePoints[firstPoint+1] - sourcePoints[firstPoint] );
 				temp[1] = sourcePoints[firstPoint+1];
-				result->appendSegment( sourceSegments[segment], &temp[0] );
 			}
+			result->appendSegment( sourceSegments[segment], &temp[0] );
 		break;
 		case Path2d::QUADTO:
 			chopQuadAt( &sourcePoints[firstPoint], temp, segRelT );
@@ -772,6 +771,17 @@ void appendChopped( const Path2d &source, size_t segment, float segRelT, bool se
 		case Path2d::CUBICTO:
 			chopCubicAt( &sourcePoints[firstPoint], temp, segRelT );
 			result->appendSegment( sourceSegments[segment], ( secondHalf ) ? &temp[3] : &temp[0] );
+		break;
+		case Path2d::CLOSE:
+			if( ! secondHalf ) {
+				temp[0] = sourcePoints[firstPoint];
+				temp[1] = sourcePoints[firstPoint] + segRelT * ( sourcePoints[0] - sourcePoints[firstPoint] );
+			}
+			else {
+				temp[0] = sourcePoints[firstPoint] + segRelT * ( sourcePoints[0] - sourcePoints[firstPoint] );
+				temp[1] = sourcePoints[0];
+			}
+			result->appendSegment( Path2d::LINETO, &temp[0] );
 		break;
 		default:
 			throw Path2dExc();
@@ -808,19 +818,26 @@ Path2d Path2d::getSubPath( float startT, float endT ) const
 		for( size_t s = 0; s < startSegment; ++s )
 			firstPoint += sSegmentTypePointCounts[mSegments[s]];
 
-		result.mSegments.push_back( mSegments[startSegment] );
 		switch( mSegments[startSegment] ) {
 			case LINETO: // trim line
 				result.mPoints.push_back( mPoints[firstPoint] + startRelT * ( mPoints[firstPoint+1] - mPoints[firstPoint] ) );
 				result.mPoints.push_back( mPoints[firstPoint] + endRelT * ( mPoints[firstPoint+1] - mPoints[firstPoint] ) ); 
+				result.mSegments.push_back( LINETO );
 			break;
 			case QUADTO:
 				result.mPoints.resize( 3 );
 				trimQuadAt( &mPoints[firstPoint], result.mPoints.data(), startRelT, endRelT );
+				result.mSegments.push_back( QUADTO );
 			break;
 			case CUBICTO:
 				result.mPoints.resize( 4 );
 				trimCubicAt( &mPoints[firstPoint], result.mPoints.data(), startRelT, endRelT );
+				result.mSegments.push_back( CUBICTO );
+			break;
+			case CLOSE:
+				result.mPoints.push_back( mPoints[firstPoint] + startRelT * ( mPoints[0] - mPoints[firstPoint] ) );
+				result.mPoints.push_back( mPoints[firstPoint] + endRelT * ( mPoints[0] - mPoints[firstPoint] ) );
+				result.mSegments.push_back( LINETO );
 			break;
 			default:
 				throw Path2dExc();
@@ -1508,7 +1525,10 @@ int Path2d::calcWinding( const ci::vec2 &pt, int *onCurveCount ) const
 			case Path2d::CUBICTO:
 				w += windingCubic( &(mPoints[firstPoint]), pt, onCurveCount );
 			break;
+			case Path2d::CLOSE: // closed is always assumed and is handled below
+			break;
 			default:
+				throw Path2dExc();
 			break;
 		}
 
@@ -1628,7 +1648,7 @@ float Path2d::calcLength() const
 			case LINETO:
 				result += distance( mPoints[firstPoint], mPoints[firstPoint + 1] );
 			break;
-			case CLOSE: // ignore - we always assume closed
+			case CLOSE:
 				result += distance( mPoints[firstPoint], mPoints[0] );
 			break;
 			default:
@@ -1660,7 +1680,7 @@ float Path2d::calcSegmentLength( size_t segment, float minT, float maxT ) const
 		case LINETO:
 			return distance( mPoints[firstPoint], mPoints[firstPoint + 1] ) * ( maxT - minT );
 		break;
-		case CLOSE: // ignore - we always assume closed
+		case CLOSE:
 			return distance( mPoints[firstPoint], mPoints[0] ) * ( maxT - minT );
 		break;
 		default:

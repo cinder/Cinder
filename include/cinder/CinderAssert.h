@@ -48,9 +48,10 @@
 
 	// defined in CinderAssert.cpp
 	namespace cinder { namespace detail {
+		CI_API void assertionFailedAbort( char const *expr, char const *function, char const *file, long line );
+		CI_API void assertionFailedMessageAbort( char const *expr, char const *msg, char const *function, char const *file, long line );
 		CI_API void assertionFailedBreak( char const *expr, char const *function, char const *file, long line );
 		CI_API void assertionFailedMessageBreak( char const *expr, char const *msg, char const *function, char const *file, long line );
-		CI_API void assertionFailedMessageAbort( char const *expr, char const *msg, char const *function, char const *file, long line );
 	} } // namespace cinder::detail
 
 	#if defined( CI_ASSERT_DEBUG_BREAK )
@@ -73,7 +74,7 @@
 
 	#else // defined( CI_ENABLE_ASSERT_HANDLER )
 
-		#define CI_ASSERT( expr )				assert( expr )
+		#define CI_ASSERT( expr )				( (expr) ? ( (void)0) : ::cinder::detail::assertionFailedAbort( #expr, CINDER_CURRENT_FUNCTION, __FILE__, __LINE__ ) )
 		#define CI_ASSERT_MSG( expr, msg )		( (expr) ? ( (void)0) : ::cinder::detail::assertionFailedMessageAbort( #expr, msg, CINDER_CURRENT_FUNCTION, __FILE__, __LINE__ ) )
 
 	#endif // defined( CI_ASSERT_DEBUG_BREAK )
