@@ -24,8 +24,8 @@
 #include "cinder/audio/linux/ContextPulseAudio.h"
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/dsp/RingBuffer.h"
+#include "cinder/Log.h"
 
-#include <iostream>
 #include <pulse/pulseaudio.h>
 
 namespace pulse {
@@ -98,6 +98,10 @@ Context::Context()
 		throw AudioContextExc( "Could not create PulseAudio threaded mainloop" );
 	}
 
+#if PA_CHECK_VERSION( 5, 0, 0 )
+	pa_threaded_mainloop_set_name( mPaMainLoop, "cinder::audio (PulseAudio)" );
+#endif
+
 	if( 0 != pa_threaded_mainloop_start( mPaMainLoop ) ) {
 		throw AudioContextExc( "Could not start PulseAudio threaded mainloop" );
 	}
@@ -134,19 +138,16 @@ Context::Context()
 
 Context::~Context()
 {
-	if( nullptr == mPaMainLoop ) {
-		return;
-	}
+	CI_ASSERT( mPaMainLoop );
+	CI_ASSERT( mPaContext );
 
 	{
 		pulse::ScopedLock scopedLock( mPaMainLoop );
 
-		if( nullptr != mPaContext ) {
-			pa_context_set_state_callback( mPaContext, nullptr, nullptr );
-			pa_context_disconnect( mPaContext );
-			pa_context_unref( mPaContext );
-			mPaContext = nullptr;
-		}
+		pa_context_set_state_callback( mPaContext, nullptr, nullptr );
+		pa_context_disconnect( mPaContext );
+		pa_context_unref( mPaContext );
+		mPaContext = nullptr;
 	}
 
 	pa_threaded_mainloop_stop( mPaMainLoop );
@@ -160,6 +161,8 @@ std::unique_ptr<Context> Context::create()
 	return result;
 }
 
+// TODO: fill out this switch?
+// - also I think userData should just be the Context, or even ci::audio::linux::ContextPulseAudio
 void Context::stateCallback( pa_context* context, void* userData ) 
 {
 	pa_threaded_mainloop* mainLoop = static_cast<pa_threaded_mainloop*>( userData );
@@ -174,8 +177,6 @@ void Context::stateCallback( pa_context* context, void* userData )
 }
 
 //! Stream
-//!
-//!
 struct Stream {
 	Context*	mContext 	= nullptr;
 	pa_stream*	mPaStream 	= nullptr;
@@ -183,21 +184,22 @@ struct Stream {
 	size_t 		mNumChannels 	= 0;
 	size_t 		mSampleRate 	= 0;
 	size_t		mFramesPerBlock	= 0;
+	std::string	mDeviceName;
 
 	size_t 		mBytesPerSample	= 0;
 	size_t 		mBytesPerFrame	= 0;
 	size_t		mBytesPerBuffer	= 0;
 
 
-	Stream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock );
+	Stream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock, const std::string &deviceName );
 	virtual ~Stream();
 
 	static void notifyCallback( pa_stream *stream, void* userData );
 	static void successCallback( pa_stream *stream, int success, void* userData );
 };
 
-Stream::Stream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock  )
-	: mContext( context ), mNumChannels( numChannels ), mSampleRate( sampleRate ), mFramesPerBlock( framesPerBlock )
+Stream::Stream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock, const std::string &deviceName )
+	: mContext( context ), mNumChannels( numChannels ), mSampleRate( sampleRate ), mFramesPerBlock( framesPerBlock ), mDeviceName( deviceName )
 {
 }
 
@@ -218,12 +220,10 @@ void Stream::successCallback( pa_stream *stream, int success, void* userData )
 }
 
 //! OutputStream
-//!
-//!
 struct OutputStream : public Stream {
 	std::function<void(size_t, void*)>	mSourceFn;
 
-	OutputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock );
+	OutputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock, const std::string &deviceName );
 	virtual ~OutputStream();
 
 	static std::unique_ptr<OutputStream> create( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock );
@@ -236,8 +236,8 @@ struct OutputStream : public Stream {
 	static void writeCallback( pa_stream* stream, size_t requestedBytes, void* userData );
 };
 
-OutputStream::OutputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock )
-	: Stream( context, numChannels, sampleRate, framesPerBlock )
+OutputStream::OutputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock, const std::string &deviceName )
+	: Stream( context, numChannels, sampleRate, framesPerBlock, deviceName )
 {
 }
 
@@ -247,35 +247,26 @@ OutputStream::~OutputStream()
 	close();
 }
 
-std::unique_ptr<OutputStream> OutputStream::create( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock )
-{
-	std::unique_ptr<OutputStream> result = std::unique_ptr<OutputStream>( new OutputStream( context, numChannels, sampleRate, framesPerBlock ) );
-	return result;	
-}
-
 void OutputStream::open()
 {
-	if( mPaStream ) {
-		return;
-	}
-
-	mBytesPerSample = sizeof(float);
-	mBytesPerFrame  = mNumChannels*mBytesPerSample;
-	mBytesPerBuffer = mFramesPerBlock*mBytesPerFrame;
+	mBytesPerSample = sizeof( float );
+	mBytesPerFrame  = mNumChannels * mBytesPerSample;
+	mBytesPerBuffer = mFramesPerBlock * mBytesPerFrame;
 
 	pa_sample_spec sampleSpec;
 	sampleSpec.format 	= PA_SAMPLE_FLOAT32LE;
 	sampleSpec.rate 	= mSampleRate;
 	sampleSpec.channels	= mNumChannels;
+	CI_ASSERT( pa_sample_spec_valid( &sampleSpec ) );
 
-	// nullptr for now
-	pa_channel_map* map = nullptr;
+	// default channel map for now
+	pa_channel_map* channelMap = nullptr;
 
 	{
 		pulse::ScopedPropertyList propList;
 		//pa_proplist_sets( propList.get(), PA_PROP_APPLICATION_ICON_NAME, "cinder-pulseaudio-output" );
 
-		mPaStream = pa_stream_new_with_proplist( mContext->mPaContext, "Playback", &sampleSpec, map, propList.get() );
+		mPaStream = pa_stream_new_with_proplist( mContext->mPaContext, "Playback", &sampleSpec, channelMap, propList.get() );
 		if( ! mPaStream ) {
 			int errorNum = pa_context_errno( mContext->mPaContext );
 			std::string errorText = pa_strerror( errorNum );
@@ -289,14 +280,20 @@ void OutputStream::open()
 		pa_stream_set_write_callback( mPaStream, &OutputStream::writeCallback, static_cast<void*>( this ) );
 
 		pa_buffer_attr bufferAttr;
-		bufferAttr.maxlength	= static_cast<uint32_t>(-1);
-		bufferAttr.minreq		= mBytesPerBuffer / 2;
-		bufferAttr.prebuf		= static_cast<uint32_t>(-1);
-		bufferAttr.tlength		= mBytesPerBuffer * 3;
-		bufferAttr.fragsize		= static_cast<uint32_t>(-1);
+		bufferAttr.maxlength	= uint32_t( mFramesPerBlock * mBytesPerFrame );
+		bufferAttr.minreq		= UINT32_MAX;
+		bufferAttr.prebuf		= 0;
+		bufferAttr.tlength		= bufferAttr.maxlength;
+		bufferAttr.fragsize		= UINT32_MAX;
 
-		pa_stream_flags_t streamFlags = static_cast<pa_stream_flags_t>( PA_STREAM_START_CORKED | PA_STREAM_AUTO_TIMING_UPDATE | PA_STREAM_INTERPOLATE_TIMING );
-		if( 0 != pa_stream_connect_playback( mPaStream, nullptr, &bufferAttr, streamFlags, nullptr, nullptr ) ) {
+		pa_stream_flags_t streamFlags = pa_stream_flags_t(
+				PA_STREAM_START_CORKED |
+				PA_STREAM_AUTO_TIMING_UPDATE |
+				PA_STREAM_INTERPOLATE_TIMING |
+				PA_STREAM_ADJUST_LATENCY );
+
+		int status = pa_stream_connect_playback( mPaStream, mDeviceName.c_str(), &bufferAttr, streamFlags, nullptr, nullptr );
+		if( status ) {
 			throw AudioContextExc( "Could not connect PulseAudio output stream playback" );	
 		}
 
@@ -304,7 +301,7 @@ void OutputStream::open()
 		while( true ) {
 			pa_stream_state_t state = pa_stream_get_state( mPaStream );
 			if( ! PA_STREAM_IS_GOOD( state ) ) {
-				throw AudioContextExc( "Stream connect failed" );	
+				throw AudioContextExc( "OutputStream connect failed" );
 			}
 
 			if( PA_STREAM_READY == state ) {
@@ -317,11 +314,7 @@ void OutputStream::open()
 }
 
 void OutputStream::close()
-{	
-	if( nullptr == mPaStream ) {
-		return;
-	}
-
+{
 	pulse::ScopedLock scopedLock( mContext->mPaMainLoop );
 
 	pa_operation* op = pa_stream_flush( mPaStream, &Stream::successCallback, static_cast<void*>( this ) );
@@ -336,10 +329,6 @@ void OutputStream::close()
 
 void OutputStream::start( std::function<void(size_t, void*)> sourceFn )
 {
-	if( nullptr == mPaStream ) {
-		return;
-	}
-
 	pulse::ScopedLock scopedLock( mContext->mPaMainLoop );
 	
 	mSourceFn = sourceFn;
@@ -348,27 +337,24 @@ void OutputStream::start( std::function<void(size_t, void*)> sourceFn )
 	pa_context_state_t contextState = pa_context_get_state( mContext->mPaContext );
 	pa_stream_state_t streamState = pa_stream_get_state( mPaStream );
 	if( ( PA_CONTEXT_READY != contextState ) && ( PA_STREAM_READY != streamState ) ) {
+		CI_LOG_E( "failed to get context state" );
+		// TODO: improve errir reporting here
 		return;
 	}
 
-	 // Uncork (resume) the stream.
+	// Uncork (resume) the stream.
 	pa_operation* op = pa_stream_cork( mPaStream, 0, &Stream::successCallback, static_cast<void*>( this ) );
 	pulse::waitForOperationCompletion( mContext->mPaMainLoop, op );	
 }
 
 void OutputStream::stop()
 {
-	if( nullptr == mPaStream ) {
-		return;
-	}
-
 	pulse::ScopedLock scopedLock( mContext->mPaMainLoop );
 
 	mSourceFn = nullptr;
 
-	// Flush the stream prior to cork, doing so after will cause hangs.  Write
-	// callbacks are suspended while inside pa_threaded_mainloop_lock() so this
-	// is all thread safe.
+	// Flush the stream prior to cork, doing so after will cause hangs. Write callbacks
+	// are suspended while inside pa_threaded_mainloop_lock() so this is all thread safe.
 	pa_operation* op = pa_stream_flush( mPaStream, &Stream::successCallback, static_cast<void*>( this ) );
 	pulse::waitForOperationCompletion( mContext->mPaMainLoop, op );
 
@@ -377,7 +363,7 @@ void OutputStream::stop()
 }
 
 void OutputStream::writeCallback( pa_stream* stream, size_t requestedBytes, void* userData )
-{	
+{
 	OutputStream* thisObj = static_cast<OutputStream*>( userData );
 
 	void* buffer = nullptr;
@@ -404,7 +390,7 @@ void OutputStream::writeCallback( pa_stream* stream, size_t requestedBytes, void
 //!
 struct InputStream : public Stream {
 
-	InputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock );
+	InputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock, const std::string &deviceName );
 	virtual ~InputStream();
 
 	static std::unique_ptr<InputStream> create( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock );
@@ -413,11 +399,34 @@ struct InputStream : public Stream {
 	void close();
 	void start();
 	void stop();
+	void enqueueSamples( pa_stream *s, size_t nbytes );
+
+	static void readCallback( pa_stream *stream, size_t nbytes, void *userData );
+
+	ci::audio::BufferDynamic                    mReadBuffer;
+	std::vector<ci::audio::dsp::RingBuffer>     mRingBuffers;
+	size_t								        mNumFramesBuffered = 0;
+	std::function<void ()>                      mMarkOverrunFn;
 };
 
-InputStream::InputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock )
-	: Stream( context, numChannels, sampleRate, framesPerBlock )
+InputStream::InputStream( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock, const std::string &deviceName )
+	: Stream( context, numChannels, sampleRate, framesPerBlock, deviceName )
 {
+	mBytesPerSample = sizeof( float );
+	mBytesPerFrame  = mNumChannels * mBytesPerSample;
+	mBytesPerBuffer = mFramesPerBlock * mBytesPerFrame;
+
+	// Allocate a big enough buffer size that will accomodate most hardware.
+	// TODO: allocate this dynamically based on current latency settings
+	const size_t kBufferSizeBytes = 32768;
+	size_t numFrames = ( kBufferSizeBytes / mBytesPerSample ) + mFramesPerBlock + 1;
+	const size_t ringBufferSize = numFrames * mNumChannels;
+	mRingBuffers.resize( numChannels );
+	for( auto &ringBuffer : mRingBuffers ) {
+		ringBuffer.resize( ringBufferSize );
+	}
+
+	mReadBuffer.setSize( framesPerBlock, numChannels );
 }
 
 InputStream::~InputStream()
@@ -426,30 +435,168 @@ InputStream::~InputStream()
 	close();
 }
 
-std::unique_ptr<InputStream> InputStream::create( Context* context, size_t numChannels, size_t sampleRate, size_t framesPerBlock )
-{
-	std::unique_ptr<InputStream> result = std::unique_ptr<InputStream>( new InputStream( context, numChannels, sampleRate, framesPerBlock ) );
-	return result;	
-}
-
 void InputStream::open()
 {
+	pa_sample_spec sampleSpec;
+	sampleSpec.format 	= PA_SAMPLE_FLOAT32LE;
+	sampleSpec.rate 	= mSampleRate;
+	sampleSpec.channels	= mNumChannels;
+	CI_ASSERT( pa_sample_spec_valid( &sampleSpec ) );
 
+	// default channel map for now
+	pa_channel_map* channelMap = nullptr;
+
+	{
+		pulse::ScopedPropertyList propList;
+		//pa_proplist_sets( propList.get(), PA_PROP_APPLICATION_ICON_NAME, "cinder-pulseaudio-input" );
+
+		mPaStream = pa_stream_new_with_proplist( mContext->mPaContext, "Record", &sampleSpec, channelMap, propList.get() );
+		if( ! mPaStream ) {
+			int errorNum = pa_context_errno( mContext->mPaContext );
+			std::string errorText = pa_strerror( errorNum );
+			throw AudioContextExc( "Could not create PulseAudio input stream" + errorText );
+		}
+
+		pa_stream_set_state_callback( mPaStream, &Stream::notifyCallback, static_cast<void*>( this ) );
+		pa_stream_set_read_callback( mPaStream, &InputStream::readCallback, static_cast<void*>( this ) );
+
+		pa_buffer_attr bufferAttr;
+		bufferAttr.maxlength	= UINT32_MAX;
+		bufferAttr.minreq		= UINT32_MAX;
+		bufferAttr.prebuf		= 0;
+		bufferAttr.tlength		= UINT32_MAX;
+		bufferAttr.fragsize		= uint32_t( mFramesPerBlock * mBytesPerFrame );
+
+		pa_stream_flags_t streamFlags = pa_stream_flags_t(
+				PA_STREAM_START_CORKED |
+				PA_STREAM_AUTO_TIMING_UPDATE |
+				PA_STREAM_INTERPOLATE_TIMING |
+				PA_STREAM_ADJUST_LATENCY );
+
+		int status = pa_stream_connect_record( mPaStream, mDeviceName.c_str(), &bufferAttr, streamFlags );
+		if( status ) {
+			throw AudioContextExc( "Could not connect PulseAudio output stream playback" );
+		}
+
+		// Wait for the stream to be ready.
+		while( true ) {
+			pa_stream_state_t state = pa_stream_get_state( mPaStream );
+			if( ! PA_STREAM_IS_GOOD( state ) ) {
+				throw AudioContextExc( "InputStream connect failed" );
+			}
+
+			if( PA_STREAM_READY == state ) {
+				break;
+			}
+
+			pa_threaded_mainloop_wait( mContext->mPaMainLoop );
+		}
+	}
 }
 
 void InputStream::close()
 {
-	
+	pulse::ScopedLock scopedLock( mContext->mPaMainLoop );
+
+	pa_operation* op = pa_stream_flush( mPaStream, &Stream::successCallback, static_cast<void*>( this ) );
+	pulse::waitForOperationCompletion( mContext->mPaMainLoop, op );
+
+	pa_stream_disconnect( mPaStream );
+	pa_stream_set_read_callback( mPaStream, nullptr, nullptr );
+	pa_stream_set_state_callback( mPaStream, nullptr, nullptr );
+	pa_stream_unref( mPaStream );
+	mPaStream = nullptr;
 }
 
 void InputStream::start()
 {
-	
+	pulse::ScopedLock scopedLock( mContext->mPaMainLoop );
+
+	//mSourceFn = sourceFn;
+
+	// Ensure the context and stream are ready.
+	pa_context_state_t contextState = pa_context_get_state( mContext->mPaContext );
+	pa_stream_state_t streamState = pa_stream_get_state( mPaStream );
+	if( ( PA_CONTEXT_READY != contextState ) && ( PA_STREAM_READY != streamState ) ) {
+		CI_LOG_E( "failed to get context state" );
+		// TODO: improve errir reporting here
+		return;
+	}
+
+	// Uncork (resume) the stream.
+	pa_operation* op = pa_stream_cork( mPaStream, 0, &Stream::successCallback, this );
+	pulse::waitForOperationCompletion( mContext->mPaMainLoop, op );
 }
 
 void InputStream::stop()
 {
-	
+	pulse::ScopedLock scopedLock( mContext->mPaMainLoop );
+
+	// Flush the stream prior to cork, doing so after will cause hangs. Write callbacks
+	// are suspended while inside pa_threaded_mainloop_lock() so this is all thread safe.
+	pa_operation* op = pa_stream_flush( mPaStream, &Stream::successCallback, static_cast<void*>( this ) );
+	pulse::waitForOperationCompletion( mContext->mPaMainLoop, op );
+
+	op = pa_stream_cork( mPaStream, 1, &Stream::successCallback, static_cast<void*>( this ) );
+	pulse::waitForOperationCompletion( mContext->mPaMainLoop, op );
+}
+
+// static
+void InputStream::readCallback( pa_stream *s, size_t nbytes, void *userData )
+{
+	InputStream *inputStream = (InputStream *)userData;
+	inputStream->enqueueSamples( s, nbytes );
+}
+
+void InputStream::enqueueSamples( pa_stream *s, size_t nbytes )
+{
+	CI_ASSERT( nbytes % mBytesPerFrame == 0 );
+
+	// TODO: use the result of pa_stream_readable_size here?
+	// - can use it to check if there is enough room in the ringbuffer left to write to
+	while( pa_stream_readable_size( s ) > 0 ) {
+		const void *data;
+
+		if( pa_stream_peek( s, &data, &nbytes ) < 0 ) {
+			auto errorStr = pa_strerror( pa_context_errno( mContext->mPaContext ) );
+			CI_LOG_E( "pa_stream_peek() failed: " << errorStr );
+			CI_ASSERT_NOT_REACHABLE();
+			return;
+		}
+
+		CI_ASSERT( nbytes > 0 );
+
+		const size_t numFramesRead = nbytes / mBytesPerFrame;
+
+		// resize mReadBuffer if necessary
+		mReadBuffer.setSize( numFramesRead, mNumChannels );
+
+		if( data ) {
+			// de-interleave and write data to a ringbuffer that will be consumed in InpudeDeviceNode's process method
+			ci::audio::dsp::deinterleave( (const float *)data, mReadBuffer.getData(), numFramesRead, mNumChannels, numFramesRead );
+		}
+		else {
+			// there is a hole in the stream, generate silence
+			mReadBuffer.zero();
+		}
+
+		size_t framesBuffered = 0;
+		for( size_t ch = 0; ch < mRingBuffers.size(); ch++ ) {
+			if( mRingBuffers[ch].write( mReadBuffer.getChannel( ch ), numFramesRead ) ) {
+				// only set this to non-zero if we succeeded at writing to the ringbuffer
+				framesBuffered = numFramesRead;
+			}
+			else {
+				//CI_LOG_W( "RingBuffer full for channel: " << ch );
+				if( mMarkOverrunFn )
+					mMarkOverrunFn();
+			}
+		}
+
+		mNumFramesBuffered += framesBuffered;
+		pa_stream_drop( s );
+	}
+
 }
 
 } // namespace pulse
@@ -462,14 +609,13 @@ namespace cinder { namespace audio { namespace linux {
 struct OutputDeviceNodePulseAudioImpl {
 
 	OutputDeviceNodePulseAudioImpl( OutputDeviceNodePulseAudio* parent, const std::shared_ptr<ContextPulseAudio>& context )
-		: mParent( parent ), mCinderContext( context )
+		: mParent( parent ), mCinderContext( context ), mPulseContext( context->getPulseContext() )
 	{
 	}	
 
 	void initPlayer( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
 	{
-		mPulseContext = pulse::Context::create();
-		mPulseStream = pulse::OutputStream::create( mPulseContext.get(), numChannels, sampleRate, framesPerBlock );
+		mPulseStream = std::make_unique<pulse::OutputStream>( mPulseContext, numChannels, sampleRate, framesPerBlock, mParent->getDevice()->getName() );
 		mPulseStream->open();
 
 		// Allocate a big enough buffer size that will accomodate most hardware. This is a workaround
@@ -483,12 +629,11 @@ struct OutputDeviceNodePulseAudioImpl {
 	void destroyPlayer()
 	{
 		mPulseStream.reset();
-		mPulseContext.reset();
-
 	}
 
 	void play()
 	{
+		CI_ASSERT( mPulseStream );
 		if( ! mPulseStream ) {
 			return;
 		}
@@ -499,6 +644,7 @@ struct OutputDeviceNodePulseAudioImpl {
 
 	void stop()
 	{
+		CI_ASSERT( mPulseStream );
 		if( ! mPulseStream ) {
 			return;
 		}
@@ -515,7 +661,7 @@ struct OutputDeviceNodePulseAudioImpl {
 			mParent->renderInputs();
 		}
 
-		// Now change the lgoic back to samples
+		// Now change the logic back to samples
 		bool readSuccess = mRingBuffer->read( (float*)buffer, numSamplesToFill );
 		CI_ASSERT( readSuccess ); // since this is sync read / write, the read should always succeed.
 
@@ -525,7 +671,7 @@ struct OutputDeviceNodePulseAudioImpl {
 	OutputDeviceNodePulseAudio*    			mParent = nullptr;
 	std::weak_ptr<ContextPulseAudio>		mCinderContext;
 
-	std::unique_ptr<pulse::Context>			mPulseContext;
+	pulse::Context*			                mPulseContext = nullptr;
 	std::unique_ptr<pulse::OutputStream>	mPulseStream;
 
 	std::unique_ptr<dsp::RingBuffer>		mRingBuffer;
@@ -533,17 +679,60 @@ struct OutputDeviceNodePulseAudioImpl {
 };
 
 // ----------------------------------------------------------------------------------------------------
+// InputDeviceNodePulseAudioImpl (private)
+// ----------------------------------------------------------------------------------------------------
+struct InputDeviceNodePulseAudioImpl {
+
+	InputDeviceNodePulseAudioImpl( InputDeviceNodePulseAudio* parent, const std::shared_ptr<ContextPulseAudio>& context )
+			: mParent( parent ), mCinderContext( context ), mPulseContext( context->getPulseContext() )
+	{
+	}
+
+	void initStream( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
+	{
+		mPulseStream = std::make_unique<pulse::InputStream>( mPulseContext, numChannels, sampleRate, framesPerBlock, mParent->getDevice()->getName() );
+		mPulseStream->open();
+	}
+
+	void destroyPlayer()
+	{
+		mPulseStream.reset();
+	}
+
+	void play()
+	{
+		CI_ASSERT( mPulseStream );
+		if( ! mPulseStream ) {
+			return;
+		}
+
+		mPulseStream->start();
+	}
+
+	void stop()
+	{
+		CI_ASSERT( mPulseStream );
+		if( ! mPulseStream ) {
+			return;
+		}
+
+		mPulseStream->stop();
+	}
+
+	InputDeviceNodePulseAudio*    			mParent = nullptr;
+	std::weak_ptr<ContextPulseAudio>		mCinderContext;
+
+	pulse::Context*			                mPulseContext = nullptr;
+	std::unique_ptr<pulse::InputStream>	    mPulseStream;
+};
+
+// ----------------------------------------------------------------------------------------------------
 // OutputDeviceNodePulseAudio
 // ----------------------------------------------------------------------------------------------------
+
 OutputDeviceNodePulseAudio::OutputDeviceNodePulseAudio( const DeviceRef &device, const Format &format, const std::shared_ptr<ContextPulseAudio> &context )
 	: OutputDeviceNode( device, format ), mImpl( new OutputDeviceNodePulseAudioImpl( this, context ) )
 {
-}
-
-void OutputDeviceNodePulseAudio::destroyPulseObjects()
-{
-	disableProcessing();		
-	uninitialize();	
 }
 
 void OutputDeviceNodePulseAudio::initialize()
@@ -604,31 +793,82 @@ void OutputDeviceNodePulseAudio::renderInputs()
 }
 
 // ----------------------------------------------------------------------------------------------------
+// InputDeviceNodePulseAudio
+// ----------------------------------------------------------------------------------------------------
+
+InputDeviceNodePulseAudio::InputDeviceNodePulseAudio( const DeviceRef &device, const Format &format, const std::shared_ptr<ContextPulseAudio> &context )
+	: InputDeviceNode( device, format ), mImpl( new InputDeviceNodePulseAudioImpl( this, context ) )
+{
+
+}
+
+InputDeviceNodePulseAudio::~InputDeviceNodePulseAudio()
+{
+}
+
+void InputDeviceNodePulseAudio::initialize()
+{
+	const size_t framesPerBlock = getFramesPerBlock();
+	const size_t numChannels = getNumChannels();
+
+	mImpl->initStream( numChannels, getSampleRate(), framesPerBlock );
+	mImpl->mPulseStream->mMarkOverrunFn = [this] {
+		auto ctx = getContext(); // don't report if the overrun happens when we're shutting down.
+		if( ctx )
+			markOverrun();
+	};
+}
+
+void InputDeviceNodePulseAudio::uninitialize()
+{
+	mImpl->destroyPlayer();
+}
+
+void InputDeviceNodePulseAudio::enableProcessing()
+{
+	mImpl->play();
+}
+
+void InputDeviceNodePulseAudio::disableProcessing()
+{
+	mImpl->stop();
+}
+
+void InputDeviceNodePulseAudio::process( Buffer *buffer )
+{
+	const size_t framesNeeded = buffer->getNumFrames();
+	if( mImpl->mPulseStream->mNumFramesBuffered < framesNeeded ) {
+//		CI_LOG_W( "not enough frames buffered, need: " << framesNeeded << ", have: " << mImpl->mNumFramesBuffered );
+		markUnderrun();
+		return;
+	}
+
+	for( size_t ch = 0; ch < getNumChannels(); ch++ ) {
+		bool readSuccess = mImpl->mPulseStream->mRingBuffers[ch].read( buffer->getChannel( ch ), framesNeeded );
+		CI_ASSERT( readSuccess );
+	}
+
+	mImpl->mPulseStream->mNumFramesBuffered -= framesNeeded;
+}
+
+// ----------------------------------------------------------------------------------------------------
 // ContextPulseAudio
 // ----------------------------------------------------------------------------------------------------
+
 ContextPulseAudio::ContextPulseAudio()
 {
+	mPulseContext = pulse::Context::create();
 }
 
 ContextPulseAudio::~ContextPulseAudio()
 {
-	// Disable and shutdown devices so there's no segfault on exits
-	/*
-	for( auto& deviceNode : mInputDeviceNodes ) {
-		auto deviceNodePulseAudio = std::dynamic_pointer_cast<InputDeviceNodePulseAudio>( deviceNode );
-		if( ! deviceNodePulseAudio ) {
-			continue;
+	// uninit any device nodes before the pulse context is destroyed
+	for( auto& deviceNode : mDeviceNodes ) {
+		auto node = deviceNode.lock();
+		if( node ) {
+			node->disable();
+			uninitializeNode( node );
 		}
-		deviceNodePulseAudio->destroyPulseObjects();
-	}
-	*/
-
-	for( auto& deviceNode : mOutputDeviceNodes ) {
-		auto deviceNodePulseAudio = std::dynamic_pointer_cast<OutputDeviceNodePulseAudio>( deviceNode );
-		if( ! deviceNodePulseAudio ) {
-			continue;
-		}
-		deviceNodePulseAudio->destroyPulseObjects();
 	}
 }
 
@@ -636,17 +876,15 @@ OutputDeviceNodeRef	ContextPulseAudio::createOutputDeviceNode( const DeviceRef &
 {
 	auto thisRef = std::dynamic_pointer_cast<ContextPulseAudio>( shared_from_this() );
 	auto result = makeNode( new OutputDeviceNodePulseAudio( device, format, thisRef ) );
-	mOutputDeviceNodes.push_back( result );
+	mDeviceNodes.push_back( result );
 	return result;
 }
 
 InputDeviceNodeRef ContextPulseAudio::createInputDeviceNode( const DeviceRef &device, const Node::Format &format  )
 {
-	//auto thisRef = std::dynamic_pointer_cast<ContextPulseAudio>( shared_from_this() );
-	//return makeNode( new InputDeviceNodePulseAudio( device, format, thisRef ) );
-
-	InputDeviceNodeRef result;
-	mInputDeviceNodes.push_back( result );
+	auto thisRef = std::dynamic_pointer_cast<ContextPulseAudio>( shared_from_this() );
+	auto result = makeNode( new InputDeviceNodePulseAudio( device, format, thisRef ) );
+	mDeviceNodes.push_back( result );
 	return result;
 }
 

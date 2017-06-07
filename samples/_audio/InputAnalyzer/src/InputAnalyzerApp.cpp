@@ -109,7 +109,7 @@ void InputAnalyzer::drawSpectralCentroid()
 void InputAnalyzer::drawLabels()
 {
 	if( ! mTextureFont )
-		mTextureFont = gl::TextureFont::create( Font( Font::getDefault().getName(), 16 ) );
+		mTextureFont = gl::TextureFont::create( ci::Font( ci::Font::getDefault().getName(), 16 ) );
 
 	gl::color( 0, 0.9f, 0.9f );
 
