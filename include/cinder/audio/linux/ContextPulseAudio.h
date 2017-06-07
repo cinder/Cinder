@@ -25,6 +25,10 @@
 
 #include "cinder/audio/Context.h"
 
+namespace pulse {
+struct Context;
+} // namespace pulse
+
 namespace cinder { namespace audio { namespace linux {
 
 struct OutputDeviceNodePulseAudioImpl;
@@ -49,10 +53,6 @@ class OutputDeviceNodePulseAudio : public OutputDeviceNode {
 	BufferInterleaved									mInterleavedBuffer;
 
 	friend struct OutputDeviceNodePulseAudioImpl;
-
-  private:
-	void destroyPulseObjects();
-	friend class ContextPulseAudio;
 };
 
 class InputDeviceNodePulseAudio : public InputDeviceNode {
@@ -68,14 +68,9 @@ class InputDeviceNodePulseAudio : public InputDeviceNode {
 	void process( Buffer *buffer )	override;
 
   private:
-
 	std::unique_ptr<InputDeviceNodePulseAudioImpl>   mImpl;
 
 	friend struct InputDeviceNodePulseAudioImpl;
-
-  private:
-	void destroyPulseObjects();
-	friend class ContextPulseAudio;
 };
 
 class ContextPulseAudio : public Context {
@@ -86,9 +81,12 @@ class ContextPulseAudio : public Context {
 	OutputDeviceNodeRef	createOutputDeviceNode( const DeviceRef &device = Device::getDefaultOutput(), const Node::Format &format = Node::Format() ) override;
 	InputDeviceNodeRef	createInputDeviceNode( const DeviceRef &device = Device::getDefaultInput(), const Node::Format &format = Node::Format()  ) override;
 
+	//! TODO: this is a private class, remove
+	pulse::Context*     getPulseContext()   { return mPulseContext.get(); }
+
   private:
-	std::vector<OutputDeviceNodeRef>	mOutputDeviceNodes;
-	std::vector<InputDeviceNodeRef>		mInputDeviceNodes;
+	std::vector<std::weak_ptr<Node>>	mDeviceNodes;
+	std::unique_ptr<pulse::Context>     mPulseContext;
 };	
 
 } } } // namespace cinder::audio::linux

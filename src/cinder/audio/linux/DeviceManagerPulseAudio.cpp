@@ -22,13 +22,16 @@
 */
 
 #include "cinder/audio/linux/DeviceManagerPulseAudio.h"
-#include <pulse/pulseaudio.h>
+#include "cinder/audio/Exception.h"
 
-#include <iostream>
+#include <pulse/pulseaudio.h>
 
 // Similar to Windows - there doesn't seem to be a way to get
 // the preferred frame size in PulseAudio.
+// TODO (rte): this is true, but we can set a preferred latency later on. update docs to reflect this
 #define PREFERRED_FRAMES_PER_BLOCK 512
+
+using namespace std;
 
 namespace pulse {
 
@@ -88,7 +91,8 @@ void processSinkInfo( pa_context* context, const pa_sink_info* info, int eol, vo
 	StateData* stateData = static_cast<StateData*>( userData );
 
 	if( eol < 0 ) {
-		return;
+		string errorMsg = "Failed to get Pulse Audio sink information, eol: " + to_string( eol ) + ", error: " + pa_strerror( pa_context_errno( context ) );
+		throw cinder::audio::AudioDeviceExc( errorMsg );
 	}
 
 	if( eol ) {
@@ -107,7 +111,8 @@ void processSourceInfo( pa_context* context, const pa_source_info* info, int eol
 	StateData* stateData = static_cast<StateData*>( userData );
 
 	if( eol < 0 ) {
-		return;
+		string errorMsg = "Failed to get Pulse Audio source information, eol: " + to_string( eol ) + ", error: " + pa_strerror( pa_context_errno( context ) );
+		throw cinder::audio::AudioDeviceExc( errorMsg );
 	}
 
 	if( eol ) {
@@ -201,9 +206,12 @@ void executeRequest( StateData* stateData )
 	// Connect context
 	if( pa_context_connect( context, nullptr, PA_CONTEXT_NOFLAGS, nullptr ) >= 0 ) {
 		// Run mainloop
-		int result = 0;
-		if( pa_mainloop_run( mainLoop, &result ) < 0 ) {
-			// Handle error
+		int retVal = 0;
+		int status = pa_mainloop_run( mainLoop, &retVal );
+		if( status < 0 ) {
+			string errorMsg = "Pulse Audio failed to execute request (" + to_string( (int)stateData->request );
+			errorMsg += "), pa_mainloop_run returned code: " + to_string( retVal );
+			throw cinder::audio::AudioDeviceExc( errorMsg );
 		}
 	}
 	pa_context_unref( context );
@@ -252,8 +260,6 @@ namespace cinder { namespace audio { namespace linux {
 
 DeviceManagerPulseAudio::DeviceManagerPulseAudio()
 {
-	parseDevices( DeviceInfo::INPUT );
-	parseDevices( DeviceInfo::OUTPUT );
 }
 
 DeviceManagerPulseAudio::~DeviceManagerPulseAudio()
