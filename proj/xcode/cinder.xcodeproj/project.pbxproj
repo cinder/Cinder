@@ -1973,7 +1973,6 @@
 		111A5F0D191F726A005C3166 /* GenNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GenNode.h; sourceTree = "<group>"; };
 		111A5F0E191F726A005C3166 /* InputNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputNode.h; sourceTree = "<group>"; };
 		111A5F10191F726A005C3166 /* ContextWasapi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContextWasapi.h; sourceTree = "<group>"; };
-		111A5F11191F726A005C3166 /* ContextXAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContextXAudio.h; sourceTree = "<group>"; };
 		111A5F12191F726A005C3166 /* DeviceManagerWasapi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceManagerWasapi.h; sourceTree = "<group>"; };
 		111A5F13191F726A005C3166 /* FileMediaFoundation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileMediaFoundation.h; sourceTree = "<group>"; };
 		111A5F14191F726A005C3166 /* MswUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MswUtil.h; sourceTree = "<group>"; };
@@ -2012,7 +2011,6 @@
 		111A5F92191F72AE005C3166 /* GenNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GenNode.cpp; sourceTree = "<group>"; };
 		111A5F93191F72AE005C3166 /* InputNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InputNode.cpp; sourceTree = "<group>"; };
 		111A5F95191F72AE005C3166 /* ContextWasapi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContextWasapi.cpp; sourceTree = "<group>"; };
-		111A5F96191F72AE005C3166 /* ContextXAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContextXAudio.cpp; sourceTree = "<group>"; };
 		111A5F97191F72AE005C3166 /* DeviceManagerWasapi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceManagerWasapi.cpp; sourceTree = "<group>"; };
 		111A5F98191F72AE005C3166 /* FileMediaFoundation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileMediaFoundation.cpp; sourceTree = "<group>"; };
 		111A5F99191F72AE005C3166 /* MswUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MswUtil.cpp; sourceTree = "<group>"; };
@@ -3153,7 +3151,6 @@
 			isa = PBXGroup;
 			children = (
 				111A5F10191F726A005C3166 /* ContextWasapi.h */,
-				111A5F11191F726A005C3166 /* ContextXAudio.h */,
 				111A5F12191F726A005C3166 /* DeviceManagerWasapi.h */,
 				111A5F13191F726A005C3166 /* FileMediaFoundation.h */,
 				111A5F14191F726A005C3166 /* MswUtil.h */,
@@ -3198,7 +3195,6 @@
 			isa = PBXGroup;
 			children = (
 				111A5F95191F72AE005C3166 /* ContextWasapi.cpp */,
-				111A5F96191F72AE005C3166 /* ContextXAudio.cpp */,
 				111A5F97191F72AE005C3166 /* DeviceManagerWasapi.cpp */,
 				111A5F98191F72AE005C3166 /* FileMediaFoundation.cpp */,
 				111A5F99191F72AE005C3166 /* MswUtil.cpp */,
