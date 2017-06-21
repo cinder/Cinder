@@ -184,8 +184,6 @@ function( ci_make_app )
 	get_filename_component( ASSETS_DEST_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets" ABSOLUTE )
 	if( EXISTS "${ARG_ASSETS_PATH}" AND IS_DIRECTORY "${ARG_ASSETS_PATH}" )
 
-		message( "ARG_ASSETS_PATH: ${ARG_ASSETS_PATH}, ASSETS_DEST_PATH: ${ASSETS_DEST_PATH}" )
-
 		if( EXISTS "${ASSETS_DEST_PATH}" )
 			message( STATUS "assets destination path already exists, removing first." )
 			file( REMOVE_RECURSE "${ASSETS_DEST_PATH}" )

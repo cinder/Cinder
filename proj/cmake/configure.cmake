@@ -56,7 +56,7 @@ else()
 	set( CINDER_TARGET_GL_DEFAULT "" )
 endif()
 
-set( CINDER_TARGET_GL ${CINDER_TARGET_GL_DEFAULT} CACHE STRING "Target GL for the system. Valid options : ogl, es2, es3, es31, es32, es2-rpi" )
+set( CINDER_TARGET_GL ${CINDER_TARGET_GL_DEFAULT} CACHE STRING "Target GL for the system. Valid options: ogl, es2, es3, es31, es32, es2-rpi" )
 
 if( CINDER_TARGET_GL )
 	ci_log_v( "CINDER_TARGET_GL: ${CINDER_TARGET_GL}" )
