@@ -31,13 +31,29 @@ list( APPEND SRC_SET_APP_MSW
 	${CINDER_SRC_DIR}/cinder/app/msw/RendererImplGlMsw.cpp
 )
 
+list( APPEND SRC_SET_AUDIO_MSW
+	${CINDER_SRC_DIR}/cinder/audio/msw/ContextWasapi.cpp
+	${CINDER_SRC_DIR}/cinder/audio/msw/DeviceManagerWasapi.cpp
+	${CINDER_SRC_DIR}/cinder/audio/msw/FileMediaFoundation.cpp
+	${CINDER_SRC_DIR}/cinder/audio/msw/MswUtil.cpp
+)
+
+list( APPEND SRC_SET_CINDER_AUDIO_DSP
+	${CINDER_SRC_DIR}/cinder/audio/dsp/ooura/fftsg.cpp
+	${CINDER_SRC_DIR}/cinder/audio/dsp/ConverterR8brain.cpp
+)
+
 list( APPEND CINDER_SRC_FILES
 	${SRC_SET_MSW}
 	${SRC_SET_APP_MSW}
+	${SRC_SET_AUDIO_MSW}
+	${SRC_SET_CINDER_AUDIO_DSP}
 )
 
-source_group( "cinder\\msw"       FILES ${SRC_SET_MSW} )
-source_group( "cinder\\app\\msw"  FILES ${SRC_SET_APP_MSW} )
+source_group( "cinder\\msw"       	FILES ${SRC_SET_MSW} )
+source_group( "cinder\\app\\msw"  	FILES ${SRC_SET_APP_MSW} )
+source_group( "cinder\\audio\\msw"  FILES ${SRC_SET_AUDIO_MSW} )
+source_group( "cinder\\audio\\dsp"  FILES ${SRC_SET_CINDER_AUDIO_DSP} )
 
 list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
     ${CINDER_INC_DIR}/msw/zlib
