@@ -178,7 +178,7 @@ function( ci_make_app )
 	if( EXISTS "${ARG_ASSETS_PATH}" AND IS_DIRECTORY "${ARG_ASSETS_PATH}" )
 
 		if( EXISTS "${ASSETS_DEST_PATH}" )
-			message( STATUS "assets destination path already exists, removing first." )
+			ci_log_v( "assets destination path already exists, removing first." )
 			file( REMOVE_RECURSE "${ASSETS_DEST_PATH}" )
 		endif()
 
@@ -189,22 +189,37 @@ function( ci_make_app )
 			file( COPY "${ARG_ASSETS_PATH}" DESTINATION "${ASSETS_DEST_PATH}" )
 		else()
 			if( CINDER_MSW )
-
 				# Get OS dependent path to use in `execute_process`
 				file( TO_NATIVE_PATH "${ASSETS_DEST_PATH}" link )
 				file( TO_NATIVE_PATH "${ARG_ASSETS_PATH}" target )
 				set( link_cmd cmd.exe /c mklink /J ${link} ${target} )
-				# make a windows symlink using mklink
-				execute_process(
-						COMMAND ${link_cmd}
+
+				# it appears the file( REMOVE_RECURSE ) command above doesn't work with windows junctions,
+				# so remove it using a native command if it still exists.
+				if( EXISTS "${ASSETS_DEST_PATH}" )
+					ci_log_v( "assets path still exists, attempting to remove it again.." )
+					set( rmdir_cmd cmd.exe /c rmdir ${link} )
+					execute_process(
+						COMMAND ${rmdir_cmd}
 						RESULT_VARIABLE resultCode
 						ERROR_VARIABLE errorMessage
+					)
+
+					if( NOT resultCode EQUAL 0 )
+					    message( WARNING "\nFailed to rmdir '${ARG_ASSETS_PATH}'" )
+					endif()
+				endif()
+
+				# make a windows symlink using mklink
+				execute_process(
+					COMMAND ${link_cmd}
+					RESULT_VARIABLE resultCode
+					ERROR_VARIABLE errorMessage
 				)
 
 				if( NOT resultCode EQUAL 0 )
 				    message( WARNING "\nFailed to symlink '${ARG_ASSETS_PATH}' to '${ASSETS_DEST_PATH}', result: ${resultCode} error: ${errorMessage}" )
 				endif()
-
 			else()
 				# make a symlink
 				execute_process(
@@ -215,7 +230,6 @@ function( ci_make_app )
 				if( NOT resultCode EQUAL 0 )
 				    message( WARNING "Failed to symlink '${ARG_ASSETS_PATH}' to '${ASSETS_DEST_PATH}', result: ${resultCode}" )
 				endif()
-
 			endif()
 		endif()
 	endif()
