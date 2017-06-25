@@ -23,22 +23,15 @@ function( ci_make_app )
 	include( "${ARG_CINDER_PATH}/proj/cmake/configure.cmake" )
 
 	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
-		if( DEFINED ENV{CLION_IDE} )
-			# By default, CLion places its binary outputs in a global cache location, where assets can't be found in the current
-			# folder heirarchy. So we override that, unless the user has specified a custom binary output dir (then they're on their own).
-			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE} )
-			# message( WARNING "CLion detected, set CMAKE_RUNTIME_OUTPUT_DIRECTORY to: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
+		if( ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) OR ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
+			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
 		else()
-            if( ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) OR ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
-			    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
-            else()
-			    # Append the build type to the output dir
-			    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
-            endif()
-			message( STATUS "set CMAKE_RUNTIME_OUTPUT_DIRECTORY to: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
+			# Append the build type to the output dir
+			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
 		endif()
 	endif()
 
+	# place the binary one level deeper, so that the assets folder can live next to it when building out-of-source.
 	set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${ARG_APP_NAME} )
 
 	ci_log_v( "APP_NAME: ${ARG_APP_NAME}" )
