@@ -115,6 +115,9 @@ list( APPEND SRC_SET_CINDER_AUDIO
 	${CINDER_SRC_DIR}/cinder/audio/Utilities.cpp
 	${CINDER_SRC_DIR}/cinder/audio/Voice.cpp
 	${CINDER_SRC_DIR}/cinder/audio/WaveTable.cpp
+)
+
+list( APPEND SRC_SET_CINDER_AUDIO_DSP
 	${CINDER_SRC_DIR}/cinder/audio/dsp/Biquad.cpp
 	${CINDER_SRC_DIR}/cinder/audio/dsp/Converter.cpp
 	${CINDER_SRC_DIR}/cinder/audio/dsp/Dsp.cpp
@@ -123,6 +126,9 @@ list( APPEND SRC_SET_CINDER_AUDIO
 
 list( APPEND CINDER_SRC_FILES           ${SRC_SET_CINDER_AUDIO} )
 source_group( "cinder\\audio" FILES     ${SRC_SET_CINDER_AUDIO} )
+
+list( APPEND CINDER_SRC_FILES           	${SRC_SET_CINDER_AUDIO_DSP} )
+source_group( "cinder\\audio\\dsp" FILES    ${SRC_SET_CINDER_AUDIO_DSP} )
 
 # ----------------------------------------------------------------------------------------------------------------------
 # cinder::gl

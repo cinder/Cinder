@@ -23,22 +23,15 @@ function( ci_make_app )
 	include( "${ARG_CINDER_PATH}/proj/cmake/configure.cmake" )
 
 	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
-		if( DEFINED ENV{CLION_IDE} )
-			# By default, CLion places its binary outputs in a global cache location, where assets can't be found in the current
-			# folder heirarchy. So we override that, unless the user has specified a custom binary output dir (then they're on their own).
-			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE} )
-			# message( WARNING "CLion detected, set CMAKE_RUNTIME_OUTPUT_DIRECTORY to: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
+		if( ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) OR ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
+			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
 		else()
-            if( ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) OR ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
-			    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
-            else()
-			    # Append the build type to the output dir
-			    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
-            endif()
-			message( STATUS "set CMAKE_RUNTIME_OUTPUT_DIRECTORY to: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
+			# Append the build type to the output dir
+			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
 		endif()
 	endif()
 
+	# place the binary one level deeper, so that the assets folder can live next to it when building out-of-source.
 	set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${ARG_APP_NAME} )
 
 	ci_log_v( "APP_NAME: ${ARG_APP_NAME}" )
@@ -184,10 +177,8 @@ function( ci_make_app )
 	get_filename_component( ASSETS_DEST_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets" ABSOLUTE )
 	if( EXISTS "${ARG_ASSETS_PATH}" AND IS_DIRECTORY "${ARG_ASSETS_PATH}" )
 
-		message( "ARG_ASSETS_PATH: ${ARG_ASSETS_PATH}, ASSETS_DEST_PATH: ${ASSETS_DEST_PATH}" )
-
 		if( EXISTS "${ASSETS_DEST_PATH}" )
-			message( STATUS "assets destination path already exists, removing first." )
+			ci_log_v( "assets destination path already exists, removing first." )
 			file( REMOVE_RECURSE "${ASSETS_DEST_PATH}" )
 		endif()
 
@@ -198,22 +189,37 @@ function( ci_make_app )
 			file( COPY "${ARG_ASSETS_PATH}" DESTINATION "${ASSETS_DEST_PATH}" )
 		else()
 			if( CINDER_MSW )
-
 				# Get OS dependent path to use in `execute_process`
 				file( TO_NATIVE_PATH "${ASSETS_DEST_PATH}" link )
 				file( TO_NATIVE_PATH "${ARG_ASSETS_PATH}" target )
 				set( link_cmd cmd.exe /c mklink /J ${link} ${target} )
-				# make a windows symlink using mklink
-				execute_process(
-						COMMAND ${link_cmd}
+
+				# it appears the file( REMOVE_RECURSE ) command above doesn't work with windows junctions,
+				# so remove it using a native command if it still exists.
+				if( EXISTS "${ASSETS_DEST_PATH}" )
+					ci_log_v( "assets path still exists, attempting to remove it again.." )
+					set( rmdir_cmd cmd.exe /c rmdir ${link} )
+					execute_process(
+						COMMAND ${rmdir_cmd}
 						RESULT_VARIABLE resultCode
 						ERROR_VARIABLE errorMessage
+					)
+
+					if( NOT resultCode EQUAL 0 )
+					    message( WARNING "\nFailed to rmdir '${ARG_ASSETS_PATH}'" )
+					endif()
+				endif()
+
+				# make a windows symlink using mklink
+				execute_process(
+					COMMAND ${link_cmd}
+					RESULT_VARIABLE resultCode
+					ERROR_VARIABLE errorMessage
 				)
 
 				if( NOT resultCode EQUAL 0 )
 				    message( WARNING "\nFailed to symlink '${ARG_ASSETS_PATH}' to '${ASSETS_DEST_PATH}', result: ${resultCode} error: ${errorMessage}" )
 				endif()
-
 			else()
 				# make a symlink
 				execute_process(
@@ -224,7 +230,6 @@ function( ci_make_app )
 				if( NOT resultCode EQUAL 0 )
 				    message( WARNING "Failed to symlink '${ARG_ASSETS_PATH}' to '${ASSETS_DEST_PATH}', result: ${resultCode}" )
 				endif()
-
 			endif()
 		endif()
 	endif()
