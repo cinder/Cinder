@@ -169,4 +169,35 @@ TEST_CASE("Json", "[noisy]")
 		doc.write( writeFile( "/tmp/testoutput.json" ), JsonTree::WriteOptions() );
 		doc.write( writeFile( "/tmp/testoutput_fast.json" ), JsonTree::WriteOptions().indented( false ) );
 	}
+	
+	SECTION("Cinder can accurately serialize and deserialize JSON values")
+	{
+		JsonTree test32u( "uint32", uint32_t( math<uint64_t>::pow( 2, 32 ) ) - 1 );
+		CHECK( test32u.getValue() == JsonTree( test32u.serialize() )["uint32"].getValue() );
+		
+		JsonTree test32( "int32", int32_t( math<int32_t>::pow( 2, 32 ) ) - 1 );
+		CHECK( test32.getValue() == JsonTree( test32.serialize() )["int32"].getValue() );
+		
+		JsonTree test64u( "uint64", uint64_t( math<uint64_t>::pow( 2, 64 ) ) - 1 );
+		CHECK( test64u.getValue() == JsonTree( test64u.serialize() )["uint64"].getValue() );
+		
+		JsonTree test64( "int64", int64_t( math<int64_t>::pow( 2, 64 ) ) - 1 );
+		CHECK( test64.getValue() == JsonTree( test64.serialize() )["int64"].getValue() );
+
+		JsonTree testFloat( "float", float( M_PI ));
+		CHECK( testFloat.getValue() == JsonTree( testFloat.serialize() )["float"].getValue() );
+		
+		JsonTree testDouble( "double", double( M_PI ));
+		CHECK( testDouble.getValue() == JsonTree( testDouble.serialize() )["double"].getValue() );
+		
+		JsonTree testString( "string", "Every machine is the spiritualization of an organism.");
+		CHECK( testString.getValue() == JsonTree( testString.serialize() )["string"].getValue() );
+		
+		JsonTree testBooleanTrue( "boolean", true);
+		CHECK( testBooleanTrue.getValue() == JsonTree( testBooleanTrue.serialize() )["boolean"].getValue() );
+		
+		JsonTree testBooleanFalse( "boolean", false);
+		CHECK( testBooleanFalse.getValue() == JsonTree( testBooleanFalse.serialize() )["boolean"].getValue() );
+	}
+	
 } // json
