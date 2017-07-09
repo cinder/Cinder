@@ -32,30 +32,42 @@ namespace cinder { namespace audio {
 
 typedef std::shared_ptr<class TargetFile>		TargetFileRef;
 
+namespace dsp {
+	class Converter;
+}
+
 //! Base class that is used to create and write to an audio destination. Currently only supports .wav encoding.
 class CI_API TargetFile {
   public:
-	static std::unique_ptr<TargetFile> create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType = SampleType::INT_16, const std::string &extension = "" );
-	static std::unique_ptr<TargetFile> create( const fs::path &path, size_t sampleRate, size_t numChannels, SampleType sampleType = SampleType::INT_16, const std::string &extension = "" );
-	virtual ~TargetFile() {}
+	static std::unique_ptr<TargetFile> create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType = SampleType::INT_16, size_t targetSampleRate = 0, const std::string &extension = "" );
+	static std::unique_ptr<TargetFile> create( const fs::path &path, size_t sampleRate, size_t numChannels, SampleType sampleType = SampleType::INT_16, size_t targetSampleRate = 0, const std::string &extension = "" );
+	virtual ~TargetFile();
 
 	void write( const Buffer *buffer );
 	void write( const Buffer *buffer, size_t numFrames );
 	void write( const Buffer *buffer, size_t numFrames, size_t frameOffset );
 
+	//! Returns the user facing sample rate (input)
 	size_t getSampleRate() const	{ return mSampleRate; }
+	//! Returns the true sample rate of the target file. \note Actual input samplerate may differ. \see getSampleRate()
+	size_t getSampleRateTarget() const	{ return mSampleRateTarget; }
+
 	size_t getNumChannels() const	{ return mNumChannels; }
 
   protected:
-	TargetFile( size_t sampleRate, size_t numChannels, SampleType sampleType )
-		: mSampleRate( sampleRate ), mNumChannels( numChannels ), mSampleType( sampleType )
-	{}
+	TargetFile( size_t sampleRate, size_t numChannels, SampleType sampleType, size_t destSampleRate = 0 );
 
 	// Implement to write \a numFrames frames of \a buffer to file. The writing begins at \a frameOffset.
 	virtual void performWrite( const Buffer *buffer, size_t numFrames, size_t frameOffset ) = 0;
 
-	size_t			mSampleRate, mNumChannels;
+	// Sets up samplerate conversion if needed.
+	void setupSampleRateConversion();
+
+	size_t			mSampleRate, mSampleRateTarget, mNumChannels, mMaxFramesPerConversion;
 	SampleType		mSampleType;
+
+	std::unique_ptr<dsp::Converter>	mConverter;
+	BufferDynamic					mConverterSourceBuffer, mConverterDestBuffer;
 };
 
 } } // namespace cinder::audio

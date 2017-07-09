@@ -22,6 +22,7 @@
  */
 
 #include "cinder/audio/Target.h"
+#include "cinder/audio/dsp/Converter.h"
 #include "cinder/CinderAssert.h"
 
 #include "cinder/Utilities.h"
@@ -38,7 +39,7 @@ namespace cinder { namespace audio {
 
 // TODO: these should be replaced with a generic registrar derived from the ImageIo stuff.
 
-std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension )
+std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, size_t sampleRateTarget, const std::string &extension )
 {
 #if ! defined( CINDER_UWP ) || ( _MSC_VER > 1800 )
 	std::string ext = dataTarget->getFilePathHint().extension().string();
@@ -48,20 +49,42 @@ std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget,
 	ext = ( ( ! ext.empty() ) && ( ext[0] == '.' ) ) ? ext.substr( 1, string::npos ) : ext;
 
 #if defined( CINDER_COCOA )
-	return std::unique_ptr<TargetFile>( new cocoa::TargetFileCoreAudio( dataTarget, sampleRate, numChannels, sampleType, ext ) );
+	return std::unique_ptr<TargetFile>( new cocoa::TargetFileCoreAudio( dataTarget, sampleRate, numChannels, sampleType, sampleRateTarget, ext ) );
 #elif defined( CINDER_MSW )
+	CI_ASSERT_MSG( sampleRateTarget == 0 || sampleRateTarget == sampleRate, "sample rate conversion not yet implemented on MSW" );
 	return std::unique_ptr<TargetFile>( new msw::TargetFileMediaFoundation( dataTarget, sampleRate, numChannels, sampleType, ext ) );
 #endif
 }
 
-std::unique_ptr<TargetFile> TargetFile::create( const fs::path &path, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension )
+std::unique_ptr<TargetFile> TargetFile::create( const fs::path &path, size_t sampleRate, size_t numChannels, SampleType sampleType, size_t targetSampleRate, const std::string &extension )
 {
-	return create( (DataTargetRef)writeFile( path ), sampleRate, numChannels, sampleType, extension );
+	return create( (DataTargetRef)writeFile( path ), sampleRate, numChannels, sampleType, targetSampleRate, extension );
+}
+
+TargetFile::TargetFile( size_t sampleRate, size_t numChannels, SampleType sampleType, size_t sampleRateTarget )
+	: mSampleRate( sampleRate ), mNumChannels( numChannels ), mSampleType( sampleType ), mSampleRateTarget( sampleRateTarget ), mMaxFramesPerConversion( 4092 )
+{
+	setupSampleRateConversion();
+}
+
+TargetFile::~TargetFile()
+{
+}
+
+void TargetFile::setupSampleRateConversion()
+{
+	if ( ! mSampleRateTarget ) {
+		mSampleRateTarget = mSampleRate;
+	} else if ( mSampleRateTarget != mSampleRate) {
+		mConverter = audio::dsp::Converter::create( mSampleRate, mSampleRateTarget, getNumChannels(), getNumChannels(), mMaxFramesPerConversion );
+		mConverterSourceBuffer.setSize( mMaxFramesPerConversion, getNumChannels() );
+		mConverterDestBuffer.setSize( mMaxFramesPerConversion, getNumChannels() );
+	}
 }
 
 void TargetFile::write( const Buffer *buffer )
 {
-	performWrite( buffer, buffer->getNumFrames(), 0 );
+	write( buffer, buffer->getNumFrames(), 0 );
 }
 
 void TargetFile::write( const Buffer *buffer, size_t numFrames )
@@ -71,7 +94,7 @@ void TargetFile::write( const Buffer *buffer, size_t numFrames )
 
 	CI_ASSERT_MSG( numFrames <= buffer->getNumFrames(), "numFrames out of bounds" );
 
-	performWrite( buffer, numFrames, 0 );
+	write( buffer, numFrames, 0 );
 }
 
 void TargetFile::write( const Buffer *buffer, size_t numFrames, size_t frameOffset )
@@ -81,7 +104,29 @@ void TargetFile::write( const Buffer *buffer, size_t numFrames, size_t frameOffs
 
 	CI_ASSERT_MSG( numFrames + frameOffset <= buffer->getNumFrames(), "numFrames + frameOffset out of bounds" );
 
-	performWrite( buffer, numFrames, frameOffset );
+	if( mConverter ) {
+		auto currFrame = frameOffset;
+		auto lastFrame = frameOffset + numFrames;
+
+		// process buffer in chunks of mMaxFramesPerConversion
+		while ( currFrame != lastFrame ) {
+			auto numSourceFrames = std::min( mMaxFramesPerConversion, lastFrame - currFrame );
+			auto numDestFrames = size_t( numSourceFrames * (float)getSampleRateTarget() / (float)getSampleRate() );
+
+			// copy buffer into temporary buffer to remove frame offset (needed for mConverter->convert)
+			mConverterSourceBuffer.copyOffset( *buffer, numSourceFrames, 0, currFrame );
+
+			mConverterSourceBuffer.setNumFrames( numSourceFrames );
+			mConverterDestBuffer.setNumFrames( numDestFrames );
+			tie( numSourceFrames, numDestFrames ) = mConverter->convert( &mConverterSourceBuffer, &mConverterDestBuffer );
+
+			performWrite( &mConverterDestBuffer, numDestFrames, 0 );
+
+			currFrame += numSourceFrames;
+		}
+	} else {
+		performWrite( buffer, numFrames, frameOffset );
+	}
 }
 
 } } // namespace cinder::audio

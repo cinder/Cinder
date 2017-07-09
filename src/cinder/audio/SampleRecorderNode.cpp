@@ -162,12 +162,12 @@ BufferRef BufferRecorderNode::getRecordedCopy() const
 	return mCopiedBuffer;
 }
 
-void BufferRecorderNode::writeToFile( const fs::path &filePath, SampleType sampleType )
+void BufferRecorderNode::writeToFile( const fs::path &filePath, SampleType sampleType, size_t destSampleRate )
 {
 	size_t currentWritePos = mWritePos;
 	BufferRef copiedBuffer = getRecordedCopy();
 
-	audio::TargetFileRef target = audio::TargetFile::create( filePath, getSampleRate(), getNumChannels(), sampleType );
+	audio::TargetFileRef target = audio::TargetFile::create( filePath, getSampleRate(), getNumChannels(), sampleType, destSampleRate );
 	target->write( copiedBuffer.get(), currentWritePos );
 }
 
