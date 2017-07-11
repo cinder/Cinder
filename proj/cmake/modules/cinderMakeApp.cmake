@@ -38,6 +38,7 @@ function( ci_make_app )
 	ci_log_v( "SOURCES: ${ARG_SOURCES}" )
 	ci_log_v( "INCLUDES: ${ARG_INCLUDES}" )
 	ci_log_v( "LIBRARIES: ${ARG_LIBRARIES}" )
+	ci_log_v( "RESOURCES: ${ARG_RESOURCES}" )
 	ci_log_v( "CINDER_PATH: ${ARG_CINDER_PATH}" )
 	ci_log_v( "CMAKE_RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
 	ci_log_v( "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}" )
@@ -84,7 +85,7 @@ function( ci_make_app )
 				message( "resources destination path exists, removing old first." )
 			endif()
 
-			file( COPY "${ARG_RESOURCES}" DESTINATION "${RESOURCES_DEST_PATH}" )
+			file( COPY ${ARG_RESOURCES} DESTINATION "${RESOURCES_DEST_PATH}" )
 
 			unset( ARG_RESOURCES ) # Don't allow resources to be added to the executable on linux
 		endif()
