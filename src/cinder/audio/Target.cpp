@@ -67,9 +67,7 @@ TargetFile::TargetFile( size_t sampleRate, size_t numChannels, SampleType sample
 	setupSampleRateConversion();
 }
 
-TargetFile::~TargetFile()
-{
-}
+TargetFile::~TargetFile() = default;
 
 void TargetFile::setupSampleRateConversion()
 {
