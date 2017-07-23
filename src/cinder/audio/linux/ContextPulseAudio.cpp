@@ -615,7 +615,7 @@ struct OutputDeviceNodePulseAudioImpl {
 
 	void initPlayer( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
 	{
-		mPulseStream = std::make_unique<pulse::OutputStream>( mPulseContext, numChannels, sampleRate, framesPerBlock, mParent->getDevice()->getName() );
+		mPulseStream = std::unique_ptr<pulse::OutputStream>( new pulse::OutputStream( mPulseContext, numChannels, sampleRate, framesPerBlock, mParent->getDevice()->getName() ) );
 		mPulseStream->open();
 
 		// Allocate a big enough buffer size that will accomodate most hardware. This is a workaround
@@ -690,7 +690,7 @@ struct InputDeviceNodePulseAudioImpl {
 
 	void initStream( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
 	{
-		mPulseStream = std::make_unique<pulse::InputStream>( mPulseContext, numChannels, sampleRate, framesPerBlock, mParent->getDevice()->getName() );
+		mPulseStream = std::unique_ptr<pulse::InputStream>( new pulse::InputStream( mPulseContext, numChannels, sampleRate, framesPerBlock, mParent->getDevice()->getName() ) );
 		mPulseStream->open();
 	}
 
