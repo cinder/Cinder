@@ -241,6 +241,8 @@ void Environment::makeContextCurrent( const Context *context )
 	if( context ) {
 		auto platformData = dynamic_pointer_cast<PlatformDataMsw>( context->getPlatformData() );
 		int attemptCount = 10;
+		// wglMakeCurrent() can fail (vewry infrequently) if it's called from two threads simultaneously (ostensibly due to driver bugs)
+		// this reattempts 10 times before throwing
 		while( ! ::wglMakeCurrent( platformData->mDc, platformData->mGlrc ) ) {
 			DWORD error = GetLastError();
 			if( attemptCount-- <= 0 )
