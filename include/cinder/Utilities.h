@@ -94,6 +94,8 @@ extern CI_API int16_t	swapEndian( int16_t val );
 extern CI_API uint16_t	swapEndian( uint16_t val );
 extern CI_API int32_t	swapEndian( int32_t val );
 extern CI_API uint32_t	swapEndian( uint32_t val );
+extern CI_API int64_t	swapEndian( int64_t val );
+extern CI_API uint64_t	swapEndian( uint64_t val );
 extern CI_API float		swapEndian( float val );
 extern CI_API double	swapEndian( double val );
 
