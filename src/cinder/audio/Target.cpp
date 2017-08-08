@@ -71,9 +71,10 @@ TargetFile::~TargetFile() = default;
 
 void TargetFile::setupSampleRateConversion()
 {
-	if ( ! mSampleRateTarget ) {
+	if( ! mSampleRateTarget ) {
 		mSampleRateTarget = mSampleRate;
-	} else if ( mSampleRateTarget != mSampleRate) {
+	}
+	else if( mSampleRateTarget != mSampleRate) {
 		mConverter = audio::dsp::Converter::create( mSampleRate, mSampleRateTarget, getNumChannels(), getNumChannels(), mMaxFramesPerConversion );
 		mConverterSourceBuffer.setSize( mMaxFramesPerConversion, getNumChannels() );
 		mConverterDestBuffer.setSize( mMaxFramesPerConversion, getNumChannels() );
@@ -107,7 +108,7 @@ void TargetFile::write( const Buffer *buffer, size_t numFrames, size_t frameOffs
 		auto lastFrame = frameOffset + numFrames;
 
 		// process buffer in chunks of mMaxFramesPerConversion
-		while ( currFrame != lastFrame ) {
+		while( currFrame != lastFrame ) {
 			auto numSourceFrames = std::min( mMaxFramesPerConversion, lastFrame - currFrame );
 			auto numDestFrames = size_t( numSourceFrames * (float)getSampleRateTarget() / (float)getSampleRate() );
 
@@ -122,7 +123,8 @@ void TargetFile::write( const Buffer *buffer, size_t numFrames, size_t frameOffs
 
 			currFrame += numSourceFrames;
 		}
-	} else {
+	}
+	else {
 		performWrite( buffer, numFrames, frameOffset );
 	}
 }
