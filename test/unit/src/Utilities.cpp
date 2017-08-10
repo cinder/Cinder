@@ -31,6 +31,22 @@ std::istream& operator>>( std::istream &i, CustomType &t )
 
 TEST_CASE( "Utilities" )
 {
+	SECTION( "swapEndian" )
+	{
+		// 8-bit; should be no-op
+		REQUIRE( swapEndian( (int8_t)-127 ) == (int8_t)-127 );
+		REQUIRE( swapEndian( (uint8_t)255 ) == (uint8_t)255 );
+		// 16-bit
+		REQUIRE( swapEndian( (int16_t)-129 ) == (int16_t)0x7FFF );
+		REQUIRE( swapEndian( (uint16_t)0xFFEF ) == (uint16_t)0xEFFF );
+		// 32-bit
+		REQUIRE( swapEndian( (int32_t)-129 ) == (int32_t)0x7FFFFFFF );
+		REQUIRE( swapEndian( (uint32_t)0xBBAAFFEF ) == (uint32_t)0xEFFFAABB );
+		// 64-bit
+		REQUIRE( swapEndian( (int64_t)-129 ) == (int64_t)0x7FFFFFFFFFFFFFFF );
+		REQUIRE( swapEndian( (uint64_t)0xAABBCCDDEEFFEEEF ) == (uint64_t)0xEFEEFFEEDDCCBBAA );
+	}
+
 	SECTION( "Compress Buffer" )
 	{
 		vector<int> d;
