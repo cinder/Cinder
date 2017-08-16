@@ -24,7 +24,6 @@
 #include "cinder/audio/FileOggVorbis.h"
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/Exception.h"
-#include "cinder/Rand.h"
 
 #include "vorbis/vorbisenc.h"
 
@@ -212,8 +211,8 @@ TargetFileOggVorbis::TargetFileOggVorbis( const DataTargetRef &dataTarget, size_
 	vorbis_analysis_init( &mVorbisDspState, &mVorbisInfo );
 	vorbis_block_init( &mVorbisDspState, &mVorbisBlock );
 
-	Rand::randomize();
-	ogg_stream_init( &mOggStream, randInt() );
+	// a constant stream serial number is used, this is okay since no streams are multiplexed
+	ogg_stream_init( &mOggStream, 0 );
 
 	ogg_packet header, headerComment, headerCodebook;
 
