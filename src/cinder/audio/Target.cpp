@@ -51,7 +51,7 @@ std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget,
 #if defined( CINDER_COCOA )
 	return std::unique_ptr<TargetFile>( new cocoa::TargetFileCoreAudio( dataTarget, sampleRate, numChannels, sampleType, sampleRateNative, ext ) );
 #elif defined( CINDER_MSW )
-	CI_ASSERT_MSG( sampleRateTarget == 0 || sampleRateTarget == sampleRate, "sample rate conversion not yet implemented on MSW" );
+	CI_ASSERT_MSG( sampleRateNative == 0 || sampleRateNative == sampleRate, "sample rate conversion not yet implemented on MSW" );
 	return std::unique_ptr<TargetFile>( new msw::TargetFileMediaFoundation( dataTarget, sampleRate, numChannels, sampleType, ext ) );
 #endif
 }
