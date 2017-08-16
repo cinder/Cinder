@@ -147,8 +147,8 @@ vector<string> SourceFileCoreAudio::getSupportedExtensions()
 // MARK: - TargetFileCoreAudio
 // ----------------------------------------------------------------------------------------------------
 
-TargetFileCoreAudio::TargetFileCoreAudio( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, size_t targetSampleRate, const std::string &extension )
-	: TargetFile( sampleRate, numChannels, sampleType, targetSampleRate )
+TargetFileCoreAudio::TargetFileCoreAudio( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, size_t sampleRateNative, const std::string &extension )
+	: TargetFile( sampleRate, numChannels, sampleType, sampleRateNative )
 {
 	::CFURLRef targetUrl = ci::cocoa::createCfUrl( Url( dataTarget->getFilePath().string() ) );
 	::AudioFileTypeID fileType = getFileTypeIdFromExtension( extension );
@@ -156,10 +156,10 @@ TargetFileCoreAudio::TargetFileCoreAudio( const DataTargetRef &dataTarget, size_
 	::AudioStreamBasicDescription fileAsbd;
 	switch( mSampleType ) {
 		case SampleType::INT_16:
-			fileAsbd = createInt16Asbd( mSampleRateTarget, mNumChannels, true );
+			fileAsbd = createInt16Asbd( getSampleRateNative(), mNumChannels, true );
 			break;
 		case SampleType::FLOAT_32:
-			fileAsbd = createFloatAsbd( mSampleRateTarget, mNumChannels, true );
+			fileAsbd = createFloatAsbd( getSampleRateNative(), mNumChannels, true );
 			break;
 		default:
 			CI_ASSERT_NOT_REACHABLE();
@@ -175,7 +175,7 @@ TargetFileCoreAudio::TargetFileCoreAudio( const DataTargetRef &dataTarget, size_
 	::CFRelease( targetUrl );
 	mExtAudioFile = ExtAudioFilePtr( audioFile );
 
-	::AudioStreamBasicDescription clientAsbd = createFloatAsbd( mSampleRateTarget, mNumChannels, false );
+	::AudioStreamBasicDescription clientAsbd = createFloatAsbd( getSampleRateNative(), mNumChannels, false );
 
 	status = ::ExtAudioFileSetProperty( mExtAudioFile.get(), kExtAudioFileProperty_ClientDataFormat, sizeof( clientAsbd ), &clientAsbd );
 	CI_VERIFY( status == noErr );

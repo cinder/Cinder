@@ -39,7 +39,7 @@ namespace cinder { namespace audio {
 
 // TODO: these should be replaced with a generic registrar derived from the ImageIo stuff.
 
-std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, size_t sampleRateTarget, const std::string &extension )
+std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, size_t sampleRateNative, const std::string &extension )
 {
 #if ! defined( CINDER_UWP ) || ( _MSC_VER > 1800 )
 	std::string ext = dataTarget->getFilePathHint().extension().string();
@@ -49,20 +49,20 @@ std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget,
 	ext = ( ( ! ext.empty() ) && ( ext[0] == '.' ) ) ? ext.substr( 1, string::npos ) : ext;
 
 #if defined( CINDER_COCOA )
-	return std::unique_ptr<TargetFile>( new cocoa::TargetFileCoreAudio( dataTarget, sampleRate, numChannels, sampleType, sampleRateTarget, ext ) );
+	return std::unique_ptr<TargetFile>( new cocoa::TargetFileCoreAudio( dataTarget, sampleRate, numChannels, sampleType, sampleRateNative, ext ) );
 #elif defined( CINDER_MSW )
 	CI_ASSERT_MSG( sampleRateTarget == 0 || sampleRateTarget == sampleRate, "sample rate conversion not yet implemented on MSW" );
 	return std::unique_ptr<TargetFile>( new msw::TargetFileMediaFoundation( dataTarget, sampleRate, numChannels, sampleType, ext ) );
 #endif
 }
 
-std::unique_ptr<TargetFile> TargetFile::create( const fs::path &path, size_t sampleRate, size_t numChannels, SampleType sampleType, size_t targetSampleRate, const std::string &extension )
+std::unique_ptr<TargetFile> TargetFile::create( const fs::path &path, size_t sampleRate, size_t numChannels, SampleType sampleType, size_t sampleRateNative, const std::string &extension )
 {
-	return create( (DataTargetRef)writeFile( path ), sampleRate, numChannels, sampleType, targetSampleRate, extension );
+	return create( (DataTargetRef)writeFile( path ), sampleRate, numChannels, sampleType, sampleRateNative, extension );
 }
 
-TargetFile::TargetFile( size_t sampleRate, size_t numChannels, SampleType sampleType, size_t sampleRateTarget )
-	: mSampleRate( sampleRate ), mNumChannels( numChannels ), mSampleType( sampleType ), mSampleRateTarget( sampleRateTarget ), mMaxFramesPerConversion( 4092 )
+TargetFile::TargetFile( size_t sampleRate, size_t numChannels, SampleType sampleType, size_t sampleRateNative )
+	: mSampleRate( sampleRate ), mNumChannels( numChannels ), mSampleType( sampleType ), mSampleRateNative( sampleRateNative ), mMaxFramesPerConversion( 4092 )
 {
 	setupSampleRateConversion();
 }
@@ -71,11 +71,11 @@ TargetFile::~TargetFile() = default;
 
 void TargetFile::setupSampleRateConversion()
 {
-	if( ! mSampleRateTarget ) {
-		mSampleRateTarget = mSampleRate;
+	if( ! mSampleRateNative ) {
+		mSampleRateNative = mSampleRate;
 	}
-	else if( mSampleRateTarget != mSampleRate) {
-		mConverter = audio::dsp::Converter::create( mSampleRate, mSampleRateTarget, getNumChannels(), getNumChannels(), mMaxFramesPerConversion );
+	else if( mSampleRateNative != mSampleRate) {
+		mConverter = audio::dsp::Converter::create( mSampleRate, mSampleRateNative, getNumChannels(), getNumChannels(), mMaxFramesPerConversion );
 		mConverterSourceBuffer.setSize( mMaxFramesPerConversion, getNumChannels() );
 		mConverterDestBuffer.setSize( mMaxFramesPerConversion, getNumChannels() );
 	}
@@ -110,7 +110,7 @@ void TargetFile::write( const Buffer *buffer, size_t numFrames, size_t frameOffs
 		// process buffer in chunks of mMaxFramesPerConversion
 		while( currFrame != lastFrame ) {
 			auto numSourceFrames = std::min( mMaxFramesPerConversion, lastFrame - currFrame );
-			auto numDestFrames = size_t( numSourceFrames * (float)getSampleRateTarget() / (float)getSampleRate() );
+			auto numDestFrames = size_t( numSourceFrames * (float)getSampleRateNative() / (float)getSampleRate() );
 
 			// copy buffer into temporary buffer to remove frame offset (needed for mConverter->convert)
 			mConverterSourceBuffer.copyOffset( *buffer, numSourceFrames, 0, currFrame );

@@ -69,7 +69,7 @@ class SourceFileCoreAudio : public SourceFile {
 
 class TargetFileCoreAudio : public TargetFile {
   public:
-	TargetFileCoreAudio( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, size_t targetSampleRate, const std::string &extension );
+	TargetFileCoreAudio( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, size_t sampleRateNative, const std::string &extension );
 	virtual ~TargetFileCoreAudio() {}
 
 	void performWrite( const Buffer *buffer, size_t numFrames, size_t frameOffset ) override;
