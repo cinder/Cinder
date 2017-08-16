@@ -40,6 +40,7 @@
 #endif
 #include <cxxabi.h>
 #include <execinfo.h>
+#include <pthread.h>
 
 using namespace std;
 
@@ -361,6 +362,13 @@ vector<string> PlatformCocoa::stackTrace()
 	free( strs );
 	
 	return result;
+}
+
+void PlatformCocoa::setThreadName( const std::string &name )
+{
+	int result = pthread_setname_np( name.c_str() ); // under macOS, arbitrarily long strings appear to be acceptable
+	if( result != 0 )
+		CI_LOG_E( "setThreadName failed" );
 }
 
 void PlatformCocoa::addDisplay( const DisplayRef &display )

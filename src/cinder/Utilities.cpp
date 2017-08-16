@@ -117,6 +117,11 @@ vector<string> stackTrace()
 	return app::Platform::get()->stackTrace();
 }
 
+void setThreadName( const std::string &name )
+{
+	app::Platform::get()->setThreadName( name );
+}
+
 int16_t swapEndian( int16_t val )
 {
 	return (int16_t) (	(((uint16_t) (val) & (uint16_t) 0x00ffU) << 8) |
