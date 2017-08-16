@@ -59,6 +59,8 @@ class CI_API TargetFile {
 
 	// Implement to write \a numFrames frames of \a buffer to file. The writing begins at \a frameOffset.
 	virtual void performWrite( const Buffer *buffer, size_t numFrames, size_t frameOffset ) = 0;
+	//! Implementations should override and return true if they can provide samplerate conversion.  If false (default), a Converter will be used if needed.
+	virtual bool supportsConversion()	{ return false; }
 
 	// Sets up samplerate conversion if needed.
 	void setupSampleRateConversion();

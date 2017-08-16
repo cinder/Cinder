@@ -75,9 +75,11 @@ void TargetFile::setupSampleRateConversion()
 		mSampleRateNative = mSampleRate;
 	}
 	else if( mSampleRateNative != mSampleRate) {
-		mConverter = audio::dsp::Converter::create( mSampleRate, mSampleRateNative, getNumChannels(), getNumChannels(), mMaxFramesPerConversion );
-		mConverterSourceBuffer.setSize( mMaxFramesPerConversion, getNumChannels() );
-		mConverterDestBuffer.setSize( mMaxFramesPerConversion, getNumChannels() );
+		if( ! supportsConversion() ) {
+			mConverter = audio::dsp::Converter::create( mSampleRate, mSampleRateNative, getNumChannels(), getNumChannels(), mMaxFramesPerConversion );
+			mConverterSourceBuffer.setSize( mMaxFramesPerConversion, getNumChannels() );
+			mConverterDestBuffer.setSize( mMaxFramesPerConversion, getNumChannels() );
+		}
 	}
 }
 
