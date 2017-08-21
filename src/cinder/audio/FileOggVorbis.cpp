@@ -25,11 +25,17 @@
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/Exception.h"
 
+#include "vorbis/vorbisenc.h"
+
 #include <sstream>
 
 using namespace std;
 
 namespace cinder { namespace audio {
+
+// ----------------------------------------------------------------------------------------------------
+// SourceFileOggVorbis
+// ----------------------------------------------------------------------------------------------------
 
 SourceFileOggVorbis::SourceFileOggVorbis()
 	: SourceFile( 0 )
@@ -180,6 +186,98 @@ long SourceFileOggVorbis::tellFn( void *datasource )
 	auto sourceFile = (SourceFileOggVorbis *)datasource;
 	
 	return static_cast<long>( sourceFile->mStream->tell() );
+}
+
+// ----------------------------------------------------------------------------------------------------
+// TargetFileOggVorbis
+// ----------------------------------------------------------------------------------------------------
+
+TargetFileOggVorbis::TargetFileOggVorbis( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType )
+	: cinder::audio::TargetFile( sampleRate, numChannels, sampleType ), mDataTarget( dataTarget )
+{
+	CI_ASSERT( mDataTarget );
+	mStream = mDataTarget->getStream();
+
+	vorbis_info_init( &mVorbisInfo );
+
+	auto status = vorbis_encode_init_vbr( &mVorbisInfo, getNumChannels(), getSampleRate(), mVorbisBaseQuality );
+	if ( status ) {
+		throw AudioFormatExc( string( "TargetFileOggVorbis: invalid quality setting." ) );
+	}
+
+	vorbis_comment_init( &mVorbisComment );
+	vorbis_comment_add_tag( &mVorbisComment, "ENCODER", "libcinder" );
+
+	vorbis_analysis_init( &mVorbisDspState, &mVorbisInfo );
+	vorbis_block_init( &mVorbisDspState, &mVorbisBlock );
+
+	// a constant stream serial number is used, this is okay since no streams are multiplexed
+	ogg_stream_init( &mOggStream, 0 );
+
+	ogg_packet header, headerComment, headerCodebook;
+
+	vorbis_analysis_headerout( &mVorbisDspState, &mVorbisComment, &header, &headerComment, &headerCodebook );
+	ogg_stream_packetin( &mOggStream, &header );
+	ogg_stream_packetin( &mOggStream, &headerComment );
+	ogg_stream_packetin( &mOggStream, &headerCodebook );
+
+	// flush ogg page so audio data starts on a new page
+	while ( ogg_stream_flush( &mOggStream, &mOggPage ) != 0 ) {
+		mStream->writeData( mOggPage.header, mOggPage.header_len );
+		mStream->writeData( mOggPage.body, mOggPage.body_len );
+	}
+}
+
+TargetFileOggVorbis::~TargetFileOggVorbis()
+{
+	// indicate end of input
+	vorbis_analysis_wrote( &mVorbisDspState, 0 );
+
+	processAndWriteVorbisBlocks();
+
+	ogg_stream_clear( &mOggStream );
+	vorbis_block_clear( &mVorbisBlock );
+	vorbis_dsp_clear( &mVorbisDspState );
+	vorbis_comment_clear( &mVorbisComment );
+	vorbis_info_clear( &mVorbisInfo );
+}
+
+void TargetFileOggVorbis::performWrite( const Buffer *buffer, size_t numFrames, size_t frameOffset )
+{
+	// process incoming buffer in chunks of maximum mVorbisBufferSize, this prevents memory allocation errors
+	auto currFrame = frameOffset;
+	auto lastFrame = frameOffset + numFrames;
+
+	while ( currFrame != lastFrame ) {
+		auto numFramesChunk = std::min( mVorbisBufferSize, lastFrame - currFrame );
+
+		float ** bufferOgg = vorbis_analysis_buffer( &mVorbisDspState, (int)numFramesChunk );
+		for ( size_t c = 0; c < getNumChannels(); ++c ) {
+			std::memcpy( bufferOgg[ c ], buffer->getChannel( c ) + currFrame, numFramesChunk * sizeof( float ) );
+		}
+		vorbis_analysis_wrote( &mVorbisDspState, (int)numFramesChunk );
+
+		processAndWriteVorbisBlocks();
+
+		currFrame += numFramesChunk;
+	}
+}
+
+void TargetFileOggVorbis::processAndWriteVorbisBlocks()
+{
+	while ( vorbis_analysis_blockout( &mVorbisDspState, &mVorbisBlock ) == 1 ) {
+		vorbis_analysis( &mVorbisBlock, NULL );
+		vorbis_bitrate_addblock( &mVorbisBlock );
+
+		while ( vorbis_bitrate_flushpacket( &mVorbisDspState, &mOggPacket ) == 1 ) {
+			ogg_stream_packetin( &mOggStream, &mOggPacket );
+
+			while ( ogg_stream_pageout( &mOggStream, &mOggPage ) != 0 ) {
+				mStream->writeData( mOggPage.header, mOggPage.header_len );
+				mStream->writeData( mOggPage.body, mOggPage.body_len );
+			}
+		}
+	}
 }
 
 } } // namespace cinder::audio
