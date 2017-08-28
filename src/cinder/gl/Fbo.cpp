@@ -333,7 +333,7 @@ void Fbo::prepareAttachments( const Fbo::Format &format, bool /*multisampling*/ 
 										|| mAttachmentsTexture.count( GL_DEPTH_STENCIL_ATTACHMENT ) || mAttachmentsBuffer.count( GL_DEPTH_STENCIL_ATTACHMENT );
 #endif
 	if( format.mDepthTexture && ( ! preexistingDepthAttachment ) ) {
-#if ! defined( CINDER_LINUX_EGL_RPI2 )
+#if ! defined( CINDER_GL_ES_2_RPI )
 		mAttachmentsTexture[GL_DEPTH_ATTACHMENT] = Texture::create( mWidth, mHeight, format.mDepthTextureFormat );
 #else
 		CI_LOG_W( "No depth texture support on the RPi2." );
