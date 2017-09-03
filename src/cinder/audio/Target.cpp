@@ -24,6 +24,7 @@
 #include "cinder/audio/Target.h"
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/CinderAssert.h"
+#include "cinder/audio/FileOggVorbis.h"
 
 #include "cinder/Utilities.h"
 
@@ -48,12 +49,16 @@ std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget,
 #endif
 	ext = ( ( ! ext.empty() ) && ( ext[0] == '.' ) ) ? ext.substr( 1, string::npos ) : ext;
 
+	if ( ext == "ogg" ) {
+		return std::unique_ptr<TargetFile>( new TargetFileOggVorbis( dataTarget, sampleRate, numChannels, sampleType, sampleRateNative ) );
+	} else {
 #if defined( CINDER_COCOA )
-	return std::unique_ptr<TargetFile>( new cocoa::TargetFileCoreAudio( dataTarget, sampleRate, numChannels, sampleType, sampleRateNative, ext ) );
+		return std::unique_ptr<TargetFile>( new cocoa::TargetFileCoreAudio( dataTarget, sampleRate, numChannels, sampleType, sampleRateNative, ext ) );
 #elif defined( CINDER_MSW )
-	CI_ASSERT_MSG( sampleRateNative == 0 || sampleRateNative == sampleRate, "sample rate conversion not yet implemented on MSW" );
-	return std::unique_ptr<TargetFile>( new msw::TargetFileMediaFoundation( dataTarget, sampleRate, numChannels, sampleType, ext ) );
+		CI_ASSERT_MSG( sampleRateNative == 0 || sampleRateNative == sampleRate, "sample rate conversion not yet implemented on MSW" );
+		return std::unique_ptr<TargetFile>( new msw::TargetFileMediaFoundation( dataTarget, sampleRate, numChannels, sampleType, ext ) );
 #endif
+	}
 }
 
 std::unique_ptr<TargetFile> TargetFile::create( const fs::path &path, size_t sampleRate, size_t numChannels, SampleType sampleType, size_t sampleRateNative, const std::string &extension )

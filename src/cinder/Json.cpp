@@ -247,12 +247,6 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
 				mValueType = VALUE_BOOL;
 			}
 		}
-		else if ( value.isDouble() ) { 
-			mValue = toString( value.asDouble() );
-			if ( setType ) {
-				mValueType = VALUE_DOUBLE;
-			}
-		}
 		else if ( value.isInt() ) { 
 			mValue = toString( value.asLargestInt() );
 			if ( setType ) {
@@ -269,6 +263,12 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
 			mValue = toString( value.asLargestUInt() );
 			if ( setType ) {
 				mValueType = VALUE_UINT;
+			}
+		}
+		else if ( value.isDouble() ) { // jsoncpp defines isDouble() to include integral types, so this must follow isInt() && isUint() 
+			mValue = toString( value.asDouble() );
+			if ( setType ) {
+				mValueType = VALUE_DOUBLE;
 			}
 		}
 	}

@@ -802,7 +802,7 @@ StreamExc::StreamExc( const std::string &fontName ) throw()
 	template void IStreamCinder::readBig<T>( T *t ); \
 	template void IStreamCinder::readLittle<T>( T *t );
 
-BOOST_PP_SEQ_FOR_EACH( STREAM_PROTOTYPES, ~, (int8_t)(uint8_t)(int16_t)(uint16_t)(int32_t)(uint32_t)(float)(double) )
+BOOST_PP_SEQ_FOR_EACH( STREAM_PROTOTYPES, ~, (int8_t)(uint8_t)(int16_t)(uint16_t)(int32_t)(uint32_t)(int64_t)(uint64_t)(float)(double) )
 
 #if defined( CINDER_UWP )
 	#pragma warning(pop) 

@@ -590,4 +590,7 @@ class CI_API Context {
 class CI_API ExcContextAllocation : public Exception {
 };
 
+class CI_API ExcContextMakeCurrent : public Exception {
+};
+
 } } // namespace cinder::gl
