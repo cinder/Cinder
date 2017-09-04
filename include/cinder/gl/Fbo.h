@@ -171,9 +171,11 @@ class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
 	//! Sets the debugging label associated with the Fbo. Calls glObjectLabel() when available.
 	void				setLabel( const std::string &label );
 	
-	//! Returns a copy of the pixels in \a attachment within \a area (cropped to the bounding rectangle of the attachment) as an 8-bit per channel Surface. \a attachment ignored on ES 2.
+	//! Returns a copy of the pixels in \a attachment within \a area (cropped to the bounding rectangle of the attachment) as a Surface8u. \a attachment ignored on ES 2.
 	Surface8u		readPixels8u( const Area &area, GLenum attachment = GL_COLOR_ATTACHMENT0 ) const;
-
+	//! Returns a copy of the pixels in \a attachment within \a area (cropped to the bounding rectangle of the attachment) as a Surface32f. \a attachment ignored on ES 2.
+	Surface32f		readPixels32f( const Area &area, GLenum attachment = GL_COLOR_ATTACHMENT0 ) const;
+	
 	//! \brief Defines the Format of the Fbo, which is passed in via create().
 	//!
 	//! The default provides an 8-bit RGBA color texture attachment and a 24-bit depth renderbuffer attachment, multi-sampling and stencil disabled.
