@@ -286,6 +286,8 @@ class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
 	void		updateMipmaps( GLenum attachment ) const;
 	bool		checkStatus( class FboExceptionInvalidSpecification *resultExc );
 	void		setDrawBuffers( GLuint fbId, const std::map<GLenum,RenderbufferRef> &attachmentsBuffer, const std::map<GLenum,TextureBaseRef> &attachmentsTexture );
+	//! Helper function for readPixels8u() / readPixels32f(), returns read area
+	Area		prepareReadPixels( const Area &area, GLenum attachment ) const;
 
 	int					mWidth, mHeight;
 	Format				mFormat;
