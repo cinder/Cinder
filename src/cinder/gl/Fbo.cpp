@@ -759,8 +759,10 @@ Surface8u Fbo::readPixels8u( const Area &area, GLenum attachment ) const
 	Surface8u result( readArea.getWidth(), readArea.getHeight(), true );
 	glReadPixels( readArea.x1, readArea.y1, readArea.getWidth(), readArea.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, result.getData() );
 
-	// glReadPixels returns pixels which are bottom-up
-	ip::flipVertical( &result );
+	if( result.getHeight() > 1 ) {
+		// glReadPixels returns pixels which are bottom-up
+		ip::flipVertical( &result );
+	}
 
 	return result;
 }
@@ -775,8 +777,10 @@ Surface32f Fbo::readPixels32f( const Area &area, GLenum attachment ) const
 	Surface32f result( readArea.getWidth(), readArea.getHeight(), true );
 	glReadPixels( readArea.x1, readArea.y1, readArea.getWidth(), readArea.getHeight(), GL_RGBA, GL_FLOAT, result.getData() );
 
-	// glReadPixels returns pixels which are bottom-up
-	ip::flipVertical( &result );
+	if( result.getHeight() > 1 ) {
+		// glReadPixels returns pixels which are bottom-up
+		ip::flipVertical( &result );
+	}
 
 	return result;
 }
