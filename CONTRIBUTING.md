@@ -124,8 +124,9 @@ namespace cinder {
 SomeClass::SomeClass( int var1, int var2 )
 	: mVar1( var1 ), mVar2( var2 )
 {
-	if( var1 == var2 )
+	if( var1 == var2 ) {
 		someMethod( var1, Rectf::zero() );
+	}
 	else {
 		...
 		...
