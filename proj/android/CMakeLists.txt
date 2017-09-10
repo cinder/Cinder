@@ -408,7 +408,7 @@ else()
     set( CMAKE_STRIP        ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-strip  CACHE FILEPATH "" FORCE )
 endif()
 
-get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE )
+get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE )
 set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR ${CINDER_DIR}/boost )
