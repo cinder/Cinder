@@ -163,12 +163,12 @@ struct IStreamMpg123 {
 };
 
 //!
-FileType determineFileType( const ci::IStreamRef& stream )
+FileType determineFileType( const std::string &extension, const ci::IStreamRef& stream )
 {
 	FileType result = FileType::UNKNOWN;
 
 	// Try MP3 first
-	if( FileType::UNKNOWN == result ) {
+	if( extension == ".mp3" ) {
 		ProcessScopedMpg123::initialize();
 
 		stream->seekAbsolute( 0 );
@@ -191,7 +191,7 @@ FileType determineFileType( const ci::IStreamRef& stream )
 		}
 	}
 
-	// WAV next
+	// If not an .mp3, try libsndfile
 	if( FileType::UNKNOWN == result ) {
 		stream->seekAbsolute( 0 );
 
@@ -497,7 +497,8 @@ void SourceFileAudioLoader::init()
 		mStream = mDataSource->createStream();
 	}
 
-	audioloader::FileType fileType = audioloader::determineFileType( mStream );
+	auto extension = mDataSource->getFilePathHint().extension().string();
+	audioloader::FileType fileType = audioloader::determineFileType( extension, mStream );
 
 	/*
 	switch( fileType ) {

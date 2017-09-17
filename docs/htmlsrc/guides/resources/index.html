@@ -118,7 +118,7 @@ Surface mySurface( loadImage( loadResource( "Logo.jpg" ) ) );
          <h3>Resources on Windows</h3>
          <p>Let's take a look now at how resources are handled on Microsoft Windows. The most noticeable difference relative to OS X is that resources are not stored as individual files, since an EXE does not encapsulate a directory like an OS X application bundle does. Instead, resources are baked into the EXE using a resource compiler, and are stored as binary data. However we can access this binary data in memory using the same <ci dox="ci::app::AppBase::loadResource">loadResource()</ci> routine we do on OS X. Furthermore, Cinder's internal code is able to handle loading from either the flat file or in-memory representations transparently and efficiently, so in general you will not need to change application code between the platforms.</p>
          
-         <strong>Note: </strong>The text which follows is helpful for understanding how Windows resources work under the hood, but we recommend you read and consider the alternative techniques under the <a class="el" href="index.html#xplatform">Cross-Platform Resources</a> section as well, even if you are writing Windows-only code.</p>
+         <p><strong>Note: </strong>The text which follows is helpful for understanding how Windows resources work under the hood, but we recommend you read and consider the alternative techniques under the <a class="el" href="index.html#xplatform">Cross-Platform Resources</a> section as well, even if you are writing Windows-only code.</p>
 
          <a class="anchor" id="mswAdd"></a>
          <h4>Adding a Resource</h4>

@@ -145,6 +145,23 @@ uint32_t swapEndian( uint32_t val )
 					 (((uint32_t) (val) & (uint32_t) 0xFF000000U) >> 24));
 }
 
+int64_t swapEndian( int64_t val )
+{
+	uint64_t	x = reinterpret_cast<uint64_t&>( val );
+				x = (x & 0x00000000FFFFFFFF) << 32 | (x & 0xFFFFFFFF00000000) >> 32;
+				x = (x & 0x0000FFFF0000FFFF) << 16 | (x & 0xFFFF0000FFFF0000) >> 16;
+				x = (x & 0x00FF00FF00FF00FF) << 8  | (x & 0xFF00FF00FF00FF00) >> 8;
+	return reinterpret_cast<int64_t&>( x );
+}
+
+uint64_t swapEndian( uint64_t val )
+{
+	uint64_t	x = (val & 0x00000000FFFFFFFF) << 32 | (val & 0xFFFFFFFF00000000) >> 32;
+				x = (x & 0x0000FFFF0000FFFF) << 16 | (x & 0xFFFF0000FFFF0000) >> 16;
+				x = (x & 0x00FF00FF00FF00FF) << 8  | (x & 0xFF00FF00FF00FF00) >> 8;
+	return x;
+}
+
 float swapEndian( float val )
 {
 	uint32_t temp = swapEndian( * reinterpret_cast<uint32_t*>( &val ) );

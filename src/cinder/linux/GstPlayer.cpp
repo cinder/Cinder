@@ -101,7 +101,7 @@ void GstData::updateState( const GstState& current )
 {
     currentState = current;
 
-    switch ( currentState ) {
+    switch ( static_cast<int>( currentState ) ) {
         case GST_STATE_NULL: {
             reset();
             break;
@@ -265,7 +265,7 @@ gboolean checkBusMessagesAsync( GstBus* bus, GstMessage* message, gpointer userD
             break;
         }
         case GST_MESSAGE_ASYNC_DONE: {
-            switch( data.currentState ) {
+            switch( static_cast<int>( data.currentState ) ) {
                 case GST_STATE_PAUSED: {
                     if( data.isSeeking ) {
                         if( data.requestedSeek  ) {

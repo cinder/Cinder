@@ -189,14 +189,19 @@ using namespace cinder::app;
 
 - (void)screenDidConnect:(NSNotification *)notification
 {
-	DisplayRef connected = app::PlatformCocoa::get()->findDisplayFromUiScreen( (UIScreen*)[notification object] );
-	app::PlatformCocoa::get()->addDisplay( connected );
+	UIScreen *screen = (UIScreen *)[notification object];
+	DisplayRef connected = app::PlatformCocoa::get()->findDisplayFromUiScreen( screen );
+	if( ! connected ) {
+		app::PlatformCocoa::get()->addDisplay( DisplayRef( new DisplayCocoaTouch( screen ) ) );
+	}
 }
 
 - (void)screenDidDisconnect:(NSNotification *)notification
 {
-	DisplayRef disconnected = app::PlatformCocoa::get()->findDisplayFromUiScreen( (UIScreen*)[notification object] );
-	app::PlatformCocoa::get()->removeDisplay( disconnected );
+	DisplayRef disconnected = app::PlatformCocoa::get()->findDisplayFromUiScreen( (UIScreen *)[notification object] );
+	if( disconnected ) {
+		app::PlatformCocoa::get()->removeDisplay( disconnected );
+	}
 }
 
 - (void)screenModeDidChange:(NSNotification *)notification
