@@ -24,6 +24,7 @@
 #pragma once
 
 #include "cinder/audio/Source.h"
+#include "cinder/audio/Target.h"
 
 //! don't include ogg's static callbacks (we rely on cinder's stream utils instead)
 #define OV_EXCLUDE_STATIC_CALLBACKS
@@ -69,14 +70,31 @@ class SourceFileOggVorbis : public SourceFile {
 	size_t				mNumChannels, mSampleRate;
 };
 
-//class TargetFileImplOggVorbis : public TargetFile {
-//public:
-//	TargetFileImplOggVorbis( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, const std::string &extension );
-//	virtual TargetFileImplOggVorbis() {}
-//
-//	void write( const Buffer *buffer, size_t frameOffset, size_t numFrames ) override;
-//
-//private:
-//};
+//! TargetFile implementation for encoding ogg vorbis files.
+class TargetFileOggVorbis : public TargetFile {
+  public:
+	TargetFileOggVorbis( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType );
+	virtual ~TargetFileOggVorbis();
+
+	void performWrite( const Buffer *buffer, size_t numFrames, size_t frameOffset ) override;
+
+  private:
+	void processAndWriteVorbisBlocks();
+
+	vorbis_info			mVorbisInfo;
+	vorbis_comment		mVorbisComment;
+	vorbis_dsp_state	mVorbisDspState;
+	vorbis_block		mVorbisBlock;
+
+	ogg_stream_state	mOggStream;
+	ogg_page			mOggPage;
+	ogg_packet			mOggPacket;
+
+	float				mVorbisBaseQuality = 0.4f;	// desired quality level, from -0.1 to 1.0 (lo to hi).
+	size_t				mVorbisBufferSize = 1024;	// size of chunks processed by libvorbis
+
+	ci::DataTargetRef	mDataTarget;
+	ci::OStreamRef		mStream;
+};
 
 } } // namespace cinder::audio

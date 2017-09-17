@@ -24,6 +24,7 @@
 
 #include "cinder/gl/Environment.h"
 #include "cinder/gl/Context.h"
+#include "cinder/Utilities.h"
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
 	#error "This file must be compiled as Objective-C++ on the Mac"
@@ -239,8 +240,14 @@ void Environment::makeContextCurrent( const Context *context )
 #elif defined( CINDER_MSW )
 	if( context ) {
 		auto platformData = dynamic_pointer_cast<PlatformDataMsw>( context->getPlatformData() );
-		if( ! ::wglMakeCurrent( platformData->mDc, platformData->mGlrc ) ) {
-			// DWORD error = GetLastError();
+		int attemptCount = 10;
+		// wglMakeCurrent() can fail (vewry infrequently) if it's called from two threads simultaneously (ostensibly due to driver bugs)
+		// this reattempts 10 times before throwing
+		while( ! ::wglMakeCurrent( platformData->mDc, platformData->mGlrc ) ) {
+			DWORD error = GetLastError();
+			if( attemptCount-- <= 0 )
+				throw ExcContextMakeCurrent();
+			ci::sleep( 1 );
 		}
 	}
 	else {
