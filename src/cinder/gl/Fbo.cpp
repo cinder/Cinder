@@ -755,6 +755,38 @@ Surface8u Fbo::readPixels8u( const Area &area, GLenum attachment ) const
 	resolveTextures();
 	ScopedFramebuffer readScp( GL_FRAMEBUFFER, mId );
 
+	Area readArea = prepareReadPixels( area, attachment );
+	Surface8u result( readArea.getWidth(), readArea.getHeight(), true );
+	glReadPixels( readArea.x1, readArea.y1, readArea.getWidth(), readArea.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, result.getData() );
+
+	if( result.getHeight() > 1 ) {
+		// glReadPixels returns pixels which are bottom-up
+		ip::flipVertical( &result );
+	}
+
+	return result;
+}
+
+Surface32f Fbo::readPixels32f( const Area &area, GLenum attachment ) const
+{
+	// resolve first, before our own bind so that we don't force a resolve unnecessarily
+	resolveTextures();
+	ScopedFramebuffer readScp( GL_FRAMEBUFFER, mId );
+
+	Area readArea = prepareReadPixels( area, attachment );
+	Surface32f result( readArea.getWidth(), readArea.getHeight(), true );
+	glReadPixels( readArea.x1, readArea.y1, readArea.getWidth(), readArea.getHeight(), GL_RGBA, GL_FLOAT, result.getData() );
+
+	if( result.getHeight() > 1 ) {
+		// glReadPixels returns pixels which are bottom-up
+		ip::flipVertical( &result );
+	}
+
+	return result;
+}
+
+Area Fbo::prepareReadPixels( const Area &area, GLenum attachment ) const
+{
 	// we need to determine the bounds of the attachment so that we can crop against it and subtract from its height
 	Area attachmentBounds = getBounds();
 	auto attachedBufferIt = mAttachmentsBuffer.find( attachment );
@@ -773,23 +805,18 @@ Surface8u Fbo::readPixels8u( const Area &area, GLenum attachment ) const
 		else // the user has attempted to read from an attachment we have no record of
 			CI_LOG_W( "Reading from unknown attachment" );
 	}
-	
+
 	Area clippedArea = area.getClipBy( attachmentBounds );
 
 #if ! defined( CINDER_GL_ES_2 )	
 	glReadBuffer( attachment );
 #endif
-	Surface8u result( clippedArea.getWidth(), clippedArea.getHeight(), true );
-	glReadPixels( clippedArea.x1, attachmentBounds.getHeight() - clippedArea.y2, clippedArea.getWidth(), clippedArea.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, result.getData() );
-	
-	// glReadPixels returns pixels which are bottom-up
-	ip::flipVertical( &result );
-	
+
 	// by binding we marked ourselves as needing to be resolved, but since this was a read-only
 	// operation and we resolved at the top, we can mark ourselves as not needing resolve
 	mNeedsResolve = false;
-	
-	return result;
+
+	return Area( clippedArea.x1, attachmentBounds.getHeight() - clippedArea.y2, clippedArea.x2,  attachmentBounds.getHeight() - clippedArea.y1 );
 }
 
 #if ! defined( CINDER_GL_ES )
