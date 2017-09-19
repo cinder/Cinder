@@ -271,41 +271,6 @@ void Context::uninitRecursive( const NodeRef &node, set<NodeRef> &traversedNodes
 	node->uninitializeImpl();
 }
 
-void Context::addAutoPulledNode( const NodeRef &node )
-{
-	mAutoPulledNodes.insert( node );
-	mAutoPullRequired = true;
-	mAutoPullCacheDirty = true;
-
-	// if not done already, allocate a buffer for auto-pulling that is large enough for stereo processing
-	size_t framesPerBlock = getFramesPerBlock();
-	if( mAutoPullBuffer.getNumFrames() < framesPerBlock )
-		mAutoPullBuffer.setSize( framesPerBlock, 2 );
-}
-
-void Context::removeAutoPulledNode( const NodeRef &node )
-{
-	size_t result = mAutoPulledNodes.erase( node );
-	CI_VERIFY( result );
-
-	mAutoPullCacheDirty = true;
-	if( mAutoPulledNodes.empty() )
-		mAutoPullRequired = false;
-}
-
-void Context::schedule( double when, const NodeRef &node, bool callFuncBeforeProcess, const std::function<void ()> &func )
-{
-	const uint64_t framesPerBlock = (uint64_t)getFramesPerBlock();
-	uint64_t eventFrameThreshold = timeToFrame( when, static_cast<double>( getSampleRate() ) );
-
-	// Place the threshold back one block so we can process the block first, guarding against wrap around
-	if( eventFrameThreshold >= framesPerBlock )
-		eventFrameThreshold -= framesPerBlock;
-
-	lock_guard<mutex> lock( mMutex );
-	mScheduledEvents.push_back( ScheduledEvent( eventFrameThreshold, node, callFuncBeforeProcess, func ) );
-}
-
 bool Context::isAudioThread() const
 {
 	return mAudioThreadId == std::this_thread::get_id();
@@ -330,6 +295,32 @@ void Context::incrementFrameCount()
 	mNumProcessedFrames += getFramesPerBlock();
 }
 
+// ----------------------------------------------------------------------------------------------------
+// NodeAutoPullable Handling
+// ----------------------------------------------------------------------------------------------------
+
+void Context::addAutoPulledNode( const NodeRef &node )
+{
+	mAutoPulledNodes.insert( node );
+	mAutoPullRequired = true;
+	mAutoPullCacheDirty = true;
+
+	// if not done already, allocate a buffer for auto-pulling that is large enough for stereo processing
+	size_t framesPerBlock = getFramesPerBlock();
+	if( mAutoPullBuffer.getNumFrames() < framesPerBlock )
+		mAutoPullBuffer.setSize( framesPerBlock, 2 );
+}
+
+void Context::removeAutoPulledNode( const NodeRef &node )
+{
+	size_t result = mAutoPulledNodes.erase( node );
+	CI_VERIFY( result );
+
+	mAutoPullCacheDirty = true;
+	if( mAutoPulledNodes.empty() )
+		mAutoPullRequired = false;
+}
+
 void Context::processAutoPulledNodes()
 {
 	if( ! mAutoPullRequired )
@@ -341,6 +332,33 @@ void Context::processAutoPulledNodes()
 		if( ! node->getProcessesInPlace() )
 			dsp::mixBuffers( node->getInternalBuffer(), &mAutoPullBuffer );
 	}
+}
+
+const std::vector<Node *>& Context::getAutoPulledNodes()
+{
+	if( mAutoPullCacheDirty ) {
+		mAutoPullCache.clear();
+		for( const NodeRef &node : mAutoPulledNodes )
+			mAutoPullCache.push_back( node.get() );
+	}
+	return mAutoPullCache;
+}
+
+// ----------------------------------------------------------------------------------------------------
+// Event Scheduling
+// ----------------------------------------------------------------------------------------------------
+
+void Context::schedule( double when, const NodeRef &node, bool callFuncBeforeProcess, const std::function<void ()> &func )
+{
+	const uint64_t framesPerBlock = (uint64_t)getFramesPerBlock();
+	uint64_t eventFrameThreshold = timeToFrame( when, static_cast<double>( getSampleRate() ) );
+
+	// Place the threshold back one block so we can process the block first, guarding against wrap around
+	if( eventFrameThreshold >= framesPerBlock )
+		eventFrameThreshold -= framesPerBlock;
+
+	lock_guard<mutex> lock( mMutex );
+	mScheduledEvents.push_back( ScheduledEvent( eventFrameThreshold, node, callFuncBeforeProcess, func ) );
 }
 
 // note: we should be synchronized with mMutex by the OutputDeviceNode impl, so mScheduledEvents is safe to modify
@@ -384,15 +402,9 @@ void Context::postProcessScheduledEvents()
 	}
 }
 
-const std::vector<Node *>& Context::getAutoPulledNodes()
-{
-	if( mAutoPullCacheDirty ) {
-		mAutoPullCache.clear();
-		for( const NodeRef &node : mAutoPulledNodes )
-			mAutoPullCache.push_back( node.get() );
-	}
-	return mAutoPullCache;
-}
+// ----------------------------------------------------------------------------------------------------
+// Debugging Helpers
+// ----------------------------------------------------------------------------------------------------
 
 namespace {
 

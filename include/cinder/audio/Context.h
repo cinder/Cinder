@@ -113,7 +113,7 @@ class CI_API Context : public std::enable_shared_from_this<Context> {
 
 	//! Schedule \a node to be enabled or disabled with with \a func on the audio thread, to be called at \a when seconds measured against getNumProcessedSeconds().
 	//! If \a \a callFuncBeforeProcess is true, then `func` will be called at the beginning of the processing block, if false will be called at the end.
-	//! \a node is owned until the scheduled event completes.
+	//! \note Should be called from the user thread. \a node is owned until the scheduled event completes.
 	void schedule( double when, const NodeRef &node, bool callFuncBeforeProcess, const std::function<void ()> &func );
 
 	//! Returns the mutex used to synchronize the audio thread. This is also used internally by the Node class when making connections.
