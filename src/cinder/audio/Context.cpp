@@ -351,7 +351,7 @@ const std::vector<Node *>& Context::getAutoPulledNodes()
 void Context::scheduleEvent( double when, const NodeRef &node, bool callFuncBeforeProcess, const std::function<void ()> &func )
 {
 	const uint64_t framesPerBlock = (uint64_t)getFramesPerBlock();
-	uint64_t eventFrameThreshold = timeToFrame( when, static_cast<double>( getSampleRate() ) );
+	uint64_t eventFrameThreshold = std::max( mNumProcessedFrames.load(), timeToFrame( when, static_cast<double>( getSampleRate() ) ) );
 
 	// Place the threshold back one block so we can process the block first, guarding against wrap around
 	if( eventFrameThreshold >= framesPerBlock )
