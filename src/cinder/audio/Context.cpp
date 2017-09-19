@@ -293,7 +293,7 @@ void Context::removeAutoPulledNode( const NodeRef &node )
 		mAutoPullRequired = false;
 }
 
-void Context::schedule( double when, const NodeRef &node, bool enable, const std::function<void ()> &func )
+void Context::schedule( double when, const NodeRef &node, bool callFuncBeforeProcess, const std::function<void ()> &func )
 {
 	const uint64_t framesPerBlock = (uint64_t)getFramesPerBlock();
 	uint64_t eventFrameThreshold = timeToFrame( when, static_cast<double>( getSampleRate() ) );
@@ -303,7 +303,7 @@ void Context::schedule( double when, const NodeRef &node, bool enable, const std
 		eventFrameThreshold -= framesPerBlock;
 
 	lock_guard<mutex> lock( mMutex );
-	mScheduledEvents.push_back( ScheduledEvent( eventFrameThreshold, node, enable, func ) );
+	mScheduledEvents.push_back( ScheduledEvent( eventFrameThreshold, node, callFuncBeforeProcess, func ) );
 }
 
 bool Context::isAudioThread() const
@@ -343,6 +343,7 @@ void Context::processAutoPulledNodes()
 	}
 }
 
+// note: we should be synchronized with mMutex by the OutputDeviceNode impl, so mScheduledEvents is safe to modify
 void Context::preProcessScheduledEvents()
 {
 	const uint64_t framesPerBlock = (uint64_t)getFramesPerBlock();
@@ -350,17 +351,16 @@ void Context::preProcessScheduledEvents()
 
 	for( auto &event : mScheduledEvents ) {
 		if( numProcessedFrames >= event.mEventFrameThreshold ) {
+			event.mProcessingEvent = true;
 			uint64_t frameOffset = numProcessedFrames - event.mEventFrameThreshold;
-			if( event.mEnable ) {
+			if( event.mCallFuncBeforeProcess ) {
 				event.mNode->mProcessFramesRange.first = size_t( framesPerBlock - frameOffset );
 				event.mFunc();
 			}
 			else {
-				// set the process range but don't call its function until postProcess() (which should be disable()'ing the Node)
+				// set the process range but don't call its function until postProcess()
 				event.mNode->mProcessFramesRange.second = (size_t)frameOffset;
 			}
-
-			event.mFinished = true;
 		}
 	}
 }
@@ -368,11 +368,11 @@ void Context::preProcessScheduledEvents()
 void Context::postProcessScheduledEvents()
 {
 	for( auto eventIt = mScheduledEvents.begin(); eventIt != mScheduledEvents.end(); /* */ ) {
-		if( eventIt->mFinished ) {
-			if( ! eventIt->mEnable )
+		if( eventIt->mProcessingEvent ) {
+			if( ! eventIt->mCallFuncBeforeProcess )
 				eventIt->mFunc();
 
-			// reset process frame range
+			// reset process frame range to an entire block
 			auto &range = eventIt->mNode->mProcessFramesRange;
 			range.first = 0;
 			range.second = getFramesPerBlock();
