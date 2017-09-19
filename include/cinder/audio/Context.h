@@ -117,8 +117,8 @@ class CI_API Context : public std::enable_shared_from_this<Context> {
 	void scheduleEvent( double when, const NodeRef &node, bool callFuncBeforeProcess, const std::function<void ()> &func );
 	//! Immediately cancels any events scheduled with scheduleEvent().
 	void cancelScheduledEvents( const NodeRef &node );
-	//! \deprecated  use scheduleEvent() instead
-	//void schedule( double when, const NodeRef &node, bool callFuncBeforeProcess, const std::function<void ()> &func );
+	//! \deprecated  use scheduleEvent() instead.
+	void schedule( double when, const NodeRef &node, bool callFuncBeforeProcess, const std::function<void ()> &func )	{ scheduleEvent( when, node, callFuncBeforeProcess, func ); }
 
 	//! Returns the mutex used to synchronize the audio thread. This is also used internally by the Node class when making connections.
 	std::mutex& getMutex() const			{ return mMutex; }
