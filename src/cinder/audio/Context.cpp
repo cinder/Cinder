@@ -348,7 +348,7 @@ const std::vector<Node *>& Context::getAutoPulledNodes()
 // Event Scheduling
 // ----------------------------------------------------------------------------------------------------
 
-void Context::schedule( double when, const NodeRef &node, bool callFuncBeforeProcess, const std::function<void ()> &func )
+void Context::scheduleEvent( double when, const NodeRef &node, bool callFuncBeforeProcess, const std::function<void ()> &func )
 {
 	const uint64_t framesPerBlock = (uint64_t)getFramesPerBlock();
 	uint64_t eventFrameThreshold = timeToFrame( when, static_cast<double>( getSampleRate() ) );
@@ -357,8 +357,32 @@ void Context::schedule( double when, const NodeRef &node, bool callFuncBeforePro
 	if( eventFrameThreshold >= framesPerBlock )
 		eventFrameThreshold -= framesPerBlock;
 
+	// TODO: support multiple events, at the moment only supporting one per node.
+	if( node->mEventScheduled ) {
+		cancelScheduledEvents( node );
+	}
+
 	lock_guard<mutex> lock( mMutex );
+	node->mEventScheduled = true;
 	mScheduledEvents.push_back( ScheduledEvent( eventFrameThreshold, node, callFuncBeforeProcess, func ) );
+}
+
+void Context::cancelScheduledEvents( const NodeRef &node )
+{
+	lock_guard<mutex> lock( mMutex );
+
+	for( auto eventIt = mScheduledEvents.begin(); eventIt != mScheduledEvents.end(); ++eventIt ) {
+		if( eventIt->mNode == node ) {
+			// reset process frame range to an entire block
+			auto &range = eventIt->mNode->mProcessFramesRange;
+			range.first = 0;
+			range.second = getFramesPerBlock();
+
+			eventIt->mNode->mEventScheduled = false;
+			mScheduledEvents.erase( eventIt );
+			break;
+		}
+	}
 }
 
 // note: we should be synchronized with mMutex by the OutputDeviceNode impl, so mScheduledEvents is safe to modify
@@ -395,6 +419,7 @@ void Context::postProcessScheduledEvents()
 			range.first = 0;
 			range.second = getFramesPerBlock();
 
+			eventIt->mNode->mEventScheduled = false;
 			eventIt = mScheduledEvents.erase( eventIt );
 		}
 		else

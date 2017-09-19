@@ -55,12 +55,12 @@ void SamplePlayerNode::stop()
 
 void SamplePlayerNode::start( double when )
 {
-	getContext()->schedule( when, shared_from_this(), true, [this] { start(); } );
+	getContext()->scheduleEvent( when, shared_from_this(), true, [this] { start(); } );
 }
 
 void SamplePlayerNode::stop( double when )
 {
-	getContext()->schedule( when, shared_from_this(), false, [this] { stop(); } );
+	getContext()->scheduleEvent( when, shared_from_this(), false, [this] { stop(); } );
 }
 
 void SamplePlayerNode::setLoopBegin( size_t positionFrames )
