@@ -193,12 +193,15 @@ void SourceFile::seek( size_t readPositionFrames )
 	if( readPositionFrames >= mNumFrames )
 		return;
 
-	// adjust read pos for samplerate conversion so that it is relative to file num frames
-	size_t fileReadPos = readPositionFrames;
-	if( getSampleRate() != getSampleRateNative() )
-		fileReadPos *= size_t( (float)mFileNumFrames / (float)mNumFrames );
+	if( getSampleRate() == getSampleRateNative() ) {
+		performSeek( readPositionFrames );
+	}
+	else {
+		// adjust read pos for samplerate conversion so that it is relative to file num frames
+		size_t fileReadPos = size_t( (float)readPositionFrames * (float)mFileNumFrames / (float)mNumFrames );
+		performSeek( fileReadPos );
+	}
 
-	performSeek( fileReadPos );
 	mReadPos = readPositionFrames;
 }
 
