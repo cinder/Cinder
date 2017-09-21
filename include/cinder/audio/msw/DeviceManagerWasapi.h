@@ -36,6 +36,9 @@ namespace cinder { namespace audio { namespace msw {
 
 class DeviceManagerWasapi : public DeviceManager {
   public:
+	  DeviceManagerWasapi();
+	~DeviceManagerWasapi();
+
 	DeviceRef getDefaultOutput() override;
 	DeviceRef getDefaultInput() override;
 
@@ -60,7 +63,7 @@ class DeviceManagerWasapi : public DeviceManager {
 		  std::string mKey;						//! mKey used by Device to get more info from manager
 		  std::string mName;						//! friendly mName
 		  enum Usage { INPUT, OUTPUT } mUsage;
-		  std::wstring			mDeviceId;		//! id used when creating XAudio2 master voice
+		  std::wstring			mDeviceId;		//! id used when creating XAudio2 master voice. // TODO: still needed? We no longer support xaudio2
 		  std::wstring			mEndpointId;		//! id used by Wasapi / MMDevice
 		  size_t mNumChannels, mSampleRate, mFramesPerBlock;
 	  };
@@ -70,6 +73,9 @@ class DeviceManagerWasapi : public DeviceManager {
 	  std::vector<std::wstring> parseDeviceIds( DeviceInfo::Usage usage );
 
 	  std::map<DeviceRef, DeviceInfo> mDeviceInfoSet;
+
+	  struct Impl;
+	  std::unique_ptr<Impl> mImpl;
 };
 
 } } } // namespace cinder::audio::msw

@@ -48,9 +48,46 @@ using namespace std;
 
 namespace cinder { namespace audio { namespace msw {
 
+struct DeviceManagerWasapi::Impl : public ::IMMNotificationClient {
+	Impl( DeviceManagerWasapi *parent )
+		: mParent( parent )
+	{}
+
+	std::string getDeviceName( const std::wstring &enpointId );
+
+	// IMMNotificationClient methods
+	STDMETHOD_(ULONG, AddRef)();
+	STDMETHOD_(ULONG, Release)();
+	STDMETHOD(QueryInterface)(REFIID iid, void** object);
+	STDMETHOD(OnDeviceStateChanged)(LPCWSTR device_id, DWORD new_state);
+	STDMETHOD(OnDefaultDeviceChanged)(EDataFlow flow, ERole role, LPCWSTR new_default_device_id);
+	STDMETHOD(OnDeviceAdded)(LPCWSTR device_id);
+	STDMETHOD(OnDeviceRemoved)(LPCWSTR device_id);
+	STDMETHOD(OnPropertyValueChanged)(LPCWSTR device_id, const PROPERTYKEY key);
+
+	DeviceManagerWasapi*							mParent = nullptr;
+	ci::msw::ManagedComPtr<::IMMDeviceEnumerator>	mIMMDeviceEnumerator;
+};
+
 // ----------------------------------------------------------------------------------------------------
-// DeviceManagerWasapi
+// DeviceManagerWasapi Public
 // ----------------------------------------------------------------------------------------------------
+
+DeviceManagerWasapi::DeviceManagerWasapi()
+	: mImpl( new Impl( this ) )
+{
+	::IMMDeviceEnumerator *enumerator;
+	HRESULT hr = ::CoCreateInstance( __uuidof(::MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(::IMMDeviceEnumerator), (void**)&enumerator );
+	CI_ASSERT( hr == S_OK );
+	mImpl->mIMMDeviceEnumerator = ci::msw::makeComUnique( enumerator );	// TODO: use throughout
+
+	mImpl->mIMMDeviceEnumerator->RegisterEndpointNotificationCallback( mImpl.get() );
+}
+
+DeviceManagerWasapi::~DeviceManagerWasapi()
+{
+	mImpl->mIMMDeviceEnumerator->UnregisterEndpointNotificationCallback( mImpl.get() );
+}
 
 DeviceRef DeviceManagerWasapi::getDefaultOutput()
 {
@@ -186,7 +223,7 @@ shared_ptr<::IMMDevice> DeviceManagerWasapi::getIMMDevice( const DeviceRef &devi
 }
 
 // ----------------------------------------------------------------------------------------------------
-// Private
+// DeviceManagerWasapi Private
 // ----------------------------------------------------------------------------------------------------
 
 DeviceManagerWasapi::DeviceInfo& DeviceManagerWasapi::getDeviceInfo( const DeviceRef &device )
@@ -323,6 +360,117 @@ vector<wstring> DeviceManagerWasapi::parseDeviceIds( DeviceInfo::Usage usage )
 		::SetupDiDestroyDeviceInfoList( devInfoSet );
 
 	return result;
+}
+
+
+// ----------------------------------------------------------------------------------------------------
+// DeviceManagerWasapi::Impl IMMNotificationClient implementation
+// ----------------------------------------------------------------------------------------------------
+
+// Implementation of IUnknown is trivial in this case.
+// See msdn.microsoft.com/en-us/library/windows/desktop/dd371403(v=vs.85).aspx
+
+ULONG DeviceManagerWasapi::Impl::AddRef()
+{
+	CI_ASSERT_NOT_REACHABLE();
+	return 1;
+}
+
+ULONG DeviceManagerWasapi::Impl::Release()
+{
+	CI_ASSERT_NOT_REACHABLE();
+	return 1;
+}
+
+HRESULT DeviceManagerWasapi::Impl::QueryInterface( REFIID iid, void** object )
+{
+	CI_ASSERT_NOT_REACHABLE();
+	if( iid == IID_IUnknown || iid == __uuidof( IMMNotificationClient ) ) {
+		*object = static_cast <IMMNotificationClient*>( this );
+	}
+	else {
+		return E_NOINTERFACE;
+	}
+	return S_OK;
+}
+
+std::string DeviceManagerWasapi::Impl::getDeviceName( const std::wstring &enpointId )
+{
+	for( const auto &dp : mParent->mDeviceInfoSet ) {
+		if( dp.second.mEndpointId == enpointId ) {
+			return dp.second.mName;
+		}
+	}
+
+	return "(unknown)";
+}
+
+STDMETHODIMP DeviceManagerWasapi::Impl::OnDeviceStateChanged( LPCWSTR device_id, DWORD new_state )
+{
+	//std::wstring blah( device_id );
+	auto devName = getDeviceName( device_id );
+
+	std::string devState;
+	switch( new_state ) {
+		case DEVICE_STATE_ACTIVE:		devState = "ACTIVE";	 break;
+		case DEVICE_STATE_DISABLED:		devState = "DISABLED";	 break;
+		case DEVICE_STATE_NOTPRESENT:	devState = "NOTPRESENT"; break;
+		case DEVICE_STATE_UNPLUGGED:	devState = "UNPLUGGED";  break;
+		default:						devState = "(unknown)";  break;
+	}
+
+	CI_LOG_I( "State changed to " << devState << " for device: " << devName );
+
+	return S_OK;
+}
+
+HRESULT DeviceManagerWasapi::Impl::OnDefaultDeviceChanged( EDataFlow flow, ERole role, LPCWSTR new_default_device_id )
+{
+	if( new_default_device_id == NULL ) {
+		// The user has removed or disabled the default device for our
+		// particular role, and no other device is available to take that role.
+		CI_LOG_E( "All devices are disabled." );
+		return E_FAIL;
+	}
+
+	auto devName = getDeviceName( new_default_device_id );
+	CI_LOG_I( "device name: " << devName );
+
+#if 0
+	// TODO: if playing with a default device and user changes it, update to new default
+	if( flow == eRender && role == device_role_ ) {
+		// Initiate a stream switch if not already initiated by signaling the
+		// stream-switch event to inform the render thread that it is OK to
+		// re-initialize the active audio renderer. All the action takes place
+		// on the WASAPI render thread.
+		if( ! restart_rendering_mode_ ) {
+			restart_rendering_mode_ = true;
+			SetEvent( stream_switch_event_.Get() );
+		}
+	}
+#endif
+	return S_OK;
+}
+
+HRESULT DeviceManagerWasapi::Impl::OnDeviceAdded( LPCWSTR device_id )
+{
+	auto devName = getDeviceName( device_id );
+	CI_LOG_I( "device name: " << devName );
+	return S_OK;
+}
+
+HRESULT DeviceManagerWasapi::Impl::OnDeviceRemoved( LPCWSTR device_id )
+{
+	auto devName = getDeviceName( device_id );
+	CI_LOG_I( "device name: " << devName );
+	return S_OK;
+}
+
+HRESULT DeviceManagerWasapi::Impl::OnPropertyValueChanged( LPCWSTR device_id, const PROPERTYKEY key )
+{
+	//auto devName = getDeviceName( device_id );
+	//CI_LOG_I( "device name: " << devName );
+	return S_OK;
 }
 
 } } } // namespace cinder::audio::msw
