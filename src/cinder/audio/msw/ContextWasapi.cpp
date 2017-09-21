@@ -300,7 +300,16 @@ void WasapiRenderClientImpl::renderAudio()
 	// the current padding represents the number of frames queued on the audio endpoint, waiting to be sent to hardware.
 	UINT32 numFramesPadding;
 	HRESULT hr = mAudioClient->GetCurrentPadding( &numFramesPadding );
-	CI_ASSERT( hr == S_OK );
+	//CI_ASSERT( hr == S_OK );
+	if( hr == AUDCLNT_E_DEVICE_INVALIDATED ) {
+		// TODO: need to handle reconnecting
+		CI_LOG_W( "mAudioClient->GetCurrentPadding() returned AUDCLNT_E_DEVICE_INVALIDATED, returning" );
+		return;
+	}
+	else {
+		//ASSERT_HR_OK( hr );
+		CI_ASSERT( hr == S_OK );
+	}
 
 	size_t numWriteFramesAvailable = mAudioClientNumFrames - numFramesPadding;
 
@@ -388,7 +397,16 @@ void WasapiCaptureClientImpl::captureAudio()
 {
 	UINT32 numPacketFrames;
 	HRESULT hr = mCaptureClient->GetNextPacketSize( &numPacketFrames );
-	CI_ASSERT( hr == S_OK );
+	if( hr == AUDCLNT_E_DEVICE_INVALIDATED ) {
+		// TODO: need to handle reconnecting
+		CI_LOG_W( "mCaptureClient->GetNextPacketSize() returned AUDCLNT_E_DEVICE_INVALIDATED, returning" );
+		return;
+	}
+	else {
+		//ASSERT_HR_OK( hr );
+		CI_ASSERT( hr == S_OK );
+	}
+
 
 	while( numPacketFrames ) {
 		if( numPacketFrames > ( mMaxReadFrames - mNumFramesBuffered ) ) {
