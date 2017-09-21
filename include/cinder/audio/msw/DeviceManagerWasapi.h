@@ -68,10 +68,12 @@ class DeviceManagerWasapi : public DeviceManager {
 		  enum Usage { INPUT, OUTPUT } mUsage;
 		  std::wstring			mDeviceId;		//! id used when creating XAudio2 master voice. // TODO: still needed? We no longer support xaudio2
 		  std::wstring			mEndpointId;		//! id used by Wasapi / MMDevice
+		  unsigned long			mState;
 		  size_t mNumChannels, mSampleRate, mFramesPerBlock;
 	  };
 
 	  DeviceInfo& getDeviceInfo( const DeviceRef &device );
+	  void rebuildDeviceInfoSet();
 	  void parseDevices( DeviceInfo::Usage usage );
 	  std::vector<std::wstring> parseDeviceIds( DeviceInfo::Usage usage );
 

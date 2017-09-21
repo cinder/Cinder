@@ -70,6 +70,46 @@ struct DeviceManagerWasapi::Impl : public ::IMMNotificationClient {
 	ci::msw::ManagedComPtr<::IMMDeviceEnumerator>	mIMMDeviceEnumerator;
 };
 
+namespace {
+
+const char*	deviceStateToStr( DWORD state )
+{
+	switch( state ) {
+		case DEVICE_STATE_ACTIVE:		return "ACTIVE";
+		case DEVICE_STATE_DISABLED:		return "DISABLED";
+		case DEVICE_STATE_NOTPRESENT:	return "NOTPRESENT";
+		case DEVICE_STATE_UNPLUGGED:	return "UNPLUGGED";
+		default:						break;
+	}
+
+	return "(unknown)";
+}
+
+const char*	deviceFlowToStr( EDataFlow flow )
+{
+	switch( flow ) {
+		case eRender:		return "eRender";
+		case eCapture:		return "eCapture";
+		default:			break;
+	}
+
+	return "(unknown)";
+}
+
+const char*	deviceRoloToStr( ERole role )
+{
+	switch( role ) {
+		case eConsole:			return "eConsole";
+		case eMultimedia:		return "eMultimedia";
+		case eCommunications:	return "eCommunications";
+		default:				break;
+	}
+
+	return "(unknown)";
+}
+
+} // anonymouse namespace
+
 // ----------------------------------------------------------------------------------------------------
 // DeviceManagerWasapi Public
 // ----------------------------------------------------------------------------------------------------
@@ -144,8 +184,7 @@ DeviceRef DeviceManagerWasapi::getDefaultInput()
 const std::vector<DeviceRef>& DeviceManagerWasapi::getDevices()
 {
 	if( mDevices.empty() ) {
-		parseDevices( DeviceInfo::Usage::INPUT );
-		parseDevices( DeviceInfo::Usage::OUTPUT );
+		rebuildDeviceInfoSet();
 	}
 	return mDevices;
 }
@@ -232,6 +271,13 @@ DeviceManagerWasapi::DeviceInfo& DeviceManagerWasapi::getDeviceInfo( const Devic
 	return mDeviceInfoSet.at( device );
 }
 
+void DeviceManagerWasapi::rebuildDeviceInfoSet()
+{
+	mDeviceInfoSet.clear();
+	parseDevices( DeviceInfo::Usage::INPUT );
+	parseDevices( DeviceInfo::Usage::OUTPUT );
+}
+
 // This call is performed twice because a separate Device subclass is used for input and output
 // and by using eRender / eCapture instead of eAll when enumerating the endpoints, it is easier
 // to distinguish between the two.
@@ -253,6 +299,12 @@ void DeviceManagerWasapi::parseDevices( DeviceInfo::Usage usage )
 	::EDataFlow dataFlow = ( usage == DeviceInfo::Usage::INPUT ? eCapture : eRender );
 	::IMMDeviceCollection *devices;
 	hr = enumerator->EnumAudioEndpoints( dataFlow, DEVICE_STATE_ACTIVE, &devices );
+
+	// TODO: consider parsing all devices
+	// - so users can at least see a headphone jack if it is unplugged (only some sound cards act this way)
+	// - note that PKEY_AudioEngine_DeviceFormat returns null below when parsing an unplugged device
+	//hr = enumerator->EnumAudioEndpoints( dataFlow, DEVICE_STATEMASK_ALL, &devices );
+
 	CI_ASSERT( hr == S_OK );
 	auto devicesPtr = ci::msw::makeComUnique( devices );
 
@@ -282,8 +334,14 @@ void DeviceManagerWasapi::parseDevices( DeviceInfo::Usage usage )
 		LPWSTR endpointIdLpwStr;
 		hr = deviceImm->GetId( &endpointIdLpwStr );
 		CI_ASSERT( hr == S_OK );
+
+		DWORD endpointState;
+		hr = deviceImm->GetState( &endpointState );
+		CI_ASSERT( hr == S_OK );
+
 		devInfo.mEndpointId = wstring( endpointIdLpwStr );
 		devInfo.mKey = ci::msw::toUtf8String( devInfo.mEndpointId );
+		devInfo.mState = endpointState;
 		::CoTaskMemFree( endpointIdLpwStr );
 		
 		// Wasapi's device Id is actually a subset of the one xaudio needs, so we find and use the match.
@@ -375,8 +433,6 @@ const DeviceRef& DeviceManagerWasapi::Impl::getDevice( const std::wstring &enpoi
 		}
 	}
 
-	// TODO: I don't think mic is yet in info set when a new one has been plugged in. need to add it if state is 'activated'?
-	CI_ASSERT_NOT_REACHABLE();
 	static DeviceRef sNullDevice;
 	return sNullDevice;
 }
@@ -414,21 +470,24 @@ HRESULT DeviceManagerWasapi::Impl::QueryInterface( REFIID iid, void** object )
 
 STDMETHODIMP DeviceManagerWasapi::Impl::OnDeviceStateChanged( LPCWSTR device_id, DWORD new_state )
 {
+	std::string stateStr = deviceStateToStr( new_state );
+
 	auto device = getDevice( device_id );
-	std::string devState;
-	switch( new_state ) {
-		case DEVICE_STATE_ACTIVE:		devState = "ACTIVE";	 break;
-		case DEVICE_STATE_DISABLED:		devState = "DISABLED";	 break;
-		case DEVICE_STATE_NOTPRESENT:	devState = "NOTPRESENT"; break;
-		case DEVICE_STATE_UNPLUGGED:	devState = "UNPLUGGED";  break;
-		default:						devState = "(unknown)";  break;
+	if( ! device ) {
+		// device may not be present if it was unplugged or disabled
+		CI_LOG_I( "device with id not present, rebuilding device set.." );
+		mParent->rebuildDeviceInfoSet();
 	}
 
-	CI_LOG_I( "State changed to " << devState << " for device: " << device->getName() );
+	device = getDevice( device_id );
+	CI_ASSERT( device );
+
+	string devName = ( (bool)device ? device->getName() : "(null)" );
+	CI_LOG_I( "State changed to " << stateStr << " for device: " << devName );
 
 	// Dispatch signals on the main thread.
 	auto app = app::App::get();
-	if( app ) {
+	if( app && device ) {
 		app->dispatchAsync(
 			[this, device, new_state] {
 				if( new_state == DEVICE_STATE_ACTIVE ) {
@@ -451,15 +510,16 @@ STDMETHODIMP DeviceManagerWasapi::Impl::OnDeviceStateChanged( LPCWSTR device_id,
 
 HRESULT DeviceManagerWasapi::Impl::OnDefaultDeviceChanged( EDataFlow flow, ERole role, LPCWSTR new_default_device_id )
 {
+	auto devName = getDevice( new_default_device_id )->getName();
+	
+	CI_LOG_I( "device name: " << devName << ", flow: " << deviceFlowToStr( flow ) << ", role: " << deviceRoloToStr( role ) );
+
 	if( new_default_device_id == NULL ) {
 		// The user has removed or disabled the default device for our
 		// particular role, and no other device is available to take that role.
 		CI_LOG_E( "All devices are disabled." );
 		return E_FAIL;
 	}
-
-	auto devName = getDevice( new_default_device_id )->getName();
-	CI_LOG_I( "device name: " << devName );
 
 #if 0
 	// TODO: if playing with a default device and user changes it, update to new default
