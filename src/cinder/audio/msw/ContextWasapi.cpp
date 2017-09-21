@@ -302,7 +302,7 @@ void WasapiRenderClientImpl::renderAudio()
 	HRESULT hr = mAudioClient->GetCurrentPadding( &numFramesPadding );
 	//CI_ASSERT( hr == S_OK );
 	if( hr == AUDCLNT_E_DEVICE_INVALIDATED ) {
-		// TODO: need to handle reconnecting
+		// see OutputDeviceNodeWasapi constructor for how re-connecting is handled
 		CI_LOG_W( "mAudioClient->GetCurrentPadding() returned AUDCLNT_E_DEVICE_INVALIDATED, returning" );
 		return;
 	}
@@ -464,6 +464,32 @@ void WasapiCaptureClientImpl::captureAudio()
 OutputDeviceNodeWasapi::OutputDeviceNodeWasapi( const DeviceRef &device, const Format &format )
 	: OutputDeviceNode( device, format ), mRenderImpl( new WasapiRenderClientImpl( this ) )
 {
+	DeviceManagerWasapi *manager = dynamic_cast<DeviceManagerWasapi *>( Context::deviceManager() );
+	CI_ASSERT( manager );
+
+	// handle devices being disconnected while in use
+	mConnections += manager->getSignalDeviceDeactivated().connect(
+		[this]( const DeviceRef &device ) {
+			if( device == getDevice() ) {
+				CI_LOG_I( "Device '" << device->getName() << "' de-activated, uninitializing." );
+				mWasEnabledBeforeDisconnection = isEnabled();
+				//getContext()->disable();
+				uninitialize();
+			}
+		}
+	);
+	mConnections += manager->getSignalDeviceActivated().connect(
+		[this]( const DeviceRef &device ) {
+			if( device == getDevice() ) {
+				CI_LOG_I( "Device '" << device->getName() << "' activated, initializing." );
+				initialize();
+
+				if( mWasEnabledBeforeDisconnection ) {
+					enableProcessing();
+				}
+			}
+		}
+	);
 }
 
 void OutputDeviceNodeWasapi::initialize()

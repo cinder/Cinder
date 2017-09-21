@@ -57,6 +57,9 @@ class DeviceManagerWasapi : public DeviceManager {
 
 	std::shared_ptr<::IMMDevice> getIMMDevice( const DeviceRef &device );
 
+	ci::signals::Signal<void ( const DeviceRef &device )>&	getSignalDeviceActivated()		{ return mSignalDeviceActivated; }
+	ci::signals::Signal<void ( const DeviceRef &device )>&	getSignalDeviceDeactivated()	{ return mSignalDeviceDeactivated; }
+
   private:
 
 	  struct DeviceInfo {
@@ -76,6 +79,10 @@ class DeviceManagerWasapi : public DeviceManager {
 
 	  struct Impl;
 	  std::unique_ptr<Impl> mImpl;
+
+	  // TODO: integrate this with default device (re)connection work
+	  // - this is a temporary solution to allow wasapi audio devices to reconnect, for example if a mic cable is temporarily unplugged
+	  ci::signals::Signal<void ( const DeviceRef &device )>		mSignalDeviceActivated, mSignalDeviceDeactivated;
 };
 
 } } } // namespace cinder::audio::msw

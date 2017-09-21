@@ -50,6 +50,10 @@ protected:
 	std::unique_ptr<WasapiRenderClientImpl>		mRenderImpl;
 	BufferInterleaved							mInterleavedBuffer;
 
+	// For managing a disconnected device
+	ci::signals::ConnectionList					mConnections;
+	bool										mWasEnabledBeforeDisconnection = false;
+
 	friend WasapiRenderClientImpl;
 };
 

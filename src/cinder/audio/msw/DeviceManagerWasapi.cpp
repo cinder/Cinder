@@ -30,6 +30,7 @@
 #include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
 #include "cinder/msw/CinderMsw.h"
+#include "cinder/app/App.h" // For dispatching device activated / deactivated signals. TODO: remove once those are formalized
 
 #include <setupapi.h>
 #pragma comment(lib, "setupapi.lib")
@@ -53,7 +54,7 @@ struct DeviceManagerWasapi::Impl : public ::IMMNotificationClient {
 		: mParent( parent )
 	{}
 
-	std::string getDeviceName( const std::wstring &enpointId );
+	const DeviceRef& getDevice( const std::wstring &enpointId );
 
 	// IMMNotificationClient methods
 	STDMETHOD_(ULONG, AddRef)();
@@ -362,6 +363,23 @@ vector<wstring> DeviceManagerWasapi::parseDeviceIds( DeviceInfo::Usage usage )
 	return result;
 }
 
+// ----------------------------------------------------------------------------------------------------
+// DeviceManagerWasapi::Impl
+// ----------------------------------------------------------------------------------------------------
+
+const DeviceRef& DeviceManagerWasapi::Impl::getDevice( const std::wstring &enpointId )
+{
+	for( const auto &dp : mParent->mDeviceInfoSet ) {
+		if( dp.second.mEndpointId == enpointId ) {
+			return dp.first;
+		}
+	}
+
+	// TODO: I don't think mic is yet in info set when a new one has been plugged in. need to add it if state is 'activated'?
+	CI_ASSERT_NOT_REACHABLE();
+	static DeviceRef sNullDevice;
+	return sNullDevice;
+}
 
 // ----------------------------------------------------------------------------------------------------
 // DeviceManagerWasapi::Impl IMMNotificationClient implementation
@@ -394,22 +412,9 @@ HRESULT DeviceManagerWasapi::Impl::QueryInterface( REFIID iid, void** object )
 	return S_OK;
 }
 
-std::string DeviceManagerWasapi::Impl::getDeviceName( const std::wstring &enpointId )
-{
-	for( const auto &dp : mParent->mDeviceInfoSet ) {
-		if( dp.second.mEndpointId == enpointId ) {
-			return dp.second.mName;
-		}
-	}
-
-	return "(unknown)";
-}
-
 STDMETHODIMP DeviceManagerWasapi::Impl::OnDeviceStateChanged( LPCWSTR device_id, DWORD new_state )
 {
-	//std::wstring blah( device_id );
-	auto devName = getDeviceName( device_id );
-
+	auto device = getDevice( device_id );
 	std::string devState;
 	switch( new_state ) {
 		case DEVICE_STATE_ACTIVE:		devState = "ACTIVE";	 break;
@@ -419,7 +424,27 @@ STDMETHODIMP DeviceManagerWasapi::Impl::OnDeviceStateChanged( LPCWSTR device_id,
 		default:						devState = "(unknown)";  break;
 	}
 
-	CI_LOG_I( "State changed to " << devState << " for device: " << devName );
+	CI_LOG_I( "State changed to " << devState << " for device: " << device->getName() );
+
+	// Dispatch signals on the main thread.
+	auto app = app::App::get();
+	if( app ) {
+		app->dispatchAsync(
+			[this, device, new_state] {
+				if( new_state == DEVICE_STATE_ACTIVE ) {
+					mParent->mSignalDeviceActivated.emit( device );
+				}
+				else {
+					// All other states fall into 'device won't work right now' category
+					mParent->mSignalDeviceDeactivated.emit( device );
+				}
+			}
+		);
+	}
+	else {
+		// TODO: this needs to support app-less situations too
+		CI_LOG_W( "No app, cannot dispatch signal for new device state." );
+	}
 
 	return S_OK;
 }
@@ -433,7 +458,7 @@ HRESULT DeviceManagerWasapi::Impl::OnDefaultDeviceChanged( EDataFlow flow, ERole
 		return E_FAIL;
 	}
 
-	auto devName = getDeviceName( new_default_device_id );
+	auto devName = getDevice( new_default_device_id )->getName();
 	CI_LOG_I( "device name: " << devName );
 
 #if 0
@@ -454,21 +479,21 @@ HRESULT DeviceManagerWasapi::Impl::OnDefaultDeviceChanged( EDataFlow flow, ERole
 
 HRESULT DeviceManagerWasapi::Impl::OnDeviceAdded( LPCWSTR device_id )
 {
-	auto devName = getDeviceName( device_id );
+	auto devName = getDevice( device_id )->getName();
 	CI_LOG_I( "device name: " << devName );
 	return S_OK;
 }
 
 HRESULT DeviceManagerWasapi::Impl::OnDeviceRemoved( LPCWSTR device_id )
 {
-	auto devName = getDeviceName( device_id );
+	auto devName = getDevice( device_id )->getName();
 	CI_LOG_I( "device name: " << devName );
 	return S_OK;
 }
 
 HRESULT DeviceManagerWasapi::Impl::OnPropertyValueChanged( LPCWSTR device_id, const PROPERTYKEY key )
 {
-	//auto devName = getDeviceName( device_id );
+	//auto devName = getDevice( device_id )->getName();
 	//CI_LOG_I( "device name: " << devName );
 	return S_OK;
 }
