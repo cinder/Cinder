@@ -69,6 +69,8 @@ struct WasapiAudioClientImpl {
 
 	size_t	mNumFramesBuffered, mAudioClientNumFrames, mNumChannels;
 
+	bool	mAudioClientInvalidated = false;
+
   protected:
 	void initAudioClient( const DeviceRef &device, size_t numChannels, HANDLE eventHandle );
 };
@@ -191,6 +193,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	CI_ASSERT( hr == S_OK );
 
 	mAudioClientNumFrames = actualNumFrames; // update with the actual size
+	mAudioClientInvalidated = false;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -256,7 +259,7 @@ void WasapiRenderClientImpl::initRenderClient()
 	CI_ASSERT( hr == S_OK );
 	mRenderClient = ci::msw::makeComUnique( renderClient );
 
-	// set the ring bufer size to accomodate the IAudioClient's buffer size (in samples) plus one extra processing block size, to account for uneven sizes.
+	// set the ring buffer size to accommodate the IAudioClient's buffer size (in samples) plus one extra processing block size, to account for uneven sizes.
 	const size_t ringBufferSize = ( mAudioClientNumFrames + mOutputDeviceNode->getFramesPerBlock() ) * mNumChannels;
 	mRingBuffer.reset( new dsp::RingBuffer( ringBufferSize ) );
 
@@ -297,13 +300,17 @@ void WasapiRenderClientImpl::runRenderThread()
 
 void WasapiRenderClientImpl::renderAudio()
 {
+	if( mAudioClientInvalidated )
+		return;
+
 	// the current padding represents the number of frames queued on the audio endpoint, waiting to be sent to hardware.
 	UINT32 numFramesPadding;
 	HRESULT hr = mAudioClient->GetCurrentPadding( &numFramesPadding );
-	//CI_ASSERT( hr == S_OK );
 	if( hr == AUDCLNT_E_DEVICE_INVALIDATED ) {
-		// see OutputDeviceNodeWasapi constructor for how re-connecting is handled
-		CI_LOG_W( "mAudioClient->GetCurrentPadding() returned AUDCLNT_E_DEVICE_INVALIDATED, returning" );
+		// TODO: handle in more graceful way other than logging
+		// - currently user needs to manually re-initailize once device is plugged back in
+		CI_LOG_W( "IAudioClient invalidated. Re-initialize Output to re-enable processing." );
+		mAudioClientInvalidated = true;
 		return;
 	}
 	else {
@@ -318,7 +325,13 @@ void WasapiRenderClientImpl::renderAudio()
 
 	float *renderBuffer;
 	hr = mRenderClient->GetBuffer( static_cast<UINT32>(numWriteFramesAvailable), (BYTE **)&renderBuffer );
-	CI_ASSERT( hr == S_OK );
+	if( hr == AUDCLNT_E_DEVICE_INVALIDATED ) {
+		mAudioClientInvalidated = true;
+		return;
+	}
+	else {
+		CI_ASSERT( hr == S_OK );
+	}
 
 	DWORD bufferFlags = 0;
 	size_t numReadSamples = numWriteFramesAvailable * mNumChannels;
@@ -400,6 +413,7 @@ void WasapiCaptureClientImpl::captureAudio()
 	if( hr == AUDCLNT_E_DEVICE_INVALIDATED ) {
 		// TODO: need to handle reconnecting
 		CI_LOG_W( "mCaptureClient->GetNextPacketSize() returned AUDCLNT_E_DEVICE_INVALIDATED, returning" );
+		mAudioClientInvalidated = true;
 		return;
 	}
 	else {
@@ -464,32 +478,10 @@ void WasapiCaptureClientImpl::captureAudio()
 OutputDeviceNodeWasapi::OutputDeviceNodeWasapi( const DeviceRef &device, const Format &format )
 	: OutputDeviceNode( device, format ), mRenderImpl( new WasapiRenderClientImpl( this ) )
 {
-	DeviceManagerWasapi *manager = dynamic_cast<DeviceManagerWasapi *>( Context::deviceManager() );
-	CI_ASSERT( manager );
+}
 
-	// handle devices being disconnected while in use
-	mConnections += manager->getSignalDeviceDeactivated().connect(
-		[this]( const DeviceRef &device ) {
-			if( device == getDevice() ) {
-				CI_LOG_I( "Device '" << device->getName() << "' de-activated, uninitializing." );
-				mWasEnabledBeforeDisconnection = isEnabled();
-				//getContext()->disable();
-				uninitialize();
-			}
-		}
-	);
-	mConnections += manager->getSignalDeviceActivated().connect(
-		[this]( const DeviceRef &device ) {
-			if( device == getDevice() ) {
-				CI_LOG_I( "Device '" << device->getName() << "' activated, initializing." );
-				initialize();
-
-				if( mWasEnabledBeforeDisconnection ) {
-					enableProcessing();
-				}
-			}
-		}
-	);
+OutputDeviceNodeWasapi::~OutputDeviceNodeWasapi()
+{
 }
 
 void OutputDeviceNodeWasapi::initialize()
@@ -521,6 +513,9 @@ void OutputDeviceNodeWasapi::enableProcessing()
 
 void OutputDeviceNodeWasapi::disableProcessing()
 {
+	if( mRenderImpl->mAudioClientInvalidated )
+		return;
+
 	HRESULT hr = mRenderImpl->mAudioClient->Stop();
 	CI_ASSERT( hr == S_OK );
 }

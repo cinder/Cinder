@@ -480,36 +480,15 @@ STDMETHODIMP DeviceManagerWasapi::Impl::OnDeviceStateChanged( LPCWSTR device_id,
 	}
 
 	device = getDevice( device_id );
-	CI_ASSERT( device );
-
-	string devName = ( (bool)device ? device->getName() : "(null)" );
+	string devName = ( (bool)device ? device->getName() : "(???)" );
 	CI_LOG_I( "State changed to " << stateStr << " for device: " << devName );
-
-	// Dispatch signals on the main thread.
-	auto app = app::App::get();
-	if( app && device ) {
-		app->dispatchAsync(
-			[this, device, new_state] {
-				if( new_state == DEVICE_STATE_ACTIVE ) {
-					mParent->mSignalDeviceActivated.emit( device );
-				}
-				else {
-					// All other states fall into 'device won't work right now' category
-					mParent->mSignalDeviceDeactivated.emit( device );
-				}
-			}
-		);
-	}
-	else {
-		// TODO: this needs to support app-less situations too
-		CI_LOG_W( "No app, cannot dispatch signal for new device state." );
-	}
 
 	return S_OK;
 }
 
 HRESULT DeviceManagerWasapi::Impl::OnDefaultDeviceChanged( EDataFlow flow, ERole role, LPCWSTR new_default_device_id )
 {
+#if 0
 	auto devName = getDevice( new_default_device_id )->getName();
 	
 	CI_LOG_I( "device name: " << devName << ", flow: " << deviceFlowToStr( flow ) << ", role: " << deviceRoloToStr( role ) );
@@ -521,7 +500,6 @@ HRESULT DeviceManagerWasapi::Impl::OnDefaultDeviceChanged( EDataFlow flow, ERole
 		return E_FAIL;
 	}
 
-#if 0
 	// TODO: if playing with a default device and user changes it, update to new default
 	if( flow == eRender && role == device_role_ ) {
 		// Initiate a stream switch if not already initiated by signaling the

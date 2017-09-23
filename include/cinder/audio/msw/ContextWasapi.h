@@ -36,7 +36,7 @@ struct WasapiCaptureClientImpl;
 class OutputDeviceNodeWasapi : public OutputDeviceNode {
   public:
 	OutputDeviceNodeWasapi( const DeviceRef &device, const Format &format );
-
+	~OutputDeviceNodeWasapi();
 protected:
 	void initialize()				override;
 	void uninitialize()				override;
@@ -49,10 +49,6 @@ protected:
 
 	std::unique_ptr<WasapiRenderClientImpl>		mRenderImpl;
 	BufferInterleaved							mInterleavedBuffer;
-
-	// For managing a disconnected device
-	ci::signals::ConnectionList					mConnections;
-	bool										mWasEnabledBeforeDisconnection = false;
 
 	friend WasapiRenderClientImpl;
 };
