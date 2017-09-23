@@ -30,8 +30,8 @@ bool Ray::calcTriangleIntersection( const vec3 &vert0, const vec3 &vert1, const 
 	vec3 edge1, edge2, tvec, pvec, qvec;
 	float det;
 	float u, v;
-	const float EPSILON = 0.000001f;
-	
+	const float epsilon = 0.000001f;
+
 	edge1 = vert1 - vert0;
 	edge2 = vert2 - vert0;
 	
@@ -39,7 +39,7 @@ bool Ray::calcTriangleIntersection( const vec3 &vert0, const vec3 &vert1, const 
 	det = dot( edge1, pvec );
 	
 #if 0 // we don't want to backface cull
-	if ( det < EPSILON )
+	if ( det < epsilon)
 		  return false;
 	tvec = getOrigin() - vert0;
 	
@@ -55,7 +55,7 @@ bool Ray::calcTriangleIntersection( const vec3 &vert0, const vec3 &vert1, const 
 	*result = dot( edge2, qvec ) / det;
 	return true;
 #else
-	if( det > -EPSILON && det < EPSILON )
+	if( det > -epsilon && det < epsilon)
 		return false;
 
 	float inv_det = 1.0f / det;
