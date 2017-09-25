@@ -352,7 +352,31 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 						dataType = GL_FLOAT;
 						dataFormat = GL_RGBA;
 						blockSizeBytes = sizeof(float) * 4;
-					break;
+					break; 					
+					case 54/*DXGI_FORMAT_R16_FLOAT*/: 
+						internalFormat = GL_R16F; 
+						dataType = GL_HALF_FLOAT; 
+						dataFormat = GL_RED; 
+						blockSizeBytes = sizeof(float) * 2; 
+					break; 
+					case 41/*DXGI_FORMAT_R32_FLOAT*/: 
+						internalFormat = GL_R32F; 
+						dataType = GL_FLOAT; 
+						dataFormat = GL_RED; 
+						blockSizeBytes = sizeof(float) * 2; 
+					break; 
+					case 34/*DXGI_FORMAT_R16G16_FLOAT*/: 
+						internalFormat = GL_RG16F; 
+						dataType = GL_HALF_FLOAT; 
+						dataFormat = GL_RG; 
+						blockSizeBytes = sizeof(float) * 2; 
+					break; 
+					case 16/*DXGI_FORMAT_R32G32_FLOAT*/: 
+						internalFormat = GL_RG32F; 
+						dataType = GL_FLOAT; 
+						dataFormat = GL_RG; 
+						blockSizeBytes = sizeof(float) * 2; 
+					break; 
 #endif
 #if ! defined( CINDER_GL_ANGLE )
 					case 12/*DXGI_FORMAT_R16G16B16A16_UINT*/:
