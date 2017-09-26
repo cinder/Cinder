@@ -69,6 +69,8 @@ struct WasapiAudioClientImpl {
 
 	size_t	mNumFramesBuffered, mAudioClientNumFrames, mNumChannels;
 
+	bool	mAudioClientInvalidated = false;
+
   protected:
 	void initAudioClient( const DeviceRef &device, size_t numChannels, HANDLE eventHandle );
 };
@@ -191,6 +193,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	CI_ASSERT( hr == S_OK );
 
 	mAudioClientNumFrames = actualNumFrames; // update with the actual size
+	mAudioClientInvalidated = false;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -256,7 +259,7 @@ void WasapiRenderClientImpl::initRenderClient()
 	CI_ASSERT( hr == S_OK );
 	mRenderClient = ci::msw::makeComUnique( renderClient );
 
-	// set the ring bufer size to accomodate the IAudioClient's buffer size (in samples) plus one extra processing block size, to account for uneven sizes.
+	// set the ring buffer size to accommodate the IAudioClient's buffer size (in samples) plus one extra processing block size, to account for uneven sizes.
 	const size_t ringBufferSize = ( mAudioClientNumFrames + mOutputDeviceNode->getFramesPerBlock() ) * mNumChannels;
 	mRingBuffer.reset( new dsp::RingBuffer( ringBufferSize ) );
 
@@ -297,10 +300,23 @@ void WasapiRenderClientImpl::runRenderThread()
 
 void WasapiRenderClientImpl::renderAudio()
 {
+	if( mAudioClientInvalidated )
+		return;
+
 	// the current padding represents the number of frames queued on the audio endpoint, waiting to be sent to hardware.
 	UINT32 numFramesPadding;
 	HRESULT hr = mAudioClient->GetCurrentPadding( &numFramesPadding );
-	CI_ASSERT( hr == S_OK );
+	if( hr == AUDCLNT_E_DEVICE_INVALIDATED ) {
+		// TODO: handle in more graceful way other than logging
+		// - currently user needs to manually re-initailize once device is plugged back in
+		CI_LOG_W( "IAudioClient invalidated. Re-initialize Output to re-enable processing." );
+		mAudioClientInvalidated = true;
+		return;
+	}
+	else {
+		//ASSERT_HR_OK( hr );
+		CI_ASSERT( hr == S_OK );
+	}
 
 	size_t numWriteFramesAvailable = mAudioClientNumFrames - numFramesPadding;
 
@@ -309,7 +325,13 @@ void WasapiRenderClientImpl::renderAudio()
 
 	float *renderBuffer;
 	hr = mRenderClient->GetBuffer( static_cast<UINT32>(numWriteFramesAvailable), (BYTE **)&renderBuffer );
-	CI_ASSERT( hr == S_OK );
+	if( hr == AUDCLNT_E_DEVICE_INVALIDATED ) {
+		mAudioClientInvalidated = true;
+		return;
+	}
+	else {
+		CI_ASSERT( hr == S_OK );
+	}
 
 	DWORD bufferFlags = 0;
 	size_t numReadSamples = numWriteFramesAvailable * mNumChannels;
@@ -388,7 +410,17 @@ void WasapiCaptureClientImpl::captureAudio()
 {
 	UINT32 numPacketFrames;
 	HRESULT hr = mCaptureClient->GetNextPacketSize( &numPacketFrames );
-	CI_ASSERT( hr == S_OK );
+	if( hr == AUDCLNT_E_DEVICE_INVALIDATED ) {
+		// TODO: need to handle reconnecting
+		CI_LOG_W( "mCaptureClient->GetNextPacketSize() returned AUDCLNT_E_DEVICE_INVALIDATED, returning" );
+		mAudioClientInvalidated = true;
+		return;
+	}
+	else {
+		//ASSERT_HR_OK( hr );
+		CI_ASSERT( hr == S_OK );
+	}
+
 
 	while( numPacketFrames ) {
 		if( numPacketFrames > ( mMaxReadFrames - mNumFramesBuffered ) ) {
@@ -448,6 +480,10 @@ OutputDeviceNodeWasapi::OutputDeviceNodeWasapi( const DeviceRef &device, const F
 {
 }
 
+OutputDeviceNodeWasapi::~OutputDeviceNodeWasapi()
+{
+}
+
 void OutputDeviceNodeWasapi::initialize()
 {
 	mRenderImpl->init();
@@ -477,6 +513,9 @@ void OutputDeviceNodeWasapi::enableProcessing()
 
 void OutputDeviceNodeWasapi::disableProcessing()
 {
+	if( mRenderImpl->mAudioClientInvalidated )
+		return;
+
 	HRESULT hr = mRenderImpl->mAudioClient->Stop();
 	CI_ASSERT( hr == S_OK );
 }
