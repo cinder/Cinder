@@ -111,8 +111,14 @@ class CI_API Context : public std::enable_shared_from_this<Context> {
 	//! \note Callers on the non-audio thread must synchronize with getMutex().
 	void removeAutoPulledNode( const NodeRef &node );
 
-	//! Schedule \a node to be enabled or disabled with with \a func on the audio thread, to be called at \a when seconds measured against getNumProcessedSeconds(). \a node is owned until the scheduled event completes.
-	void schedule( double when, const NodeRef &node, bool enable, const std::function<void ()> &func );
+	//! Schedule \a node to be enabled or disabled with with \a func on the audio thread, to be called at \a when seconds measured against getNumProcessedSeconds().
+	//! If \a \a callFuncBeforeProcess is true, then `func` will be called at the beginning of the processing block, if false will be called at the end.
+	//! \note Should be called from the user thread. Currently only one event can be scheduled on a node at a time. \a node is owned until the scheduled event completes.
+	void scheduleEvent( double when, const NodeRef &node, bool callFuncBeforeProcess, const std::function<void ()> &func );
+	//! Immediately cancels any events scheduled with scheduleEvent().
+	void cancelScheduledEvents( const NodeRef &node );
+	//! \deprecated  use scheduleEvent() instead.
+	void schedule( double when, const NodeRef &node, bool callFuncBeforeProcess, const std::function<void ()> &func )	{ scheduleEvent( when, node, callFuncBeforeProcess, func ); }
 
 	//! Returns the mutex used to synchronize the audio thread. This is also used internally by the Node class when making connections.
 	std::mutex& getMutex() const			{ return mMutex; }
@@ -132,14 +138,14 @@ class CI_API Context : public std::enable_shared_from_this<Context> {
 
   private:
 	struct ScheduledEvent {
-		ScheduledEvent( uint64_t eventFrameThreshold, const NodeRef &node, bool enable, const std::function<void ()> &fn )
-			: mEventFrameThreshold( eventFrameThreshold ), mNode( node ), mEnable( enable ), mFunc( fn ), mFinished( false )
+		ScheduledEvent( uint64_t eventFrameThreshold, const NodeRef &node, bool callFuncBeforeProcess, const std::function<void ()> &fn )
+			: mEventFrameThreshold( eventFrameThreshold ), mNode( node ), mCallFuncBeforeProcess( callFuncBeforeProcess ), mFunc( fn ), mProcessingEvent( false )
 		{}
 
 		uint64_t				mEventFrameThreshold;
 		NodeRef					mNode;
-		bool					mEnable;
-		bool					mFinished;
+		bool					mCallFuncBeforeProcess;
+		bool					mProcessingEvent;
 		std::function<void ()>	mFunc;
 	};
 
