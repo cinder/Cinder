@@ -41,7 +41,7 @@ namespace cinder { namespace audio {
 // ----------------------------------------------------------------------------------------------------
 
 Node::Node( const Format &format )
-	: mInitialized( false ), mEnabled( false ),	mChannelMode( format.getChannelMode() ),
+	: mInitialized( false ), mEnabled( false ), mEventScheduled( false ), mChannelMode( format.getChannelMode() ),
 		mNumChannels( 1 ), mAutoEnabled( true ), mProcessInPlace( true ), mLastProcessedFrame( numeric_limits<uint64_t>::max() )
 {
 	if( format.getChannels() ) {
@@ -178,6 +178,11 @@ void Node::enable()
 	if( ! mInitialized )
 		initializeImpl();
 
+	// Need to cancel events regardless if node is already enabled as one might be disabling us
+	if( mEventScheduled && ! getContext()->isAudioThread() ) {
+		getContext()->cancelScheduledEvents( shared_from_this() );
+	}
+
 	if( mEnabled )
 		return;
 
@@ -187,6 +192,11 @@ void Node::enable()
 
 void Node::disable()
 {
+	// Need to cancel events regardless if node is already disabled as one might be enabling us
+	if( mEventScheduled && ! getContext()->isAudioThread() ) {
+		getContext()->cancelScheduledEvents( shared_from_this() );
+	}
+
 	if( ! mEnabled )
 		return;
 
@@ -196,12 +206,12 @@ void Node::disable()
 
 void Node::enable( double when )
 {
-	getContext()->schedule( when, shared_from_this(), true, [this] { enable(); } );
+	getContext()->scheduleEvent( when, shared_from_this(), true, [this] { enable(); } );
 }
 
 void Node::disable( double when )
 {
-	getContext()->schedule( when, shared_from_this(), false, [this] { disable(); } );
+	getContext()->scheduleEvent( when, shared_from_this(), false, [this] { disable(); } );
 }
 
 void Node::setEnabled( bool b )

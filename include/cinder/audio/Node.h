@@ -228,6 +228,7 @@ class CI_API Node : public std::enable_shared_from_this<Node>, private Noncopyab
 
 	std::weak_ptr<Context>	mContext;
 	std::atomic<bool>		mEnabled;
+	std::atomic<bool>		mEventScheduled;
 	bool					mInitialized;
 	bool					mAutoEnabled;
 	bool					mProcessInPlace;
