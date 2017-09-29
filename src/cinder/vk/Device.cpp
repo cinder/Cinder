@@ -295,6 +295,21 @@ void Device::initializeDevice( const std::vector<std::pair<VkQueueFlags, uint32_
 		layerExtensionNames.insert( layerExtensionNames.begin(), VK_KHR_SWAPCHAIN_EXTENSION_NAME );
 	}
 
+	// Resolve incompatible extensions
+	{
+		const auto itKHRMaintenance1 = std::find_if(layerExtensionNames.begin(), layerExtensionNames.end(),
+			[](const char * name){ return std::strcmp(name, "VK_KHR_maintenance1") == 0; });
+
+		if (itKHRMaintenance1 != layerExtensionNames.end()) {
+			const auto itAMDNegativeViewportHeight = std::find_if(layerExtensionNames.begin(), layerExtensionNames.end(),
+				[](const char * name){ return std::strcmp(name, "VK_AMD_negative_viewport_height") == 0; });
+			if (itAMDNegativeViewportHeight != layerExtensionNames.end()) {
+				// Prefer VK_KHR_maintenance1
+				layerExtensionNames.erase(itAMDNegativeViewportHeight);
+			}
+		}
+	}
+
 	// Create the device
     VkDeviceCreateInfo createInfo = {};
     createInfo.sType					= VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
