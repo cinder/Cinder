@@ -36,6 +36,9 @@ namespace cinder { namespace audio { namespace msw {
 
 class DeviceManagerWasapi : public DeviceManager {
   public:
+	  DeviceManagerWasapi();
+	~DeviceManagerWasapi();
+
 	DeviceRef getDefaultOutput() override;
 	DeviceRef getDefaultInput() override;
 
@@ -56,19 +59,25 @@ class DeviceManagerWasapi : public DeviceManager {
 	void updateActualFramesPerBlock( const DeviceRef &device, size_t framesPerBlock );
 
   private:
+	  // TODO: fix formatting
+	  struct DeviceInfo {
+		  std::string mKey;						//! mKey used by Device to get more info from manager
+		  std::string mName;						//! friendly mName
+		  enum Usage { INPUT, OUTPUT } mUsage;
+		  std::wstring			mEndpointId;		//! id used by Wasapi / MMDevice
+		  unsigned long			mState;
+		  size_t mNumChannels, mSampleRate, mFramesPerBlock;
+	  };
 
-	struct DeviceInfo {
-		std::string mKey;							//! mKey used by Device to get more info from manager
-		std::string mName;							//! friendly mName
-		enum Usage { INPUT, OUTPUT } mUsage;
-		std::wstring			mEndpointId;		//! id used by Wasapi / MMDevice
-		size_t mNumChannels, mSampleRate, mFramesPerBlock;
-	};
+	  DeviceInfo& getDeviceInfo( const DeviceRef &device );
+	  void rebuildDeviceInfoSet();
+	  void parseDevices( DeviceInfo::Usage usage );
+	  std::vector<std::wstring> parseDeviceIds( DeviceInfo::Usage usage );
 
-	DeviceInfo& getDeviceInfo( const DeviceRef &device );
-	void parseDevices( DeviceInfo::Usage usage );
+	  std::map<DeviceRef, DeviceInfo> mDeviceInfoSet;
 
-	std::map<DeviceRef, DeviceInfo> mDeviceInfoSet;
+	  struct Impl;
+	  std::unique_ptr<Impl> mImpl;
 };
 
 } } } // namespace cinder::audio::msw

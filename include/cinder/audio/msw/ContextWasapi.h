@@ -36,6 +36,7 @@ struct WasapiCaptureClientImpl;
 class OutputDeviceNodeWasapi : public OutputDeviceNode {
   public:
 	OutputDeviceNodeWasapi( const DeviceRef &device, bool exclusiveMode, const Format &format );
+	~OutputDeviceNodeWasapi();
 
 protected:
 	void initialize()				override;

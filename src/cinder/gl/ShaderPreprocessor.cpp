@@ -168,8 +168,11 @@ ShaderPreprocessor::ShaderPreprocessor()
 string ShaderPreprocessor::parse( const fs::path &sourcePath, std::set<fs::path> *includedFiles )
 {
 	const fs::path fullPath = findFullPath( sourcePath, "" );
-	string source = loadString( loadFile( fullPath ) );
+	if( fullPath.empty() ) {
+		throw ShaderPreprocessorExc( "could not find shader at source path: " + sourcePath.string() );
+	}
 
+	string source = loadString( loadFile( fullPath ) );
 	return parse( source, sourcePath, includedFiles );
 }
 
@@ -288,6 +291,9 @@ string ShaderPreprocessor::parseRecursive( const fs::path &includePath, const fs
 	}
 	else {
 		const fs::path fullPath = findFullPath( includePath, currentDirectory );
+		if( fullPath.empty() ) {
+			throw ShaderPreprocessorExc( "could not find shader with include path: " + includePath.string() );
+		}
 
 		if( includeTree.count( fullPath ) ) {
 			// circular include, skip it as it has already been appended.
@@ -299,7 +305,15 @@ string ShaderPreprocessor::parseRecursive( const fs::path &includePath, const fs
 		ifstream input( fullPath.string().c_str() );
 		if( ! input.is_open() )
 			throw ShaderPreprocessorExc( "Failed to open file at include path: " + fullPath.string() );
-		output += readStream( input, fullPath, lineNumberStart, versionNumber, includeTree );
+
+		try {
+			output += readStream( input, fullPath, lineNumberStart, versionNumber, includeTree );
+		}
+		catch( ShaderPreprocessorExc &exc ) {
+			// append currently processed glsl file.
+			throw ShaderPreprocessorExc( string( exc.what() ) + ", while parsing file: " + fullPath.string() );
+		}
+
 		input.close();
 	}
 
@@ -423,7 +437,7 @@ fs::path ShaderPreprocessor::findFullPath( const fs::path &includePath, const fs
 			return fs::canonical( fullPath );
 	}
 
-	throw ShaderPreprocessorExc( "could not find shader with include path: " + includePath.string() );
+	return {};
 }
 
 } } // namespace cinder::gl

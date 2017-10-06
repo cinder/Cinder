@@ -41,7 +41,7 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 <h1 id="building-libcinder-with-cmake">Building libcinder with CMake</h1>
-<p>To build libcinder from the command line, first make sure you have CMake version 3.0 or later installed. Then the process is similar to most other cmake projects you may have used, for example you can do the following from within the main cinder repo path:</p>
+<p>To build libcinder from the command line, first make sure you have CMake version 2.8 or later installed. Then the process is similar to most other cmake projects you may have used, for example you can do the following from within the main cinder repo path:</p>
 <pre><code>mkdir build
 cd build
 cmake ..
@@ -72,7 +72,7 @@ make -j4
 </code></pre>
 
 <p>To simplify configuring your project and the many platform-specific particulars, we use a utility function called <code>ci_make_app()</code>, which takes a number of arguments to build your application. For example, <a href="https://github.com/cinder/Cinder/blob/master/samples/_opengl/ObjLoader/proj/cmake/CMakeLists.txt">here</a> is the CMakeLists.txt file used for building the <code>_opengl/ObjLoader</code> sample:</p>
-<pre><code class="cmake">cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
+<pre><code class="cmake">cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
 project( opengl-ObjLoader )

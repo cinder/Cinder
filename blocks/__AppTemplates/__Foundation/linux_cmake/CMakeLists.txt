@@ -1,5 +1,5 @@
 # Cube
-cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
+cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE on )
 
 get_filename_component( CINDER_DIR "_TBOX_CINDER_PATH_" ABSOLUTE )

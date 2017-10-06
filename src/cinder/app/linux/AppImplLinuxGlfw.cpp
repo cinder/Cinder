@@ -45,6 +45,7 @@ public:
 		::glfwSetCursorPosCallback( glfwWindow, GlfwCallbacks::onMousePos );
 		::glfwSetMouseButtonCallback( glfwWindow, GlfwCallbacks::onMouseButton );
 		::glfwSetScrollCallback( glfwWindow, GlfwCallbacks::onMouseWheel );
+		::glfwSetDropCallback( glfwWindow, GlfwCallbacks::onFileDrop );
 	}
 
 	static void unregisterWindowEvents( GLFWwindow *glfwWindow ) {
@@ -272,6 +273,18 @@ public:
 			MouseEvent event( getWindow(), 0, (int)mouseX, (int)mouseY, modifiers, wheelDelta , 0 );
 			cinderWindow->emitMouseWheel( &event );	
 		}
+	}
+
+	static void onFileDrop( GLFWwindow *glfwWindow, int count, const char **paths )
+	{
+		std::vector<fs::path> files;
+		for( int i = 0; i < count; i++ ) {
+			files.push_back( paths[i] );
+		}
+
+		vec2 dropPoint = { 0, 0 }; // note: doesn't appear to be any way to get the drop position.
+		FileDropEvent dropEvent( getWindow(), dropPoint.x, dropPoint.y, files );
+		getWindow()->emitFileDrop( &dropEvent );
 	}
 };
 

@@ -292,12 +292,12 @@ FontManager* FontManager::instance()
 	if( ! FontManager::sInstance ) {
 		FontManager::sInstance =  new FontManager();
 	}
-	
+
 	return sInstance;
 }
 
 #if defined( CINDER_MSW_DESKTOP )
-int CALLBACK EnumFontFamiliesExProc( ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, int FontType, LPARAM lParam )
+int CALLBACK EnumFontFamiliesExProc( ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX * /*lpntme*/, int /*FontType*/, LPARAM lParam )
 {
 	reinterpret_cast<vector<string>*>( lParam )->push_back( toUtf8( (char16_t*)lpelfe->elfFullName ) );
 	return 1;

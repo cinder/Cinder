@@ -32,7 +32,7 @@
 namespace cinder {
 
 template<typename T>
-class CI_API ConcurrentCircularBuffer : private Noncopyable {
+class ConcurrentCircularBuffer : private Noncopyable {
   public:
 	typedef boost::circular_buffer<T> container_type;
 	typedef typename container_type::size_type size_type;

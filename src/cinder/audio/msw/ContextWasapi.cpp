@@ -98,6 +98,8 @@ struct WasapiAudioClientImpl {
 	size_t		mBytesPerSample;
 	bool		mExclusiveMode;
 
+	bool	mAudioClientInvalidated = false;
+
   protected:
 	void initAudioClient( const DeviceRef &device, size_t numChannels, HANDLE eventHandle );
 
@@ -422,6 +424,8 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	}
 
 	LOG_AUDIOCLIENT( "init complete. mAudioClientNumFrames: " << mAudioClientNumFrames );
+
+	mAudioClientInvalidated = false;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -557,19 +561,28 @@ size_t WasapiRenderClientImpl::getWriteFramesAvailable() const
 
 void WasapiRenderClientImpl::renderAudio()
 {
+	if( mAudioClientInvalidated )
+		return;
+
 	size_t numWriteFramesAvailable = getWriteFramesAvailable();
 
 	while( mNumFramesBuffered < numWriteFramesAvailable ) {
 		mOutputDeviceNode->renderInputs();
 	}
 
-	BYTE *audioBuffer;
-	HRESULT hr = mRenderClient->GetBuffer( (UINT32)numWriteFramesAvailable, &audioBuffer );
-	ASSERT_HR_OK( hr );
+	float *renderBuffer;
+	HRESULT hr = mRenderClient->GetBuffer( static_cast<UINT32>(numWriteFramesAvailable), (BYTE **)&renderBuffer );
+	if( hr == AUDCLNT_E_DEVICE_INVALIDATED ) {
+		mAudioClientInvalidated = true;
+		return;
+	}
+	else {
+		CI_ASSERT( hr == S_OK );
+	}
 
 	size_t numReadSamples = numWriteFramesAvailable * mNumChannels;
 
-	bool readSuccess = mRingBuffer->read( (char *)audioBuffer, numReadSamples * mBytesPerSample );
+	bool readSuccess = mRingBuffer->read( (char *)renderBuffer, numReadSamples * mBytesPerSample );
 	CI_ASSERT( readSuccess ); // since this is sync read / write, the read should always succeed.
 
 	mNumFramesBuffered -= numWriteFramesAvailable;
@@ -648,7 +661,16 @@ void WasapiCaptureClientImpl::captureAudio()
 {
 	UINT32 numPacketFrames;
 	HRESULT hr = mCaptureClient->GetNextPacketSize( &numPacketFrames );
-	ASSERT_HR_OK( hr );
+	if( hr == AUDCLNT_E_DEVICE_INVALIDATED ) {
+		// TODO: need to handle reconnecting
+		CI_LOG_W( "mCaptureClient->GetNextPacketSize() returned AUDCLNT_E_DEVICE_INVALIDATED, returning" );
+		mAudioClientInvalidated = true;
+		return;
+	}
+	else {
+		//ASSERT_HR_OK( hr );
+		CI_ASSERT( hr == S_OK );
+	}
 
 	while( numPacketFrames ) {
 		if( numPacketFrames > ( mMaxReadFrames - mNumFramesBuffered ) ) {
@@ -727,6 +749,10 @@ OutputDeviceNodeWasapi::OutputDeviceNodeWasapi( const DeviceRef &device, bool ex
 {
 }
 
+OutputDeviceNodeWasapi::~OutputDeviceNodeWasapi()
+{
+}
+
 void OutputDeviceNodeWasapi::initialize()
 {
 	if( mRenderImpl->mAudioClient && mRenderImpl->mRenderClient ) {
@@ -784,6 +810,9 @@ void OutputDeviceNodeWasapi::enableProcessing()
 
 void OutputDeviceNodeWasapi::disableProcessing()
 {
+	if( mRenderImpl->mAudioClientInvalidated )
+		return;
+
 	HRESULT hr = mRenderImpl->mAudioClient->Stop();
 
 	// TODO: not sure why, but sometimes this isn't returning S_OK or any other expected hresult (it returns 0x10000000)
