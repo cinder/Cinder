@@ -29,7 +29,7 @@ target_compile_definitions( cinder PUBLIC ${CINDER_DEFINES} )
 # Visual Studio and Xcode generators adds a ${CMAKE_BUILD_TYPE} to the ARCHIVE 
 # and LIBRARY directories. Override the directories so, ${CMAKE_BUILD_TYPE} doesn't double up.
 if( CINDER_MSW )
-	set( PLATFORM_TOOLSET "$(PlatformToolset)" )
+	set( PLATFORM_TOOLSET "$(PlatformToolset)" CACHE STRING "Visual Studio Toolset Version" )
 	if( NOT ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) )
 		# Assume Visual Studio 2015
 		set( PLATFORM_TOOLSET "v140" )
