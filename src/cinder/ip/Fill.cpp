@@ -22,8 +22,6 @@
 
 #include "cinder/ip/Fill.h"
 
-#include <boost/preprocessor/seq.hpp>
-
 namespace cinder { namespace ip {
 
 template<typename T>
@@ -123,23 +121,49 @@ void fill( ChannelT<T> *channel, T value )
 	fill( channel, value, channel->getBounds() );
 }
 
-#define fill_PROTOTYPES(r,data,T)\
-	template CI_API void fill<T,uint8_t>( SurfaceT<T> *surface, const ColorT<uint8_t> &color, const Area &area ); \
-	template CI_API void fill<T,uint8_t>( SurfaceT<T> *surface, const ColorT<uint8_t> &color ); \
-	template CI_API void fill<T,uint8_t>( SurfaceT<T> *surface, const ColorAT<uint8_t> &color, const Area &area ); \
-	template CI_API void fill<T,uint8_t>( SurfaceT<T> *surface, const ColorAT<uint8_t> &color ); \
-	template CI_API void fill<T,uint16_t>( SurfaceT<T> *surface, const ColorT<uint16_t> &color, const Area &area ); \
-	template CI_API void fill<T,uint16_t>( SurfaceT<T> *surface, const ColorT<uint16_t> &color ); \
-	template CI_API void fill<T,uint16_t>( SurfaceT<T> *surface, const ColorAT<uint16_t> &color, const Area &area ); \
-	template CI_API void fill<T,uint16_t>( SurfaceT<T> *surface, const ColorAT<uint16_t> &color ); \
-	template CI_API void fill<T,float>( SurfaceT<T> *surface, const ColorT<float> &color, const Area &area ); \
-	template CI_API void fill<T,float>( SurfaceT<T> *surface, const ColorT<float> &color ); \
-	template CI_API void fill<T,float>( SurfaceT<T> *surface, const ColorAT<float> &color, const Area &area ); \
-	template CI_API void fill<T,float>( SurfaceT<T> *surface, const ColorAT<float> &color ); \
-	template CI_API void fill<T>( ChannelT<T> *channel, const T value, const Area &area ); \
-	template CI_API void fill<T>( ChannelT<T> *channel, const T value );
+template void fill<uint8_t,uint8_t>( SurfaceT<uint8_t> *surface, const ColorT<uint8_t> &color, const Area &area );
+template void fill<uint8_t,uint8_t>( SurfaceT<uint8_t> *surface, const ColorT<uint8_t> &color );
+template void fill<uint8_t,uint8_t>( SurfaceT<uint8_t> *surface, const ColorAT<uint8_t> &color, const Area &area );
+template void fill<uint8_t,uint8_t>( SurfaceT<uint8_t> *surface, const ColorAT<uint8_t> &color );
+template void fill<uint8_t,uint16_t>( SurfaceT<uint8_t> *surface, const ColorT<uint16_t> &color, const Area &area );
+template void fill<uint8_t,uint16_t>( SurfaceT<uint8_t> *surface, const ColorT<uint16_t> &color );
+template void fill<uint8_t,uint16_t>( SurfaceT<uint8_t> *surface, const ColorAT<uint16_t> &color, const Area &area );
+template void fill<uint8_t,uint16_t>( SurfaceT<uint8_t> *surface, const ColorAT<uint16_t> &color );
+template void fill<uint8_t,float>( SurfaceT<uint8_t> *surface, const ColorT<float> &color, const Area &area );
+template void fill<uint8_t,float>( SurfaceT<uint8_t> *surface, const ColorT<float> &color );
+template void fill<uint8_t,float>( SurfaceT<uint8_t> *surface, const ColorAT<float> &color, const Area &area );
+template void fill<uint8_t,float>( SurfaceT<uint8_t> *surface, const ColorAT<float> &color );
+template void fill<uint8_t>( ChannelT<uint8_t> *channel, const uint8_t value, const Area &area );
+template void fill<uint8_t>( ChannelT<uint8_t> *channel, const uint8_t value );
 
-BOOST_PP_SEQ_FOR_EACH( fill_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
+template void fill<uint16_t,uint8_t>( SurfaceT<uint16_t> *surface, const ColorT<uint8_t> &color, const Area &area );
+template void fill<uint16_t,uint8_t>( SurfaceT<uint16_t> *surface, const ColorT<uint8_t> &color );
+template void fill<uint16_t,uint8_t>( SurfaceT<uint16_t> *surface, const ColorAT<uint8_t> &color, const Area &area );
+template void fill<uint16_t,uint8_t>( SurfaceT<uint16_t> *surface, const ColorAT<uint8_t> &color );
+template void fill<uint16_t,uint16_t>( SurfaceT<uint16_t> *surface, const ColorT<uint16_t> &color, const Area &area );
+template void fill<uint16_t,uint16_t>( SurfaceT<uint16_t> *surface, const ColorT<uint16_t> &color );
+template void fill<uint16_t,uint16_t>( SurfaceT<uint16_t> *surface, const ColorAT<uint16_t> &color, const Area &area );
+template void fill<uint16_t,uint16_t>( SurfaceT<uint16_t> *surface, const ColorAT<uint16_t> &color );
+template void fill<uint16_t,float>( SurfaceT<uint16_t> *surface, const ColorT<float> &color, const Area &area );
+template void fill<uint16_t,float>( SurfaceT<uint16_t> *surface, const ColorT<float> &color );
+template void fill<uint16_t,float>( SurfaceT<uint16_t> *surface, const ColorAT<float> &color, const Area &area );
+template void fill<uint16_t,float>( SurfaceT<uint16_t> *surface, const ColorAT<float> &color );
+template void fill<uint16_t>( ChannelT<uint16_t> *channel, const uint16_t value, const Area &area );
+template void fill<uint16_t>( ChannelT<uint16_t> *channel, const uint16_t value );
 
+template void fill<float,uint8_t>( SurfaceT<float> *surface, const ColorT<uint8_t> &color, const Area &area );
+template void fill<float,uint8_t>( SurfaceT<float> *surface, const ColorT<uint8_t> &color );
+template void fill<float,uint8_t>( SurfaceT<float> *surface, const ColorAT<uint8_t> &color, const Area &area );
+template void fill<float,uint8_t>( SurfaceT<float> *surface, const ColorAT<uint8_t> &color );
+template void fill<float,uint16_t>( SurfaceT<float> *surface, const ColorT<uint16_t> &color, const Area &area );
+template void fill<float,uint16_t>( SurfaceT<float> *surface, const ColorT<uint16_t> &color );
+template void fill<float,uint16_t>( SurfaceT<float> *surface, const ColorAT<uint16_t> &color, const Area &area );
+template void fill<float,uint16_t>( SurfaceT<float> *surface, const ColorAT<uint16_t> &color );
+template void fill<float,float>( SurfaceT<float> *surface, const ColorT<float> &color, const Area &area );
+template void fill<float,float>( SurfaceT<float> *surface, const ColorT<float> &color );
+template void fill<float,float>( SurfaceT<float> *surface, const ColorAT<float> &color, const Area &area );
+template void fill<float,float>( SurfaceT<float> *surface, const ColorAT<float> &color );
+template void fill<float>( ChannelT<float> *channel, const float value, const Area &area );
+template void fill<float>( ChannelT<float> *channel, const float value );
 
 } } // namespace cinder::ip

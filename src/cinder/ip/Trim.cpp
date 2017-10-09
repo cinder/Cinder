@@ -22,7 +22,6 @@
 
 #include "cinder/ip/Trim.h"
 
-#include <boost/preprocessor/seq.hpp>
 #include <algorithm>
 
 namespace cinder { namespace ip {
@@ -92,9 +91,7 @@ Area findNonTransparentArea( const SurfaceT<T> &surface, const Area &unclippedBo
 	return Area( leftColumn, topLine, rightColumn, bottomLine );
 }
 
-#define TRIM_PROTOTYPES(r,data,T)\
-	template CI_API Area findNonTransparentArea( const SurfaceT<T> &surface, const Area &unclippedBounds );
-
-BOOST_PP_SEQ_FOR_EACH( TRIM_PROTOTYPES, ~, CHANNEL_TYPES )
+template Area findNonTransparentArea( const SurfaceT<uint8_t> &surface, const Area &unclippedBounds );
+template Area findNonTransparentArea( const SurfaceT<float> &surface, const Area &unclippedBounds );
 
 } } // namespace cinder::ip

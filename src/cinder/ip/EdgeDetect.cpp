@@ -24,8 +24,6 @@
 #include "cinder/Surface.h"
 #include "cinder/CinderMath.h"
 
-#include <boost/preprocessor/seq.hpp>
-
 namespace cinder { namespace ip {
 
 //     X           Y
@@ -86,14 +84,21 @@ void edgeDetectSobel( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSuface )
 	edgeDetectSobel( srcSurface, srcSurface.getBounds(), ivec2(), dstSuface );
 }
 
+	
+template void edgeDetectSobel( const ChannelT<uint8_t> &srcChannel, const Area &srcArea, const ivec2 &dstLT, ChannelT<uint8_t> *dstChannel );
+template void edgeDetectSobel( const SurfaceT<uint8_t> &srcSurface, const Area &srcArea, const ivec2 &dstLT, SurfaceT<uint8_t> *dstSurface );
+template void edgeDetectSobel( const ChannelT<uint8_t> &srcChannel, ChannelT<uint8_t> *dstChannel );
+template void edgeDetectSobel( const SurfaceT<uint8_t> &srcSurface, SurfaceT<uint8_t> *dstSurface );
 
-#define edgeDetect_PROTOTYPES(r,data,T)\
-	template CI_API void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &dstLT, ChannelT<T> *dstChannel ); \
-	template CI_API void edgeDetectSobel( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &dstLT, SurfaceT<T> *dstSurface ); \
-	template CI_API void edgeDetectSobel( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel );	\
-	template CI_API void edgeDetectSobel( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface );	
+template void edgeDetectSobel( const ChannelT<uint16_t> &srcChannel, const Area &srcArea, const ivec2 &dstLT, ChannelT<uint16_t> *dstChannel );
+template void edgeDetectSobel( const SurfaceT<uint16_t> &srcSurface, const Area &srcArea, const ivec2 &dstLT, SurfaceT<uint16_t> *dstSurface );
+template void edgeDetectSobel( const ChannelT<uint16_t> &srcChannel, ChannelT<uint16_t> *dstChannel );
+template void edgeDetectSobel( const SurfaceT<uint16_t> &srcSurface, SurfaceT<uint16_t> *dstSurface );
 
-BOOST_PP_SEQ_FOR_EACH( edgeDetect_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
+template void edgeDetectSobel( const ChannelT<float> &srcChannel, const Area &srcArea, const ivec2 &dstLT, ChannelT<float> *dstChannel );
+template void edgeDetectSobel( const SurfaceT<float> &srcSurface, const Area &srcArea, const ivec2 &dstLT, SurfaceT<float> *dstSurface );
+template void edgeDetectSobel( const ChannelT<float> &srcChannel, ChannelT<float> *dstChannel );
+template void edgeDetectSobel( const SurfaceT<float> &srcSurface, SurfaceT<float> *dstSurface );
 
 
 } } // namespace cinder::ip

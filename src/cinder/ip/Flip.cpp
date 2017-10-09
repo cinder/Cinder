@@ -22,8 +22,6 @@
 
 #include "cinder/ip/Flip.h"
 
-#include <boost/preprocessor/seq.hpp>
-
 using namespace std;
 
 namespace cinder { namespace ip {
@@ -216,12 +214,20 @@ void flipHorizontal( SurfaceT<T> *surface )
 	}
 }
 
-#define flip_PROTOTYPES(r,data,T)\
-	template CI_API void flipVertical<T>( SurfaceT<T> *surface );\
-	template CI_API void flipVertical<T>( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface );\
-	template CI_API void flipVertical<T>( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel );\
-	template CI_API void flipHorizontal<T>( SurfaceT<T> *surface );
-	
-BOOST_PP_SEQ_FOR_EACH( flip_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
+template void flipVertical<uint8_t>( SurfaceT<uint8_t> *surface );
+template void flipVertical<uint8_t>( const SurfaceT<uint8_t> &srcSurface, SurfaceT<uint8_t> *destSurface );
+template void flipVertical<uint8_t>( const ChannelT<uint8_t> &srcChannel, ChannelT<uint8_t> *destChannel );
+template void flipHorizontal<uint8_t>( SurfaceT<uint8_t> *surface );
+
+template void flipVertical<uint16_t>( SurfaceT<uint16_t> *surface );
+template void flipVertical<uint16_t>( const SurfaceT<uint16_t> &srcSurface, SurfaceT<uint16_t> *destSurface );
+template void flipVertical<uint16_t>( const ChannelT<uint16_t> &srcChannel, ChannelT<uint16_t> *destChannel );
+template void flipHorizontal<uint16_t>( SurfaceT<uint16_t> *surface );
+
+template void flipVertical<float>( SurfaceT<float> *surface );
+template void flipVertical<float>( const SurfaceT<float> &srcSurface, SurfaceT<float> *destSurface );
+template void flipVertical<float>( const ChannelT<float> &srcChannel, ChannelT<float> *destChannel );
+template void flipHorizontal<float>( SurfaceT<float> *surface );
+
 
 } } // namespace cinder::ip
