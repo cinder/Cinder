@@ -23,9 +23,6 @@
 #include "cinder/ip/Grayscale.h"
 #include "cinder/ChanTraits.h"
 
-#include <boost/preprocessor/seq.hpp>
-
-
 namespace cinder { namespace ip {
 
 template<typename T>
@@ -91,12 +88,14 @@ void grayscale( const Surface8u &srcSurface, Channel8u *dstChannel )
 	}
 }
 
-#define grayscale_PROTOTYPES(r,data,T)\
+#define grayscale_PROTOTYPES(T)\
 	template CI_API void grayscale( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface );
 	
 template CI_API void grayscale( const SurfaceT<float> &srcSurface, ChannelT<float> *dstChannel );
 
-BOOST_PP_SEQ_FOR_EACH( grayscale_PROTOTYPES, ~, CHANNEL_TYPES )
+// These should match CHANNEL_TYPES
+grayscale_PROTOTYPES(uint8_t)
+grayscale_PROTOTYPES(float)
 
 
 } } // namespace cinder::ip
