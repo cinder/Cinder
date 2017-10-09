@@ -34,7 +34,6 @@ using std::unique_ptr;
 #include <limits>
 #include <fstream>
 #include <algorithm>
-#include <boost/preprocessor/seq.hpp>
 
 namespace cinder { namespace ip {
 
@@ -360,13 +359,16 @@ void resize( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel, const Filte
 	resize( srcChannel, srcChannel.getBounds(), dstChannel, dstChannel->getBounds(), filter );
 }
 
-#define resize_PROTOTYPES(r,data,T)\
-	template CI_API void resize( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface, const FilterBase &filter ); \
-	template CI_API void resize( const SurfaceT<T> &srcSurface, const Area &srcArea, SurfaceT<T> *dstSurface, const Area &dstArea, const FilterBase &filter ); \
-	template CI_API void resize( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel, const FilterBase &filter ); \
-	template CI_API SurfaceT<T> resizeCopy( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &dstSize, const FilterBase &filter ); \
-	template CI_API void resize( const ChannelT<T> &srcChannel, const Area &srcArea, ChannelT<T> *dstChannel, const Area &dstArea, const FilterBase &filter );
+template void resize( const SurfaceT<uint8_t> &srcSurface, SurfaceT<uint8_t> *dstSurface, const FilterBase &filter );
+template void resize( const SurfaceT<uint8_t> &srcSurface, const Area &srcArea, SurfaceT<uint8_t> *dstSurface, const Area &dstArea, const FilterBase &filter );
+template void resize( const ChannelT<uint8_t> &srcChannel, ChannelT<uint8_t> *dstChannel, const FilterBase &filter );
+template SurfaceT<uint8_t> resizeCopy( const SurfaceT<uint8_t> &srcSurface, const Area &srcArea, const ivec2 &dstSize, const FilterBase &filter );
+template void resize( const ChannelT<uint8_t> &srcChannel, const Area &srcArea, ChannelT<uint8_t> *dstChannel, const Area &dstArea, const FilterBase &filter );
 
-BOOST_PP_SEQ_FOR_EACH( resize_PROTOTYPES, ~, CHANNEL_TYPES )
+template void resize( const SurfaceT<float> &srcSurface, SurfaceT<float> *dstSurface, const FilterBase &filter );
+template void resize( const SurfaceT<float> &srcSurface, const Area &srcArea, SurfaceT<float> *dstSurface, const Area &dstArea, const FilterBase &filter );
+template void resize( const ChannelT<float> &srcChannel, ChannelT<float> *dstChannel, const FilterBase &filter );
+template SurfaceT<float> resizeCopy( const SurfaceT<float> &srcSurface, const Area &srcArea, const ivec2 &dstSize, const FilterBase &filter );
+template void resize( const ChannelT<float> &srcChannel, const Area &srcArea, ChannelT<float> *dstChannel, const Area &dstArea, const FilterBase &filter );
 
 } } // namespace cinder::ip

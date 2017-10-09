@@ -24,7 +24,6 @@
 #include "cinder/ChanTraits.h"
 
 #include <stdlib.h>
-#include <boost/preprocessor/seq.hpp>
 
 
 namespace cinder { namespace ip {
@@ -351,17 +350,16 @@ void AdaptiveThresholdT<T>::calculate( int32_t windowSize, float percentageDelta
 template class CI_API AdaptiveThresholdT<uint8_t>;
 template class CI_API AdaptiveThresholdT<float>;
 
-#define threshold_PROTOTYPES(r,data,T)\
-	template CI_API void threshold( SurfaceT<T> *surface, T value ); \
-	template CI_API void threshold( SurfaceT<T> *surface, T value, const Area &area ); \
-	template CI_API void threshold( const SurfaceT<T> &srcSurface, T value, SurfaceT<T> *dstSurface );\
-	template CI_API void threshold( const ChannelT<T> &srcChannel, T value, ChannelT<T> *dstChannel );\
-	template CI_API void adaptiveThreshold( const ChannelT<T> &srcChannel, int32_t windowSize, float percentageDelta, ChannelT<T> *dstChannel ); \
-	template CI_API void adaptiveThreshold( ChannelT<T> *channel, int32_t windowSize, float percentageDelta ); \
-	template CI_API void adaptiveThresholdZero( ChannelT<T> *channel, int32_t windowSize ); \
-	template CI_API void adaptiveThresholdZero( const ChannelT<T> &srcChannel, int32_t windowSize, ChannelT<T> *dstChannel );
+template void threshold( SurfaceT<uint8_t> *surface, uint8_t value );
+template void threshold( SurfaceT<uint8_t> *surface, uint8_t value, const Area &area );
+template void threshold( const SurfaceT<uint8_t> &srcSurface, uint8_t value, SurfaceT<uint8_t> *dstSurface );
+template void threshold( const ChannelT<uint8_t> &srcChannel, uint8_t value, ChannelT<uint8_t> *dstChannel );
 
-BOOST_PP_SEQ_FOR_EACH( threshold_PROTOTYPES, ~, (uint8_t) )
+template void adaptiveThreshold( const ChannelT<uint8_t> &srcChannel, int32_t windowSize, float percentageDelta, ChannelT<uint8_t> *dstChannel );
+template void adaptiveThreshold( ChannelT<uint8_t> *channel, int32_t windowSize, float percentageDelta );
+
+template void adaptiveThresholdZero( ChannelT<uint8_t> *channel, int32_t windowSize );
+template void adaptiveThresholdZero( const ChannelT<uint8_t> &srcChannel, int32_t windowSize, ChannelT<uint8_t> *dstChannel );
 
 
 } } // namespace cinder::ip

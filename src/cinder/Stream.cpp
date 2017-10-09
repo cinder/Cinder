@@ -30,7 +30,7 @@
 #include <limits>
 #include <boost/scoped_array.hpp>
 #include <iostream>
-#include <boost/preprocessor/seq/for_each.hpp>
+
 using std::string;
 
 namespace cinder {
@@ -792,17 +792,105 @@ StreamExc::StreamExc( const std::string &fontName ) throw()
 
 /////////////////////////////////////////////////////////////////////
 
-#define STREAM_PROTOTYPES(r,data,T)\
-	template void OStream::write<T>( T t ); \
-	template void OStream::writeEndian<T>( T t, uint8_t endian ); \
-	template void OStream::writeBig<T>( T t ); \
-	template void OStream::writeLittle<T>( T t ); \
-	template void IStreamCinder::read<T>( T *t ); \
-	template void IStreamCinder::readEndian<T>( T *t, uint8_t endian ); \
-	template void IStreamCinder::readBig<T>( T *t ); \
-	template void IStreamCinder::readLittle<T>( T *t );
+template void OStream::write<int8_t>( int8_t t );
+template void OStream::writeEndian<int8_t>( int8_t t, uint8_t endian );
+template void OStream::writeBig<int8_t>( int8_t t );
+template void OStream::writeLittle<int8_t>( int8_t t );
 
-BOOST_PP_SEQ_FOR_EACH( STREAM_PROTOTYPES, ~, (int8_t)(uint8_t)(int16_t)(uint16_t)(int32_t)(uint32_t)(int64_t)(uint64_t)(float)(double) )
+template void OStream::write<uint8_t>( uint8_t t );
+template void OStream::writeEndian<uint8_t>( uint8_t t, uint8_t endian );
+template void OStream::writeBig<uint8_t>( uint8_t t );
+template void OStream::writeLittle<uint8_t>( uint8_t t );
+
+template void OStream::write<int16_t>( int16_t t );
+template void OStream::writeEndian<int16_t>( int16_t t, uint8_t endian );
+template void OStream::writeBig<int16_t>( int16_t t );
+template void OStream::writeLittle<int16_t>( int16_t t );
+
+template void IStreamCinder::read<int8_t>( int8_t *t );
+template void IStreamCinder::readEndian<int8_t>( int8_t *t, uint8_t endian );
+template void IStreamCinder::readBig<int8_t>( int8_t *t );
+template void IStreamCinder::readLittle<int8_t>( int8_t *t );
+
+template void OStream::write<uint16_t>( uint16_t t );
+template void OStream::writeEndian<uint16_t>( uint16_t t, uint8_t endian );
+template void OStream::writeBig<uint16_t>( uint16_t t );
+template void OStream::writeLittle<uint16_t>( uint16_t t );
+
+template void OStream::write<int32_t>( int32_t t );
+template void OStream::writeEndian<int32_t>( int32_t t, uint8_t endian );
+template void OStream::writeBig<int32_t>( int32_t t );
+template void OStream::writeLittle<int32_t>( int32_t t );
+
+template void OStream::write<uint32_t>( uint32_t t );
+template void OStream::writeEndian<uint32_t>( uint32_t t, uint8_t endian );
+template void OStream::writeBig<uint32_t>( uint32_t t );
+template void OStream::writeLittle<uint32_t>( uint32_t t );
+
+template void OStream::write<int64_t>( int64_t t );
+template void OStream::writeEndian<int64_t>( int64_t t, uint8_t endian );
+template void OStream::writeBig<int64_t>( int64_t t );
+template void OStream::writeLittle<int64_t>( int64_t t );
+
+template void OStream::write<uint64_t>( uint64_t t );
+template void OStream::writeEndian<uint64_t>( uint64_t t, uint8_t endian );
+template void OStream::writeBig<uint64_t>( uint64_t t );
+template void OStream::writeLittle<uint64_t>( uint64_t t );
+
+template void OStream::write<float>( float t );
+template void OStream::writeEndian<float>( float t, uint8_t endian );
+template void OStream::writeBig<float>( float t );
+template void OStream::writeLittle<float>( float t );
+
+template void OStream::write<double>( double t );
+template void OStream::writeEndian<double>( double t, uint8_t endian );
+template void OStream::writeBig<double>( double t );
+template void OStream::writeLittle<double>( double t );
+
+template void IStreamCinder::read<uint8_t>( uint8_t *t );
+template void IStreamCinder::readEndian<uint8_t>( uint8_t *t, uint8_t endian );
+template void IStreamCinder::readBig<uint8_t>( uint8_t *t );
+template void IStreamCinder::readLittle<uint8_t>( uint8_t *t );
+
+template void IStreamCinder::read<int16_t>( int16_t *t );
+template void IStreamCinder::readEndian<int16_t>( int16_t *t, uint8_t endian );
+template void IStreamCinder::readBig<int16_t>( int16_t *t );
+template void IStreamCinder::readLittle<int16_t>( int16_t *t );
+
+template void IStreamCinder::read<uint16_t>( uint16_t *t );
+template void IStreamCinder::readEndian<uint16_t>( uint16_t *t, uint8_t endian );
+template void IStreamCinder::readBig<uint16_t>( uint16_t *t );
+template void IStreamCinder::readLittle<uint16_t>( uint16_t *t );
+
+template void IStreamCinder::read<int32_t>( int32_t *t );
+template void IStreamCinder::readEndian<int32_t>( int32_t *t, uint8_t endian );
+template void IStreamCinder::readBig<int32_t>( int32_t *t );
+template void IStreamCinder::readLittle<int32_t>( int32_t *t );
+
+template void IStreamCinder::read<uint32_t>( uint32_t *t );
+template void IStreamCinder::readEndian<uint32_t>( uint32_t *t, uint8_t endian );
+template void IStreamCinder::readBig<uint32_t>( uint32_t *t );
+template void IStreamCinder::readLittle<uint32_t>( uint32_t *t );
+
+template void IStreamCinder::read<int64_t>( int64_t *t );
+template void IStreamCinder::readEndian<int64_t>( int64_t *t, uint8_t endian );
+template void IStreamCinder::readBig<int64_t>( int64_t *t );
+template void IStreamCinder::readLittle<int64_t>( int64_t *t );
+
+template void IStreamCinder::read<uint64_t>( uint64_t *t );
+template void IStreamCinder::readEndian<uint64_t>( uint64_t *t, uint8_t endian );
+template void IStreamCinder::readBig<uint64_t>( uint64_t *t );
+template void IStreamCinder::readLittle<uint64_t>( uint64_t *t );
+
+template void IStreamCinder::read<float>( float *t );
+template void IStreamCinder::readEndian<float>( float *t, uint8_t endian );
+template void IStreamCinder::readBig<float>( float *t );
+template void IStreamCinder::readLittle<float>( float *t );
+
+template void IStreamCinder::read<double>( double *t );
+template void IStreamCinder::readEndian<double>( double *t, uint8_t endian );
+template void IStreamCinder::readBig<double>( double *t );
+template void IStreamCinder::readLittle<double>( double *t );
 
 #if defined( CINDER_UWP )
 	#pragma warning(pop) 
