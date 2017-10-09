@@ -77,21 +77,21 @@ std::vector<std::string> split(std::string str, const std::string &separators, b
 	
 	std::size_t searchPrevPos = 0, searchPos;
 	
-	while ((searchPos = str.find_first_of(separators, searchPrevPos)) != std::string::npos)
+	while ((searchPos = str.find_first_of( separators, searchPrevPos )) != std::string::npos)
 	{
 		
-		if (searchPos >= searchPrevPos && !compress){
-			result.push_back(str.substr(searchPrevPos, searchPos - searchPrevPos));
+		if ( searchPos >= searchPrevPos && ! compress ){
+			result.push_back( str.substr( searchPrevPos, searchPos - searchPrevPos ));
 		}
-		else if(searchPos > searchPrevPos){
-			result.push_back(str.substr(searchPrevPos, searchPos - searchPrevPos));
+		else if( searchPos > searchPrevPos ){
+			result.push_back( str.substr( searchPrevPos, searchPos - searchPrevPos ));
 		}
 		
 		searchPrevPos = searchPos+1;
 	}
 	
 	if (searchPrevPos <= str.length())
-		result.push_back(str.substr(searchPrevPos, std::string::npos));
+		result.push_back( str.substr( searchPrevPos, std::string::npos ));
 	
 	return result;
 }
