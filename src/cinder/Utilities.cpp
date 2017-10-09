@@ -33,8 +33,6 @@
 
 #include <vector>
 #include <fstream>
-#include <boost/tokenizer.hpp>
-#include <boost/algorithm/string.hpp>
 
 using std::vector;
 using std::string;
@@ -67,18 +65,32 @@ std::map<std::string, std::string> getEnvironmentVariables()
 	return app::Platform::get()->getEnvironmentVariables();
 }
 
-std::vector<std::string> split( const std::string &str, char separator, bool compress )
+std::vector<std::string> split(std::string str, char separator, bool compress )
 {
 	return split( str, string( 1, separator ), compress );
 }
 
-std::vector<std::string> split( const std::string &str, const std::string &separators, bool compress )
+std::vector<std::string> split(std::string str, const std::string &separators, bool compress )
 {
-	vector<string> result;
-
-	boost::algorithm::split( result, str, boost::is_any_of(separators),
-		compress ? boost::token_compress_on : boost::token_compress_off );
-
+	std::vector<std::string> result;
+	
+	
+	std::size_t searchPrevPos = 0, searchPos;
+	while ((searchPos = str.find_first_of(separators, searchPrevPos)) != std::string::npos)
+	{
+		if (searchPos >= searchPrevPos && !compress)
+			result.push_back(str.substr(searchPrevPos, searchPos - searchPrevPos + 1));
+		else if(searchPos > searchPrevPos){
+			result.push_back(str.substr(searchPrevPos, searchPos - searchPrevPos));
+		}
+		
+		searchPrevPos = searchPos+1;
+	}
+	
+	if (searchPrevPos < str.length()){
+		result.push_back(str.substr(searchPrevPos, std::string::npos));
+	}
+	
 	return result;
 }
 
