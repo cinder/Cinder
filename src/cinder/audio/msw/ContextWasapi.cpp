@@ -391,7 +391,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 
 		initializeSucceeded = tryInit( requestedDuration, wfx.Format, immDevice.get(), eventDriven );
 		if( initializeSucceeded ) {
-			LOG_AUDIOCLIENT( "Initialize() succeeded with WAVEFORMATEX: " << waveFormatToString( wfx ) );
+			LOG_AUDIOCLIENT( "Initialize() succeeded with requested duration: " << requestedDuration / 10000.0 << "ms, WAVEFORMATEX: " << waveFormatToString( wfx ) );
 
 			mNumChannels = wfx.Format.nChannels;
 			mSampleType = supportedFormat.first.mSampleType;

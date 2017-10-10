@@ -20,8 +20,8 @@
 #include "../../../../samples/_audio/common/AudioDrawUtils.h"
 
 const bool USE_SECONDARY_SCREEN = true;
-const bool WASAPI_EXCLUSIVE_MODE = true;
-const bool SET_FRAMES_PER_BLOCK = true;
+const bool WASAPI_EXCLUSIVE_MODE = false;
+const bool SET_FRAMES_PER_BLOCK = false;
 const size_t FRAMES_PER_BLOCK = 160;
 const double RECORD_SECONDS = 4.0;
 
@@ -102,9 +102,9 @@ void DeviceTestApp::setup()
 //	setOutputDevice( audio::Device::getDefaultOutput(), 1 );
 	//setOutputDevice( audio::Device::findOutputByName( "1-2 (OCTA-CAPTURE)" ) );
 
-	//setInputDevice( audio::Device::getDefaultInput() );
+	setInputDevice( audio::Device::getDefaultInput() );
 	//setInputDevice( audio::Device::getDefaultInput(), 1 );
-	setupRolandOctaCaptureInputMonitoring();
+	//setupRolandOctaCaptureInputMonitoring();
 
 	//setupMultiChannelDevice( "PreSonus FIREPOD (1431)" );
 	//setupMultiChannelDeviceWindows( "MOTU Analog (MOTU Audio Wave for 64 bit)" );
@@ -114,10 +114,10 @@ void DeviceTestApp::setup()
 	mGain >> mRecorder;
 
 	setupUI();
-	//setupTest( mTestSelector.currentSection() );
+//	setupTest( mTestSelector.currentSection() );
 
 //	setupInputPulled();
-//	setupIOClean();
+	setupIOClean();
 
 	PRINT_GRAPH( ctx );
 	CI_LOG_I( "Context samplerate: " << ctx->getSampleRate() << ", frames per block: " << ctx->getFramesPerBlock() );
