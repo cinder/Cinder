@@ -73,7 +73,7 @@ class SourceFileOggVorbis : public SourceFile {
 //! TargetFile implementation for encoding ogg vorbis files.
 class TargetFileOggVorbis : public TargetFile {
   public:
-	TargetFileOggVorbis( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType );
+	TargetFileOggVorbis( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, size_t sampleRateNative );
 	virtual ~TargetFileOggVorbis();
 
 	void performWrite( const Buffer *buffer, size_t numFrames, size_t frameOffset ) override;

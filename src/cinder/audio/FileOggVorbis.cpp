@@ -192,15 +192,15 @@ long SourceFileOggVorbis::tellFn( void *datasource )
 // TargetFileOggVorbis
 // ----------------------------------------------------------------------------------------------------
 
-TargetFileOggVorbis::TargetFileOggVorbis( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType )
-	: cinder::audio::TargetFile( sampleRate, numChannels, sampleType ), mDataTarget( dataTarget )
+TargetFileOggVorbis::TargetFileOggVorbis( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, size_t sampleRateNative )
+	: cinder::audio::TargetFile( sampleRate, numChannels, sampleType, sampleRateNative ), mDataTarget( dataTarget )
 {
 	CI_ASSERT( mDataTarget );
 	mStream = mDataTarget->getStream();
 
 	vorbis_info_init( &mVorbisInfo );
 
-	auto status = vorbis_encode_init_vbr( &mVorbisInfo, getNumChannels(), getSampleRate(), mVorbisBaseQuality );
+	auto status = vorbis_encode_init_vbr( &mVorbisInfo, getNumChannels(), getSampleRateNative(), mVorbisBaseQuality );
 	if ( status ) {
 		throw AudioFormatExc( string( "TargetFileOggVorbis: invalid quality setting." ) );
 	}
