@@ -30,7 +30,6 @@
 #include <limits>
 #include <boost/scoped_array.hpp>
 #include <iostream>
-#include <boost/preprocessor/seq/for_each.hpp>
 using std::string;
 
 namespace cinder {
@@ -792,7 +791,7 @@ StreamExc::StreamExc( const std::string &fontName ) throw()
 
 /////////////////////////////////////////////////////////////////////
 
-#define STREAM_PROTOTYPES(r,data,T)\
+#define STREAM_PROTOTYPES(T)\
 	template void OStream::write<T>( T t ); \
 	template void OStream::writeEndian<T>( T t, uint8_t endian ); \
 	template void OStream::writeBig<T>( T t ); \
@@ -802,7 +801,17 @@ StreamExc::StreamExc( const std::string &fontName ) throw()
 	template void IStreamCinder::readBig<T>( T *t ); \
 	template void IStreamCinder::readLittle<T>( T *t );
 
-BOOST_PP_SEQ_FOR_EACH( STREAM_PROTOTYPES, ~, (int8_t)(uint8_t)(int16_t)(uint16_t)(int32_t)(uint32_t)(int64_t)(uint64_t)(float)(double) )
+STREAM_PROTOTYPES(int8_t)
+STREAM_PROTOTYPES(uint8_t)
+STREAM_PROTOTYPES(int16_t)
+STREAM_PROTOTYPES(uint16_t)
+STREAM_PROTOTYPES(int32_t)
+STREAM_PROTOTYPES(uint32_t)
+STREAM_PROTOTYPES(int64_t)
+STREAM_PROTOTYPES(uint64_t)
+STREAM_PROTOTYPES(float)
+STREAM_PROTOTYPES(double)
+
 
 #if defined( CINDER_UWP )
 	#pragma warning(pop) 

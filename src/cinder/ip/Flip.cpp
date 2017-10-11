@@ -22,8 +22,6 @@
 
 #include "cinder/ip/Flip.h"
 
-#include <boost/preprocessor/seq.hpp>
-
 using namespace std;
 
 namespace cinder { namespace ip {
@@ -216,12 +214,15 @@ void flipHorizontal( SurfaceT<T> *surface )
 	}
 }
 
-#define flip_PROTOTYPES(r,data,T)\
+#define flip_PROTOTYPES(T)\
 	template CI_API void flipVertical<T>( SurfaceT<T> *surface );\
 	template CI_API void flipVertical<T>( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface );\
 	template CI_API void flipVertical<T>( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel );\
 	template CI_API void flipHorizontal<T>( SurfaceT<T> *surface );
 	
-BOOST_PP_SEQ_FOR_EACH( flip_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
+	
+flip_PROTOTYPES(uint8_t)
+flip_PROTOTYPES(uint16_t)
+flip_PROTOTYPES(float)
 
 } } // namespace cinder::ip

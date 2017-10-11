@@ -24,8 +24,6 @@
 #include "cinder/ChanTraits.h"
 
 #include <stdlib.h>
-#include <boost/preprocessor/seq.hpp>
-
 
 namespace cinder { namespace ip {
 
@@ -351,7 +349,7 @@ void AdaptiveThresholdT<T>::calculate( int32_t windowSize, float percentageDelta
 template class CI_API AdaptiveThresholdT<uint8_t>;
 template class CI_API AdaptiveThresholdT<float>;
 
-#define threshold_PROTOTYPES(r,data,T)\
+#define threshold_PROTOTYPES(T)\
 	template CI_API void threshold( SurfaceT<T> *surface, T value ); \
 	template CI_API void threshold( SurfaceT<T> *surface, T value, const Area &area ); \
 	template CI_API void threshold( const SurfaceT<T> &srcSurface, T value, SurfaceT<T> *dstSurface );\
@@ -361,7 +359,6 @@ template class CI_API AdaptiveThresholdT<float>;
 	template CI_API void adaptiveThresholdZero( ChannelT<T> *channel, int32_t windowSize ); \
 	template CI_API void adaptiveThresholdZero( const ChannelT<T> &srcChannel, int32_t windowSize, ChannelT<T> *dstChannel );
 
-BOOST_PP_SEQ_FOR_EACH( threshold_PROTOTYPES, ~, (uint8_t) )
-
+threshold_PROTOTYPES(uint8_t)
 
 } } // namespace cinder::ip
