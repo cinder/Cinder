@@ -40,49 +40,63 @@ class ConcurrentCircularBuffer : private Noncopyable {
 	typedef typename boost::call_traits<value_type>::param_type param_type;
 
 	explicit ConcurrentCircularBuffer( size_type capacity )
-		: mNumUnread( 0 ), mContainer( capacity ), mCanceled( false )
+		: mNumUnread( 0 ), mNumWaitingNotEmpty( 0 ), mNumWaitingNotFull( 0 ), mContainer( capacity ), mCanceled( false )
 	{}
 
-	void pushFront( param_type item ) {
+	//! Attempts to push \a item to the front of the buffer and waits for an availability. Returns success as true or false.
+	bool pushFront( param_type item ) {
 		// param_type represents the "best" way to pass a parameter of type value_type to a method
 		std::unique_lock<std::mutex> lock( mMutex );
 		while( ! is_not_full_impl() && ! mCanceled ) {
+			mNumWaitingNotFull++;
 			mNotFullCond.wait( lock );
+			mNumWaitingNotFull--;
 		}
-		if( mCanceled )
-			return;
+		if( mCanceled ) {
+			if( mNumWaitingNotEmpty == 0 && mNumWaitingNotFull == 0 )
+				mCancelCond.notify_all();
+			return false;
+		}
 		mContainer.push_front( item );
 		++mNumUnread;
 		mNotEmptyCond.notify_one();
+		return true;
 	}
 
-	void popBack(value_type* pItem) {
+	//! Attempts to pop an item from the back of the buffer and waits for an availability. Returns success as true or false.
+	bool popBack(value_type* pItem) {
 		std::unique_lock<std::mutex> lock( mMutex );
 		while( ! is_not_empty_impl() && ! mCanceled ) {
+			mNumWaitingNotEmpty++;
 			mNotEmptyCond.wait( lock );
+			mNumWaitingNotEmpty--;
 		}
-		if( mCanceled )
-			return;
+		if( mCanceled ) {
+			if( mNumWaitingNotEmpty == 0 && mNumWaitingNotFull == 0 )
+				mCancelCond.notify_all();		
+			return false;
+		}
 		*pItem = mContainer[--mNumUnread];
 		mNotFullCond.notify_one();
+		return true;
 	}
 
 	//! Attempts to push \a item to the front of the buffer, but does not wait for an availability. Returns success as true or false.
 	bool tryPushFront( param_type item ) {
 		// param_type represents the "best" way to pass a parameter of type value_type to a method
 		std::lock_guard<std::mutex> lock( mMutex );
-		if( ! is_not_full_impl() )
+		if( ! is_not_full_impl() || mCanceled )
 			return false;
 		mContainer.push_front( item );
 		++mNumUnread;
-		mNotEmptyCond.notify_one();	
+		mNotEmptyCond.notify_one();
 		return true;
 	}
 
 	//! Attempts to pop an item from the back of the buffer, but does not wait for an availability. Returns success as true or false.
 	bool tryPopBack( value_type* pItem ) {
 		std::lock_guard<std::mutex> lock( mMutex );
-		if( ! is_not_empty_impl() )
+		if( ! is_not_empty_impl() || mCanceled )
 			return false;
 		*pItem = mContainer[--mNumUnread];
 		mNotFullCond.notify_one();
@@ -99,11 +113,20 @@ class ConcurrentCircularBuffer : private Noncopyable {
 		return is_not_full_impl();
 	}
 	
+	//! Signals all threads that are waiting to push to or pop from the queue.
 	void cancel() {
-		std::lock_guard<std::mutex> lock( mMutex );
+		std::unique_lock<std::mutex> lock( mMutex );
+
 		mCanceled = true;
-		mNotFullCond.notify_all();
-		mNotEmptyCond.notify_all();
+		mNotFullCond.notify_all(); // atomic, never throws
+		mNotEmptyCond.notify_all(); // atomic, never throws
+
+		// Wait for all threads to cancel.
+		if( ! ( mNumWaitingNotEmpty == 0 && mNumWaitingNotFull == 0 ) )
+			mCancelCond.wait( lock );
+
+		// Done.
+		mCanceled = false;
 	}
 	
 	//! Returns the number of items the buffer can hold
@@ -124,7 +147,12 @@ class ConcurrentCircularBuffer : private Noncopyable {
 	mutable std::mutex		mMutex;
 	std::condition_variable	mNotEmptyCond;
 	std::condition_variable	mNotFullCond;
+	std::condition_variable	mCancelCond;
 	bool					mCanceled;
+
+	// These don't need to be atomic, as they are also guarded by the mutex.
+	int						mNumWaitingNotEmpty;
+	int						mNumWaitingNotFull;
 };
 
 } // namespace cinder
