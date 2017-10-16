@@ -65,7 +65,7 @@ std::map<std::string, std::string> getEnvironmentVariables()
 	return app::Platform::get()->getEnvironmentVariables();
 }
 
-std::vector<std::string> split(std::string str, char separator, bool compress )
+std::vector<std::string> split(const std::string& str, char separator, bool compress )
 {
 	return split( str, string( 1, separator ), compress );
 }
