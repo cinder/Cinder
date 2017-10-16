@@ -70,7 +70,7 @@ std::vector<std::string> split(std::string str, char separator, bool compress )
 	return split( str, string( 1, separator ), compress );
 }
 
-std::vector<std::string> split(std::string str, const std::string &separators, bool compress )
+std::vector<std::string> split(const std::string& str, const std::string &separators, bool compress )
 {
 	std::vector<std::string> result;
 	
