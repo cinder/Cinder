@@ -102,4 +102,33 @@ TEST_CASE( "Utilities" )
 		REQUIRE( str1.size() == str2.size() );
 		REQUIRE( str1 == str2 );
 	}
+    
+    SECTION( "split string " )
+    {
+        // one separator type
+        string str1 = "one two three four";
+        std::vector<string> resultStr1{"one", "two", "three", "four"};
+        REQUIRE( ci::split(str1, ' ', false) == resultStr1 );
+        
+        // multiple separators
+        string str2 = "one,two---three four";
+        std::vector<string> resultStr2{"one", "two", "", "", "three", "four"};
+        REQUIRE( ci::split(str2, ",- ", false) == resultStr2 );
+        
+        
+        // one separator, compress = true
+        string str3 = "one,two,three,four";
+        std::vector<string> resultStr3{"one", "two", "three", "four"};
+        REQUIRE( ci::split(str3, ',', true) == resultStr3 );
+        
+        
+        // multiple separators, compress = true
+        string str4 = "one,two---three four";
+        std::vector<string> resultStr4{"one", "two", "three", "four"};
+        REQUIRE( ci::split(str4, ",- ", true) == resultStr4 );
+        
+    }
+    
+
+    
 }

@@ -65,18 +65,16 @@ std::map<std::string, std::string> getEnvironmentVariables()
 	return app::Platform::get()->getEnvironmentVariables();
 }
 
-std::vector<std::string> split(const std::string& str, char separator, bool compress )
+std::vector<std::string> split(const std::string &str, char separator, bool compress )
 {
 	return split( str, string( 1, separator ), compress );
 }
 
-std::vector<std::string> split(const std::string& str, const std::string &separators, bool compress )
+std::vector<std::string> split(const std::string &str, const std::string &separators, bool compress )
 {
 	std::vector<std::string> result;
 	
-	
 	std::size_t searchPrevPos = 0, searchPos;
-	
 	while ((searchPos = str.find_first_of( separators, searchPrevPos )) != std::string::npos)
 	{
 		
