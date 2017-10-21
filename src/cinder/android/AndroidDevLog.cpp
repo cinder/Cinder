@@ -26,9 +26,9 @@
 #include <android/log.h>
 #include <sstream>
 
-#define DBG_APP_LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "cinder_app", __VA_ARGS__))
-#define DBG_APP_LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder_app", __VA_ARGS__))
-#define DBG_APP_LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder_app", __VA_ARGS__))
+#define DBG_APP_LOGI(text) ((void)__android_log_print(ANDROID_LOG_INFO, "cinder_app", "%s", text))
+#define DBG_APP_LOGW(text) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder_app", "%s", text))
+#define DBG_APP_LOGE(text) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder_app", "%s", text))
 
 namespace cinder { namespace android {
 
