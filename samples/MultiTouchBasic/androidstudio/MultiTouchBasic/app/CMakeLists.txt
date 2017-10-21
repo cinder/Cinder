@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.4.1)
+
+add_subdirectory(${CINDER_DIR}/proj/android ./buildCinder)
+
+add_library( MultiTouchApp SHARED
+    ../../../src/MultiTouchBasicApp.cpp
+)
+
+target_include_directories( MultiTouchApp PRIVATE
+    ${CINDER_DIR}/include
+    ../../../include
+)
+
+
+target_link_libraries( MultiTouchApp
+    cinder
+    ${CINDER_DIR}/lib/android/android-${NDK_PLATFORM}/${ANDROID_ABI}/libboost_system.a
+    ${CINDER_DIR}/lib/android/android-${NDK_PLATFORM}/${ANDROID_ABI}/libboost_filesystem.a
+    log android EGL GLESv3 OpenSLES z atomic
+)
