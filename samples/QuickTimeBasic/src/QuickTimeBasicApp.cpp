@@ -86,14 +86,16 @@ void QuickTimeSampleApp::fileDrop( FileDropEvent event )
 
 void QuickTimeSampleApp::update()
 {
-	if( mMovie )
-		mFrameTexture = mMovie->getTexture();
+	if( mMovie ) {
 
-	static bool sPrintedDone = false;
-	if( ! sPrintedDone && mMovie->isDone() ) {
-		console() << "Done Playing" << std::endl;
-		sPrintedDone = true;
-	}
+        mFrameTexture = mMovie->getTexture();
+
+        static bool sPrintedDone = false;
+        if (!sPrintedDone && mMovie->isDone()) {
+            console() << "Done Playing" << std::endl;
+            sPrintedDone = true;
+        }
+    }
 }
 
 void QuickTimeSampleApp::draw()
