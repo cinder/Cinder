@@ -45,7 +45,6 @@
 		#define CINDER_RESOURCE( LOCALPREFIX, PATH, ID, TYPE ) \
 		QUOTE_PATH(LOCALPREFIX##PATH),ID,#TYPE
 	#endif
-#elif ! defined(__ANDROID__)
-	// MAC or iOS RESOURCE: lives in app bundle. Linux RESOURCE: lives in folder named 'resources` next to executable
+#else
 	#define CINDER_RESOURCE( LOCALPREFIX, PATH, ID, TYPE ) #PATH
 #endif
