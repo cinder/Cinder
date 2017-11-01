@@ -1,13 +1,12 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-add_subdirectory(${CINDER_DIR}/proj/android ./buildCinder)
+add_subdirectory(${CINDER_DIR}/proj/android ${CINDER_DIR}/buildCinderForAndroid)
 
 add_library( QuickTimeBasic SHARED
-    ../../../src/QuickTimeBasicApp.cpp
+		../../../src/QuickTimeBasicApp.cpp
 )
 
 target_include_directories( QuickTimeBasic PRIVATE
-    ${CINDER_DIR}/include
     ${CINDER_DIR}/include
     ../../../include
 )

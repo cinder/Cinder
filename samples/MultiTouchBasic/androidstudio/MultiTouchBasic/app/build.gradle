@@ -1,22 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 21
     defaultConfig {
         applicationId "org.libcinder.samples.multitouchbasic"
         minSdkVersion 19
-        targetSdkVersion 25
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
-                arguments "-DCINDER_DIR=${projectDir}/../../../../..",
-                "-DNDK_PLATFORM=21", 
-                "-DNDK_STL=gnustl"
-                cppFlags "-std=c++11 -fexceptions -frtti"
-            }
+				arguments "-DCINDER_DIR=${projectDir}/../../../../..",
+				"-DNDK_PLATFORM=21",
+				"-DNDK_STL=gnustl"
+				cppFlags "-std=c++11 -fexceptions -frtti"            }
         }
         ndk {
             abiFilters 'armeabi-v7a'
@@ -33,19 +31,17 @@ android {
             path "CMakeLists.txt"
         }
     }
-
     sourceSets {
         main {
             assets.srcDirs = ["${projectDir}/../../../assets"]
         }
     }
-
 }
 
 repositories {
     jcenter()
     flatDir {
-        dirs "${projectDir}/../../../../../lib/android"
+		dirs "${projectDir}/../../../../../lib/android/"
     }
 }
 
@@ -54,7 +50,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.1.1'
+    compile 'com.android.support:appcompat-v7:21.0.0'
     testCompile 'junit:junit:4.12'
 
     debugCompile 'org.libcinder:libcinder-debug:1.0@aar'

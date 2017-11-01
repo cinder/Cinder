@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-add_subdirectory(${CINDER_DIR}/proj/android ./buildCinder)
+add_subdirectory(${CINDER_DIR}/proj/android ${CINDER_DIR}/buildCinderForAndroid)
 
 add_library( MultiTouchApp SHARED
-    ../../../src/MultiTouchBasicApp.cpp
+		../../../src/MultiTouchBasicApp.cpp
 )
 
 target_include_directories( MultiTouchApp PRIVATE
