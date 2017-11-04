@@ -1,9 +1,13 @@
+
+
 apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "org.libcinder.samples.shadowmappingbasic"
+
         minSdkVersion 19
         targetSdkVersion 21
         versionCode 1
@@ -14,7 +18,8 @@ android {
 				arguments "-DCINDER_DIR=${projectDir}/../../../../../..",
 				"-DNDK_PLATFORM=21",
 				"-DNDK_STL=gnustl"
-				cppFlags "-std=c++11 -fexceptions -frtti"            }
+				cppFlags "-std=c++11 -fexceptions -frtti"
+            }
         }
         ndk {
             abiFilters 'armeabi-v7a'
@@ -42,17 +47,13 @@ repositories {
     jcenter()
     flatDir {
 		dirs "${projectDir}/../../../../../../lib/android/"
+
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
     compile 'com.android.support:appcompat-v7:21.0.0'
-    testCompile 'junit:junit:4.12'
-
     debugCompile 'org.libcinder:libcinder-debug:1.0@aar'
     releaseCompile 'org.libcinder:libcinder-release:1.0@aar'
 }
+
