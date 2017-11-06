@@ -374,7 +374,9 @@ if( NDK_TOOLCHAIN_CLANG )
     set( CMAKE_STRIP        ${NKD_TOOLCHAIN_ROOT}/bin/ndk-strip CACHE FILEPATH "" FORCE )
 endif()
 
-#get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE )
+#fix windows paths
+string (REPLACE "\\" "/" CINDER_DIR ${CINDER_DIR})
+
 set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR ${CINDER_DIR}/boost )
