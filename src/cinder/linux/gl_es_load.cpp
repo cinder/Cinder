@@ -56,7 +56,7 @@ static void _dbg_out( const std::string& s )
 {
 #if defined( _GL_ES_LOAD_DEBUG_ )
   #if defined( CINDER_ANDROID )
-	__android_log_print( ANDROID_LOG_INFO, "cinder:gl_es_load", s.c_str() );
+	__android_log_print( ANDROID_LOG_INFO, "cinder:gl_es_load", "s", s.c_str() );
   #elif defined( CINDER_LINUX )
 	std::cout << s << std::endl; 
   #endif

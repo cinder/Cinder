@@ -471,7 +471,7 @@ public:
 			case LEVEL_FATAL:	prio = ANDROID_LOG_FATAL; 	break;
 		}
 
-		__android_log_print( prio, TAG, ss.str().c_str() );
+		__android_log_print( prio, TAG, "%s", ss.str().c_str() );
 	}
 };
 

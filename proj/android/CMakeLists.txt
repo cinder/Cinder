@@ -6,47 +6,21 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 set( CMAKE_C_COMPILER_WORKS   1 )
 set( CMAKE_CXX_COMPILER_WORKS 1 )
 
-if(NOT WIN32)
-  string(ASCII 27 Esc)
-  set(ColorReset    "${Esc}[m"     )
-  set(ColorBold     "${Esc}[1m"    )
-  set(Red           "${Esc}[31m"   )
-  set(Green         "${Esc}[32m"   )
-  set(Yellow        "${Esc}[33m"   )
-  set(Blue          "${Esc}[34m"   )
-  set(Magenta       "${Esc}[35m"   )
-  set(Cyan          "${Esc}[36m"   )
-  set(White         "${Esc}[37m"   )
-  set(BoldRed       "${Esc}[1;31m" )
-  set(BoldGreen     "${Esc}[1;32m" )
-  set(BoldYellow    "${Esc}[1;33m" )
-  set(BoldBlue      "${Esc}[1;34m" )
-  set(BoldMagenta   "${Esc}[1;35m" )
-  set(BoldCyan      "${Esc}[1;36m" )
-  set(BoldWhite     "${Esc}[1;37m" )
-endif()
 
 # Default values
 set( DEFAULT_NDK_PLATFORM 21    )
 set( DEFAULT_NDK_ARCH     "armeabi-v7a" )
 
-# ------------------------------------------------------------------------
-# NDK_ROOT
-# ------------------------------------------------------------------------
-# If NDK_ROOT as not passed in as parameter - check environment variable.
-if( NOT NDK_ROOT )
-    if( DEFINED ENV{NDK_ROOT} )
-        set( NDK_ROOT $ENV{NDK_ROOT} )
-    endif()
-endif()
 
 if( "" STREQUAL "${CMAKE_BUILD_TYPE}" )
     set( CMAKE_BUILD_TYPE "Debug" CACHE FILEPATH "" FORCE )
 endif()
+
+
 message( "${BoldGreen}CMake Build Type: ${CMAKE_BUILD_TYPE} ${ColorReset}" )
 
 # See if we can find the NDK located next to the Cinder directory
-if( NOT NDK_ROOT )
+if( NOT ANDROID_NDK )
     # Most recent first
     set( _supported_ndks 
         "android-ndk"
@@ -97,18 +71,18 @@ if( NOT NDK_ROOT )
             if( IS_DIRECTORY "${ndk_dir}" )
                 message( "${BoldGreen}Detected NDK, version: ${val}, at ${ndk_dir}${ColorReset}" )
                 message( "" )
-                set( NDK_ROOT "${ndk_dir}" )            
+                set( ANDROID_NDK "${ndk_dir}" )            
                 break()
             endif() 
         endforeach()
     endif()
 endif()
 
-# Bail if we haven't set NDK_ROOT
-if( NOT NDK_ROOT )
+# Bail if we haven't set ANDROID_NDK
+if( NOT ANDROID_NDK )
     set( _suggestedDir ${CMAKE_CURRENT_SOURCE_DIR}/../../android-ndk )
     get_filename_component( _suggestedDir "${_suggestedDir}" ABSOLUTE )
-    message( FATAL_ERROR "${BoldRed}NDK_ROOT not set! Set using env var or -DNDK_ROOT=<path to NDK> or install (r10d or later) to ${_suggestedDir} ${ColorReset}" )
+    message( FATAL_ERROR "${BoldRed}ANDROID_NDK not set! Set using env var or -DANDROID_NDK=<path to NDK> or install (r10d or later) to ${_suggestedDir} ${ColorReset}" )
 endif()
 # ------------------------------------------------------------------------
 
@@ -135,7 +109,7 @@ endif()
 # NDK_ARCH
 # ------------------------------------------------------------------------
 if( NOT NDK_ARCH )
-    set( NDK_ARCH ${DEFAULT_NDK_ARCH} )
+    set( NDK_ARCH ${ANDROID_ABI} )
 endif()
 
 set( _supported_archs "armeabi" "armeabi-v7a" "arm64-v8a" "x86" "x86_64" "mips" "mips64" )
@@ -145,7 +119,7 @@ if( ${_index} LESS 0 )
 endif()
 
 # -- log to console --
-message( "${BoldBlue}NDK_ROOT     : ${NDK_ROOT}${ColorReset}" )
+message( "${BoldBlue}ANDROID_NDK     : ${ANDROID_NDK}${ColorReset}" )
 message( "${BoldBlue}NDK_PLATFORM : ${NDK_PLATFORM}${ColorReset}" )
 message( "${BoldBlue}NDK_ARCH     : ${NDK_ARCH}${ColorReset}" )
 if( NDK_GLES2 )
@@ -295,44 +269,44 @@ endif()
 if( "gnustl" STREQUAL "${NDK_STL}" )
     if( "gcc48" STREQUAL "${NDK_TOOLCHAIN}" )
         include_directories( 
-            ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/include 
-            ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/include/backward
+            ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.8/include 
+            ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.8/include/backward
         )
         # Architecture
         if( "armeabi" STREQUAL "${NDK_ARCH}" )
-            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi/include )
+            include_directories( ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi/include )
         elseif( "armeabi-v7a" STREQUAL "${NDK_ARCH}" )
-            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/include )
+            include_directories( ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/include )
         elseif( "x86" STREQUAL "${NDK_ARCH}" )
-            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/x86/include )
+            include_directories( ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.8/libs/x86/include )
         elseif( "mips" STREQUAL "${NDK_ARCH}" )
-            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/mips/include )
+            include_directories( ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.8/libs/mips/include )
         endif()
     elseif( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         include_directories( 
-            ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/include 
-            ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/include/backward
+            ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/include 
+            ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/include/backward
         )
         # Architecture
         if( "armeabi" STREQUAL "${NDK_ARCH}" )
-            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi/include )
+            include_directories( ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi/include )
         elseif( "armeabi-v7a" STREQUAL "${NDK_ARCH}" )
-            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include )
+            include_directories( ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include )
         elseif( "arm64-v8a" STREQUAL "${NDK_ARCH}" )
-            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/arm64-v8a/include )
+            include_directories( ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/libs/arm64-v8a/include )
         elseif( "x86" STREQUAL "${NDK_ARCH}" )
-            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/x86/include )
+            include_directories( ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/libs/x86/include )
         elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
-            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/x86_64/include )
+            include_directories( ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/libs/x86_64/include )
         elseif( "mips" STREQUAL "${NDK_ARCH}" )
-            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips/include )
+            include_directories( ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips/include )
         elseif( "mips64" STREQUAL "${NDK_ARCH}" )
-            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips64/include )
+            include_directories( ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips64/include )
         endif()
     endif()
 elseif( "libc++" STREQUAL "${NDK_STL}" )
     include_directories( 
-        ${NDK_ROOT}/sources/cxx-stl/llvm-libc++/libcxx/include
+        ${ANDROID_NDK}/sources/cxx-stl/llvm-libc++/libcxx/include
     )
 else()
     message( FATAL_ERROR "${BoldRed}Unsupported STL library ${NDK_STL}${ColorReset}" )
@@ -351,7 +325,7 @@ if( NOT NDK_TOOLCHAIN_HOST )
 endif()
 
 # Toolchain prefix
-set( NKD_TOOLCHAIN_ROOT "${NDK_ROOT}/toolchains/${NDK_TOOLCHAIN_DIR}/prebuilt/${NDK_TOOLCHAIN_HOST}" )
+set( NKD_TOOLCHAIN_ROOT "${ANDROID_NDK}/toolchains/${NDK_TOOLCHAIN_DIR}/prebuilt/${NDK_TOOLCHAIN_HOST}" )
 message( "${BoldBlue}NKD_TOOLCHAIN_ROOT : ${NKD_TOOLCHAIN_ROOT}${ColorReset}" )
 if( NOT NDK_TOOLCHAIN_CLANG )
     message( "${BoldBlue}NDK_TOOLCHAIN_PREFIX : ${NDK_TOOLCHAIN_PREFIX}${ColorReset}" )
@@ -361,17 +335,17 @@ message( "" )
 # sysroot
 #if( NOT NDK_TOOLCHAIN_CLANG)
     if(("armeabi" STREQUAL "${NDK_ARCH}") OR ("armeabi-v7a" STREQUAL "${NDK_ARCH}"))
-        set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-arm" )
+        set( NDK_SYSROOT "${ANDROID_NDK}/platforms/${NDK_PLATFORM_DIR}/arch-arm" )
     elseif( "arm64-v8a" STREQUAL "${NDK_ARCH}" )
-        set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-arm64" )
+        set( NDK_SYSROOT "${ANDROID_NDK}/platforms/${NDK_PLATFORM_DIR}/arch-arm64" )
     elseif( "x86" STREQUAL "${NDK_ARCH}" )
-        set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-x86" )
+        set( NDK_SYSROOT "${ANDROID_NDK}/platforms/${NDK_PLATFORM_DIR}/arch-x86" )
     elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
-        set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-x86_64" )
+        set( NDK_SYSROOT "${ANDROID_NDK}/platforms/${NDK_PLATFORM_DIR}/arch-x86_64" )
     elseif( "mips" STREQUAL "${NDK_ARCH}" )
-        set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-mips" )
+        set( NDK_SYSROOT "${ANDROID_NDK}/platforms/${NDK_PLATFORM_DIR}/arch-mips" )
     elseif( "mips64" STREQUAL "${NDK_ARCH}" )
-        set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-mips64" )
+        set( NDK_SYSROOT "${ANDROID_NDK}/platforms/${NDK_PLATFORM_DIR}/arch-mips64" )
     endif()
     #
     if( NOT NDK_SYSROOT )
@@ -396,23 +370,18 @@ if( NDK_TOOLCHAIN_CLANG )
     set( CMAKE_LINKER       ${NKD_TOOLCHAIN_ROOT}/bin/clang++ 	CACHE FILEPATH "" FORCE )
     set( CMAKE_NM           ${NKD_TOOLCHAIN_ROOT}/bin/          CACHE FILEPATH "" FORCE )
     #set( CMAKE_RANLIB       ${NKD_TOOLCHAIN_ROOT}/bin/llvm-ar   CACHE FILEPATH "" FORCE )
-    set( CMAKE_RANLIB       ${NDK_ROOT}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ranlib   CACHE FILEPATH "" FORCE )
+    set( CMAKE_RANLIB       ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ranlib   CACHE FILEPATH "" FORCE )
     set( CMAKE_STRIP        ${NKD_TOOLCHAIN_ROOT}/bin/ndk-strip CACHE FILEPATH "" FORCE )
-else()
-    set( CMAKE_C_COMPILER   ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-gcc    CACHE FILEPATH "" FORCE )
-    set( CMAKE_CXX_COMPILER ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-g++    CACHE FILEPATH "" FORCE )
-    set( CMAKE_AR           ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-ar     CACHE FILEPATH "" FORCE )
-    set( CMAKE_LINKER       ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-ld     CACHE FILEPATH "" FORCE )
-    set( CMAKE_NM           ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-nm     CACHE FILEPATH "" FORCE )
-    set( CMAKE_RANLIB       ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-ranlib CACHE FILEPATH "" FORCE )
-    set( CMAKE_STRIP        ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-strip  CACHE FILEPATH "" FORCE )
 endif()
 
-get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE )
+#fix windows paths
+string (REPLACE "\\" "/" CINDER_DIR ${CINDER_DIR})
+
 set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR ${CINDER_DIR}/boost )
 
+project( cinder_android )
 
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
 message( "${BoldGreen}CINDER_SRC_DIR: ${CINDER_SRC_DIR}${ColorReset}" )
@@ -429,12 +398,6 @@ message( "${BoldGreen}CMAKE_STRIP       : ${CMAKE_STRIP}${ColorReset}" )
 message( "" )
 message( "${BoldGreen}CMAKE_SYSROOT     : ${CMAKE_SYSROOT}${ColorReset}" ) 
 message( "" )
-
-project( cinder_android )
-
-# Output path
-set( LIBRARY_OUTPUT_PATH ${CINDER_DIR}/lib/android/${NDK_PLATFORM_OUT}/${NKD_ARCH_OUT} )
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH} )
 
 include_directories( 
     ${CINDER_INC_DIR} 
@@ -500,10 +463,10 @@ set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
 
 # CXX_FLAGS
 if( NDK_TOOLCHAIN_CLANG )
-    set( CXX_FLAGS "-gcc-toolchain ${NDK_ROOT}/toolchains/arm-linux-androideabi-4.9/prebuilt/${NDK_TOOLCHAIN_HOST} ${ARCH_FLAGS} -fvisibility=default -std=c++11 -stdlib=libstdc++ -ffunction-sections -funwind-tables -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -no-canonical-prefixes -fomit-frame-pointer -DANDROID -DFT2_BUILD_LIBRARY" )
+    set( CXX_FLAGS "-gcc-toolchain ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.9/prebuilt/${NDK_TOOLCHAIN_HOST} ${ARCH_FLAGS} -fvisibility=default -std=c++11 -stdlib=libstdc++ -ffunction-sections -funwind-tables -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -no-canonical-prefixes -fomit-frame-pointer -DANDROID -DFT2_BUILD_LIBRARY" )
 	include_directories(
-		${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/include
-		${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/${NDK_ARCH}/include
+		${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/include
+		${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/libs/${NDK_ARCH}/include
 	)
 else()
     set( CXX_FLAGS "${ARCH_FLAGS} -fvisibility=default -std=c++11 -DFT2_BUILD_LIBRARY" )
