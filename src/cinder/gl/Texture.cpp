@@ -807,6 +807,15 @@ Texture1dRef Texture1d::create( const void *data, GLenum dataFormat, int width, 
 		return Texture1dRef( new Texture1d( data, dataFormat, width, format ) );
 }
 
+void Texture1d::initMaxMipmapLevel()
+{
+	if( mMaxMipmapLevel == -1 )
+		mMaxMipmapLevel = requiredMipLevels( mWidth, 1, 1 ) - 1;
+#if ! defined( CINDER_GL_ES_2 )
+	glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, mMaxMipmapLevel );
+#endif
+}
+
 Texture1d::Texture1d( GLint width, Format format )
 	: mWidth( width )
 {
@@ -815,8 +824,10 @@ Texture1d::Texture1d( GLint width, Format format )
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 	TextureBase::initParams( format, GL_RGB, GL_UNSIGNED_BYTE );
 
-	ScopedTextureBind tbs( mTarget, mTextureId );
-	env()->allocateTexStorage1d( mTarget, format.mMaxMipmapLevel + 1, mInternalFormat, mWidth, format.isImmutableStorage(), format.getDataType() );
+	if( mMipmapping )
+		initMaxMipmapLevel();
+
+	env()->allocateTexStorage1d( mTarget, mMaxMipmapLevel + 1, mInternalFormat, mWidth, format.isImmutableStorage(), format.getDataType() );
 }
 
 Texture1d::Texture1d( const Surface8u &surface, Format format )
@@ -1730,6 +1741,15 @@ Texture3dRef Texture3d::create( const void *data, GLenum dataFormat, int width, 
 		return Texture3dRef( new Texture3d( data, dataFormat, width, height, depth, format ) );
 }
 
+void Texture3d::initMaxMipmapLevel()
+{
+	if( mMaxMipmapLevel == -1 )
+		mMaxMipmapLevel = requiredMipLevels( mWidth, mHeight, mDepth ) - 1;
+#if ! defined( CINDER_GL_ES_2 )
+	glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, mMaxMipmapLevel );
+#endif
+}
+
 Texture3d::Texture3d( GLint width, GLint height, GLint depth, Format format )
 	: mWidth( width ), mHeight( height ), mDepth( depth )
 {
@@ -1738,8 +1758,10 @@ Texture3d::Texture3d( GLint width, GLint height, GLint depth, Format format )
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 	TextureBase::initParams( format, GL_RGB, GL_UNSIGNED_BYTE );
 
-	ScopedTextureBind tbs( mTarget, mTextureId );
-	env()->allocateTexStorage3d( mTarget, format.mMaxMipmapLevel + 1, mInternalFormat, mWidth, mHeight, mDepth, format.isImmutableStorage() );
+	if( mMipmapping )
+		initMaxMipmapLevel();
+
+	env()->allocateTexStorage3d( mTarget, mMaxMipmapLevel + 1, mInternalFormat, mWidth, mHeight, mDepth, format.isImmutableStorage() );
 }
 
 Texture3d::Texture3d( const void *data, GLenum dataFormat, int width, int height, int depth, Format format )

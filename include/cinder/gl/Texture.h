@@ -459,6 +459,7 @@ class CI_API Texture1d : public TextureBase {
 	Texture1d( const void *data, GLenum dataFormat, int width, Format format );
 
 	void	printDims( std::ostream &os ) const override;
+	void	initMaxMipmapLevel();
 
 	GLint		mWidth;
 };
@@ -693,6 +694,7 @@ class CI_API Texture3d : public TextureBase {
 	Texture3d( const void *data, GLenum dataFormat, int width, int height, int depth, Format format );
 
 	void	printDims( std::ostream &os ) const override;
+	void	initMaxMipmapLevel();
 
 	GLint		mWidth, mHeight, mDepth;
 };
