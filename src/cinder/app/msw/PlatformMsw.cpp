@@ -396,7 +396,7 @@ void app::PlatformMsw::refreshDisplays()
 			DisplayMsw *oldDisplay = reinterpret_cast<DisplayMsw*>( displayIt->get() );
 			if( oldDisplay->mMonitor == newDisplay->mMonitor ) {
 				// found this display; see if anything changed
-				if( ( oldDisplay->mArea != newDisplay->mArea ) || ( oldDisplay->mBitsPerPixel != newDisplay->mBitsPerPixel ) )
+				if( ( oldDisplay->mArea != newDisplay->mArea ) || ( oldDisplay->mBitsPerPixel != newDisplay->mBitsPerPixel ) || ( oldDisplay->mContentScale != newDisplay->mContentScale ) )
 					changedDisplays.push_back( *displayIt );
 				*oldDisplay = *newDisplay;
 				oldDisplay->mVisitedFlag = true;
