@@ -18,7 +18,7 @@ class HighDensityDisplayApp : public App {
 	
 	// This will maintain a list of points which we will draw line segments between
 	PolyLine2f		mPoints;
-	
+
 	gl::Texture2dRef	mLogo;
 	gl::TextureFontRef	mFont;
 };
@@ -31,7 +31,7 @@ void prepareSettings( HighDensityDisplayApp::Settings *settings )
 	settings->setWindowSize( ivec2( 640, 480 ) );
 	settings->setHighDensityDisplayEnabled( true ); // try removing this line
 	settings->setMultiTouchEnabled( false );
-	
+
 	// on iOS we want to make a Window per monitor
 #if defined( CINDER_COCOA_TOUCH )
 	for( auto display : Display::getDisplays() )
