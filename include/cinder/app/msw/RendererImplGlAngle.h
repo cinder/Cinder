@@ -36,12 +36,16 @@ namespace cinder { namespace gl {
 
 namespace cinder { namespace app {
 
+#if defined( CINDER_MSW_DESKTOP )
+class WindowImplMsw;
+#endif
+
 class RendererImplGlAngle : public RendererImplMsw {
  public:
 	RendererImplGlAngle( class RendererGl *renderer );
 
 #if defined( CINDER_MSW_DESKTOP )	
-	bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
+	bool	initialize( WindowImplMsw *windowImpl, RendererRef sharedRenderer );
 #elif defined( CINDER_UWP )
 	bool	initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
 #endif
@@ -52,9 +56,6 @@ class RendererImplGlAngle : public RendererImplMsw {
 	void	swapBuffers() const override;
 	void	makeCurrentContext( bool force = false ) override;
 
-#if defined( CINDER_MSW_DESKTOP )
-	HDC		getDc() const { return mDc; }
-#endif
  protected:
 	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc );
 	
@@ -65,7 +66,7 @@ class RendererImplGlAngle : public RendererImplMsw {
 	EGLDisplay		mDisplay;
 	EGLSurface		mSurface;
 #if defined( CINDER_MSW_DESKTOP )
-	HDC				mDc;
+	WindowImplMsw	*mWindowImpl;
 #endif
 };
 

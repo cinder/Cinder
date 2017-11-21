@@ -34,6 +34,8 @@
 #if defined( CINDER_UWP )
 	#include "cinder/winrt/WinRTUtils.h"
 	#include "angle_windowsstore.h"
+#else
+	#include "cinder/app/msw/AppImplMsw.h"
 #endif
 
 #define DEBUG_GL 1
@@ -58,14 +60,15 @@ RendererImplGlAngle::RendererImplGlAngle( RendererGl *renderer )
 }
 
 #if defined( CINDER_MSW_DESKTOP )
-bool RendererImplGlAngle::initialize( HWND wnd, HDC dc, RendererRef sharedRenderer )
+bool RendererImplGlAngle::initialize( WindowImplMsw *windowImpl, RendererRef sharedRenderer )
 #elif defined( CINDER_UWP )
 bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer )
 #endif
 {
-	mWnd = wnd;
 #if defined( CINDER_MSW_DESKTOP )
-	mDc = dc;
+	mWindowImpl = windowImpl;
+#else
+	mWnd = wnd;
 #endif
 
 	if( sharedRenderer )
@@ -96,7 +99,7 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 		EGL_NONE
 	};
 
-	mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_ANGLE_ANGLE, dc, displayAttributes );
+	mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_ANGLE_ANGLE, mWindowImpl->getDc(), displayAttributes );
 #else
 	const EGLint displayAttributes[] = {
 		EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
@@ -144,7 +147,7 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 		return false;
 
 #if defined( CINDER_MSW_DESKTOP )
-	mSurface = eglCreateWindowSurface( mDisplay, config, wnd, NULL );
+	mSurface = eglCreateWindowSurface( mDisplay, config, mWindowImpl->getHwnd(), NULL );
 #else
 	Windows::Foundation::Collections::PropertySet^ surfaceCreationProperties = ref new Windows::Foundation::Collections::PropertySet();
 	surfaceCreationProperties->Insert( ref new ::Platform::String(EGLNativeWindowTypeProperty), wnd.Get() );
@@ -214,18 +217,20 @@ void RendererImplGlAngle::defaultResize() const
 
 #if defined( CINDER_MSW_DESKTOP )
 	::RECT clientRect;
-	::GetClientRect( mWnd, &clientRect );
+	::GetClientRect( mWindowImpl->getHwnd(), &clientRect );
 	int width = clientRect.right - clientRect.left;
 	int height = clientRect.bottom - clientRect.top;
+	ivec2 sizePt = mWindowImpl->getSize();
 #else
 	float widthf, heightf;
 	winrt::GetPlatformWindowDimensions( mWnd.Get(), &widthf, &heightf );
 	int width = (int)widthf;
 	int height = (int)heightf;
+	ivec2 sizePt( width, height );
 #endif
 
 	gl::viewport( 0, 0, width, height );
-	gl::setMatricesWindow( width, height );
+	gl::setMatricesWindow( sizePt.x, sizePt.y );
 }
 
 void RendererImplGlAngle::swapBuffers() const
