@@ -120,7 +120,7 @@ float Window::getContentScale() const
 	
 #if defined( CINDER_COCOA )
 	return [mImpl getContentScale];
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	return mImpl->getContentScale();
 #else
 	return 1.0f;
