@@ -986,6 +986,11 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_DEVICECHANGE:
 			impl->mAppImpl->mNeedsToRefreshDisplays = true;
 		break;
+		case 0x02E0 /*WM_DPICHANGED*/:
+			if( impl->mAppImpl->setupHasBeenCalled() ) {
+				impl->mAppImpl->mNeedsToRefreshDisplays = true;
+			}
+		break;
 	}
 
 	// unhandled messages To DefWindowProc

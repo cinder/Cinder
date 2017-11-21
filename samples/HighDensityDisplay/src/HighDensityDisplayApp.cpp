@@ -25,9 +25,6 @@ class HighDensityDisplayApp : public App {
 
 void prepareSettings( HighDensityDisplayApp::Settings *settings )
 {
-	auto primaryDisplay = Display::getDisplays()[0];
-	settings->setDisplay( primaryDisplay );
-	//settings->setWindowSize( ivec2( vec2( 640, 480 ) * primaryDisplay->getContentScale() ) );
 	settings->setWindowSize( ivec2( 640, 480 ) );
 	settings->setHighDensityDisplayEnabled( true ); // try removing this line
 	settings->setMultiTouchEnabled( false );
@@ -69,8 +66,6 @@ void HighDensityDisplayApp::displayChange()
 
 void HighDensityDisplayApp::draw()
 {
-console() << getWindowSize() << " " << getWindowContentScale() << std::endl;
-
 	gl::clear( Color( 0.1f, 0.1f, 0.15f ) );
 	gl::enableAlphaBlending();
 

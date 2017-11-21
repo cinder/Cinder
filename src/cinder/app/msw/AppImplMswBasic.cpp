@@ -75,6 +75,10 @@ void AppImplMswBasic::run()
 		if( mNeedsToRefreshDisplays ) {
 			mNeedsToRefreshDisplays = false;
 			PlatformMsw::get()->refreshDisplays();
+			// if this app is high-DPI aware, we need to issue resizes with possible contentScale changes
+			if( getHighDensityDisplayEnabled() )
+				for( auto &window : mWindows )
+					window->resize();
 		}
 
 		// update and draw
