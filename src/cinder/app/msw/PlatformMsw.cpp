@@ -39,8 +39,13 @@
 #include <Shlwapi.h>
 #include <shlobj.h>
 
-
 using namespace std;
+
+namespace {
+	HMODULE sShcoreDll = nullptr;
+	typedef HRESULT(WINAPI* GetDpiForMonitorFn)( HMONITOR hmonitor, DWORD /*MONITOR_DPI_TYPE*/ dpiType, UINT *dpiX, UINT *dpiY );
+	GetDpiForMonitorFn sGetDpiForMonitorFnPtr = nullptr;
+}
 
 namespace cinder { namespace app {
 
@@ -311,8 +316,20 @@ BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC /*hdc*/, LPREC
 	DisplayMsw *newDisplay = new DisplayMsw();
 	newDisplay->mArea = Area( rect->left, rect->top, rect->right, rect->bottom );
 	newDisplay->mMonitor = hMonitor;
-	newDisplay->mContentScale = 1.0f;
 	newDisplay->mBitsPerPixel = getMonitorBitsPerPixel( hMonitor );
+	
+	newDisplay->mContentScale = 1.0f; // default value
+	// dynamic function resoluion for ::GetDpiForMonitor()
+	if( sShcoreDll != (HMODULE)INVALID_HANDLE_VALUE ) {
+		if( ! sGetDpiForMonitorFnPtr )
+			sGetDpiForMonitorFnPtr = (GetDpiForMonitorFn)::GetProcAddress( sShcoreDll, "GetDpiForMonitor" );
+		if( sGetDpiForMonitorFnPtr ) {
+			UINT x, y;
+			HRESULT hr = sGetDpiForMonitorFnPtr( hMonitor, (DWORD)0 /*MDT_Effective_DPI*/, &x, &y );
+			if( SUCCEEDED( hr ) )
+				newDisplay->mContentScale = x / 96.0f;
+		}
+	}
 
 	displaysVector->push_back( DisplayRef( newDisplay ) );
 	return TRUE;
@@ -321,6 +338,21 @@ BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC /*hdc*/, LPREC
 const std::vector<DisplayRef>& app::PlatformMsw::getDisplays()
 {
 	if( ! mDisplaysInitialized ) {
+		// enable DPI awareness on Windows 8.1+
+		if( ! sShcoreDll ) {
+			sShcoreDll = ::LoadLibrary( L"Shcore.dll" );
+			if( ! sShcoreDll )
+				sShcoreDll = (HMODULE)INVALID_HANDLE_VALUE;
+		}
+		
+		if( sShcoreDll ) {
+			typedef HRESULT(WINAPI* SetProcessDpiAwarenessFn)( DWORD /*PROCESS_DPI_AWARNESS*/ value );
+			SetProcessDpiAwarenessFn setProcessDpiAwarenessFnPtr = nullptr;
+			setProcessDpiAwarenessFnPtr = (SetProcessDpiAwarenessFn)::GetProcAddress( sShcoreDll, "SetProcessDpiAwareness" );
+			if( setProcessDpiAwarenessFnPtr )
+				setProcessDpiAwarenessFnPtr( 2 /*PROCESS_PER_MONITOR_DPI_AWARE*/ );
+		}
+
 		::EnumDisplayMonitors( NULL, NULL, DisplayMsw::enumMonitorProc, (LPARAM)&mDisplays );
 	
 		// ensure that the primary display is sDisplay[0]

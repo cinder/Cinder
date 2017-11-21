@@ -23,6 +23,7 @@
 
 #include "cinder/app/msw/RendererImpl2dGdi.h"
 #include "cinder/app/AppBase.h"
+#include "cinder/app/msw/AppImplMsw.h"
 #include "cinder/msw/CinderMsw.h"
 #include "cinder/msw/CinderMswGdiPlus.h"
 #include "cinder/Log.h"
@@ -49,21 +50,21 @@ void RendererImpl2dGdi::swapBuffers() const
 	}
 
 	if( mPaintEvents )
-		::EndPaint( mWnd, &mPaintStruct );
+		::EndPaint( mWindowImpl->getHwnd(), &mPaintStruct );
 	else
-		::ReleaseDC( mWnd, mPaintDc );
+		::ReleaseDC( mWindowImpl->getHwnd(), mPaintDc );
 }
 
 void RendererImpl2dGdi::makeCurrentContext( bool /*force*/ )
 {
 	if( mPaintEvents )
-		mPaintDc = ::BeginPaint( mWnd, &mPaintStruct );
+		mPaintDc = ::BeginPaint( mWindowImpl->getHwnd(), &mPaintStruct );
 	else
-		mPaintDc = ::GetDC( mWnd );
+		mPaintDc = ::GetDC( mWindowImpl->getHwnd() );
 	
 	if( mDoubleBuffer ) {
 		::RECT clientRect;
-		::GetClientRect( mWnd, &clientRect );
+		::GetClientRect( mWindowImpl->getHwnd(), &clientRect );
 		ivec2 windowSize( clientRect.right - clientRect.left, clientRect.bottom - clientRect.top );
 
 		mDoubleBufferDc = ::CreateCompatibleDC( mPaintDc );
@@ -79,9 +80,9 @@ void RendererImpl2dGdi::makeCurrentContext( bool /*force*/ )
 	}
 }
 
-bool RendererImpl2dGdi::initialize( HWND wnd, HDC /*dc*/, RendererRef /*sharedRenderer*/ )
+bool RendererImpl2dGdi::initialize( WindowImplMsw *windowImpl, RendererRef /*sharedRenderer*/ )
 {
-	mWnd = wnd;
+	mWindowImpl = windowImpl;
 	return true;
 }
 
@@ -90,9 +91,9 @@ Surface8u RendererImpl2dGdi::copyWindowContents( const Area &area )
 	// Warning - if you step through this code with a debugger, the image returned
 	// will be of the foreground window (presumably your IDE) instead
 	::RECT clientRect;
-	::GetClientRect( mWnd, &clientRect );
+	::GetClientRect( mWindowImpl->getHwnd(), &clientRect );
 	Area clippedArea = area.getClipBy( Area( clientRect.left, clientRect.top, clientRect.right, clientRect.bottom ) );
-	::HDC hdc = ::GetDC( mWnd );
+	::HDC hdc = ::GetDC( mWindowImpl->getHwnd() );
 	::HDC memDC = ::CreateCompatibleDC( hdc );
 
 	::HBITMAP copyBitmap = ::CreateCompatibleBitmap( hdc, clippedArea.getWidth(), clippedArea.getHeight() );

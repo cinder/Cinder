@@ -33,11 +33,13 @@ namespace cinder { namespace gl {
 
 namespace cinder { namespace app {
 
+class WindowImplMsw;
+
 class RendererImplGlMsw : public RendererImplMsw {
  public:
 	RendererImplGlMsw( class RendererGl *aRenderer );
 	
-	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
+	bool			initialize( WindowImplMsw *windowImpl, RendererRef sharedRenderer );
 	virtual void	prepareToggleFullScreen();
 	virtual void	finishToggleFullScreen();
 	virtual void	kill();
@@ -45,16 +47,14 @@ class RendererImplGlMsw : public RendererImplMsw {
 	virtual void	swapBuffers() const;
 	virtual void	makeCurrentContext( bool force = false );
 
-	HDC				getDc() const { return mDC; }
-
  protected:
 	class RendererGl	*mRenderer;
+	WindowImplMsw		*mWindowImpl;
 	gl::ContextRef		mCinderContext;
 
 	bool		mWasFullScreen;
 	bool		mWasVerticalSynced;
 	HGLRC		mRC;
-	HDC			mDC;
 };
 
 } } // namespace cinder::app

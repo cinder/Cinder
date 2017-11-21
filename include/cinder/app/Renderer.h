@@ -58,6 +58,10 @@
 		class RendererImpl2dCocoaTouchQuartz;
 		class UIView;
 	#endif
+#elif defined( CINDER_MSW )
+	namespace cinder { namespace app {
+		class WindowImplMsw;
+	} } // namespace cinder::app
 #elif defined( CINDER_ANDROID )
 	struct ANativeWindow;
 #elif defined( CINDER_LINUX )
@@ -93,14 +97,14 @@ class CI_API Renderer {
 	virtual void	setFrameSize( int /*width*/, int /*height*/ ) {}
 
 #elif defined( CINDER_MSW_DESKTOP )
-	virtual void setup( HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;
+	virtual void setup( WindowImplMsw *windowImpl, RendererRef sharedRenderer ) = 0;
 
 	virtual void prepareToggleFullScreen() {}
 	virtual void finishToggleFullScreen() {}
 	virtual void kill() {}
 
-	virtual HWND				getHwnd() = 0;
-	virtual HDC					getDc() { return NULL; }
+	virtual HWND				getHwnd() const = 0;
+	virtual HDC					getDc() const = 0;
 #elif defined( CINDER_UWP )
 	virtual void setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) = 0;
 #elif defined( CINDER_ANDROID )
@@ -167,11 +171,12 @@ class CI_API Renderer2d : public Renderer {
 	static Renderer2dRef	create( bool doubleBuffer = true, bool paintEvents = true ) { return Renderer2dRef( new Renderer2d( doubleBuffer, paintEvents ) ); }
 	virtual RendererRef		clone() const { return Renderer2dRef( new Renderer2d( *this ) ); }
 	
-	void setup( HWND wnd, HDC dc, RendererRef sharedRenderer );
+	void setup( WindowImplMsw *windowImpl, RendererRef sharedRenderer );
 	void kill();
 	
-	HWND	getHwnd() { return mWnd; }
-	HDC		getDc();
+	HWND	getHwnd() const;
+	HDC		getDc() const;
+
 
 	void			prepareToggleFullScreen();
 	void			finishToggleFullScreen();
@@ -186,9 +191,8 @@ class CI_API Renderer2d : public Renderer {
  
 	class RendererImpl2dGdi	*mImpl;
 
+	WindowImplMsw	*mWindowImpl;
 	bool			mDoubleBuffer, mPaintEvents;
-	HWND			mWnd;
-	HDC				mDC;
 };
 
 #elif defined( CINDER_ANDROID )
