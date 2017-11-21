@@ -61,6 +61,8 @@ class CI_API PlatformMsw : public Platform {
 
 	std::vector<std::string>	stackTrace() override;
 
+	void setThreadName( const std::string &name ) override;
+
 	const std::vector<DisplayRef>&	getDisplays() override;
 	void							refreshDisplays();
 	//! Returns the Display which corresponds to \a hMonitor. Returns main display on failure.
