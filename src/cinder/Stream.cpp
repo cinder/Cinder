@@ -28,7 +28,6 @@
 
 #include <stdio.h>
 #include <limits>
-#include <boost/scoped_array.hpp>
 #include <iostream>
 using std::string;
 
@@ -42,7 +41,7 @@ namespace cinder {
 template<typename T>
 void OStream::writeBig( T t )
 {
-#ifdef BOOST_BIG_ENDIAN
+#if ! defined( CINDER_LITTLE_ENDIAN )
 	write( t );
 #else
 	t = swapEndian( t );
@@ -53,7 +52,7 @@ void OStream::writeBig( T t )
 template<typename T>
 void OStream::writeLittle( T t )
 {
-#ifdef CINDER_LITTLE_ENDIAN
+#if defined( CINDER_LITTLE_ENDIAN )
 	write( t );
 #else
 	t = swapEndian( t );
@@ -83,7 +82,7 @@ void IStreamCinder::read( fs::path *p )
 template<typename T>
 void IStreamCinder::readBig( T *t )
 {
-#ifdef BOOST_BIG_ENDIAN
+#if ! defined( CINDER_LITTLE_ENDIAN )
 	read( t );
 #else
 	IORead( t, sizeof(T) );
@@ -113,7 +112,7 @@ void IStreamCinder::readFixedString( char *t, size_t size, bool nullTerminate )
 
 void IStreamCinder::readFixedString( std::string *t, size_t size )
 {
-	boost::scoped_array<char> buffer( new char[size+1] );
+	std::unique_ptr<char[]> buffer( new char[size+1] );
 
 	IORead( buffer.get(), size );
 	buffer[size] = 0;

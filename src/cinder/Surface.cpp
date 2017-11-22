@@ -40,8 +40,7 @@
 #include "cinder/ImageIo.h"
 #include "cinder/ip/Fill.h"
 
-#include <boost/type_traits/is_same.hpp>
-
+#include <type_traits>
 
 namespace cinder {
 
@@ -70,13 +69,13 @@ class ImageSourceSurface : public ImageSource {
 		mHeight = surface.getHeight();
 		setColorModel( ImageIo::CM_RGB );
 		setChannelOrder( ImageIo::ChannelOrder( surface.getChannelOrder().getImageIoChannelOrder() ) );
-		if( boost::is_same<T,uint8_t>::value ) {
+		if( std::is_same<T,uint8_t>::value ) {
 			setDataType( ImageIo::UINT8 );
 		}
-		else if( boost::is_same<T,uint16_t>::value ) {
+		else if( std::is_same<T,uint16_t>::value ) {
 			setDataType( ImageIo::UINT16 );
 		}
-		else if( boost::is_same<T,float>::value ) {
+		else if( std::is_same<T,float>::value ) {
 			setDataType( ImageIo::FLOAT32 );
 		}
 		else
@@ -553,11 +552,11 @@ template<typename T>
 ImageTargetSurface<T>::ImageTargetSurface( SurfaceT<T> *aSurface )
 	: ImageTarget(), mSurface( aSurface )
 {
-	if( boost::is_same<T,float>::value )
+	if( std::is_same<T,float>::value )
 		setDataType( ImageIo::FLOAT32 );
-	else if( boost::is_same<T,uint16_t>::value )
+	else if( std::is_same<T,uint16_t>::value )
 		setDataType( ImageIo::UINT16 );
-	else if( boost::is_same<T,uint8_t>::value )
+	else if( std::is_same<T,uint8_t>::value )
 		setDataType( ImageIo::UINT8 );
 	else 
 		throw; // what is this?
