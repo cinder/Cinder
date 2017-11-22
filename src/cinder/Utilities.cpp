@@ -137,6 +137,13 @@ bool asciiCaseEqual( const char *a, const char *b )
 	return result;
 }
 
+std::string trim( const std::string &str )
+{
+	auto wsFront = std::find_if_not( str.begin(), str.end(), [](int c){ return std::isspace(c); } );
+	auto wsBack = std::find_if_not( str.rbegin(), str.rend(),[](int c){ return std::isspace(c); } ).base();
+	return wsBack <= wsFront ? std::string() : std::string( wsFront, wsBack );
+}
+
 void sleep( float milliseconds )
 {
 	app::Platform::get()->sleep( milliseconds );

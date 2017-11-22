@@ -142,7 +142,7 @@ TEST_CASE( "Utilities" )
 	}
     
 	SECTION( "asciiCaseEqual const char*" )
-    {
+	{
 		REQUIRE( ci::asciiCaseEqual( "", "" ) );
 		REQUIRE( ! ci::asciiCaseEqual( "", "A" ) );
 		REQUIRE( ! ci::asciiCaseEqual( "A", "" ) );
@@ -151,5 +151,18 @@ TEST_CASE( "Utilities" )
 		REQUIRE( ci::asciiCaseEqual( "abc", "ABC" ) );
 		REQUIRE( ! ci::asciiCaseEqual( "abc", "abd" ) );
 		REQUIRE( ! ci::asciiCaseEqual( "abc", "abcd" ) );
+	}
+
+	SECTION( "trim(std::string)" )
+	{
+		REQUIRE( ci::trim( "" ) == "" );
+		REQUIRE( ci::trim( "none" ) == "none" );
+		REQUIRE( ci::trim( " one" ) == "one" );
+		REQUIRE( ci::trim( "one " ) == "one" );
+		REQUIRE( ci::trim( " one " ) == "one" );
+		REQUIRE( ci::trim( "two  " ) == "two" );
+		REQUIRE( ci::trim( "  two" ) == "two" );
+		REQUIRE( ci::trim( "  two  " ) == "two" );
+		REQUIRE( ci::trim( " \t\n\rtwo  " ) == "two" );
 	}
 }
