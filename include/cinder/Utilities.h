@@ -84,6 +84,9 @@ template<>
 inline double fromString( const std::string &s ) { return atof( s.c_str() ); }
 #endif
 
+//! returns \c true if ASCII strings \a a and \a b are case-insensitively equal. Not Unicode-aware.
+CI_API bool asciiCaseEqual( const std::string &a, const std::string &b );
+
 //! Returns a stack trace (aka backtrace) where \c stackTrace()[0] == caller, \c stackTrace()[1] == caller's parent, etc
 CI_API std::vector<std::string> stackTrace();
 

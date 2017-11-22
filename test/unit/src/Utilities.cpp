@@ -129,6 +129,12 @@ TEST_CASE( "Utilities" )
         
     }
     
-
-    
+	SECTION( "asciiCaseEqual" )
+    {
+		REQUIRE( ci::asciiCaseEqual( "a", "A" ) );
+		REQUIRE( ! ci::asciiCaseEqual( "a", "b" ) );
+		REQUIRE( ci::asciiCaseEqual( "abc", "ABC" ) );
+		REQUIRE( ! ci::asciiCaseEqual( "abc", "abd" ) );
+		REQUIRE( ! ci::asciiCaseEqual( "abc", "abcd" ) );
+	}
 }

@@ -117,6 +117,16 @@ void writeString( const DataTargetRef &dataTarget, const std::string &str )
 	ofs.close();
 }
 
+bool asciiCaseEqual( const std::string &a, const std::string &b )
+{
+	if( a.size() != b.size() )
+		return false;
+	else
+		return equal( a.cbegin(), a.cend(), b.cbegin(), []( std::string::value_type ac, std::string::value_type bc ) {
+				return std::toupper(ac) == std::toupper(bc);
+		});
+}
+
 void sleep( float milliseconds )
 {
 	app::Platform::get()->sleep( milliseconds );
