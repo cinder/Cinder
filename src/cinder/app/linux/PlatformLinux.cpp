@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <pwd.h>
+#include <pthread.h>
 
 namespace cinder {
 
@@ -457,6 +458,15 @@ std::vector<std::string> PlatformLinux::stackTrace()
 {
 	// @TODO: Implement
 	return std::vector<std::string>();	
+}
+
+void PlatformLinux::setThreadName( const std::string &name )
+{
+	std::array<char,16> nameTrunc; // 16-byte maximum
+	strncpy( nameTrunc.data(), name.c_str(), 15 );
+	int result = pthread_setname_np( pthread_self(), nameTrunc.data() );
+	if( result != 0 )
+		CI_LOG_E( "setThreadName failed" );
 }
 
 void PlatformLinux::addDisplay( const DisplayRef &display )
