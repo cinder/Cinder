@@ -551,7 +551,7 @@ JsonTree* JsonTree::getNodePtr( const string &relativePath, bool caseSensitive, 
                 string key2 = *pathIt;
                 if( caseSensitive && key1 == key2 ) {
                     keysMatch = true;
-                } else if ( !caseSensitive && ( boost::iequals( key1, key2 ) ) ) {
+                } else if ( !caseSensitive && ( ci::asciiCaseEqual( key1, key2 ) ) ) {
                     keysMatch = true;
                 }
                 
