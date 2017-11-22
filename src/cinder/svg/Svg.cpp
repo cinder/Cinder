@@ -158,6 +158,7 @@ vector<string> readStringList( const std::string &s, bool stripQuotes = false )
 			trimmed.erase( std::remove( trimmed.begin(), trimmed.end(), '"' ), trimmed.end() );
 			trimmed.erase( std::remove( trimmed.begin(), trimmed.end(), '\'' ), trimmed.end() );
 		}
+		*resultIt = trimmed;
 	}
 	
 	return result;
