@@ -128,9 +128,24 @@ TEST_CASE( "Utilities" )
         REQUIRE( ci::split(str4, ",- ", true) == resultStr4 );
         
     }
-    
-	SECTION( "asciiCaseEqual" )
+
+	SECTION( "asciiCaseEqual std::string" )
     {
+		REQUIRE( ci::asciiCaseEqual( string(""), string("") ) );
+		REQUIRE( ! ci::asciiCaseEqual( string(""), string("A") ) );
+		REQUIRE( ! ci::asciiCaseEqual( string("A"), string("") ) );
+		REQUIRE( ci::asciiCaseEqual( string("a"), string("A") ) );
+		REQUIRE( ! ci::asciiCaseEqual( string("a"), string("b") ) );
+		REQUIRE( ci::asciiCaseEqual( string("abc"), string("ABC") ) );
+		REQUIRE( ! ci::asciiCaseEqual( string("abc"), string("abd") ) );
+		REQUIRE( ! ci::asciiCaseEqual( string("abc"), string("abcd") ) );
+	}
+    
+	SECTION( "asciiCaseEqual const char*" )
+    {
+		REQUIRE( ci::asciiCaseEqual( "", "" ) );
+		REQUIRE( ! ci::asciiCaseEqual( "", "A" ) );
+		REQUIRE( ! ci::asciiCaseEqual( "A", "" ) );
 		REQUIRE( ci::asciiCaseEqual( "a", "A" ) );
 		REQUIRE( ! ci::asciiCaseEqual( "a", "b" ) );
 		REQUIRE( ci::asciiCaseEqual( "abc", "ABC" ) );

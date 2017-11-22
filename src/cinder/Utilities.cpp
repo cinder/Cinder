@@ -127,6 +127,16 @@ bool asciiCaseEqual( const std::string &a, const std::string &b )
 		});
 }
 
+bool asciiCaseEqual( const char *a, const char *b )
+{
+	bool result;
+	while( (result = std::toupper(*a) == std::toupper(*b++)) == true )
+	if( *a++ == '\0' )
+		break;
+
+	return result;
+}
+
 void sleep( float milliseconds )
 {
 	app::Platform::get()->sleep( milliseconds );
