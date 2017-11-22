@@ -41,8 +41,8 @@ class AppImplLinux;
 class WindowImplLinux {
 public:
 
-  WindowImplLinux( const Window::Format &format, RendererRef sharedRenderer, AppImplLinux *appImpl );
-  virtual ~WindowImplLinux();
+	WindowImplLinux( const Window::Format &format, WindowImplLinux *sharedRendererWindow, AppImplLinux *appImpl );
+	virtual ~WindowImplLinux();
 
 	virtual bool		isFullScreen() { return mFullScreen; }
 	virtual void		setFullScreen( bool fullScreen, const app::FullScreenOptions &options );
