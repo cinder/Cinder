@@ -24,7 +24,7 @@
 #include "cinder/ChanTraits.h"
 #include "cinder/ImageIo.h"
 
-#include <boost/type_traits/is_same.hpp>
+#include <type_traits>
 
 using namespace std;
 
@@ -43,11 +43,11 @@ class ImageTargetChannel : public ImageTarget {
 	ImageTargetChannel( ChannelT<T> *channel )
 		: mChannel( channel )
 	{
-		if( boost::is_same<T,float>::value )
+		if( std::is_same<T,float>::value )
 			setDataType( ImageIo::FLOAT32 );
-		else if( boost::is_same<T,uint16_t>::value )
+		else if( std::is_same<T,uint16_t>::value )
 			setDataType( ImageIo::UINT16 );
-		else if( boost::is_same<T,uint8_t>::value )
+		else if( std::is_same<T,uint8_t>::value )
 			setDataType( ImageIo::UINT8 );
 		else 
 			throw; // what is this?
@@ -71,13 +71,13 @@ class ImageSourceChannel : public ImageSource {
 		setChannelOrder( ImageIo::Y );
 		if( channel.getIncrement() != 1 )
 			setCustomPixelInc( channel.getIncrement() );
-		if( boost::is_same<T,uint8_t>::value ) {
+		if( std::is_same<T,uint8_t>::value ) {
 			setDataType( ImageIo::UINT8 );
 		}
-		else if( boost::is_same<T,uint16_t>::value ) {
+		else if( std::is_same<T,uint16_t>::value ) {
 			setDataType( ImageIo::UINT16 );
 		}
-		else if( boost::is_same<T,float>::value ) {
+		else if( std::is_same<T,float>::value ) {
 			setDataType( ImageIo::FLOAT32 );
 		}
 		else
