@@ -324,20 +324,20 @@ void AppImplLinux::run()
 	rpi::InputClose();
 }
 
-RendererRef AppImplLinux::findSharedRenderer( const RendererRef &searchRenderer )
+WindowImplLinux* AppImplLinux::findSharedRendererWindow( const RendererRef &searchRenderer )
 {
 	if( ! searchRenderer ) {
-		return RendererRef();
+		return nullptr;
 	}
 
 	for( const auto &win : mWindows ) {
 		RendererRef renderer = win->getRenderer();
 		if( renderer && ( typeid(*renderer) == typeid(*searchRenderer) ) ) {
-			return renderer;
+			return win;
 		}
 	}
 
-	return RendererRef();	
+	return nullptr;	
 }
 
 WindowRef AppImplLinux::createWindow( Window::Format format )
@@ -346,7 +346,7 @@ WindowRef AppImplLinux::createWindow( Window::Format format )
 		format.setRenderer( mApp->getDefaultRenderer()->clone() );
 	}
 
-	mWindows.push_back( new WindowImplLinux( format, findSharedRenderer( format.getRenderer() ), this ) );
+	mWindows.push_back( new WindowImplLinux( format, findSharedRendererWindow( format.getRenderer() ), this ) );
 
 	// emit initial resize if we have fired setup
 	if( mSetupHasBeenCalled ) {
