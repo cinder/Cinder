@@ -723,18 +723,15 @@ GLint Fbo::getSamples()
 
 GLint Fbo::getMaxSamples()
 {
-	static GLint sMaxSamples = -1;
+	GLint maxSamples = -1;
 #if ! defined( CINDER_GL_ES_2 )
-	if( sMaxSamples < 0 ) {
-		glGetIntegerv( GL_MAX_SAMPLES, &sMaxSamples);
-	}
-	
-	return sMaxSamples;
+	glGetIntegerv( GL_MAX_SAMPLES, &maxSamples);
+
+	return maxSamples;
 #elif defined( CINDER_COCOA_TOUCH )
-	if( sMaxSamples < 0 )
-		glGetIntegerv( GL_MAX_SAMPLES_APPLE, &sMaxSamples);
-	
-	return sMaxSamples;
+	glGetIntegerv( GL_MAX_SAMPLES_APPLE, &maxSamples);
+
+	return maxSamples;
 #else
 	return 0;
 #endif
