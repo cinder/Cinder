@@ -713,7 +713,7 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
 GLint Fbo::getSamples()
 {
 #if ! defined( CINDER_GL_ES_2 )
-	GLint samples = 0;
+	GLint samples = -1;
 	glGetIntegerv( GL_SAMPLES, &samples);
 	return samples;
 #else
