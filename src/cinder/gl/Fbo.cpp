@@ -742,13 +742,10 @@ GLint Fbo::getMaxSamples()
 
 GLint Fbo::getMaxAttachments()
 {
-	static GLint sMaxAttachments = -1;
 #if ! defined( CINDER_GL_ES_2 )
-	if( sMaxAttachments < 0 ) {
-		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &sMaxAttachments );
-	}
-	
-	return sMaxAttachments;
+	GLint maxAttachments = -1;
+	glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &maxAttachments );
+	return maxAttachments;
 #else
 	return 1;
 #endif
