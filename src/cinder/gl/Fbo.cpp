@@ -710,6 +710,17 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
     return true;
 }
 
+GLint Fbo::getSamples()
+{
+#if ! defined( CINDER_GL_ES_2 )
+	GLint samples = 0;
+	glGetIntegerv( GL_SAMPLES, &samples);
+	return samples;
+#else
+	return 0;
+#endif
+}
+
 GLint Fbo::getMaxSamples()
 {
 	static GLint sMaxSamples = -1;
