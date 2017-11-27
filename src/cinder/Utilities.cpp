@@ -33,6 +33,7 @@
 
 #include <vector>
 #include <fstream>
+#include <cctype>
 
 using std::vector;
 using std::string;
@@ -115,6 +116,33 @@ void writeString( const DataTargetRef &dataTarget, const std::string &str )
 	std::ofstream ofs( outPath.string(), std::ofstream::binary );
 	ofs << str;
 	ofs.close();
+}
+
+bool asciiCaseEqual( const std::string &a, const std::string &b )
+{
+	if( a.size() != b.size() )
+		return false;
+	else
+		return equal( a.cbegin(), a.cend(), b.cbegin(), []( std::string::value_type ac, std::string::value_type bc ) {
+				return std::toupper(ac) == std::toupper(bc);
+		});
+}
+
+bool asciiCaseEqual( const char *a, const char *b )
+{
+	bool result;
+	while( (result = std::toupper(*a) == std::toupper(*b++)) == true )
+	if( *a++ == '\0' )
+		break;
+
+	return result;
+}
+
+std::string trim( const std::string &str )
+{
+	auto wsFront = std::find_if_not( str.begin(), str.end(), [](int c){ return std::isspace(c); } );
+	auto wsBack = std::find_if_not( str.rbegin(), str.rend(),[](int c){ return std::isspace(c); } ).base();
+	return wsBack <= wsFront ? std::string() : std::string( wsFront, wsBack );
 }
 
 void sleep( float milliseconds )
