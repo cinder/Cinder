@@ -33,6 +33,7 @@
 
 #include <vector>
 #include <fstream>
+#include <cctype>
 
 using std::vector;
 using std::string;
