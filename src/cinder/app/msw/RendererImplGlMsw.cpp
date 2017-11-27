@@ -23,6 +23,7 @@
 
 #if ! defined( CINDER_GL_ANGLE )
 #include "cinder/gl/platform.h"
+#include "cinder/app/msw/AppImplMsw.h"
 #include "cinder/app/msw/RendererImplGlMsw.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Context.h"
@@ -58,17 +59,19 @@ void RendererImplGlMsw::finishToggleFullScreen()
 void RendererImplGlMsw::defaultResize() const
 {
 	::RECT clientRect;
-	::GetClientRect( mWnd, &clientRect );
-	int width = clientRect.right - clientRect.left;
-	int height = clientRect.bottom - clientRect.top;
+	::GetClientRect( mWindowImpl->getHwnd(), &clientRect );
+	int widthPx = clientRect.right - clientRect.left;
+	int heightPx = clientRect.bottom - clientRect.top;
 
-	gl::viewport( 0, 0, width, height );
-	gl::setMatricesWindow( width, height );
+	ivec2 sizePt = mWindowImpl->getSize();
+
+	gl::viewport( 0, 0, widthPx, heightPx );
+	gl::setMatricesWindow( sizePt.x, sizePt.y );
 }
 
 void RendererImplGlMsw::swapBuffers() const
 {
-	::SwapBuffers( mDC );
+	::SwapBuffers( mWindowImpl->getDc() );
 }
 
 void RendererImplGlMsw::makeCurrentContext( bool force )
@@ -287,20 +290,19 @@ bool initializeGl( HWND /*wnd*/, HDC dc, HGLRC sharedRC, const RendererGl::Optio
 }
 } // anonymous namespace
 
-bool RendererImplGlMsw::initialize( HWND wnd, HDC dc, RendererRef sharedRenderer )
+bool RendererImplGlMsw::initialize( WindowImplMsw *windowImpl, RendererRef sharedRenderer )
 {
-	mWnd = wnd;
-	mDC = dc;
+	mWindowImpl = windowImpl;
 
 	RendererGl *sharedRendererGl = dynamic_cast<RendererGl*>( sharedRenderer.get() );
 	HGLRC sharedRC = ( sharedRenderer ) ? sharedRendererGl->mImpl->mRC : NULL;
 
-	if( ! initializeGl( wnd, dc, sharedRC, mRenderer->getOptions(), &mRC ) ) {
+	if( ! initializeGl( mWindowImpl->getHwnd(), mWindowImpl->getDc(), sharedRC, mRenderer->getOptions(), &mRC ) ) {
 		return false;
 	}
 
 	gl::Environment::setCore();
-	auto platformData = std::shared_ptr<gl::Context::PlatformData>( new gl::PlatformDataMsw( mRC, mDC ) );
+	auto platformData = std::shared_ptr<gl::Context::PlatformData>( new gl::PlatformDataMsw( mRC, mWindowImpl->getDc() ) );
 	platformData->mDebug = mRenderer->getOptions().getDebug();
 	platformData->mDebugLogSeverity = mRenderer->getOptions().getDebugLogSeverity();
 	platformData->mDebugBreakSeverity = mRenderer->getOptions().getDebugBreakSeverity();

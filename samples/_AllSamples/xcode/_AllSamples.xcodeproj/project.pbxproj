@@ -54,7 +54,6 @@
 				00D494BC1988A24F00A44E4C /* PBXTargetDependency */,
 				00D494BE1988A24F00A44E4C /* PBXTargetDependency */,
 				00D494C21988A24F00A44E4C /* PBXTargetDependency */,
-				00D494C41988A24F00A44E4C /* PBXTargetDependency */,
 				00D494C61988A24F00A44E4C /* PBXTargetDependency */,
 				00D4949619889F3300A44E4C /* PBXTargetDependency */,
 				00D4948E19889EFA00A44E4C /* PBXTargetDependency */,
@@ -1245,13 +1244,6 @@
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = Renderer2d;
 		};
-		00D494B31988A1FE00A44E4C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00D494AF1988A1FE00A44E4C /* RetinaSample.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = RetinaSample;
-		};
 		00D494B91988A22800A44E4C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00D494B51988A22800A44E4C /* slerpBasic.xcodeproj */;
@@ -1280,19 +1272,19 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = Renderer2d;
 		};
-		00D494C31988A24F00A44E4C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00D494AF1988A1FE00A44E4C /* RetinaSample.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = RetinaSample;
-		};
 		00D494C51988A24F00A44E4C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00D494B51988A22800A44E4C /* slerpBasic.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = slerpBasic;
+		};
+		00F0AAC81FC4BB3100F9EBBE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00F0AAC41FC4BB3000F9EBBE /* HighDensityDisplay.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = HighDensityDisplay;
 		};
 		00F0B3311039DFFD003AB416 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1576,8 +1568,8 @@
 		00D494971988A0C200A44E4C /* ConvexHull.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ConvexHull.xcodeproj; path = ../../ConvexHull/xcode/ConvexHull.xcodeproj; sourceTree = "<group>"; };
 		00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FallingGears.xcodeproj; path = ../../FallingGears/xcode/FallingGears.xcodeproj; sourceTree = "<group>"; };
 		00D494A91988A1D300A44E4C /* Renderer2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Renderer2d.xcodeproj; path = ../../Renderer2dBasic/xcode/Renderer2d.xcodeproj; sourceTree = "<group>"; };
-		00D494AF1988A1FE00A44E4C /* RetinaSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RetinaSample.xcodeproj; path = ../../RetinaSample/xcode/RetinaSample.xcodeproj; sourceTree = "<group>"; };
 		00D494B51988A22800A44E4C /* slerpBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = slerpBasic.xcodeproj; path = ../../slerpBasic/xcode/slerpBasic.xcodeproj; sourceTree = "<group>"; };
+		00F0AAC41FC4BB3000F9EBBE /* HighDensityDisplay.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HighDensityDisplay.xcodeproj; path = ../../HighDensityDisplay/xcode/HighDensityDisplay.xcodeproj; sourceTree = "<group>"; };
 		00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParamsBasic.xcodeproj; path = ../../ParamsBasic/xcode/ParamsBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QTimeAdvApp.xcodeproj; path = ../../QuickTimeAdvanced/xcode/QTimeAdvApp.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B34E1039F830003AB416 /* QuickTimeIteration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeIteration.xcodeproj; path = ../../QuickTimeIteration/xcode/QuickTimeIteration.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1598,7 +1590,6 @@
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
-				006424F81DBFE782007AAB2A /* LevelOfDetailBasic.xcodeproj */,
 				006D7144199528A4008149E2 /* _opengl */,
 				11754415193596440075AF60 /* _audio */,
 				0029329B1530F5480022B1BF /* _svg */,
@@ -1620,10 +1611,12 @@
 				0005C9D0100681E9004D82BC /* fontSample.xcodeproj */,
 				00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */,
 				006D72BE1995325D008149E2 /* Geometry.xcodeproj */,
+				00F0AAC41FC4BB3000F9EBBE /* HighDensityDisplay.xcodeproj */,
 				009F01FA1136D23400636E3C /* ImageFileBasic.xcodeproj */,
 				00705E6B1018F3F700DD615B /* ImageHeightField.xcodeproj */,
 				00712F441627A45A005FC5A0 /* Instascope.xcodeproj */,
 				009709CE16CC6741005DC014 /* LocationManager.xcodeproj */,
+				006424F81DBFE782007AAB2A /* LevelOfDetailBasic.xcodeproj */,
 				0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */,
 				00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */,
 				0005C9FF10068206004D82BC /* perlinTest.xcodeproj */,
@@ -1635,7 +1628,6 @@
 				00F0B34E1039F830003AB416 /* QuickTimeIteration.xcodeproj */,
 				007BDE071118921D00BC750C /* RDiffusion.xcodeproj */,
 				00D494A91988A1D300A44E4C /* Renderer2d.xcodeproj */,
-				00D494AF1988A1FE00A44E4C /* RetinaSample.xcodeproj */,
 				0005CA2F10068222004D82BC /* SaveImage.xcodeproj */,
 				00D494B51988A22800A44E4C /* slerpBasic.xcodeproj */,
 				002CFBD11644BE2B00C1A31D /* StereoscopicRendering.xcodeproj */,
@@ -2372,18 +2364,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		00D494B01988A1FE00A44E4C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				00D494B41988A1FE00A44E4C /* RetinaSample.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		00D494B61988A22800A44E4C /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				00D494BA1988A22800A44E4C /* slerpBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00F0AAC51FC4BB3000F9EBBE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00F0AAC91FC4BB3100F9EBBE /* HighDensityDisplay.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2678,6 +2670,10 @@
 					ProjectRef = 002932B01530F57D0022B1BF /* GoodNightMorning.xcodeproj */;
 				},
 				{
+					ProductGroup = 00F0AAC51FC4BB3000F9EBBE /* Products */;
+					ProjectRef = 00F0AAC41FC4BB3000F9EBBE /* HighDensityDisplay.xcodeproj */;
+				},
+				{
 					ProductGroup = 006D715E199528DB008149E2 /* Products */;
 					ProjectRef = 006D715D199528DB008149E2 /* HighDynamicRange.xcodeproj */;
 				},
@@ -2828,10 +2824,6 @@
 				{
 					ProductGroup = 00D494AA1988A1D300A44E4C /* Products */;
 					ProjectRef = 00D494A91988A1D300A44E4C /* Renderer2d.xcodeproj */;
-				},
-				{
-					ProductGroup = 00D494B01988A1FE00A44E4C /* Products */;
-					ProjectRef = 00D494AF1988A1FE00A44E4C /* RetinaSample.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005CA3010068222004D82BC /* Products */;
@@ -3512,18 +3504,18 @@
 			remoteRef = 00D494AD1988A1D300A44E4C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		00D494B41988A1FE00A44E4C /* RetinaSample.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = RetinaSample.app;
-			remoteRef = 00D494B31988A1FE00A44E4C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		00D494BA1988A22800A44E4C /* slerpBasic.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = slerpBasic.app;
 			remoteRef = 00D494B91988A22800A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00F0AAC91FC4BB3100F9EBBE /* HighDensityDisplay.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = HighDensityDisplay.app;
+			remoteRef = 00F0AAC81FC4BB3100F9EBBE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		00F0B3321039DFFD003AB416 /* ParamsBasic.app */ = {
@@ -4036,11 +4028,6 @@
 			isa = PBXTargetDependency;
 			name = Renderer2d;
 			targetProxy = 00D494C11988A24F00A44E4C /* PBXContainerItemProxy */;
-		};
-		00D494C41988A24F00A44E4C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RetinaSample;
-			targetProxy = 00D494C31988A24F00A44E4C /* PBXContainerItemProxy */;
 		};
 		00D494C61988A24F00A44E4C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

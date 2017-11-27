@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class RetinaSampleApp : public App {
+class HighDensityDisplayApp : public App {
   public:
 	void setup() override;
 	void mouseDrag( MouseEvent event ) override;
@@ -18,16 +18,17 @@ class RetinaSampleApp : public App {
 	
 	// This will maintain a list of points which we will draw line segments between
 	PolyLine2f		mPoints;
-	
+
 	gl::Texture2dRef	mLogo;
 	gl::TextureFontRef	mFont;
 };
 
-void prepareSettings( RetinaSampleApp::Settings *settings )
+void prepareSettings( HighDensityDisplayApp::Settings *settings )
 {
-	settings->setHighDensityDisplayEnabled(); // try removing this line
+	settings->setWindowSize( ivec2( 640, 480 ) );
+	settings->setHighDensityDisplayEnabled( true ); // try removing this line
 	settings->setMultiTouchEnabled( false );
-	
+
 	// on iOS we want to make a Window per monitor
 #if defined( CINDER_COCOA_TOUCH )
 	for( auto display : Display::getDisplays() )
@@ -35,31 +36,35 @@ void prepareSettings( RetinaSampleApp::Settings *settings )
 #endif
 }
 
-void RetinaSampleApp::setup()
+void HighDensityDisplayApp::setup()
 {
 	// this should have mipmapping enabled in a real app but leaving it disabled
-	// since helps us see the change in going from Retina to non-Retina
-	mLogo = gl::Texture2d::create( loadImage( loadResource( "CinderAppIcon.png" ) ) );
+	// since helps us see the change in going from High Density to non-High Density
+	mLogo = gl::Texture2d::create( loadImage( loadAsset( "CinderAppIcon.png" ) ) );
 
-	// A font suitable for 24points at both Retina and non-Retina
+	// A font suitable for 24points at both High Density and non-High Density
+#if defined( CINDER_MSW )
+	mFont = gl::TextureFont::create( Font( "Arial", 24 * 2 ), gl::TextureFont::Format().enableMipmapping() );
+#else
 	mFont = gl::TextureFont::create( Font( "Helvetica", 24 * 2 ), gl::TextureFont::Format().enableMipmapping() );
+#endif
 
-	getWindow()->getSignalDisplayChange().connect( std::bind( &RetinaSampleApp::displayChange, this ) );
+	getWindow()->getSignalDisplayChange().connect( std::bind( &HighDensityDisplayApp::displayChange, this ) );
 }
 
-void RetinaSampleApp::mouseDrag( MouseEvent event )
+void HighDensityDisplayApp::mouseDrag( MouseEvent event )
 {
 	mPoints.push_back( event.getPos() );
 }
 
-void RetinaSampleApp::displayChange()
+void HighDensityDisplayApp::displayChange()
 {
 	console() << "Window display changed: " << getWindow()->getDisplay()->getBounds() << std::endl;
 	console() << "ContentScale = " << getWindowContentScale() << endl;
 	console() << "getWindowCenter() = " << getWindowCenter() << endl;
 }
 
-void RetinaSampleApp::draw()
+void HighDensityDisplayApp::draw()
 {
 	gl::clear( Color( 0.1f, 0.1f, 0.15f ) );
 	gl::enableAlphaBlending();
@@ -74,7 +79,7 @@ void RetinaSampleApp::draw()
 	gl::pushModelMatrix();
 		gl::color( 1.0f, 0.2f, 0.15f );
 		gl::translate( getWindowCenter() );
-		gl::rotate( getElapsedSeconds() / 10 );
+		gl::rotate( float(getElapsedSeconds() / 10) );
 		gl::drawSolidRect( Rectf( Area( -100, -100, 100, 100 ) ) );
 	gl::popModelMatrix();
 
@@ -84,10 +89,10 @@ void RetinaSampleApp::draw()
 
 	// The font has been made double the size we need for non-Retina, so we always scale by 0.5f
 	// another strategy would be to use two different TextureFonts
-	std::string s = ( getWindowContentScale() > 1 ) ? "Retina" : "Non-Retina";
+	std::string s = ( getWindowContentScale() > 1.0f ) ? "High Density" : "Non-High Density";
 	float stringWidth = mFont->measureString( s ).x * 0.5f;
 	mFont->drawString( s, vec2( getWindowWidth() - stringWidth - 12, getWindowHeight() - 12 ),
 		gl::TextureFont::DrawOptions().scale( 0.5f ).pixelSnap( false ) );
 }
 
-CINDER_APP( RetinaSampleApp, RendererGl, prepareSettings )
+CINDER_APP( HighDensityDisplayApp, RendererGl, prepareSettings )

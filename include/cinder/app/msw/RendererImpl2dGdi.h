@@ -33,12 +33,13 @@
 namespace cinder { namespace app {
 
 class AppBase;
+class WindowImplMsw;
 
 class RendererImpl2dGdi : public RendererImplMsw {
  public:
 	 RendererImpl2dGdi( bool doubleBuffer, bool paintEvents );
 
-	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
+	virtual bool	initialize( WindowImplMsw *windowImpl, RendererRef sharedRenderer );
 	virtual void	kill() {}
 	virtual void	defaultResize() const;
 	virtual void	swapBuffers() const;
@@ -48,6 +49,7 @@ class RendererImpl2dGdi : public RendererImplMsw {
 	Surface8u		copyWindowContents( const Area &area );
 	
  protected:
+	WindowImplMsw	*mWindowImpl;
 	::HDC			mPaintDc;
 	::PAINTSTRUCT	mPaintStruct;
 	

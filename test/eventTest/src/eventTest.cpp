@@ -73,27 +73,27 @@ string mouseInitiatorToText( const MouseEvent &event )
 
 void EventTestApp::mouseDown( MouseEvent event )
 {
-	console() << "You clicked the " << mouseInitiatorToText( event ) << " mouse button @ " << event.getPos() << " " << mouseModifiersToText( event ) << endl;
+	console() << "You clicked the " << mouseInitiatorToText( event ) << " mouse button @ " << event.getPos() << "pt " << toPixels( event.getPos() ) << "px " << " " << mouseModifiersToText( event ) << endl;
 }
 
 void EventTestApp::mouseUp( MouseEvent event )
 {
-	console() << "You released the " << mouseInitiatorToText( event ) << " mouse button @ " << event.getPos() << mouseModifiersToText( event ) << endl;
+	console() << "You released the " << mouseInitiatorToText( event ) << " mouse button @ " << event.getPos() << "pt " << toPixels( event.getPos() ) << "px " << mouseModifiersToText( event ) << endl;
 }
 
 void EventTestApp::mouseWheel( MouseEvent event )
 {
-	console() << "You scrolled the mouse @ " << event.getPos() << " by " << event.getWheelIncrement() << " detents " << mouseModifiersToText( event ) << endl;
+	console() << "You scrolled the mouse @ " << event.getPos() << "pt " << toPixels( event.getPos() ) << "px by " << event.getWheelIncrement() << " detents " << mouseModifiersToText( event ) << endl;
 }
 
 void EventTestApp::mouseMove( MouseEvent event )
 {
-	console() << "You moved the mouse @ " << event.getPos() << mouseModifiersToText( event ) << endl;
+	console() << "You moved the mouse @ " << event.getPos() << "pt " << toPixels( event.getPos() ) << "px " << mouseModifiersToText( event ) << endl;
 }
 
 void EventTestApp::mouseDrag( MouseEvent event )
 {
-	console() << "You dragged the mouse @ " << event.getPos() << mouseModifiersToText( event ) << endl;
+	console() << "You dragged the mouse @ " << event.getPos() << "pt " << toPixels( event.getPos() ) << "px " << mouseModifiersToText( event ) << endl;
 }
 
 void EventTestApp::keyDown( KeyEvent event )
@@ -115,7 +115,7 @@ void EventTestApp::keyUp( KeyEvent event )
 void EventTestApp::fileDrop( FileDropEvent event )
 {
 	stringstream ss;
-	ss << "You dropped files @ " << event.getPos() << " and the files were: " << endl;
+	ss << "You dropped files @ " << event.getPos() << "pt " << toPixels( event.getPos() ) << "px and the files were: " << endl;
 	for( size_t s = 0; s < event.getNumFiles(); ++s )
 		ss << event.getFile( s ) << endl;
 	console() << ss.str() << endl;
@@ -126,4 +126,6 @@ void EventTestApp::draw()
 	gl::clear();
 }
 
-CINDER_APP( EventTestApp, RendererGl )
+CINDER_APP( EventTestApp, RendererGl, []( EventTestApp::Settings *settings ) {
+	settings->setHighDensityDisplayEnabled( true );
+} )
