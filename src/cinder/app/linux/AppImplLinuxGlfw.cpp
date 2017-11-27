@@ -430,10 +430,10 @@ void AppImplLinux::run()
 	mMainWindow.reset();
 }
 
-RendererRef AppImplLinux::findSharedRenderer( const RendererRef &searchRenderer )
+WindowImplLinux* AppImplLinux::findSharedRendererWindow( const RendererRef &searchRenderer )
 {
 	if( ! searchRenderer ) {
-		return RendererRef();
+		return nullptr;
 	}
 
 	for( const auto &win : mWindows ) {
@@ -441,11 +441,11 @@ RendererRef AppImplLinux::findSharedRenderer( const RendererRef &searchRenderer 
 		auto rendererPtr = renderer.get();
 		auto searchRendererPtr = searchRenderer.get();
 		if( renderer && ( typeid(*rendererPtr) == typeid(*searchRendererPtr) ) ) {
-			return renderer;
+			return win;
 		}
 	}
 
-	return RendererRef();	
+	return nullptr;
 }
 
 WindowRef AppImplLinux::createWindow( Window::Format format )
@@ -454,7 +454,7 @@ WindowRef AppImplLinux::createWindow( Window::Format format )
 		format.setRenderer( mApp->getDefaultRenderer()->clone() );
 	}
 
-	mWindows.push_back( new WindowImplLinux( format, findSharedRenderer( format.getRenderer() ), this ) );
+	mWindows.push_back( new WindowImplLinux( format, findSharedRendererWindow( format.getRenderer() ), this ) );
 
 	// emit initial resize if we have fired setup
 	if( mSetupHasBeenCalled ) {

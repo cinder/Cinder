@@ -46,7 +46,7 @@ struct WindowImplLinux::NativeWindow {
 	}
 };
 
-WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef sharedRenderer, AppImplLinux *appImpl )
+WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux *sharedRendererWindow, AppImplLinux *appImpl )
 	: mAppImpl( appImpl )
 {
 	mDisplay = format.getDisplay();
@@ -55,6 +55,7 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	// NativeWindow->window will get updated by the mRenderer
 	auto windowSize = format.getSize();
 	mNativeWindow = std::unique_ptr<NativeWindow>( new NativeWindow( windowSize, 0 ) );
+	RendererRef sharedRenderer = sharedRendererWindow ? sharedRendererWindow->getRenderer() : nullptr;
 	mRenderer->setup( reinterpret_cast<void*>( &(mNativeWindow->window) ), sharedRenderer );
 
 	RendererGlRef rendererGl = std::dynamic_pointer_cast<RendererGl>( mRenderer );
