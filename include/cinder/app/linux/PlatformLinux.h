@@ -62,6 +62,9 @@ class PlatformLinux : public Platform {
 	virtual void 					launchWebBrowser( const Url &url ) override;
 
 	virtual std::vector<std::string>		stackTrace() override;
+
+	void setThreadName( const std::string &name ) override;
+
 	virtual const std::vector<DisplayRef>&	getDisplays() override;
 
 	//! Returns the Display which corresponds to a GLFWmonitor \a monitor. Returns main display on failure.

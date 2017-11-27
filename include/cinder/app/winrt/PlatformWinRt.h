@@ -67,6 +67,8 @@ class PlatformWinRt : public Platform {
 	
 	std::vector<std::string> stackTrace() override;
 
+	void setThreadName( const std::string &name ) override;
+
 	const std::vector<DisplayRef>&	getDisplays() override;
   
   private:

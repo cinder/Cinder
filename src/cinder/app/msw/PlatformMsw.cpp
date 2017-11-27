@@ -243,6 +243,50 @@ vector<string> PlatformMsw::stackTrace()
 	return csw.getEntries();
 }
 
+namespace {
+// must be separate fn due to __try
+void setThreadNameHelper( const std::string &name )
+{
+#pragma pack(push,8)
+	typedef struct tagTHREADNAME_INFO {
+		DWORD dwType; // Must be 0x1000.
+		LPCSTR szName; // Pointer to name
+		DWORD dwThreadID; // Thread ID (-1=caller thread).
+		DWORD dwFlags; // Reserved for future use, must be zero.
+	 } THREADNAME_INFO;
+#pragma pack(pop)
+
+#pragma warning(push)  
+#pragma warning(disable: 6320 6322)  
+	__try {
+		THREADNAME_INFO info;
+		info.dwType = 0x1000;
+		info.szName = name.c_str();
+		info.dwThreadID = -1;
+		info.dwFlags = 0;
+
+		::RaiseException( 0x406D1388 /* MS_VC_EXCEPTION */, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info );
+	}  
+	__except (EXCEPTION_EXECUTE_HANDLER) {
+	}  
+#pragma warning(pop)  
+}
+}
+
+void PlatformMsw::setThreadName( const std::string &name )
+{
+	// The SetThreadDescription API available in Windows 10 version 1607, but is not widely supported, so we use both techniques
+	typedef HRESULT(WINAPI* SetThreadDescription)( HANDLE, PCWSTR );
+	static SetThreadDescription setThreadDescriptionFnPtr = nullptr;
+	if( ! setThreadDescriptionFnPtr ) {
+		setThreadDescriptionFnPtr = (SetThreadDescription)::GetProcAddress( ::GetModuleHandle(TEXT("Kernel32.dll")), "SetThreadDescription" );
+		if( setThreadDescriptionFnPtr )
+			setThreadDescriptionFnPtr( ::GetCurrentThread(), msw::toWideString( name ).c_str() );
+	}
+
+	setThreadNameHelper( name );
+}
+
 ResourceLoadExcMsw::ResourceLoadExcMsw( int mswID, const string &mswType )
 	: ResourceLoadExc( "" )
 {

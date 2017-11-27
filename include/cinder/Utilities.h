@@ -87,6 +87,9 @@ inline double fromString( const std::string &s ) { return atof( s.c_str() ); }
 //! Returns a stack trace (aka backtrace) where \c stackTrace()[0] == caller, \c stackTrace()[1] == caller's parent, etc
 CI_API std::vector<std::string> stackTrace();
 
+//! Sets the name of the current thread to \a name
+CI_API void setThreadName( const std::string &name );
+
 // ENDIANNESS
 CI_API inline int8_t	swapEndian( int8_t val ) { return val; }
 CI_API inline uint8_t	swapEndian( uint8_t val ) { return val; }
