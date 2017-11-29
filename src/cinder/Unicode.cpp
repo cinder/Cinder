@@ -48,6 +48,10 @@
 #include <cstring>
 #include <string>
 
+#if defined( CINDER_ANDROID)
+#include <stdlib.h>
+#endif
+
 #include "utf8cpp/checked.h"
 extern "C" {
 #include "linebreak.h"
