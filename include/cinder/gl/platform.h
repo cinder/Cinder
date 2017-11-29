@@ -231,7 +231,7 @@
 #endif
 
 #if defined( CINDER_GL_ES )
-	#if defined( GL_KHR_debug ) && ( CINDER_GL_ES_VERSION <= CINDER_GL_ES_VERSION_3_1 )
+	#if defined( GL_KHR_debug ) && ( CINDER_GL_ES_VERSION <= CINDER_GL_ES_VERSION_3_1 ) && ( ! defined( CINDER_GL_ANGLE ) )
 		#define CINDER_GL_HAS_KHR_DEBUG
 		#if ! defined( CINDER_GL_ANGLE )
 			#define GL_BUFFER 			GL_BUFFER_KHR

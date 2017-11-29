@@ -35,6 +35,7 @@
 		#import "cinder/app/cocoa/RendererImplGlCocoaTouch.h"
 	#endif
 #elif defined( CINDER_MSW_DESKTOP )
+	#include "cinder/app/msw/AppImplMsw.h"
 	#if defined( CINDER_GL_ANGLE )
 		#include "cinder/app/msw/RendererImplGlAngle.h"
 	#else
@@ -58,7 +59,6 @@ RendererGl::RendererGl( const RendererGl &renderer )
 	: Renderer( renderer ), mImpl( nullptr ), mOptions( renderer.mOptions )
 {
 #if defined( CINDER_MSW_DESKTOP )
-	mWnd = renderer.mWnd;
 #elif defined( CINDER_ANDROID )
 	mImpl = 0;	
 #endif
@@ -215,17 +215,28 @@ RendererGl::~RendererGl()
 	delete mImpl;
 }
 
-void RendererGl::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
+void RendererGl::setup( WindowImplMsw *windowImpl, RendererRef sharedRenderer )
 {
-	mWnd = wnd;
+	mWindowImpl = windowImpl;
+
 	if( ! mImpl )
 #if defined( CINDER_GL_ANGLE )
 		mImpl = new RendererImplGlAngle( this );
 #else
 		mImpl = new RendererImplGlMsw( this );
 #endif
-	if( ! mImpl->initialize( wnd, dc, sharedRenderer ) )
+	if( ! mImpl->initialize( windowImpl, sharedRenderer ) )
 		throw ExcRendererAllocation( "RendererImplGlMsw initialization failed." );
+}
+
+HWND RendererGl::getHwnd() const
+{
+	return mWindowImpl->getHwnd();
+}
+
+HDC RendererGl::getDc() const
+{
+	return mWindowImpl->getDc();
 }
 
 void RendererGl::kill()
@@ -272,11 +283,6 @@ void RendererGl::finishDraw()
 void RendererGl::defaultResize()
 {
 	mImpl->defaultResize();
-}
-
-HDC RendererGl::getDc()
-{
-	return mImpl->getDc();
 }
 
 Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )

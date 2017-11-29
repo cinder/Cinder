@@ -85,11 +85,13 @@ class AppImplMsw {
 	bool					setupHasBeenCalled() const { return mSetupHasBeenCalled; }
 	virtual void			closeWindow( class WindowImplMsw *windowImpl ) = 0;
 	virtual void			setForegroundWindow( WindowRef window ) = 0;
+	bool					getHighDensityDisplayEnabled() const;
 
 	class AppBase			*mApp;
 	float					mFrameRate;
 	WindowRef				mActiveWindow;
 	bool					mSetupHasBeenCalled;
+	bool					mHighDensityDispalyEnabled();
 	bool					mNeedsToRefreshDisplays;
 	bool					mActive;
 	ULONG_PTR				mGdiplusToken;
@@ -106,10 +108,16 @@ class WindowImplMsw {
 
 	virtual bool		isFullScreen() { return mFullScreen; }
 	virtual void		setFullScreen( bool fullScreen, const app::FullScreenOptions &options );
-	virtual ivec2		getSize() const { return ivec2( mWindowWidth, mWindowHeight ); }
-	virtual void		setSize( const ivec2 &size );
+	virtual ivec2		getSize() const { return ivec2( toPoints( mWindowWidthPx ), toPoints( mWindowHeightPx ) ); }
+	virtual void		setSize( const ivec2 &sizePoints );
 	virtual ivec2		getPos() const { return mWindowOffset; }
 	virtual void		setPos( const ivec2 &pos );
+
+	virtual float		getContentScale() const;
+	int					toPoints( int pixels ) const { return (int)(pixels / getContentScale()); }
+	float				toPoints( float pixels ) const { return pixels / getContentScale(); }
+	ivec2				toPixels( const ivec2& points ) { return ivec2( int(points.x * getContentScale()), int(points.y * getContentScale()) ); }
+
 	virtual void		close();
 	virtual std::string	getTitle() const;
 	virtual void		setTitle( const std::string &title );
@@ -134,6 +142,9 @@ class WindowImplMsw {
 	virtual void			redraw();
 	virtual void			resize();
 
+	HWND			getHwnd() const { return mWnd; }
+	HDC				getDc() const { return mDC; }
+
 	void			privateClose();
   protected:
 	//! Sets 'mWindowStyle' and 'mWindowExStyle' based on 'mFullScreen' and 'mBorderless'
@@ -153,9 +164,9 @@ class WindowImplMsw {
 	DWORD					mWindowStyle, mWindowExStyle;
 	ivec2					mWindowOffset;
 	bool					mHidden;
-	int						mWindowWidth, mWindowHeight;
+	int						mWindowWidthPx, mWindowHeightPx;
 	bool					mFullScreen, mBorderless, mAlwaysOnTop, mResizable;
-	ivec2					mWindowedPos, mWindowedSize;
+	ivec2					mWindowedPos, mWindowedSizePx;
 	DisplayRef				mDisplay;
 	RendererRef				mRenderer;
 	std::map<DWORD,vec2>			mMultiTouchPrev;

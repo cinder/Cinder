@@ -79,11 +79,11 @@ class CI_API AppBase {
 		Settings();
 		virtual ~Settings() {}
 
-		//! Sets the size of the default window measured in pixels
+		//! Sets the size of the default window measured in points
 		void	setWindowSize( int windowSizeX, int windowSizeY )	{ mDefaultWindowFormat.setSize( ivec2( windowSizeX, windowSizeY ) ); }
-		//! Sets the size of the default window measured in pixels
+		//! Sets the size of the default window measured in points
 		void	setWindowSize( const ivec2 &size )					{ mDefaultWindowFormat.setSize( size ); }
-		//! Gets the size of the default window measured in pixels
+		//! Gets the size of the default window measured in points
 		ivec2	getWindowSize() const								{ return mDefaultWindowFormat.getSize(); }
 		
 		//! Returns the position of the default window in screen coordinates measured in pixels
