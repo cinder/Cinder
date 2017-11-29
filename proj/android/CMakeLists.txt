@@ -332,31 +332,6 @@ if( NOT NDK_TOOLCHAIN_CLANG )
 endif()
 message( "" )
 
-# sysroot
-#if( NOT NDK_TOOLCHAIN_CLANG)
-    if(("armeabi" STREQUAL "${NDK_ARCH}") OR ("armeabi-v7a" STREQUAL "${NDK_ARCH}"))
-        set( NDK_SYSROOT "${ANDROID_NDK}/platforms/${NDK_PLATFORM_DIR}/arch-arm" )
-    elseif( "arm64-v8a" STREQUAL "${NDK_ARCH}" )
-        set( NDK_SYSROOT "${ANDROID_NDK}/platforms/${NDK_PLATFORM_DIR}/arch-arm64" )
-    elseif( "x86" STREQUAL "${NDK_ARCH}" )
-        set( NDK_SYSROOT "${ANDROID_NDK}/platforms/${NDK_PLATFORM_DIR}/arch-x86" )
-    elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
-        set( NDK_SYSROOT "${ANDROID_NDK}/platforms/${NDK_PLATFORM_DIR}/arch-x86_64" )
-    elseif( "mips" STREQUAL "${NDK_ARCH}" )
-        set( NDK_SYSROOT "${ANDROID_NDK}/platforms/${NDK_PLATFORM_DIR}/arch-mips" )
-    elseif( "mips64" STREQUAL "${NDK_ARCH}" )
-        set( NDK_SYSROOT "${ANDROID_NDK}/platforms/${NDK_PLATFORM_DIR}/arch-mips64" )
-    endif()
-    #
-    if( NOT NDK_SYSROOT )
-        message( FATAL_ERROR "${BoldRed}Unable to determine SYSROOT for ${NDK_ARCH} for platform android-${NDK_PLATFORM}${ColorReset}" )
-    endif()
-    #
-    message( "${BoldBlue}NDK_SYSROOT : ${NDK_SYSROOT}${ColorReset}" )
-    message( "" )
-
-    set( CMAKE_SYSROOT ${NDK_SYSROOT} CACHE FILEPATH "" FORCE )
-#endif()
 
 if( APPLE )
     set( CMAKE_OSX_SYSROOT "" CACHE FILEPATH "" FORCE )
