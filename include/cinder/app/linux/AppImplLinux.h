@@ -44,7 +44,7 @@ class AppImplLinux {
 	AppLinux					*getApp();
 	
  protected:
-	RendererRef					findSharedRenderer( const RendererRef &searchRenderer );
+	WindowImplLinux*				findSharedRendererWindow( const RendererRef &searchRenderer );
 
 	WindowRef					createWindow( Window::Format format );
 	void						quit();

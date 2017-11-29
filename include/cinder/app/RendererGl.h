@@ -173,10 +173,10 @@ class CI_API RendererGl : public Renderer {
 	#endif
 	void	setFrameSize( int width, int height ) override;
 #elif defined( CINDER_MSW_DESKTOP )
-	virtual void	setup( HWND wnd, HDC dc, RendererRef sharedRenderer );
+	virtual void	setup( WindowImplMsw *windowImpl, RendererRef sharedRenderer );
 	virtual void	kill();
-	virtual HWND	getHwnd() override { return mWnd; }
-	virtual HDC		getDc() override;
+	virtual HWND	getHwnd() const override;
+	virtual HDC		getDc() const override;
 	virtual void	prepareToggleFullScreen();
 	virtual void	finishToggleFullScreen();
 #elif defined( CINDER_UWP )
@@ -219,7 +219,7 @@ protected:
 		class RendererImplGlMsw		*mImpl;
 		friend class				RendererImplGlMsw;
 	#endif
-	HWND						mWnd;
+	WindowImplMsw					*mWindowImpl;
 #elif defined( CINDER_UWP )
 	class RendererImplGlAngle	*mImpl;
 	friend class				RendererImplGlAngle;

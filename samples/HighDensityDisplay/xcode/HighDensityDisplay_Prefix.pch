@@ -1,4 +1,3 @@
-
 #if defined( __cplusplus )
 	#include "cinder/Cinder.h"
 	

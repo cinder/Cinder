@@ -31,9 +31,6 @@
 #include "cinder/Text.h"
 #include "cinder/Log.h"
 
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/case_conv.hpp>
-	
 using namespace std;
 
 namespace cinder { namespace svg {
@@ -156,11 +153,12 @@ vector<string> readStringList( const std::string &s, bool stripQuotes = false )
 {
 	vector<string> result = ci::split( s, "," );
 	for( vector<string>::iterator resultIt = result.begin(); resultIt != result.end(); ++resultIt ) {
-		boost::trim( *resultIt );
+		auto trimmed = ci::trim( *resultIt );
 		if( stripQuotes ) {
-			boost::erase_all( *resultIt, "\"" );
-			boost::erase_all( *resultIt, "\'" );
+			trimmed.erase( std::remove( trimmed.begin(), trimmed.end(), '"' ), trimmed.end() );
+			trimmed.erase( std::remove( trimmed.begin(), trimmed.end(), '\'' ), trimmed.end() );
 		}
+		*resultIt = trimmed;
 	}
 	
 	return result;
@@ -444,7 +442,7 @@ bool Style::parseProperty( const std::string &key, const std::string &value, con
 		return true;
 	}
 	else if( key == "font-weight" ) {
-		string weightString = boost::to_lower_copy( boost::trim_copy( value ) );
+		string weightString = ci::trim( value );
 		if( isdigit( weightString[0] ) ) {
 			int v = atoi( weightString.c_str() );
 			if( v > 900 ) v = 900;
@@ -452,13 +450,13 @@ bool Style::parseProperty( const std::string &key, const std::string &value, con
 			mFontWeight = FontWeight( static_cast<int>(WEIGHT_100) + ( ( v / 100 ) - 1 ) );
 			mSpecifiesFontWeight = true;
 		}
-		else if( weightString == "normal" ) {
+		else if( ci::asciiCaseEqual( weightString, "normal" ) ) {
 			mFontWeight = WEIGHT_NORMAL;
 			mSpecifiesFontWeight = true;
 		}
-		else if( weightString == "bold" ) {
+		else if( ci::asciiCaseEqual( weightString, "bold" ) ) {
 			mFontWeight = WEIGHT_BOLD;
-			mSpecifiesFontWeight = true;			
+			mSpecifiesFontWeight = true;
 		}
 		return true;
 	}

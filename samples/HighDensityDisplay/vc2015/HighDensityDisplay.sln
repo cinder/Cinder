@@ -1,0 +1,38 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HighDensityDisplay", "HighDensityDisplay.vcxproj", "{F77A4975-60F1-4291-B393-D98CAC1D837B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+		Debug_ANGLE|Win32 = Debug_ANGLE|Win32
+		Release_ANGLE|Win32 = Release_ANGLE|Win32
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+		Debug_ANGLE|x64 = Debug_ANGLE|x64
+		Release_ANGLE|x64 = Release_ANGLE|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Debug|Win32.Build.0 = Debug|Win32
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Release|Win32.ActiveCfg = Release|Win32
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Release|Win32.Build.0 = Release|Win32
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Debug_ANGLE|Win32.ActiveCfg = Debug_ANGLE|Win32
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Debug_ANGLE|Win32.Build.0 = Debug_ANGLE|Win32
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Release_ANGLE|Win32.ActiveCfg = Release_ANGLE|Win32
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Release_ANGLE|Win32.Build.0 = Release_ANGLE|Win32
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Debug|x64.ActiveCfg = Debug|x64
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Debug|x64.Build.0 = Debug|x64
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Release|x64.ActiveCfg = Release|x64
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Release|x64.Build.0 = Release|x64
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Debug_ANGLE|x64.ActiveCfg = Debug_ANGLE|x64
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Debug_ANGLE|x64.Build.0 = Debug_ANGLE|x64
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Release_ANGLE|x64.ActiveCfg = Release_ANGLE|x64
+		{F77A4975-60F1-4291-B393-D98CAC1D837B}.Release_ANGLE|x64.Build.0 = Release_ANGLE|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

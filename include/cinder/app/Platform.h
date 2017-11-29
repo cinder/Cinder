@@ -129,6 +129,9 @@ class CI_API Platform {
 	//! Returns a stack trace (aka backtrace) where \c stackTrace()[0] == caller, \c stackTrace()[1] == caller's parent, etc
 	virtual std::vector<std::string>		stackTrace() = 0;
 
+	//! Sets the name of the current thread to \a name
+	virtual void setThreadName( const std::string &name ) = 0;
+
 	//! Returns a std::vector of Displays connected to the system.
 	virtual const std::vector<DisplayRef>&	getDisplays() = 0;
 

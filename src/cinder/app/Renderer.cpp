@@ -155,21 +155,26 @@ Renderer2d::Renderer2d( bool doubleBuffer, bool paintEvents )
 {
 }
 
-void Renderer2d::setup( HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
+void Renderer2d::setup( WindowImplMsw *windowImpl, RendererRef /*sharedRenderer*/ )
 {
-	mWnd = wnd;
+	mWindowImpl = windowImpl;
 	mImpl = new RendererImpl2dGdi( mDoubleBuffer, mPaintEvents );
-	mImpl->initialize( wnd, dc, RendererRef() /* we don't use shared renderers on GDI */ );
+	mImpl->initialize( windowImpl, RendererRef() /* we don't use shared renderers on GDI */ );
+}
+
+HWND Renderer2d::getHwnd() const
+{
+	return mWindowImpl->getHwnd();
+}
+
+HDC	Renderer2d::getDc() const
+{
+	return mWindowImpl->getDc();
 }
 
 void Renderer2d::kill()
 {
 	mImpl->kill();
-}
-
-HDC Renderer2d::getDc()
-{
-	return mImpl->getDc();
 }
 
 void Renderer2d::prepareToggleFullScreen()

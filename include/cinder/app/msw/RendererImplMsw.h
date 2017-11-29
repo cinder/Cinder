@@ -35,12 +35,11 @@ namespace cinder { namespace app {
 
 class AppBase;
 class AppImplMswBasic;
+class WindowImplMsw;
 
 class RendererImplMsw {
  public:
-#if defined( CINDER_MSW_DESKTOP )
-	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;
-#elif defined( CINDER_UWP )
+#if defined( CINDER_UWP )
 	virtual bool	initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) = 0;
 #endif
 	virtual void	prepareToggleFullScreen() {}
@@ -52,7 +51,6 @@ class RendererImplMsw {
 
  protected:
   #if defined( CINDER_MSW_DESKTOP )
-	HWND				mWnd;
   #else
 	::Platform::Agile<Windows::UI::Core::CoreWindow>		mWnd;
   #endif
