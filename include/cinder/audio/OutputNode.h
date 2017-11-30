@@ -90,8 +90,7 @@ class CI_API OutputDeviceNode : public OutputNode {
 	virtual void deviceParamsDidChange();
 
 	DeviceRef					mDevice;
-	bool						mWasEnabledBeforeParamsChange, mOutputFramesPerBlockDirty;
-	size_t						mOutputFramesPerBlock;
+	bool						mWasEnabledBeforeParamsChange;
 	signals::ScopedConnection	mWillChangeConn, mDidChangeConn, mInterruptionBeganConn, mInterruptionEndedConn;
 };
 
