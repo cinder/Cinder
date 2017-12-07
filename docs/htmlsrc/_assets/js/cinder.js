@@ -2,7 +2,18 @@ var section;
 $(document).ready(function() {
 
 	var _this = this;
+
+	// the root directory is current location
 	var rootDir = window.location.origin + "/";
+
+	// Special condition for online version, assuming "docs/" is 
+	// the default root directory when not is a release specific directory
+	var protocol = window.location.protocol;
+	if( protocol === 'http:' || protocol === 'https:' ) {
+		rootDir = window.location.origin + "/docs/";
+	}
+
+	// if the current location is a filename, make the root the root of the docs directory
 	if(  window.location.pathname.lastIndexOf( window.docsRoot + '/' ) >= 0 ){
 		rootDir = window.location.pathname.substr(0, window.location.pathname.lastIndexOf( window.docsRoot + '/' ) + ( window.docsRoot.length + 1 ) );
 	}
