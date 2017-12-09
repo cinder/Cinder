@@ -555,9 +555,9 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 
 void _glfwPlatformPollEvents(void)
 {
-    EventNode* node = NULL;
+    EventNode* node = dequeueEvent(_glfw.mir.event_queue);
 
-    while ((node = dequeueEvent(_glfw.mir.event_queue)))
+    while (node)
     {
         handleEvent(node->event, node->window);
         deleteNode(_glfw.mir.event_queue, node);
