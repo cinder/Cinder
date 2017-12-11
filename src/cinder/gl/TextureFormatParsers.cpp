@@ -346,13 +346,13 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 				dataFormat = GL_RED;
 				dataType = GL_HALF_FLOAT;
 				blockSizeBytes = sizeof(uint16_t); 
-				break;
+			break;
 			case FOURCC_G16R16F:
-	            internalFormat = GL_RG16F;
-	            dataFormat = GL_RG;
-	            dataType = GL_HALF_FLOAT;
+	            		internalFormat = GL_RG16F;
+	            		dataFormat = GL_RG;
+	            		dataType = GL_HALF_FLOAT;
 				blockSizeBytes = sizeof(uint16_t) * 2; 
-				break;
+			break;
 			case FOURCC_A16B16G16R16F:
 				internalFormat = GL_RGBA16F;
 				dataFormat = GL_RGBA;
@@ -364,13 +364,13 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 				dataFormat = GL_RED;
 				dataType = GL_FLOAT;
 				blockSizeBytes = sizeof(float); 
-				break;
+			break;
 			case FOURCC_G32R32F:
-	            internalFormat = GL_RG32F;
-	            dataFormat = GL_RG;
-	            dataType = GL_FLOAT;
+	            		internalFormat = GL_RG32F;
+	            		dataFormat = GL_RG;
+	            		dataType = GL_FLOAT;
 				blockSizeBytes = sizeof(float) * 2;
-				break;
+			break;
 			case FOURCC_A32B32G32R32F:
 				internalFormat = GL_RGBA32F;
 				dataFormat = GL_RGBA;
