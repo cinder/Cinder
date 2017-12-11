@@ -240,7 +240,10 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 	} DdsHeader10;
 
 	enum { FOURCC_DXT1 = 0x31545844, FOURCC_DXT3 = 0x33545844, FOURCC_DXT5 = 0x35545844, FOURCC_DX10 = 0x30315844,
-		FOURCC_ATI1 = 0x31495441, FOURCC_ATI2= 0x32495441 };
+		FOURCC_ATI1 = 0x31495441, FOURCC_ATI2= 0x32495441,
+		FOURCC_R16F = 111, FOURCC_G16R16F = 112, FOURCC_A16B16G16R16F = 113, // s10e5 formats (16-bits per channel)
+		FOURCC_R32F = 114, FOURCC_G32R32F = 115, FOURCC_A32B32G32R32F = 116 // IEEE s23e8 formats (32-bits per channel)
+	};
 
 	enum { DDPF_ALPHAPIXELS = 0x1, DDPF_ALPHA = 0x2, DDPF_FOURCC = 0x4, DDPF_RGB = 0x40, DDPF_YUV = 0x200, DDPF_LUMINANCE = 0x20000 };
 
@@ -338,6 +341,42 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 				internalFormat = GL_COMPRESSED_RG_RGTC2;
 			break;
 #endif
+			case FOURCC_R16F:
+				internalFormat = GL_R16F;
+				dataFormat = GL_RED;
+				dataType = GL_HALF_FLOAT;
+				blockSizeBytes = sizeof(uint16_t); 
+				break;
+			case FOURCC_G16R16F:
+	            internalFormat = GL_RG16F;
+	            dataFormat = GL_RG;
+	            dataType = GL_HALF_FLOAT;
+				blockSizeBytes = sizeof(uint16_t) * 2; 
+				break;
+			case FOURCC_A16B16G16R16F:
+				internalFormat = GL_RGBA16F;
+				dataFormat = GL_RGBA;
+				dataType = GL_HALF_FLOAT;
+				blockSizeBytes = sizeof(uint16_t) * 4;
+			break;
+			case FOURCC_R32F:
+				internalFormat = GL_R32F;
+				dataFormat = GL_RED;
+				dataType = GL_FLOAT;
+				blockSizeBytes = sizeof(float); 
+				break;
+			case FOURCC_G32R32F:
+	            internalFormat = GL_RG32F;
+	            dataFormat = GL_RG;
+	            dataType = GL_FLOAT;
+				blockSizeBytes = sizeof(float) * 2;
+				break;
+			case FOURCC_A32B32G32R32F:
+				internalFormat = GL_RGBA32F;
+				dataFormat = GL_RGBA;
+				dataType = GL_FLOAT;
+				blockSizeBytes = sizeof(float) * 4;
+			break;
 			case FOURCC_DX10:
 				switch( ddsHeader10.dxgiFormat ) {
 #if ! defined( CINDER_GL_ES_2 )
