@@ -105,7 +105,8 @@ public:
 
 
 	struct Sensor {
-		bool 				mRequested = false;
+		bool 							mRequested = false;
+		bool							mIsEnabled = false;
 		const ASensor 		*mSensor = nullptr;
 		SensorCallbackFn	mCallbackFn;
 	};
