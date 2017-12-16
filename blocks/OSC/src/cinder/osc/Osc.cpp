@@ -1730,33 +1730,22 @@ uint64_t getFutureClockWithOffset( milliseconds offsetFuture, int64_t localOffse
 	return ( secs << 32 ) + usecs;
 }
 
-void getDate( uint64_t ntpTime, uint32_t *year, uint32_t *month, uint32_t *day, uint32_t *hours, uint32_t *minutes, uint32_t *seconds )
+std::string getClockString( uint64_t ntpTime, bool includeDate )
 {
 	// Convert to unix timestamp.
 	std::time_t sec_since_epoch = ( ntpTime - ( uint64_t( 0x83AA7E80 ) << 32 ) ) >> 32;
-	
-	auto tm = std::localtime( &sec_since_epoch );
-	if( year ) *year = tm->tm_year + 1900;
-	if( month ) *month = tm->tm_mon + 1;
-	if( day ) *day = tm->tm_mday;
-	if( hours ) *hours = tm->tm_hour;
-	if( minutes ) *minutes = tm->tm_min;
-	if( seconds )*seconds = tm->tm_sec;
-}
+	std::tm tm;
+// Windows deprecated this function in favor of a 'safe' version.
+#if defined(CINDER_MSW)
+  localtime_s(&tm, &sec_since_epoch);
+#else
+  tm = *std::localtime(&sec_since_epoch);
+#endif
+  auto time_str_format = includeDate ? "%D %T" : "%T";
 
-std::string getClockString( uint64_t ntpTime, bool includeDate )
-{
-	uint32_t year, month, day, hours, minutes, seconds;
-	getDate( ntpTime, &year, &month, &day, &hours, &minutes, &seconds );
-	
-	char buffer[128];
-	
-	if( includeDate )
-		sprintf( buffer, "%d/%d/%d %02d:%02d:%02d", month, day, year, hours, minutes, seconds );
-	else
-		sprintf( buffer, "%02d:%02d:%02d", hours, minutes, seconds );
-	
-	return std::string( buffer );
+  std::stringstream str;
+  str << std::put_time(&tm, time_str_format);
+	return str.str();
 }
 
 void calcOffsetFromSystem( uint64_t ntpTime, int64_t *localOffsetSecs, int64_t *localOffsetUSecs )
