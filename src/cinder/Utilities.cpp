@@ -132,11 +132,23 @@ bool asciiCaseEqual( const char *a, const char *b )
 {
 	bool result;
 	while( (result = std::toupper(*a) == std::toupper(*b++)) == true )
-	if( *a++ == '\0' )
-		break;
+		if( *a++ == '\0' )
+			break;
 
 	return result;
 }
+
+int asciiCaseCmp( const char *a, const char *b )
+{
+	while( ((int)std::toupper(*a)) == ((int)std::toupper(*b)) ) {
+		if( *a == '\0' || *b == '\0' )
+			break;
+		++a, ++b;
+	}
+
+	return ((int)std::toupper(*a)) - ((int)std::toupper(*b));
+}
+
 
 std::string trim( const std::string &str )
 {
