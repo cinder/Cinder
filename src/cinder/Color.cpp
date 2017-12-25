@@ -297,7 +297,7 @@ ColorT<uint8_t> svgNameToRgb( const char *name, bool *found )
 	int minIdx = 0, maxIdx = sTotalColors - 1;
 	while( minIdx <= maxIdx ) {
 		int curIdx = ( minIdx + maxIdx ) / 2;
-		int cmp = asciiCaseEqual( name, sColorNames[curIdx] );
+		int cmp = asciiCaseCmp( name, sColorNames[curIdx] );
 		if( cmp == 0 ) {
 			if( found )
 				*found = true;
