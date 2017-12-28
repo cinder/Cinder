@@ -31,7 +31,7 @@
 	#include "cinder/qtime/QuickTimeGlImplLegacy.h"
 #elif ( ! defined( CINDER_MAC_USE_GSTREAMER ) && defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) ) || defined( CINDER_COCOA_TOUCH )
 	#include "cinder/qtime/QuickTimeGlImplAvf.h"
-#elif defined( CINDER_MAC_USE_GSTREAMER )
+#elif defined( CINDER_MAC_USE_GSTREAMER ) || defined( CINDER_MSW_USE_GSTREAMER )
 	#include "cinder/linux/Movie.h" 
 #elif defined( CINDER_ANDROID )
 	#include "cinder/android/MovieGl.h" 
