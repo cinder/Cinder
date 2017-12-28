@@ -41,6 +41,6 @@ template<typename T>
 CI_API SurfaceT<T> resizeCopy( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &dstSize, const FilterBase &filter = FilterTriangle() );
 //! Returns a new Channel which is a copy of \a srcChannel's area \a srcArea scaled to size \a dstSize using filter \a filter
 template<typename T>
-CI_API SurfaceT<T> resizeCopy( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &dstSize, const FilterBase &filter = FilterTriangle() );
+CI_API ChannelT<T> resizeCopy( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &dstSize, const FilterBase &filter = FilterTriangle() );
 
 } } // namespace cinder::ip
