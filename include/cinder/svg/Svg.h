@@ -489,7 +489,9 @@ class CI_API Circle : public Node {
 	Circle( const Node *parent, const XmlTree &xml );
 	
 	vec2		getCenter() const { return mCenter; }
+	void		setCenter( const vec2 &center ) { mCenter = center; }
 	float		getRadius() const { return mRadius; }
+	void		setRadius( float radius ) { mRadius = radius; }
 
 	virtual bool	containsPoint( const vec2 &pt ) const { return distance2( pt, mCenter ) < mRadius * mRadius; }
 
@@ -510,8 +512,11 @@ class CI_API Ellipse : public Node {
 	Ellipse( const Node *parent, const XmlTree &xml );
 	
 	vec2		getCenter() const { return mCenter; }
+	void		setCenter( const vec2 &center ) { mCenter = center; }
 	float		getRadiusX() const { return mRadiusX; }
+	void		setRadiusX( float radiusX ) { mRadiusX = radiusX; }
 	float		getRadiusY() const { return mRadiusY; }
+	void		setRadiusY( float radiusY ) { mRadiusY = radiusY; }
 
 	bool 			containsPoint( const vec2 &pt ) const;
 
@@ -570,6 +575,7 @@ class CI_API Rect : public Node {
 	Rect( const Node *parent, const XmlTree &xml );
 	
 	const Rectf&	getRect() const { return mRect; }
+	void			setRect( const Rectf &rect ) { mRect = rect; }
 
 	virtual bool	containsPoint( const vec2 &pt ) const { return mRect.contains( pt ); }	
 
@@ -679,6 +685,7 @@ class CI_API TextSpan : public Node {
 		std::vector<Value>	mRotate;
 		float				mTextLength;
 		float				mLengthAdjust;
+		std::vector<Value>	mLetterSpacing;
 	};
 
 	TextSpan( const Node *parent, const XmlTree &xml );
@@ -690,6 +697,7 @@ class CI_API TextSpan : public Node {
 	std::vector<std::pair<uint16_t,vec2> > 	getGlyphMeasures() const;
 	vec2										getTextPen() const;
 	float						getRotation() const;
+	Value						getLetterSpacing() const;
 	
   protected:
 	virtual void	renderSelf( Renderer &renderer ) const;
@@ -713,6 +721,7 @@ class CI_API Text : public Node {
 
 	vec2 	getTextPen() const;
 	float	getRotation() const;
+	Value	getLetterSpacing() const;
 	
   protected:
 	virtual void	renderSelf( Renderer &renderer ) const;
@@ -755,6 +764,9 @@ class CI_API Group : public Node, private Noncopyable {
 	const std::list<Node*>&	getChildren() const { return mChildren; }
 	//! Returns a reference to the list of the Group's children.
 	std::list<Node*>&		getChildren() { return mChildren; }
+
+	//! Recursively iterates all Nodes in Group or Doc, passing each to \a fn to be optionally manipulated
+	virtual void		iterate( const std::function<void(Node*)> &fn );
 
   protected:
 	Node*		nodeUnderPoint( const vec2 &absolutePoint, const mat3 &parentInverseMatrix ) const;
