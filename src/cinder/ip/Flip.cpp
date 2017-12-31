@@ -72,13 +72,12 @@ void flipHorizontal( SurfaceT<T> *surface )
         T *rowPtr = surface->getData( ivec2( 0, y ) );
         for( int32_t x = 0; x < halfWidth; ++x ) {
             for( int c = 0; c < inc; ++c ) {
-                T temp = rowPtr[x*inc+c];
-                rowPtr[x*inc+c] = rowPtr[(width-x-1)*inc+c];
-                rowPtr[(width-x-1)*inc+c] = temp;
+                T temp = rowPtr[ x * inc + c ];
+                rowPtr[ x * inc + c ] = rowPtr[ ( width - x - 1 ) * inc + c ];
+                rowPtr[ ( width - x - 1 ) * inc + c ] = temp;
             }
         }
     }
-    
 }
     
 template<typename T>
@@ -95,9 +94,9 @@ void flipHorizontal( ChannelT<T> *channel )
         T *rowPtr = channel->getData( ivec2( 0, y ) );
         for( int32_t x = 0; x < halfWidth; ++x ) {
             for( int c = 0; c < inc; ++c ) {
-                T temp = rowPtr[x*inc+c];
-                rowPtr[x*inc+c] = rowPtr[(width-x-1)*inc+c];
-                rowPtr[(width-x-1)*inc+c] = temp;
+                T temp = rowPtr[ x * inc + c ];
+                rowPtr[ x * inc + c ] = rowPtr[ ( width - x -1 ) * inc + c ];
+                rowPtr[ ( width - x - 1 ) * inc + c ] = temp;
             }
         }
     }
@@ -109,22 +108,33 @@ void flipDiagonal( SurfaceT<T> *surface )
     const int32_t height = surface->getHeight();
     const int32_t width = surface->getWidth();
     const int32_t lastRow = surface->getHeight() - 1;
-    const int32_t widthStep = width / height + 1;
-    
+    const int32_t halfHeight = height / 2;
+
     //uses increment to guess the right place to swap values
     //this way we don't need to check for isPlanar() and the process will work for all conditions
     const size_t inc = surface->getPixelInc();
-    for( int32_t y = 0; y < height; ++y ) {
+    for( int32_t y = 0; y < halfHeight; ++y ) {
         T* rowPtr = surface->getData( ivec2( 0, y ) );
-        T* mirrorPtr = surface->getData( ivec2(0, lastRow-y));
-        for( int32_t x = 0; x < width - widthStep * y; ++x ) {
+        T* mirrorPtr = surface->getData( ivec2(0, lastRow - y ));
+        for( int32_t x = 0; x < width; ++x ) {
             for( int c = 0; c < inc; ++c ) {
-                T temp = rowPtr[x*inc+c];
-                rowPtr[x*inc+c] = mirrorPtr[(width-x)*inc+c];
-                mirrorPtr[(width-x)*inc+c] = temp;
+                T temp = rowPtr[ x * inc + c ];
+                rowPtr[ x * inc + c ] = mirrorPtr[ ( width - x - 1 ) * inc + c ];
+                mirrorPtr[ ( width - x - 1) * inc + c ] = temp;
             }
         }
-        
+    }
+    
+    //if height was an odd number one row of pixels will be left that should be reversed
+    if (halfHeight != height / 2.0f){
+        T* rowPtr = surface->getData( ivec2( 0, halfHeight) );
+        for( int32_t x = 0; x < width / 2; ++x ) {
+            for( int c = 0; c < inc; ++c ) {
+                T temp = rowPtr[ x * inc + c ];
+                rowPtr[ x * inc + c ] = rowPtr[ ( width - x - 1 ) * inc + c ];
+                rowPtr[ ( width - x - 1) * inc + c ] = temp;
+            }
+        }
     }
 }
     
@@ -134,24 +144,34 @@ void flipDiagonal( ChannelT<T> *channel )
     const int32_t height = channel->getHeight();
     const int32_t width = channel->getWidth();
     const int32_t lastRow = channel->getHeight() - 1;
-    const int32_t widthStep = width / height + 1;
+    const int32_t halfHeight = height / 2;
     
     //uses increment to guess the right place to swap values
     //this way we don't need to check for isPlanar() and the process will work for all conditions
     const size_t inc = channel->getIncrement();
-    for( int32_t y = 0; y < height; ++y ) {
+    for( int32_t y = 0; y < halfHeight; ++y ) {
         T* rowPtr = channel->getData( ivec2( 0, y ) );
-        T* mirrorPtr = channel->getData( ivec2(0, lastRow-y));
-        for( int32_t x = 0; x < width - widthStep * y; ++x ) {
+        T* mirrorPtr = channel->getData( ivec2(0, lastRow - y ));
+        for( int32_t x = 0; x < width; ++x ) {
             for( int c = 0; c < inc; ++c ) {
-                T temp = rowPtr[x*inc+c];
-                rowPtr[x*inc+c] = mirrorPtr[(width-x)*inc+c];
-                mirrorPtr[(width-x)*inc+c] = temp;
+                T temp = rowPtr[ x * inc + c ];
+                rowPtr[ x * inc + c ] = mirrorPtr[ ( width - x - 1 ) * inc + c ];
+                mirrorPtr[ ( width - x - 1) * inc + c ] = temp;
             }
         }
-        
     }
     
+    //if height was an odd number one row of pixels will be left that should be reversed
+    if (halfHeight != height / 2.0f){
+        T* rowPtr = channel->getData( ivec2( 0, halfHeight) );
+        for( int32_t x = 0; x < width / 2; ++x ) {
+            for( int c = 0; c < inc; ++c ) {
+                T temp = rowPtr[ x * inc + c ];
+                rowPtr[ x * inc + c ] = rowPtr[ ( width - x - 1 ) * inc + c ];
+                rowPtr[ ( width - x - 1) * inc + c ] = temp;
+            }
+        }
+    }
 }
     
 namespace { // anonymous
