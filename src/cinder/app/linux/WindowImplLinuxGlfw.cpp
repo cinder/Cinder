@@ -47,6 +47,7 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux 
 	const auto& options = std::dynamic_pointer_cast<RendererGl>( mRenderer )->getOptions();
 #if defined( CINDER_GL_ES )
 	::glfwDefaultWindowHints();
+	::glfwWindowHint( GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API );
 	::glfwWindowHint( GLFW_CLIENT_API, GLFW_OPENGL_ES_API );
   #if CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_2
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
