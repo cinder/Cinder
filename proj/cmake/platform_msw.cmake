@@ -70,14 +70,7 @@ if( CINDER_MSW_USE_GSTREAMER )
                     ${GST_ROOT}/lib/gmodule-2.0.lib
                     ${GST_ROOT}/lib/gthread-2.0.lib
                     ${GST_ROOT}/lib/glib-2.0.lib
-                    ${GST_ROOT}/lib/gio-2.0.lib
-                    ${GST_ROOT}/lib/pangowin32-1.0.lib
-                    ${GST_ROOT}/lib/pangocairo-1.0.lib
-                    ${GST_ROOT}/lib/gdk_pixbuf-2.0.lib
-                    ${GST_ROOT}/lib/pango-1.0.lib
-                    ${GST_ROOT}/lib/cairo.lib
-                    ${GST_ROOT}/lib/ffi.lib
-                    ${GST_ROOT}/lib/intl.lib )
+                    ${GST_ROOT}/lib/gio-2.0.lib )
 
         list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE 
                     ${GST_ROOT}/include 
