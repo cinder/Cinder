@@ -88,6 +88,8 @@ inline double fromString( const std::string &s ) { return atof( s.c_str() ); }
 CI_API bool asciiCaseEqual( const std::string &a, const std::string &b );
 //! returns \c true if ASCII strings \a a and \a b are case-insensitively equal. Not Unicode-aware.
 CI_API bool asciiCaseEqual( const char *a, const char *b );
+//! returns equivalent of strcmp() using ASCII case-insensitive comparison
+CI_API int asciiCaseCmp( const char *a, const char *b );
 
 //! returns a copy of \a str with all whitespace (as defined by std::isspace()) removed from beginning and end
 CI_API std::string trim( const std::string &str );

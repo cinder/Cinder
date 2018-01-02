@@ -59,20 +59,27 @@ float parseFloat( const char **sInOut )
 				temp[i++] = *s;
 			s++;
 		}
-		bool parsingExponent = false;
+		bool parsingExponent = false, startingExponent;
 		bool seenDecimal = false;
 		while( *s && ( parsingExponent || (*s != '-' && *s != '+')) && isNumeric(*s) ) {
+			startingExponent = false;
 			if( *s == '.' && seenDecimal )
 				break;
 			else if( *s == '.' )
 				seenDecimal = true;
 			if( i < sizeof(temp) )
 				temp[i++] = *s;
-			if( *s == 'e' || *s == 'E' )
+			if( *s == 'e' || *s == 'E' ) {
 				parsingExponent = true;
+				startingExponent = true;
+			}
 			else
 				parsingExponent = false;
 			s++;
+		}
+		if( startingExponent ) { // if we got a false positive on an exponent, for example due to "ex" or "em" unit, back up one
+			--i;
+			--s;
 		}
 		temp[i] = 0;
 		float result = (float)atof( temp );
@@ -1863,6 +1870,15 @@ Rectf Group::calcBoundingBox() const
 	return result;
 }
 
+void Group::iterate( const std::function<void(Node*)> &fn )
+{
+	for( list<Node*>::iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
+		fn( *childIt );
+		if( typeid(**childIt) == typeid(svg::Group) )
+			static_cast<svg::Group*>(*childIt)->iterate( fn );
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 // Use
 Use::Use( const Node *parent, const XmlTree &xml )
@@ -1992,6 +2008,14 @@ float Text::getRotation() const
 		return mAttributes.mRotate[0].asUser();
 }
 
+Value Text::getLetterSpacing() const
+{
+	if( mAttributes.mLetterSpacing.size() != 1 ) {
+		return Value( 0 );
+	}
+	else
+		return mAttributes.mLetterSpacing[0];
+}
 
 void Text::renderSelf( Renderer &renderer ) const
 {
@@ -2115,6 +2139,8 @@ TextSpan::Attributes::Attributes( const XmlTree &xml )
 		mY = readValueList( xml["y"], false );
 	if( xml.hasAttribute( "rotate" ) )
 		mRotate = readValueList( xml["rotate"], false );
+	if( xml.hasAttribute( "letter-spacing" ) )
+		mLetterSpacing = readValueList( xml["letter-spacing"], false );
 }
 
 const std::shared_ptr<Font>	TextSpan::getFont() const
@@ -2159,6 +2185,18 @@ float TextSpan::getRotation() const
 	}
 	else
 		return mAttributes.mRotate[0].asUser();
+}
+
+Value TextSpan::getLetterSpacing() const
+{
+	if( mIgnoreAttributes || ( mAttributes.mLetterSpacing.size() != 1 ) ) {
+		if( ! mParent ) return 0;
+		else if( typeid(*mParent) == typeid(TextSpan) ) return reinterpret_cast<const TextSpan*>( mParent )->getLetterSpacing();
+		else if( typeid(*mParent) == typeid(Text) ) return reinterpret_cast<const Text*>( mParent )->getLetterSpacing();
+		else return 0;
+	}
+	else
+		return mAttributes.mLetterSpacing[0];
 }
 
 void TextSpan::Attributes::startRender( Renderer &renderer ) const

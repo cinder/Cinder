@@ -165,4 +165,19 @@ TEST_CASE( "Utilities" )
 		REQUIRE( ci::trim( "  two  " ) == "two" );
 		REQUIRE( ci::trim( " \t\n\rtwo  " ) == "two" );
 	}
+
+	SECTION( "asciiCaseCmp()" )
+	{
+		REQUIRE( ci::asciiCaseCmp( "", "" ) == 0 );
+		REQUIRE( ci::asciiCaseCmp( "", "a" ) < 0 );
+		REQUIRE( ci::asciiCaseCmp( "a", "" ) > 0 );
+		REQUIRE( ci::asciiCaseCmp( "a", "a" ) == 0 );
+		REQUIRE( ci::asciiCaseCmp( "", "abc" ) < 0 );
+		REQUIRE( ci::asciiCaseCmp( "abc", "" ) > 0 );
+		REQUIRE( ci::asciiCaseCmp( "abc", "abc" ) == 0 );
+		REQUIRE( ci::asciiCaseCmp( "ab", "Abc" ) < 0 );
+		REQUIRE( ci::asciiCaseCmp( "aBc", "AbC" ) == 0 );
+		REQUIRE( ci::asciiCaseCmp( "aBc", "abcD" ) < 0 );
+		REQUIRE( ci::asciiCaseCmp( "aBcD", "ab" ) > 0 );
+	}
 }
