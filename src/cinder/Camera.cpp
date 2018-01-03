@@ -63,7 +63,14 @@ void Camera::setOrientation( const quat &orientation )
 // Derived from math presented in http://paulbourke.net/miscellaneous/lens/
 float Camera::getFocalLength() const
 {
-	return 1 / ( tan( toRadians( mFov ) * 0.5f ) * 2 );
+	if( !mFocalLengthCached ) {
+
+		mFocalLength = 1.0f / ( tan( toRadians( mFov ) * 0.5f ) * 2.0f );
+
+		mFocalLengthCached = true;
+	}
+
+	return mFocalLength;
 }
 
 void Camera::setWorldUp( const vec3 &worldUp )
@@ -299,7 +306,8 @@ void CameraPersp::setPerspective( float verticalFovDegrees, float aspectRatio, f
 	mNearClip		= nearPlane;
 	mFarClip		= farPlane;
 
-	mProjectionCached = false;
+	mFocalLengthCached = false;
+	mProjectionCached  = false;
 }
 
 Ray CameraPersp::calcRay( float uPos, float vPos, float imagePlaneApectRatio ) const
@@ -380,7 +388,8 @@ void CameraPersp::setLensShift(float horizontal, float vertical)
 	mLensShift.x = horizontal;
 	mLensShift.y = vertical;
 
-	mProjectionCached = false;
+	mFocalLengthCached = false;
+	mProjectionCached  = false;
 }
 
 CameraPersp	CameraPersp::calcFraming( const Sphere &worldSpaceSphere ) const
@@ -412,8 +421,9 @@ CameraOrtho::CameraOrtho( float left, float right, float bottom, float top, floa
 	mNearClip		= nearPlane;
 	mFarClip		= farPlane;
 	
-	mProjectionCached = false;
-	mModelViewCached = true;
+	mFocalLengthCached		= false;
+	mProjectionCached		= false;
+	mModelViewCached		= true;
 	mInverseModelViewCached = true;
 }
 
@@ -426,7 +436,8 @@ void CameraOrtho::setOrtho( float left, float right, float bottom, float top, fl
 	mNearClip		= nearPlane;
 	mFarClip		= farPlane;
 
-	mProjectionCached = false;
+	mFocalLengthCached = false;
+	mProjectionCached  = false;
 }
 
 void CameraOrtho::calcProjection() const
@@ -491,7 +502,10 @@ vec3 CameraStereo::getEyePointShifted() const
 
 void CameraStereo::setConvergence( float distance, bool adjustEyeSeparation )
 { 
-	mConvergence = distance; mProjectionCached = false;
+	mConvergence = distance;
+
+	mFocalLengthCached = false;
+	mProjectionCached  = false;
 
 	if( adjustEyeSeparation )
 		mEyeSeparation = mConvergence / 30.0f;

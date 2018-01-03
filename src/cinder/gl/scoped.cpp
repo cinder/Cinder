@@ -142,7 +142,7 @@ ScopedBlend::~ScopedBlend()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedGlslProg
-ScopedGlslProg::ScopedGlslProg( GlslProgRef& prog )
+ScopedGlslProg::ScopedGlslProg( const GlslProgRef& prog )
 	: mCtx( gl::context() )
 {
 	mCtx->pushGlslProg( prog.get() );
@@ -422,6 +422,19 @@ ScopedDepthWrite::ScopedDepthWrite( bool enableWrite )
 ScopedDepthWrite::~ScopedDepthWrite()
 {
 	mCtx->popDepthMask();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedDepthRange
+ScopedDepthRange::ScopedDepthRange( double nearVal, double farVal )
+	: mCtx( gl::context() )
+{
+	mCtx->pushDepthRange( nearVal, farVal );
+}
+
+ScopedDepthRange::~ScopedDepthRange()
+{
+	mCtx->popDepthRange();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

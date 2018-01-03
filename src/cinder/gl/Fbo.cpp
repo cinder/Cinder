@@ -710,20 +710,28 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
     return true;
 }
 
+GLint Fbo::getSamples()
+{
+#if ! defined( CINDER_GL_ES_2 )
+	GLint samples = -1;
+	glGetIntegerv( GL_SAMPLES, &samples);
+	return samples;
+#else
+	return 0;
+#endif
+}
+
 GLint Fbo::getMaxSamples()
 {
-	static GLint sMaxSamples = -1;
+	GLint maxSamples = -1;
 #if ! defined( CINDER_GL_ES_2 )
-	if( sMaxSamples < 0 ) {
-		glGetIntegerv( GL_MAX_SAMPLES, &sMaxSamples);
-	}
-	
-	return sMaxSamples;
+	glGetIntegerv( GL_MAX_SAMPLES, &maxSamples);
+
+	return maxSamples;
 #elif defined( CINDER_COCOA_TOUCH )
-	if( sMaxSamples < 0 )
-		glGetIntegerv( GL_MAX_SAMPLES_APPLE, &sMaxSamples);
-	
-	return sMaxSamples;
+	glGetIntegerv( GL_MAX_SAMPLES_APPLE, &maxSamples);
+
+	return maxSamples;
 #else
 	return 0;
 #endif
@@ -731,13 +739,10 @@ GLint Fbo::getMaxSamples()
 
 GLint Fbo::getMaxAttachments()
 {
-	static GLint sMaxAttachments = -1;
 #if ! defined( CINDER_GL_ES_2 )
-	if( sMaxAttachments < 0 ) {
-		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &sMaxAttachments );
-	}
-	
-	return sMaxAttachments;
+	GLint maxAttachments = -1;
+	glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &maxAttachments );
+	return maxAttachments;
 #else
 	return 1;
 #endif

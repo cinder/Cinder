@@ -48,15 +48,18 @@ namespace cinder {
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;
+using glm::dvec2;
+using glm::dvec3;
+using glm::dvec4;
 using glm::ivec2;
 using glm::ivec3;
 using glm::ivec4;
 using glm::uvec2;
 using glm::uvec3;
 using glm::uvec4;
-using glm::dvec2;
-using glm::dvec3;
-using glm::dvec4;
+using glm::tvec2;
+using glm::tvec3;
+using glm::tvec4;
 
 //! Returns a vector which is orthogonal to \a vec
 template<typename T, glm::precision P>
@@ -71,14 +74,20 @@ glm::tvec3<T, P> orthogonal( const glm::tvec3<T, P> &vec )
 
 template<uint8_t DIM,typename T> struct CI_API VECDIM { };
 
-template<> struct CI_API VECDIM<2,float>	{ typedef vec2	TYPE; };
-template<> struct CI_API VECDIM<3,float>	{ typedef vec3	TYPE; };
-template<> struct CI_API VECDIM<4,float>	{ typedef vec4	TYPE; };
-template<> struct CI_API VECDIM<2,double>	{ typedef dvec2	TYPE; };
-template<> struct CI_API VECDIM<3,double>	{ typedef dvec3	TYPE; };
-template<> struct CI_API VECDIM<4,double>	{ typedef dvec4	TYPE; };
-template<> struct CI_API VECDIM<2,int>		{ typedef ivec2	TYPE; };
-template<> struct CI_API VECDIM<3,int>		{ typedef ivec3	TYPE; };
-template<> struct CI_API VECDIM<4,int>		{ typedef ivec4	TYPE; };
+template<> struct CI_API VECDIM<2,float>			{ typedef vec2		TYPE; };
+template<> struct CI_API VECDIM<3,float>			{ typedef vec3		TYPE; };
+template<> struct CI_API VECDIM<4,float>			{ typedef vec4		TYPE; };
+template<> struct CI_API VECDIM<2,double>			{ typedef dvec2		TYPE; };
+template<> struct CI_API VECDIM<3,double>			{ typedef dvec3		TYPE; };
+template<> struct CI_API VECDIM<4,double>			{ typedef dvec4		TYPE; };
+template<> struct CI_API VECDIM<2,int>				{ typedef ivec2		TYPE; };
+template<> struct CI_API VECDIM<3,int>				{ typedef ivec3		TYPE; };
+template<> struct CI_API VECDIM<4,int>				{ typedef ivec4		TYPE; };
+template<> struct CI_API VECDIM<2,uint>				{ typedef uvec2		TYPE; };
+template<> struct CI_API VECDIM<3,uint>				{ typedef uvec3		TYPE; };
+template<> struct CI_API VECDIM<4,uint>				{ typedef uvec4		TYPE; };
+template<typename T> struct CI_API VECDIM<2,T>		{ typedef tvec2<T>	TYPE; };
+template<typename T> struct CI_API VECDIM<3,T>		{ typedef tvec3<T>	TYPE; };
+template<typename T> struct CI_API VECDIM<4,T>		{ typedef tvec4<T>	TYPE; };
 
 } // namespace cinder

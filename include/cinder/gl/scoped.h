@@ -117,7 +117,7 @@ struct CI_API ScopedBlendAdditive : public ScopedBlend
 };
 
 struct CI_API ScopedGlslProg : private Noncopyable {
-	ScopedGlslProg( GlslProgRef &prog );
+	ScopedGlslProg( const GlslProgRef &prog );
 	ScopedGlslProg( const std::shared_ptr<const GlslProg> &prog );
 	ScopedGlslProg( const GlslProg *prog );
 	~ScopedGlslProg();
@@ -293,6 +293,15 @@ struct CI_API ScopedDepthWrite : private Noncopyable {
 	//! Destructor returns state to how it was before this object was constructed.
 	~ScopedDepthWrite();
 
+  private:
+	Context		*mCtx;
+};
+
+//! Scopes state of depth range
+struct CI_API ScopedDepthRange : private Noncopyable {
+	ScopedDepthRange( double nearVal, double farVal );
+	~ScopedDepthRange();
+	
   private:
 	Context		*mCtx;
 };

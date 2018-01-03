@@ -1740,7 +1740,7 @@ void Circle::loadInto( Target *target, const AttribSet &/*requestedAttribs*/ ) c
 	normals.emplace_back( 0, 0, 1 );
 
 	// iterate the segments
-	const float tDelta = 1 / (float)mNumSubdivisions * 2.0f * 3.14159f;
+	const float tDelta = 1 / (float)mNumSubdivisions * float( M_PI * 2 );
 	float t = 0;
 	for( int s = 0; s <= mNumSubdivisions; s++ ) {
 		vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
@@ -1829,7 +1829,7 @@ void Ring::loadInto( Target *target, const AttribSet &/*requestedAttribs*/ ) con
 	float outerRadius = mRadius + 0.5f * mWidth;
 
 	// iterate the segments
-	const float tDelta = 1 / (float) mNumSubdivisions * 2.0f * 3.14159f;
+	const float tDelta = 1 / (float) mNumSubdivisions * float( M_PI * 2 );
 	float t = 0;
 	for( int s = 0; s <= mNumSubdivisions; s++ ) {
 		vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
@@ -2735,7 +2735,7 @@ void Transform::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 	else if( ctx->getAttribDims( POSITION ) != 0 )
 		CI_LOG_W( "Unsupported dimension for geom::POSITION passed to geom::Transform" );
 	
-	// we'll make the sort of modification to our normals (if they're present)
+	// we'll make the same sort of modification to our normals (if they're present)
 	// using the inverse transpose of 'mTransform'
 	if( ctx->getAttribDims( NORMAL ) == 3 ) {
 		vec3* normals = reinterpret_cast<vec3*>( ctx->getAttribData( NORMAL ) );
@@ -2746,7 +2746,7 @@ void Transform::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 	else if( ctx->getAttribDims( NORMAL ) != 0 )
 		CI_LOG_W( "Unsupported dimension for geom::NORMAL passed to geom::Transform" );
 
-	// and finally, we'll make the sort of modification to our tangents (if they're present)
+	// we'll also make the same sort of modification to our tangents (if they're present)
 	// using the inverse transpose of 'mTransform'
 	if( ctx->getAttribDims( TANGENT ) == 3 ) {
 		vec3* tangents = reinterpret_cast<vec3*>( ctx->getAttribData( TANGENT ) );
@@ -2756,6 +2756,17 @@ void Transform::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 	}
 	else if( ctx->getAttribDims( TANGENT ) != 0 )
 		CI_LOG_W( "Unsupported dimension for geom::TANGENT passed to geom::Transform" );
+
+	// and finally, we'll make the same sort of modification to our bitangents (if they're present)
+	// using the inverse transpose of 'mTransform'
+	if( ctx->getAttribDims( BITANGENT ) == 3 ) {
+		vec3* bitangents = reinterpret_cast<vec3*>( ctx->getAttribData( BITANGENT ) );
+		mat3 bitangentsTransform = glm::transpose( inverse( mat3( mTransform ) ) );
+		for( size_t v = 0; v < numVertices; ++v )
+			bitangents[v] = normalize( bitangentsTransform * bitangents[v] );
+	}
+	else if( ctx->getAttribDims( BITANGENT ) != 0 )
+		CI_LOG_W( "Unsupported dimension for geom::BITANGENT passed to geom::Transform" );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -2987,7 +2998,7 @@ void ColorFromAttrib::process( SourceModsContext *ctx, const AttribSet &requeste
 		return;
 
 	if( ctx->getAttribDims( mAttrib ) == 0 ) {
-		CI_LOG_W( "ColorFromAttrib called on geom::Source missing requested " << attribToString( mAttrib ) );
+		CI_LOG_E( "ColorFromAttrib called on geom::Source missing requested " << attribToString( mAttrib ) );
 		return;
 	}
 
@@ -3112,7 +3123,7 @@ void geom::AttribFn<S,D>::process( SourceModsContext *ctx, const AttribSet &requ
 	ctx->processUpstream( request );
 
 	if( ctx->getAttribDims( mSrcAttrib ) == 0 ) {
-		CI_LOG_W( "AttribFn called on geom::Source missing requested " << attribToString( mSrcAttrib ) );
+		CI_LOG_E( "AttribFn called on geom::Source missing requested " << attribToString( mSrcAttrib ) );
 		return;
 	}
 
@@ -4272,14 +4283,14 @@ void VertexNormalLines::process( SourceModsContext *ctx, const AttribSet &reques
 	const size_t numInVertices = ctx->getNumVertices();
 
 	if( ctx->getAttribDims( Attrib::POSITION ) != 3 ) {
-		CI_LOG_W( "VertexNormalLines only works for 3D positions" );
+		CI_LOG_E( "VertexNormalLines only works for 3D positions" );
 		return;
 	}
 	if( ctx->getAttribDims( mAttrib ) != 3 ) {
 		if( ctx->getAttribDims( mAttrib ) > 0 )
-			CI_LOG_W( "VertexNormalLines requires 3D " << attribToString( mAttrib ) );
+			CI_LOG_E( "VertexNormalLines requires 3D " << attribToString( mAttrib ) );
 		else
-			CI_LOG_W( "VertexNormalLines requires " << attribToString( mAttrib ) );
+			CI_LOG_E( "VertexNormalLines requires " << attribToString( mAttrib ) );
 		return;
 	}
 
@@ -4368,19 +4379,19 @@ void Tangents::process( SourceModsContext *ctx, const AttribSet &requestedAttrib
 	const size_t numVertices = ctx->getNumVertices();
 
 	if( numIndices == 0 ) {
-		CI_LOG_W( "geom::Tangents requires indexed geometry" );
+		CI_LOG_E( "geom::Tangents requires indexed geometry" );
 		return;
 	}
 	if( ctx->getAttribDims( Attrib::POSITION ) != 3 ) {
-		CI_LOG_W( "geom::Tangents requires 3D positions" );
+		CI_LOG_E( "geom::Tangents requires 3D positions" );
 		return;
 	}
 	if( ctx->getAttribDims( Attrib::NORMAL ) != 3 ) {
-		CI_LOG_W( "geom::Tangents requires 3D normals" );
+		CI_LOG_E( "geom::Tangents requires 3D normals" );
 		return;
 	}
 	if( ctx->getAttribDims( Attrib::TEX_COORD_0 ) != 2 ) {
-		CI_LOG_W( "geom::Tangents requires 2D texture coordinates" );
+		CI_LOG_E( "geom::Tangents requires 2D texture coordinates" );
 		return;
 	}
 
@@ -4407,7 +4418,7 @@ void Invert::process( SourceModsContext *ctx, const AttribSet &requestedAttribs 
 	ctx->processUpstream( requestedAttribs );
 
 	if( ctx->getAttribDims( mAttrib ) == 0 ) {
-		CI_LOG_W( "geom::Invert missing attrib: " << attribToString( mAttrib ) );
+		CI_LOG_E( "geom::Invert missing attrib: " << attribToString( mAttrib ) );
 		return;
 	}
 	
@@ -4492,7 +4503,7 @@ void Bounds::process( SourceModsContext *ctx, const AttribSet &requestedAttribs 
 	
 	uint8_t dims = ctx->getAttribDims( mAttrib );
 	if( dims == 0 ) {
-		CI_LOG_W( "geom::Bounds requested attribute " << attribToString( mAttrib ) << " missing." );
+		CI_LOG_E( "geom::Bounds requested attribute " << attribToString( mAttrib ) << " missing." );
 		return;
 	}
 	
@@ -4939,7 +4950,7 @@ void SourceModsContext::complete( Target *target, const AttribSet &requestedAttr
 	// first let's verify that all counts on our requested attributes are the same. If not, we'll continue to process but with an error
 	for( const auto &attribCount : mAttribCount )
 		if( attribCount.second != mNumVertices && ( requestedAttribs.count( attribCount.first ) > 0 ) )
-			CI_LOG_E( "Attribute " << attribToString( attribCount.first ) << " count is " << attribCount.first << " instead of " << mNumVertices );
+			CI_LOG_W( "Attribute " << attribToString( attribCount.first ) << " count is " << attribCount.first << " instead of " << mNumVertices );
 	
 	for( const auto &attribInfoPair : mAttribInfo ) {
 		Attrib attrib = attribInfoPair.first;
@@ -4971,7 +4982,7 @@ void SourceModsContext::loadInto( Target *target, const AttribSet &requestedAttr
 		// first let's verify that all counts on our requested attributes are the same. If not, we'll continue to process but with an error
 		for( const auto &attribCount : mAttribCount )
 			if( attribCount.second != mNumVertices && ( requestedAttribs.count( attribCount.first ) > 0 ) )
-				CI_LOG_E( "Attribute " << attribToString( attribCount.first ) << " count is " << attribCount.first << " instead of " << mNumVertices );
+				CI_LOG_W( "Attribute " << attribToString( attribCount.first ) << " count is " << attribCount.first << " instead of " << mNumVertices );
 		
 		for( const auto &attribInfoPair : mAttribInfo ) {
 			Attrib attrib = attribInfoPair.first;
@@ -5122,7 +5133,7 @@ void SourceModsContext::copyIndices( Primitive primitive, const uint32_t *source
 void SourceModsContext::appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytes )
 {
 	if( mPrimitive != primitive )
-		CI_LOG_E( "Primitive types don't match" );
+		CI_LOG_W( "Primitive types don't match" );
 	
 	auto newIndices = unique_ptr<uint32_t[]>( new uint32_t[numIndices + mNumIndices] );
 	mIndicesRequiredBytes = std::max( mIndicesRequiredBytes, requiredBytes );

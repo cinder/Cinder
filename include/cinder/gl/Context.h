@@ -320,13 +320,15 @@ class CI_API Context {
 	void		popBoolState( GLenum cap, bool forceRestore = false );
 	//! Synonym for setBoolState(). Enables or disables OpenGL capability \a cap.
 	void		enable( GLenum cap, GLboolean value = true );
+	//! Determines if an OpenGL capability \a cap is enabled.  Calls glIsEnabled() directly.
+	bool		isEnabled( GLenum cap ) const;
 	//! Analogous to glIsEnabled(). Returns whether a given OpenGL capability is enabled or not
 	GLboolean	getBoolState( GLenum cap );
 	//! Enables or disables OpenGL capability \a cap. Calls \a setter rather than glEnable or glDisable. Not generally necessary to call directly.
 	void		setBoolState( GLenum cap, GLboolean value, const std::function<void(GLboolean)> &setter );
 
 	//! Analogous glBlendFunc(). Consider using a ScopedBlend instead.
-	void		blendFunc( GLenum sfactor, GLenum dfactor );
+	inline void blendFunc( GLenum sfactor, GLenum dfactor ) { blendFuncSeparate( sfactor, dfactor, sfactor, dfactor ); }
 	//! Analogous to glBlendFuncSeparate(). Consider using a ScopedBlend instead.
 	void		blendFuncSeparate( GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
 	//! Analogous to glBlendFuncSeparate, but pushes values rather than replaces them
@@ -370,6 +372,28 @@ class CI_API Context {
 	void		popDepthFunc( bool forceRestore = false );
 	//! Returns the depth buffer comparison function, either \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL or \c GL_ALWAYS.
 	GLenum		getDepthFunc();
+
+	//! Set the depth range. Analogous to glDepthRange().
+	void						depthRange( double nearVal, double farVal );
+	//! Pushes and sets the current depth range.
+	void						pushDepthRange( double nearVal, double farVal );
+	//! Duplicates and pushes the current depth range.
+	void						pushDepthRange();
+	//! Sets the current depth range. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void						popDepthRange( bool forceRestore = false );
+	//! Returns the current depth range.
+	std::pair<double, double>	getDepthRange();
+
+	//! Set the polygon offset. Analogous to glPolygonOffset().
+	void						polygonOffset( float factor, float units );
+	//! Pushes and sets the current polygon offset.
+	void						pushPolygonOffset( float factor, float units );
+	//! Duplicates and pushes the current polygon offset.
+	void						pushPolygonOffset();
+	//! Sets the current polygon offset. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void						popPolygonOffset( bool forceRestore = false );
+	//! Returns the current polygon offset.
+	std::pair<float, float>		getPolygonOffset();
 
 #if ! defined( CINDER_GL_ES )
 	//! Sets the current polygon rasterization mode. \a face must be \c GL_FRONT_AND_BACK. \c GL_POINT, \c GL_LINE & \c GL_FILL are legal values for \a mode.
@@ -532,9 +556,11 @@ class CI_API Context {
 	std::vector<GLenum>			mPolygonModeStack;
 #endif
 
-	std::vector<GLboolean>		mDepthMaskStack;
-	std::vector<GLenum>			mDepthFuncStack;
-	
+	std::vector<GLboolean>					mDepthMaskStack;
+	std::vector<GLenum>						mDepthFuncStack;
+	std::vector<std::pair<double,double>>	mDepthRangeStack;
+	std::vector<std::pair<float,float>>		mPolygonOffsetStack;
+
 	std::map<GLenum,std::vector<GLboolean>>	mBoolStateStack;
 	// map<TextureUnit,map<TextureTarget,vector<Binding ID Stack>>>
 	std::map<uint8_t,std::map<GLenum,std::vector<GLint>>>	mTextureBindingStack;

@@ -68,11 +68,11 @@ class CI_API Camera {
 	//! Returns the camera's vertical field of view measured in degrees.
 	float	getFov() const { return mFov; }
 	//! Sets the camera's vertical field of view measured in degrees.
-	void	setFov( float verticalFov ) { mFov = verticalFov;  mProjectionCached = false; }
+	void	setFov( float verticalFov ) { mFov = verticalFov; mFocalLengthCached = false; mProjectionCached = false; }
 	//! Returns the camera's horizontal field of view measured in degrees.
 	float	getFovHorizontal() const { return toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(mFov) * 0.5f ) * mAspectRatio ) ); }
 	//! Sets the camera's horizontal field of view measured in degrees.
-	void	setFovHorizontal( float horizontalFov ) { mFov = toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians( horizontalFov ) * 0.5f ) / mAspectRatio ) );  mProjectionCached = false; }
+	void	setFovHorizontal( float horizontalFov ) { mFov = toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians( horizontalFov ) * 0.5f ) / mAspectRatio ) ); mFocalLengthCached = false; mProjectionCached = false; }
 	//! Returns the camera's focal length, calculating it based on the field of view.
 	float	getFocalLength() const;
 
@@ -86,15 +86,15 @@ class CI_API Camera {
 	//! Returns the aspect ratio of the image plane - its width divided by its height
 	float	getAspectRatio() const { return mAspectRatio; }
 	//! Sets the aspect ratio of the image plane - its width divided by its height
-	void	setAspectRatio( float aAspectRatio ) { mAspectRatio = aAspectRatio; mProjectionCached = false; }
+	void	setAspectRatio( float aAspectRatio ) { mAspectRatio = aAspectRatio; mFocalLengthCached = false; mProjectionCached = false; }
 	//! Returns the distance along the view direction to the Near clipping plane.
 	float	getNearClip() const { return mNearClip; }
 	//! Sets the distance along the view direction to the Near clipping plane.
-	void	setNearClip( float nearClip ) { mNearClip = nearClip; mProjectionCached = false; }
+	void	setNearClip( float nearClip ) { mNearClip = nearClip; mFocalLengthCached = false; mProjectionCached = false; }
 	//! Returns the distance along the view direction to the Far clipping plane.
 	float	getFarClip() const { return mFarClip; }
 	//! Sets the distance along the view direction to the Far clipping plane.
-	void	setFarClip( float farClip ) { mFarClip = farClip; mProjectionCached = false; }
+	void	setFarClip( float farClip ) { mFarClip = farClip; mFocalLengthCached = false; mProjectionCached = false; }
 
 	//! Returns the four corners of the Camera's Near clipping plane, expressed in world-space
 	virtual void	getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const;
@@ -138,7 +138,7 @@ class CI_API Camera {
 
   protected:
 	Camera()
-		: mModelViewCached( false ), mProjectionCached( false ), mInverseModelViewCached( false ), mWorldUp( vec3( 0, 1, 0 ) ),
+		: mFocalLengthCached( false ), mModelViewCached( false ), mProjectionCached( false ), mInverseModelViewCached( false ), mWorldUp( vec3( 0, 1, 0 ) ),
 			mPivotDistance( 0 )
 	{}
 
@@ -164,6 +164,9 @@ class CI_API Camera {
 	mutable vec3	mU;	// Right vector
 	mutable vec3	mV;	// Readjust up-vector
 	mutable vec3	mW;	// Negative view direction
+
+	mutable	float   mFocalLength;
+	mutable bool	mFocalLengthCached;
 
 	mutable mat4	mProjectionMatrix, mInverseProjectionMatrix;
 	mutable bool	mProjectionCached;
@@ -261,7 +264,7 @@ class CI_API CameraStereo : public CameraPersp {
 	//! Returns the distance between the camera's for the left and right eyes.
 	float			getEyeSeparation() const { return mEyeSeparation; }
 	//! Sets the distance between the camera's for the left and right eyes. This affects the parallax effect. 
-	void			setEyeSeparation( float distance ) { mEyeSeparation = distance; mModelViewCached = false; mProjectionCached = false; }
+	void			setEyeSeparation( float distance ) { mEyeSeparation = distance; mFocalLengthCached = false; mModelViewCached = false; mProjectionCached = false; }
 	//! Returns the location of the currently enabled eye camera.
 	vec3			getEyePointShifted() const;
 	

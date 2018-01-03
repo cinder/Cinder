@@ -384,8 +384,10 @@ void VboMesh::allocateIndexVbo()
 	if( mNumIndices == 0 )
 		return;
 
-	size_t bytesRequired = 1; // GL_UNSIGNED_BYTE
-	if( mIndexType == GL_UNSIGNED_SHORT )
+	size_t bytesRequired = 0;
+	if( mIndexType == GL_UNSIGNED_BYTE )
+		bytesRequired = 1;
+	else if( mIndexType == GL_UNSIGNED_SHORT )
 		bytesRequired = 2;
 	else if( mIndexType == GL_UNSIGNED_INT )
 		bytesRequired = 4;

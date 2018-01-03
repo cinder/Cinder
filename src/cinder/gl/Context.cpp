@@ -31,6 +31,7 @@
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/ConstantConversions.h"
 #include "cinder/gl/scoped.h"
+#include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
 #include "cinder/Utilities.h"
 #include "cinder/Breakpoint.h"
@@ -1325,6 +1326,13 @@ void Context::enable( GLenum cap, GLboolean value )
 	setBoolState( cap, value );
 }
 
+bool Context::isEnabled( GLenum cap ) const
+{
+	const GLboolean result = glIsEnabled( cap );
+	CI_ASSERT( GL_TRUE == result || GL_FALSE == result );
+	return GL_TRUE == result;
+}
+
 GLboolean Context::getBoolState( GLenum cap )
 {
 	auto cached = mBoolStateStack.find( cap );
@@ -1343,11 +1351,6 @@ GLboolean Context::getBoolState( GLenum cap )
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // BlendFunc
-void Context::blendFunc( GLenum sfactor, GLenum dfactor )
-{
-	blendFuncSeparate( sfactor, dfactor, sfactor, dfactor );
-}
-
 void Context::blendFuncSeparate( GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha )
 {
 	bool needsChange = setStackState<GLint>( mBlendSrcRgbStack, srcRGB );
@@ -1543,6 +1546,109 @@ GLenum Context::getDepthFunc()
 	}
 
 	return mDepthFuncStack.back();
+}
+
+//////////////////////////////////////////////////////////////////
+// DepthRange
+void Context::depthRange( double nearVal, double farVal )
+{
+	if( setStackState( mDepthRangeStack, std::pair<double, double>( nearVal, farVal ) ) )
+#if ! defined( CINDER_GL_ES )
+		glDepthRange( nearVal, farVal );
+#else
+		glDepthRangef( static_cast<float>( nearVal ), static_cast<float>( farVal ) );
+#endif
+}
+
+void Context::pushDepthRange( double nearVal, double farVal )
+{
+	if( pushStackState( mDepthRangeStack, std::pair<double, double>( nearVal, farVal ) ) )
+#if ! defined( CINDER_GL_ES )
+		glDepthRange( nearVal, farVal );
+#else
+		glDepthRangef( static_cast<float>( nearVal ), static_cast<float>( farVal ) );
+#endif
+}
+
+void Context::pushDepthRange()
+{
+	pushStackState( mDepthRangeStack, getDepthRange() );
+}
+
+void Context::popDepthRange( bool forceRestore )
+{
+	if( mDepthRangeStack.empty() )
+		CI_LOG_E( "DepthRange stack underflow" );
+	else if( popStackState( mDepthRangeStack ) || forceRestore ) {
+		auto depthRange = getDepthRange();
+#if ! defined( CINDER_GL_ES )
+		glDepthRange( depthRange.first, depthRange.second );
+#else
+		glDepthRangef( static_cast<float>( depthRange.first ), static_cast<float>( depthRange.second ) );
+#endif
+	}
+}
+
+std::pair<double, double> Context::getDepthRange()
+{
+	if( mDepthRangeStack.empty() ) {
+#if ! defined( CINDER_GL_ES )
+		GLdouble params[2];
+		glGetDoublev( GL_DEPTH_RANGE, params );
+#else
+		GLfloat params[2];
+		glGetFloatv( GL_DEPTH_RANGE, params );
+#endif
+		// push twice to account for inevitable pop to follow
+		mDepthRangeStack.push_back( std::pair<double, double>( params[0], params[1] ) );
+		mDepthRangeStack.push_back( std::pair<double, double>( params[0], params[1] ) );
+	}
+
+	return mDepthRangeStack.back();
+}
+
+//////////////////////////////////////////////////////////////////
+// PolygonOffset
+void Context::polygonOffset( float factor, float units )
+{
+	if( setStackState( mPolygonOffsetStack, std::pair<float, float>( factor, units ) ) )
+		glPolygonOffset( factor, units );
+}
+
+void Context::pushPolygonOffset( float factor, float units )
+{
+	if( pushStackState( mPolygonOffsetStack, std::pair<float, float>( factor, units ) ) )
+		glPolygonOffset( factor, units );
+}
+
+void Context::pushPolygonOffset()
+{
+	pushStackState( mPolygonOffsetStack, getPolygonOffset() );
+}
+
+void Context::popPolygonOffset( bool forceRestore )
+{
+	if( mPolygonOffsetStack.empty() )
+		CI_LOG_E( "PolygonOffset stack underflow" );
+	else if( popStackState( mPolygonOffsetStack ) || forceRestore ) {
+		auto polygonOffset = getPolygonOffset();
+		glPolygonOffset( polygonOffset.first, polygonOffset.second );
+	}
+}
+
+std::pair<float, float> Context::getPolygonOffset()
+{
+	if( mPolygonOffsetStack.empty() ) {
+		GLfloat factor, units;
+		glGetFloatv( GL_POLYGON_OFFSET_FACTOR, &factor );
+		glGetFloatv( GL_POLYGON_OFFSET_UNITS, &units );
+
+		// push twice to account for inevitable pop to follow
+		mPolygonOffsetStack.push_back( std::pair<float, float>( factor, units ) );
+		mPolygonOffsetStack.push_back( std::pair<float, float>( factor, units ) );
+	}
+
+	return mPolygonOffsetStack.back();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

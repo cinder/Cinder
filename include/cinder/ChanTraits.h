@@ -75,10 +75,29 @@ struct CI_API CHANTRAIT<float>
 	static float convert( uint16_t v ) { return v / 65535.0f; }
 	static float convert( half_float v ) { return halfToFloat( v ); }
 	static float convert( float v ) { return v; }
+    static float convert( double v ) { return static_cast<float>( v ); }
 	static float grayscale( float r, float g, float b ) { return r * 0.2126f + g * 0.7152f + b * 0.0722f; } // luma coefficients from Rec. 709
 	//! Calculates the multiplied version of a color component \a c by alpha \a a
 	static float premultiply( float c, float a ) { return c * a; }
 	static float inverse( float c ) { return 1.0f - c; }
+};
+
+template<>
+struct CI_API CHANTRAIT<double>
+{
+	typedef double Sum;
+	typedef double Accum;
+	typedef double SignedSum;
+	static double max() { return 1.0; }
+	static double convert( uint8_t v ) { return v / 255.0; }
+	static double convert( uint16_t v ) { return v / 65535.0; }
+	static double convert( half_float v ) { return halfToFloat( v ); }
+	static double convert( float v ) { return v; }
+	static double convert( double v ) { return v; }
+	static double grayscale( double r, double g, double b ) { return r * 0.2126 + g * 0.7152 + b * 0.0722; } // luma coefficients from Rec. 709
+	//! Calculates the multiplied version of a color component \a c by alpha \a a
+	static double premultiply( double c, double a ) { return c * a; }
+	static double inverse( double c ) { return 1.0 - c; }
 };
 
 template<>
@@ -92,6 +111,7 @@ struct CI_API CHANTRAIT<half_float>
 	static half_float convert( uint16_t v ) { return floatToHalf( v / 65535.0f ); }
 	static half_float convert( half_float v ) { return v; }
 	static half_float convert( float v ) { return floatToHalf( v ); }
+    static half_float convert( double v ) { return floatToHalf( static_cast<float>( v ) ); }
 	static half_float grayscale( half_float r, half_float g, half_float b ) {
 		return floatToHalf( halfToFloat( r ) * 0.2126f + halfToFloat( g ) * 0.7152f + halfToFloat( b ) * 0.0722f ); } // luma coefficients from Rec. 709
 	//! Calculates the multiplied version of a color component \a c by alpha \a a

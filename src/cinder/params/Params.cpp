@@ -79,6 +79,8 @@ void pushGlState()
 	ctx->pushGlslProg();
 	ctx->pushViewport();
 	ctx->pushScissor();
+	ctx->pushDepthRange();
+	ctx->pushPolygonOffset();
 	ctx->pushLineWidth();
 	ctx->pushActiveTexture();
 	ctx->pushBlendFuncSeparate();
@@ -86,11 +88,13 @@ void pushGlState()
 	ctx->pushFrontFace();
 	ctx->pushTextureBinding( GL_TEXTURE_2D, 0 );
 	ctx->pushBoolState( GL_SCISSOR_TEST );
-	ctx->pushBoolState( GL_CULL_FACE );
 #if ! defined( CINDER_GL_ANGLE )
 	ctx->pushBoolState( GL_LINE_SMOOTH );
 #endif
 	ctx->pushBoolState( GL_DEPTH_TEST );
+	ctx->pushBoolState( GL_POLYGON_OFFSET_POINT );
+	ctx->pushBoolState( GL_POLYGON_OFFSET_LINE );
+	ctx->pushBoolState( GL_POLYGON_OFFSET_FILL );
 	ctx->pushBoolState( GL_BLEND );
 	ctx->pushBoolState( GL_CULL_FACE );
 }
@@ -101,11 +105,13 @@ void popGlState()
 	
 	ctx->popBoolState( GL_CULL_FACE, true );
 	ctx->popBoolState( GL_BLEND, true );
+	ctx->popBoolState( GL_POLYGON_OFFSET_FILL, true );
+	ctx->popBoolState( GL_POLYGON_OFFSET_LINE, true );
+	ctx->popBoolState( GL_POLYGON_OFFSET_POINT, true );
 	ctx->popBoolState( GL_DEPTH_TEST, true );
 #if ! defined( CINDER_GL_ANGLE )
 	ctx->pushBoolState( GL_LINE_SMOOTH );
 #endif
-	ctx->popBoolState( GL_CULL_FACE, true );
 	ctx->popBoolState( GL_SCISSOR_TEST, true );
 	ctx->popTextureBinding( GL_TEXTURE_2D, 0, true );
 	ctx->popFrontFace( true );
@@ -113,6 +119,8 @@ void popGlState()
 	ctx->popBlendFuncSeparate( true );
 	ctx->popActiveTexture( true );
 	ctx->popLineWidth( true );
+	ctx->popPolygonOffset( true );
+	ctx->popDepthRange( true );
 	ctx->popScissor( true );
 	ctx->popViewport( true );
 	ctx->popGlslProg( true );

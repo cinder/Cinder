@@ -66,6 +66,7 @@ CI_API class Context* context();
 CI_API class Environment* env();
 
 CI_API void enableVerticalSync( bool enable = true );
+CI_API inline void disableVerticalSync() { enableVerticalSync( false ); }
 CI_API bool isVerticalSyncEnabled();
 
 CI_API GLenum getError();
@@ -88,7 +89,7 @@ CI_API GlslProgRef& getStockShader( const class ShaderDef &shader );
 CI_API void bindStockShader( const class ShaderDef &shader );
 CI_API void setDefaultShaderVars();
 
-CI_API void clear( const ColorA &color = ColorA::black(), bool clearDepthBuffer = true );
+CI_API void clear( const ColorA &color = ColorA::zero(), bool clearDepthBuffer = true );
 	
 CI_API void clear( GLbitfield mask );
 CI_API void clearColor( const ColorA &color );
@@ -122,47 +123,73 @@ CI_API inline void scissor( const ivec2 &position, const ivec2 &size ) { scissor
 	
 CI_API void enable( GLenum state, bool enable = true );
 CI_API inline void disable( GLenum state ) { enable( state, false ); }
+CI_API bool isEnabled( GLenum state );
 
-//! Enables or disables blending state as governed by \c GL_BLEND but does not modify blend function.
-CI_API void enableBlending( bool enable = false );
-//! Disables blending state via \c GL_BLEND, but does not modify blend function
+//! Sets the blend function using the source and destination factors.
+CI_API void setBlendingMode( GLenum sfactor, GLenum dfactor );
+//! Sets the blend function to unpremultiplied alpha blending.
+CI_API inline void setAlphaBlendingMode() { setBlendingMode( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ); }
+//! Sets the blend function to premultiplied alpha blending.
+CI_API inline void setAlphaBlendingPremultMode() { setBlendingMode( GL_ONE, GL_ONE_MINUS_SRC_ALPHA ); }
+//! Sets the blend function to additive blending.
+CI_API inline void setAdditiveBlendingMode() { setBlendingMode( GL_SRC_ALPHA, GL_ONE ); }
+
+//! Enables or disables blending state as governed by \c GL_BLEND.
+CI_API void enableBlending( bool enable = true );
+//! Disables blending state via \c GL_BLEND.
 CI_API inline void disableBlending() { enableBlending( false ); }
-//! Enables blending via \c GL_BLEND and sets the blend function to unpremultiplied alpha blending when \p enable is \c true; otherwise disables blending without modifying the blend function.
-CI_API void enableAlphaBlending( bool enable = true );
-//! Enables blending via \c GL_BLEND and sets the blend function to premultiplied alpha blending
-CI_API void enableAlphaBlendingPremult();
-//! Disables blending state as governed by \c GL_BLEND but does not modify blend function.. Deprecated; prefer disableBlending()
-CI_API inline void disableAlphaBlending() { disableBlending(); }
-//! Enables \c GL_BLEND and sets the blend function to additive blending
-CI_API void enableAdditiveBlending();
 
 //! Specifies whether polygons are culled. Equivalent to calling enable( \c GL_CULL_FACE, \a enable ). Specify front or back faces with gl::cullFace().
 CI_API void enableFaceCulling( bool enable = true );
+//! Disables polygon culling. Analagous to `glEnable( GL_CULL_FACE, false );`
+CI_API inline void disableFaceCulling() { enableFaceCulling( false ); }
 //! Specifies whether front or back-facing polygons are culled (as specified by \a face) when polygon culling is enabled. Valid values are \c GL_BACK and \c GL_FRONT.
 CI_API void cullFace( GLenum face );
 
 #if ! defined( CINDER_GL_ES )
 //! Specifies whether logic operations are enabled. Equivalent to calling enable( \c GL_COLOR_LOGIC_OP, \a enable ). Specify symbolic constants that selects the logical operation with gl::logicOp().
 CI_API void enableLogicOp( bool enable = true );
+//! Disable logic operations. Equivalent to calling enable( \c GL_COLOR_LOGIC_OP, \a false ).
+CI_API inline void disableLogicOp() { enableLogicOp( false ); }
 //! Specifies a symbolic constant that selects a logical operation. Valid values are \c GL_CLEAR, \c GL_SET, \c GL_COPY, \c GL_COPY_INVERTED, \c GL_NOOP, \c GL_INVERT, \c GL_AND, \c GL_NAND, \c GL_OR, \c GL_NOR, \c GL_XOR, \c GL_EQUIV, \c GL_AND_REVERSE, \c GL_AND_INVERTED, \c GL_OR_REVERSE, or \c GL_OR_INVERTED.
 CI_API void logicOp( GLenum mode );
 #endif
 
-//! Disables reading / testing from the depth buffer. Disables \c GL_DEPTH_TEST
-CI_API void disableDepthRead();
-//! Disables writing to depth buffer; analogous to calling glDepthMask( GL_FALSE );
-CI_API void disableDepthWrite();
 //! Enables or disables reading / testing from depth buffer; analogous to setting \c GL_DEPTH_TEST to \p enable
-CI_API void enableDepthRead( bool enable = true );
+CI_API inline void enableDepthRead( bool enable = true ) { gl::enable( GL_DEPTH_TEST, enable ); }
+//! Disables reading / testing from the depth buffer. Disables \c GL_DEPTH_TEST
+CI_API inline void disableDepthRead() { enableDepthRead( false ); }
 //! Enables or disables writing to depth buffer; analogous to calling glDepthMask( \p enable ); Note that reading must also be enabled for writing to have any effect.
 CI_API void enableDepthWrite( bool enable = true );
+//! Disables writing to depth buffer; analogous to calling glDepthMask( GL_FALSE );
+CI_API inline void disableDepthWrite() { enableDepthWrite( false ); }
 //! Enables or disables writing to and reading / testing from depth buffer
 CI_API inline void enableDepth( bool enable = true ) { enableDepthRead( enable ); enableDepthWrite( enable ); }
 
+//! Sets the depth range.
+CI_API void depthRange( double nearVal, double farVal );
+
+//! Sets the polygon offset.
+CI_API void polygonOffset( float factor, float units );
+#if ! defined( CINDER_GL_ES )
+//! Enables the polygon offset for points.
+CI_API inline void enablePolygonOffsetPoint( bool enable = true ) { gl::enable( GL_POLYGON_OFFSET_POINT, enable ); }
+//! Disables the polygon offset for points.
+CI_API inline void disablePolygonOffsetPoint() { enablePolygonOffsetPoint( false ); }
+//! Enables the polygon offset for lines.
+CI_API inline void enablePolygonOffsetLine( bool enable = true ) { gl::enable( GL_POLYGON_OFFSET_LINE, enable ); }
+//! Disables the polygon offset for lines.
+CI_API inline void disablePolygonOffsetLine() { enablePolygonOffsetLine( false ); }
+#endif
+//! Enables the polygon offset for polygons.
+CI_API inline void enablePolygonOffsetFill( bool enable = true ) { gl::enable( GL_POLYGON_OFFSET_FILL, enable ); }
+//! Disables the polygon offset for polygons.
+CI_API inline void disablePolygonOffsetFill() { enablePolygonOffsetFill( false ); }
+
 //! Enables or disables the stencil test operation, which controls reading and writing to the stencil buffer. Analagous to `glEnable( GL_STENCIL_TEST, enable );`
-CI_API void enableStencilTest( bool enable = true );
+CI_API inline void enableStencilTest( bool enable = true ) { gl::enable( GL_STENCIL_TEST, enable ); }
 //! Disables the stencil test operation. Analagous to `glEnable( GL_STENCIL_TEST, false );`
-CI_API void disableStencilTest();
+CI_API inline void disableStencilTest() { enableStencilTest( false ); }
  
 //! Sets the View and Projection matrices based on a Camera
 CI_API void setMatrices( const ci::Camera &cam );
@@ -218,6 +245,8 @@ CI_API inline void scale( float x, float y, float z ) { scale( vec3( x, y, z ) )
 CI_API inline void scale( const ci::vec2 &v ) { scale( vec3( v.x, v.y, 1 ) ); }
 //! Scales the Model matrix by (\a x,\a y, 1)
 CI_API inline void scale( float x, float y ) { scale( vec3( x, y, 1 ) ); }
+//! Scales the Model matrix by (\a s,\a s,\a s)
+CI_API inline void scale( float s ) { scale( vec3( s, s, s ) ); }
 
 //! Translates the Model matrix by \a v
 CI_API void translate( const ci::vec3 &v );
