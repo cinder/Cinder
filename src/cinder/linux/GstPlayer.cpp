@@ -334,9 +334,9 @@ GstPlayer::~GstPlayer()
 void GstPlayer::cleanup()
 {
     if( mGstData.pipeline != nullptr ) {
-        resetPipeline();
-        // Reset the bus since the associated pipeline got resetted.
+        // Flush and remove the bus since we are about to destroy our pipeline.
         resetBus();
+        resetPipeline();
     }
 
     resetVideoBuffers();
@@ -424,6 +424,7 @@ void GstPlayer::resetPipeline()
 
 void GstPlayer::resetBus()
 {
+    gst_bus_set_flushing( mGstBus, true );
     bool success = g_source_remove( mBusId );
     if( success ) {
         mBusId = -1;
@@ -436,9 +437,9 @@ void GstPlayer::setCustomPipeline( const GstCustomPipelineData &customPipeline )
     // Similar to loading and maybe merged at some point.
     // If we have a custom pipeline we reset before re-using.
     if( mGstData.pipeline ) {
-        resetPipeline();
-        // Reset the bus since the associated pipeline got destroyed.
+        // Flush and remove the bus since we are about to destroy our pipeline.
         resetBus();
+        resetPipeline();
     }
 
     GError *error = nullptr;
