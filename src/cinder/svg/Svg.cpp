@@ -30,6 +30,7 @@
 #include "cinder/Base64.h"
 #include "cinder/Text.h"
 #include "cinder/Log.h"
+#include "cinder/Unicode.h"
 
 using namespace std;
 
@@ -2061,12 +2062,16 @@ TextSpan::TextSpan( Node *parent, const std::string &str )
 	: Node( parent ), mIgnoreAttributes( true )
 {
 	// replace all multi-char whitespace with single space
-	const char *c = str.c_str();
-	while( *c ) {
-		if( isspace(*c) ) mString += ' ';
-		while( *c && isspace(*c) ) c++;
-		while( *c && ( ! isspace(*c) ) ) mString += *c++;
-	}
+	/*size_t c = 0;
+	while( str[c] ) {
+		if( isspace(str[c]) ) mString += ' ';
+		while( str[c] && isspace(str[c]) )
+			nextCharUtf8( str.c_str(), &c );
+		while( str[c] && ( ! isspace(str[c]) ) ) // this is not really correct - does not work with UTF32 code points that are >255
+			mString += nextCharUtf8( str.c_str(), &c );
+	}*/
+	// Technically multi-char whitespace should be reduced to single chars; needs to be revisited with unicode-aware version of this method
+	mString = str;
 }
 
 void TextSpan::renderSelf( Renderer &renderer ) const
