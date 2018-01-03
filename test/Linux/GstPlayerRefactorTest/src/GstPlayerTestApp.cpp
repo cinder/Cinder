@@ -34,7 +34,7 @@ class GstPlayerTestApp : public App {
 	void update() override;
 	void draw() override;
 
-	void loadMovieFile( const fs::path &path );
+	void loadMovieFile( const Url &path );
 
 	void testPlayPause();
 	void toggleVideoPlayback();
@@ -71,10 +71,10 @@ class GstPlayerTestApp : public App {
 	float           mLastStepPosition   = 0.0f;
 
     // Reload
-    double          mTriggerReloadRate = 4.0;
-    bool            mRandomizeReloadRate = true;
+    double          mTriggerReloadRate = 15.0;
+    bool            mRandomizeReloadRate = false;
     double          mTimeLastReloadTrigger;
-    std::vector<fs::path> mReloadPaths;
+    std::vector<Url> mReloadPaths;
 
 	TestCase		mCurrentTestCase = TEST_RELOADING;
 
@@ -93,9 +93,9 @@ void GstPlayerTestApp::setup()
 	
 	CI_LOG_I( "\n--- TESTING LEVELS END----\n\n");
 
-    loadMovieFile( "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4" );
-    mReloadPaths.push_back( "http://pdl.warnerbros.com/wbol/us/dd/med/northbynorthwest/quicktime_page/nbnf_airplane_explosion_qt_500.mov" );
-    mReloadPaths.push_back( "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4" );
+    loadMovieFile( Url( "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4" ) );
+    mReloadPaths.push_back( Url( "http://pdl.warnerbros.com/wbol/us/dd/med/northbynorthwest/quicktime_page/nbnf_airplane_explosion_qt_500.mov" ) );
+    mReloadPaths.push_back( Url( "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4" ) );
     mTriggerTimer.start();
     mTimeLastPlayPauseTrigger = mTriggerTimer.getSeconds();
 }
@@ -199,7 +199,7 @@ void GstPlayerTestApp::testReload()
 void GstPlayerTestApp::newLoad()
 {
     static int currentMovieIndex = 0;
-    fs::path movieToLoad = mReloadPaths[ currentMovieIndex % 2 ];
+    auto movieToLoad = mReloadPaths[ currentMovieIndex % 2 ];
     currentMovieIndex++;
     loadMovieFile( movieToLoad );
 }
@@ -265,9 +265,6 @@ void GstPlayerTestApp::draw()
 void GstPlayerTestApp::keyDown( KeyEvent event )
 {
     if( event.getCode() == KeyEvent::KEY_o ) {
-        fs::path moviePath = getOpenFilePath();
-        if( ! moviePath.empty() )
-            loadMovieFile( moviePath );
     }
     else if( event.getCode() == KeyEvent::KEY_p ) {
         if( mMovie ) mMovie->stop();
@@ -284,18 +281,18 @@ void GstPlayerTestApp::keyDown( KeyEvent event )
     }
 }
 
-void GstPlayerTestApp::loadMovieFile( const fs::path &moviePath )
+void GstPlayerTestApp::loadMovieFile( const Url &movieUrl )
 {
     try {
         // load up the movie, set it to loop, and begin playing
-        mMovie = qtime::MovieGl::create( moviePath );
+        mMovie = qtime::MovieGl::create( movieUrl );
         mMovie->setLoop();
         mMovie->play();
-	console() << "Playing: " << mMovie->isPlaying() << std::endl;
+        console() << "Playing: " << mMovie->isPlaying() << std::endl;
     }
     catch( ci::Exception &exc ) {
-        console() << "Exception caught trying to load the movie from path: " << moviePath << ", what: " << exc.what() << std::endl;
-	mMovie.reset();
+        console() << "Exception caught trying to load the movie from path: " << movieUrl << ", what: " << exc.what() << std::endl;
+        mMovie.reset();
     }
 
     mFrameTexture.reset();
@@ -308,7 +305,6 @@ void GstPlayerTestApp::mouseDown( MouseEvent event )
 
 void GstPlayerTestApp::fileDrop( FileDropEvent event )
 {
-    loadMovieFile( event.getFile( 0 ) );
 }
 
 CINDER_APP( GstPlayerTestApp, RendererGl, GstPlayerTestApp::prepareSettings );
