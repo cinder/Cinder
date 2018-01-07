@@ -15,6 +15,7 @@
 #endif
 
 #include "cinder/app/AppBase.h"
+#include "cinder/Log.h"
 #include "cinder/gl/Environment.h"
 #include <chrono>
 
@@ -142,7 +143,7 @@ GstBusSyncReply checkBusMessagesSync( GstBus* bus, GstMessage* message, gpointer
             const gchar *context_type = nullptr;
             gst_message_parse_context_type( message, &context_type );
 
-            g_print( "Need context %s from element %s\n", context_type, GST_ELEMENT_NAME( GST_MESSAGE_SRC( message ) ) );
+            CI_LOG_I( "Need context : " << context_type << " from element : " << GST_ELEMENT_NAME( GST_MESSAGE_SRC( message ) ) );
 
             GstContext* context = nullptr;
             if( g_strcmp0( context_type, GST_GL_DISPLAY_CONTEXT_TYPE ) == 0 ) {
@@ -188,7 +189,7 @@ gboolean checkBusMessagesAsync( GstBus* bus, GstMessage* message, gpointer userD
 
             GstStateChangeReturn state = gst_element_set_state( data.pipeline, GST_STATE_NULL );
             if( state == GST_STATE_CHANGE_FAILURE ) {
-                g_error( "Failed to set the pipeline to nullptr state after ERROR occured\n" );
+                CI_LOG_E( "Failed to set the pipeline to nullptr state after ERROR occured." );
             }
             break;
         }
@@ -201,7 +202,7 @@ gboolean checkBusMessagesAsync( GstBus* bus, GstMessage* message, gpointer userD
             gst_message_parse_have_context( message, &context );
             context_type = gst_context_get_context_type( context );
             context_str = gst_structure_to_string( gst_context_get_structure( context ) );
-            g_print( "Have context %s from element %s\n", context_type, GST_ELEMENT_NAME( GST_MESSAGE_SRC( message ) ) );
+            CI_LOG_I( "Have context : " << context_type << " from element : " << GST_ELEMENT_NAME( GST_MESSAGE_SRC( message ) ) );
             g_free( context_str );
 
             if( context ) {
@@ -214,10 +215,10 @@ gboolean checkBusMessagesAsync( GstBus* bus, GstMessage* message, gpointer userD
             if( data.isLive ) break; // No buffering for live sources.
             gint percent = 0;
             gst_message_parse_buffering( message, &percent );
-            g_print( "Buffering (%3d%%)\r", percent );
+            CI_LOG_I( "Buffering : " << percent );
             if( percent == 100 ) {
                 data.isBuffering = false;
-                g_print( " Buffering Complete ! \n" );
+                CI_LOG_I( "Buffering Complete !" );
                 if( data.targetState == GST_STATE_PLAYING ) {
                     gst_element_set_state( data.pipeline, GST_STATE_PLAYING );
                 }
@@ -225,7 +226,7 @@ gboolean checkBusMessagesAsync( GstBus* bus, GstMessage* message, gpointer userD
             else {
                 if( ! data.isBuffering && data.targetState == GST_STATE_PLAYING ) {
                     gst_element_set_state( data.pipeline, GST_STATE_PAUSED );
-                    g_print(  " Buffering in process....\n" );
+                    CI_LOG_I(  "Buffering in process...." );
                 }
                 data.isBuffering = true;
             }
@@ -250,7 +251,7 @@ gboolean checkBusMessagesAsync( GstBus* bus, GstMessage* message, gpointer userD
                 GstState old, current, pending;
                 gst_message_parse_state_changed( message, &old, &current, &pending );
                 if( old != current ) {
-                    g_print( "Pipeline state changed from : %s to %s with pending %s\n", gst_element_state_get_name( old ), gst_element_state_get_name ( current ), gst_element_state_get_name( pending) );
+                    CI_LOG_I( "Pipeline state changed from : " << gst_element_state_get_name( old ) << " to : " << gst_element_state_get_name ( current ) << " with pending : " <<  gst_element_state_get_name( pending) );
                 }
 
                 data.updateState(  current );
@@ -376,10 +377,10 @@ bool GstPlayer::initializeGStreamer()
         /// If we havent already initialized GStreamer do this.
         if( ! gst_init_check( nullptr, nullptr, &err ) ) {
             if( err->message ) {
-                g_error( "FAILED to initialize GStreamer : %s\n", err->message );
+                CI_LOG_E( "FAILED to initialize GStreamer : " << err->message );
             }
             else {
-                g_error( "FAILED to initialize GStreamer due to unknown error ...\n" );
+                CI_LOG_E( "FAILED to initialize GStreamer due to unknown error." );
             }
             return false;
         }
@@ -390,7 +391,7 @@ bool GstPlayer::initializeGStreamer()
             else {
                 sUseGstGl = false;
             }
-            g_print( "Initialized GStreamer version %i.%i.%i.%i\n", major, minor, micro, nano );
+            CI_LOG_I( "Initialized GStreamer version : " << major << "." << minor << "." << micro << "." << nano );
             return true;
         }
     }
@@ -446,7 +447,7 @@ void GstPlayer::setCustomPipeline( const GstCustomPipelineData &customPipeline )
     mGstData.pipeline = gst_parse_launch( customPipeline.pipeline.c_str(), &error );
 
     if( error != nullptr ) {
-        g_print( "Could not construct custom pipeline: %s\n", error->message );
+        CI_LOG_E( "Could not construct custom pipeline : " << error->message );
         g_error_free (error);
     }
 
@@ -550,16 +551,16 @@ void GstPlayer::constructPipeline()
     mGstData.pipeline   = gst_element_factory_make( "playbin", "playbinsink" );
     if( ! mGstData.pipeline ) {
         // Not much we can do without at least playbin...
-        g_printerr( "Failed to create playbin pipeline!\n" );
+        CI_LOG_E( "Failed to create playbin pipeline!" );
         return;
     }
 
     mGstData.videoBin   = gst_bin_new( "cinder-vbin" );
-    if( ! mGstData.videoBin ) g_printerr( "Failed to create video bin!\n" );
+    if( ! mGstData.videoBin ) CI_LOG_E( "Failed to create video bin!" );
 
     mGstData.appSink    = gst_element_factory_make( "appsink", "videosink" );
     if( ! mGstData.appSink ) {
-        g_printerr( "Failed to create app sink element!\n" );
+        CI_LOG_E( "Failed to create app sink element!" );
     }
     else {
         gst_app_sink_set_max_buffers( GST_APP_SINK( mGstData.appSink ), 1 );
@@ -589,10 +590,10 @@ void GstPlayer::constructPipeline()
     if( sUseGstGl ) {
 #if defined( CINDER_GST_HAS_GL )
         mGstData.glupload           = gst_element_factory_make( "glupload", "upload" );
-        if( ! mGstData.glupload ) g_printerr( "Failed to create GL upload element!\n" );
+        if( ! mGstData.glupload ) CI_LOG_E( "Failed to create GL upload element!" );
 
         mGstData.glcolorconvert     = gst_element_factory_make( "glcolorconvert", "convert" );
-        if( ! mGstData.glcolorconvert ) g_printerr( "Failed to create GL convert element!\n" );
+        if( ! mGstData.glcolorconvert ) CI_LOG_E( "Failed to create GL convert element!" );
 
         mGstData.rawCapsFilter      = gst_element_factory_make( "capsfilter", "rawcapsfilter" );
 #if defined( CINDER_LINUX_EGL_ONLY ) && defined( CINDER_GST_HAS_GL )
@@ -600,12 +601,12 @@ void GstPlayer::constructPipeline()
 #else
         if( mGstData.rawCapsFilter ) g_object_set( G_OBJECT( mGstData.rawCapsFilter ), "caps", gst_caps_from_string( "video/x-raw" ), nullptr );
 #endif
-        else g_printerr( "Failed to create raw caps filter element!\n" );
+        else CI_LOG_E( "Failed to create raw caps filter element!" );
 
         gst_bin_add_many( GST_BIN( mGstData.videoBin ),  mGstData.rawCapsFilter, mGstData.glupload, mGstData.glcolorconvert, mGstData.appSink, nullptr );
 
         if( ! gst_element_link_many( mGstData.rawCapsFilter, mGstData.glupload, mGstData.glcolorconvert,  mGstData.appSink, nullptr ) ) {
-            g_printerr( "Failed to link video elements...!\n" );
+            CI_LOG_E( "Failed to link video elements!" );
         }
 
         pad = gst_element_get_static_pad( mGstData.rawCapsFilter, "sink" );
@@ -763,14 +764,14 @@ gint64 GstPlayer::getDurationNanos()
     gint64 duration = 0;
     if( isPrerolled() ) {
         if( ! gst_element_query_duration( mGstData.pipeline, GST_FORMAT_TIME, &duration ) ) {
-            g_warning( "Cannot query duration." );
+            CI_LOG_W( "Cannot query duration." );
             return -1;
         }
         mGstData.duration = duration;
     }
     else {
         mGstData.duration = -1;
-        g_warning( "Cannot query duration ! Pipeline is NOT PRE-ROLLED" );
+        CI_LOG_W( "Cannot query duration ! Pipeline is NOT PRE-ROLLED" );
     }
     return mGstData.duration;
 }
@@ -807,7 +808,7 @@ gint64 GstPlayer::getPositionNanos()
                 pos = mGstData.requestedSeekTime * GST_SECOND;
             }
             else {
-                g_warning( "Cannot query position ! " );
+                CI_LOG_W( "Cannot query position!" );
                 pos = -1;
             }
         }
@@ -815,7 +816,7 @@ gint64 GstPlayer::getPositionNanos()
     }
     else {
         mGstData.position = -1;
-        g_warning("Cannot query position ! Pipeline is not prerolled.. ");
+        CI_LOG_W( "Cannot query position! Pipeline is not prerolled." );
     }
     return mGstData.position;
 }
@@ -903,7 +904,7 @@ bool GstPlayer::setRate( float rate )
     }
 
     if( rate < 0.0f && isStream() ) {
-        g_print( "No reverse playback supported for streams!\n " );
+        CI_LOG_W( "No reverse playback supported for streams!" );
         return false;
     }
 
@@ -944,7 +945,7 @@ bool GstPlayer::sendSeekEvent( gint64 seekTime )
     gboolean successSeek = gst_element_send_event( mGstData.pipeline, seekEvent );
 
     if( ! successSeek ) {
-        g_warning("seek failed");
+        CI_LOG_W( "Seek FAILED!" );
         return false;
     }
 
@@ -974,7 +975,7 @@ GstStateChangeReturn GstPlayer::getStateChange()
 {
     GstState current, pending;
     GstStateChangeReturn stateChange = gst_element_get_state( mGstData.pipeline, &current, &pending, 0 );
-    g_print( "Pipeline CURRENT state : %s with PENDING %s\n", gst_element_state_get_name( current ), gst_element_state_get_name( pending ) );
+    CI_LOG_I( "Pipeline CURRENT state : " <<  gst_element_state_get_name( current ) << " with PENDING : " << gst_element_state_get_name( pending ) );
 
     return stateChange;
 }
@@ -993,10 +994,10 @@ bool GstPlayer::setPipelineState( GstState targetState )
         return true; // Avoid unnecessary state changes.
 
     GstStateChangeReturn stateChangeResult = gst_element_set_state( mGstData.pipeline, mGstData.targetState );
-    g_print( "Pipeline state about to change from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name( targetState ) );
+    CI_LOG_I( "Pipeline state about to change from : " << gst_element_state_get_name( current ) << " to : " << gst_element_state_get_name( targetState ) );
 
     if( ! sEnableAsyncStateChange && stateChangeResult == GST_STATE_CHANGE_ASYNC ) {
-        g_print( " Blocking until pipeline state changes from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name( targetState ) );
+        CI_LOG_I( "Blocking until pipeline state changes from : " << gst_element_state_get_name( current ) << " to : " << gst_element_state_get_name( targetState ) );
         stateChangeResult = gst_element_get_state( mGstData.pipeline, &current, &pending, GST_CLOCK_TIME_NONE );
     }
 
@@ -1007,17 +1008,17 @@ bool GstPlayer::checkStateChange( GstStateChangeReturn stateChangeResult )
 {
     switch( stateChangeResult ) {
         case GST_STATE_CHANGE_FAILURE: {
-            g_warning( "** Pipeline failed to change state.. **" );
+            CI_LOG_E( "Pipeline FAILED to change state." );
             return false;
         }
         case GST_STATE_CHANGE_SUCCESS: {
-            g_print( "Pipeline state changed SUCCESSFULLY from : %s to %s\n", gst_element_state_get_name( mGstData.currentState ), gst_element_state_get_name ( mGstData.targetState ) );
+            CI_LOG_I( "Pipeline state changed SUCCESSFULLY from : " << gst_element_state_get_name( mGstData.currentState ) << " to : " << gst_element_state_get_name ( mGstData.targetState ) );
             // Our target state is now the current one also.
             mGstData.updateState( mGstData.targetState );
             return true;
         }
         case GST_STATE_CHANGE_ASYNC: {
-            g_print( "Pipeline state change will happen ASYNC from : %s to %s\n", gst_element_state_get_name( mGstData.currentState ), gst_element_state_get_name ( mGstData.targetState ) );
+            CI_LOG_I( "Pipeline state change will happen ASYNC from : " << gst_element_state_get_name( mGstData.currentState ) << " to : " << gst_element_state_get_name ( mGstData.targetState ) );
             return true;
         }
         case GST_STATE_CHANGE_NO_PREROLL: {
