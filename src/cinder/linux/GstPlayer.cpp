@@ -181,15 +181,18 @@ gboolean checkBusMessagesAsync( GstBus* bus, GstMessage* message, gpointer userD
     {
         case GST_MESSAGE_ERROR: {
             GError *err = nullptr;
-            gchar *dbg;
+            gchar *dbg = nullptr;
             gst_message_parse_error( message, &err, &dbg );
-            gst_object_default_error( message->src, err, dbg );
+            CI_LOG_E( "ERROR from element " << GST_OBJECT_NAME( message->src ) << " : " << err->message );
+            if( dbg )
+                CI_LOG_E( "Debugging info : " << dbg );
+
             g_error_free ( err );
             g_free ( dbg );
 
             GstStateChangeReturn state = gst_element_set_state( data.pipeline, GST_STATE_NULL );
             if( state == GST_STATE_CHANGE_FAILURE ) {
-                CI_LOG_E( "Failed to set the pipeline to nullptr state after ERROR occured." );
+                CI_LOG_E( "Failed to set the pipeline to NULL state after ERROR occured." );
             }
             break;
         }
