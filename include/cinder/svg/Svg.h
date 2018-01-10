@@ -706,6 +706,9 @@ class CI_API TextSpan : public Node {
 	float									getRotation() const;
 	Value									getLetterSpacing() const;
 
+	std::vector<TextSpanRef>&				getSpans() { return mSpans; }
+	const std::vector<TextSpanRef>&			getSpans() const { return mSpans; }
+
   protected:
 	virtual void	renderSelf( Renderer &renderer ) const;
 
