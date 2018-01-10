@@ -528,9 +528,10 @@ bool GstPlayer::initialize()
             sGstGLDisplay = gst_gl_display_new ();
         else
             holdDisplayRef = true;
-
+        ci::gl::env()->makeContextCurrent( nullptr );
         auto platformData = std::dynamic_pointer_cast<ci::gl::PlatformDataMsw>( ci::gl::context()->getPlatformData() );
         mGstData.context  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)platformData->mGlrc, GST_GL_PLATFORM_WGL, GST_GL_API_OPENGL );
+        ci::gl::context()->makeCurrent();
 #endif
         if( holdDisplayRef ) {
             gst_object_ref( sGstGLDisplay );
