@@ -88,7 +88,7 @@ void Swapchain::initializeColorBuffers()
 	}
 
 	// If a specific present mode isn't requested, find one.
-	if( VK_PRESENT_MODE_MAX_ENUM == mOptions.mPresentMode ) {
+	if( VK_PRESENT_MODE_MAX_ENUM_KHR == mOptions.mPresentMode ) {
 		CI_LOG_I( "Finding best present mode..." );
 		// If mailbox mode is available, use it, as is the lowest-latency non-
 		// tearing mode.  If not, try IMMEDIATE which will usually be available,
