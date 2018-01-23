@@ -27,8 +27,6 @@
 #include "cinder/audio/Exception.h"
 #include "cinder/Noncopyable.h"
 
-#include <boost/logic/tribool.hpp>
-
 #include <memory>
 #include <atomic>
 #include <set>
@@ -70,27 +68,34 @@ class CI_API Node : public std::enable_shared_from_this<Node>, private Noncopyab
 	};
 
 	struct Format {
-		Format() : mChannels( 0 ), mChannelMode( ChannelMode::MATCHES_INPUT ), mAutoEnable( boost::logic::indeterminate ) {}
+		Format()
+			: mChannels( 0 ), mChannelMode( ChannelMode::MATCHES_INPUT ), mAutoEnable( true ), mAutoEnableSet( false )
+		{}
 
 		//! Sets the number of channels for the Node.
 		Format& channels( size_t ch )							{ mChannels = ch; return *this; }
 		//! Controls how channels will be matched between connected Node's, if necessary. \see ChannelMode.
 		Format& channelMode( ChannelMode mode )					{ mChannelMode = mode; return *this; }
 		//! Whether or not the Node will be auto-enabled when connection changes occur.  Default is true for base \a Node class, although sub-classes may choose a different default.
-		Format& autoEnable( bool autoEnable = true )			{ mAutoEnable = autoEnable; return *this; }
+		Format& autoEnable( bool autoEnable = true )			{ setAutoEnable( autoEnable ); return *this; }
 
 		size_t			getChannels() const						{ return mChannels; }
 		ChannelMode		getChannelMode() const					{ return mChannelMode; }
-		boost::tribool	getAutoEnable() const					{ return mAutoEnable; }
+		bool			getAutoEnable() const					{ return mAutoEnable; }
+		//! Returns whether the user specified whether auto-enable is on or off. Some types of Nodes will choose
+		//! a different default for auto-enable, ex. the base Node type will turn it on by default, whereas `InputNode`s and `OutputNode`s
+		//! will turn it off and the user will have to manually set this property or call enable() on the Node themselves.
+		bool			isAutoEnableSet() const					{ return mAutoEnableSet; }
 
 		void setChannels( size_t ch )							{ mChannels = ch; }
 		void setChannelMode( ChannelMode mode )					{ mChannelMode = mode; }
-		void setAutoEnable( bool autoEnable	)					{ mAutoEnable = autoEnable; }
+		void setAutoEnable( bool autoEnable	)					{ mAutoEnable = autoEnable; mAutoEnableSet = true; }
 
 	  private:
 		size_t			mChannels;
 		ChannelMode		mChannelMode;
-		boost::tribool	mAutoEnable;
+		bool			mAutoEnable;
+		bool			mAutoEnableSet;
 	};
 
 	Node( const Format &format );
