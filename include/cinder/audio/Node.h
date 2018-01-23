@@ -58,7 +58,7 @@ typedef std::shared_ptr<class Node>				NodeRef;
 //! \see InputNode, OutputNode
 class CI_API Node : public std::enable_shared_from_this<Node>, private Noncopyable {
   public:
-	//! Used to specifiy how the corresponding channels are to be resolved between two connected Node's,
+	//! Used to specify how the corresponding channels are to be resolved between two connected Node's,
 	//! based on either a Node's input (the default), it's output, or specified by user.
 	enum class ChannelMode {
 		//! Number of channels has been specified by user or is non-settable.
