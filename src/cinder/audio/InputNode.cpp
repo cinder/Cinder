@@ -38,7 +38,7 @@ InputNode::InputNode( const Format &format )
 	if( getChannelMode() != ChannelMode::SPECIFIED )
 		setChannelMode( ChannelMode::MATCHES_OUTPUT );
 
-	if( boost::indeterminate( format.getAutoEnable() ) )
+	if( ! format.isAutoEnableSet() )
 		setAutoEnabled( false );
 }
 
