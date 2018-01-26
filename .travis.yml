@@ -24,22 +24,12 @@ matrix:
 
     # OS X Xcode
     - os: osx
+      osx_image: xcode9.2
+      env: 
+        - TOOL="xcode-osx"
+        - DESCRIPTION="OS X build/test via Xcode"
+    - os: osx
       osx_image: xcode8.3
-      env: 
-        - TOOL="xcode-osx"
-        - DESCRIPTION="OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8.2
-      env: 
-        - TOOL="xcode-osx"
-        - DESCRIPTION="OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8.1
-      env:
-        - TOOL="xcode-osx"
-        - DESCRIPTION=OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8
       env:
         - TOOL="xcode-osx"
         - DESCRIPTION=OS X build/test via Xcode"
@@ -51,22 +41,12 @@ matrix:
 
     # iOS Xcode
     - os: osx
+      osx_image: xcode9.2
+      env: 
+        - TOOL="xcode-ios"
+        - DESCRIPTION="OS X build/test via Xcode"
+    - os: osx
       osx_image: xcode8.3
-      env: 
-        - TOOL="xcode-ios"
-        - DESCRIPTION="OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8.2
-      env: 
-        - TOOL="xcode-ios"
-        - DESCRIPTION="OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8.1
-      env:
-        - TOOL="xcode-ios"
-        - DESCRIPTION=OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8
       env:
         - TOOL="xcode-ios"
         - DESCRIPTION=OS X build/test via Xcode"
@@ -78,22 +58,12 @@ matrix:
 
     # iOS-Sim Xcode
     - os: osx
+      osx_image: xcode9.2
+      env: 
+        - TOOL="xcode-ios-sim"
+        - DESCRIPTION="OS X build/test via Xcode"
+    - os: osx
       osx_image: xcode8.3
-      env: 
-        - TOOL="xcode-ios-sim"
-        - DESCRIPTION="OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8.2
-      env: 
-        - TOOL="xcode-ios-sim"
-        - DESCRIPTION="OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8.1
-      env:
-        - TOOL="xcode-ios-sim"
-        - DESCRIPTION=OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8
       env:
         - TOOL="xcode-ios-sim"
         - DESCRIPTION=OS X build/test via Xcode"
@@ -105,22 +75,12 @@ matrix:
 
     # OS X CMake
     - os: osx
+      osx_image: xcode9.2
+      env:
+        - TOOL="cmake" 
+        - DESCRIPTION="OS X build/test via CMake"
+    - os: osx
       osx_image: xcode8.3
-      env:
-        - TOOL="cmake" 
-        - DESCRIPTION="OS X build/test via CMake"
-    - os: osx
-      osx_image: xcode8.2
-      env:
-        - TOOL="cmake" 
-        - DESCRIPTION="OS X build/test via CMake"
-    - os: osx
-      osx_image: xcode8.1
-      env:
-        - TOOL="cmake" 
-        - DESCRIPTION="OS X build/test via CMake"
-    - os: osx
-      osx_image: xcode8
       env:
         - TOOL="cmake" 
         - DESCRIPTION="OS X build/test via CMake"
