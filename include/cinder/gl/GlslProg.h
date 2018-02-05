@@ -267,7 +267,7 @@ class CI_API GlslProg {
 		//! Adds a define directive to the ShaderPreprocessor, which will be prepended to the shader sources
 		Format&		define( const std::string &define, const std::string &value );
 		//! Returns the define directives that the ShaderPreprocessor will prepend to shader sources.
-		std::vector<std::string> getDefineDirectives() const;
+		const std::vector<std::pair<std::string,std::string>>& getDefines() const;
 		//! Specifies the #version directive that the ShaderPreprocessor will add to shader sources, if they don't contain an explicit `#version` string.
 		Format&		version( int version );
 		//! Returns the #version directive that the ShaderPreprocessor will add to shader sources, if they don't contain an explicit `#version` string.
