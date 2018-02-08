@@ -1,19 +1,6 @@
 #!/bin/bash
 set -e
 
-# CMake
-sudo add-apt-repository -y ppa:george-edison55/cmake-3.x && \
-  sudo apt-get -y update && \
-  sudo apt-get -y install cmake
-
-# Clang
-sudo apt-add-repository -y "deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.7 main" && \
-  wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key|sudo apt-key add - && \
-  sudo apt-get -y update && \
-  sudo apt-get install -y \
-    clang-3.7 \
-    lldb-3.7
-
 # Packages
 sudo apt-get -y install \
   libxcursor-dev \
