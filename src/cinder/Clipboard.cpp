@@ -145,6 +145,9 @@ std::string	Clipboard::getString()
 	}
 	::CloseClipboard();
 	return result;
+#elif defined(CINDER_LINUX)
+  std::string result=std::string(glfwGetClipboardString((GLFWwindow*)app::getWindow()->getNative()));
+	return result;
 #endif
 }
 
@@ -206,6 +209,8 @@ void Clipboard::setString( const std::string &str )
 	::GlobalUnlock( hglbCopy );
 	::SetClipboardData( CF_UNICODETEXT, hglbCopy ); 
 	::CloseClipboard();
+#elif defined( CINDER_LINUX )
+ 	glfwSetClipboardString((GLFWwindow*)app::getWindow()->getNative(),str.c_str());
 #endif
 }
 
