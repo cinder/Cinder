@@ -49,7 +49,7 @@
 #elif defined( CINDER_LINUX )
   #include "cinder/app/App.h"
   #include "cinder/app/RendererGl.h"
-  #include"glfw/glfw3.h"
+  #include "glfw/glfw3.h"
 #endif
 
 namespace cinder {
