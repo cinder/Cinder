@@ -117,6 +117,8 @@ const char*	deviceRoloToStr( ERole role )
 DeviceManagerWasapi::DeviceManagerWasapi()
 	: mImpl( new Impl( this ) )
 {
+	ci::msw::initializeCom();
+
 	::IMMDeviceEnumerator *enumerator;
 	HRESULT hr = ::CoCreateInstance( __uuidof(::MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(::IMMDeviceEnumerator), (void**)&enumerator );
 	CI_ASSERT( hr == S_OK );

@@ -73,6 +73,7 @@ private:
 
 class ContextWasapi : public Context {
   public:
+	ContextWasapi();
 	OutputDeviceNodeRef	createOutputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() )	override;
 	InputDeviceNodeRef	createInputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() )	override;
 };
