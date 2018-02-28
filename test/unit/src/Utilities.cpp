@@ -2,6 +2,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Utilities.h"
+#include "cinder/ConcurrentCircularBuffer.h"
 #include "cinder/app/App.h"
 
 #include <iostream>
@@ -31,6 +32,27 @@ std::istream& operator>>( std::istream &i, CustomType &t )
 
 TEST_CASE( "Utilities" )
 {
+	SECTION( "ConcurrentCircularBuffer" )
+	{
+		ConcurrentCircularBuffer<int> ccb( 10 );
+		REQUIRE( ccb.getCapacity() == 10 );
+		for( int i = 0; i < 10; ++i )
+			ccb.pushFront( i );
+
+		REQUIRE( ccb.getSize() == 10 );
+		REQUIRE( ccb.isNotEmpty() );
+		REQUIRE( ! ccb.isNotFull() );
+		int temp;
+		REQUIRE( ! ccb.tryPushFront( 11 ) );
+		for( int i = 0; i < 10; ++i ) {
+			ccb.popBack( &temp );
+			REQUIRE( temp == i );
+		}
+		REQUIRE( ! ccb.tryPopBack( &temp ) );
+		REQUIRE( ! ccb.isNotEmpty() );
+		REQUIRE( ccb.isNotFull() );
+	}
+
 	SECTION( "swapEndian" )
 	{
 		// 8-bit; should be no-op
