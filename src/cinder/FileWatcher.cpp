@@ -307,14 +307,20 @@ void FileWatcher::unwatch( const fs::path &filePath )
 	auto fullPath = findFullFilePath( filePath );
 
 	lock_guard<recursive_mutex> lock( mMutex );
-	for( auto &watch : mWatchList ) {
+	
+	for( auto it = mWatchList.begin(); it != mWatchList.end(); /* */ ) {
+		const auto &watch = *it;
 		watch->unwatch( fullPath );
+		if( watch->isDiscarded() ) {
+			it = mWatchList.erase( it );
+			continue;
+		}
+		++it;
 	}
 }
 
 void FileWatcher::unwatch( const vector<fs::path> &filePaths )
 {
-	lock_guard<recursive_mutex> lock( mMutex );
 	for( const auto &filePath : filePaths ) {
 		unwatch( filePath );
 	}
