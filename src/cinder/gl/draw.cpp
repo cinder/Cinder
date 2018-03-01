@@ -1175,16 +1175,14 @@ void drawSolidCircle( const vec2 &center, float radius, int numSegments )
 	if( normals )
 		normals[0] = vec3( 0, 0, 1 );
 	const float tDelta = 1.0f / numSegments * 2 * (float)M_PI;
-	float t = 0;
 	for( int s = 0; s <= numSegments; s++ ) {
-		const vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
+		const vec2 unit( math<float>::cos( s * tDelta ), math<float>::sin( s * tDelta ) );
 		if( verts )
 			verts[s+1] = center + unit * radius;
 		if( texCoords )
 			texCoords[s+1] = unit * 0.5f + vec2( 0.5f, 0.5f );
 		if( normals )
 			normals[s+1] = vec3( 0, 0, 1 );
-		t += tDelta;
 	}
 
 	defaultVbo->bufferSubData( 0, dataSizeBytes, data.get() );
@@ -1194,7 +1192,6 @@ void drawSolidCircle( const vec2 &center, float radius, int numSegments )
 	ctx->drawArrays( GL_TRIANGLE_FAN, 0, numSegments + 2 );
 	ctx->popVao();
 }
-
 void drawSolidEllipse( const vec2 &center, float radiusX, float radiusY, int numSegments )
 {
 	auto ctx = context();
