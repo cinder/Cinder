@@ -148,7 +148,19 @@ DataSourceUrlRef DataSourceUrl::create( const Url &url, const UrlOptions &option
 DataSourceUrl::DataSourceUrl( const Url &url, const UrlOptions &options )
 	: DataSource( "", url ), mOptions( options )
 {
+#if _MSC_VER >= 1900 && _MSC_VER <= 1912
+	std::string urlString = url.str();
+
+	if ( urlString.size() >= 260 )	{
+		// Workaround for MSVC++ 14.0/17.0 exceptions once fs::path length hits 260
+		const size_t start = urlString.rfind( '/' );
+		urlString = urlString.substr( start == std::string::npos ? 0 : start, 259 );
+	}
+
+	setFilePathHint( urlString );
+#else
 	setFilePathHint( url.str() );
+#endif
 }
 
 void DataSourceUrl::createBuffer()
