@@ -188,13 +188,13 @@ void resample( const vector<const ChannelT<T>*> &srcChannels, const FilterBase &
 	xWeightPtr = xWeightBuffer;
 	for ( int32_t bx = 0; bx < dstWidth; bx++, xWeightPtr += filterParamsX.width ) {
 		xWeights[bx].weight = xWeightPtr;
-		makeWeightTable<T,typename SCALETRAIT<T>::SUMT>( bx, MAP(bx, m.sx, m.ux), filter, &filterParamsX, srcWidth, true, &xWeights[bx] );
+		makeWeightTable<T,typename SCALETRAIT<T>::SUMT>( MAP(bx, m.sx, m.ux), filter, &filterParamsX, srcWidth, true, &xWeights[bx] );
 	}
 
 	for( size_t chan = 0; chan < srcChannels.size(); ++chan ) {
 		for ( int32_t dstY = 0; dstY < dstHeight; ++dstY ) {     // loop over dest scanlines
 			// prepare a weight table for dest y position by
-			makeWeightTable<T,typename SCALETRAIT<T>::SUMT>( dstY, MAP(dstY, m.sy, m.uy), filter, &filterParamsY, srcHeight, false, &yWeights );
+			makeWeightTable<T,typename SCALETRAIT<T>::SUMT>( MAP(dstY, m.sy, m.uy), filter, &filterParamsY, srcHeight, false, &yWeights );
 
 			memset( accum.get(), 0, sizeof(int32_t) * dstWidth );
 
@@ -228,7 +228,7 @@ void scanlineAccumulate( LT weight, LT *lineBuffer, int32_t width, AT *accum )
 }
 
 template<typename T, typename WT>
-void makeWeightTable( int32_t b, float cen, const FilterBase &filter, const FilterParams *params, int32_t len, bool trimzeros, WeightTable<WT> *wtab )
+void makeWeightTable( float cen, const FilterBase &filter, const FilterParams *params, int32_t len, bool trimzeros, WeightTable<WT> *wtab )
 {
 	int32_t start, end, i, stillzero, lastnonzero, nz;
 	WT *wp, t, sum;
