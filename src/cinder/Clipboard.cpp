@@ -47,9 +47,9 @@
 	#include "cinder/ip/Blend.h"
 	#include <set>
 #elif defined( CINDER_LINUX )
-  #include "cinder/app/App.h"
-  #include "cinder/app/RendererGl.h"
-  #include "glfw/glfw3.h"
+	#include "cinder/app/App.h"
+	#include "cinder/app/RendererGl.h"
+	#include "glfw/glfw3.h"
 #endif
 
 namespace cinder {
@@ -88,6 +88,8 @@ bool Clipboard::hasString()
 	std::set<UINT> textFormats;
 	textFormats.insert( CF_TEXT ); textFormats.insert( CF_UNICODETEXT ); textFormats.insert( CF_OEMTEXT );
 	return clipboardContainsFormat( textFormats );
+#elif defined( CINDER_LINUX )
+	return glfwGetClipboardString( (GLFWwindow*)app::getWindow()->getNative() ) != nullptr;
 #endif
 }
 
@@ -105,11 +107,13 @@ bool Clipboard::hasImage()
 #elif defined( CINDER_MSW )
 	std::set<UINT> imageFormats;
 	imageFormats.insert( CF_BITMAP ); imageFormats.insert( CF_DIB ); imageFormats.insert( CF_DIBV5 );
-	return clipboardContainsFormat( imageFormats);
+	return clipboardContainsFormat( imageFormats );
+#elif defined( CINDER_LINUX )
+	return false;
 #endif
 }
 	
-std::string	Clipboard::getString()
+std::string Clipboard::getString()
 {
 #if defined( CINDER_MAC )
 	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
@@ -149,9 +153,8 @@ std::string	Clipboard::getString()
 	}
 	::CloseClipboard();
 	return result;
-#elif defined(CINDER_LINUX)
-  std::string result=std::string(glfwGetClipboardString((GLFWwindow*)app::getWindow()->getNative()));
-	return result;
+#elif defined( CINDER_LINUX )
+	return std::string( glfwGetClipboardString( (GLFWwindow*)app::getWindow()->getNative() ) );
 #endif
 }
 
@@ -188,6 +191,8 @@ ImageSourceRef Clipboard::getImage()
 	}
 	::CloseClipboard();
 	return result;
+#elif defined( CINDER_LINUX )
+	return ImageSourceRef();
 #endif
 }
 
@@ -214,7 +219,7 @@ void Clipboard::setString( const std::string &str )
 	::SetClipboardData( CF_UNICODETEXT, hglbCopy ); 
 	::CloseClipboard();
 #elif defined( CINDER_LINUX )
- 	glfwSetClipboardString((GLFWwindow*)app::getWindow()->getNative(),str.c_str());
+ 	glfwSetClipboardString( (GLFWwindow*)app::getWindow()->getNative(), str.c_str() );
 #endif
 }
 
@@ -280,7 +285,9 @@ void Clipboard::setImage( ImageSourceRef imageSource, ImageTarget::Options optio
 
 	::GlobalUnlock( hglbCopy );
 	::SetClipboardData( CF_DIBV5, hglbCopy ); 
-	::CloseClipboard();	
+	::CloseClipboard();
+#elif defined( CINDER_LINUX )
+	CI_LOG_E( "Clipboard::setImage() not supported on Linux" );
 #endif
 }
 
