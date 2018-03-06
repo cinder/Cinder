@@ -71,11 +71,13 @@ void Context::registerClearStatics()
 	// A signal is registered for app cleanup in order to ensure that all Node's and their
 	// dependencies are destroyed before static memory goes down - this avoids a crash at cleanup
 	// in r8brain's static processing containers.
-	// TODO: consider leaking the master context by default and providing a public clear function.
-	app::AppBase::get()->getSignalCleanup().connect( [] {
-		sDeviceManager.reset();
-		sMasterContext.reset();
-	} );
+	auto app = app::AppBase::get();
+	if( app ) {
+		app->getSignalCleanup().connect( [] {
+			sDeviceManager.reset();
+			sMasterContext.reset();
+		} );
+	}
 }
 
 // static
