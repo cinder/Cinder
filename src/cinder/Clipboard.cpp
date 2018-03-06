@@ -46,6 +46,10 @@
 	#include "cinder/ip/Fill.h"
 	#include "cinder/ip/Blend.h"
 	#include <set>
+#elif defined( CINDER_LINUX )
+  #include "cinder/app/App.h"
+  #include "cinder/app/RendererGl.h"
+  #include "glfw/glfw3.h"
 #endif
 
 namespace cinder {
@@ -145,6 +149,9 @@ std::string	Clipboard::getString()
 	}
 	::CloseClipboard();
 	return result;
+#elif defined(CINDER_LINUX)
+  std::string result=std::string(glfwGetClipboardString((GLFWwindow*)app::getWindow()->getNative()));
+	return result;
 #endif
 }
 
@@ -206,6 +213,8 @@ void Clipboard::setString( const std::string &str )
 	::GlobalUnlock( hglbCopy );
 	::SetClipboardData( CF_UNICODETEXT, hglbCopy ); 
 	::CloseClipboard();
+#elif defined( CINDER_LINUX )
+ 	glfwSetClipboardString((GLFWwindow*)app::getWindow()->getNative(),str.c_str());
 #endif
 }
 
