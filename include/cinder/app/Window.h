@@ -294,7 +294,8 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	vec2	getCenter() const { return vec2( getWidth() / 2.0f, getHeight() / 2.0f ); }
 	//! Sets the position and size of the Window so that it spans all connected displays
 	void	spanAllDisplays();
-	
+	//! Returns the mouse position, in window coordinates measured in points. Can be negative or larger than window size if the mouse is outside of this window.
+	ivec2	getMousePos() const;
 	//! Returns the multiplier (typically 2 on high-density (Retina) displays, 1 otherwise) mapping points to pixels
 	float	getContentScale() const;
 	//! Returns a scalar mapped from points to pixels by multiplying by getContentScale()

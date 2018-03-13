@@ -114,6 +114,11 @@ void Window::spanAllDisplays()
 	setPos( spanning.getUL() );
 }
 
+ivec2 Window::getMousePos() const
+{
+	return app::AppBase::get()->getMousePos() - getPos();
+}
+
 float Window::getContentScale() const
 {
 	testValid();
