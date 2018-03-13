@@ -791,14 +791,14 @@ StreamExc::StreamExc( const std::string &fontName ) throw()
 /////////////////////////////////////////////////////////////////////
 
 #define STREAM_PROTOTYPES(T)\
-	template void OStream::write<T>( T t ); \
-	template void OStream::writeEndian<T>( T t, uint8_t endian ); \
-	template void OStream::writeBig<T>( T t ); \
-	template void OStream::writeLittle<T>( T t ); \
-	template void IStreamCinder::read<T>( T *t ); \
-	template void IStreamCinder::readEndian<T>( T *t, uint8_t endian ); \
-	template void IStreamCinder::readBig<T>( T *t ); \
-	template void IStreamCinder::readLittle<T>( T *t );
+	template CI_API void OStream::write<T>( T t ); \
+	template CI_API void OStream::writeEndian<T>( T t, uint8_t endian ); \
+	template CI_API void OStream::writeBig<T>( T t ); \
+	template CI_API void OStream::writeLittle<T>( T t ); \
+	template CI_API void IStreamCinder::read<T>( T *t ); \
+	template CI_API void IStreamCinder::readEndian<T>( T *t, uint8_t endian ); \
+	template CI_API void IStreamCinder::readBig<T>( T *t ); \
+	template CI_API void IStreamCinder::readLittle<T>( T *t );
 
 STREAM_PROTOTYPES(int8_t)
 STREAM_PROTOTYPES(uint8_t)
