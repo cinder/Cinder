@@ -148,7 +148,7 @@ DataSourceUrlRef DataSourceUrl::create( const Url &url, const UrlOptions &option
 DataSourceUrl::DataSourceUrl( const Url &url, const UrlOptions &options )
 	: DataSource( "", url ), mOptions( options )
 {
-#if _MSC_VER >= 1900 && _MSC_VER <= 1912
+#if defined( CINDER_MSW )
 	std::string urlString = url.str();
 
 	if ( urlString.size() >= 260 )	{

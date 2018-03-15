@@ -143,8 +143,8 @@ IStreamUrl::IStreamUrl( const std::string &url, const std::string &user, const s
 	: IStreamCinder()
 {
 	mImpl = std::shared_ptr<IStreamUrlImpl>( new IStreamUrlPlatformImpl( url, user, password, options ) );
-#if _MSC_VER >= 1900 && _MSC_VER <= 1912
-	if (url.size() >= 260)
+#if defined( CINDER_MSW )
+	if ( url.size() >= 260 )
 	{
 		// Workaround for MSVC++ 14.0/17.0 exceptions once fs::path length hits 260
 		const size_t start = url.rfind( '/' );
