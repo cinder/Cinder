@@ -39,16 +39,20 @@ namespace cinder { namespace audio {
 
 // TODO: these should be replaced with a generic registrar derived from the ImageIo stuff.
 
-std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension )
+std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, std::string ext )
 {
+	if( ext.empty() ) {
 #if ! defined( CINDER_UWP ) || ( _MSC_VER > 1800 )
-	std::string ext = dataTarget->getFilePathHint().extension().string();
+		ext = dataTarget->getFilePathHint().extension().string();
 #else
-	std::string ext = dataTarget->getFilePathHint().extension();
+		ext = dataTarget->getFilePathHint().extension();
 #endif
-	ext = ( ( ! ext.empty() ) && ( ext[0] == '.' ) ) ? ext.substr( 1, string::npos ) : ext;
+		if ( ! ext.empty() && ( ext[0] == '.' ) ) {
+			ext.erase( ext.begin() );
+		}
+	}
 
-	if ( ext == "ogg" ) {
+	if( ext == "ogg" ) {
 		return std::unique_ptr<TargetFile>( new TargetFileOggVorbis( dataTarget, sampleRate, numChannels, sampleType ) );
 	}
 
@@ -61,9 +65,9 @@ std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget,
 #endif
 }
 
-std::unique_ptr<TargetFile> TargetFile::create( const fs::path &path, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension )
+std::unique_ptr<TargetFile> TargetFile::create( const fs::path &path, size_t sampleRate, size_t numChannels, SampleType sampleType, std::string extension )
 {
-	return create( (DataTargetRef)writeFile( path ), sampleRate, numChannels, sampleType, extension );
+	return create( writeFile( path ), sampleRate, numChannels, sampleType, extension );
 }
 
 void TargetFile::write( const Buffer *buffer )
