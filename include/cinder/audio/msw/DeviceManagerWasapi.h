@@ -53,10 +53,7 @@ class DeviceManagerWasapi : public DeviceManager {
 	void setSampleRate( const DeviceRef &device, size_t sampleRate ) override;
 	void setFramesPerBlock( const DeviceRef &device, size_t framesPerBlock ) override;
 
-
 	std::shared_ptr<::IMMDevice> getIMMDevice( const DeviceRef &device );
-	// kludge to allow the related DevInfo's mFramesPerBlock to be updated after IAudioClient::Initialize()
-	void updateActualFramesPerBlock( const DeviceRef &device, size_t framesPerBlock );
 
   private:
 	  // TODO: fix formatting

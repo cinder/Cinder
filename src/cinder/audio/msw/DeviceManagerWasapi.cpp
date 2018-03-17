@@ -255,12 +255,6 @@ shared_ptr<::IMMDevice> DeviceManagerWasapi::getIMMDevice( const DeviceRef &devi
 	return 	ci::msw::makeComShared( deviceImm );
 }
 
-void DeviceManagerWasapi::updateActualFramesPerBlock( const DeviceRef &device, size_t framesPerBlock )
-{
-	getDeviceInfo( device ).mFramesPerBlock = framesPerBlock;
-	clearCachedValues( device );
-}
-
 // ----------------------------------------------------------------------------------------------------
 // DeviceManagerWasapi Private
 // ----------------------------------------------------------------------------------------------------
