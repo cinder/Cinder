@@ -24,8 +24,6 @@
 #include "cinder/Surface.h"
 #include "cinder/CinderMath.h"
 
-#include <boost/preprocessor/seq.hpp>
-
 namespace cinder { namespace ip {
 
 //     X           Y
@@ -87,13 +85,15 @@ void edgeDetectSobel( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSuface )
 }
 
 
-#define edgeDetect_PROTOTYPES(r,data,T)\
+#define edgeDetect_PROTOTYPES(T)\
 	template CI_API void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &dstLT, ChannelT<T> *dstChannel ); \
 	template CI_API void edgeDetectSobel( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &dstLT, SurfaceT<T> *dstSurface ); \
 	template CI_API void edgeDetectSobel( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel );	\
 	template CI_API void edgeDetectSobel( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface );	
 
-BOOST_PP_SEQ_FOR_EACH( edgeDetect_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
+edgeDetect_PROTOTYPES(uint8_t)
+edgeDetect_PROTOTYPES(uint16_t)
+edgeDetect_PROTOTYPES(float)
 
 
 } } // namespace cinder::ip

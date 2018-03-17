@@ -33,8 +33,7 @@
 
 #include <vector>
 #include <fstream>
-#include <boost/tokenizer.hpp>
-#include <boost/algorithm/string.hpp>
+#include <cctype>
 
 using std::vector;
 using std::string;
@@ -74,11 +73,23 @@ std::vector<std::string> split( const std::string &str, char separator, bool com
 
 std::vector<std::string> split( const std::string &str, const std::string &separators, bool compress )
 {
-	vector<string> result;
-
-	boost::algorithm::split( result, str, boost::is_any_of(separators),
-		compress ? boost::token_compress_on : boost::token_compress_off );
-
+	std::vector<std::string> result;
+	
+	std::size_t searchPrevPos = 0, searchPos;
+	while( (searchPos = str.find_first_of( separators, searchPrevPos )) != std::string::npos ) {
+		if( searchPos >= searchPrevPos && ! compress ) {
+			result.push_back( str.substr( searchPrevPos, searchPos - searchPrevPos ) );
+		}
+		else if( searchPos > searchPrevPos ) {
+			result.push_back( str.substr( searchPrevPos, searchPos - searchPrevPos ) );
+		}
+		
+		searchPrevPos = searchPos + 1;
+	}
+	
+	if( searchPrevPos <= str.length() )
+		result.push_back( str.substr( searchPrevPos, std::string::npos ) );
+	
 	return result;
 }
 
@@ -107,6 +118,45 @@ void writeString( const DataTargetRef &dataTarget, const std::string &str )
 	ofs.close();
 }
 
+bool asciiCaseEqual( const std::string &a, const std::string &b )
+{
+	if( a.size() != b.size() )
+		return false;
+	else
+		return equal( a.cbegin(), a.cend(), b.cbegin(), []( std::string::value_type ac, std::string::value_type bc ) {
+				return std::toupper(ac) == std::toupper(bc);
+		});
+}
+
+bool asciiCaseEqual( const char *a, const char *b )
+{
+	bool result;
+	while( (result = std::toupper(*a) == std::toupper(*b++)) == true )
+		if( *a++ == '\0' )
+			break;
+
+	return result;
+}
+
+int asciiCaseCmp( const char *a, const char *b )
+{
+	while( ((int)std::toupper(*a)) == ((int)std::toupper(*b)) ) {
+		if( *a == '\0' || *b == '\0' )
+			break;
+		++a, ++b;
+	}
+
+	return ((int)std::toupper(*a)) - ((int)std::toupper(*b));
+}
+
+
+std::string trim( const std::string &str )
+{
+	auto wsFront = std::find_if_not( str.begin(), str.end(), [](int c){ return std::isspace(c); } );
+	auto wsBack = std::find_if_not( str.rbegin(), str.rend(),[](int c){ return std::isspace(c); } ).base();
+	return wsBack <= wsFront ? std::string() : std::string( wsFront, wsBack );
+}
+
 void sleep( float milliseconds )
 {
 	app::Platform::get()->sleep( milliseconds );
@@ -115,6 +165,11 @@ void sleep( float milliseconds )
 vector<string> stackTrace()
 {
 	return app::Platform::get()->stackTrace();
+}
+
+void setThreadName( const std::string &name )
+{
+	app::Platform::get()->setThreadName( name );
 }
 
 int16_t swapEndian( int16_t val )

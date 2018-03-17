@@ -39,8 +39,13 @@
 #include <Shlwapi.h>
 #include <shlobj.h>
 
-
 using namespace std;
+
+namespace {
+	HMODULE sShcoreDll = nullptr;
+	typedef HRESULT(WINAPI* GetDpiForMonitorFn)( HMONITOR hmonitor, DWORD /*MONITOR_DPI_TYPE*/ dpiType, UINT *dpiX, UINT *dpiY );
+	GetDpiForMonitorFn sGetDpiForMonitorFnPtr = nullptr;
+}
 
 namespace cinder { namespace app {
 
@@ -243,6 +248,50 @@ vector<string> PlatformMsw::stackTrace()
 	return csw.getEntries();
 }
 
+namespace {
+// must be separate fn due to __try
+void setThreadNameHelper( const std::string &name )
+{
+#pragma pack(push,8)
+	typedef struct tagTHREADNAME_INFO {
+		DWORD dwType; // Must be 0x1000.
+		LPCSTR szName; // Pointer to name
+		DWORD dwThreadID; // Thread ID (-1=caller thread).
+		DWORD dwFlags; // Reserved for future use, must be zero.
+	 } THREADNAME_INFO;
+#pragma pack(pop)
+
+#pragma warning(push)  
+#pragma warning(disable: 6320 6322)  
+	__try {
+		THREADNAME_INFO info;
+		info.dwType = 0x1000;
+		info.szName = name.c_str();
+		info.dwThreadID = -1;
+		info.dwFlags = 0;
+
+		::RaiseException( 0x406D1388 /* MS_VC_EXCEPTION */, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info );
+	}  
+	__except (EXCEPTION_EXECUTE_HANDLER) {
+	}  
+#pragma warning(pop)  
+}
+}
+
+void PlatformMsw::setThreadName( const std::string &name )
+{
+	// The SetThreadDescription API available in Windows 10 version 1607, but is not widely supported, so we use both techniques
+	typedef HRESULT(WINAPI* SetThreadDescription)( HANDLE, PCWSTR );
+	static SetThreadDescription setThreadDescriptionFnPtr = nullptr;
+	if( ! setThreadDescriptionFnPtr ) {
+		setThreadDescriptionFnPtr = (SetThreadDescription)::GetProcAddress( ::GetModuleHandle(TEXT("Kernel32.dll")), "SetThreadDescription" );
+		if( setThreadDescriptionFnPtr )
+			setThreadDescriptionFnPtr( ::GetCurrentThread(), msw::toWideString( name ).c_str() );
+	}
+
+	setThreadNameHelper( name );
+}
+
 ResourceLoadExcMsw::ResourceLoadExcMsw( int mswID, const string &mswType )
 	: ResourceLoadExc( "" )
 {
@@ -311,8 +360,20 @@ BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC /*hdc*/, LPREC
 	DisplayMsw *newDisplay = new DisplayMsw();
 	newDisplay->mArea = Area( rect->left, rect->top, rect->right, rect->bottom );
 	newDisplay->mMonitor = hMonitor;
-	newDisplay->mContentScale = 1.0f;
 	newDisplay->mBitsPerPixel = getMonitorBitsPerPixel( hMonitor );
+	
+	newDisplay->mContentScale = 1.0f; // default value
+	// dynamic function resoluion for ::GetDpiForMonitor()
+	if( sShcoreDll != (HMODULE)INVALID_HANDLE_VALUE ) {
+		if( ! sGetDpiForMonitorFnPtr )
+			sGetDpiForMonitorFnPtr = (GetDpiForMonitorFn)::GetProcAddress( sShcoreDll, "GetDpiForMonitor" );
+		if( sGetDpiForMonitorFnPtr ) {
+			UINT x, y;
+			HRESULT hr = sGetDpiForMonitorFnPtr( hMonitor, (DWORD)0 /*MDT_Effective_DPI*/, &x, &y );
+			if( SUCCEEDED( hr ) )
+				newDisplay->mContentScale = x / 96.0f;
+		}
+	}
 
 	displaysVector->push_back( DisplayRef( newDisplay ) );
 	return TRUE;
@@ -321,6 +382,21 @@ BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC /*hdc*/, LPREC
 const std::vector<DisplayRef>& app::PlatformMsw::getDisplays()
 {
 	if( ! mDisplaysInitialized ) {
+		// enable DPI awareness on Windows 8.1+
+		if( ! sShcoreDll ) {
+			sShcoreDll = ::LoadLibrary( L"Shcore.dll" );
+			if( ! sShcoreDll )
+				sShcoreDll = (HMODULE)INVALID_HANDLE_VALUE;
+		}
+		
+		if( sShcoreDll ) {
+			typedef HRESULT(WINAPI* SetProcessDpiAwarenessFn)( DWORD /*PROCESS_DPI_AWARNESS*/ value );
+			SetProcessDpiAwarenessFn setProcessDpiAwarenessFnPtr = nullptr;
+			setProcessDpiAwarenessFnPtr = (SetProcessDpiAwarenessFn)::GetProcAddress( sShcoreDll, "SetProcessDpiAwareness" );
+			if( setProcessDpiAwarenessFnPtr )
+				setProcessDpiAwarenessFnPtr( 2 /*PROCESS_PER_MONITOR_DPI_AWARE*/ );
+		}
+
 		::EnumDisplayMonitors( NULL, NULL, DisplayMsw::enumMonitorProc, (LPARAM)&mDisplays );
 	
 		// ensure that the primary display is sDisplay[0]
@@ -364,7 +440,7 @@ void app::PlatformMsw::refreshDisplays()
 			DisplayMsw *oldDisplay = reinterpret_cast<DisplayMsw*>( displayIt->get() );
 			if( oldDisplay->mMonitor == newDisplay->mMonitor ) {
 				// found this display; see if anything changed
-				if( ( oldDisplay->mArea != newDisplay->mArea ) || ( oldDisplay->mBitsPerPixel != newDisplay->mBitsPerPixel ) )
+				if( ( oldDisplay->mArea != newDisplay->mArea ) || ( oldDisplay->mBitsPerPixel != newDisplay->mBitsPerPixel ) || ( oldDisplay->mContentScale != newDisplay->mContentScale ) )
 					changedDisplays.push_back( *displayIt );
 				*oldDisplay = *newDisplay;
 				oldDisplay->mVisitedFlag = true;

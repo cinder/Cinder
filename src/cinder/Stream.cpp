@@ -28,9 +28,7 @@
 
 #include <stdio.h>
 #include <limits>
-#include <boost/scoped_array.hpp>
 #include <iostream>
-#include <boost/preprocessor/seq/for_each.hpp>
 using std::string;
 
 namespace cinder {
@@ -43,7 +41,7 @@ namespace cinder {
 template<typename T>
 void OStream::writeBig( T t )
 {
-#ifdef BOOST_BIG_ENDIAN
+#if ! defined( CINDER_LITTLE_ENDIAN )
 	write( t );
 #else
 	t = swapEndian( t );
@@ -54,7 +52,7 @@ void OStream::writeBig( T t )
 template<typename T>
 void OStream::writeLittle( T t )
 {
-#ifdef CINDER_LITTLE_ENDIAN
+#if defined( CINDER_LITTLE_ENDIAN )
 	write( t );
 #else
 	t = swapEndian( t );
@@ -84,7 +82,7 @@ void IStreamCinder::read( fs::path *p )
 template<typename T>
 void IStreamCinder::readBig( T *t )
 {
-#ifdef BOOST_BIG_ENDIAN
+#if ! defined( CINDER_LITTLE_ENDIAN )
 	read( t );
 #else
 	IORead( t, sizeof(T) );
@@ -114,7 +112,7 @@ void IStreamCinder::readFixedString( char *t, size_t size, bool nullTerminate )
 
 void IStreamCinder::readFixedString( std::string *t, size_t size )
 {
-	boost::scoped_array<char> buffer( new char[size+1] );
+	std::unique_ptr<char[]> buffer( new char[size+1] );
 
 	IORead( buffer.get(), size );
 	buffer[size] = 0;
@@ -792,17 +790,27 @@ StreamExc::StreamExc( const std::string &fontName ) throw()
 
 /////////////////////////////////////////////////////////////////////
 
-#define STREAM_PROTOTYPES(r,data,T)\
-	template void OStream::write<T>( T t ); \
-	template void OStream::writeEndian<T>( T t, uint8_t endian ); \
-	template void OStream::writeBig<T>( T t ); \
-	template void OStream::writeLittle<T>( T t ); \
-	template void IStreamCinder::read<T>( T *t ); \
-	template void IStreamCinder::readEndian<T>( T *t, uint8_t endian ); \
-	template void IStreamCinder::readBig<T>( T *t ); \
-	template void IStreamCinder::readLittle<T>( T *t );
+#define STREAM_PROTOTYPES(T)\
+	template CI_API void OStream::write<T>( T t ); \
+	template CI_API void OStream::writeEndian<T>( T t, uint8_t endian ); \
+	template CI_API void OStream::writeBig<T>( T t ); \
+	template CI_API void OStream::writeLittle<T>( T t ); \
+	template CI_API void IStreamCinder::read<T>( T *t ); \
+	template CI_API void IStreamCinder::readEndian<T>( T *t, uint8_t endian ); \
+	template CI_API void IStreamCinder::readBig<T>( T *t ); \
+	template CI_API void IStreamCinder::readLittle<T>( T *t );
 
-BOOST_PP_SEQ_FOR_EACH( STREAM_PROTOTYPES, ~, (int8_t)(uint8_t)(int16_t)(uint16_t)(int32_t)(uint32_t)(int64_t)(uint64_t)(float)(double) )
+STREAM_PROTOTYPES(int8_t)
+STREAM_PROTOTYPES(uint8_t)
+STREAM_PROTOTYPES(int16_t)
+STREAM_PROTOTYPES(uint16_t)
+STREAM_PROTOTYPES(int32_t)
+STREAM_PROTOTYPES(uint32_t)
+STREAM_PROTOTYPES(int64_t)
+STREAM_PROTOTYPES(uint64_t)
+STREAM_PROTOTYPES(float)
+STREAM_PROTOTYPES(double)
+
 
 #if defined( CINDER_UWP )
 	#pragma warning(pop) 

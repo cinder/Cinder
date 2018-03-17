@@ -13,7 +13,7 @@ struct Monitor {
 	Monitor( DisplayRef display, Colorf color, bool mainDisplay )
 		: mArea( display->getBounds() ), mColor( color ), mMainDisplay( mainDisplay )
 	{
-		app::console() << display->getName() << ": " << mArea << std::endl;
+		app::console() << display->getName() << ": " << mArea << " contentScale: " << display->getContentScale() << std::endl;
 	}
 
 	void draw() {

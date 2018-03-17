@@ -46,9 +46,9 @@ CI_API fs::path getDocumentsDirectory();
 //! Launches a path in a web browser
 CI_API void launchWebBrowser( const Url &url );
 	
-//! Returns a vector of substrings split by the separator \a separator. <tt>split( "one two three", ' ' ) -> [ "one", "two", "three" ]</tt> If \a compress is TRUE, it will consider consecutive separators as one.
+//! Returns a vector of substrings split by the separator \a separator. <tt>split( "one two three", ' ' ) -> [ "one", "two", "three" ]</tt> If \a compress is \c true, it will consider consecutive separators as one.
 CI_API std::vector<std::string> split( const std::string &str, char separator, bool compress = true );
-//! Returns a vector of substrings split by the characters in \a separators. <tt>split( "one, two, three", " ," ) -> [ "one", "two", "three" ]</tt> If \a compress is TRUE, it will consider consecutive separators as one.
+//! Returns a vector of substrings split by the characters in \a separators. <tt>split( "one, two, three", " ," ) -> [ "one", "two", "three" ]</tt> If \a compress is \c true, it will consider consecutive separators as one.
 CI_API std::vector<std::string> split( const std::string &str, const std::string &separators, bool compress = true );
 
 //! Loads the contents of \a dataSource and returns it as a std::string
@@ -84,8 +84,21 @@ template<>
 inline double fromString( const std::string &s ) { return atof( s.c_str() ); }
 #endif
 
+//! returns \c true if ASCII strings \a a and \a b are case-insensitively equal. Not Unicode-aware.
+CI_API bool asciiCaseEqual( const std::string &a, const std::string &b );
+//! returns \c true if ASCII strings \a a and \a b are case-insensitively equal. Not Unicode-aware.
+CI_API bool asciiCaseEqual( const char *a, const char *b );
+//! returns equivalent of strcmp() using ASCII case-insensitive comparison
+CI_API int asciiCaseCmp( const char *a, const char *b );
+
+//! returns a copy of \a str with all whitespace (as defined by std::isspace()) removed from beginning and end
+CI_API std::string trim( const std::string &str );
+
 //! Returns a stack trace (aka backtrace) where \c stackTrace()[0] == caller, \c stackTrace()[1] == caller's parent, etc
 CI_API std::vector<std::string> stackTrace();
+
+//! Sets the name of the current thread to \a name
+CI_API void setThreadName( const std::string &name );
 
 // ENDIANNESS
 CI_API inline int8_t	swapEndian( int8_t val ) { return val; }

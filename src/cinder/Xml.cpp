@@ -26,7 +26,6 @@
 
 #include "cinder/Xml.h"
 #include "cinder/Utilities.h"
-#include <boost/algorithm/string.hpp>
 
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
@@ -42,7 +41,7 @@ bool tagsMatch( const std::string &tag1, const std::string &tag2, bool caseSensi
 {
 	if( caseSensitive && ( tag1 == tag2 ) )
 		return true;
-	else if( ( ! caseSensitive ) && ( boost::iequals( tag1, tag2 ) ) )
+	else if( ( ! caseSensitive ) && ( asciiCaseEqual( tag1, tag2 ) ) )
 		return true;
 	else
 		return false;

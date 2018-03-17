@@ -210,6 +210,11 @@ fs::path AppImplMsw::getFolderPath( const fs::path &initialPath )
 	return result;
 }
 
+bool AppImplMsw::getHighDensityDisplayEnabled() const
+{
+	return mApp->isHighDensityDisplayEnabled();
+}
+
 fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string> extensions )
 {
 	OPENFILENAMEW ofn;       // common dialog box structure
@@ -299,18 +304,21 @@ WindowImplMsw::WindowImplMsw( const Window::Format &format, RendererRef sharedRe
 	if( ! mDisplay )
 		mDisplay = Display::getMainDisplay();
 
-	mWindowedSize = format.getSize();
-	mWindowWidth = mWindowedSize.x;
-	mWindowHeight = mWindowedSize.y;
+	if( appImpl->getHighDensityDisplayEnabled() )
+		mWindowedSizePx = ivec2( vec2( format.getSize() ) * mDisplay->getContentScale() );
+	else
+		mWindowedSizePx = format.getSize();		
+	mWindowWidthPx = mWindowedSizePx.x;
+	mWindowHeightPx = mWindowedSizePx.y;
 	if( format.isPosSpecified() ) {
 		mWindowOffset = mWindowedPos = mDisplay->getBounds().getUL() + format.getPos();
 	}
 	else {
 		ivec2 displaySize = mDisplay->getSize();
-		mWindowOffset = mWindowedPos = mDisplay->getBounds().getUL() + ( displaySize - mWindowedSize ) / 2;
+		mWindowOffset = mWindowedPos = mDisplay->getBounds().getUL() + ( displaySize - mWindowedSizePx ) / 2;
 	}
 
-	createWindow( ivec2( mWindowWidth, mWindowHeight ), format.getTitle(), mDisplay, sharedRenderer );
+	createWindow( ivec2( mWindowWidthPx, mWindowHeightPx ), format.getTitle(), mDisplay, sharedRenderer );
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 	
@@ -325,12 +333,12 @@ WindowImplMsw::WindowImplMsw( HWND hwnd, RendererRef renderer, RendererRef share
 	
 	mDC = ::GetDC( hwnd );
 	mWindowOffset = ivec2( rect.left, rect.top );
-	mWindowWidth = rect.right - rect.left;
-	mWindowHeight = rect.bottom - rect.top;
+	mWindowWidthPx = rect.right - rect.left;
+	mWindowHeightPx = rect.bottom - rect.top;
 
 	mDisplay = app::PlatformMsw::get()->findDisplayFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
 
-	mRenderer->setup( mWnd, mDC, sharedRenderer );
+	mRenderer->setup( this, sharedRenderer );
 
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 }
@@ -407,7 +415,7 @@ void WindowImplMsw::createWindow( const ivec2 &windowSize, const std::string &ti
 	// update display
 	mDisplay = PlatformMsw::get()->findDisplayFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
 
-	mRenderer->setup( mWnd, mDC, sharedRenderer );
+	mRenderer->setup( this, sharedRenderer );
 }
 
 void WindowImplMsw::completeCreation()
@@ -469,8 +477,8 @@ void WindowImplMsw::toggleFullScreen( const app::FullScreenOptions &options )
 	if( prevFullScreen ) {
 		windowRect.left = mWindowedPos.x;
 		windowRect.top = mWindowedPos.y;
-		windowRect.right = mWindowedPos.x + mWindowedSize.x;
-		windowRect.bottom = mWindowedPos.y + mWindowedSize.y;
+		windowRect.right = mWindowedPos.x + mWindowedSizePx.x;
+		windowRect.bottom = mWindowedPos.y + mWindowedSizePx.y;
 		::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );
 	}
 	else {
@@ -479,7 +487,7 @@ void WindowImplMsw::toggleFullScreen( const app::FullScreenOptions &options )
 			display = mDisplay;
 
 		mWindowedPos = mWindowOffset;
-		mWindowedSize = ivec2( mWindowWidth, mWindowHeight );
+		mWindowedSizePx = ivec2( mWindowWidthPx, mWindowHeightPx );
 		newWindowSize = display->getSize();
 
 		Area area = display->getBounds();
@@ -563,11 +571,17 @@ void WindowImplMsw::setTitle( const std::string &title )
 		::SetWindowText( mWnd, titleWide.c_str() );
 }
 
-void WindowImplMsw::setSize( const ivec2 &windowSize )
+void WindowImplMsw::setSize( const ivec2 &sizePoints )
 {
-	int screenWidth, screenHeight;
-	getScreenSize( windowSize.x, windowSize.y, &screenWidth, &screenHeight );
-	::SetWindowPos( mWnd, HWND_TOP, 0, 0, screenWidth, screenHeight, SWP_NOMOVE | SWP_NOZORDER );
+	int screenWidthPx, screenHeightPx;
+	ivec2 windowSizePx = toPixels( sizePoints );
+	getScreenSize( windowSizePx.x, windowSizePx.y, &screenWidthPx, &screenHeightPx );
+	::SetWindowPos( mWnd, HWND_TOP, 0, 0, screenWidthPx, screenHeightPx, SWP_NOMOVE | SWP_NOZORDER );
+}
+
+float WindowImplMsw::getContentScale() const
+{
+	return ( mAppImpl->getHighDensityDisplayEnabled() ) ? mDisplay->getContentScale() : 1.0f;
 }
 
 void WindowImplMsw::close()
@@ -589,7 +603,7 @@ void WindowImplMsw::enableMultiTouch()
 void WindowImplMsw::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
 {
 	// pull these symbols dynamically out of the user32.dll
-	static BOOL (WINAPI *GetTouchInputInfo)( HTOUCHINPUT, UINT, PTOUCHINPUT, int ) = NULL;
+	static BOOL (WINAPI *GetTouchInputInfo)( HTOUCHINPUT, UINT, PTOUCHINPUT, int ) = nullptr;
 	if( ! GetTouchInputInfo )
 		*(size_t *)&GetTouchInputInfo = (size_t)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "GetTouchInputInfo" );
 	static BOOL (WINAPI *CloseTouchInputHandle)( HTOUCHINPUT ) = NULL;
@@ -606,27 +620,28 @@ void WindowImplMsw::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
 			for( unsigned int i = 0; i < numInputs; i++ ) {
 				const TOUCHINPUT &ti = pInputs.get()[i];
 				if( ti.dwID != 0 ) {
-					POINT pt;
+					POINT ptI;
 					// this has a small problem, which is that we lose the subpixel precision of the touch points.
 					// However ScreenToClient doesn't support floating or fixed point either, so we're stuck 
 					// unless we write our own ScreenToClient, which actually should be doable
-					pt.x = TOUCH_COORD_TO_PIXEL( ti.x );
-					pt.y = TOUCH_COORD_TO_PIXEL( ti.y );
-					::ScreenToClient( hWnd, &pt );
+					ptI.x = TOUCH_COORD_TO_PIXEL( ti.x );
+					ptI.y = TOUCH_COORD_TO_PIXEL( ti.y );
+					::ScreenToClient( hWnd, &ptI );
+					vec2 pt( toPoints( (float)ptI.x ), toPoints( (float)ptI.y ) );
 					if( ti.dwFlags & 0x0004/*TOUCHEVENTF_UP*/ ) {
 						vec2 prevPos = mMultiTouchPrev[ti.dwID];
-						endTouches.push_back( TouchEvent::Touch( vec2( (float)pt.x, (float)pt.y ), prevPos, ti.dwID, currentTime, &pInputs.get()[i] ) );
+						endTouches.push_back( TouchEvent::Touch( pt, prevPos, ti.dwID, currentTime, &pInputs.get()[i] ) );
 						mMultiTouchPrev.erase( ti.dwID );
 					}
 					else if( ti.dwFlags & 0x0002/*TOUCHEVENTF_DOWN*/ ) {
-						beganTouches.push_back( TouchEvent::Touch( vec2( (float)pt.x, (float)pt.y ), vec2( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
-						mMultiTouchPrev[ti.dwID] = vec2( (float)pt.x, (float)pt.y );
+						beganTouches.push_back( TouchEvent::Touch( pt, pt, ti.dwID, currentTime, &pInputs.get()[i] ) );
+						mMultiTouchPrev[ti.dwID] = pt;
 						activeTouches.push_back( beganTouches.back() );
 					}
 					else if( ti.dwFlags & 0x0001/*TOUCHEVENTF_MOVE*/ ) {
-						movedTouches.push_back( TouchEvent::Touch( vec2( (float)pt.x, (float)pt.y ), mMultiTouchPrev[ti.dwID], ti.dwID, currentTime, &pInputs.get()[i] ) );
+						movedTouches.push_back( TouchEvent::Touch( pt, mMultiTouchPrev[ti.dwID], ti.dwID, currentTime, &pInputs.get()[i] ) );
 						activeTouches.push_back( movedTouches.back() );
-						mMultiTouchPrev[ti.dwID] = vec2( (float)pt.x, (float)pt.y );
+						mMultiTouchPrev[ti.dwID] = pt;
 					}
 				}
             }
@@ -843,7 +858,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_LBUTTONDOWN: {
 			::SetCapture( mWnd );
 			impl->mIsDragging = true;
-			MouseEvent event( impl->getWindow(), MouseEvent::LEFT_DOWN, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
+			MouseEvent event( impl->getWindow(), MouseEvent::LEFT_DOWN, impl->toPoints( LOSHORT(lParam) ), impl->toPoints( HISHORT(lParam) ), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
 			impl->getWindow()->emitMouseDown( &event );
 			return 0;
 		}
@@ -851,7 +866,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_RBUTTONDOWN: {
 			::SetCapture( mWnd );
 			impl->mIsDragging = true;
-			MouseEvent event( impl->getWindow(), MouseEvent::RIGHT_DOWN, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
+			MouseEvent event( impl->getWindow(), MouseEvent::RIGHT_DOWN, impl->toPoints( LOSHORT(lParam) ), impl->toPoints( HISHORT(lParam) ), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
 			impl->getWindow()->emitMouseDown( &event );
 			return 0;
 		}
@@ -859,7 +874,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_MBUTTONDOWN: {
 			::SetCapture( mWnd );
 			impl->mIsDragging = true;		
-			MouseEvent event( impl->getWindow(), MouseEvent::MIDDLE_DOWN, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
+			MouseEvent event( impl->getWindow(), MouseEvent::MIDDLE_DOWN, impl->toPoints( LOSHORT(lParam) ), impl->toPoints( HISHORT(lParam) ), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
 			impl->getWindow()->emitMouseDown( &event );
 			return 0;
 		}
@@ -867,7 +882,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_LBUTTONUP: {
 			::ReleaseCapture();
 			impl->mIsDragging = false;
-			MouseEvent event( impl->getWindow(), MouseEvent::LEFT_DOWN, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
+			MouseEvent event( impl->getWindow(), MouseEvent::LEFT_DOWN, impl->toPoints( LOSHORT(lParam) ), impl->toPoints( HISHORT(lParam) ), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
 			impl->getWindow()->emitMouseUp( &event );
 			return 0;
 		}
@@ -875,7 +890,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_RBUTTONUP: {
 			::ReleaseCapture();
 			impl->mIsDragging = false;		
-			MouseEvent event( impl->getWindow(), MouseEvent::RIGHT_DOWN, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
+			MouseEvent event( impl->getWindow(), MouseEvent::RIGHT_DOWN, impl->toPoints( LOSHORT(lParam) ), impl->toPoints( HISHORT(lParam) ), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
 			impl->getWindow()->emitMouseUp( &event );
 			return 0;
 		}
@@ -883,7 +898,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_MBUTTONUP: {
 			::ReleaseCapture();
 			impl->mIsDragging = false;
-			MouseEvent event( impl->getWindow(), MouseEvent::MIDDLE_DOWN, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
+			MouseEvent event( impl->getWindow(), MouseEvent::MIDDLE_DOWN, impl->toPoints( LOSHORT(lParam) ), impl->toPoints( HISHORT(lParam) ), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
 			impl->getWindow()->emitMouseUp( &event );
 			return 0;
 		}
@@ -891,7 +906,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_MOUSEWHEEL: {
 			POINT pt = { ((int)(short)LOWORD(lParam)), ((int)(short)HIWORD(lParam)) };
 			::MapWindowPoints( NULL, mWnd, &pt, 1 );
-			MouseEvent event( impl->getWindow(), 0, pt.x, pt.y, prepMouseEventModifiers( wParam ),
+			MouseEvent event( impl->getWindow(), 0, int(impl->getContentScale() * pt.x), int(impl->getContentScale() * pt.y), prepMouseEventModifiers( wParam ),
 								GET_WHEEL_DELTA_WPARAM( wParam ) / 120.0f, static_cast<unsigned int>( wParam ) );
 			impl->getWindow()->emitMouseWheel( &event );
 		}
@@ -899,25 +914,25 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_KILLFOCUS:
 			// if we lose capture during a drag, post a mouseup event as a notifier
 			if( impl->mIsDragging ) {
-				MouseEvent event( impl->getWindow(), 0, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
+				MouseEvent event( impl->getWindow(), 0, impl->toPoints( LOSHORT(lParam) ), impl->toPoints( HISHORT(lParam) ), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
 				impl->getWindow()->emitMouseUp( &event );
 			}
 			impl->mIsDragging = false;
 		break;
 		case WM_MOUSEMOVE: {
 			if( impl->mIsDragging ) {
-				MouseEvent event( impl->getWindow(), 0, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
+				MouseEvent event( impl->getWindow(), 0, impl->toPoints( LOSHORT(lParam) ), impl->toPoints( HISHORT(lParam) ), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
 				impl->getWindow()->emitMouseDrag( &event );						
 			}
 			else {
-				MouseEvent event( impl->getWindow(), 0, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
+				MouseEvent event( impl->getWindow(), 0, impl->toPoints( LOSHORT(lParam) ), impl->toPoints(  HISHORT(lParam) ), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) );
 				impl->getWindow()->emitMouseMove( &event );
 			}
 		}
 		break;
 		case WM_SIZE:
-			impl->mWindowWidth = LOWORD(lParam);
-			impl->mWindowHeight = HIWORD(lParam);
+			impl->mWindowWidthPx = LOWORD(lParam);
+			impl->mWindowHeightPx = HIWORD(lParam);
 			if( impl->getWindow() && impl->mAppImpl->setupHasBeenCalled() ) {
 				impl->getWindow()->emitResize();
 			}
@@ -953,7 +968,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			::DragQueryPoint( dropH, &dropPoint );
 			::DragFinish( dropH );
 
-			FileDropEvent dropEvent( impl->getWindow(), dropPoint.x, dropPoint.y, files );
+			FileDropEvent dropEvent( impl->getWindow(), impl->toPoints( dropPoint.x ), impl->toPoints( dropPoint.y ), files );
 			impl->getWindow()->emitFileDrop( &dropEvent );
 			return 0;
 		}
@@ -970,6 +985,11 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		break;
 		case WM_DEVICECHANGE:
 			impl->mAppImpl->mNeedsToRefreshDisplays = true;
+		break;
+		case 0x02E0 /*WM_DPICHANGED*/:
+			if( impl->mAppImpl->setupHasBeenCalled() ) {
+				impl->mAppImpl->mNeedsToRefreshDisplays = true;
+			}
 		break;
 	}
 

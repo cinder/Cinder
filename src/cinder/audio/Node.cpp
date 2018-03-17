@@ -49,7 +49,7 @@ Node::Node( const Format &format )
 		mChannelMode = ChannelMode::SPECIFIED;
 	}
 
-	if( ! boost::indeterminate( format.getAutoEnable() ) )
+	if( format.isAutoEnableSet() )
 		setAutoEnabled( format.getAutoEnable() );
 }
 

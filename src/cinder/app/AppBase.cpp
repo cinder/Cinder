@@ -317,7 +317,7 @@ Surface	AppBase::copyWindowSurface()
 
 Surface	AppBase::copyWindowSurface( const Area &area )
 {
-	Area clippedArea = area.getClipBy( getWindowBounds() );
+	Area clippedArea = area.getClipBy( getWindow()->toPixels( getWindow()->getBounds() ) );
 	return getWindow()->getRenderer()->copyWindowSurface( clippedArea, getWindow()->toPixels( getWindow()->getHeight() ) );
 }
 

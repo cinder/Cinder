@@ -50,13 +50,15 @@ std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget,
 
 	if ( ext == "ogg" ) {
 		return std::unique_ptr<TargetFile>( new TargetFileOggVorbis( dataTarget, sampleRate, numChannels, sampleType ) );
-	} else {
-#if defined( CINDER_COCOA )
-		return std::unique_ptr<TargetFile>( new cocoa::TargetFileCoreAudio( dataTarget, sampleRate, numChannels, sampleType, ext ) );
-#elif defined( CINDER_MSW )
-		return std::unique_ptr<TargetFile>( new msw::TargetFileMediaFoundation( dataTarget, sampleRate, numChannels, sampleType, ext ) );
-#endif
 	}
+
+#if defined( CINDER_COCOA )
+	return std::unique_ptr<TargetFile>( new cocoa::TargetFileCoreAudio( dataTarget, sampleRate, numChannels, sampleType, ext ) );
+#elif defined( CINDER_MSW )
+	return std::unique_ptr<TargetFile>( new msw::TargetFileMediaFoundation( dataTarget, sampleRate, numChannels, sampleType, ext ) );
+#else
+	return nullptr;
+#endif
 }
 
 std::unique_ptr<TargetFile> TargetFile::create( const fs::path &path, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension )

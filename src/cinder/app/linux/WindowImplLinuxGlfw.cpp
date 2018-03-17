@@ -29,7 +29,7 @@
 
 namespace cinder { namespace app {
 
-WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef sharedRenderer, AppImplLinux *appImpl )
+WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux *sharedRendererWindow, AppImplLinux *appImpl )
 	: mAppImpl( appImpl )
 {
 	mFullScreen = format.isFullScreen();
@@ -40,9 +40,14 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 
 	mRenderer = format.getRenderer();
 
+	GLFWwindow *sharedGlfwWindow = nullptr;
+	if( sharedRendererWindow )
+		sharedGlfwWindow = reinterpret_cast<GLFWwindow*>( sharedRendererWindow->getNative() );
+
 	const auto& options = std::dynamic_pointer_cast<RendererGl>( mRenderer )->getOptions();
 #if defined( CINDER_GL_ES )
 	::glfwDefaultWindowHints();
+	::glfwWindowHint( GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API );
 	::glfwWindowHint( GLFW_CLIENT_API, GLFW_OPENGL_ES_API );
   #if CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_2
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
@@ -83,16 +88,16 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	if( mFullScreen ) {
 		cinder::app::DisplayLinux* displayLinux = dynamic_cast<cinder::app::DisplayLinux*>( mDisplay.get() );
 		auto windowSize = displayLinux->getSize();
-		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), displayLinux->getGlfwMonitor(), NULL );
+		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), displayLinux->getGlfwMonitor(), sharedGlfwWindow );
 		mWindowedSize = format.getSize();
 		mWindowedPos = format.getPos();
 	}
 	else {
 		auto windowSize = format.getSize();
-		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), NULL, NULL );
+		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), nullptr, sharedGlfwWindow );
 	}
 
-	mRenderer->setup( mGlfwWindow, sharedRenderer );
+	mRenderer->setup( mGlfwWindow, sharedRendererWindow ? sharedRendererWindow->getRenderer() : nullptr );
 
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );

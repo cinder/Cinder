@@ -23,7 +23,7 @@
 #include "cinder/Color.h"
 #include "cinder/Vector.h"
 #include "cinder/ImageIo.h"
-#include <boost/algorithm/string/case_conv.hpp>
+#include "cinder/Utilities.h"
 
 namespace cinder {
 
@@ -294,11 +294,10 @@ vec3 rgbToHsv( const Colorf &c )
 
 ColorT<uint8_t> svgNameToRgb( const char *name, bool *found )
 {
-	std::string value = boost::to_lower_copy( std::string( name ) );
 	int minIdx = 0, maxIdx = sTotalColors - 1;
 	while( minIdx <= maxIdx ) {
 		int curIdx = ( minIdx + maxIdx ) / 2;
-		int cmp = strcmp( value.c_str(), sColorNames[curIdx] );
+		int cmp = asciiCaseCmp( name, sColorNames[curIdx] );
 		if( cmp == 0 ) {
 			if( found )
 				*found = true;

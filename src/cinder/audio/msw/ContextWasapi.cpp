@@ -908,6 +908,11 @@ void InputDeviceNodeWasapi::process( Buffer *buffer )
 // ContextWasapi
 // ----------------------------------------------------------------------------------------------------
 
+ContextWasapi::ContextWasapi()
+{
+	ci::msw::initializeCom();
+}
+
 OutputDeviceNodeRef ContextWasapi::createOutputDeviceNode( const DeviceRef &device, const Node::Format &format )
 {
 	return makeNode( new OutputDeviceNodeWasapi( device, mExclusiveMode, format ) );

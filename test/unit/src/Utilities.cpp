@@ -2,6 +2,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Utilities.h"
+#include "cinder/ConcurrentCircularBuffer.h"
 #include "cinder/app/App.h"
 
 #include <iostream>
@@ -31,6 +32,27 @@ std::istream& operator>>( std::istream &i, CustomType &t )
 
 TEST_CASE( "Utilities" )
 {
+	SECTION( "ConcurrentCircularBuffer" )
+	{
+		ConcurrentCircularBuffer<int> ccb( 10 );
+		REQUIRE( ccb.getCapacity() == 10 );
+		for( int i = 0; i < 10; ++i )
+			ccb.pushFront( i );
+
+		REQUIRE( ccb.getSize() == 10 );
+		REQUIRE( ccb.isNotEmpty() );
+		REQUIRE( ! ccb.isNotFull() );
+		int temp;
+		REQUIRE( ! ccb.tryPushFront( 11 ) );
+		for( int i = 0; i < 10; ++i ) {
+			ccb.popBack( &temp );
+			REQUIRE( temp == i );
+		}
+		REQUIRE( ! ccb.tryPopBack( &temp ) );
+		REQUIRE( ! ccb.isNotEmpty() );
+		REQUIRE( ccb.isNotFull() );
+	}
+
 	SECTION( "swapEndian" )
 	{
 		// 8-bit; should be no-op
@@ -101,5 +123,83 @@ TEST_CASE( "Utilities" )
 
 		REQUIRE( str1.size() == str2.size() );
 		REQUIRE( str1 == str2 );
+	}
+    
+    SECTION( "split string " )
+    {
+        // one separator type
+        string str1 = "one two three four";
+        std::vector<string> resultStr1{"one", "two", "three", "four"};
+        REQUIRE( ci::split(str1, ' ', false) == resultStr1 );
+        
+        // multiple separators
+        string str2 = "one,two---three four";
+        std::vector<string> resultStr2{"one", "two", "", "", "three", "four"};
+        REQUIRE( ci::split(str2, ",- ", false) == resultStr2 );
+        
+        
+        // one separator, compress = true
+        string str3 = "one,two,three,four";
+        std::vector<string> resultStr3{"one", "two", "three", "four"};
+        REQUIRE( ci::split(str3, ',', true) == resultStr3 );
+        
+        
+        // multiple separators, compress = true
+        string str4 = "one,two---three four";
+        std::vector<string> resultStr4{"one", "two", "three", "four"};
+        REQUIRE( ci::split(str4, ",- ", true) == resultStr4 );
+        
+    }
+
+	SECTION( "asciiCaseEqual std::string" )
+    {
+		REQUIRE( ci::asciiCaseEqual( string(""), string("") ) );
+		REQUIRE( ! ci::asciiCaseEqual( string(""), string("A") ) );
+		REQUIRE( ! ci::asciiCaseEqual( string("A"), string("") ) );
+		REQUIRE( ci::asciiCaseEqual( string("a"), string("A") ) );
+		REQUIRE( ! ci::asciiCaseEqual( string("a"), string("b") ) );
+		REQUIRE( ci::asciiCaseEqual( string("abc"), string("ABC") ) );
+		REQUIRE( ! ci::asciiCaseEqual( string("abc"), string("abd") ) );
+		REQUIRE( ! ci::asciiCaseEqual( string("abc"), string("abcd") ) );
+	}
+    
+	SECTION( "asciiCaseEqual const char*" )
+	{
+		REQUIRE( ci::asciiCaseEqual( "", "" ) );
+		REQUIRE( ! ci::asciiCaseEqual( "", "A" ) );
+		REQUIRE( ! ci::asciiCaseEqual( "A", "" ) );
+		REQUIRE( ci::asciiCaseEqual( "a", "A" ) );
+		REQUIRE( ! ci::asciiCaseEqual( "a", "b" ) );
+		REQUIRE( ci::asciiCaseEqual( "abc", "ABC" ) );
+		REQUIRE( ! ci::asciiCaseEqual( "abc", "abd" ) );
+		REQUIRE( ! ci::asciiCaseEqual( "abc", "abcd" ) );
+	}
+
+	SECTION( "trim(std::string)" )
+	{
+		REQUIRE( ci::trim( "" ) == "" );
+		REQUIRE( ci::trim( "none" ) == "none" );
+		REQUIRE( ci::trim( " one" ) == "one" );
+		REQUIRE( ci::trim( "one " ) == "one" );
+		REQUIRE( ci::trim( " one " ) == "one" );
+		REQUIRE( ci::trim( "two  " ) == "two" );
+		REQUIRE( ci::trim( "  two" ) == "two" );
+		REQUIRE( ci::trim( "  two  " ) == "two" );
+		REQUIRE( ci::trim( " \t\n\rtwo  " ) == "two" );
+	}
+
+	SECTION( "asciiCaseCmp()" )
+	{
+		REQUIRE( ci::asciiCaseCmp( "", "" ) == 0 );
+		REQUIRE( ci::asciiCaseCmp( "", "a" ) < 0 );
+		REQUIRE( ci::asciiCaseCmp( "a", "" ) > 0 );
+		REQUIRE( ci::asciiCaseCmp( "a", "a" ) == 0 );
+		REQUIRE( ci::asciiCaseCmp( "", "abc" ) < 0 );
+		REQUIRE( ci::asciiCaseCmp( "abc", "" ) > 0 );
+		REQUIRE( ci::asciiCaseCmp( "abc", "abc" ) == 0 );
+		REQUIRE( ci::asciiCaseCmp( "ab", "Abc" ) < 0 );
+		REQUIRE( ci::asciiCaseCmp( "aBc", "AbC" ) == 0 );
+		REQUIRE( ci::asciiCaseCmp( "aBc", "abcD" ) < 0 );
+		REQUIRE( ci::asciiCaseCmp( "aBcD", "ab" ) > 0 );
 	}
 }
