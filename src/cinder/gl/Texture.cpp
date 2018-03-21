@@ -816,7 +816,7 @@ Texture1d::Texture1d( GLint width, Format format )
 	TextureBase::initParams( format, GL_RGB, GL_UNSIGNED_BYTE );
 
 	ScopedTextureBind tbs( mTarget, mTextureId );
-	env()->allocateTexStorage1d( mTarget, format.mMaxMipmapLevel + 1, mInternalFormat, mWidth, format.isImmutableStorage(), format.getDataType() );
+	env()->allocateTexStorage1d( mTarget, mMaxMipmapLevel + 1, mInternalFormat, mWidth, format.isImmutableStorage(), format.getDataType() );
 }
 
 Texture1d::Texture1d( const Surface8u &surface, Format format )
@@ -1739,7 +1739,7 @@ Texture3d::Texture3d( GLint width, GLint height, GLint depth, Format format )
 	TextureBase::initParams( format, GL_RGB, GL_UNSIGNED_BYTE );
 
 	ScopedTextureBind tbs( mTarget, mTextureId );
-	env()->allocateTexStorage3d( mTarget, format.mMaxMipmapLevel + 1, mInternalFormat, mWidth, mHeight, mDepth, format.isImmutableStorage() );
+	env()->allocateTexStorage3d( mTarget, mMaxMipmapLevel + 1, mInternalFormat, mWidth, mHeight, mDepth, format.isImmutableStorage() );
 }
 
 Texture3d::Texture3d( const void *data, GLenum dataFormat, int width, int height, int depth, Format format )
