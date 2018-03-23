@@ -34,6 +34,7 @@ Debug_Shared/
 Release_Shared/
 ipch/
 **/vc2013/enc_temp_folder/**
+.vs/
 
 # doxygen generated files
 docs/html
