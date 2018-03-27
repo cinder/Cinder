@@ -23,6 +23,8 @@
 
 #include "cinder/PolyLine.h"
 
+#include <algorithm>
+
 namespace cinder {
 
 template<typename T>
