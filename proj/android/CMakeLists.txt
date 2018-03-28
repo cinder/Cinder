@@ -652,7 +652,6 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/CinderAssert.cpp
     ${CINDER_SRC_DIR}/cinder/CinderMath.cpp
     ${CINDER_SRC_DIR}/cinder/Color.cpp
-    ${CINDER_SRC_DIR}/cinder/ConvexHull.cpp
     ${CINDER_SRC_DIR}/cinder/DataSource.cpp
     ${CINDER_SRC_DIR}/cinder/DataTarget.cpp
     ${CINDER_SRC_DIR}/cinder/Display.cpp
