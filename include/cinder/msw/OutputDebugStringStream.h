@@ -29,6 +29,7 @@
 #include <sstream>
 #include <string>
 
+#include "cinder/msw/CinderMsw.h"
 
 // This is a wrapper to make ::OutputDebugStringA behave like std::ostream
 // Derived from code written by Sven Axelsson
@@ -60,7 +61,8 @@ protected:
 template<>
 void basic_debugbuf<char>::output_debug_string(const char *text)
 {
-    ::OutputDebugStringA(text);
+	std::wstring textW = toWideString( text );
+	::OutputDebugStringW( textW.c_str() );
 }
 
 template<>
