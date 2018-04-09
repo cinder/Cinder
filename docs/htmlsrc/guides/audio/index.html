@@ -156,7 +156,7 @@ mNode = ctx->makeNode( new NodeType );
          <p>There are a couple of important parameters governed by the current Context, which <ci dox="audio::Node">Node</ci>s use to configure their internal buffer layout:</p>
          <ul>
             <li><strong>samplerate</strong>: the number of processing samples per second, typically 44,100 or 48,000.</li>
-            <li><strong>frames per block</strong>: processing is sectioned into blocks (an array of numbers, usually a power of two) to facilitate real-time operations. The default value is 512, though some systems can go much lower (like OS X).</li>
+            <li><strong>frames per block</strong>: processing is sectioned into blocks (an array of numbers, usually a power of two but not required) to facilitate real-time operations. The default value is 512, though some systems can go much lower (like OS X).</li>
          </ul>
 
          <p>These parameters are ultimately configured by the Context's <code>OutputNode</code> (accessible with <code>Context::getOutput()</code>), which is currently always of type <code>OutputNodeDevice</code>. This means that the samplerate and frames-per-block settings are governed by your system's hardware settings.</p>
