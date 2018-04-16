@@ -19,10 +19,10 @@
 #include "../../common/AudioTestGui.h"
 #include "../../../../samples/_audio/common/AudioDrawUtils.h"
 
-const bool USE_SECONDARY_SCREEN = true;
-const bool WASAPI_EXCLUSIVE_MODE = false;
-const bool SET_FRAMES_PER_BLOCK = false;
-const size_t FRAMES_PER_BLOCK = 160;
+const bool USE_SECONDARY_SCREEN = 1;
+const bool WASAPI_EXCLUSIVE_MODE = 0;
+const bool SET_FRAMES_PER_BLOCK = 0;
+const size_t FRAMES_PER_BLOCK = 256;
 const double RECORD_SECONDS = 4.0;
 
 using namespace ci;
@@ -114,10 +114,10 @@ void DeviceTestApp::setup()
 	mGain >> mRecorder;
 
 	setupUI();
-//	setupTest( mTestSelector.currentSection() );
+	setupTest( mTestSelector.currentSection() );
 
-//	setupInputPulled();
-	setupIOClean();
+	//setupInputPulled();
+	//setupIOClean();
 
 	PRINT_GRAPH( ctx );
 	CI_LOG_I( "Context samplerate: " << ctx->getSampleRate() << ", frames per block: " << ctx->getFramesPerBlock() );
