@@ -200,14 +200,22 @@ bool WasapiAudioClientImpl::tryFormat( const PossibleFormat &possibleFormat, siz
 		*isClosestMatch = false;
 		return true;
 	}
-	else if( hr == S_FALSE && closestMatch->nSamplesPerSec == wfx.Format.nSamplesPerSec ) {
-		// indicates that a closest match was provided.
+	else if( hr == S_FALSE ) {
 		CI_ASSERT_MSG( closestMatch, "expected closestMatch" );
-		auto scopedClosestMatch = shared_ptr<::WAVEFORMATEX>( closestMatch, ::CoTaskMemFree );
+		//LOG_AUDIOCLIENT( "closestMatch WAVEFORMATEX: " << waveFormatToString( *closestMatch ) );
 
-		copyWaveFormat( *closestMatch, &result->Format );
-		*isClosestMatch = true;
-		return true;
+		if( closestMatch->nSamplesPerSec == wfx.Format.nSamplesPerSec ) {
+			// indicates that a closest match was provided.
+			auto scopedClosestMatch = shared_ptr<::WAVEFORMATEX>( closestMatch, ::CoTaskMemFree );
+
+			copyWaveFormat( *closestMatch, &result->Format );
+			*isClosestMatch = true;
+			return true;
+		}
+		else {
+			// skipping closestMatch with different samplerate.
+			return false;
+		}
 	}
 	else if( hr == AUDCLNT_E_UNSUPPORTED_FORMAT ) {
 		return false;
@@ -251,6 +259,11 @@ bool WasapiAudioClientImpl::tryInit( ::REFERENCE_TIME requestedDuration, const :
 	}
 	else if( hr == E_INVALIDARG ) {
 		CI_LOG_W( "Initialize attempt failed with E_INVALIDARG. It's likely that this format isn't actually supported, so skipping it. WAVEFORMATEX: " << waveFormatToString( format ) );
+		createAudioClient( immDevice ); // throw away the current IAudioClient and create a new one
+		return false;
+	}
+	else if( hr == AUDCLNT_E_UNSUPPORTED_FORMAT ) {
+		CI_LOG_W( "Initialize attempt failed with AUDCLNT_E_UNSUPPORTED_FORMAT, skipping it. WAVEFORMATEX: " << waveFormatToString( format ) );
 		createAudioClient( immDevice ); // throw away the current IAudioClient and create a new one
 		return false;
 	}
@@ -352,6 +365,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 
 	if( supportedFormats.empty() ) {
 		// We failed to find a supported format. For debugging purposes, print the format indicated by PKEY_AudioEngine_DeviceFormat
+		// TODO: move this to DeviceManagerWasapi so it can be printed by user too
 		::IPropertyStore *properties;
 		hr = immDevice->OpenPropertyStore( STGM_READ, &properties );
 		ASSERT_HR_OK( hr );
@@ -363,21 +377,29 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		::WAVEFORMATEX *audioEngineFormat = (::WAVEFORMATEX *)formatVar.blob.pBlobData;
 
 		string audioEngineFormatStr = waveFormatToString( *audioEngineFormat );
+		//LOG_AUDIOCLIENT( "audioEngineFormatStr WAVEFORMATEX: " << audioEngineFormatStr );
 		throw WasapiExc( "Failed to find a supported format. The PKEY_AudioEngine_DeviceFormat suggests that the format should be: " + audioEngineFormatStr );
 	}
 
 	mAudioClientNumFrames = device->getFramesPerBlock();
 
 	// Check minimum device period
-	::REFERENCE_TIME defaultDevicePeriod; // engine time, this is for shared mode
-	::REFERENCE_TIME minDevicePeriod; // this is for exclusive mode
+	::REFERENCE_TIME defaultDevicePeriod = 0; // engine time, this is for shared mode
+	::REFERENCE_TIME minDevicePeriod = 0; // this is for exclusive mode
 	hr = mAudioClient->GetDevicePeriod( &defaultDevicePeriod, &minDevicePeriod );
-	ASSERT_HR_OK( hr );
+	if( hr == AUDCLNT_E_UNSUPPORTED_FORMAT ) {
+		// noticed this once in a blue moon when a device is re-plugged in.
+		CI_LOG_W( "IAudioClient::GetDevicePeriod() failed with return code AUDCLNT_E_UNSUPPORTED_FORMAT for Device named: '"
+			<< device->getName() << "', input channels: " << device->getNumInputChannels() << ", output channels: " << device->getNumOutputChannels() );
+	}
+	else {
+		ASSERT_HR_OK( hr );
+	}
 
 	LOG_AUDIOCLIENT( "device: " << device->getName() << ", default device period: " << defaultDevicePeriod / 10000.0 << "ms, min device period: " << minDevicePeriod / 10000.0 << "ms" );
 
 	::REFERENCE_TIME requestedDuration = framesToHundredNanoSeconds( mAudioClientNumFrames, sampleRate );
-	if( requestedDuration < minDevicePeriod ) {
+	if( minDevicePeriod && requestedDuration < minDevicePeriod ) {
 		CI_LOG_W( "requested buffer duration (" << requestedDuration / 10000.0 << "ms) is less than minDevicePeriod (" << minDevicePeriod / 10000.0 );
 		requestedDuration = minDevicePeriod;
 	}
