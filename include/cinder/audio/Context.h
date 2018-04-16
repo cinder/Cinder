@@ -26,6 +26,7 @@
 #include "cinder/audio/Node.h"
 #include "cinder/audio/InputNode.h"
 #include "cinder/audio/OutputNode.h"
+#include "cinder/Timer.h"
 
 #include <list>
 #include <mutex>
@@ -129,6 +130,8 @@ class CI_API Context : public std::enable_shared_from_this<Context> {
 	void preProcess();
 	//! OutputNode implementations should call this after each rendering block.
 	void postProcess();
+	//! Returns the time in seconds spent during the last process loop.
+	double getTimeDuringLastProcessLoop() const	{ return mTimeDuringLastProcessLoop; }
 
 	//! Returns a string representation of the Node graph for debugging purposes.
 	std::string printGraphToString();
@@ -164,8 +167,10 @@ class CI_API Context : public std::enable_shared_from_this<Context> {
 	std::atomic<uint64_t>		mNumProcessedFrames;
 	OutputNodeRef				mOutput;
 	std::list<ScheduledEvent>	mScheduledEvents;
+	ci::Timer					mProcessTimer;
+	std::atomic<double>			mTimeDuringLastProcessLoop = -1;
 
-	// other nodes that don't have any outputs and need to be explictly pulled
+	// other nodes that don't have any outputs and need to be explicitly pulled
 	std::set<NodeRef>		mAutoPulledNodes;
 	std::vector<Node *>		mAutoPullCache;
 	bool					mAutoPullRequired, mAutoPullCacheDirty;

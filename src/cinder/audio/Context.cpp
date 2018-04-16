@@ -296,6 +296,7 @@ bool Context::isAudioThread() const
 
 void Context::preProcess()
 {
+	mProcessTimer.start();
 	mAudioThreadId = std::this_thread::get_id();
 
 	preProcessScheduledEvents();
@@ -306,6 +307,9 @@ void Context::postProcess()
 	processAutoPulledNodes();
 	postProcessScheduledEvents();
 	incrementFrameCount();
+
+	mProcessTimer.stop();
+	mTimeDuringLastProcessLoop = mProcessTimer.getSeconds();
 }
 
 void Context::incrementFrameCount()
