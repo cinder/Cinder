@@ -126,4 +126,19 @@ void OutputDeviceNode::deviceParamsDidChange()
 	getContext()->setEnabled( mWasEnabledBeforeParamsChange );
 }
 
+size_t OutputDeviceNode::getOutputSampleRate()
+{ 
+	return getDevice()->getSampleRate();
+}
+
+size_t OutputDeviceNode::getOutputFramesPerBlock()
+{
+	return getDevice()->getFramesPerBlock();
+}
+
+string OutputDeviceNode::getName() const
+{
+	return Node::getName() + " (" + getDevice()->getName() + ")";
+}
+
 } } // namespace cinder::audio

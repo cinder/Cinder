@@ -166,7 +166,7 @@ class CI_API Node : public std::enable_shared_from_this<Node>, private Noncopyab
 	std::vector<NodeRef>		getOutputs() const;
 
 	//! Returns a string representing the name of this Node type. Default returns a demangled, compiler-specific class name.
-	virtual std::string getName();
+	virtual std::string getName() const;
 	//! Sets this Node's name to a user-specified string.
 	void				setName( const std::string &name )	{ mName = name; }
 

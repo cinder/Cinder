@@ -53,8 +53,6 @@ class DeviceManagerWasapi : public DeviceManager {
 	void setSampleRate( const DeviceRef &device, size_t sampleRate ) override;
 	void setFramesPerBlock( const DeviceRef &device, size_t framesPerBlock ) override;
 
-	const std::wstring& getDeviceId( const DeviceRef &device );
-
 	std::shared_ptr<::IMMDevice> getIMMDevice( const DeviceRef &device );
 
   private:
@@ -63,7 +61,6 @@ class DeviceManagerWasapi : public DeviceManager {
 		  std::string mKey;						//! mKey used by Device to get more info from manager
 		  std::string mName;						//! friendly mName
 		  enum Usage { INPUT, OUTPUT } mUsage;
-		  std::wstring			mDeviceId;		//! id used when creating XAudio2 master voice. // TODO: still needed? We no longer support xaudio2
 		  std::wstring			mEndpointId;		//! id used by Wasapi / MMDevice
 		  unsigned long			mState;
 		  size_t mNumChannels, mSampleRate, mFramesPerBlock;

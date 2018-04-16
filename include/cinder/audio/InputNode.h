@@ -64,6 +64,14 @@ class CI_API InputDeviceNode : public InputNode {
 	//! Returns the frame of the last buffer overrun or 0 if none since the last time this method was called.
 	uint64_t getLastOverrun() const;
 
+	//! Sets the amount of extra sample storage used by RingBuffers. Default value is 2, must be at least 1.
+	void	setRingBufferPaddingFactor( float factor );
+	//! Returns the amount of extra sample storage used by RingBuffers.
+	float	getRingBufferPaddingFactor() const	{ return mRingBufferPaddingFactor; }
+
+	//! Overridden to append the Device's name.
+	std::string getName() const override;
+
   protected:
 	InputDeviceNode( const DeviceRef &device, const Format &format );
 
@@ -75,6 +83,7 @@ class CI_API InputDeviceNode : public InputNode {
   private:
 	DeviceRef						mDevice;
 	mutable std::atomic<uint64_t>	mLastOverrun, mLastUnderrun;
+	float							mRingBufferPaddingFactor = 2;
 };
 
 //! Callback used to allow simple audio processing without subclassing a Node. First parameter is the Buffer to which to write samples, second parameter is the samplerate.

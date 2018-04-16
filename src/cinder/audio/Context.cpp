@@ -169,7 +169,9 @@ void Context::disable()
 		return;
 
 	mEnabled = false;
-	getOutput()->disable();
+	auto output = getOutput();
+	if( output )
+		getOutput()->disable();
 }
 
 void Context::setEnabled( bool b )
@@ -213,7 +215,21 @@ void Context::disconnectAllNodes()
 
 void Context::setOutput( const OutputNodeRef &output )
 {
+	if( mOutput ) {
+		if( output && mOutput->getOutputFramesPerBlock() != output->getOutputFramesPerBlock() || mOutput->getOutputSampleRate() != output->getOutputSampleRate() ) {
+			// params changed used in sizing buffers, uninit all connected nodes so they can reconfigure
+			uninitializeAllNodes();
+		}
+		else {
+			// params are the same, so just uninitialize the old output.
+			uninitializeNode( mOutput );
+		}
+	}
+
 	mOutput = output;
+
+	if( mOutput )
+		initializeAllNodes();
 }
 
 const OutputNodeRef& Context::getOutput()
@@ -280,6 +296,7 @@ bool Context::isAudioThread() const
 
 void Context::preProcess()
 {
+	mProcessTimer.start();
 	mAudioThreadId = std::this_thread::get_id();
 
 	preProcessScheduledEvents();
@@ -290,6 +307,9 @@ void Context::postProcess()
 	processAutoPulledNodes();
 	postProcessScheduledEvents();
 	incrementFrameCount();
+
+	mProcessTimer.stop();
+	mTimeDuringLastProcessLoop = mProcessTimer.getSeconds();
 }
 
 void Context::incrementFrameCount()

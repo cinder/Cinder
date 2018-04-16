@@ -32,4 +32,17 @@ enum class SampleType {
 	FLOAT_32
 };
 
+//! Returns the size in bytes of a SampleType
+inline size_t sampleSize( SampleType sampleType )
+{
+	switch( sampleType ) {
+		case SampleType::INT_16:	return 2;
+		case SampleType::INT_24:	return 3;
+		case SampleType::FLOAT_32:	return 4;
+		default:					break;
+	}
+
+	return 0;
+}
+
 } } // namespace cinder::audio

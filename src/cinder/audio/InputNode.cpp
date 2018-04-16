@@ -115,6 +115,16 @@ void InputDeviceNode::markOverrun()
 	mLastOverrun = getContext()->getNumProcessedFrames();
 }
 
+void InputDeviceNode::setRingBufferPaddingFactor( float factor )
+{
+	mRingBufferPaddingFactor = max<float>( 1, factor );
+}
+
+string InputDeviceNode::getName() const
+{
+	return Node::getName() + " (" + getDevice()->getName() + ")";
+}
+
 // ----------------------------------------------------------------------------------------------------
 // CallbackProcessorNode
 // ----------------------------------------------------------------------------------------------------

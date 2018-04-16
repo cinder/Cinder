@@ -23,17 +23,32 @@
 
 #pragma once
 
-#include "cinder/Stream.h"
+#include "cinder/audio/SampleType.h"
 
-#include <memory>
 #include <Objidl.h>
+#include <mmreg.h>
 
-struct tWAVEFORMATEX;
-typedef struct tWAVEFORMATEX WAVEFORMATEX;
+#include <string>
+
+typedef LONGLONG REFERENCE_TIME;
 
 namespace cinder { namespace audio { namespace msw {
 
-//! return pointer type is actually a WAVEFORMATEXTENSIBLE, identifiable by the wFormat tag
-std::shared_ptr<::WAVEFORMATEX> interleavedFloatWaveFormat( size_t sampleRate, size_t numChannels );
+//! Constructs and returns an appropriate WAVEFORMATEXTENSIBLE for the given parameters. Always interleaved.
+//! If \t bitPerSample is non-zero then it will be used for the WAVEFORMATEX's wBitsPerSample property, which may be larger than wValidBitsPerSample for alignment purposes.
+//! If \t useExtensible is true, sets the wFormatTag to WAVE_FORMAT_EXTENSIBLE, otherwise to WAVE_FORMAT_PCM
+::WAVEFORMATEXTENSIBLE makeWaveFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bitsPerSample = 0, bool useExtensible = true );
+//! Copies \t source format to \t dest. If source.wFormatTag == WAVE_FORMAT_EXTENSIBLE, copies a WAVEFORMATEXTENSIBLE, otherwise copies a WAVEFORMATEX.
+void copyWaveFormat( const ::WAVEFORMATEX &source, ::WAVEFORMATEX *dest );
+//! Prints a WAVEFORMATEX or WAVEFORMATEXTENSIBLE to string and returns it
+std::string	waveFormatToString( const ::WAVEFORMATEX &wfx );
+//! Prints a WAVEFORMATEXTENSIBLE to string and returns it
+std::string	waveFormatToString( const ::WAVEFORMATEXTENSIBLE &wfx );
+//! Converts frames to 100-nanoseconds
+::REFERENCE_TIME framesToHundredNanoSeconds( size_t frames, size_t sampleRate );
+//! Converts 100-nanoseconds to frames
+size_t hundredNanoSecondsToFrames( ::REFERENCE_TIME refTime, size_t sampleRate );
+//! Returns a string representation of \c hr
+const char* hresultToString( ::HRESULT hr );
 
 } } } // namespace cinder::audio::msw

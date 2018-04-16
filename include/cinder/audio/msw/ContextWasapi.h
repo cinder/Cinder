@@ -35,8 +35,9 @@ struct WasapiCaptureClientImpl;
 
 class OutputDeviceNodeWasapi : public OutputDeviceNode {
   public:
-	OutputDeviceNodeWasapi( const DeviceRef &device, const Format &format );
+	OutputDeviceNodeWasapi( const DeviceRef &device, bool exclusiveMode, const Format &format );
 	~OutputDeviceNodeWasapi();
+
 protected:
 	void initialize()				override;
 	void uninitialize()				override;
@@ -48,14 +49,14 @@ protected:
 	void renderInputs();
 
 	std::unique_ptr<WasapiRenderClientImpl>		mRenderImpl;
-	BufferInterleaved							mInterleavedBuffer;
+	std::vector<char>							mSampleBuffer;
 
 	friend WasapiRenderClientImpl;
 };
 
 class InputDeviceNodeWasapi : public InputDeviceNode {
 public:
-	InputDeviceNodeWasapi( const DeviceRef &device, const Format &format = Format() );
+	InputDeviceNodeWasapi( const DeviceRef &device, bool exclusiveMode, const Format &format = Format() );
 	virtual ~InputDeviceNodeWasapi();
 
 protected:
@@ -76,6 +77,21 @@ class ContextWasapi : public Context {
 	ContextWasapi();
 	OutputDeviceNodeRef	createOutputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() )	override;
 	InputDeviceNodeRef	createInputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() )	override;
+
+	//! Sets whether 'Exclusive-Mode Streams' are used for OutputDeviceNode and InputDeviceNode instances. Default is false ('shared mode').
+	//! \note when exclusive mode is enabled, the channel count for OutputDeviceNode and InputDeviceNode always matches the Device's number of outputs or inputs.
+	void setExclusiveModeEnabled( bool enable = true )	{ mExclusiveMode = enable; }
+	//! Returns whether 'Exclusive-Mode Streams' are used for OutputDeviceNode and InputDeviceNode instances. Default is false ('shared mode').
+	bool isExclusiveModeEnabled() const					{ return mExclusiveMode; }
+
+  private:
+	bool	mExclusiveMode = false;
+};
+
+class WasapiExc : public AudioExc {
+  public:
+	WasapiExc( const std::string &description );
+	WasapiExc( const std::string &description, int32_t hr );
 };
 
 } } } // namespace cinder::audio::msw
