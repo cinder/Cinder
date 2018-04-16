@@ -350,12 +350,20 @@ void DeviceManagerWasapi::parseDevices( DeviceInfo::Usage usage )
 
 			auto audioClientPtr = ci::msw::makeComUnique( audioClient );
 
-			::REFERENCE_TIME defaultDevicePeriod; // engine time, this is for shared mode
-			::REFERENCE_TIME minDevicePeriod; // this is for exclusive mode
+			::REFERENCE_TIME defaultDevicePeriod = 0; // engine time, this is for shared mode
+			::REFERENCE_TIME minDevicePeriod = 0; // this is for exclusive mode
 			hr = audioClient->GetDevicePeriod( &defaultDevicePeriod, &minDevicePeriod );
-			ASSERT_HR_OK( hr );
+			if( hr == AUDCLNT_E_UNSUPPORTED_FORMAT ) {
+				// noticed this once in a blue moon when a device is re-plugged in.
+				CI_LOG_W( "IAudioClient::GetDevicePeriod() failed with return code AUDCLNT_E_UNSUPPORTED_FORMAT for "
+					<< ( usage ==  DeviceInfo::Usage::INPUT ? "input" : "output" ) <<" Device named: '" << devInfo.mName << "'" );
 
-			devInfo.mFramesPerBlock = hundredNanoSecondsToFrames( defaultDevicePeriod, devInfo.mSampleRate );
+				devInfo.mFramesPerBlock = 512; // set to a reasonable default for windows.
+			}
+			else {
+				ASSERT_HR_OK( hr );
+				devInfo.mFramesPerBlock = hundredNanoSecondsToFrames( defaultDevicePeriod, devInfo.mSampleRate );
+			}
 		}
 
 		DeviceRef addedDevice = addDevice( devInfo.mKey );
