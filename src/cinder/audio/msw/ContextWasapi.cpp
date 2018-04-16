@@ -780,20 +780,17 @@ void OutputDeviceNodeWasapi::initialize()
 
 void OutputDeviceNodeWasapi::uninitialize()
 {
-	CI_LOG_I( "this: " << hex << this << dec );
 	mRenderImpl->uninit();
 }
 
 void OutputDeviceNodeWasapi::enableProcessing()
 {
-	CI_LOG_I( "this: " << hex << this << dec );
 	HRESULT hr = mRenderImpl->mAudioClient->Start();
 	ASSERT_HR_OK( hr );
 }
 
 void OutputDeviceNodeWasapi::disableProcessing()
 {
-	CI_LOG_I( "this: " << hex << this << dec );
 	if( mRenderImpl->mAudioClientInvalidated )
 		return;
 
