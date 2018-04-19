@@ -4,7 +4,7 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 
 set( CINDER_PLATFORM "Posix" )
 
-list( APPEND SRC_SET_GLFW 
+list( APPEND SRC_SET_GLFW
 	${CINDER_SRC_DIR}/glfw/src/context.c
 	${CINDER_SRC_DIR}/glfw/src/init.c
 	${CINDER_SRC_DIR}/glfw/src/input.c
@@ -22,7 +22,7 @@ list( APPEND SRC_SET_GLFW
 	${CINDER_SRC_DIR}/glfw/src/vulkan.c
 )
 
-list( APPEND SRC_SET_CINDER_APP_LINUX 
+list( APPEND SRC_SET_CINDER_APP_LINUX
 	${CINDER_SRC_DIR}/cinder/app/linux/AppLinux.cpp
 	${CINDER_SRC_DIR}/cinder/app/linux/PlatformLinux.cpp
 )
@@ -41,11 +41,11 @@ list( APPEND SRC_SET_CINDER_AUDIO_DSP
 )
 
 list( APPEND SRC_SET_CINDER_VIDEO_LINUX
-    ${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp
-    ${CINDER_SRC_DIR}/cinder/linux/Movie.cpp
+	${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp
+	${CINDER_SRC_DIR}/cinder/linux/Movie.cpp
 )
 
-# Curl 
+# Curl
 list( APPEND SRC_SET_CINDER_LINUX ${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp )
 
 # Relevant source files depending on target GL.
@@ -60,7 +60,7 @@ if( NOT CINDER_GL_ES_2_RPI )
 			${CINDER_SRC_DIR}/glload/glx_load_cpp.cpp
 		)
 	endif()
-		
+
 	list( APPEND SRC_SET_CINDER_LINUX
 		${SRC_SET_GLFW}
 	)
@@ -106,7 +106,7 @@ else() # rpi specific
 		/opt/vc/include/interface/vmcs_host/linux/
 		/opt/vc/include/interface/vcos/pthreads
 	)
-	list( APPEND CINDER_LIBS_DEPENDS 
+	list( APPEND CINDER_LIBS_DEPENDS
 		/opt/vc/lib/libEGL.so
 		/opt/vc/lib/libGLESv2.so
 		/opt/vc/lib/libbcm_host.so
@@ -134,7 +134,7 @@ list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${PULSEAUDIO_INCLUDE_DIR} )
 find_package( MPG123 REQUIRED )
 list( APPEND CINDER_LIBS_DEPENDS ${MPG123_LIBRARY} )
 list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${MPG123_INCLUDE_DIR} )
-# sndfile 
+# sndfile
 find_package( SNDFILE REQUIRED )
 list( APPEND CINDER_LIBS_DEPENDS ${SNDFILE_LIBRARY} )
 list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${SNDFILE_INCLUDE_DIR} )
@@ -145,7 +145,7 @@ list( APPEND CINDER_LIBS_DEPENDS ${GLIB_GOBJECT_LIBRARIES} ${GLIB_LIBRARIES} )
 list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${GLIB_INCLUDE_DIRS} )
 # GStreamer
 find_package( GStreamer REQUIRED )
-list( APPEND CINDER_LIBS_DEPENDS 
+list( APPEND CINDER_LIBS_DEPENDS
 	${GSTREAMER_LIBRARIES}
 	${GSTREAMER_BASE_LIBRARIES}
 	${GSTREAMER_APP_LIBRARIES}
@@ -181,11 +181,11 @@ list( APPEND CINDER_LIBS_DEPENDS dl pthread )
 
 # Workaround for gcc bug on versions > 5.3.1 when building as a shared lib.
 if( CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.3.1 AND BUILD_SHARED_LIBS )
-    list( APPEND CINDER_LIBS_DEPENDS gcc )
+	list( APPEND CINDER_LIBS_DEPENDS gcc )
 endif()
 
-source_group( "cinder\\linux"           FILES ${SRC_SET_CINDER_LINUX} )
-source_group( "cinder\\app\\linux"      FILES ${SRC_SET_CINDER_APP_LINUX} )
+source_group( "cinder\\linux"			FILES ${SRC_SET_CINDER_LINUX} )
+source_group( "cinder\\app\\linux"		FILES ${SRC_SET_CINDER_APP_LINUX} )
 
 list( APPEND CINDER_INCLUDE_USER_PRIVATE
 	${CINDER_INC_DIR}/glfw
@@ -212,12 +212,12 @@ endif()
 list( APPEND CINDER_DEFINES "-D_UNIX" ${GLFW_FLAGS}  )
 
 if( NOT CINDER_BOOST_USE_SYSTEM )
-    execute_process( COMMAND gcc -dumpversion OUTPUT_VARIABLE GCC_VERSION )
-    if( GCC_VERSION VERSION_GREATER 5.1 OR GCC_VERSION VERSION_EQUAL 5.1 )
-        message( STATUS "Version >= 5.1 -- Disabling _GLIBCXX_USE_CXX11_ABI." )
-        list( APPEND CINDER_DEFINES "-D_GLIBCXX_USE_CXX11_ABI=0" )
-        if( CMAKE_COMPILER_IS_GNUXX )
-            set( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wabi-tag ) 
-        endif()
-    endif()
+	execute_process( COMMAND gcc -dumpversion OUTPUT_VARIABLE GCC_VERSION )
+	if( GCC_VERSION VERSION_GREATER 5.1 OR GCC_VERSION VERSION_EQUAL 5.1 )
+		message( STATUS "Version >= 5.1 -- Disabling _GLIBCXX_USE_CXX11_ABI." )
+		list( APPEND CINDER_DEFINES "-D_GLIBCXX_USE_CXX11_ABI=0" )
+		if( CMAKE_COMPILER_IS_GNUXX )
+			set( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wabi-tag )
+		endif()
+	endif()
 endif()
