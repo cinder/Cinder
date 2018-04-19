@@ -6,10 +6,10 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
+	   the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	   the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -32,7 +32,7 @@
 
 namespace cinder { namespace app {
 
-void checkGlStatus();	
+void checkGlStatus();
 
 RendererGlLinux::RendererGlLinux( RendererGl *aRenderer )
 	: mRenderer( aRenderer )
@@ -50,15 +50,15 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 
 	// OpenGL ES 3 also uses EGL_OPENGL_ES2_BIT
 	configAttribs.push_back( EGL_RENDERABLE_TYPE ); configAttribs.push_back( EGL_OPENGL_ES2_BIT );
-	configAttribs.push_back( EGL_SURFACE_TYPE    ); configAttribs.push_back( EGL_WINDOW_BIT );
-	configAttribs.push_back( EGL_RED_SIZE        ); configAttribs.push_back( 8 );
-	configAttribs.push_back( EGL_GREEN_SIZE      ); configAttribs.push_back( 8 );
-	configAttribs.push_back( EGL_BLUE_SIZE       ); configAttribs.push_back( 8 );
-	configAttribs.push_back( EGL_ALPHA_SIZE      ); configAttribs.push_back( 8 );
-	configAttribs.push_back( EGL_DEPTH_SIZE      ); configAttribs.push_back( mRenderer->getOptions().getDepthBufferDepth() );
-	configAttribs.push_back( EGL_STENCIL_SIZE    ); configAttribs.push_back( mRenderer->getOptions().getStencil() ? 8 : EGL_DONT_CARE );
+	configAttribs.push_back( EGL_SURFACE_TYPE	 ); configAttribs.push_back( EGL_WINDOW_BIT );
+	configAttribs.push_back( EGL_RED_SIZE		 ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_GREEN_SIZE		 ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_BLUE_SIZE		 ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_ALPHA_SIZE		 ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_DEPTH_SIZE		 ); configAttribs.push_back( mRenderer->getOptions().getDepthBufferDepth() );
+	configAttribs.push_back( EGL_STENCIL_SIZE	 ); configAttribs.push_back( mRenderer->getOptions().getStencil() ? 8 : EGL_DONT_CARE );
 	configAttribs.push_back( EGL_SAMPLE_BUFFERS  ); configAttribs.push_back( 1 );
-	configAttribs.push_back( EGL_NONE            );
+	configAttribs.push_back( EGL_NONE			 );
 
 	mDisplay = eglGetDisplay( EGL_DEFAULT_DISPLAY );
 	if( mDisplay == EGL_NO_DISPLAY) {
@@ -99,29 +99,29 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 	// Create window surface
 	EGL_DISPMANX_WINDOW_T* nativeWindow = reinterpret_cast<EGL_DISPMANX_WINDOW_T*>( window );
 
-	DISPMANX_UPDATE_HANDLE_T  	update  = vc_dispmanx_update_start( 0 );
-	DISPMANX_DISPLAY_HANDLE_T 	display = vc_dispmanx_display_open( 0 );
-	int32_t 					layer = 0;
+	DISPMANX_UPDATE_HANDLE_T	update	= vc_dispmanx_update_start( 0 );
+	DISPMANX_DISPLAY_HANDLE_T	display = vc_dispmanx_display_open( 0 );
+	int32_t						layer = 0;
 	VC_RECT_T					dst_rect = { 0, 0, nativeWindow->width, nativeWindow->height };
 	DISPMANX_RESOURCE_HANDLE_T	src = 0;
 	VC_RECT_T					src_rect = { 0, 0, nativeWindow->width << 16, nativeWindow->height << 16 };
-	DISPMANX_PROTECTION_T 		protection = DISPMANX_PROTECTION_NONE;
+	DISPMANX_PROTECTION_T		protection = DISPMANX_PROTECTION_NONE;
 	VC_DISPMANX_ALPHA_T			alpha = { DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS, 255, 0 };
 	DISPMANX_CLAMP_T*			clamp = 0;
-	DISPMANX_TRANSFORM_T 		transform = (DISPMANX_TRANSFORM_T)0;
-	
-	nativeWindow->element = vc_dispmanx_element_add( 
+	DISPMANX_TRANSFORM_T		transform = (DISPMANX_TRANSFORM_T)0;
+
+	nativeWindow->element = vc_dispmanx_element_add(
 		update,
-		display, 
+		display,
 		layer,
-		&dst_rect, 
+		&dst_rect,
 		src,
-		&src_rect, 
-		protection, 
-		&alpha, 
-		clamp, 
-		transform 
-	);	
+		&src_rect,
+		protection,
+		&alpha,
+		clamp,
+		transform
+	);
 
 	vc_dispmanx_update_submit_sync( update );
 
@@ -177,7 +177,7 @@ void RendererGlLinux::swapBuffers() const
 	assert( status );
 	EGLBoolean result = ::eglSwapBuffers( mDisplay, mSurface );
 	// @TODO: Is this really necessary?
-	//assert( result );	
+	//assert( result );
 }
 
 void RendererGlLinux::makeCurrentContext( bool force )

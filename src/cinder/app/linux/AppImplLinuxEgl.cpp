@@ -6,10 +6,10 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
+	   the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	   the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -48,12 +48,12 @@ namespace rpi {
 
 enum {
 	INPUT_UNKNOWN			= 0x000,
-    INPUT_KEYUP 			= 0x100,
-    INPUT_KEYDOWN 			= 0x101,
-    INPUT_KEYREPEAT 		= 0x102,
-    INPUT_MOUSEBUTTONUP 	= 0x200,
-    INPUT_MOUSEBUTTONDOWN	= 0x201,
-    INPUT_MOUSEMOTION 		= 0x300,
+	INPUT_KEYUP				= 0x100,
+	INPUT_KEYDOWN			= 0x101,
+	INPUT_KEYREPEAT			= 0x102,
+	INPUT_MOUSEBUTTONUP		= 0x200,
+	INPUT_MOUSEBUTTONDOWN	= 0x201,
+	INPUT_MOUSEMOTION		= 0x300,
 
 	INPUT_MOUSELEFT			= 272,
 	INPUT_MOUSEMIDDLE		= 273,
@@ -62,9 +62,9 @@ enum {
 
 struct InputEvent
 {
-    uint16_t type;
-    uint16_t code; 		// button and keycodes from linux/input.h
-    int32_t  motion[3];	// X, Y, mouse_wheel
+	uint16_t type;
+	uint16_t code;		// button and keycodes from linux/input.h
+	int32_t  motion[3];	// X, Y, mouse_wheel
 
 	InputEvent() {
 		type = 0;
@@ -87,17 +87,17 @@ bool InputIsButtonDown( uint16_t buttonCode );
 namespace cinder { namespace app {
 
 struct MouseState {
-	ivec2 pos 		= ivec2( 0 );
-	bool leftDown 	= false;
+	ivec2 pos		= ivec2( 0 );
+	bool leftDown	= false;
 	bool middleDown	= false;
-	bool rightDown 	= false;
+	bool rightDown	= false;
 };
 
 static MouseState sMouseState;
 
 char keyCodeToChar( uint16_t cinderKeyCode );
 
-//bool keyPressed( int *character );	
+//bool keyPressed( int *character );
 //void keyboardReset();
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -119,7 +119,7 @@ AppImplLinux::AppImplLinux( AppLinux *aApp, const AppLinux::Settings &settings )
 
 	mFrameRate = settings.getFrameRate();
 	mFrameRateEnabled = settings.isFrameRateEnabled();
-	
+
 	auto formats = settings.getWindowFormats();
 	if( formats.empty() ) {
 		formats.push_back( settings.getDefaultWindowFormat() );
@@ -188,13 +188,13 @@ void AppImplLinux::run()
 
 	// issue initial app activation event
 	mApp->emitDidBecomeActive();
-	
+
 	// issue initial resize revent
 	for( auto &window : mWindows ) {
 		window->resize();
 	}
 
-	// start input 
+	// start input
 	if( rpi::InputInit() ) {
 		std::cout << "Mouse and keyboard input successfully initialized" << std::endl;
 	}
@@ -203,7 +203,7 @@ void AppImplLinux::run()
 	}
 
 	// initialize our next frame time
-	mNextFrameTime = getElapsedSeconds();	
+	mNextFrameTime = getElapsedSeconds();
 
 	while( ! mShouldQuit ) {
 		// input events
@@ -267,13 +267,13 @@ void AppImplLinux::run()
 					else {
 						mMainWindow->emitMouseMove( &event );
 					}
-				} 
+				}
 				break;
 
 				case rpi::INPUT_MOUSEBUTTONDOWN: {
 					int initiator = 0;
 					switch( inputEvent.code ) {
-						case rpi::INPUT_MOUSELEFT:   { sMouseState.leftDown   = true; initiator = MouseEvent::LEFT_DOWN;   } break;
+						case rpi::INPUT_MOUSELEFT:	 { sMouseState.leftDown   = true; initiator = MouseEvent::LEFT_DOWN;   } break;
 						case rpi::INPUT_MOUSEMIDDLE: { sMouseState.middleDown = true; initiator = MouseEvent::MIDDLE_DOWN; } break;
 						case rpi::INPUT_MOUSERIGHT:  { sMouseState.rightDown  = true; initiator = MouseEvent::RIGHT_DOWN;  } break;
 					}
@@ -297,9 +297,9 @@ void AppImplLinux::run()
 				case rpi::INPUT_MOUSEBUTTONUP: {
 					int initiator = 0;
 					switch( inputEvent.code ) {
-						case rpi::INPUT_MOUSELEFT:   { sMouseState.leftDown   = false; initiator = MouseEvent::LEFT_DOWN;   } break;
+						case rpi::INPUT_MOUSELEFT:	 { sMouseState.leftDown   = false; initiator = MouseEvent::LEFT_DOWN;	} break;
 						case rpi::INPUT_MOUSEMIDDLE: { sMouseState.middleDown = false; initiator = MouseEvent::MIDDLE_DOWN; } break;
-						case rpi::INPUT_MOUSERIGHT:  { sMouseState.rightDown  = false; initiator = MouseEvent::RIGHT_DOWN;  } break;
+						case rpi::INPUT_MOUSERIGHT:  { sMouseState.rightDown  = false; initiator = MouseEvent::RIGHT_DOWN;	} break;
 					}
 
 					MouseEvent event( getWindow(), initiator, sMouseState.pos.x, sMouseState.pos.y, 0, 0.0f, 0 );
@@ -337,7 +337,7 @@ WindowImplLinux* AppImplLinux::findSharedRendererWindow( const RendererRef &sear
 		}
 	}
 
-	return nullptr;	
+	return nullptr;
 }
 
 WindowRef AppImplLinux::createWindow( Window::Format format )
@@ -361,9 +361,9 @@ void AppImplLinux::quit()
 	mShouldQuit = true;
 }
 
-float AppImplLinux::getFrameRate() const 
-{ 
-	return mFrameRate; 
+float AppImplLinux::getFrameRate() const
+{
+	return mFrameRate;
 }
 
 void AppImplLinux::setFrameRate( float frameRate )
@@ -383,14 +383,14 @@ bool AppImplLinux::isFrameRateEnabled() const
 	return mFrameRateEnabled;
 }
 
-WindowRef AppImplLinux::getWindow() const 
-{ 
-	return mActiveWindow; 
+WindowRef AppImplLinux::getWindow() const
+{
+	return mActiveWindow;
 }
 
-void AppImplLinux::setWindow( WindowRef window ) 
-{ 
-	mActiveWindow = window; 
+void AppImplLinux::setWindow( WindowRef window )
+{
+	mActiveWindow = window;
 }
 
 size_t AppImplLinux::getNumWindows() const
@@ -403,7 +403,7 @@ WindowRef AppImplLinux::getWindowIndex( size_t index ) const
 	if( index >= mWindows.size() ) {
 		return cinder::app::WindowRef();
 	}
-	
+
 	auto winIt = mWindows.begin();
 	std::advance( winIt, index );
 	return (*winIt)->mWindowRef;
@@ -431,7 +431,7 @@ void AppImplLinux::showCursor()
 
 ivec2 AppImplLinux::getMousePos() const
 {
-	return sMouseState.pos;	
+	return sMouseState.pos;
 }
 
 #if defined( CINDER_LINUX_EGL_ONLY )
@@ -453,89 +453,89 @@ char keyCodeToChar( uint16_t cinderKeyCode )
 {
 	char result = 0;
 	switch( cinderKeyCode ) {
-		case KeyEvent::KEY_TAB         : result = '\t'; break;
-		case KeyEvent::KEY_RETURN      : result = '\n'; break;
-		case KeyEvent::KEY_SPACE       : result = ' '; break;
-		case KeyEvent::KEY_EXCLAIM     : result = '!'; break;
+		case KeyEvent::KEY_TAB		   : result = '\t'; break;
+		case KeyEvent::KEY_RETURN	   : result = '\n'; break;
+		case KeyEvent::KEY_SPACE	   : result = ' '; break;
+		case KeyEvent::KEY_EXCLAIM	   : result = '!'; break;
 		case KeyEvent::KEY_QUOTEDBL    : result = '"'; break;
-		case KeyEvent::KEY_HASH        : result = '#'; break;
-		case KeyEvent::KEY_DOLLAR      : result = '$'; break;
+		case KeyEvent::KEY_HASH		   : result = '#'; break;
+		case KeyEvent::KEY_DOLLAR	   : result = '$'; break;
 		case KeyEvent::KEY_AMPERSAND   : result = '&'; break;
-		case KeyEvent::KEY_QUOTE       : result = '\''; break;
+		case KeyEvent::KEY_QUOTE	   : result = '\''; break;
 		case KeyEvent::KEY_LEFTPAREN   : result = '('; break;
 		case KeyEvent::KEY_RIGHTPAREN  : result = ')'; break;
 		case KeyEvent::KEY_ASTERISK    : result = '*'; break;
-		case KeyEvent::KEY_PLUS        : result = '+'; break;
-		case KeyEvent::KEY_COMMA       : result = ','; break;
-		case KeyEvent::KEY_MINUS       : result = '-'; break;
-		case KeyEvent::KEY_PERIOD      : result = '.'; break;
-		case KeyEvent::KEY_SLASH       : result = '/'; break;
-		case KeyEvent::KEY_0           : result = '0'; break;
-		case KeyEvent::KEY_1           : result = '1'; break;
-		case KeyEvent::KEY_2           : result = '2'; break;
-		case KeyEvent::KEY_3           : result = '3'; break;
-		case KeyEvent::KEY_4           : result = '4'; break;
-		case KeyEvent::KEY_5           : result = '5'; break;
-		case KeyEvent::KEY_6           : result = '6'; break;
-		case KeyEvent::KEY_7           : result = '8'; break;
-		case KeyEvent::KEY_8           : result = '0'; break;
-		case KeyEvent::KEY_9           : result = '9'; break;
-		case KeyEvent::KEY_COLON       : result = ':'; break;
+		case KeyEvent::KEY_PLUS		   : result = '+'; break;
+		case KeyEvent::KEY_COMMA	   : result = ','; break;
+		case KeyEvent::KEY_MINUS	   : result = '-'; break;
+		case KeyEvent::KEY_PERIOD	   : result = '.'; break;
+		case KeyEvent::KEY_SLASH	   : result = '/'; break;
+		case KeyEvent::KEY_0		   : result = '0'; break;
+		case KeyEvent::KEY_1		   : result = '1'; break;
+		case KeyEvent::KEY_2		   : result = '2'; break;
+		case KeyEvent::KEY_3		   : result = '3'; break;
+		case KeyEvent::KEY_4		   : result = '4'; break;
+		case KeyEvent::KEY_5		   : result = '5'; break;
+		case KeyEvent::KEY_6		   : result = '6'; break;
+		case KeyEvent::KEY_7		   : result = '8'; break;
+		case KeyEvent::KEY_8		   : result = '0'; break;
+		case KeyEvent::KEY_9		   : result = '9'; break;
+		case KeyEvent::KEY_COLON	   : result = ':'; break;
 		case KeyEvent::KEY_SEMICOLON   : result = ';'; break;
-		case KeyEvent::KEY_LESS        : result = '<'; break;
-		case KeyEvent::KEY_EQUALS      : result = '='; break;
-		case KeyEvent::KEY_GREATER     : result = '>'; break;
+		case KeyEvent::KEY_LESS		   : result = '<'; break;
+		case KeyEvent::KEY_EQUALS	   : result = '='; break;
+		case KeyEvent::KEY_GREATER	   : result = '>'; break;
 		case KeyEvent::KEY_QUESTION    : result = '?'; break;
-		case KeyEvent::KEY_AT          : result = '@'; break;
+		case KeyEvent::KEY_AT		   : result = '@'; break;
 
 		case KeyEvent::KEY_LEFTBRACKET : result = '['; break;
 		case KeyEvent::KEY_BACKSLASH   : result = '\\'; break;
 		case KeyEvent::KEY_RIGHTBRACKET: result = ']'; break;
-		case KeyEvent::KEY_CARET       : result = '^'; break;
+		case KeyEvent::KEY_CARET	   : result = '^'; break;
 		case KeyEvent::KEY_UNDERSCORE  : result = '_'; break;
 		case KeyEvent::KEY_BACKQUOTE   : result = '`'; break;
-		case KeyEvent::KEY_a           : result = 'a'; break;
-		case KeyEvent::KEY_b           : result = 'b'; break;
-		case KeyEvent::KEY_c           : result = 'c'; break;
-		case KeyEvent::KEY_d           : result = 'd'; break;
-		case KeyEvent::KEY_e           : result = 'e'; break;
-		case KeyEvent::KEY_f           : result = 'f'; break;
-		case KeyEvent::KEY_g           : result = 'g'; break;
-		case KeyEvent::KEY_h           : result = 'h'; break;
-		case KeyEvent::KEY_i           : result = 'i'; break;
-		case KeyEvent::KEY_j           : result = 'j'; break;
-		case KeyEvent::KEY_k           : result = 'k'; break;
-		case KeyEvent::KEY_l           : result = 'l'; break;
-		case KeyEvent::KEY_m           : result = 'm'; break;
-		case KeyEvent::KEY_n           : result = 'n'; break;
-		case KeyEvent::KEY_o           : result = 'o'; break;
-		case KeyEvent::KEY_p           : result = 'p'; break;
-		case KeyEvent::KEY_q           : result = 'q'; break;
-		case KeyEvent::KEY_r           : result = 'r'; break;
-		case KeyEvent::KEY_s           : result = 's'; break;
-		case KeyEvent::KEY_t           : result = 't'; break;
-		case KeyEvent::KEY_u           : result = 'u'; break;
-		case KeyEvent::KEY_v           : result = 'v'; break;
-		case KeyEvent::KEY_w           : result = 'w'; break;
-		case KeyEvent::KEY_x           : result = 'x'; break;
-		case KeyEvent::KEY_y           : result = 'y'; break;
-		case KeyEvent::KEY_z           : result = 'z'; break;
+		case KeyEvent::KEY_a		   : result = 'a'; break;
+		case KeyEvent::KEY_b		   : result = 'b'; break;
+		case KeyEvent::KEY_c		   : result = 'c'; break;
+		case KeyEvent::KEY_d		   : result = 'd'; break;
+		case KeyEvent::KEY_e		   : result = 'e'; break;
+		case KeyEvent::KEY_f		   : result = 'f'; break;
+		case KeyEvent::KEY_g		   : result = 'g'; break;
+		case KeyEvent::KEY_h		   : result = 'h'; break;
+		case KeyEvent::KEY_i		   : result = 'i'; break;
+		case KeyEvent::KEY_j		   : result = 'j'; break;
+		case KeyEvent::KEY_k		   : result = 'k'; break;
+		case KeyEvent::KEY_l		   : result = 'l'; break;
+		case KeyEvent::KEY_m		   : result = 'm'; break;
+		case KeyEvent::KEY_n		   : result = 'n'; break;
+		case KeyEvent::KEY_o		   : result = 'o'; break;
+		case KeyEvent::KEY_p		   : result = 'p'; break;
+		case KeyEvent::KEY_q		   : result = 'q'; break;
+		case KeyEvent::KEY_r		   : result = 'r'; break;
+		case KeyEvent::KEY_s		   : result = 's'; break;
+		case KeyEvent::KEY_t		   : result = 't'; break;
+		case KeyEvent::KEY_u		   : result = 'u'; break;
+		case KeyEvent::KEY_v		   : result = 'v'; break;
+		case KeyEvent::KEY_w		   : result = 'w'; break;
+		case KeyEvent::KEY_x		   : result = 'x'; break;
+		case KeyEvent::KEY_y		   : result = 'y'; break;
+		case KeyEvent::KEY_z		   : result = 'z'; break;
 
-		case KeyEvent::KEY_KP0         : result = '0'; break;
-		case KeyEvent::KEY_KP1         : result = '1'; break;
-		case KeyEvent::KEY_KP2         : result = '2'; break;
-		case KeyEvent::KEY_KP3         : result = '3'; break;
-		case KeyEvent::KEY_KP4         : result = '4'; break;
-		case KeyEvent::KEY_KP5         : result = '5'; break;
-		case KeyEvent::KEY_KP6         : result = '6'; break;
-		case KeyEvent::KEY_KP7         : result = '7'; break;
-		case KeyEvent::KEY_KP8         : result = '8'; break;
-		case KeyEvent::KEY_KP9         : result = '9'; break;
+		case KeyEvent::KEY_KP0		   : result = '0'; break;
+		case KeyEvent::KEY_KP1		   : result = '1'; break;
+		case KeyEvent::KEY_KP2		   : result = '2'; break;
+		case KeyEvent::KEY_KP3		   : result = '3'; break;
+		case KeyEvent::KEY_KP4		   : result = '4'; break;
+		case KeyEvent::KEY_KP5		   : result = '5'; break;
+		case KeyEvent::KEY_KP6		   : result = '6'; break;
+		case KeyEvent::KEY_KP7		   : result = '7'; break;
+		case KeyEvent::KEY_KP8		   : result = '8'; break;
+		case KeyEvent::KEY_KP9		   : result = '9'; break;
 		case KeyEvent::KEY_KP_PERIOD   : result = '.'; break;
 		case KeyEvent::KEY_KP_DIVIDE   : result = '/'; break;
 		case KeyEvent::KEY_KP_MULTIPLY : result = '*'; break;
 		case KeyEvent::KEY_KP_MINUS    : result = '-'; break;
-		case KeyEvent::KEY_KP_PLUS     : result = '+'; break;
+		case KeyEvent::KEY_KP_PLUS	   : result = '+'; break;
 		case KeyEvent::KEY_KP_ENTER    : result = '\n'; break;
 		case KeyEvent::KEY_KP_EQUALS   : result = '='; break;
 	}
@@ -547,7 +547,7 @@ char keyCodeToChar( uint16_t cinderKeyCode )
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Borrowed from:
-//     https://github.com/AndrewFromMelbourne/raspidmx/blob/master/common/key.c
+//	   https://github.com/AndrewFromMelbourne/raspidmx/blob/master/common/key.c
 //
 ////////////////////////////////////////////////////////////////////////////////
 static int sStdInFileDesc = -1;
@@ -555,79 +555,79 @@ static struct termios sTermiosAttribs;
 
 bool keyPressed(int *character)
 {
-    // If this is the first time the function is called, change the stdin
-    // stream so that we get each character when the keys are pressed and
-    // and so that character aren't echoed to the screen when the keys are
-    // pressed.
-    if (-1 == sStdInFileDesc)
-    {
-        // Get the file descriptor associated with stdin stream.
-        sStdInFileDesc = fileno(stdin);
+	// If this is the first time the function is called, change the stdin
+	// stream so that we get each character when the keys are pressed and
+	// and so that character aren't echoed to the screen when the keys are
+	// pressed.
+	if (-1 == sStdInFileDesc)
+	{
+		// Get the file descriptor associated with stdin stream.
+		sStdInFileDesc = fileno(stdin);
 
-        // Get the terminal (termios) attritubets for stdin so we can
-        // modify them and reset them before exiting the program.
-        tcgetattr(sStdInFileDesc, &sTermiosAttribs);
+		// Get the terminal (termios) attritubets for stdin so we can
+		// modify them and reset them before exiting the program.
+		tcgetattr(sStdInFileDesc, &sTermiosAttribs);
 
-        // Copy the termios attributes so we can modify them.
-        struct termios term;
-        memcpy(&term, &sTermiosAttribs, sizeof(term));
+		// Copy the termios attributes so we can modify them.
+		struct termios term;
+		memcpy(&term, &sTermiosAttribs, sizeof(term));
 
-        // Unset ICANON and ECHO for stdin. When ICANON is not set the
-        // input is in noncanonical mode. In noncanonical mode input is
-        // available as each key is pressed. In canonical mode input is
-        // only available after the enter key is pressed. Unset ECHO so that
-        // the characters aren't echoed to the screen when keys are pressed.
-        // See the termios(3) man page for more information.
-        term.c_lflag &= ~(ICANON|ECHO);
-        tcsetattr(sStdInFileDesc, TCSANOW, &term);
+		// Unset ICANON and ECHO for stdin. When ICANON is not set the
+		// input is in noncanonical mode. In noncanonical mode input is
+		// available as each key is pressed. In canonical mode input is
+		// only available after the enter key is pressed. Unset ECHO so that
+		// the characters aren't echoed to the screen when keys are pressed.
+		// See the termios(3) man page for more information.
+		term.c_lflag &= ~(ICANON|ECHO);
+		tcsetattr(sStdInFileDesc, TCSANOW, &term);
 
-        // Turn off buffering for stdin. We want to get the characters
-        // immediately. We don't want the characters to be buffered.
-        setbuf(stdin, NULL);
-    }
+		// Turn off buffering for stdin. We want to get the characters
+		// immediately. We don't want the characters to be buffered.
+		setbuf(stdin, NULL);
+	}
 
-    // Get the number of characters that are waiting to be read.
-    int charactersBuffered = 0;
-    ioctl(sStdInFileDesc, FIONREAD, &charactersBuffered);
+	// Get the number of characters that are waiting to be read.
+	int charactersBuffered = 0;
+	ioctl(sStdInFileDesc, FIONREAD, &charactersBuffered);
 
-    // Set the return value to true if there are any characters to be read.
-    bool pressed = (charactersBuffered != 0);
+	// Set the return value to true if there are any characters to be read.
+	bool pressed = (charactersBuffered != 0);
 
-    if (charactersBuffered == 1)
-    {
-        // There is only one character to be read. Read it in.
-        int c = fgetc(stdin);
+	if (charactersBuffered == 1)
+	{
+		// There is only one character to be read. Read it in.
+		int c = fgetc(stdin);
 
-        // Check if the caller wants the value of character read.
-        if (character != NULL)
-        {
-            *character = c;
-        }
-    }
-    else if (charactersBuffered > 1)
-    {
-        // There is more than one character to be read. This can be key such
-        // as the arrow keys or function keys. This code just reads them in
-        // and ignores them. The caller will be informed that a key was
-        // pressed, but won't get a value for the key.
-        while (charactersBuffered)
-        {
-            fgetc(stdin);
-            --charactersBuffered;
-        }
-    }
+		// Check if the caller wants the value of character read.
+		if (character != NULL)
+		{
+			*character = c;
+		}
+	}
+	else if (charactersBuffered > 1)
+	{
+		// There is more than one character to be read. This can be key such
+		// as the arrow keys or function keys. This code just reads them in
+		// and ignores them. The caller will be informed that a key was
+		// pressed, but won't get a value for the key.
+		while (charactersBuffered)
+		{
+			fgetc(stdin);
+			--charactersBuffered;
+		}
+	}
 
-    return pressed;
+	return pressed;
 }
 
 void keyboardReset()
 {
-    if (-1 == sStdInFileDesc) {
-        // If keyPressed() has been called the terminal input has been
-        // changed for the stdin stream. Put the attributes back the way
-        // we found them.
-        tcsetattr(sStdInFileDesc, TCSANOW, &sTermiosAttribs);
-    }
+	if (-1 == sStdInFileDesc) {
+		// If keyPressed() has been called the terminal input has been
+		// changed for the stdin stream. Put the attributes back the way
+		// we found them.
+		tcsetattr(sStdInFileDesc, TCSANOW, &sTermiosAttribs);
+	}
 }
 */
 
@@ -641,9 +641,9 @@ namespace rpi {
 
 struct EventBuffer
 {
-    struct input_event buffer[INPUT_BUFFER_SIZE];
-    int first;
-    int count;
+	struct input_event buffer[INPUT_BUFFER_SIZE];
+	int first;
+	int count;
 };
 
 static struct EventBuffer keyboardEventBuffer;
@@ -660,219 +660,219 @@ static bool buttonStates[INPUT_NUM_BUTTONS];
 
 bool InputInit(void)
 {
-    keyboardEventBuffer.first = keyboardEventBuffer.count = 0;
-    mouseEventBuffer.first = mouseEventBuffer.count = 0;
-    keyboardFd = mouseFd = -1;
-    mouseMove[0] = mouseMove[1] = mouseMove[2] = 0;
+	keyboardEventBuffer.first = keyboardEventBuffer.count = 0;
+	mouseEventBuffer.first = mouseEventBuffer.count = 0;
+	keyboardFd = mouseFd = -1;
+	mouseMove[0] = mouseMove[1] = mouseMove[2] = 0;
 
-    regex_t kbd;
-    regex_t mouse;
-    if( regcomp(&kbd,"event-kbd",0) != 0 ) {
-        printf("regcomp for kbd failed\n");
-        return false;
-    }
-    if( regcomp(&mouse,"event-mouse",0) != 0 ) {
-        printf("regcomp for mouse failed\n");
-        return false;
-    }
+	regex_t kbd;
+	regex_t mouse;
+	if( regcomp(&kbd,"event-kbd",0) != 0 ) {
+		printf("regcomp for kbd failed\n");
+		return false;
+	}
+	if( regcomp(&mouse,"event-mouse",0) != 0 ) {
+		printf("regcomp for mouse failed\n");
+		return false;
+	}
 
-    DIR *dirp;
-    const char *dirName = "/dev/input/by-id";
-    if( ( dirp = opendir(dirName) ) == NULL ) {
-        perror("couldn't open '/dev/input/by-id'");
-        return false;
-    }
+	DIR *dirp;
+	const char *dirName = "/dev/input/by-id";
+	if( ( dirp = opendir(dirName) ) == NULL ) {
+		perror("couldn't open '/dev/input/by-id'");
+		return false;
+	}
 
-    // Find any files in the directory that match the regex for keyboard or mouse
-    struct dirent *dp;
-    do {     
-        errno = 0;
-        
-        if( ( dp = readdir( dirp ) ) != NULL ) {
-            //printf("readdir (%s)\n",dp->d_name);
+	// Find any files in the directory that match the regex for keyboard or mouse
+	struct dirent *dp;
+	do {
+		errno = 0;
 
-            char fullPath[1024];
-            int result;
+		if( ( dp = readdir( dirp ) ) != NULL ) {
+			//printf("readdir (%s)\n",dp->d_name);
 
-            if( regexec( &kbd, dp->d_name, 0, NULL, 0 ) == 0 ) {
-                //printf("match for the kbd = %s\n",dp->d_name);
-                sprintf(fullPath,"%s/%s",dirName,dp->d_name);
-                keyboardFd = open(fullPath,O_RDONLY | O_NONBLOCK);
-                //printf("%s Fd = %d\n",fullPath,keyboardFd);
-                //printf("Getting exclusive access: ");
-                result = ioctl(keyboardFd, EVIOCGRAB, 1);
-                if (result != 0)
-                    printf("Couldn't grab exclusive keyboard access\n");
-            }
-            if( regexec( &mouse, dp->d_name, 0, NULL, 0) == 0 ) {
-                //printf("match for the kbd = %s\n",dp->d_name);
-                sprintf(fullPath,"%s/%s",dirName,dp->d_name);
-                mouseFd = open(fullPath,O_RDONLY | O_NONBLOCK);
-                //printf("%s Fd = %d\n",fullPath,mouseFd);
-                //printf("Getting exclusive access: ");
-                result = ioctl(mouseFd, EVIOCGRAB, 1);
-                if( result != 0 ) {
-                    printf("Couldn't grab exclusive mouse access\n");
-                }
-            }
+			char fullPath[1024];
+			int result;
 
-        }
-    } while( dp != NULL );
+			if( regexec( &kbd, dp->d_name, 0, NULL, 0 ) == 0 ) {
+				//printf("match for the kbd = %s\n",dp->d_name);
+				sprintf(fullPath,"%s/%s",dirName,dp->d_name);
+				keyboardFd = open(fullPath,O_RDONLY | O_NONBLOCK);
+				//printf("%s Fd = %d\n",fullPath,keyboardFd);
+				//printf("Getting exclusive access: ");
+				result = ioctl(keyboardFd, EVIOCGRAB, 1);
+				if (result != 0)
+					printf("Couldn't grab exclusive keyboard access\n");
+			}
+			if( regexec( &mouse, dp->d_name, 0, NULL, 0) == 0 ) {
+				//printf("match for the kbd = %s\n",dp->d_name);
+				sprintf(fullPath,"%s/%s",dirName,dp->d_name);
+				mouseFd = open(fullPath,O_RDONLY | O_NONBLOCK);
+				//printf("%s Fd = %d\n",fullPath,mouseFd);
+				//printf("Getting exclusive access: ");
+				result = ioctl(mouseFd, EVIOCGRAB, 1);
+				if( result != 0 ) {
+					printf("Couldn't grab exclusive mouse access\n");
+				}
+			}
 
-    closedir(dirp);
+		}
+	} while( dp != NULL );
 
-    regfree(&kbd);
-    regfree(&mouse);
+	closedir(dirp);
 
-    if( keyboardFd == -1 ) {
-        printf( "couldn't find keyboard event file\n" );
-        return false;
-    }
+	regfree(&kbd);
+	regfree(&mouse);
 
-    if( mouseFd == -1 ) {
-        printf( "couldn't find mouse event file\n" );
-        return false;
-    }
+	if( keyboardFd == -1 ) {
+		printf( "couldn't find keyboard event file\n" );
+		return false;
+	}
 
-    return true;
+	if( mouseFd == -1 ) {
+		printf( "couldn't find mouse event file\n" );
+		return false;
+	}
+
+	return true;
 }
 
 void InputClose(void)
 {
-    int result;
+	int result;
 
-    if( mouseFd != -1 ) {
-        //printf("Releasing exclusive mouse access: ");
-        result = ioctl(mouseFd, EVIOCGRAB, 0);
-        if( result != 0 ) {
-            printf("Couldn't release exclusive mouse access\n");
-        }
-        close(mouseFd);
-    }
+	if( mouseFd != -1 ) {
+		//printf("Releasing exclusive mouse access: ");
+		result = ioctl(mouseFd, EVIOCGRAB, 0);
+		if( result != 0 ) {
+			printf("Couldn't release exclusive mouse access\n");
+		}
+		close(mouseFd);
+	}
 
-    if( keyboardFd != -1 ) {
-        //printf("Releasing exclusive keyboard access: ");
-        result = ioctl(keyboardFd, EVIOCGRAB, 0);
-        if( result != 0 ) {
-            printf("Couldn't release exclusive keyboard access\n");
-        }
-        close(keyboardFd);
-    }
+	if( keyboardFd != -1 ) {
+		//printf("Releasing exclusive keyboard access: ");
+		result = ioctl(keyboardFd, EVIOCGRAB, 0);
+		if( result != 0 ) {
+			printf("Couldn't release exclusive keyboard access\n");
+		}
+		close(keyboardFd);
+	}
 }
 
 bool InputPollEvent( InputEvent* pEvent )
 {
-    // Read more events from keyboard if the buffer is empty
-    if( keyboardEventBuffer.count == 0 && keyboardFd != -1 ) {
-        int bytesRead = read(keyboardFd, keyboardEventBuffer.buffer, sizeof(struct input_event)*INPUT_BUFFER_SIZE);
-        if( bytesRead > 0 ) {
-            keyboardEventBuffer.first = 0;
-            keyboardEventBuffer.count = bytesRead / sizeof(struct input_event);
-        }
-    }
+	// Read more events from keyboard if the buffer is empty
+	if( keyboardEventBuffer.count == 0 && keyboardFd != -1 ) {
+		int bytesRead = read(keyboardFd, keyboardEventBuffer.buffer, sizeof(struct input_event)*INPUT_BUFFER_SIZE);
+		if( bytesRead > 0 ) {
+			keyboardEventBuffer.first = 0;
+			keyboardEventBuffer.count = bytesRead / sizeof(struct input_event);
+		}
+	}
 
-    // Read more events from mouse if the buffer is empty
-    if( mouseEventBuffer.count == 0 && mouseFd != -1 ) {
-        int bytesRead = read(mouseFd, mouseEventBuffer.buffer, sizeof(struct input_event)*INPUT_BUFFER_SIZE);
-        if( bytesRead > 0 ) {
-            mouseEventBuffer.first = 0;
-            mouseEventBuffer.count = bytesRead / sizeof(struct input_event);
-        }
-    }
+	// Read more events from mouse if the buffer is empty
+	if( mouseEventBuffer.count == 0 && mouseFd != -1 ) {
+		int bytesRead = read(mouseFd, mouseEventBuffer.buffer, sizeof(struct input_event)*INPUT_BUFFER_SIZE);
+		if( bytesRead > 0 ) {
+			mouseEventBuffer.first = 0;
+			mouseEventBuffer.count = bytesRead / sizeof(struct input_event);
+		}
+	}
 
-    // Process events until finding one that should be reported
-    while( true ) {
-        if( keyboardEventBuffer.count == 0 && mouseEventBuffer.count == 0 ) {
-            return false;
-        }
+	// Process events until finding one that should be reported
+	while( true ) {
+		if( keyboardEventBuffer.count == 0 && mouseEventBuffer.count == 0 ) {
+			return false;
+		}
 
-        // Find the oldest event from either buffer
-        struct EventBuffer* pInput;
-        if( keyboardEventBuffer.count == 0 ) {
-            pInput = &mouseEventBuffer;
-        }
-        else {
-            if( mouseEventBuffer.count == 0 ) {
-                pInput = &keyboardEventBuffer;
-            }
-            else {
-                struct timeval* keyboardEventTime = &keyboardEventBuffer.buffer[keyboardEventBuffer.first].time;
-                struct timeval* mouseEventTime = &mouseEventBuffer.buffer[mouseEventBuffer.first].time;
+		// Find the oldest event from either buffer
+		struct EventBuffer* pInput;
+		if( keyboardEventBuffer.count == 0 ) {
+			pInput = &mouseEventBuffer;
+		}
+		else {
+			if( mouseEventBuffer.count == 0 ) {
+				pInput = &keyboardEventBuffer;
+			}
+			else {
+				struct timeval* keyboardEventTime = &keyboardEventBuffer.buffer[keyboardEventBuffer.first].time;
+				struct timeval* mouseEventTime = &mouseEventBuffer.buffer[mouseEventBuffer.first].time;
 
-                if( ( keyboardEventTime->tv_sec < mouseEventTime->tv_sec ) ||
-                    ( ( keyboardEventTime->tv_sec == mouseEventTime->tv_sec ) && 
-                      ( keyboardEventTime->tv_usec < mouseEventTime->tv_usec) ) 
-                ) {
-                
-                    pInput = &keyboardEventBuffer;
-                }
-                else {
-                    pInput = &mouseEventBuffer;
-                }
-            }        
-        }
-        
-        // Get the event from the buffer
-        struct input_event* evp = &pInput->buffer[pInput->first];
-        pInput->first++;
-        pInput->count--;
+				if( ( keyboardEventTime->tv_sec < mouseEventTime->tv_sec ) ||
+					( ( keyboardEventTime->tv_sec == mouseEventTime->tv_sec ) &&
+					  ( keyboardEventTime->tv_usec < mouseEventTime->tv_usec) )
+				) {
 
-        // relative mouse movement
-        if( evp->type == EV_REL ) {
-            if(evp->code == REL_X) {
-                mouseMove[0] = evp->value;
-            }
-            else if(evp->code == REL_Y) {
-                mouseMove[1] = evp->value;
-            }
-            else if(evp->code == REL_WHEEL) {
-                mouseMove[2] = evp->value;
-            }          
-        }
-        // sync: end of a logical mouse action
-        else if( evp->type == EV_SYN ) {
-            if( pInput == &mouseEventBuffer && ( mouseMove[0] || mouseMove[1] || mouseMove[2] ) ) {
-                pEvent->type = INPUT_MOUSEMOTION;
-                for (int i=0; i<3; i++) {
-                    pEvent->motion[i] = mouseMove[i];
-                }
-                mouseMove[0] = mouseMove[1] = mouseMove[2] = 0;
-                return true;
-            }
-        }
-        // mouse button or keypress
-        else if( evp->type == EV_KEY ) {
-            if( pInput == &mouseEventBuffer ) {
-                pEvent->type = INPUT_MOUSEBUTTONUP + evp->value;
-                pEvent->code = evp->code;
+					pInput = &keyboardEventBuffer;
+				}
+				else {
+					pInput = &mouseEventBuffer;
+				}
+			}
+		}
 
-                uint16_t index = evp->code - BTN_MISC;
-                if (index < INPUT_NUM_BUTTONS) {
-                    buttonStates[index] = (evp->value != 0);
-                }
-            }
-            else {
-                pEvent->type = INPUT_KEYUP + evp->value;
-                pEvent->code = evp->code;
+		// Get the event from the buffer
+		struct input_event* evp = &pInput->buffer[pInput->first];
+		pInput->first++;
+		pInput->count--;
 
-                uint16_t index = evp->code;
-                if( index < INPUT_NUM_KEYS ) { 
-                    keyStates[index] = (evp->value != 0);
-                }
-            }
-            return true;
-        }
-    }
+		// relative mouse movement
+		if( evp->type == EV_REL ) {
+			if(evp->code == REL_X) {
+				mouseMove[0] = evp->value;
+			}
+			else if(evp->code == REL_Y) {
+				mouseMove[1] = evp->value;
+			}
+			else if(evp->code == REL_WHEEL) {
+				mouseMove[2] = evp->value;
+			}
+		}
+		// sync: end of a logical mouse action
+		else if( evp->type == EV_SYN ) {
+			if( pInput == &mouseEventBuffer && ( mouseMove[0] || mouseMove[1] || mouseMove[2] ) ) {
+				pEvent->type = INPUT_MOUSEMOTION;
+				for (int i=0; i<3; i++) {
+					pEvent->motion[i] = mouseMove[i];
+				}
+				mouseMove[0] = mouseMove[1] = mouseMove[2] = 0;
+				return true;
+			}
+		}
+		// mouse button or keypress
+		else if( evp->type == EV_KEY ) {
+			if( pInput == &mouseEventBuffer ) {
+				pEvent->type = INPUT_MOUSEBUTTONUP + evp->value;
+				pEvent->code = evp->code;
+
+				uint16_t index = evp->code - BTN_MISC;
+				if (index < INPUT_NUM_BUTTONS) {
+					buttonStates[index] = (evp->value != 0);
+				}
+			}
+			else {
+				pEvent->type = INPUT_KEYUP + evp->value;
+				pEvent->code = evp->code;
+
+				uint16_t index = evp->code;
+				if( index < INPUT_NUM_KEYS ) {
+					keyStates[index] = (evp->value != 0);
+				}
+			}
+			return true;
+		}
+	}
 }
 
 bool InputIsKeyDown(uint16_t keyCode)
 {
-    return keyStates[keyCode];
+	return keyStates[keyCode];
 }
 
 bool InputIsButtonDown(uint16_t buttonCode)
 {
-    return buttonStates[buttonCode - BTN_MISC];
+	return buttonStates[buttonCode - BTN_MISC];
 }
 
 } // namespace rpi

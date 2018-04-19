@@ -6,10 +6,10 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
+	   the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	   the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -42,7 +42,7 @@ class AppImplLinux {
 	virtual ~AppImplLinux();
 
 	AppLinux					*getApp();
-	
+
  protected:
 	WindowImplLinux*				findSharedRendererWindow( const RendererRef &searchRenderer );
 
@@ -51,15 +51,15 @@ class AppImplLinux {
 
 	float						getFrameRate() const;
 	void						setFrameRate( float aFrameRate );
-	void 						disableFrameRate();
-	bool 						isFrameRateEnabled() const;
+	void						disableFrameRate();
+	bool						isFrameRateEnabled() const;
 
 
 	WindowRef					getWindow() const;
 	void						setWindow( WindowRef window );
-	size_t 						getNumWindows() const;
-	WindowRef 					getWindowIndex( size_t index ) const;
-	WindowRef 					getForegroundWindow() const;
+	size_t						getNumWindows() const;
+	WindowRef					getWindowIndex( size_t index ) const;
+	WindowRef					getForegroundWindow() const;
 	void						setForegroundWindow( WindowRef window );
 
 	void						hideCursor();
@@ -67,7 +67,7 @@ class AppImplLinux {
 	ivec2						getMousePos() const;
 
 #if defined( CINDER_LINUX_EGL_ONLY )
-	ivec2 						getDefaultDisplaySize() const;
+	ivec2						getDefaultDisplaySize() const;
 #endif
 
 private:
@@ -76,26 +76,26 @@ private:
 
 	std::list<WindowImplLinux*>	mWindows;
 	WindowRef					mActiveWindow;
-	WindowRef 					mForegroundWindow;
+	WindowRef					mForegroundWindow;
 
 #if defined( CINDER_LINUX_EGL_ONLY )
-	ivec2 						mDefaultDisplaySize = ivec2( 0, 0 );
-#endif	
+	ivec2						mDefaultDisplaySize = ivec2( 0, 0 );
+#endif
 
-	float 						mFrameRate;
+	float						mFrameRate;
 	bool						mFrameRateEnabled;
-	bool 						mShouldQuit = false;
+	bool						mShouldQuit = false;
 
 	bool						mSetupHasBeenCalled = false;
 	bool						mQuitOnLastWindowClosed;
-	
+
 	double						mNextFrameTime;
 
-	void 						sleepUntilNextFrame();
-	void 						run();
+	void						sleepUntilNextFrame();
+	void						run();
 
-	void 						registerWindowEvents( WindowImplLinux* window );
-	void 						unregisterWindowEvents( WindowImplLinux* window );
+	void						registerWindowEvents( WindowImplLinux* window );
+	void						unregisterWindowEvents( WindowImplLinux* window );
 
 	friend class AppLinux;
 	friend class WindowImplLinux;

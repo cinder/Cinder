@@ -6,10 +6,10 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
+	   the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	   the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -79,7 +79,7 @@ WindowImplLinux::~WindowImplLinux()
 
 void WindowImplLinux::setFullScreen( bool fullScreen, const app::FullScreenOptions &options )
 {
-	// TODO: Find a way to do this w/o recreating 
+	// TODO: Find a way to do this w/o recreating
 }
 
 ivec2 WindowImplLinux::getSize() const
@@ -98,7 +98,7 @@ ivec2 WindowImplLinux::getPos() const
 }
 
 void WindowImplLinux::setPos( const ivec2 &pos )
-{	
+{
 }
 
 void WindowImplLinux::close()
@@ -122,24 +122,24 @@ const std::vector<TouchEvent::Touch>& WindowImplLinux::getActiveTouches() const
 	return mActiveTouches;
 }
 
-EGLNativeWindowType	WindowImplLinux::getNative() 
-{ 
+EGLNativeWindowType	WindowImplLinux::getNative()
+{
 	return reinterpret_cast<EGLNativeWindowType>( mNativeWindow.get() );
 }
 
-EGLNativeWindowType WindowImplLinux::getNative() const 
-{ 
+EGLNativeWindowType WindowImplLinux::getNative() const
+{
 	return reinterpret_cast<EGLNativeWindowType>( mNativeWindow.get() );
 }
 
 void WindowImplLinux::setBorderless( bool borderless )
 {
-	// TODO: Find a way to do this w/o recreating 
+	// TODO: Find a way to do this w/o recreating
 }
 
 void WindowImplLinux::setAlwaysOnTop( bool alwaysOnTop )
 {
-	// TODO: Find a way to do this w/o recreating 
+	// TODO: Find a way to do this w/o recreating
 }
 
 void WindowImplLinux::keyDown( const KeyEvent &event )
@@ -161,10 +161,10 @@ void WindowImplLinux::draw()
 		ci::gl::ScopedColor color( 1.0f, 1.0f, 1.0f );
 
 		ci::gl::setMatricesWindow( mNativeWindow->window.width, mNativeWindow->window.height );
-		
+
 		Rectf r = sCursorTex->getBounds();
 		r += vec2( mAppImpl->getMousePos() );
-		ci::gl::draw( sCursorTex, r ); 
+		ci::gl::draw( sCursorTex, r );
 	}
 	mRenderer->finishDraw();
 }
