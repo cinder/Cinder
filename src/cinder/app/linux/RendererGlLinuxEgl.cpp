@@ -26,9 +26,16 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
+#include "cinder/Log.h"
 
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 #include <bcm_host.h>
 #include <EGL/egl.h>
+#else
+#include <EGL/egl.h>
+#define EGL_EGLEXT_PROTOTYPES
+#include <EGL/eglext.h>
+#endif
 
 namespace cinder { namespace app {
 
@@ -44,13 +51,71 @@ RendererGlLinux::~RendererGlLinux()
 }
 
 
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
+#else
+bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRenderer )
+#endif
 {
-	std::vector<EGLint> configAttribs;
+#if ! defined( CINDER_HEADLESS_GL_EGL )
+	mDisplay = eglGetDisplay( EGL_DEFAULT_DISPLAY );
+#else
+	const char* s = eglQueryString( EGL_NO_DISPLAY, EGL_EXTENSIONS );
+	std::string egl_extensions( s );
+	CI_LOG_I( "Supported EGL extensions : " << egl_extensions );
 
+	auto hasExtension = [ & ] ( const std::string extension ) -> bool {
+		size_t pos = egl_extensions.find( extension );
+		// Check to see if we have exact extension match.
+		if( pos != std::string::npos ) {
+			if( ( ( pos == 0 ) || ! std::isalpha( egl_extensions[ pos - 1 ] ) )
+					&& ! std::isalpha( egl_extensions[ pos + extension.size() ] ) )
+				return true;
+		}
+		return false;
+	};
+
+	if( hasExtension( "EGL_EXT_device_base" )
+			&& hasExtension( "EGL_EXT_platform_device" )
+			&& hasExtension( "EGL_EXT_platform_base" ) ) {
+
+		int numDevices = 0;
+		EGLDeviceEXT* devices = nullptr;
+
+		PFNEGLQUERYDEVICESEXTPROC eglQueryDevicesEXT = (PFNEGLQUERYDEVICESEXTPROC)eglGetProcAddress( "eglQueryDevicesEXT" );
+		PFNEGLQUERYDEVICESTRINGEXTPROC eglQueryDeviceStringEXT = (PFNEGLQUERYDEVICESTRINGEXTPROC)eglGetProcAddress( "eglQueryDeviceStringEXT" );
+		PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT = (PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress( "eglGetPlatformDisplayEXT" );
+
+		// Check that we have at least one device.
+		if( ! eglQueryDevicesEXT || ! eglQueryDevicesEXT( 0, nullptr, &numDevices ) || numDevices < 1 )
+			return false;
+		if( ( devices = (EGLDeviceEXT*)malloc( sizeof( EGLDeviceEXT ) * numDevices ) ) == nullptr )
+			return false;
+		if( ! eglQueryDevicesEXT( numDevices, devices, &numDevices ) || numDevices < 1 )
+			return false;
+
+		// Get a device as display.
+		mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_DEVICE_EXT, devices[0], NULL );
+	}
+	else {
+		CI_LOG_E( "No available EGL Device extension support!" );
+		return false;
+	}
+#endif // CINDER_HEADLESS_GL_EGL
+	if( mDisplay == EGL_NO_DISPLAY) {
+		CI_LOG_E( "Failed to get EGL display from device!" );
+		return false;
+	}
+
+	std::vector<EGLint> configAttribs;
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 	// OpenGL ES 3 also uses EGL_OPENGL_ES2_BIT
-	configAttribs.push_back( EGL_RENDERABLE_TYPE ); configAttribs.push_back( EGL_OPENGL_ES2_BIT );
 	configAttribs.push_back( EGL_SURFACE_TYPE	 ); configAttribs.push_back( EGL_WINDOW_BIT );
+	configAttribs.push_back( EGL_RENDERABLE_TYPE ); configAttribs.push_back( EGL_OPENGL_ES2_BIT );
+#else
+	configAttribs.push_back( EGL_RENDERABLE_TYPE ); configAttribs.push_back( EGL_OPENGL_BIT );
+	configAttribs.push_back( EGL_SURFACE_TYPE	 ); configAttribs.push_back( EGL_PBUFFER_BIT );
+#endif
 	configAttribs.push_back( EGL_RED_SIZE		 ); configAttribs.push_back( 8 );
 	configAttribs.push_back( EGL_GREEN_SIZE		 ); configAttribs.push_back( 8 );
 	configAttribs.push_back( EGL_BLUE_SIZE		 ); configAttribs.push_back( 8 );
@@ -60,28 +125,30 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 	configAttribs.push_back( EGL_SAMPLE_BUFFERS  ); configAttribs.push_back( 1 );
 	configAttribs.push_back( EGL_NONE			 );
 
-	mDisplay = eglGetDisplay( EGL_DEFAULT_DISPLAY );
-	if( mDisplay == EGL_NO_DISPLAY) {
-		return false;
-	}
 
 	EGLint majorVersion, minorVersion;
 	if( ! eglInitialize( mDisplay, &majorVersion, &minorVersion ) ) {
+		CI_LOG_E( "Failed to initialize EGL!" );
 		return false;
 	}
 
+#if ! defined( CINDER_HEADLESS_GL_EGL ) || defined( CINDER_GL_ES )
 	eglBindAPI( EGL_OPENGL_ES_API );
+#else
+	eglBindAPI( EGL_OPENGL_API );
+#endif
 	if( eglGetError() != EGL_SUCCESS ) {
-		return false;
-	}
-
-	EGLint configCount;
-	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &mConfig, 1, &configCount ) || (configCount != 1) ) {
+		CI_LOG_E( "Failed to bind GL API!" );
 		return false;
 	}
 
 	EGLint contextAttibutes[] = {
-#if defined( CINDER_GL_ES_3 )
+#if ! defined( CINDER_GL_ES )
+		EGL_CONTEXT_MAJOR_VERSION, mRenderer->getOptions().getVersion().first,
+		EGL_CONTEXT_MINOR_VERSION, mRenderer->getOptions().getVersion().second,
+		EGL_CONTEXT_OPENGL_PROFILE_MASK,
+		EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+#elif defined( CINDER_GL_ES_3 )
 		EGL_CONTEXT_CLIENT_VERSION, 3,
 #else
 		EGL_CONTEXT_CLIENT_VERSION, 2,
@@ -89,13 +156,13 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 		EGL_NONE
 	};
 
-	// Create context
-	mContext = eglCreateContext( mDisplay, mConfig, EGL_NO_CONTEXT, contextAttibutes );
-	if( eglGetError() != EGL_SUCCESS ) {
+	EGLint configCount;
+	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &mConfig, 1, &configCount ) || (configCount != 1) ) {
+		CI_LOG_E( "Failed to choose appropriate EGL config!" );
 		return false;
 	}
-	checkGlStatus();
 
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 	// Create window surface
 	EGL_DISPMANX_WINDOW_T* nativeWindow = reinterpret_cast<EGL_DISPMANX_WINDOW_T*>( window );
 
@@ -111,33 +178,52 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 	DISPMANX_TRANSFORM_T		transform = (DISPMANX_TRANSFORM_T)0;
 
 	nativeWindow->element = vc_dispmanx_element_add(
-		update,
-		display,
-		layer,
-		&dst_rect,
-		src,
-		&src_rect,
-		protection,
-		&alpha,
-		clamp,
-		transform
+			update,
+			display,
+			layer,
+			&dst_rect,
+			src,
+			&src_rect,
+			protection,
+			&alpha,
+			clamp,
+			transform
 	);
 
 	vc_dispmanx_update_submit_sync( update );
 
 	mSurface = eglCreateWindowSurface( mDisplay, mConfig, nativeWindow, NULL );
+#else
+	// Create Pixel Buffer surface for offscreen rendering
+	int pbattribs[] = { EGL_WIDTH, renderSize.x, EGL_HEIGHT, renderSize.y, EGL_NONE };
+	mSurface = eglCreatePbufferSurface( mDisplay, mConfig, pbattribs );
+#endif // CINDER_HEADLESS_GL_EGL
 	auto err = eglGetError();
 	if( err != EGL_SUCCESS ) {
+		CI_LOG_E( "Failed to create EGL surface for rendering!" );
 		return false;
 	}
 
-	eglMakeCurrent( mDisplay, mSurface, mSurface, mContext );
+	// Create context
+	mContext = eglCreateContext( mDisplay, mConfig, EGL_NO_CONTEXT, contextAttibutes );
 	if( eglGetError() != EGL_SUCCESS ) {
+		CI_LOG_E( "Failed to create EGL context!" );
 		return false;
 	}
 	checkGlStatus();
 
+	eglMakeCurrent( mDisplay, mSurface, mSurface, mContext );
+	if( eglGetError() != EGL_SUCCESS ) {
+		CI_LOG_E( "Failed to make current EGL context!" );
+		return false;
+	}
+	checkGlStatus();
+
+#if ! defined( CINDER_GL_ES )
+	gl::Environment::setCore();
+#else
 	gl::Environment::setEs();
+#endif
 	gl::env()->initializeFunctionPointers();
 	checkGlStatus();
 
@@ -158,6 +244,10 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 
 void RendererGlLinux::kill()
 {
+	eglTerminate( mDisplay );
+	eglMakeCurrent( mDisplay, mSurface, mSurface, nullptr );
+	mCinderContext.reset();
+	gl::Context::reflectCurrent( nullptr );
 }
 
 void RendererGlLinux::defaultResize() const
@@ -176,8 +266,6 @@ void RendererGlLinux::swapBuffers() const
 	auto status = ::eglMakeCurrent( mDisplay, mSurface, mSurface, mContext );
 	assert( status );
 	EGLBoolean result = ::eglSwapBuffers( mDisplay, mSurface );
-	// @TODO: Is this really necessary?
-	//assert( result );
 }
 
 void RendererGlLinux::makeCurrentContext( bool force )
@@ -190,13 +278,12 @@ void checkGlStatus()
 #if defined( DEBUG_GL )
 	EGLint lastEglError = ci::gl::getEglError();
 	if( lastEglError != EGL_SUCCESS ) {
-		std::cout << "EGL ERROR: " << ci::gl::getEglErrorString( lastEglError ) << std::endl;
-		//CI_BREAK();
+		CI_LOG_E( "EGL ERROR: " << ci::gl::getEglErrorString( lastEglError ) );
 	}
 
 	GLenum lastGlError = ci::gl::getError();
 	if( lastGlError != GL_NO_ERROR ) {
-		std::cout << "GL ERROR: " << ci::gl::getErrorString( lastGlError ) << std::endl;
+		CI_LOG_E( "GL ERROR: " << ci::gl::getErrorString( lastGlError ) );
 	}
 #endif // DEBUG_GL
 }

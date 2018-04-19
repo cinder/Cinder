@@ -110,7 +110,11 @@ class CI_API Renderer {
 #elif defined( CINDER_ANDROID )
 	virtual void setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) = 0;
 #elif defined( CINDER_LINUX )
+#if defined( CINDER_HEADLESS )
+	virtual void	setup( ci::ivec2 renderSize, RendererRef sharedRenderer ) = 0;
+#else
 	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) = 0;
+#endif
 #endif
 
 	virtual Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) = 0;

@@ -433,13 +433,21 @@ RendererGl::~RendererGl()
 	delete mImpl;
 }
 
+#if defined( CINDER_HEADLESS )
+void RendererGl::setup( ci::ivec2 renderSize, RendererRef sharedRenderer )
+#else
 void RendererGl::setup( void* nativeWindow, RendererRef sharedRenderer )
+#endif
 {
 	if( ! mImpl ) {
 		mImpl = new RendererGlLinux( this );
 	}
 
+#if defined( CINDER_HEADLESS )
+	if( ! mImpl->initialize( renderSize, sharedRenderer ) ) {
+#else
 	if( ! mImpl->initialize( nativeWindow, sharedRenderer ) ) {
+#endif
 		throw ExcRendererAllocation( "RendererGlLinux initialization failed." );
 	}
 }

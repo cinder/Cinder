@@ -88,6 +88,23 @@ else()
 	set( CINDER_GL_CORE TRUE )
 endif()
 
+
+# Enable headless GL rendering support.
+set( CINDER_HEADLESS_GL "" CACHE STRING "Enable headless rendering. Valid options: egl" )
+if( CINDER_HEADLESS_GL )
+	if( CINDER_LINUX )
+		string( TOLOWER "${CINDER_HEADLESS_GL}" CINDER_HEADLESS_GL_LOWER )
+		if( "egl" STREQUAL "${CINDER_HEADLESS_GL_LOWER}" )
+			set( CINDER_HEADLESS True )
+			set( CINDER_HEADLESS_GL_EGL True )
+		else()
+			message( FATAL_ERROR "Unsupported headless GL rendering option: " ${CINDER_HEADLESS_GL_LOWER} " Available options include: egl, ..." )
+		endif()
+	else()
+		message( FATAL_ERROR "Cinder headless GL rendering support is only available on Linux." )
+	endif()
+endif()
+
 # Configure platform variables needed by both libcinder and user projects.
 if( CINDER_LINUX )
 	# Find architecture name.

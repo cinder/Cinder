@@ -48,7 +48,11 @@ class RendererGlLinux {
 	RendererGlLinux( class RendererGl *aRenderer );
 	virtual ~RendererGlLinux();
 
+#if defined( CINDER_HEADLESS )
+	virtual bool		initialize( ci::ivec2 renderSize, RendererRef sharedRenderer );
+#else
 	virtual bool		initialize( void *window, RendererRef sharedRenderer );
+#endif
 	virtual void		kill();
 	virtual void		defaultResize() const;
 	virtual void		swapBuffers() const;

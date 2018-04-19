@@ -29,12 +29,14 @@
 #include "cinder/gl/scoped.h"
 #include "cinder/gl/Texture.h"
 
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 #include <bcm_host.h>
-
 #include "MousePointer.h"
+#endif
 
 namespace cinder { namespace app {
 
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 static ci::gl::TextureRef sCursorTex;
 
 struct WindowImplLinux::NativeWindow {
@@ -45,6 +47,7 @@ struct WindowImplLinux::NativeWindow {
 		window.element = element;
 	}
 };
+#endif
 
 WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux *sharedRendererWindow, AppImplLinux *appImpl )
 	: mAppImpl( appImpl )
@@ -52,19 +55,23 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux 
 	mDisplay = format.getDisplay();
 	mRenderer = format.getRenderer();
 
+	RendererRef sharedRenderer = sharedRendererWindow ? sharedRendererWindow->getRenderer() : nullptr;
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 	// NativeWindow->window will get updated by the mRenderer
 	auto windowSize = format.getSize();
 	mNativeWindow = std::unique_ptr<NativeWindow>( new NativeWindow( windowSize, 0 ) );
-	RendererRef sharedRenderer = sharedRendererWindow ? sharedRendererWindow->getRenderer() : nullptr;
 	mRenderer->setup( reinterpret_cast<void*>( &(mNativeWindow->window) ), sharedRenderer );
-
-	RendererGlRef rendererGl = std::dynamic_pointer_cast<RendererGl>( mRenderer );
-
 	// Load mouse cursor
 	if( ! sCursorTex ) {
 		sCursorTex = ci::gl::Texture::create( sMousePointer, GL_RGBA, sMousePointerWidth, sMousePointerHeight );
 		sCursorTex->setTopDown();
 	}
+
+#else
+	mWindowedSize = format.getSize();
+	mRenderer->setup( mWindowedSize, sharedRenderer );
+#endif
+	RendererGlRef rendererGl = std::dynamic_pointer_cast<RendererGl>( mRenderer );
 
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
@@ -79,17 +86,21 @@ WindowImplLinux::~WindowImplLinux()
 
 void WindowImplLinux::setFullScreen( bool fullScreen, const app::FullScreenOptions &options )
 {
-	// TODO: Find a way to do this w/o recreating
+	/*Not implemented*/
 }
 
 ivec2 WindowImplLinux::getSize() const
 {
-	//return mAppImpl->getDefaultDisplaySize();
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 	return ivec2( mNativeWindow->window.width, mNativeWindow->window.height );
+#else
+	return mWindowedSize;
+#endif
 }
 
 void WindowImplLinux::setSize( const ivec2 &size )
 {
+	/*Not implemented*/
 }
 
 ivec2 WindowImplLinux::getPos() const
@@ -99,22 +110,27 @@ ivec2 WindowImplLinux::getPos() const
 
 void WindowImplLinux::setPos( const ivec2 &pos )
 {
+	/*Not implemented*/
 }
 
 void WindowImplLinux::close()
 {
+	/*Not implemented*/
 }
 
 void WindowImplLinux::setTitle( const std::string &title )
 {
+	/*Not implemented*/
 }
 
 void WindowImplLinux::hide()
 {
+	/*Not implemented*/
 }
 
 void WindowImplLinux::show()
 {
+	/*Not implemented*/
 }
 
 const std::vector<TouchEvent::Touch>& WindowImplLinux::getActiveTouches() const
@@ -122,24 +138,40 @@ const std::vector<TouchEvent::Touch>& WindowImplLinux::getActiveTouches() const
 	return mActiveTouches;
 }
 
-EGLNativeWindowType	WindowImplLinux::getNative()
+#if ! defined( CINDER_HEADLESS_GL_EGL )
+EGLNativeWindowType WindowImplLinux::getNative()
+#else
+void* WindowImplLinux::getNative()
+#endif
 {
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 	return reinterpret_cast<EGLNativeWindowType>( mNativeWindow.get() );
+#else
+	return nullptr;
+#endif
 }
 
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 EGLNativeWindowType WindowImplLinux::getNative() const
+#else
+void* WindowImplLinux::getNative() const
+#endif
 {
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 	return reinterpret_cast<EGLNativeWindowType>( mNativeWindow.get() );
+#else
+	return nullptr;
+#endif
 }
 
 void WindowImplLinux::setBorderless( bool borderless )
 {
-	// TODO: Find a way to do this w/o recreating
+	/*Not implemented*/
 }
 
 void WindowImplLinux::setAlwaysOnTop( bool alwaysOnTop )
 {
-	// TODO: Find a way to do this w/o recreating
+	/*Not implemented*/
 }
 
 void WindowImplLinux::keyDown( const KeyEvent &event )
@@ -154,6 +186,7 @@ void WindowImplLinux::draw()
 	mAppImpl->setWindow( mWindowRef );
 	mRenderer->startDraw();
 	mWindowRef->emitDraw();
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 	if( mShowCursor && sCursorTex ) {
 		ci::gl::ScopedViewport viewport();
 		ci::gl::ScopedMatrices matrices();
@@ -166,6 +199,7 @@ void WindowImplLinux::draw()
 		r += vec2( mAppImpl->getMousePos() );
 		ci::gl::draw( sCursorTex, r );
 	}
+#endif
 	mRenderer->finishDraw();
 }
 
@@ -177,12 +211,16 @@ void WindowImplLinux::resize()
 
 void WindowImplLinux::hideCursor()
 {
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 	mShowCursor = false;
+#endif
 }
 
 void WindowImplLinux::showCursor()
 {
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 	mShowCursor = true;
+#endif
 }
 
 ivec2 WindowImplLinux::getMousePos() const

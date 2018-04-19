@@ -4,6 +4,7 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 
 set( CINDER_PLATFORM "Posix" )
 
+# When CINDER_HEADLESS is set, ${SRC_SET_GLFW} will *not* be compiled.
 list( APPEND SRC_SET_GLFW
 	${CINDER_SRC_DIR}/glfw/src/context.c
 	${CINDER_SRC_DIR}/glfw/src/init.c
@@ -49,7 +50,7 @@ list( APPEND SRC_SET_CINDER_VIDEO_LINUX
 list( APPEND SRC_SET_CINDER_LINUX ${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp )
 
 # Relevant source files depending on target GL.
-if( NOT CINDER_GL_ES_2_RPI )
+if( NOT CINDER_GL_ES_2_RPI AND NOT CINDER_HEADLESS_GL_EGL )
 	if( CINDER_GL_ES )
 		list( APPEND SRC_SET_CINDER_LINUX
 			${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
@@ -70,13 +71,27 @@ if( NOT CINDER_GL_ES_2_RPI )
 		${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGlfw.cpp
 		${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGlfw.cpp
 	)
-else()
+elseif( CINDER_HEADLESS_GL_EGL OR CINDER_GL_ES_2_RPI )
+	if( CINDER_HEADLESS_GL_EGL )
+		list( APPEND SRC_SET_CINDER_LINUX
+			${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxHeadless.cpp
+		)
+	else()
+		list( APPEND SRC_SET_CINDER_LINUX
+			${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxRpi.cpp
+		)
+	endif()
+
 	list( APPEND SRC_SET_CINDER_LINUX
-		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxEgl.cpp
 		${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxEgl.cpp
 		${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxEgl.cpp
-		${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
 	)
+
+	if( CINDER_GL_ES )
+		list( APPEND SRC_SET_CINDER_LINUX
+			${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
+		)
+	endif()
 endif()
 
 list( APPEND CINDER_SRC_FILES
@@ -95,6 +110,11 @@ if( NOT CINDER_GL_ES ) # desktop
 	find_package( X11 REQUIRED )
 	list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
 	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${X11_INCLUDE_DIR} )
+	if( CINDER_HEADLESS )
+		if( CINDER_HEADLESS_GL_EGL ) # Headless through EGL
+			list( APPEND CINDER_LIBS_DEPENDS EGL )
+		endif()
+	endif()
 elseif( CINDER_GL_ES AND NOT CINDER_GL_ES_2_RPI ) # No X for the rpi.
 	find_package( X11 REQUIRED )
 	list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
@@ -192,21 +212,32 @@ list( APPEND CINDER_INCLUDE_USER_PRIVATE
 )
 
 # Cinder GL defines depending on target GL.
-if( CINDER_GL_ES AND NOT CINDER_GL_ES_2_RPI ) # es2, es3, es31, es32
-	list( APPEND GLFW_FLAGS "-D_GLFW_X11" )
-	if( CINDER_GL_ES_2 )
-		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_2" )
-	elseif( CINDER_GL_ES_3 )
-		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3" )
-	elseif( CINDER_GL_ES_3_1 )
-		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3_1" )
-	elseif( CINDER_GL_ES_3_2 )
-		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3_2" )
+if( CINDER_GL_CORE )
+	list( APPEND CINDER_DEFINES "-DCINDER_GL_CORE" )
+elseif( CINDER_GL_ES )
+	list( APPEND CINDER_DEFINES "-DCINDER_GL_ES" )
+	if( NOT CINDER_GL_ES_2_RPI )
+		if( CINDER_GL_ES_2 )
+			list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_2" )
+		elseif( CINDER_GL_ES_3 )
+			list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3" )
+		elseif( CINDER_GL_ES_3_1 )
+			list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3_1" )
+		elseif( CINDER_GL_ES_3_2 )
+			list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3_2" )
+		endif()
+	else() # rpi
+		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_2" "-DCINDER_LINUX_EGL_ONLY" "-DCINDER_GL_ES_2_RPI" )
 	endif()
-elseif( NOT CINDER_GL_ES ) # Core Profile
+endif()
+
+# Set appropriate defines when running headless.
+if( CINDER_HEADLESS )
+	if( CINDER_HEADLESS_GL_EGL )
+		list( APPEND CINDER_DEFINES "-DCINDER_LINUX_EGL_ONLY -DCINDER_HEADLESS -DCINDER_HEADLESS_GL_EGL" )
+	endif()
+elseif( NOT CINDER_GL_ES_2_RPI ) # If not headless and not on the RPi we need X.
 	list( APPEND GLFW_FLAGS "-D_GLFW_X11" )
-else() # Rpi
-	list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_2" "-DCINDER_LINUX_EGL_ONLY" "-DCINDER_GL_ES_2_RPI" )
 endif()
 
 list( APPEND CINDER_DEFINES "-D_UNIX" ${GLFW_FLAGS}  )

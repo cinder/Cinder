@@ -186,7 +186,11 @@ class CI_API RendererGl : public Renderer {
 #elif defined( CINDER_ANDROID )
 	virtual void	setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) override;
 #elif defined( CINDER_LINUX )
+#if defined( CINDER_HEADLESS )
+	virtual void	setup( ci::ivec2 renderSize, RendererRef sharedRenderer ) override;
+#else
 	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) override;
+#endif
 #endif
 
 	const Options&	getOptions() const { return mOptions; }

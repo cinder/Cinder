@@ -61,8 +61,13 @@ public:
 	virtual const std::vector<TouchEvent::Touch>&	getActiveTouches() const;
 
 #if defined( CINDER_LINUX_EGL_ONLY )
+#if defined( CINDER_GL_ES_2_RPI )
 	virtual EGLNativeWindowType	getNative();
 	virtual EGLNativeWindowType getNative() const;
+#else
+	virtual void*	getNative();
+	virtual void*	getNative() const;
+#endif
 #else
 	virtual GLFWwindow	*getNative() { return mGlfwWindow; }
 	virtual GLFWwindow	*getNative() const { return mGlfwWindow; }
@@ -89,7 +94,7 @@ protected:
 	AppImplLinux		*mAppImpl = nullptr;
 	WindowRef			mWindowRef;
 
-#if defined( CINDER_LINUX_EGL_ONLY )
+#if defined( CINDER_GL_ES_2_RPI )
 	struct NativeWindow;
 	std::unique_ptr<NativeWindow> mNativeWindow;
 	bool				mShowCursor = true;
