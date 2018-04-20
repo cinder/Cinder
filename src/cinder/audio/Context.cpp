@@ -137,7 +137,7 @@ void Context::setMaster( Context *masterContext, DeviceManager *deviceManager )
 }
 
 Context::Context()
-	: mEnabled( false ), mAutoPullRequired( false ), mAutoPullCacheDirty( false ), mNumProcessedFrames( 0 )
+	: mEnabled( false ), mAutoPullRequired( false ), mAutoPullCacheDirty( false ), mNumProcessedFrames( 0 ), mTimeDuringLastProcessLoop( -1.0 )
 {
 }
 
