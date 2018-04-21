@@ -23,6 +23,7 @@ list( APPEND CINDER_INCLUDE_SYSTEM_INTERFACE
 # *_PRIVATE includes are used by cinder internally, user apps explicitly add these as needed.
 list( APPEND CINDER_INCLUDE_USER_PRIVATE
 	${CINDER_INC_DIR}
+	${CINDER_INC_DIR}/EGL-Registry
 	${CINDER_INC_DIR}/jsoncpp
 	${CINDER_INC_DIR}/tinyexr
 	${CINDER_SRC_DIR}/linebreak
