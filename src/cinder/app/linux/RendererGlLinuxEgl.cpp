@@ -95,7 +95,7 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 			return false;
 
 		// Get a device as display.
-		mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_DEVICE_EXT, devices[0], NULL );
+		mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_DEVICE_EXT, devices[0], nullptr );
 	}
 	else {
 		CI_LOG_E( "No available EGL Device extension support!" );
@@ -157,7 +157,7 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 	};
 
 	EGLint configCount;
-	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &mConfig, 1, &configCount ) || (configCount != 1) ) {
+	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &mConfig, 1, &configCount ) || ( configCount != 1 ) ) {
 		CI_LOG_E( "Failed to choose appropriate EGL config!" );
 		return false;
 	}
@@ -192,7 +192,7 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 
 	vc_dispmanx_update_submit_sync( update );
 
-	mSurface = eglCreateWindowSurface( mDisplay, mConfig, nativeWindow, NULL );
+	mSurface = eglCreateWindowSurface( mDisplay, mConfig, nativeWindow, nullptr );
 #else
 	// Create Pixel Buffer surface for offscreen rendering
 	int pbattribs[] = { EGL_WIDTH, renderSize.x, EGL_HEIGHT, renderSize.y, EGL_NONE };
