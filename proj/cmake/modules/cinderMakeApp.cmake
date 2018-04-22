@@ -21,6 +21,20 @@ function( ci_make_app )
 
 	option( CINDER_COPY_ASSETS "Copy assets to a folder next to the application. Default is OFF, and a symlink is created that points to the original assets folder." OFF )
 	include( "${ARG_CINDER_PATH}/proj/cmake/configure.cmake" )
+	# Give the user the option to define with which build type of Cinder the application should link.
+	# By default the application will link with Cinder based on CMAKE_CURRENT_BUILD_TYPE.
+	# Use CINDER_APP_LINK_RELEASE or CINDER_APP_LINK_DEBUG to force the app to link with a specific build version of Cinder.
+	#
+	# In order to achieve this we override the build type which is embedded
+	# in the CINDER_LIB_DIRECTORY path and included from the configure.cmake file.
+	get_filename_component( CINDER_LIB_PARENT_DIR "${CINDER_LIB_DIRECTORY}" DIRECTORY )
+	if( CINDER_APP_LINK_RELEASE )
+		set( CINDER_LIB_DIRECTORY "${CINDER_LIB_PARENT_DIR}/Release" )
+		message( "Forcing application to link with Release build of Cinder." )
+	elseif( CINDER_APP_LINK_DEBUG )
+		set( CINDER_LIB_DIRECTORY "${CINDER_LIB_PARENT_DIR}/Debug" )
+		message( "Forcing application to link with Debug build of Cinder." )
+	endif()
 
 	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
 		if( ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) OR ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
