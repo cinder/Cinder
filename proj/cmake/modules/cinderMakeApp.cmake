@@ -49,7 +49,7 @@ function( ci_make_app )
 
 	# This ensures that the application will link with the correct version of Cinder
 	# based on the current build type without the need to remove the entire build folder
-	# when switching build type after an initial configuration. See PR #1518 for more info. 
+	# when switching build type after an initial configuration. See PR #1518 for more info.
 	if( cinder_DIR )
 		unset( cinder_DIR CACHE )
 	endif()
@@ -89,13 +89,13 @@ function( ci_make_app )
 
 			unset( ARG_RESOURCES ) # Don't allow resources to be added to the executable on linux
 		endif()
-	elseif( CINDER_MSW )		
+	elseif( CINDER_MSW )
 		if( MSVC )
 			# Override the default /MD with /MT
-			foreach( 
+			foreach(
 				flag_var
-				CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO 
-				CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO 
+				CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO
+				CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
 			)
 				if( ${flag_var} MATCHES "/MD" )
 					string( REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}" )
@@ -103,7 +103,7 @@ function( ci_make_app )
 				endif()
 			endforeach()
 			# Force synchronous PDB writes
-			add_compile_options( /FS ) 
+			add_compile_options( /FS )
 			# Force multiprocess compilation
 			add_compile_options( /MP )
 			# Add lib dirs
