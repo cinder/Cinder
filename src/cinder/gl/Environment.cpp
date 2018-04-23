@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -128,7 +128,7 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 	}
 
 	::CGLSetCurrentContext( cglContext );
-	shared_ptr<Context::PlatformData> platformData = shared_ptr<Context::PlatformData>( new PlatformDataMac( cglContext ), destroyPlatformData );	
+	shared_ptr<Context::PlatformData> platformData = shared_ptr<Context::PlatformData>( new PlatformDataMac( cglContext ), destroyPlatformData );
 #elif defined( CINDER_COCOA_TOUCH )
 	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataIos>( sharedContext->getPlatformData() );
 	EAGLContext *prevContext = [EAGLContext currentContext];
@@ -182,12 +182,12 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 		EGLint surfaceAttribList[] = { EGL_NONE, EGL_NONE };
 		EGLContext offscreenContext = ::eglCreateContext( prevEglDisplay, sharedContextPlatformData->mConfig, prevEglContext, surfaceAttribList );
 
-		shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( offscreenContext, sharedContextPlatformData->mDisplay, offScreenSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );	
+		shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( offscreenContext, sharedContextPlatformData->mDisplay, offScreenSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );
 	#else
 		auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
 		// Create a shared context GLFW style
 		glfwWindowHint( GLFW_VISIBLE, GL_FALSE );
-		GLFWwindow* sharedGlfwContext = ::glfwCreateWindow( 1, 1, "", NULL, sharedContextPlatformData->mContext );	
+		GLFWwindow* sharedGlfwContext = ::glfwCreateWindow( 1, 1, "", NULL, sharedContextPlatformData->mContext );
 		shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( sharedGlfwContext ), destroyPlatformData );
 	#endif
 #endif
@@ -255,7 +255,7 @@ void Environment::makeContextCurrent( const Context *context )
 	}
 #elif defined( CINDER_ANDROID )
 	// NOTE: Does not work as advertised on Android. Disabling for now.
-	//	
+	//
 	// if( context ) {
 	// 	auto platformData = dynamic_pointer_cast<PlatformDataAndroid>( context->getPlatformData() );
 	// 	EGLBoolean status = ::eglMakeCurrent( platformData->mDisplay, platformData->mSurface, platformData->mSurface, platformData->mContext );
