@@ -168,7 +168,7 @@ class CI_API Context : public std::enable_shared_from_this<Context> {
 	OutputNodeRef				mOutput;
 	std::list<ScheduledEvent>	mScheduledEvents;
 	ci::Timer					mProcessTimer;
-	std::atomic<double>			mTimeDuringLastProcessLoop = -1;
+	std::atomic<double>			mTimeDuringLastProcessLoop;
 
 	// other nodes that don't have any outputs and need to be explicitly pulled
 	std::set<NodeRef>		mAutoPulledNodes;
