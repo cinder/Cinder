@@ -56,7 +56,7 @@ void enableVerticalSync( bool enable )
 	if( wglext_EXT_swap_control )
 		::wglSwapIntervalEXT( sync );
 #elif defined( CINDER_LINUX )
-	#if ! defined( CINDER_LINUX_EGL_ONLY )
+	#if ! defined( CINDER_LINUX_EGL_ONLY ) && ! defined( CINDER_HEADLESS_GL_OSMESA )
 		GLint sync = ( enable ) ? 1 : 0;
 		glfwSwapInterval( sync );
 	#endif

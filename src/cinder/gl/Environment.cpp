@@ -43,6 +43,11 @@
 #elif defined( CINDER_LINUX )
 	#if defined( CINDER_LINUX_EGL_ONLY )
 		#include "EGL/egl.h"
+	#elif defined( CINDER_HEADLESS_GL_OSMESA )
+		#if ! defined( GLAPIENTRY )
+			#define GLAPIENTRY
+		#endif
+		#include "GL/osmesa.h"
 	#else
 		#include "glfw/glfw3.h"
 	#endif
@@ -102,12 +107,13 @@ void destroyPlatformData( Context::PlatformData *data )
 #elif defined( CINDER_ANDROID )
 	auto platformData = dynamic_cast<PlatformDataAndroid*>( data );
 #elif defined( CINDER_LINUX )
-	#if !defined( CINDER_LINUX_EGL_ONLY )
-		auto platformData = dynamic_cast<PlatformDataLinux*>( data );
-		::glfwDestroyWindow( platformData->mContext );
-	#else
-		auto platformData = dynamic_cast<PlatformDataLinux*>( data );
+	auto platformData = dynamic_cast<PlatformDataLinux*>( data );
+	#if defined( CINDER_LINUX_EGL_ONLY )
 		::eglDestroyContext( platformData->mDisplay, platformData->mContext );
+	#elif defined( CINDER_HEADLESS_GL_OSMESA )
+		OSMesaDestroyContext( platformData->mContext );
+	#else
+		::glfwDestroyWindow( platformData->mContext );
 	#endif
 #endif
 
@@ -183,6 +189,11 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 		EGLContext offscreenContext = ::eglCreateContext( prevEglDisplay, sharedContextPlatformData->mConfig, prevEglContext, surfaceAttribList );
 
 		shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( offscreenContext, sharedContextPlatformData->mDisplay, offScreenSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );
+	#elif defined( CINDER_HEADLESS_GL_OSMESA )
+		auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
+		const int ctxattribs[] = { OSMESA_FORMAT, OSMESA_RGBA, OSMESA_DEPTH_BITS, 32, OSMESA_STENCIL_BITS, 8, OSMESA_ACCUM_BITS, 16, OSMESA_PROFILE, OSMESA_CORE_PROFILE, 0 };
+		OSMesaContext sharedCtx  = OSMesaCreateContextAttribs( ctxattribs, sharedContextPlatformData->mContext );
+		shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( sharedContextPlatformData->mContext, sharedContextPlatformData->mBuffer, sharedContextPlatformData->mBufferWidth, sharedContextPlatformData->mBufferHeight ) );
 	#else
 		auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
 		// Create a shared context GLFW style
@@ -257,9 +268,9 @@ void Environment::makeContextCurrent( const Context *context )
 	// NOTE: Does not work as advertised on Android. Disabling for now.
 	//
 	// if( context ) {
-	// 	auto platformData = dynamic_pointer_cast<PlatformDataAndroid>( context->getPlatformData() );
-	// 	EGLBoolean status = ::eglMakeCurrent( platformData->mDisplay, platformData->mSurface, platformData->mSurface, platformData->mContext );
-	// 	assert( status );
+	//	auto platformData = dynamic_pointer_cast<PlatformDataAndroid>( context->getPlatformData() );
+	//	EGLBoolean status = ::eglMakeCurrent( platformData->mDisplay, platformData->mSurface, platformData->mSurface, platformData->mContext );
+	//	assert( status );
 	// }
 #elif defined( CINDER_LINUX )
 	#if defined( CINDER_LINUX_EGL_ONLY )
@@ -269,6 +280,11 @@ void Environment::makeContextCurrent( const Context *context )
 			assert( status );
 		} else {
 			EGLBoolean status = eglMakeCurrent( ::eglGetCurrentDisplay(), EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
+		}
+	#elif defined( CINDER_HEADLESS_GL_OSMESA )
+		if( context ) {
+			auto platformData = dynamic_pointer_cast<PlatformDataLinux>( context->getPlatformData() );
+			OSMesaMakeCurrent( platformData->mContext, platformData->mBuffer, GL_UNSIGNED_BYTE, platformData->mBufferWidth, platformData->mBufferHeight );
 		}
 	#else
 		if( context ) {

@@ -50,7 +50,7 @@ list( APPEND SRC_SET_CINDER_VIDEO_LINUX
 list( APPEND SRC_SET_CINDER_LINUX ${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp )
 
 # Relevant source files depending on target GL.
-if( NOT CINDER_GL_ES_2_RPI AND NOT CINDER_HEADLESS_GL_EGL )
+if( NOT CINDER_GL_ES_2_RPI AND NOT CINDER_HEADLESS )
 	if( CINDER_GL_ES )
 		list( APPEND SRC_SET_CINDER_LINUX
 			${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
@@ -92,6 +92,17 @@ elseif( CINDER_HEADLESS_GL_EGL OR CINDER_GL_ES_2_RPI )
 			${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
 		)
 	endif()
+elseif( CINDER_HEADLESS_GL_OSMESA )
+	list( APPEND SRC_SET_CINDER_LINUX
+		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxHeadless.cpp
+		${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxOSMesa.cpp
+		${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxOSMesa.cpp
+	)
+	if( CINDER_GL_ES )
+		list( APPEND SRC_SET_CINDER_LINUX
+			${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
+		)
+	endif()
 endif()
 
 list( APPEND CINDER_SRC_FILES
@@ -103,34 +114,43 @@ list( APPEND CINDER_SRC_FILES
 )
 
 # Relevant libs and include dirs depending on target platform and target GL.
-if( NOT CINDER_GL_ES ) # desktop
-	find_package( OpenGL REQUIRED )
-	list( APPEND CINDER_LIBS_DEPENDS ${OPENGL_LIBRARIES} )
-	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${OPENGL_INCLUDE_DIR} )
-	find_package( X11 REQUIRED )
-	list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
-	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${X11_INCLUDE_DIR} )
-	if( CINDER_HEADLESS )
+if( CINDER_GL_CORE )
+	if( NOT CINDER_HEADLESS_GL_OSMESA )
+		find_package( OpenGL REQUIRED )
+		list( APPEND CINDER_LIBS_DEPENDS ${OPENGL_LIBRARIES} )
+		list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${OPENGL_INCLUDE_DIR} )
+		find_package( X11 REQUIRED )
+		list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
+		list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${X11_INCLUDE_DIR} )
 		if( CINDER_HEADLESS_GL_EGL ) # Headless through EGL
 			list( APPEND CINDER_LIBS_DEPENDS EGL )
 		endif()
+	else()
+		find_package( X11 REQUIRED )
+		list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
+		list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${X11_INCLUDE_DIR} )
+		find_package( OSMesa REQUIRED )
+		list( APPEND CINDER_LIBS_DEPENDS ${OSMESA_LIBRARIES} ${OSMESA_GL_LIBRARIES} )
+		list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${OSMESA_INCLUDE_DIR} )
 	endif()
-elseif( CINDER_GL_ES AND NOT CINDER_GL_ES_2_RPI ) # No X for the rpi.
-	find_package( X11 REQUIRED )
-	list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
-	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${X11_INCLUDE_DIR} )
-	list( APPEND CINDER_LIBS_DEPENDS EGL GLESv2 )
-else() # rpi specific
-	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
-		/opt/vc/include
-		/opt/vc/include/interface/vmcs_host/linux/
-		/opt/vc/include/interface/vcos/pthreads
-	)
-	list( APPEND CINDER_LIBS_DEPENDS
-		/opt/vc/lib/libEGL.so
-		/opt/vc/lib/libGLESv2.so
-		/opt/vc/lib/libbcm_host.so
-	)
+elseif( CINDER_GL_ES )
+	if( NOT CINDER_GL_ES_2_RPI )
+		find_package( X11 REQUIRED )
+		list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
+		list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${X11_INCLUDE_DIR} )
+		list( APPEND CINDER_LIBS_DEPENDS EGL GLESv2 )
+	else()
+		list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
+			/opt/vc/include
+			/opt/vc/include/interface/vmcs_host/linux/
+			/opt/vc/include/interface/vcos/pthreads
+		)
+		list( APPEND CINDER_LIBS_DEPENDS
+			/opt/vc/lib/libEGL.so
+			/opt/vc/lib/libGLESv2.so
+			/opt/vc/lib/libbcm_host.so
+		)
+	endif()
 endif()
 
 # Common libs for Linux.
@@ -235,6 +255,8 @@ endif()
 if( CINDER_HEADLESS )
 	if( CINDER_HEADLESS_GL_EGL )
 		list( APPEND CINDER_DEFINES "-DCINDER_LINUX_EGL_ONLY -DCINDER_HEADLESS -DCINDER_HEADLESS_GL_EGL" )
+	elseif( CINDER_HEADLESS_GL_OSMESA )
+		list( APPEND CINDER_DEFINES "-DCINDER_HEADLESS -DCINDER_HEADLESS_GL_OSMESA" )
 	endif()
 elseif( NOT CINDER_GL_ES_2_RPI ) # If not headless and not on the RPi we need X.
 	list( APPEND GLFW_FLAGS "-D_GLFW_X11" )

@@ -29,6 +29,8 @@
 	typedef void *EGLContext;
 	typedef void *EGLDisplay;
 	typedef void *EGLSurface;
+#elif defined( CINDER_HEADLESS_GL_OSMESA )
+	typedef struct osmesa_context *OSMesaContext;
 #else
 	typedef struct GLFWwindow GLFWwindow;
 #endif
@@ -67,6 +69,11 @@ class RendererGlLinux {
 	EGLDisplay			mDisplay;
 	EGLSurface			mSurface;
 	EGLConfig			mConfig;
+#elif defined( CINDER_HEADLESS_GL_OSMESA )
+	OSMesaContext			mContext;
+	void				*mBuffer;
+	int				mBufferWidth{ 0 };
+	int				mBufferHeight{ 0 };
 #else
 	GLFWwindow			*mContext = nullptr;
 #endif

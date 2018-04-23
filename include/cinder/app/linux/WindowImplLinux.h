@@ -29,7 +29,7 @@
 
 #if defined( CINDER_LINUX_EGL_ONLY )
 	#include "EGL/eglplatform.h"
-#else
+#elif ! defined( CINDER_HEADLESS )
 	#include "glfw/glfw3.h"
 	#include "glfw/glfw3native.h"
 #endif
@@ -60,14 +60,12 @@ public:
 	virtual RendererRef	getRenderer() const { return mRenderer; }
 	virtual const std::vector<TouchEvent::Touch>&	getActiveTouches() const;
 
-#if defined( CINDER_LINUX_EGL_ONLY )
-#if defined( CINDER_GL_ES_2_RPI )
-	virtual EGLNativeWindowType	getNative();
-	virtual EGLNativeWindowType getNative() const;
-#else
+#if defined( CINDER_HEADLESS )
 	virtual void*	getNative();
 	virtual void*	getNative() const;
-#endif
+#elif defined( CINDER_GL_ES_2_RPI )
+	virtual EGLNativeWindowType	getNative();
+	virtual EGLNativeWindowType getNative() const;
 #else
 	virtual GLFWwindow	*getNative() { return mGlfwWindow; }
 	virtual GLFWwindow	*getNative() const { return mGlfwWindow; }
