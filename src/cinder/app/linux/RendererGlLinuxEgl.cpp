@@ -239,6 +239,10 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 	eglSwapInterval( mDisplay, 1 );
 	checkGlStatus();
 
+	CI_LOG_I( "Renderer: " << glGetString( GL_RENDERER ) );
+	CI_LOG_I( "Vendor: " << glGetString( GL_VENDOR ) );
+	CI_LOG_I( "OpenGL Version: " << glGetString( GL_VERSION ) );
+
 	return true;
 }
 
