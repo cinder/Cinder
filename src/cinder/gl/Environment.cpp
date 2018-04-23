@@ -41,11 +41,11 @@
 #elif defined( CINDER_ANDROID )
 	#include "EGL/egl.h"
 #elif defined( CINDER_LINUX )
-  #if defined( CINDER_LINUX_EGL_ONLY )
- 	#include "EGL/egl.h"
-  #else
-	#include "glfw/glfw3.h"
-  #endif
+	#if defined( CINDER_LINUX_EGL_ONLY )
+		#include "EGL/egl.h"
+	#else
+		#include "glfw/glfw3.h"
+	#endif
 #endif
 
 #include "cinder/Log.h"
@@ -102,13 +102,13 @@ void destroyPlatformData( Context::PlatformData *data )
 #elif defined( CINDER_ANDROID )
 	auto platformData = dynamic_cast<PlatformDataAndroid*>( data );
 #elif defined( CINDER_LINUX )
-#if !defined( CINDER_LINUX_EGL_ONLY )
-	auto platformData = dynamic_cast<PlatformDataLinux*>( data );
-	::glfwDestroyWindow( platformData->mContext );
-#else
-	auto platformData = dynamic_cast<PlatformDataLinux*>( data );
-	::eglDestroyContext( platformData->mDisplay, platformData->mContext );
-#endif
+	#if !defined( CINDER_LINUX_EGL_ONLY )
+		auto platformData = dynamic_cast<PlatformDataLinux*>( data );
+		::glfwDestroyWindow( platformData->mContext );
+	#else
+		auto platformData = dynamic_cast<PlatformDataLinux*>( data );
+		::eglDestroyContext( platformData->mDisplay, platformData->mContext );
+	#endif
 #endif
 
 	delete data;
@@ -172,24 +172,24 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 
 	shared_ptr<Context::PlatformData> platformData( new PlatformDataAndroid( eglContext, sharedContextPlatformData->mDisplay, sharedContextPlatformData->mSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );
 #elif defined( CINDER_LINUX )
-  #if defined( CINDER_LINUX_EGL_ONLY )
-	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
-	EGLContext prevEglContext = ::eglGetCurrentContext();
-	EGLDisplay prevEglDisplay = ::eglGetCurrentDisplay();
-	EGLint offscreenSurfaceAttribList[] = { EGL_WIDTH, 1, EGL_HEIGHT, 1, EGL_NONE, EGL_NONE };
-	EGLSurface offScreenSurface = ::eglCreatePbufferSurface( prevEglDisplay, sharedContextPlatformData->mConfig, offscreenSurfaceAttribList );
+	#if defined( CINDER_LINUX_EGL_ONLY )
+		auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
+		EGLContext prevEglContext = ::eglGetCurrentContext();
+		EGLDisplay prevEglDisplay = ::eglGetCurrentDisplay();
+		EGLint offscreenSurfaceAttribList[] = { EGL_WIDTH, 1, EGL_HEIGHT, 1, EGL_NONE, EGL_NONE };
+		EGLSurface offScreenSurface = ::eglCreatePbufferSurface( prevEglDisplay, sharedContextPlatformData->mConfig, offscreenSurfaceAttribList );
 
-	EGLint surfaceAttribList[] = { EGL_NONE, EGL_NONE };
-	EGLContext offscreenContext = ::eglCreateContext( prevEglDisplay, sharedContextPlatformData->mConfig, prevEglContext, surfaceAttribList );
+		EGLint surfaceAttribList[] = { EGL_NONE, EGL_NONE };
+		EGLContext offscreenContext = ::eglCreateContext( prevEglDisplay, sharedContextPlatformData->mConfig, prevEglContext, surfaceAttribList );
 
-	shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( offscreenContext, sharedContextPlatformData->mDisplay, offScreenSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );	
-  #else
-	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
-	// Create a shared context GLFW style
-	glfwWindowHint( GLFW_VISIBLE, GL_FALSE );
-	GLFWwindow* sharedGlfwContext = ::glfwCreateWindow( 1, 1, "", NULL, sharedContextPlatformData->mContext );	
- 	shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( sharedGlfwContext ), destroyPlatformData );
-  #endif
+		shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( offscreenContext, sharedContextPlatformData->mDisplay, offScreenSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );	
+	#else
+		auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
+		// Create a shared context GLFW style
+		glfwWindowHint( GLFW_VISIBLE, GL_FALSE );
+		GLFWwindow* sharedGlfwContext = ::glfwCreateWindow( 1, 1, "", NULL, sharedContextPlatformData->mContext );	
+		shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( sharedGlfwContext ), destroyPlatformData );
+	#endif
 #endif
 
 	ContextRef result( new Context( platformData ) );
@@ -262,23 +262,23 @@ void Environment::makeContextCurrent( const Context *context )
 	// 	assert( status );
 	// }
 #elif defined( CINDER_LINUX )
-  #if defined( CINDER_LINUX_EGL_ONLY )
-	if( context ) {
-		auto platformData = dynamic_pointer_cast<PlatformDataLinux>( context->getPlatformData() );
-	 	EGLBoolean status = ::eglMakeCurrent( platformData->mDisplay, platformData->mSurface, platformData->mSurface, platformData->mContext );
-	 	assert( status );
-	} else {
-		EGLBoolean status = eglMakeCurrent( ::eglGetCurrentDisplay(), EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
-	}
-  #else
-	if( context ) {
-		auto platformData = dynamic_pointer_cast<PlatformDataLinux>( context->getPlatformData() );
-		glfwMakeContextCurrent( platformData->mContext );
-  	}
-	else {
-		glfwMakeContextCurrent( nullptr );
-	}
-  #endif
+	#if defined( CINDER_LINUX_EGL_ONLY )
+		if( context ) {
+			auto platformData = dynamic_pointer_cast<PlatformDataLinux>( context->getPlatformData() );
+			EGLBoolean status = ::eglMakeCurrent( platformData->mDisplay, platformData->mSurface, platformData->mSurface, platformData->mContext );
+			assert( status );
+		} else {
+			EGLBoolean status = eglMakeCurrent( ::eglGetCurrentDisplay(), EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
+		}
+	#else
+		if( context ) {
+			auto platformData = dynamic_pointer_cast<PlatformDataLinux>( context->getPlatformData() );
+			glfwMakeContextCurrent( platformData->mContext );
+		}
+		else {
+			glfwMakeContextCurrent( nullptr );
+		}
+	#endif
 #endif
 }
 
