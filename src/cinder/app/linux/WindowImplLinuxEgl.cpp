@@ -25,11 +25,10 @@
 #include "cinder/app/linux/WindowImplLinux.h"
 #include "cinder/app/linux/AppImplLinux.h"
 
+#if ! defined( CINDER_HEADLESS_GL_EGL )
 #include "cinder/gl/draw.h"
 #include "cinder/gl/scoped.h"
 #include "cinder/gl/Texture.h"
-
-#if ! defined( CINDER_HEADLESS_GL_EGL )
 #include <bcm_host.h>
 #include "MousePointer.h"
 #endif
