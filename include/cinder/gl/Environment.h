@@ -176,13 +176,13 @@ struct PlatformDataAndroid : public Context::PlatformData {
 	};
 	#elif defined( CINDER_HEADLESS_GL_OSMESA )
 		struct PlatformDataLinux : public Context::PlatformData {
-			PlatformDataLinux( OSMesaContext context, void* buffer, int bufferWidth, int bufferHeight )
+			PlatformDataLinux( OSMesaContext context, const std::vector<unsigned char>& buffer, int bufferWidth, int bufferHeight )
 				: mContext( context ), mBuffer( buffer ), mBufferWidth( bufferWidth ), mBufferHeight( bufferHeight )
 			{}
-			OSMesaContext		mContext;
-			void			*mBuffer{ nullptr };
-			int 			mBufferWidth{ 0 };
-			int 			mBufferHeight{ 0 };
+			OSMesaContext			mContext;
+			std::vector<unsigned char>	mBuffer;
+			int				mBufferWidth{ 0 };
+			int				mBufferHeight{ 0 };
 		};
   #else
 	struct PlatformDataLinux : public Context::PlatformData {
