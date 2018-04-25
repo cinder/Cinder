@@ -50,9 +50,6 @@ RendererGlLinux::RendererGlLinux( RendererGl *aRenderer )
 
 RendererGlLinux::~RendererGlLinux()
 {
-#if defined( CINDER_HEADLESS_GL_OSMESA )
-	free( mBuffer );
-#endif
 }
 
 
@@ -79,7 +76,6 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 			&& hasExtension( "EGL_EXT_platform_base" ) ) {
 
 		int numDevices = 0;
-		EGLDeviceEXT* devices = nullptr;
 
 		PFNEGLQUERYDEVICESEXTPROC eglQueryDevicesEXT = (PFNEGLQUERYDEVICESEXTPROC)eglGetProcAddress( "eglQueryDevicesEXT" );
 		PFNEGLQUERYDEVICESTRINGEXTPROC eglQueryDeviceStringEXT = (PFNEGLQUERYDEVICESTRINGEXTPROC)eglGetProcAddress( "eglQueryDeviceStringEXT" );
@@ -88,9 +84,9 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 		// Check that we have at least one device.
 		if( ! eglQueryDevicesEXT || ! eglQueryDevicesEXT( 0, nullptr, &numDevices ) || numDevices < 1 )
 			return false;
-		if( ( devices = (EGLDeviceEXT*)malloc( sizeof( EGLDeviceEXT ) * numDevices ) ) == nullptr )
-			return false;
-		if( ! eglQueryDevicesEXT( numDevices, devices, &numDevices ) || numDevices < 1 )
+
+		std::vector<EGLDeviceEXT> devices{ numDevices };
+		if( ! eglQueryDevicesEXT( numDevices, devices.data(), &numDevices ) || numDevices < 1 )
 			return false;
 
 		// Get a device as display.
@@ -199,13 +195,8 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 
 	mBufferWidth = renderSize.x;
 	mBufferHeight = renderSize.y;
-	mBuffer = malloc( renderSize.x * renderSize.y * 4 * sizeof( GL_UNSIGNED_BYTE ) );
-	if( ! mBuffer ) {
-		CI_LOG_E( "Failed to allocate draw buffer!" );
-		return false;
-	}
-
-	if( ! OSMesaMakeCurrent( mContext, mBuffer, GL_UNSIGNED_BYTE, renderSize.x, renderSize.y ) ) {
+	mBuffer.resize( renderSize.x * renderSize.y * 4 );
+	if( ! OSMesaMakeCurrent( mContext, mBuffer.data(), GL_UNSIGNED_BYTE, renderSize.x, renderSize.y ) ) {
 		CI_LOG_E( "Failed to make current EGL context!" );
 		checkGlStatus();
 		return false;

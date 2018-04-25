@@ -284,7 +284,7 @@ void Environment::makeContextCurrent( const Context *context )
 	#elif defined( CINDER_HEADLESS_GL_OSMESA )
 		if( context ) {
 			auto platformData = dynamic_pointer_cast<PlatformDataLinux>( context->getPlatformData() );
-			OSMesaMakeCurrent( platformData->mContext, platformData->mBuffer, GL_UNSIGNED_BYTE, platformData->mBufferWidth, platformData->mBufferHeight );
+			OSMesaMakeCurrent( platformData->mContext, platformData->mBuffer.data(), GL_UNSIGNED_BYTE, platformData->mBufferWidth, platformData->mBufferHeight );
 		}
 	#else
 		if( context ) {
