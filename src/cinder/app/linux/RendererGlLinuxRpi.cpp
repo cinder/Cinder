@@ -211,4 +211,4 @@ void checkGlStatus()
 #endif // DEBUG_GL
 }
 
-}
+}} // namespace cinder::app
