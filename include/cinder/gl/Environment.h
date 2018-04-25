@@ -180,7 +180,7 @@ struct PlatformDataAndroid : public Context::PlatformData {
 				: mContext( context ), mBuffer( buffer ), mBufferWidth( bufferWidth ), mBufferHeight( bufferHeight )
 			{}
 			OSMesaContext		mContext;
-			void* 			mBuffer;
+			void			*mBuffer{ nullptr };
 			int 			mBufferWidth{ 0 };
 			int 			mBufferHeight{ 0 };
 		};

@@ -71,7 +71,7 @@ class RendererGlLinux {
 	EGLConfig			mConfig;
 #elif defined( CINDER_HEADLESS_GL_OSMESA )
 	OSMesaContext			mContext;
-	void				*mBuffer;
+	void				*mBuffer{ nullptr };
 	int				mBufferWidth{ 0 };
 	int				mBufferHeight{ 0 };
 #else
