@@ -28,9 +28,16 @@
 #include "cinder/gl/Environment.h"
 #include "cinder/Log.h"
 
-#include <EGL/egl.h>
-#define EGL_EGLEXT_PROTOTYPES
-#include <EGL/eglext.h>
+#if defined( CINDER_HEADLESS_GL_EGL )
+	#include <EGL/egl.h>
+	#define EGL_EGLEXT_PROTOTYPES
+	#include <EGL/eglext.h>
+#else
+	#if ! defined( GLAPIENTRY )
+		#define GLAPIENTRY
+	#endif
+	#include "GL/osmesa.h"
+#endif
 
 namespace cinder { namespace app {
 
@@ -43,11 +50,15 @@ RendererGlLinux::RendererGlLinux( RendererGl *aRenderer )
 
 RendererGlLinux::~RendererGlLinux()
 {
+#if defined( CINDER_HEADLESS_GL_OSMESA )
+	free( mBuffer );
+#endif
 }
 
 
 bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRenderer )
 {
+#if defined( CINDER_HEADLESS_GL_EGL )
 	const char* s = eglQueryString( EGL_NO_DISPLAY, EGL_EXTENSIONS );
 	std::string egl_extensions( s );
 	CI_LOG_I( "Supported EGL extensions : " << egl_extensions );
@@ -95,7 +106,12 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 	}
 
 	std::vector<EGLint> configAttribs;
+#if ! defined( CINDER_GL_ES )
 	configAttribs.push_back( EGL_RENDERABLE_TYPE ); configAttribs.push_back( EGL_OPENGL_BIT );
+#else
+	// OpenGL ES 3 also uses EGL_OPENGL_ES2_BIT
+	configAttribs.push_back( EGL_RENDERABLE_TYPE ); configAttribs.push_back( EGL_OPENGL_ES2_BIT );
+#endif
 	configAttribs.push_back( EGL_SURFACE_TYPE	 ); configAttribs.push_back( EGL_PBUFFER_BIT );
 	configAttribs.push_back( EGL_RED_SIZE		 ); configAttribs.push_back( 8 );
 	configAttribs.push_back( EGL_GREEN_SIZE		 ); configAttribs.push_back( 8 );
@@ -113,10 +129,10 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 		return false;
 	}
 
-#if defined( CINDER_GL_ES )
-	eglBindAPI( EGL_OPENGL_ES_API );
-#else
+#if ! defined( CINDER_GL_ES )
 	eglBindAPI( EGL_OPENGL_API );
+#else
+	eglBindAPI( EGL_OPENGL_ES_API );
 #endif
 	if( eglGetError() != EGL_SUCCESS ) {
 		CI_LOG_E( "Failed to bind GL API!" );
@@ -156,16 +172,46 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 	mContext = eglCreateContext( mDisplay, mConfig, EGL_NO_CONTEXT, contextAttibutes );
 	if( eglGetError() != EGL_SUCCESS ) {
 		CI_LOG_E( "Failed to create EGL context!" );
+		checkGlStatus();
 		return false;
 	}
-	checkGlStatus();
 
 	eglMakeCurrent( mDisplay, mSurface, mSurface, mContext );
 	if( eglGetError() != EGL_SUCCESS ) {
 		CI_LOG_E( "Failed to make current EGL context!" );
+		checkGlStatus();
 		return false;
 	}
-	checkGlStatus();
+#else 
+	// Create context
+	int ctxattribs[] = { OSMESA_FORMAT, OSMESA_RGBA, 
+						 OSMESA_DEPTH_BITS, 32,
+						 OSMESA_STENCIL_BITS, 8,
+						 OSMESA_ACCUM_BITS, 16,
+						 OSMESA_PROFILE, OSMESA_CORE_PROFILE,
+						 0 };
+	mContext = OSMesaCreateContextAttribs( ctxattribs, nullptr );
+	if( ! mContext ) {
+		CI_LOG_E( "Failed to create OSMESA context!" );
+		checkGlStatus();
+		return false;
+	}
+
+	mBufferWidth = renderSize.x;
+	mBufferHeight = renderSize.y;
+	mBuffer = malloc( renderSize.x * renderSize.y * 4 * sizeof( GL_UNSIGNED_BYTE ) );
+	if( ! mBuffer ) {
+		CI_LOG_E( "Failed to allocate draw buffer!" );
+		return false;
+	}
+
+	if( ! OSMesaMakeCurrent( mContext, mBuffer, GL_UNSIGNED_BYTE, renderSize.x, renderSize.y ) ) {
+		CI_LOG_E( "Failed to make current EGL context!" );
+		checkGlStatus();
+		return false;
+	}
+	CI_LOG_I( "Rendering with OSMesa" );
+#endif
 
 #if ! defined( CINDER_GL_ES )
 	gl::Environment::setCore();
@@ -175,7 +221,11 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 	gl::env()->initializeFunctionPointers();
 	checkGlStatus();
 
+#if defined( CINDER_HEADLESS_GL_EGL )
 	std::shared_ptr<gl::PlatformDataLinux> platformData( new gl::PlatformDataLinux( mContext, mDisplay, mSurface, mConfig ) );
+#else
+	std::shared_ptr<gl::PlatformDataLinux> platformData( new gl::PlatformDataLinux( mContext, mBuffer, mBufferWidth, mBufferHeight ) );
+#endif
 	platformData->mObjectTracking = mRenderer->getOptions().getObjectTracking();
 
 	mCinderContext = gl::Context::createFromExisting( platformData );
@@ -184,22 +234,32 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 	mCinderContext->makeCurrent();
 	checkGlStatus();
 
+#if defined( CINDER_HEADLESS_GL_EGL )
 	eglSwapInterval( mDisplay, 1 );
 	checkGlStatus();
+#endif
+	CI_LOG_I( "Renderer: " << glGetString( GL_RENDERER ) );
+	CI_LOG_I( "Vendor: " << glGetString( GL_VENDOR ) );
+	CI_LOG_I( "OpenGL Version: " << glGetString( GL_VERSION ) );
 
 	return true;
 }
 
 void RendererGlLinux::kill()
 {
+#if defined( CINDER_HEADLESS_GL_EGL )
 	eglTerminate( mDisplay );
 	eglMakeCurrent( mDisplay, mSurface, mSurface, nullptr );
+#else
+	OSMesaDestroyContext( mContext );
+#endif
 	mCinderContext.reset();
 	gl::Context::reflectCurrent( nullptr );
 }
 
 void RendererGlLinux::defaultResize() const
 {
+#if defined( CINDER_HEADLESS_GL_EGL )
 	EGLint width;
 	EGLint height;
 	eglQuerySurface( mDisplay, mSurface, EGL_WIDTH, &width );
@@ -207,13 +267,16 @@ void RendererGlLinux::defaultResize() const
 
 	gl::viewport( 0, 0, width, height );
 	gl::setMatricesWindow( width, height );
+#endif
 }
 
 void RendererGlLinux::swapBuffers() const
 {
+#if defined( CINDER_HEADLESS_GL_EGL )
 	auto status = ::eglMakeCurrent( mDisplay, mSurface, mSurface, mContext );
 	assert( status );
 	EGLBoolean result = ::eglSwapBuffers( mDisplay, mSurface );
+#endif
 }
 
 void RendererGlLinux::makeCurrentContext( bool force )
@@ -224,10 +287,12 @@ void RendererGlLinux::makeCurrentContext( bool force )
 void checkGlStatus()
 {
 #if defined( DEBUG_GL )
-	EGLint lastEglError = ci::gl::getEglError();
-	if( lastEglError != EGL_SUCCESS ) {
-		CI_LOG_E( "EGL ERROR: " << ci::gl::getEglErrorString( lastEglError ) );
-	}
+	#if defined( CINDER_HEADLESS_GL_EGL )
+		EGLint lastEglError = ci::gl::getEglError();
+		if( lastEglError != EGL_SUCCESS ) {
+			CI_LOG_E( "EGL ERROR: " << ci::gl::getEglErrorString( lastEglError ) );
+		}
+	#endif
 
 	GLenum lastGlError = ci::gl::getError();
 	if( lastGlError != GL_NO_ERROR ) {

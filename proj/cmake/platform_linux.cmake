@@ -49,8 +49,8 @@ list( APPEND SRC_SET_CINDER_VIDEO_LINUX
 # Curl
 list( APPEND SRC_SET_CINDER_LINUX ${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp )
 
-# Relevant source files depending on target GL.
-if( NOT CINDER_GL_ES_2_RPI AND NOT CINDER_HEADLESS )
+# Relevant source files depending on target GL and if we running headless.
+if( NOT CINDER_HEADLESS ) # Desktop ogl, es2, es3, RPi
 	if( CINDER_GL_ES )
 		list( APPEND SRC_SET_CINDER_LINUX
 			${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
@@ -62,40 +62,28 @@ if( NOT CINDER_GL_ES_2_RPI AND NOT CINDER_HEADLESS )
 		)
 	endif()
 
-	list( APPEND SRC_SET_CINDER_LINUX
-		${SRC_SET_GLFW}
-	)
-
-	list( APPEND SRC_SET_CINDER_APP_LINUX
-		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxGlfw.cpp
-		${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGlfw.cpp
-		${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGlfw.cpp
-	)
-elseif( CINDER_HEADLESS_GL_EGL OR CINDER_GL_ES_2_RPI )
-	if( CINDER_HEADLESS_GL_EGL )
+	if( NOT CINDER_GL_ES_2_RPI ) # GLFW
 		list( APPEND SRC_SET_CINDER_LINUX
-			${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxHeadless.cpp
-			${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxEgl.cpp
-			${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxEgl.cpp
+			${SRC_SET_GLFW}
 		)
-	else()
+		list( APPEND SRC_SET_CINDER_APP_LINUX
+			${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxGlfw.cpp
+			${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGlfw.cpp
+			${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGlfw.cpp
+		)
+	else() # RPi
 		list( APPEND SRC_SET_CINDER_LINUX
+			${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
 			${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxRpi.cpp
 			${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxRpi.cpp
 			${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxRpi.cpp
 		)
 	endif()
-
-	if( CINDER_GL_ES )
-		list( APPEND SRC_SET_CINDER_LINUX
-			${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
-		)
-	endif()
-elseif( CINDER_HEADLESS_GL_OSMESA )
+else() # Headless egl, osmesa
 	list( APPEND SRC_SET_CINDER_LINUX
 		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxHeadless.cpp
-		${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxOSMesa.cpp
-		${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxOSMesa.cpp
+		${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxHeadless.cpp
+		${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxHeadless.cpp
 	)
 	if( CINDER_GL_ES )
 		list( APPEND SRC_SET_CINDER_LINUX
