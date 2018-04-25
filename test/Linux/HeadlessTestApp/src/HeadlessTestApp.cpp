@@ -69,11 +69,11 @@ void HeadlessTestApp::draw()
 #if defined( SNAPSHOT_FBO )
 		ci::gl::ScopedFramebuffer scopedFbo( mFbo );
 #endif
-		ci::gl::clear( ci::Color( .0f, .0f, .0f ) );
+		ci::gl::clear( ci::Color( .0f, .2f, 1.0f ) );
 		gl::setMatricesWindow( getWindowSize() );
 		gl::enableAlphaBlending();
 		renderSnapshot();
-		saveSnapshot( "headless-egl-snapshot.png" );
+		saveSnapshot( "headless-snapshot.png" );
 	}
 	sCount++;
 }
