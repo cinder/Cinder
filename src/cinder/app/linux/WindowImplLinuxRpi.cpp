@@ -25,8 +25,25 @@
 #include "cinder/app/linux/WindowImplLinux.h"
 #include "cinder/app/linux/AppImplLinux.h"
 
+#include "cinder/gl/draw.h"
+#include "cinder/gl/scoped.h"
+#include "cinder/gl/Texture.h"
+
+#include <bcm_host.h>
+#include "MousePointer.h"
+
 namespace cinder { namespace app {
 
+static ci::gl::TextureRef sCursorTex;
+
+struct WindowImplLinux::NativeWindow {
+	EGL_DISPMANX_WINDOW_T window;
+	NativeWindow( const ivec2& size, uint32_t element ) {
+		window.width   = size.x;
+		window.height  = size.y;
+		window.element = element;
+	}
+};
 
 WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux *sharedRendererWindow, AppImplLinux *appImpl )
 	: mAppImpl( appImpl )
@@ -35,8 +52,16 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux 
 	mRenderer = format.getRenderer();
 
 	RendererRef sharedRenderer = sharedRendererWindow ? sharedRendererWindow->getRenderer() : nullptr;
-	mWindowedSize = format.getSize();
-	mRenderer->setup( mWindowedSize, sharedRenderer );
+	// NativeWindow->window will get updated by the mRenderer
+	auto windowSize = format.getSize();
+	mNativeWindow = std::unique_ptr<NativeWindow>( new NativeWindow( windowSize, 0 ) );
+	mRenderer->setup( reinterpret_cast<void*>( &(mNativeWindow->window) ), sharedRenderer );
+	// Load mouse cursor
+	if( ! sCursorTex ) {
+		sCursorTex = ci::gl::Texture::create( sMousePointer, GL_RGBA, sMousePointerWidth, sMousePointerHeight );
+		sCursorTex->setTopDown();
+	}
+
 	RendererGlRef rendererGl = std::dynamic_pointer_cast<RendererGl>( mRenderer );
 
 	// set WindowRef and its impl pointer to this
@@ -57,7 +82,7 @@ void WindowImplLinux::setFullScreen( bool fullScreen, const app::FullScreenOptio
 
 ivec2 WindowImplLinux::getSize() const
 {
-	return mWindowedSize;
+	return ivec2( mNativeWindow->window.width, mNativeWindow->window.height );
 }
 
 void WindowImplLinux::setSize( const ivec2 &size )
@@ -100,14 +125,14 @@ const std::vector<TouchEvent::Touch>& WindowImplLinux::getActiveTouches() const
 	return mActiveTouches;
 }
 
-void* WindowImplLinux::getNative()
+EGLNativeWindowType WindowImplLinux::getNative()
 {
-	return nullptr;
+	return reinterpret_cast<EGLNativeWindowType>( mNativeWindow.get() );
 }
 
-void* WindowImplLinux::getNative() const
+EGLNativeWindowType WindowImplLinux::getNative() const
 {
-	return nullptr;
+	return reinterpret_cast<EGLNativeWindowType>( mNativeWindow.get() );
 }
 
 void WindowImplLinux::setBorderless( bool borderless )
@@ -132,6 +157,18 @@ void WindowImplLinux::draw()
 	mAppImpl->setWindow( mWindowRef );
 	mRenderer->startDraw();
 	mWindowRef->emitDraw();
+	if( mShowCursor && sCursorTex ) {
+		ci::gl::ScopedViewport viewport();
+		ci::gl::ScopedMatrices matrices();
+		ci::gl::ScopedBlendAlpha blend();
+		ci::gl::ScopedColor color( 1.0f, 1.0f, 1.0f );
+
+		ci::gl::setMatricesWindow( mNativeWindow->window.width, mNativeWindow->window.height );
+
+		Rectf r = sCursorTex->getBounds();
+		r += vec2( mAppImpl->getMousePos() );
+		ci::gl::draw( sCursorTex, r );
+	}
 	mRenderer->finishDraw();
 }
 
@@ -143,12 +180,12 @@ void WindowImplLinux::resize()
 
 void WindowImplLinux::hideCursor()
 {
-	/*Not implemented*/
+	mShowCursor = false;
 }
 
 void WindowImplLinux::showCursor()
 {
-	/*Not implemented*/
+	mShowCursor = true;
 }
 
 ivec2 WindowImplLinux::getMousePos() const
@@ -156,4 +193,4 @@ ivec2 WindowImplLinux::getMousePos() const
 	return ivec2( 0, 0 );
 }
 
-}} // namespace cinder::app
+}

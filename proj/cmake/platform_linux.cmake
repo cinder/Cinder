@@ -75,17 +75,16 @@ elseif( CINDER_HEADLESS_GL_EGL OR CINDER_GL_ES_2_RPI )
 	if( CINDER_HEADLESS_GL_EGL )
 		list( APPEND SRC_SET_CINDER_LINUX
 			${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxHeadless.cpp
+			${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxEgl.cpp
+			${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxEgl.cpp
 		)
 	else()
 		list( APPEND SRC_SET_CINDER_LINUX
 			${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxRpi.cpp
+			${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxRpi.cpp
+			${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxRpi.cpp
 		)
 	endif()
-
-	list( APPEND SRC_SET_CINDER_LINUX
-		${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxEgl.cpp
-		${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxEgl.cpp
-	)
 
 	if( CINDER_GL_ES )
 		list( APPEND SRC_SET_CINDER_LINUX
