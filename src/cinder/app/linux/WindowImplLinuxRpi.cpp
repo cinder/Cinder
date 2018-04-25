@@ -193,4 +193,4 @@ ivec2 WindowImplLinux::getMousePos() const
 	return ivec2( 0, 0 );
 }
 
-}
+}} // namespace cinder::app
