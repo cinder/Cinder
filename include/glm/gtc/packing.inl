@@ -618,7 +618,7 @@ namespace detail
 		float const MaxColor = max(Color.x, max(Color.y, Color.z));
 
 		float const ExpSharedP = max(-15.f - 1.f, floor(log2(MaxColor))) + 1.0f + 15.f;
-		float const MaxShared = floor(MaxColor / pow(2.0f, (ExpSharedP - 16.f - 9.f)) + 0.5f);
+		float const MaxShared = floor(MaxColor / pow(2.0f, (ExpSharedP - 15.f - 9.f)) + 0.5f);
 		float const ExpShared = MaxShared == pow(2.0f, 9.0f) ? ExpSharedP + 1.0f : ExpSharedP;
 
 		uvec3 const ColorComp(floor(Color / pow(2.f, (ExpShared - 15.f - 9.f)) + 0.5f));
