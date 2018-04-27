@@ -15,6 +15,7 @@
 #endif
 
 #include "cinder/app/AppBase.h"
+#include "cinder/Log.h"
 #include "cinder/gl/Environment.h"
 #include <chrono>
 
@@ -22,6 +23,10 @@ namespace gst { namespace video {
 
 #if defined( CINDER_GST_HAS_GL )
 static GstGLDisplay* sGstGLDisplay = nullptr;
+static GstGLContext* sGstGLContext = nullptr;
+static GstGLContext* createGstGLContext( GstGLDisplay* display, GstGLContext* context, gpointer userData ) {
+    return sGstGLContext;
+}
 #endif
 
 static bool         sUseGstGl = false;
@@ -135,7 +140,7 @@ GstBusSyncReply checkBusMessagesSync( GstBus* bus, GstMessage* message, gpointer
 
     GstData& data = *( static_cast<GstData*>( userData ) );
 
-    switch( GST_MESSAGE_TYPE( message ) ) 
+    switch( GST_MESSAGE_TYPE( message ) )
     {
 #if defined( CINDER_GST_HAS_GL )
         case GST_MESSAGE_NEED_CONTEXT: {
@@ -153,7 +158,12 @@ GstBusSyncReply checkBusMessagesSync( GstBus* bus, GstMessage* message, gpointer
             else if( g_strcmp0( context_type, "gst.gl.app_context" ) == 0 ) {
                 context = gst_context_new( "gst.gl.app_context", TRUE );
                 GstStructure *s = gst_context_writable_structure( context );
-                gst_structure_set( s, "context", GST_GL_TYPE_CONTEXT, data.context, nullptr );
+                if( sGstGLContext ) {
+                    gst_structure_set( s, "context", GST_GL_TYPE_CONTEXT, sGstGLContext, nullptr );
+                }
+                else {
+                    gst_structure_set( s, "context", GST_GL_TYPE_CONTEXT, data.context, nullptr );
+                }
                 gst_element_set_context( GST_ELEMENT( message->src ), context );
             }
 
@@ -412,8 +422,9 @@ void GstPlayer::resetPipeline()
     mGstData.videoBin = nullptr;
     if( sUseGstGl ) {
 #if defined( CINDER_GST_HAS_GL )
-        gst_object_unref( mGstData.context );
+        if( mGstData.context ) gst_object_unref( mGstData.context );
         mGstData.context = nullptr;
+        if( sGstGLContext ) gst_object_unref( sGstGLContext );
         gst_object_unref( sGstGLDisplay );
         // Pipeline will unref and destroy its children..
         mGstData.glupload = nullptr;
@@ -528,10 +539,30 @@ bool GstPlayer::initialize()
             sGstGLDisplay = gst_gl_display_new ();
         else
             holdDisplayRef = true;
+        // Shared context creation can be tricky on Windows with certain hardware / driver combos
+        // so we follow a different path here and create the shared GstGLContext context
+        // on our own which we pass internally to GStreamer, when required, with the GstGLDisplay 'create-context' signal.
+        // See https://bugzilla.gnome.org/show_bug.cgi?id=792407
         ci::gl::env()->makeContextCurrent( nullptr );
         auto platformData = std::dynamic_pointer_cast<ci::gl::PlatformDataMsw>( ci::gl::context()->getPlatformData() );
-        mGstData.context  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)platformData->mGlrc, GST_GL_PLATFORM_WGL, GST_GL_API_OPENGL );
-        ci::gl::context()->makeCurrent();
+        if( ! sGstGLContext ) {
+            // GStreamer assumes full-ownership when receiving sGstGLContext so increase ref count to keep it alive.
+            sGstGLContext = (GstGLContext*)gst_object_ref( gst_gl_context_new( sGstGLDisplay ) );
+            GstGLContext* sharedCtx = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)platformData->mGlrc, GST_GL_PLATFORM_WGL, GST_GL_API_OPENGL );
+            GError* err = nullptr;
+            if( ! gst_gl_context_create( sGstGLContext, sharedCtx, &err ) && err ) {
+                CI_LOG_E( "Failed to create shared context between Cinder and GStreamer : " << err->message );
+                g_free( err );
+            }
+            if( sharedCtx ) gst_object_unref( sharedCtx );
+            sharedCtx = nullptr;
+        }
+        else gst_object_ref( sGstGLContext ); // Already have a context created, keep it alive.
+
+        if( sGstGLContext )
+            g_signal_connect( sGstGLDisplay, "create-context", G_CALLBACK( createGstGLContext ), nullptr );
+
+        ci::gl::context()->makeCurrent( true );
 #endif
         if( holdDisplayRef ) {
             gst_object_ref( sGstGLDisplay );
