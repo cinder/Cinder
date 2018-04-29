@@ -154,7 +154,11 @@ GstBusSyncReply checkBusMessagesSync( GstBus* bus, GstMessage* message, gpointer
             else if( g_strcmp0( context_type, "gst.gl.app_context" ) == 0 ) {
                 context = gst_context_new( "gst.gl.app_context", TRUE );
                 GstStructure *s = gst_context_writable_structure( context );
-                gst_structure_set( s, "context", GST_GL_TYPE_CONTEXT, data.context, nullptr );
+                #if defined( GST_TYPE_GL_CONTEXT )
+                    gst_structure_set( s, "context", GST_TYPE_GL_CONTEXT, data.context, nullptr );
+                #else
+                    gst_structure_set( s, "context", GST_GL_TYPE_CONTEXT, data.context, nullptr );
+                #endif
                 gst_element_set_context( GST_ELEMENT( message->src ), context );
             }
 

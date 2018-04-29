@@ -40,6 +40,7 @@
 
     #include <gst/gl/gstglcontext.h>
     #include <gst/gl/gstgldisplay.h>
+    #include <gst/gl/gstglmemory.h>
 
     #if defined( CINDER_LINUX_EGL_ONLY )
         #include <gst/gl/egl/gstgldisplay_egl.h>
