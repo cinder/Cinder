@@ -96,11 +96,14 @@
 #include "./gtx/quaternion.hpp"
 #include "./gtx/raw_data.hpp"
 #include "./gtx/rotate_vector.hpp"
+
 #include "./gtx/spline.hpp"
 #include "./gtx/std_based_type.hpp"
+
 #if !(GLM_COMPILER & GLM_COMPILER_CUDA)
 #	include "./gtx/string_cast.hpp"
 #endif
+
 #include "./gtx/transform.hpp"
 #include "./gtx/transform2.hpp"
 #include "./gtx/vector_angle.hpp"
