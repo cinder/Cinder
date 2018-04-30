@@ -10,9 +10,8 @@ list( APPEND SRC_SET_GLFW
 	${CINDER_SRC_DIR}/glfw/src/input.c
 	${CINDER_SRC_DIR}/glfw/src/monitor.c
 	${CINDER_SRC_DIR}/glfw/src/window.c
-
+	${CINDER_SRC_DIR}/glfw/src/glx_context.c
 	${CINDER_SRC_DIR}/glfw/src/egl_context.c
-	${CINDER_SRC_DIR}/glfw/src/window.c
 	${CINDER_SRC_DIR}/glfw/src/x11_init.c
 	${CINDER_SRC_DIR}/glfw/src/x11_monitor.c
 	${CINDER_SRC_DIR}/glfw/src/x11_window.c
@@ -52,16 +51,10 @@ list( APPEND SRC_SET_CINDER_LINUX ${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp )
 # Relevant source files depending on target GL.
 if( NOT CINDER_GL_ES_2_RPI )
 	if( CINDER_GL_ES )
-		list( APPEND SRC_SET_GLFW 
-			${CINDER_SRC_DIR}/glfw/src/egl_context.c
-		)
 		list( APPEND SRC_SET_CINDER_LINUX
 			${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
 		)
 	else()
-		list( APPEND SRC_SET_GLFW 
-			${CINDER_SRC_DIR}/glfw/src/glx_context.c
-		)
 		list( APPEND SRC_SET_CINDER_LINUX
 			${CINDER_SRC_DIR}/glload/glx_load.c
 			${CINDER_SRC_DIR}/glload/glx_load_cpp.cpp
@@ -200,7 +193,7 @@ list( APPEND CINDER_INCLUDE_USER_PRIVATE
 
 # Cinder GL defines depending on target GL.
 if( CINDER_GL_ES AND NOT CINDER_GL_ES_2_RPI ) # es2, es3, es31, es32
-	list( APPEND GLFW_FLAGS "-D_GLFW_X11 -D_GLFW_EGL -D_GLFW_USE_GLESV2" )
+	list( APPEND GLFW_FLAGS "-D_GLFW_X11" )
 	if( CINDER_GL_ES_2 )
 		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_2" )
 	elseif( CINDER_GL_ES_3 )
@@ -211,7 +204,7 @@ if( CINDER_GL_ES AND NOT CINDER_GL_ES_2_RPI ) # es2, es3, es31, es32
 		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3_2" )
 	endif()
 elseif( NOT CINDER_GL_ES ) # Core Profile
-	list( APPEND GLFW_FLAGS "-D_GLFW_X11 -D_GLFW_GLX -D_GLFW_USE_OPENGL" )
+	list( APPEND GLFW_FLAGS "-D_GLFW_X11" )
 else() # Rpi
 	list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_2" "-DCINDER_LINUX_EGL_ONLY" "-DCINDER_GL_ES_2_RPI" )
 endif()

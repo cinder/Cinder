@@ -130,7 +130,11 @@ void DelayNode::process( Buffer *buffer )
 	}
 	else {
 		const size_t delayFrames = size_t( mParamDelaySeconds.getValue() * sampleRate );
-		size_t readIndex = writeIndex + delayBufferFrames - delayFrames;
+		int readIndex = writeIndex + delayBufferFrames - delayFrames;
+		if( readIndex >= delayBufferFrames )
+			readIndex -= delayBufferFrames;
+		else if( readIndex < 0 )
+			readIndex = int( delayBufferFrames - 1 ); // value was over delayBufferFrames, set to last available frame (will cause distortion)
 
 		for( size_t i = 0; i < numFrames; i++ ) {
 			float sample = *inChannel;

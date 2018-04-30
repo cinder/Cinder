@@ -559,6 +559,7 @@ void MediaFoundationInitializer::initMediaFoundation()
 {
 	if( ! sIsMfInitialized ) {
 		sIsMfInitialized = true;
+		ci::msw::initializeCom();
 		HRESULT hr = ::MFStartup( MF_VERSION );
 		CI_ASSERT( hr == S_OK );
 	}

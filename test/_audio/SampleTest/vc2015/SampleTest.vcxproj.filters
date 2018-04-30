@@ -32,7 +32,7 @@
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\samples\common\AudioDrawUtils.h">
+    <ClInclude Include="..\..\..\..\samples\_audio\common\AudioDrawUtils.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

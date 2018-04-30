@@ -8,38 +8,85 @@ matrix:
   include:
 
     # linux version have unique dependencies, so we set them up individually
+    # linux version have unique dependencies, so we set them up individually
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      sudo: required
+      env:
+        - TARGET="trusty"
+        - DESCRIPTION="Ubuntu Trusty build/test via CMake & gcc"
+        - MATRIX_EVAL="CC=gcc && CXX=g++"
+
     - os: linux
       dist: trusty
       compiler: clang
+      sudo: required
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            # clang requires newer standard library to work properly
+            - g++-4.9
+      env:
+        - TARGET="trusty"
+        - DESCRIPTION="Ubuntu Trusty build/test via CMake & clang"
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
+
+    - os: linux
+      dist: trusty
+      compiler: clang
+      sudo: required
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
             - g++-4.9
-      sudo: required
-      env: 
+            - clang++-3.5
+      env:
         - TARGET="trusty"
-        - DESCRIPTION="Ubuntu Trusty build/test via CMake"
+        - DESCRIPTION="Ubuntu Trusty build/test via CMake & clang-3.5"
+        - MATRIX_EVAL="CC=clang-3.5 && CXX=clang++-3.5"
+
+    - os: linux
+      dist: trusty
+      sudo: required
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env:
+         - TARGET="trusty"
+         - DESCRIPTION="Ubuntu Trusty build/test via CMake & g++5"
+         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+
+    - os: linux
+      dist: trusty
+      sudo: required
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+      env:
+         - TARGET="trusty"
+         - DESCRIPTION="Ubuntu Trusty build/test via CMake & g++6"
+         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+
 
     # OS X Xcode
     - os: osx
-      osx_image: xcode8.3
-      env: 
-        - TOOL="xcode-osx"
-        - DESCRIPTION="OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8.2
-      env: 
-        - TOOL="xcode-osx"
-        - DESCRIPTION="OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8.1
+      osx_image: xcode9.2
       env:
         - TOOL="xcode-osx"
-        - DESCRIPTION=OS X build/test via Xcode"
+        - DESCRIPTION="OS X build/test via Xcode"
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode8.3
       env:
         - TOOL="xcode-osx"
         - DESCRIPTION=OS X build/test via Xcode"
@@ -51,22 +98,12 @@ matrix:
 
     # iOS Xcode
     - os: osx
-      osx_image: xcode8.3
-      env: 
-        - TOOL="xcode-ios"
-        - DESCRIPTION="OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8.2
-      env: 
-        - TOOL="xcode-ios"
-        - DESCRIPTION="OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8.1
+      osx_image: xcode9.2
       env:
         - TOOL="xcode-ios"
-        - DESCRIPTION=OS X build/test via Xcode"
+        - DESCRIPTION="OS X build/test via Xcode"
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode8.3
       env:
         - TOOL="xcode-ios"
         - DESCRIPTION=OS X build/test via Xcode"
@@ -78,22 +115,12 @@ matrix:
 
     # iOS-Sim Xcode
     - os: osx
-      osx_image: xcode8.3
-      env: 
-        - TOOL="xcode-ios-sim"
-        - DESCRIPTION="OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8.2
-      env: 
-        - TOOL="xcode-ios-sim"
-        - DESCRIPTION="OS X build/test via Xcode"
-    - os: osx
-      osx_image: xcode8.1
+      osx_image: xcode9.2
       env:
         - TOOL="xcode-ios-sim"
-        - DESCRIPTION=OS X build/test via Xcode"
+        - DESCRIPTION="OS X build/test via Xcode"
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode8.3
       env:
         - TOOL="xcode-ios-sim"
         - DESCRIPTION=OS X build/test via Xcode"
@@ -105,30 +132,25 @@ matrix:
 
     # OS X CMake
     - os: osx
+      osx_image: xcode9.2
+      env:
+        - TOOL="cmake"
+        - DESCRIPTION="OS X build/test via CMake"
+    - os: osx
       osx_image: xcode8.3
       env:
-        - TOOL="cmake" 
-        - DESCRIPTION="OS X build/test via CMake"
-    - os: osx
-      osx_image: xcode8.2
-      env:
-        - TOOL="cmake" 
-        - DESCRIPTION="OS X build/test via CMake"
-    - os: osx
-      osx_image: xcode8.1
-      env:
-        - TOOL="cmake" 
-        - DESCRIPTION="OS X build/test via CMake"
-    - os: osx
-      osx_image: xcode8
-      env:
-        - TOOL="cmake" 
+        - TOOL="cmake"
         - DESCRIPTION="OS X build/test via CMake"
     - os: osx
       osx_image: xcode7.3
       env:
-        - TOOL="cmake" 
+        - TOOL="cmake"
         - DESCRIPTION="OS X build/test via CMake"
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      eval "${MATRIX_EVAL}";
+    fi
 
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -149,4 +171,4 @@ script:
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "xcode-ios-sim" ]]; then
       proj/xcode/iossim-build-xcpretty.sh;
     fi
-    
+

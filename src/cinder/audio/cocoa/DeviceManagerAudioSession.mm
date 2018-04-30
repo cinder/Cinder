@@ -86,7 +86,7 @@ DeviceRef DeviceManagerAudioSession::getDefaultInput()
 	return getRemoteIODevice();
 }
 
-DeviceRef DeviceManagerAudioSession::findDeviceByName( const string &name )
+DeviceRef DeviceManagerAudioSession::findDeviceByName( const string &name, bool supportsOutput, bool supportsInput )
 {
 	return getRemoteIODevice();
 }

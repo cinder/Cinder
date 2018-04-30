@@ -134,6 +134,12 @@ CI_API void drawSolidTriangle( const vec2 &pt0, const vec2 &pt1, const vec2 &pt2
 CI_API void drawSolidTriangle( const vec2 &pt0, const vec2 &pt1, const vec2 &pt2, const vec2 &texPt0, const vec2 &texPt1, const vec2 &texPt2 );
 //! Renders a textured triangle.
 CI_API void drawSolidTriangle( const vec2 pts[3], const vec2 texCoord[3] = nullptr );
+//! Renders a solid triangle.
+CI_API void drawSolidTriangle( const vec3 &pt0, const vec3 &pt1, const vec3 &pt2 );
+//! Renders a textured triangle.
+CI_API void drawSolidTriangle( const vec3 &pt0, const vec3 &pt1, const vec3 &pt2, const vec2 &texPt0, const vec2 &texPt1, const vec2 &texPt2 );
+//! Renders a textured triangle.
+CI_API void drawSolidTriangle( const vec3 pts[3], const vec2 texCoord[3] = nullptr );
 	
 	
 CI_API void	drawArrays( GLenum mode, GLint first, GLsizei count );

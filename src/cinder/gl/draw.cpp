@@ -1175,16 +1175,14 @@ void drawSolidCircle( const vec2 &center, float radius, int numSegments )
 	if( normals )
 		normals[0] = vec3( 0, 0, 1 );
 	const float tDelta = 1.0f / numSegments * 2 * (float)M_PI;
-	float t = 0;
 	for( int s = 0; s <= numSegments; s++ ) {
-		const vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
+		const vec2 unit( math<float>::cos( s * tDelta ), math<float>::sin( s * tDelta ) );
 		if( verts )
 			verts[s+1] = center + unit * radius;
 		if( texCoords )
 			texCoords[s+1] = unit * 0.5f + vec2( 0.5f, 0.5f );
 		if( normals )
 			normals[s+1] = vec3( 0, 0, 1 );
-		t += tDelta;
 	}
 
 	defaultVbo->bufferSubData( 0, dataSizeBytes, data.get() );
@@ -1194,7 +1192,6 @@ void drawSolidCircle( const vec2 &center, float radius, int numSegments )
 	ctx->drawArrays( GL_TRIANGLE_FAN, 0, numSegments + 2 );
 	ctx->popVao();
 }
-
 void drawSolidEllipse( const vec2 &center, float radiusX, float radiusY, int numSegments )
 {
 	auto ctx = context();
@@ -1324,6 +1321,58 @@ void drawSolidTriangle( const vec2 pts[3], const vec2 texCoord[3] )
 	if( posLoc >= 0 ) {
 		enableVertexAttribArray( posLoc );
 		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+	}
+	if( texCoord ) {
+		int texLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::TEX_COORD_0 );
+		if( texLoc >= 0 ) {
+			enableVertexAttribArray( texLoc );
+			vertexAttribPointer( texLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float)*6) );
+		}
+	}
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_TRIANGLES, 0, 3 );
+	ctx->popVao();
+}
+
+void drawSolidTriangle( const vec3 &pt0, const vec3 &pt1, const vec3 &pt2 )
+{
+	vec3 pts[3] = { pt0, pt1, pt2 };
+	drawSolidTriangle( pts, nullptr );
+}
+
+//! Renders a textured triangle.
+void drawSolidTriangle( const vec3 &pt0, const vec3 &pt1, const vec3 &pt2, const vec2 &texCoord0, const vec2 &texCoord1, const vec2 &texCoord2 )
+{
+	vec3 pts[3] = { pt0, pt1, pt2 };
+	vec2 texs[3] = { texCoord0, texCoord1, texCoord2 };
+	drawSolidTriangle( pts, texs );
+}
+
+void drawSolidTriangle( const vec3 pts[3], const vec2 texCoord[3] )
+{
+	auto ctx = context();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+
+	GLfloat data[3*3+3*2]; // both verts and texCoords
+	memcpy( data, pts, sizeof(float) * 3 * 3 );
+	if( texCoord )
+		memcpy( data + 3 * 2, texCoord, sizeof(float) * 3 * 2 );
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(float)*15 );
+	ScopedBuffer bufferBindScp( defaultVbo );
+	defaultVbo->bufferSubData( 0, sizeof(float) * ( texCoord ? 15 : 9 ), data );
+
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
 	}
 	if( texCoord ) {
 		int texLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::TEX_COORD_0 );

@@ -49,7 +49,7 @@ Node::Node( const Format &format )
 		mChannelMode = ChannelMode::SPECIFIED;
 	}
 
-	if( ! boost::indeterminate( format.getAutoEnable() ) )
+	if( format.isAutoEnableSet() )
 		setAutoEnabled( format.getAutoEnable() );
 }
 
@@ -514,7 +514,7 @@ bool Node::canConnectToInput( const NodeRef &input )
 	return true;
 }
 
-std::string Node::getName()
+std::string Node::getName() const
 {
 	return ! mName.empty() ? mName : System::demangleTypeName( typeid( *this ).name() );
 }

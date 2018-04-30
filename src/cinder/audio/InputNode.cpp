@@ -38,7 +38,7 @@ InputNode::InputNode( const Format &format )
 	if( getChannelMode() != ChannelMode::SPECIFIED )
 		setChannelMode( ChannelMode::MATCHES_OUTPUT );
 
-	if( boost::indeterminate( format.getAutoEnable() ) )
+	if( ! format.isAutoEnableSet() )
 		setAutoEnabled( false );
 }
 
@@ -113,6 +113,16 @@ void InputDeviceNode::markOverrun()
 	CI_ASSERT( ctx );
 
 	mLastOverrun = getContext()->getNumProcessedFrames();
+}
+
+void InputDeviceNode::setRingBufferPaddingFactor( float factor )
+{
+	mRingBufferPaddingFactor = max<float>( 1, factor );
+}
+
+string InputDeviceNode::getName() const
+{
+	return Node::getName() + " (" + getDevice()->getName() + ")";
 }
 
 // ----------------------------------------------------------------------------------------------------

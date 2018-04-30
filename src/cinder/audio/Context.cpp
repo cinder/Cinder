@@ -71,11 +71,13 @@ void Context::registerClearStatics()
 	// A signal is registered for app cleanup in order to ensure that all Node's and their
 	// dependencies are destroyed before static memory goes down - this avoids a crash at cleanup
 	// in r8brain's static processing containers.
-	// TODO: consider leaking the master context by default and providing a public clear function.
-	app::AppBase::get()->getSignalCleanup().connect( [] {
-		sDeviceManager.reset();
-		sMasterContext.reset();
-	} );
+	auto app = app::AppBase::get();
+	if( app ) {
+		app->getSignalCleanup().connect( [] {
+			sDeviceManager.reset();
+			sMasterContext.reset();
+		} );
+	}
 }
 
 // static
@@ -135,7 +137,7 @@ void Context::setMaster( Context *masterContext, DeviceManager *deviceManager )
 }
 
 Context::Context()
-	: mEnabled( false ), mAutoPullRequired( false ), mAutoPullCacheDirty( false ), mNumProcessedFrames( 0 )
+	: mEnabled( false ), mAutoPullRequired( false ), mAutoPullCacheDirty( false ), mNumProcessedFrames( 0 ), mTimeDuringLastProcessLoop( -1.0 )
 {
 }
 
@@ -167,7 +169,9 @@ void Context::disable()
 		return;
 
 	mEnabled = false;
-	getOutput()->disable();
+	auto output = getOutput();
+	if( output )
+		getOutput()->disable();
 }
 
 void Context::setEnabled( bool b )
@@ -211,7 +215,21 @@ void Context::disconnectAllNodes()
 
 void Context::setOutput( const OutputNodeRef &output )
 {
+	if( mOutput ) {
+		if( output && mOutput->getOutputFramesPerBlock() != output->getOutputFramesPerBlock() || mOutput->getOutputSampleRate() != output->getOutputSampleRate() ) {
+			// params changed used in sizing buffers, uninit all connected nodes so they can reconfigure
+			uninitializeAllNodes();
+		}
+		else {
+			// params are the same, so just uninitialize the old output.
+			uninitializeNode( mOutput );
+		}
+	}
+
 	mOutput = output;
+
+	if( mOutput )
+		initializeAllNodes();
 }
 
 const OutputNodeRef& Context::getOutput()
@@ -278,6 +296,7 @@ bool Context::isAudioThread() const
 
 void Context::preProcess()
 {
+	mProcessTimer.start();
 	mAudioThreadId = std::this_thread::get_id();
 
 	preProcessScheduledEvents();
@@ -288,6 +307,9 @@ void Context::postProcess()
 	processAutoPulledNodes();
 	postProcessScheduledEvents();
 	incrementFrameCount();
+
+	mProcessTimer.stop();
+	mTimeDuringLastProcessLoop = mProcessTimer.getSeconds();
 }
 
 void Context::incrementFrameCount()

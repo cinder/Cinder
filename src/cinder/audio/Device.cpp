@@ -55,9 +55,19 @@ DeviceRef Device::getDefaultInput()
 	return Context::deviceManager()->getDefaultInput();
 }
 
+DeviceRef Device::findOutputByName( const std::string &name )
+{
+	return Context::deviceManager()->findDeviceByName( name, true, false );
+}
+
+DeviceRef Device::findInputByName( const std::string &name )
+{
+	return Context::deviceManager()->findDeviceByName( name, false, true );
+}
+
 DeviceRef Device::findDeviceByName( const string &name )
 {
-	return Context::deviceManager()->findDeviceByName( name );
+	return Context::deviceManager()->findDeviceByName( name, false, false );
 }
 
 DeviceRef Device::findDeviceByKey( const string &key )
@@ -175,11 +185,17 @@ string Device::printDevicesToString()
 // DeviceManager
 // ----------------------------------------------------------------------------------------------------
 
-DeviceRef DeviceManager::findDeviceByName( const string &name )
+DeviceRef DeviceManager::findDeviceByName( const string &name, bool supportsOutput, bool supportsInput )
 {
 	for( const auto &device : getDevices() ) {
-		if( device->getName() == name )
+		if( device->getName() == name ) {
+			if( supportsOutput && ! device->getNumOutputChannels() )
+				continue;
+			if( supportsInput && ! device->getNumInputChannels() )
+				continue;
+
 			return device;
+		}
 	}
 
 	return DeviceRef();
@@ -216,11 +232,15 @@ void DeviceManager::emitParamsWillChange( const DeviceRef &device )
 
 void DeviceManager::emitParamsDidChange( const DeviceRef &device )
 {
-	// clear param caching, will be updated the next time Device is queried
-	device->mSampleRate = 0;
-	device->mFramesPerBlock = 0;
+	clearCachedValues( device );
 
 	device->mSignalParamsDidChange.emit();
+}
+
+void DeviceManager::clearCachedValues( const DeviceRef &device )
+{
+	device->mSampleRate = 0;
+	device->mFramesPerBlock = 0;
 }
 
 } } // namespace cinder::audio

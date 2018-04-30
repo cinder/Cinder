@@ -30,6 +30,7 @@
 #include "cinder/Base64.h"
 #include "cinder/Text.h"
 #include "cinder/Log.h"
+#include "cinder/Unicode.h"
 
 using namespace std;
 
@@ -59,20 +60,27 @@ float parseFloat( const char **sInOut )
 				temp[i++] = *s;
 			s++;
 		}
-		bool parsingExponent = false;
+		bool parsingExponent = false, startingExponent;
 		bool seenDecimal = false;
 		while( *s && ( parsingExponent || (*s != '-' && *s != '+')) && isNumeric(*s) ) {
+			startingExponent = false;
 			if( *s == '.' && seenDecimal )
 				break;
 			else if( *s == '.' )
 				seenDecimal = true;
 			if( i < sizeof(temp) )
 				temp[i++] = *s;
-			if( *s == 'e' || *s == 'E' )
+			if( *s == 'e' || *s == 'E' ) {
 				parsingExponent = true;
+				startingExponent = true;
+			}
 			else
 				parsingExponent = false;
 			s++;
+		}
+		if( startingExponent ) { // if we got a false positive on an exponent, for example due to "ex" or "em" unit, back up one
+			--i;
+			--s;
 		}
 		temp[i] = 0;
 		float result = (float)atof( temp );
@@ -199,7 +207,6 @@ Paint::Paint( const ColorA8u &color )
 {
 	mStops.push_back( std::make_pair( 0.0f, color ) );
 }
-	
 
 Paint Paint::parse( const char *value, bool *specified, const Node *parentNode )
 {
@@ -608,7 +615,7 @@ Value Value::parse( const std::string &s )
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Node
-Node::Node( const Node *parent, const XmlTree &xml )
+Node::Node( Node *parent, const XmlTree &xml )
 	: mParent( parent ), mStyle( xml, this ), mBoundingBoxCached( false )
 {
 	mSpecifiesTransform = false;
@@ -1002,7 +1009,7 @@ mat3 Node::getTransformAbsolute() const
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Gradient
-Gradient::Gradient( const Node *parent, const XmlTree &xml )
+Gradient::Gradient( Node *parent, const XmlTree &xml )
 	: Node( parent, xml ), mUseObjectBoundingBox( true ), mSpecifiesTransform( false )
 {
 	parse( parent, xml );
@@ -1088,7 +1095,7 @@ Paint Gradient::asPaint() const
 
 ////////////////////////////////////////////////////////////////////////////////////
 // LinearGradient
-LinearGradient::LinearGradient( const Node *parent, const XmlTree &xml )
+LinearGradient::LinearGradient( Node *parent, const XmlTree &xml )
 	: Gradient( parent, xml )
 {
 	parse( xml );
@@ -1111,7 +1118,7 @@ Paint LinearGradient::asPaint() const
 
 ////////////////////////////////////////////////////////////////////////////////////
 // RadialGradient
-RadialGradient::RadialGradient( const Node *parent, const XmlTree &xml )
+RadialGradient::RadialGradient( Node *parent, const XmlTree &xml )
 	: Gradient( parent, xml )
 {
 	parse( xml );
@@ -1136,7 +1143,7 @@ Paint RadialGradient::asPaint() const
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Circle
-Circle::Circle( const Node *parent, const XmlTree &xml )
+Circle::Circle( Node *parent, const XmlTree &xml )
 	: Node( parent, xml )
 {
 	mCenter.x = xml.getAttributeValue( "cx", 0.0f );
@@ -1158,7 +1165,7 @@ Shape2d Circle::getShape() const
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Ellipse
-Ellipse::Ellipse( const Node *parent, const XmlTree &xml )
+Ellipse::Ellipse( Node *parent, const XmlTree &xml )
 	: Node( parent, xml )
 {
 	mCenter.x = xml.getAttributeValue( "cx", 0.0f );
@@ -1483,7 +1490,7 @@ Shape2d parsePath( const std::string &p )
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Path
-Path::Path( const Node *parent, const XmlTree &xml )
+Path::Path( Node *parent, const XmlTree &xml )
 	: Node( parent, xml )
 {
 	std::string p = xml.getAttributeValue<string>( "d", "" );
@@ -1506,7 +1513,7 @@ void Path::renderSelf( Renderer &renderer ) const
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Line
-Line::Line( const Node *parent, const XmlTree &xml )
+Line::Line( Node *parent, const XmlTree &xml )
 	: Node( parent, xml )
 {
 	mPoint1.x = xml.getAttributeValue<float>( "x1", 0 );
@@ -1530,7 +1537,7 @@ Shape2d	Line::getShape() const
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Rect
-Rect::Rect( const Node *parent, const XmlTree &xml )
+Rect::Rect( Node *parent, const XmlTree &xml )
 	: Node( parent, xml )
 {
 	float width = 0, height = 0;
@@ -1592,7 +1599,7 @@ vector<vec2> parsePointList( const std::string &p )
 	return result;
 }
 
-Polygon::Polygon( const Node *parent, const XmlTree &xml )
+Polygon::Polygon( Node *parent, const XmlTree &xml )
 	: Node( parent, xml )
 {
 	mPolyLine = PolyLine2f( parsePointList( xml.getAttributeValue<string>( "points", "" ) ) );
@@ -1622,7 +1629,7 @@ Shape2d	Polygon::getShape() const
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Polyline
-Polyline::Polyline( const Node *parent, const XmlTree &xml )
+Polyline::Polyline( Node *parent, const XmlTree &xml )
 	: Node( parent, xml )
 {
 	mPolyLine = PolyLine2f( parsePointList( xml.getAttributeValue<string>( "points", "" ) ) );
@@ -1650,7 +1657,7 @@ Shape2d	Polyline::getShape() const
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Group
-Group::Group( const Node *parent, const XmlTree &xml )
+Group::Group( Node *parent, const XmlTree &xml )
 	: Node( parent, xml )
 {
 	parse( xml );
@@ -1824,6 +1831,21 @@ void Group::appendMergedShape2d( Shape2d *appendTo ) const
 	}
 }
 
+const Node&	Group::getChild( size_t index ) const
+{
+	auto childIt = mChildren.begin();
+	while( index ) {
+		--index;
+		if( childIt == mChildren.end() )
+			break;
+	}
+
+	if( childIt == mChildren.end() )
+		throw ExcChildNotFound( "index " + to_string( index ) );
+
+	return **childIt;
+}
+
 void Group::renderSelf( Renderer &renderer ) const
 {
 	renderer.pushGroup( *this, mStyle.getOpacity() );
@@ -1863,9 +1885,18 @@ Rectf Group::calcBoundingBox() const
 	return result;
 }
 
+void Group::iterate( const std::function<void(Node*)> &fn )
+{
+	for( list<Node*>::iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
+		fn( *childIt );
+		if( typeid(**childIt) == typeid(svg::Group) )
+			static_cast<svg::Group*>(*childIt)->iterate( fn );
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 // Use
-Use::Use( const Node *parent, const XmlTree &xml )
+Use::Use( Node *parent, const XmlTree &xml )
 	: Node( parent, xml ), mReferenced( 0 )
 {
 	parse( xml );
@@ -1898,7 +1929,7 @@ void Use::renderSelf( Renderer &renderer ) const
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Image
-Image::Image( const Node *parent, const XmlTree &xml )
+Image::Image( Node *parent, const XmlTree &xml )
 	: Node( parent, xml )
 {
 	mRect.x1 = xml.getAttributeValue<float>( "x", 0 );
@@ -1950,7 +1981,7 @@ void Image::renderSelf( Renderer &renderer ) const
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Text
-Text::Text( const Node *parent, const XmlTree &xml )
+Text::Text( Node *parent, const XmlTree &xml )
 	: Node( parent, xml ), mAttributes( xml )
 {
 	for( XmlTree::ConstIter treeIt = xml.begin(); treeIt != xml.end(); ++treeIt ) {
@@ -1992,6 +2023,14 @@ float Text::getRotation() const
 		return mAttributes.mRotate[0].asUser();
 }
 
+Value Text::getLetterSpacing() const
+{
+	if( mAttributes.mLetterSpacing.size() != 1 ) {
+		return Value( 0 );
+	}
+	else
+		return mAttributes.mLetterSpacing[0];
+}
 
 void Text::renderSelf( Renderer &renderer ) const
 {
@@ -2006,7 +2045,7 @@ void Text::renderSelf( Renderer &renderer ) const
 
 ////////////////////////////////////////////////////////////////////////////////////
 // TextSpan
-TextSpan::TextSpan( const Node *parent, const XmlTree &xml )
+TextSpan::TextSpan( Node *parent, const XmlTree &xml )
 	: Node( parent, xml ), mAttributes( xml ), mIgnoreAttributes( false )
 {
 	for( XmlTree::ConstIter treeIt = xml.begin(); treeIt != xml.end(); ++treeIt ) {
@@ -2019,16 +2058,20 @@ TextSpan::TextSpan( const Node *parent, const XmlTree &xml )
 	}
 }
 
-TextSpan::TextSpan( const Node *parent, const std::string &str )
+TextSpan::TextSpan( Node *parent, const std::string &str )
 	: Node( parent ), mIgnoreAttributes( true )
 {
 	// replace all multi-char whitespace with single space
-	const char *c = str.c_str();
-	while( *c ) {
-		if( isspace(*c) ) mString += ' ';
-		while( *c && isspace(*c) ) c++;
-		while( *c && ( ! isspace(*c) ) ) mString += *c++;
-	}
+	/*size_t c = 0;
+	while( str[c] ) {
+		if( isspace(str[c]) ) mString += ' ';
+		while( str[c] && isspace(str[c]) )
+			nextCharUtf8( str.c_str(), &c );
+		while( str[c] && ( ! isspace(str[c]) ) ) // this is not really correct - does not work with UTF32 code points that are >255
+			mString += nextCharUtf8( str.c_str(), &c );
+	}*/
+	// Technically multi-char whitespace should be reduced to single chars; needs to be revisited with unicode-aware version of this method
+	mString = str;
 }
 
 void TextSpan::renderSelf( Renderer &renderer ) const
@@ -2115,6 +2158,8 @@ TextSpan::Attributes::Attributes( const XmlTree &xml )
 		mY = readValueList( xml["y"], false );
 	if( xml.hasAttribute( "rotate" ) )
 		mRotate = readValueList( xml["rotate"], false );
+	if( xml.hasAttribute( "letter-spacing" ) )
+		mLetterSpacing = readValueList( xml["letter-spacing"], false );
 }
 
 const std::shared_ptr<Font>	TextSpan::getFont() const
@@ -2149,6 +2194,17 @@ vec2 TextSpan::getTextPen() const
 		return vec2( mAttributes.mX[0].asUser(), mAttributes.mY[0].asUser() );
 }
 
+void TextSpan::setTextPen( const vec2 &textPen )
+{
+	if( mIgnoreAttributes ) {
+		if( ! mParent ) return;
+		else if( typeid(*mParent) == typeid(TextSpan) ) return reinterpret_cast<TextSpan*>( mParent )->setTextPen( textPen );
+		else if( typeid(*mParent) == typeid(Text) ) return reinterpret_cast<Text*>( mParent )->setTextPen( textPen );
+	}
+	else
+		mAttributes.setTextPen( textPen );
+}
+
 float TextSpan::getRotation() const
 {
 	if( mIgnoreAttributes || ( mAttributes.mRotate.size() != 1 ) ) {
@@ -2159,6 +2215,18 @@ float TextSpan::getRotation() const
 	}
 	else
 		return mAttributes.mRotate[0].asUser();
+}
+
+Value TextSpan::getLetterSpacing() const
+{
+	if( mIgnoreAttributes || ( mAttributes.mLetterSpacing.size() != 1 ) ) {
+		if( ! mParent ) return 0;
+		else if( typeid(*mParent) == typeid(TextSpan) ) return reinterpret_cast<const TextSpan*>( mParent )->getLetterSpacing();
+		else if( typeid(*mParent) == typeid(Text) ) return reinterpret_cast<const Text*>( mParent )->getLetterSpacing();
+		else return 0;
+	}
+	else
+		return mAttributes.mLetterSpacing[0];
 }
 
 void TextSpan::Attributes::startRender( Renderer &renderer ) const
@@ -2176,6 +2244,18 @@ void TextSpan::Attributes::finishRender( Renderer &renderer ) const
 	if( mX.size() == 1 && mY.size() == 1 )
 		renderer.popTextPen();
 	renderer.popTextRotation();
+}
+
+void TextSpan::Attributes::setTextPen( const vec2 &textPen )
+{
+	if( mX.empty() )
+		mX.push_back( Value( textPen.x ) );
+	else
+		mX[0] = Value( textPen.x );
+	if( mY.empty() )
+		mY.push_back( Value( textPen.y ) );
+	else
+		mY[0] = Value( textPen.y );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
