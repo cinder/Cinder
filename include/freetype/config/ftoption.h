@@ -82,6 +82,10 @@ FT_BEGIN_HEADER
   /* to control the various font drivers and modules.  The controllable    */
   /* properties are listed in the section @properties.                     */
   /*                                                                       */
+  /* You have to undefine this configuration option on platforms that lack */
+  /* the concept of environment variables (and thus don't have the         */
+  /* `getenv' function), for example Windows CE.                           */
+  /*                                                                       */
   /* `FREETYPE_PROPERTIES' has the following syntax form (broken here into */
   /* multiple lines for better readability).                               */
   /*                                                                       */
@@ -263,7 +267,7 @@ FT_BEGIN_HEADER
   /*   options set by those programs have precendence, overwriting the     */
   /*   value here with the configured one.                                 */
   /*                                                                       */
-#define FT_CONFIG_OPTION_USE_PNG
+ #define FT_CONFIG_OPTION_USE_PNG
 
 
   /*************************************************************************/
