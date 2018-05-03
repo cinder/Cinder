@@ -1,10 +1,10 @@
 /***************************************************************************/
 /*                                                                         */
-/*  cf2error.h                                                             */
+/*  psstack.h                                                              */
 /*                                                                         */
-/*    Adobe's code for error handling (specification).                     */
+/*    Adobe's code for emulating a CFF stack (specification).              */
 /*                                                                         */
-/*  Copyright 2006-2013 Adobe Systems Incorporated.                        */
+/*  Copyright 2007-2013 Adobe Systems Incorporated.                        */
 /*                                                                         */
 /*  This software, and all works of authorship, whether in source or       */
 /*  object code form as indicated by the copyright notice(s) included      */
@@ -36,84 +36,86 @@
 /***************************************************************************/
 
 
-#ifndef CF2ERROR_H_
-#define CF2ERROR_H_
-
-
-#include FT_MODULE_ERRORS_H
-
-#undef FTERRORS_H_
-
-#undef  FT_ERR_PREFIX
-#define FT_ERR_PREFIX  CF2_Err_
-#define FT_ERR_BASE    FT_Mod_Err_CF2
-
-
-#include FT_ERRORS_H
-#include "cf2ft.h"
+#ifndef PSSTACK_H_
+#define PSSTACK_H_
 
 
 FT_BEGIN_HEADER
 
 
-  /*
-   * A poor-man error facility.
-   *
-   * This code being written in vanilla C, doesn't have the luxury of a
-   * language-supported exception mechanism such as the one available in
-   * Java.  Instead, we are stuck with using error codes that must be
-   * carefully managed and preserved.  However, it is convenient for us to
-   * model our error mechanism on a Java-like exception mechanism.
-   * When we assign an error code we are thus `throwing' an error.
-   *
-   * The perservation of an error code is done by coding convention.
-   * Upon a function call if the error code is anything other than
-   * `FT_Err_Ok', which is guaranteed to be zero, we
-   * will return without altering that error.  This will allow the
-   * error to propagate and be handled at the appropriate location in
-   * the code.
-   *
-   * This allows a style of code where the error code is initialized
-   * up front and a block of calls are made with the error code only
-   * being checked after the block.  If a new error occurs, the original
-   * error will be preserved and a functional no-op should result in any
-   * subsequent function that has an initial error code not equal to
-   * `FT_Err_Ok'.
-   *
-   * Errors are encoded by calling the `FT_THROW' macro.  For example,
-   *
-   * {
-   *   FT_Error  e;
-   *
-   *
-   *   ...
-   *   e = FT_THROW( Out_Of_Memory );
-   * }
-   *
-   */
+  /* CFF operand stack; specified maximum of 48 or 192 values */
+  typedef struct  CF2_StackNumber_
+  {
+    union
+    {
+      CF2_Fixed  r;      /* 16.16 fixed point */
+      CF2_Frac   f;      /* 2.30 fixed point (for font matrix) */
+      CF2_Int    i;
+    } u;
+
+    CF2_NumberType  type;
+
+  } CF2_StackNumber;
 
 
-  /* Set error code to a particular value. */
+  typedef struct  CF2_StackRec_
+  {
+    FT_Memory         memory;
+    FT_Error*         error;
+    CF2_StackNumber*  buffer;
+    CF2_StackNumber*  top;
+    FT_UInt           stackSize;
+
+  } CF2_StackRec, *CF2_Stack;
+
+
+  FT_LOCAL( CF2_Stack )
+  cf2_stack_init( FT_Memory  memory,
+                  FT_Error*  error,
+                  FT_UInt    stackSize );
   FT_LOCAL( void )
-  cf2_setError( FT_Error*  error,
-                FT_Error   value );
+  cf2_stack_free( CF2_Stack  stack );
 
+  FT_LOCAL( CF2_UInt )
+  cf2_stack_count( CF2_Stack  stack );
 
-  /*
-   * A macro that conditionally sets an error code.
-   *
-   * This macro will first check whether `error' is set;
-   * if not, it will set it to `e'.
-   *
-  */
-#define CF2_SET_ERROR( error, e )              \
-          cf2_setError( error, FT_THROW( e ) )
+  FT_LOCAL( void )
+  cf2_stack_pushInt( CF2_Stack  stack,
+                     CF2_Int    val );
+  FT_LOCAL( void )
+  cf2_stack_pushFixed( CF2_Stack  stack,
+                       CF2_Fixed  val );
+
+  FT_LOCAL( CF2_Int )
+  cf2_stack_popInt( CF2_Stack  stack );
+  FT_LOCAL( CF2_Fixed )
+  cf2_stack_popFixed( CF2_Stack  stack );
+
+  FT_LOCAL( CF2_Fixed )
+  cf2_stack_getReal( CF2_Stack  stack,
+                     CF2_UInt   idx );
+  FT_LOCAL( void )
+  cf2_stack_setReal( CF2_Stack  stack,
+                     CF2_UInt   idx,
+                     CF2_Fixed  val );
+
+  FT_LOCAL( void )
+  cf2_stack_pop( CF2_Stack  stack,
+                 CF2_UInt   num );
+
+  FT_LOCAL( void )
+  cf2_stack_roll( CF2_Stack  stack,
+                  CF2_Int    count,
+                  CF2_Int    idx );
+
+  FT_LOCAL( void )
+  cf2_stack_clear( CF2_Stack  stack );
 
 
 FT_END_HEADER
 
 
-#endif /* CF2ERROR_H_ */
+#endif /* PSSTACK_H_ */
 
 
 /* END */

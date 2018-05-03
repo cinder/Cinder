@@ -1,8 +1,8 @@
 /***************************************************************************/
 /*                                                                         */
-/*  cf2stack.h                                                             */
+/*  psarrst.h                                                              */
 /*                                                                         */
-/*    Adobe's code for emulating a CFF stack (specification).              */
+/*    Adobe's code for Array Stacks (specification).                       */
 /*                                                                         */
 /*  Copyright 2007-2013 Adobe Systems Incorporated.                        */
 /*                                                                         */
@@ -36,76 +36,65 @@
 /***************************************************************************/
 
 
-#ifndef CF2STACK_H_
-#define CF2STACK_H_
+#ifndef PSARRST_H_
+#define PSARRST_H_
+
+
+#include "pserror.h"
 
 
 FT_BEGIN_HEADER
 
 
-  /* CFF operand stack; specified maximum of 48 or 192 values */
-  typedef struct  CF2_StackNumber_
+  /* need to define the struct here (not opaque) so it can be allocated by */
+  /* clients                                                               */
+  typedef struct  CF2_ArrStackRec_
   {
-    union
-    {
-      CF2_Fixed  r;      /* 16.16 fixed point */
-      CF2_Frac   f;      /* 2.30 fixed point (for font matrix) */
-      CF2_Int    i;
-    } u;
+    FT_Memory  memory;
+    FT_Error*  error;
 
-    CF2_NumberType  type;
+    size_t  sizeItem;       /* bytes per element             */
+    size_t  allocated;      /* items allocated               */
+    size_t  chunk;          /* allocation increment in items */
+    size_t  count;          /* number of elements allocated  */
+    size_t  totalSize;      /* total bytes allocated         */
 
-  } CF2_StackNumber;
+    void*  ptr;             /* ptr to data                   */
 
+  } CF2_ArrStackRec, *CF2_ArrStack;
 
-  typedef struct  CF2_StackRec_
-  {
-    FT_Memory         memory;
-    FT_Error*         error;
-    CF2_StackNumber   buffer[CF2_OPERAND_STACK_SIZE];
-    CF2_StackNumber*  top;
-
-  } CF2_StackRec, *CF2_Stack;
-
-
-  FT_LOCAL( CF2_Stack )
-  cf2_stack_init( FT_Memory  memory,
-                  FT_Error*  error );
-  FT_LOCAL( void )
-  cf2_stack_free( CF2_Stack  stack );
-
-  FT_LOCAL( CF2_UInt )
-  cf2_stack_count( CF2_Stack  stack );
 
   FT_LOCAL( void )
-  cf2_stack_pushInt( CF2_Stack  stack,
-                     CF2_Int    val );
+  cf2_arrstack_init( CF2_ArrStack  arrstack,
+                     FT_Memory     memory,
+                     FT_Error*     error,
+                     size_t        sizeItem );
   FT_LOCAL( void )
-  cf2_stack_pushFixed( CF2_Stack  stack,
-                       CF2_Fixed  val );
-
-  FT_LOCAL( CF2_Int )
-  cf2_stack_popInt( CF2_Stack  stack );
-  FT_LOCAL( CF2_Fixed )
-  cf2_stack_popFixed( CF2_Stack  stack );
-
-  FT_LOCAL( CF2_Fixed )
-  cf2_stack_getReal( CF2_Stack  stack,
-                     CF2_UInt   idx );
+  cf2_arrstack_finalize( CF2_ArrStack  arrstack );
 
   FT_LOCAL( void )
-  cf2_stack_roll( CF2_Stack  stack,
-                  CF2_Int    count,
-                  CF2_Int    idx );
+  cf2_arrstack_setCount( CF2_ArrStack  arrstack,
+                         size_t        numElements );
+  FT_LOCAL( void )
+  cf2_arrstack_clear( CF2_ArrStack  arrstack );
+  FT_LOCAL( size_t )
+  cf2_arrstack_size( const CF2_ArrStack  arrstack );
+
+  FT_LOCAL( void* )
+  cf2_arrstack_getBuffer( const CF2_ArrStack  arrstack );
+  FT_LOCAL( void* )
+  cf2_arrstack_getPointer( const CF2_ArrStack  arrstack,
+                           size_t              idx );
 
   FT_LOCAL( void )
-  cf2_stack_clear( CF2_Stack  stack );
+  cf2_arrstack_push( CF2_ArrStack  arrstack,
+                     const void*   ptr );
 
 
 FT_END_HEADER
 
 
-#endif /* CF2STACK_H_ */
+#endif /* PSARRST_H_ */
 
 
 /* END */

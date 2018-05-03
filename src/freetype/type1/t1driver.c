@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Type 1 driver interface (body).                                      */
 /*                                                                         */
-/*  Copyright 1996-2016 by                                                 */
+/*  Copyright 1996-2018 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -30,6 +30,8 @@
 #include FT_INTERNAL_DEBUG_H
 #include FT_INTERNAL_STREAM_H
 #include FT_INTERNAL_HASH_H
+#include FT_INTERNAL_POSTSCRIPT_PROPS_H
+#include FT_DRIVER_H
 
 #include FT_SERVICE_MULTIPLE_MASTERS_H
 #include FT_SERVICE_GLYPH_DICT_H
@@ -37,6 +39,7 @@
 #include FT_SERVICE_POSTSCRIPT_NAME_H
 #include FT_SERVICE_POSTSCRIPT_CMAPS_H
 #include FT_SERVICE_POSTSCRIPT_INFO_H
+#include FT_SERVICE_PROPERTIES_H
 #include FT_SERVICE_KERNING_H
 
 
@@ -122,8 +125,14 @@
     (FT_Get_MM_Func)        T1_Get_Multi_Master,   /* get_mm         */
     (FT_Set_MM_Design_Func) T1_Set_MM_Design,      /* set_mm_design  */
     (FT_Set_MM_Blend_Func)  T1_Set_MM_Blend,       /* set_mm_blend   */
+    (FT_Get_MM_Blend_Func)  T1_Get_MM_Blend,       /* get_mm_blend   */
     (FT_Get_MM_Var_Func)    T1_Get_MM_Var,         /* get_mm_var     */
-    (FT_Set_Var_Design_Func)T1_Set_Var_Design      /* set_var_design */
+    (FT_Set_Var_Design_Func)T1_Set_Var_Design,     /* set_var_design */
+    (FT_Get_Var_Design_Func)T1_Get_Var_Design,     /* get_var_design */
+    (FT_Set_Instance_Func)  T1_Reset_MM_Blend,     /* set_instance   */
+
+    (FT_Get_Var_Blend_Func) NULL,                  /* get_var_blend  */
+    (FT_Done_Blend_Func)    T1_Done_Blend          /* done_blend     */
   };
 #endif
 
@@ -609,6 +618,18 @@
 
 
   /*
+   *  PROPERTY SERVICE
+   *
+   */
+
+  FT_DEFINE_SERVICE_PROPERTIESREC(
+    t1_service_properties,
+
+    (FT_Properties_SetFunc)ps_property_set,      /* set_property */
+    (FT_Properties_GetFunc)ps_property_get )     /* get_property */
+
+
+  /*
    *  SERVICE LIST
    *
    */
@@ -619,6 +640,7 @@
     { FT_SERVICE_ID_GLYPH_DICT,           &t1_service_glyph_dict },
     { FT_SERVICE_ID_FONT_FORMAT,          FT_FONT_FORMAT_TYPE_1 },
     { FT_SERVICE_ID_POSTSCRIPT_INFO,      &t1_service_ps_info },
+    { FT_SERVICE_ID_PROPERTIES,           &t1_service_properties },
 
 #ifndef T1_CONFIG_OPTION_NO_AFM
     { FT_SERVICE_ID_KERNING,              &t1_service_kerning },
@@ -708,13 +730,13 @@
       FT_MODULE_DRIVER_SCALABLE   |
       FT_MODULE_DRIVER_HAS_HINTER,
 
-      sizeof ( FT_DriverRec ),
+      sizeof ( PS_DriverRec ),
 
       "type1",
       0x10000L,
       0x20000L,
 
-      0,    /* module-specific interface */
+      NULL,    /* module-specific interface */
 
       T1_Driver_Init,           /* FT_Module_Constructor  module_init   */
       T1_Driver_Done,           /* FT_Module_Destructor   module_done   */
@@ -735,8 +757,8 @@
     T1_Load_Glyph,              /* FT_Slot_LoadFunc  load_glyph */
 
 #ifdef T1_CONFIG_OPTION_NO_AFM
-    0,                          /* FT_Face_GetKerningFunc   get_kerning  */
-    0,                          /* FT_Face_AttachFunc       attach_file  */
+    NULL,                       /* FT_Face_GetKerningFunc   get_kerning  */
+    NULL,                       /* FT_Face_AttachFunc       attach_file  */
 #else
     Get_Kerning,                /* FT_Face_GetKerningFunc   get_kerning  */
     T1_Read_Metrics,            /* FT_Face_AttachFunc       attach_file  */
@@ -744,7 +766,7 @@
     T1_Get_Advances,            /* FT_Face_GetAdvancesFunc  get_advances */
 
     T1_Size_Request,            /* FT_Size_RequestFunc  request_size */
-    0                           /* FT_Size_SelectFunc   select_size  */
+    NULL                        /* FT_Size_SelectFunc   select_size  */
   };
 
 

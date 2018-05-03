@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Auto-fitter module implementation (body).                            */
 /*                                                                         */
-/*  Copyright 2003-2016 by                                                 */
+/*  Copyright 2003-2018 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -56,7 +56,7 @@
 
 #include FT_INTERNAL_OBJECTS_H
 #include FT_INTERNAL_DEBUG_H
-#include FT_AUTOHINTER_H
+#include FT_DRIVER_H
 #include FT_SERVICE_PROPERTIES_H
 
 
@@ -102,6 +102,19 @@
 
     return error;
   }
+
+
+#ifdef FT_CONFIG_OPTION_PIC
+
+#undef  AF_SCRIPT_CLASSES_GET
+#define AF_SCRIPT_CLASSES_GET  \
+          ( GET_PIC( ft_module->library )->af_script_classes )
+
+#undef  AF_STYLE_CLASSES_GET
+#define AF_STYLE_CLASSES_GET  \
+          ( GET_PIC( ft_module->library )->af_style_classes )
+
+#endif
 
 
   static FT_Error
@@ -291,12 +304,10 @@
         long         nsd = ft_strtol( s, NULL, 10 );
 
 
-        if ( nsd == 0 )
-          module->no_stem_darkening = 0;
-        else if ( nsd == 1 )
-          module->no_stem_darkening = 1;
+        if ( !nsd )
+          module->no_stem_darkening = FALSE;
         else
-          return FT_THROW( Invalid_Argument );
+          module->no_stem_darkening = TRUE;
       }
       else
 #endif
@@ -421,12 +432,14 @@
 
   FT_DEFINE_SERVICE_PROPERTIESREC(
     af_service_properties,
+
     (FT_Properties_SetFunc)af_property_set,        /* set_property */
     (FT_Properties_GetFunc)af_property_get )       /* get_property */
 
 
   FT_DEFINE_SERVICEDESCREC1(
     af_services,
+
     FT_SERVICE_ID_PROPERTIES, &AF_SERVICE_PROPERTIES_GET )
 
 
@@ -519,9 +532,16 @@
     error = af_loader_load_glyph( loader, module, slot->face,
                                   glyph_index, load_flags );
 
-    af_glyph_hints_dump_points( hints, 0 );
-    af_glyph_hints_dump_segments( hints, 0 );
-    af_glyph_hints_dump_edges( hints, 0 );
+#ifdef FT_DEBUG_LEVEL_TRACE
+    if ( ft_trace_levels[FT_COMPONENT] )
+    {
+#endif
+      af_glyph_hints_dump_points( hints, 0 );
+      af_glyph_hints_dump_segments( hints, 0 );
+      af_glyph_hints_dump_edges( hints, 0 );
+#ifdef FT_DEBUG_LEVEL_TRACE
+    }
+#endif
 
     af_loader_done( loader );
 
@@ -552,6 +572,7 @@
 
   FT_DEFINE_AUTOHINTER_INTERFACE(
     af_autofitter_interface,
+
     NULL,                                                    /* reset_face */
     NULL,                                              /* get_global_hints */
     NULL,                                             /* done_global_hints */
@@ -570,9 +591,10 @@
 
     (const void*)&AF_INTERFACE_GET,
 
-    (FT_Module_Constructor)af_autofitter_init,
-    (FT_Module_Destructor) af_autofitter_done,
-    (FT_Module_Requester)  af_get_interface )
+    (FT_Module_Constructor)af_autofitter_init,  /* module_init   */
+    (FT_Module_Destructor) af_autofitter_done,  /* module_done   */
+    (FT_Module_Requester)  af_get_interface     /* get_interface */
+  )
 
 
 /* END */

@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    FreeType outline management (body).                                  */
 /*                                                                         */
-/*  Copyright 1996-2016 by                                                 */
+/*  Copyright 1996-2018 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -287,7 +287,7 @@
     return FT_Err_Ok;
 
   Exit:
-    FT_TRACE5(( "FT_Outline_Decompose: Error %d\n", error ));
+    FT_TRACE5(( "FT_Outline_Decompose: Error 0x%x\n", error ));
     return error;
 
   Invalid_Outline:
@@ -540,8 +540,8 @@
 
     for ( n = 0; n < outline->n_points; n++ )
     {
-      vec->x += xOffset;
-      vec->y += yOffset;
+      vec->x = ADD_LONG( vec->x, xOffset );
+      vec->y = ADD_LONG( vec->y, yOffset );
       vec++;
     }
   }
@@ -1088,7 +1088,8 @@
         v_cur.x = points[n].x >> xshift;
         v_cur.y = points[n].y >> yshift;
 
-        area += ( v_cur.y - v_prev.y ) * ( v_cur.x + v_prev.x );
+        area = ADD_LONG( area,
+                         ( v_cur.y - v_prev.y ) * ( v_cur.x + v_prev.x ) );
 
         v_prev = v_cur;
       }
