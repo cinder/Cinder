@@ -26,6 +26,8 @@
 
 #include <vector>
 
+namespace cinder {
+
 std::vector<cinder::PolyLine2f> calcIntersection( const std::vector<cinder::PolyLine2f> &a, std::vector<cinder::PolyLine2f> &b );
 //! Calculates the boolean union of \a a and \a b.
 std::vector<cinder::PolyLine2f> calcUnion( const std::vector<cinder::PolyLine2f> &a, std::vector<cinder::PolyLine2f> &b );
@@ -39,3 +41,5 @@ std::vector<cinder::PolyLine2f> calcRoundOffset( const std::vector<cinder::PolyL
 std::vector<cinder::PolyLine2f> calcMiterOffset( const std::vector<cinder::PolyLine2f> &poly, float offset, double miterLimit = 2.0 );
 //! Calculates the squared offset curve of \a poly. Negative \a offset creates inset.
 std::vector<cinder::PolyLine2f> calcSquareOffset( const std::vector<cinder::PolyLine2f> &poly, float offset );
+
+} // namespace cinder

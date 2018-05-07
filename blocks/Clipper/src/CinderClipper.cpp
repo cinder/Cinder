@@ -24,7 +24,8 @@
 #include "clipper.hpp"
 
 using namespace std;
-using namespace cinder;
+
+namespace cinder {
 
 template<typename T, typename U>
 ClipperLib::Paths toClipper( const vector<PolyLineT<T>> &polys, U mult )
@@ -119,3 +120,5 @@ std::vector<cinder::PolyLine2f> calcSquareOffset( const std::vector<cinder::Poly
 {
 	return calcOffsetOp( ClipperLib::jtSquare, poly, offset, 0, 0 );
 }
+
+} // namespace cinder
