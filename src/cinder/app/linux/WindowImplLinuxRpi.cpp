@@ -6,10 +6,10 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
+	   the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	   the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -30,7 +30,6 @@
 #include "cinder/gl/Texture.h"
 
 #include <bcm_host.h>
-
 #include "MousePointer.h"
 
 namespace cinder { namespace app {
@@ -52,19 +51,18 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux 
 	mDisplay = format.getDisplay();
 	mRenderer = format.getRenderer();
 
+	RendererRef sharedRenderer = sharedRendererWindow ? sharedRendererWindow->getRenderer() : nullptr;
 	// NativeWindow->window will get updated by the mRenderer
 	auto windowSize = format.getSize();
 	mNativeWindow = std::unique_ptr<NativeWindow>( new NativeWindow( windowSize, 0 ) );
-	RendererRef sharedRenderer = sharedRendererWindow ? sharedRendererWindow->getRenderer() : nullptr;
 	mRenderer->setup( reinterpret_cast<void*>( &(mNativeWindow->window) ), sharedRenderer );
-
-	RendererGlRef rendererGl = std::dynamic_pointer_cast<RendererGl>( mRenderer );
-
 	// Load mouse cursor
 	if( ! sCursorTex ) {
 		sCursorTex = ci::gl::Texture::create( sMousePointer, GL_RGBA, sMousePointerWidth, sMousePointerHeight );
 		sCursorTex->setTopDown();
 	}
+
+	RendererGlRef rendererGl = std::dynamic_pointer_cast<RendererGl>( mRenderer );
 
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
@@ -79,17 +77,17 @@ WindowImplLinux::~WindowImplLinux()
 
 void WindowImplLinux::setFullScreen( bool fullScreen, const app::FullScreenOptions &options )
 {
-	// TODO: Find a way to do this w/o recreating 
+	/*Not implemented*/
 }
 
 ivec2 WindowImplLinux::getSize() const
 {
-	//return mAppImpl->getDefaultDisplaySize();
 	return ivec2( mNativeWindow->window.width, mNativeWindow->window.height );
 }
 
 void WindowImplLinux::setSize( const ivec2 &size )
 {
+	/*Not implemented*/
 }
 
 ivec2 WindowImplLinux::getPos() const
@@ -98,23 +96,28 @@ ivec2 WindowImplLinux::getPos() const
 }
 
 void WindowImplLinux::setPos( const ivec2 &pos )
-{	
+{
+	/*Not implemented*/
 }
 
 void WindowImplLinux::close()
 {
+	/*Not implemented*/
 }
 
 void WindowImplLinux::setTitle( const std::string &title )
 {
+	/*Not implemented*/
 }
 
 void WindowImplLinux::hide()
 {
+	/*Not implemented*/
 }
 
 void WindowImplLinux::show()
 {
+	/*Not implemented*/
 }
 
 const std::vector<TouchEvent::Touch>& WindowImplLinux::getActiveTouches() const
@@ -122,24 +125,24 @@ const std::vector<TouchEvent::Touch>& WindowImplLinux::getActiveTouches() const
 	return mActiveTouches;
 }
 
-EGLNativeWindowType	WindowImplLinux::getNative() 
-{ 
+EGLNativeWindowType WindowImplLinux::getNative()
+{
 	return reinterpret_cast<EGLNativeWindowType>( mNativeWindow.get() );
 }
 
-EGLNativeWindowType WindowImplLinux::getNative() const 
-{ 
+EGLNativeWindowType WindowImplLinux::getNative() const
+{
 	return reinterpret_cast<EGLNativeWindowType>( mNativeWindow.get() );
 }
 
 void WindowImplLinux::setBorderless( bool borderless )
 {
-	// TODO: Find a way to do this w/o recreating 
+	/*Not implemented*/
 }
 
 void WindowImplLinux::setAlwaysOnTop( bool alwaysOnTop )
 {
-	// TODO: Find a way to do this w/o recreating 
+	/*Not implemented*/
 }
 
 void WindowImplLinux::keyDown( const KeyEvent &event )
@@ -161,10 +164,10 @@ void WindowImplLinux::draw()
 		ci::gl::ScopedColor color( 1.0f, 1.0f, 1.0f );
 
 		ci::gl::setMatricesWindow( mNativeWindow->window.width, mNativeWindow->window.height );
-		
+
 		Rectf r = sCursorTex->getBounds();
 		r += vec2( mAppImpl->getMousePos() );
-		ci::gl::draw( sCursorTex, r ); 
+		ci::gl::draw( sCursorTex, r );
 	}
 	mRenderer->finishDraw();
 }

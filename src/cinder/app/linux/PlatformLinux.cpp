@@ -491,7 +491,7 @@ void PlatformLinux::removeDisplay( const DisplayRef &display )
 
 std::string DisplayLinux::getName() const
 {
-#if defined( CINDER_LINUX_EGL_ONLY )
+#if defined( CINDER_LINUX_EGL_ONLY ) || defined( CINDER_HEADLESS )
 	return std::string();
 #else
 	return glfwGetMonitorName( mMonitor );
@@ -505,7 +505,7 @@ GLFWmonitor* DisplayLinux::getGlfwMonitor() const
 
 DisplayRef PlatformLinux::findDisplayFromGlfwMonitor( GLFWmonitor *monitor )
 {
-#if defined( CINDER_LINUX_EGL_ONLY )
+#if defined( CINDER_LINUX_EGL_ONLY ) || defined( CINDER_HEADLESS )
 	return nullptr;
 #else
 	for( auto &display : mDisplays ) {
@@ -518,7 +518,7 @@ DisplayRef PlatformLinux::findDisplayFromGlfwMonitor( GLFWmonitor *monitor )
 #endif
 }
 
-#if ! defined( CINDER_LINUX_EGL_ONLY )
+#if ! defined( CINDER_LINUX_EGL_ONLY ) && ! defined( CINDER_HEADLESS )
 void DisplayLinux::displayReconfiguredCallback( GLFWmonitor* monitor, int event )
 {
 	auto platform = app::PlatformLinux::get();

@@ -6,10 +6,10 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
+	   the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	   the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -26,13 +26,14 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
+#include "cinder/Log.h"
 
 #include <bcm_host.h>
 #include <EGL/egl.h>
 
 namespace cinder { namespace app {
 
-void checkGlStatus();	
+void checkGlStatus();
 
 RendererGlLinux::RendererGlLinux( RendererGl *aRenderer )
 	: mRenderer( aRenderer )
@@ -46,37 +47,36 @@ RendererGlLinux::~RendererGlLinux()
 
 bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 {
-	std::vector<EGLint> configAttribs;
-
-	// OpenGL ES 3 also uses EGL_OPENGL_ES2_BIT
-	configAttribs.push_back( EGL_RENDERABLE_TYPE ); configAttribs.push_back( EGL_OPENGL_ES2_BIT );
-	configAttribs.push_back( EGL_SURFACE_TYPE    ); configAttribs.push_back( EGL_WINDOW_BIT );
-	configAttribs.push_back( EGL_RED_SIZE        ); configAttribs.push_back( 8 );
-	configAttribs.push_back( EGL_GREEN_SIZE      ); configAttribs.push_back( 8 );
-	configAttribs.push_back( EGL_BLUE_SIZE       ); configAttribs.push_back( 8 );
-	configAttribs.push_back( EGL_ALPHA_SIZE      ); configAttribs.push_back( 8 );
-	configAttribs.push_back( EGL_DEPTH_SIZE      ); configAttribs.push_back( mRenderer->getOptions().getDepthBufferDepth() );
-	configAttribs.push_back( EGL_STENCIL_SIZE    ); configAttribs.push_back( mRenderer->getOptions().getStencil() ? 8 : EGL_DONT_CARE );
-	configAttribs.push_back( EGL_SAMPLE_BUFFERS  ); configAttribs.push_back( 1 );
-	configAttribs.push_back( EGL_NONE            );
-
 	mDisplay = eglGetDisplay( EGL_DEFAULT_DISPLAY );
+
 	if( mDisplay == EGL_NO_DISPLAY) {
+		CI_LOG_E( "Failed to get EGL display from device!" );
 		return false;
 	}
 
+	std::vector<EGLint> configAttribs;
+	// OpenGL ES 3 also uses EGL_OPENGL_ES2_BIT
+	configAttribs.push_back( EGL_SURFACE_TYPE	 ); configAttribs.push_back( EGL_WINDOW_BIT );
+	configAttribs.push_back( EGL_RENDERABLE_TYPE ); configAttribs.push_back( EGL_OPENGL_ES2_BIT );
+	configAttribs.push_back( EGL_RED_SIZE		 ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_GREEN_SIZE		 ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_BLUE_SIZE		 ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_ALPHA_SIZE		 ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_DEPTH_SIZE		 ); configAttribs.push_back( mRenderer->getOptions().getDepthBufferDepth() );
+	configAttribs.push_back( EGL_STENCIL_SIZE	 ); configAttribs.push_back( mRenderer->getOptions().getStencil() ? 8 : EGL_DONT_CARE );
+	configAttribs.push_back( EGL_SAMPLE_BUFFERS  ); configAttribs.push_back( 1 );
+	configAttribs.push_back( EGL_NONE			 );
+
+
 	EGLint majorVersion, minorVersion;
 	if( ! eglInitialize( mDisplay, &majorVersion, &minorVersion ) ) {
+		CI_LOG_E( "Failed to initialize EGL!" );
 		return false;
 	}
 
 	eglBindAPI( EGL_OPENGL_ES_API );
 	if( eglGetError() != EGL_SUCCESS ) {
-		return false;
-	}
-
-	EGLint configCount;
-	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &mConfig, 1, &configCount ) || (configCount != 1) ) {
+		CI_LOG_E( "Failed to bind GL API!" );
 		return false;
 	}
 
@@ -89,50 +89,59 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 		EGL_NONE
 	};
 
-	// Create context
-	mContext = eglCreateContext( mDisplay, mConfig, EGL_NO_CONTEXT, contextAttibutes );
-	if( eglGetError() != EGL_SUCCESS ) {
+	EGLint configCount;
+	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &mConfig, 1, &configCount ) || ( configCount != 1 ) ) {
+		CI_LOG_E( "Failed to choose appropriate EGL config!" );
 		return false;
 	}
-	checkGlStatus();
 
 	// Create window surface
 	EGL_DISPMANX_WINDOW_T* nativeWindow = reinterpret_cast<EGL_DISPMANX_WINDOW_T*>( window );
 
-	DISPMANX_UPDATE_HANDLE_T  	update  = vc_dispmanx_update_start( 0 );
-	DISPMANX_DISPLAY_HANDLE_T 	display = vc_dispmanx_display_open( 0 );
-	int32_t 					layer = 0;
+	DISPMANX_UPDATE_HANDLE_T	update	= vc_dispmanx_update_start( 0 );
+	DISPMANX_DISPLAY_HANDLE_T	display = vc_dispmanx_display_open( 0 );
+	int32_t						layer = 0;
 	VC_RECT_T					dst_rect = { 0, 0, nativeWindow->width, nativeWindow->height };
 	DISPMANX_RESOURCE_HANDLE_T	src = 0;
 	VC_RECT_T					src_rect = { 0, 0, nativeWindow->width << 16, nativeWindow->height << 16 };
-	DISPMANX_PROTECTION_T 		protection = DISPMANX_PROTECTION_NONE;
+	DISPMANX_PROTECTION_T		protection = DISPMANX_PROTECTION_NONE;
 	VC_DISPMANX_ALPHA_T			alpha = { DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS, 255, 0 };
 	DISPMANX_CLAMP_T*			clamp = 0;
-	DISPMANX_TRANSFORM_T 		transform = (DISPMANX_TRANSFORM_T)0;
-	
-	nativeWindow->element = vc_dispmanx_element_add( 
-		update,
-		display, 
-		layer,
-		&dst_rect, 
-		src,
-		&src_rect, 
-		protection, 
-		&alpha, 
-		clamp, 
-		transform 
-	);	
+	DISPMANX_TRANSFORM_T		transform = (DISPMANX_TRANSFORM_T)0;
+
+	nativeWindow->element = vc_dispmanx_element_add(
+			update,
+			display,
+			layer,
+			&dst_rect,
+			src,
+			&src_rect,
+			protection,
+			&alpha,
+			clamp,
+			transform
+	);
 
 	vc_dispmanx_update_submit_sync( update );
 
-	mSurface = eglCreateWindowSurface( mDisplay, mConfig, nativeWindow, NULL );
+	mSurface = eglCreateWindowSurface( mDisplay, mConfig, nativeWindow, nullptr );
 	auto err = eglGetError();
 	if( err != EGL_SUCCESS ) {
+		CI_LOG_E( "Failed to create EGL surface for rendering!" );
 		return false;
 	}
 
+	// Create context
+	mContext = eglCreateContext( mDisplay, mConfig, EGL_NO_CONTEXT, contextAttibutes );
+	if( eglGetError() != EGL_SUCCESS ) {
+		CI_LOG_E( "Failed to create EGL context!" );
+		return false;
+	}
+	checkGlStatus();
+
 	eglMakeCurrent( mDisplay, mSurface, mSurface, mContext );
 	if( eglGetError() != EGL_SUCCESS ) {
+		CI_LOG_E( "Failed to make current EGL context!" );
 		return false;
 	}
 	checkGlStatus();
@@ -158,6 +167,10 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 
 void RendererGlLinux::kill()
 {
+	eglTerminate( mDisplay );
+	eglMakeCurrent( mDisplay, mSurface, mSurface, nullptr );
+	mCinderContext.reset();
+	gl::Context::reflectCurrent( nullptr );
 }
 
 void RendererGlLinux::defaultResize() const
@@ -176,8 +189,6 @@ void RendererGlLinux::swapBuffers() const
 	auto status = ::eglMakeCurrent( mDisplay, mSurface, mSurface, mContext );
 	assert( status );
 	EGLBoolean result = ::eglSwapBuffers( mDisplay, mSurface );
-	// @TODO: Is this really necessary?
-	//assert( result );	
 }
 
 void RendererGlLinux::makeCurrentContext( bool force )
@@ -190,13 +201,12 @@ void checkGlStatus()
 #if defined( DEBUG_GL )
 	EGLint lastEglError = ci::gl::getEglError();
 	if( lastEglError != EGL_SUCCESS ) {
-		std::cout << "EGL ERROR: " << ci::gl::getEglErrorString( lastEglError ) << std::endl;
-		//CI_BREAK();
+		CI_LOG_E( "EGL ERROR: " << ci::gl::getEglErrorString( lastEglError ) );
 	}
 
 	GLenum lastGlError = ci::gl::getError();
 	if( lastGlError != GL_NO_ERROR ) {
-		std::cout << "GL ERROR: " << ci::gl::getErrorString( lastGlError ) << std::endl;
+		CI_LOG_E( "GL ERROR: " << ci::gl::getErrorString( lastGlError ) );
 	}
 #endif // DEBUG_GL
 }
