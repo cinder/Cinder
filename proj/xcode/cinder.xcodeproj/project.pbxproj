@@ -183,8 +183,6 @@
 		007439930EA7BB47005DD3E6 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007439920EA7BB47005DD3E6 /* QTKit.framework */; };
 		0074399E0EA7BB7D005DD3E6 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */; };
 		0076581C11226084005547DF /* CinderResources.h in Headers */ = {isa = PBXBuildFile; fileRef = 0076581B11226084005547DF /* CinderResources.h */; };
-		00782614171CD91400B47F9C /* ConvexHull.h in Headers */ = {isa = PBXBuildFile; fileRef = 00782613171CD91400B47F9C /* ConvexHull.h */; };
-		00782619171CD9D800B47F9C /* ConvexHull.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00782617171CD9D800B47F9C /* ConvexHull.cpp */; };
 		007A7B13158D098D00BEAD18 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007A7B12158D098D00BEAD18 /* Window.cpp */; };
 		007B09740E9559960052257E /* Rand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007B09730E9559960052257E /* Rand.cpp */; };
 		007B09840E957B9A0052257E /* KeyEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007B09830E957B9A0052257E /* KeyEvent.cpp */; };
@@ -433,7 +431,6 @@
 		27C100041BD16D4800AF387F /* linebreak.h in Headers */ = {isa = PBXBuildFile; fileRef = 0034C31D151A5B9F003F2E30 /* linebreak.h */; };
 		27C100051BD16D4800AF387F /* linebreakdef.h in Headers */ = {isa = PBXBuildFile; fileRef = 0034C320151A5B9F003F2E30 /* linebreakdef.h */; };
 		27C100061BD16D4800AF387F /* CaptureImplCocoaDummy.h in Headers */ = {isa = PBXBuildFile; fileRef = 00E5A41B163F5A2B00AACB3A /* CaptureImplCocoaDummy.h */; };
-		27C100071BD16D4800AF387F /* ConvexHull.h in Headers */ = {isa = PBXBuildFile; fileRef = 00782613171CD91400B47F9C /* ConvexHull.h */; };
 		27C100091BD16D4800AF387F /* ImageFileTinyExr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11316E561B28ABE900BD8783 /* ImageFileTinyExr.cpp */; };
 		27C1000A1BD16D4800AF387F /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; settings = {COMPILER_FLAGS = "-Wno-conversion -Wno-unused-variable"; }; };
 		27C1000B1BD16D4800AF387F /* DeviceManagerAudioSession.mm in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F82191F72AE005C3166 /* DeviceManagerAudioSession.mm */; };
@@ -616,7 +613,6 @@
 		27C100BC1BD16D4800AF387F /* floor1.c in Sources */ = {isa = PBXBuildFile; fileRef = 111A5E66191F703D005C3166 /* floor1.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		27C100BD1BD16D4800AF387F /* ImageTargetFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */; };
 		27C100BE1BD16D4800AF387F /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
-		27C100BF1BD16D4800AF387F /* ConvexHull.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00782617171CD9D800B47F9C /* ConvexHull.cpp */; };
 		27C100C01BD16D4800AF387F /* vorbisfile.c in Sources */ = {isa = PBXBuildFile; fileRef = 111A5E95191F703D005C3166 /* vorbisfile.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		27C100C21BD16D4800AF387F /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		27C100C31BD16D4800AF387F /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B9305B121C94E900093AFE /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -769,7 +765,6 @@
 		27C1FEAD1BD0AE3400AF387F /* linebreak.h in Headers */ = {isa = PBXBuildFile; fileRef = 0034C31D151A5B9F003F2E30 /* linebreak.h */; };
 		27C1FEAE1BD0AE3400AF387F /* MovieWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 006D706119942C31008149E2 /* MovieWriter.h */; };
 		27C1FEAF1BD0AE3400AF387F /* linebreakdef.h in Headers */ = {isa = PBXBuildFile; fileRef = 0034C320151A5B9F003F2E30 /* linebreakdef.h */; };
-		27C1FEB01BD0AE3400AF387F /* ConvexHull.h in Headers */ = {isa = PBXBuildFile; fileRef = 00782613171CD91400B47F9C /* ConvexHull.h */; };
 		27C1FEB11BD0AE3400AF387F /* codebook.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E61191F703D005C3166 /* codebook.h */; };
 		27C1FEB31BD0AE3400AF387F /* ImageFileTinyExr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11316E561B28ABE900BD8783 /* ImageFileTinyExr.cpp */; };
 		27C1FEB41BD0AE3400AF387F /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; settings = {COMPILER_FLAGS = "-Wno-conversion -Wno-unused-variable"; }; };
@@ -953,7 +948,6 @@
 		27C1FF661BD0AE3400AF387F /* floor1.c in Sources */ = {isa = PBXBuildFile; fileRef = 111A5E66191F703D005C3166 /* floor1.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		27C1FF671BD0AE3400AF387F /* ImageTargetFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */; };
 		27C1FF681BD0AE3400AF387F /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
-		27C1FF691BD0AE3400AF387F /* ConvexHull.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00782617171CD9D800B47F9C /* ConvexHull.cpp */; };
 		27C1FF6A1BD0AE3400AF387F /* vorbisfile.c in Sources */ = {isa = PBXBuildFile; fileRef = 111A5E95191F703D005C3166 /* vorbisfile.c */; settings = {COMPILER_FLAGS = "-Wno-unused -Wno-conversion"; }; };
 		27C1FF6C1BD0AE3400AF387F /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92EF5121C828400093AFE /* CoreMedia.framework */; };
 		27C1FF6D1BD0AE3400AF387F /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D6A5FE840307C02AAC07 /* AppKit.framework */; };
@@ -1775,8 +1769,6 @@
 		007439920EA7BB47005DD3E6 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		0076581B11226084005547DF /* CinderResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CinderResources.h; sourceTree = "<group>"; };
-		00782613171CD91400B47F9C /* ConvexHull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvexHull.h; sourceTree = "<group>"; };
-		00782617171CD9D800B47F9C /* ConvexHull.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvexHull.cpp; sourceTree = "<group>"; };
 		007A7B12158D098D00BEAD18 /* Window.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Window.cpp; path = app/Window.cpp; sourceTree = "<group>"; };
 		007A7B16158D09A600BEAD18 /* Window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Window.h; path = app/Window.h; sourceTree = "<group>"; };
 		007B09730E9559960052257E /* Rand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rand.cpp; sourceTree = "<group>"; };
@@ -2641,7 +2633,6 @@
 				003FAAA21290CCB1002D6860 /* Clipboard.h */,
 				00D23A550EAEB4DE0002BF91 /* Color.h */,
 				0059BD32151CF5540063F095 /* ConcurrentCircularBuffer.h */,
-				00782613171CD91400B47F9C /* ConvexHull.h */,
 				11C97C89192F0BD700A510B5 /* CurrentFunction.h */,
 				006228E110C8248800A8191C /* DataSource.h */,
 				00BC898C10D2BEA200D6DC59 /* DataTarget.h */,
@@ -2732,7 +2723,6 @@
 				43C4323F1450A8DA0095B260 /* CinderMath.cpp */,
 				003FAA9E1290CC90002D6860 /* Clipboard.cpp */,
 				00D23A530EAEB4C00002BF91 /* Color.cpp */,
-				00782617171CD9D800B47F9C /* ConvexHull.cpp */,
 				006228E310C8273C00A8191C /* DataSource.cpp */,
 				00BC898A10D2BE9400D6DC59 /* DataTarget.cpp */,
 				0071BD080FB9FA2C0092E7D6 /* Display.cpp */,
@@ -4054,7 +4044,6 @@
 				27C1FEAD1BD0AE3400AF387F /* linebreak.h in Headers */,
 				27C1FEAE1BD0AE3400AF387F /* MovieWriter.h in Headers */,
 				27C1FEAF1BD0AE3400AF387F /* linebreakdef.h in Headers */,
-				27C1FEB01BD0AE3400AF387F /* ConvexHull.h in Headers */,
 				27C1FEB11BD0AE3400AF387F /* codebook.h in Headers */,
 				B3EA403D1DD0EEA900E34348 /* ttunpat.h in Headers */,
 			);
@@ -4310,7 +4299,6 @@
 				B322C4991DC7DC7100D2E661 /* zconf.h in Headers */,
 				27C100061BD16D4800AF387F /* CaptureImplCocoaDummy.h in Headers */,
 				B3EA40381DD0EEA900E34348 /* tttables.h in Headers */,
-				27C100071BD16D4800AF387F /* ConvexHull.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4621,7 +4609,6 @@
 				0003F4511992D67300647C8B /* GlslProg.h in Headers */,
 				111A5EE5191F703D005C3166 /* window.h in Headers */,
 				111A5EC0191F703D005C3166 /* masking.h in Headers */,
-				00782614171CD91400B47F9C /* ConvexHull.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4958,7 +4945,6 @@
 				B3EA40611DD0EF5C00E34348 /* type1.c in Sources */,
 				27C100BD1BD16D4800AF387F /* ImageTargetFileQuartz.cpp in Sources */,
 				27C100BE1BD16D4800AF387F /* ImageSourceFileQuartz.cpp in Sources */,
-				27C100BF1BD16D4800AF387F /* ConvexHull.cpp in Sources */,
 				27C100C01BD16D4800AF387F /* vorbisfile.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5211,7 +5197,6 @@
 				B3EA40601DD0EF5C00E34348 /* type1.c in Sources */,
 				27C1FF671BD0AE3400AF387F /* ImageTargetFileQuartz.cpp in Sources */,
 				27C1FF681BD0AE3400AF387F /* ImageSourceFileQuartz.cpp in Sources */,
-				27C1FF691BD0AE3400AF387F /* ConvexHull.cpp in Sources */,
 				27C1FF6A1BD0AE3400AF387F /* vorbisfile.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5482,7 +5467,6 @@
 				111A5EDA191F703D005C3166 /* registry.c in Sources */,
 				111A5FFE191F72AE005C3166 /* SamplePlayerNode.cpp in Sources */,
 				B322C4761DC7DC7100D2E661 /* infback.c in Sources */,
-				00782619171CD9D800B47F9C /* ConvexHull.cpp in Sources */,
 				111A5FEF191F72AE005C3166 /* Node.cpp in Sources */,
 				111A5FFB191F72AE005C3166 /* Param.cpp in Sources */,
 			);

@@ -1,13 +1,14 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2010, The Cinder Project
+
+ This code is intended to be used with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -22,13 +23,9 @@
 
 #include "cinder/PolyLine.h"
 
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/point_xy.hpp>
-#include <boost/geometry/geometries/polygon.hpp>
-#include <boost/geometry/multi/multi.hpp>
+#include <algorithm>
 
 namespace cinder {
-
 
 template<typename T>
 bool PolyLineT<T>::isClockwise( bool *isColinear ) const
@@ -220,128 +217,6 @@ T PolyLineT<T>::calcCentroid() const
 	}
 
 	return result;
-}
-
-namespace {
-typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double> > polygon;
-
-template<typename T>
-std::vector<PolyLineT<T> > convertBoostGeometryPolygons( std::vector<polygon> &polygons )
-{
-	std::vector<PolyLineT<T> > result;
-	for( std::vector<polygon>::const_iterator outIt = polygons.begin(); outIt != polygons.end(); ++outIt ) {
-		typedef polygon::inner_container_type::const_iterator RingIterator;
-		typedef polygon::ring_type::const_iterator PointIterator;
-
-		result.push_back( PolyLineT<T>() );
-		for( PointIterator pt = outIt->outer().begin(); pt != outIt->outer().end(); ++pt )
-			result.back().push_back( T( boost::geometry::get<0>(*pt), boost::geometry::get<1>(*pt) ) );
-
-		for( RingIterator crunk = outIt->inners().begin(); crunk != outIt->inners().end(); ++crunk ) {
-			PolyLineT<T> contour;
-			for( PointIterator pt = crunk->begin(); pt != crunk->end(); ++pt )
-				contour.push_back( T( boost::geometry::get<0>(*pt), boost::geometry::get<1>(*pt) ) );
-			result.push_back( contour );
-		}
-	}
-	
-	return result;
-}
-
-template<typename T>
-polygon convertPolyLinesToBoostGeometry( const std::vector<PolyLineT<T> > &a )
-{
-	polygon result;
-	
-	for( typename std::vector<T>::const_iterator ptIt = a[0].getPoints().begin(); ptIt != a[0].getPoints().end(); ++ptIt )
-		result.outer().push_back( boost::geometry::make<boost::geometry::model::d2::point_xy<double> >( ptIt->x, ptIt->y ) );
-	for( typename std::vector<PolyLineT<T> >::const_iterator plIt = a.begin() + 1; plIt != a.end(); ++plIt ) {
-		polygon::ring_type ring;
-		for( typename std::vector<T>::const_iterator ptIt = plIt->getPoints().begin(); ptIt != plIt->getPoints().end(); ++ptIt )
-			ring.push_back( boost::geometry::make<boost::geometry::model::d2::point_xy<double> >( ptIt->x, ptIt->y ) );
-		result.inners().push_back( ring );
-	}
-	
-	boost::geometry::correct( result );
-	
-	return result;
-}
-} // anonymous namespace
-
-template<typename T>
-std::vector<PolyLineT<T> > PolyLineT<T>::calcUnion( const std::vector<PolyLineT<T> > &a, std::vector<PolyLineT<T> > &b )
-{
-	typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double> > polygon;
-
-	if( a.empty() )
-		return b;
-	else if( b.empty() )
-		return a;
-
-	polygon polyA = convertPolyLinesToBoostGeometry( a );
-	polygon polyB = convertPolyLinesToBoostGeometry( b );
-	
-	std::vector<polygon> output;
-	boost::geometry::union_( polyA, polyB, output );
-
-	return convertBoostGeometryPolygons<T>( output );
-}
-
-template<typename T>
-std::vector<PolyLineT<T> > PolyLineT<T>::calcIntersection( const std::vector<PolyLineT<T> > &a, std::vector<PolyLineT<T> > &b )
-{
-	typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double> > polygon;
-
-	if( a.empty() )
-		return b;
-	else if( b.empty() )
-		return a;
-
-	polygon polyA = convertPolyLinesToBoostGeometry( a );
-	polygon polyB = convertPolyLinesToBoostGeometry( b );
-	
-	std::vector<polygon> output;
-	boost::geometry::intersection( polyA, polyB, output );
-
-	return convertBoostGeometryPolygons<T>( output );
-}
-
-template<typename T>
-std::vector<PolyLineT<T> > PolyLineT<T>::calcXor( const std::vector<PolyLineT<T> > &a, std::vector<PolyLineT<T> > &b )
-{
-	typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double> > polygon;
-
-	if( a.empty() )
-		return b;
-	else if( b.empty() )
-		return a;
-
-	polygon polyA = convertPolyLinesToBoostGeometry( a );
-	polygon polyB = convertPolyLinesToBoostGeometry( b );
-	
-	std::vector<polygon> output;
-	boost::geometry::sym_difference( polyA, polyB, output );
-
-	return convertBoostGeometryPolygons<T>( output );
-}
-
-template<typename T>
-std::vector<PolyLineT<T> > PolyLineT<T>::calcDifference( const std::vector<PolyLineT<T> > &a, std::vector<PolyLineT<T> > &b )
-{
-	typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double> > polygon;
-
-	if( a.empty() )
-		return b;
-	else if( b.empty() )
-		return a;
-
-	polygon polyA = convertPolyLinesToBoostGeometry( a );
-	polygon polyB = convertPolyLinesToBoostGeometry( b );
-	
-	std::vector<polygon> output;
-	boost::geometry::difference( polyA, polyB, output );
-
-	return convertBoostGeometryPolygons<T>( output );
 }
 
 template class CI_API PolyLineT<vec2>;

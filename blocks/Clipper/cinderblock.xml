@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name="Clipper"
+	id="org.libcinder.clipper"
+	author="Cinder Project, Angus Johnson"
+	license="Boost"
+	summary="2D Polygon boolean operations"
+	core="false"
+	version="6.4.2"
+	>
+	<source>src/clipper.cpp</source>
+	<source>src/CinderClipper.cpp</source>
+	<header>include/clipper.hpp</header>
+	<header>include/CinderClipper.h</header>
+	<includePath>incude</includePath>
+</block>
+</cinder>

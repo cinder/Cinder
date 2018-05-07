@@ -51,7 +51,6 @@
 				006D71CD1995295E008149E2 /* PBXTargetDependency */,
 				006D71CF1995295E008149E2 /* PBXTargetDependency */,
 				006D71D11995295E008149E2 /* PBXTargetDependency */,
-				00D494BC1988A24F00A44E4C /* PBXTargetDependency */,
 				00D494BE1988A24F00A44E4C /* PBXTargetDependency */,
 				00D494C21988A24F00A44E4C /* PBXTargetDependency */,
 				00D494C61988A24F00A44E4C /* PBXTargetDependency */,
@@ -76,7 +75,6 @@
 				00AE22CD164C50AE007D532C /* PBXTargetDependency */,
 				002CFBDC1644BE4300C1A31D /* PBXTargetDependency */,
 				00712F631627A484005FC5A0 /* PBXTargetDependency */,
-				00712F651627A484005FC5A0 /* PBXTargetDependency */,
 				00712F671627A484005FC5A0 /* PBXTargetDependency */,
 				00712F691627A484005FC5A0 /* PBXTargetDependency */,
 				00712F2F1627A41C005FC5A0 /* PBXTargetDependency */,
@@ -838,13 +836,6 @@
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = Instascope;
 		};
-		00712F561627A46A005FC5A0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00712F4E1627A46A005FC5A0 /* PolygonBoolean.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = PolygonBoolean;
-		};
 		00712F601627A47B005FC5A0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00712F581627A47B005FC5A0 /* QuaternionAccum.xcodeproj */;
@@ -858,13 +849,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = FrustumCulling;
-		};
-		00712F641627A484005FC5A0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00712F4E1627A46A005FC5A0 /* PolygonBoolean.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = PolygonBoolean;
 		};
 		00712F661627A484005FC5A0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1223,13 +1207,6 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = ClipboardBasic;
 		};
-		00D4949B1988A0C200A44E4C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00D494971988A0C200A44E4C /* ConvexHull.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = ConvexHull;
-		};
 		00D494A11988A0E300A44E4C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */;
@@ -1250,13 +1227,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = slerpBasic;
-		};
-		00D494BB1988A24F00A44E4C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00D494971988A0C200A44E4C /* ConvexHull.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = ConvexHull;
 		};
 		00D494BD1988A24F00A44E4C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1537,7 +1507,6 @@
 		00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FlickrTestMultithreaded.xcodeproj; path = ../../FlickrTestMultithreaded/xcode/FlickrTestMultithreaded.xcodeproj; sourceTree = "<group>"; };
 		00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrustumCulling.xcodeproj; path = ../../FrustumCulling/xcode/FrustumCulling.xcodeproj; sourceTree = "<group>"; };
 		00712F441627A45A005FC5A0 /* Instascope.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Instascope.xcodeproj; path = ../../Kaleidoscope/xcode/Instascope.xcodeproj; sourceTree = "<group>"; };
-		00712F4E1627A46A005FC5A0 /* PolygonBoolean.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PolygonBoolean.xcodeproj; path = ../../PolygonBoolean/xcode/PolygonBoolean.xcodeproj; sourceTree = "<group>"; };
 		00712F581627A47B005FC5A0 /* QuaternionAccum.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuaternionAccum.xcodeproj; path = ../../QuaternionAccum/xcode/QuaternionAccum.xcodeproj; sourceTree = "<group>"; };
 		007BDE071118921D00BC750C /* RDiffusion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RDiffusion.xcodeproj; path = ../../RDiffusion/xcode/RDiffusion.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00886B7B164DD1A9005B1855 /* Tubular.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Tubular.xcodeproj; path = ../../Tubular/xcode/Tubular.xcodeproj; sourceTree = "<group>"; };
@@ -1565,7 +1534,6 @@
 		00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BasicAppMultiWindow.xcodeproj; path = ../../BasicAppMultiWindow/xcode/BasicAppMultiWindow.xcodeproj; sourceTree = "<group>"; };
 		00D4948719889EED00A44E4C /* BezierPathIteration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BezierPathIteration.xcodeproj; path = ../../BezierPathIteration/xcode/BezierPathIteration.xcodeproj; sourceTree = "<group>"; };
 		00D4948F19889F1B00A44E4C /* ClipboardBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ClipboardBasic.xcodeproj; path = ../../ClipboardBasic/xcode/ClipboardBasic.xcodeproj; sourceTree = "<group>"; };
-		00D494971988A0C200A44E4C /* ConvexHull.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ConvexHull.xcodeproj; path = ../../ConvexHull/xcode/ConvexHull.xcodeproj; sourceTree = "<group>"; };
 		00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FallingGears.xcodeproj; path = ../../FallingGears/xcode/FallingGears.xcodeproj; sourceTree = "<group>"; };
 		00D494A91988A1D300A44E4C /* Renderer2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Renderer2d.xcodeproj; path = ../../Renderer2dBasic/xcode/Renderer2d.xcodeproj; sourceTree = "<group>"; };
 		00D494B51988A22800A44E4C /* slerpBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = slerpBasic.xcodeproj; path = ../../slerpBasic/xcode/slerpBasic.xcodeproj; sourceTree = "<group>"; };
@@ -1603,7 +1571,6 @@
 				00236D981130E4C7006C991F /* CairoBasic.xcodeproj */,
 				009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */,
 				00D4948F19889F1B00A44E4C /* ClipboardBasic.xcodeproj */,
-				00D494971988A0C200A44E4C /* ConvexHull.xcodeproj */,
 				0005C9AB100681D2004D82BC /* Earthquake.xcodeproj */,
 				00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */,
 				00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */,
@@ -1621,7 +1588,6 @@
 				00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */,
 				0005C9FF10068206004D82BC /* perlinTest.xcodeproj */,
 				00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */,
-				00712F4E1627A46A005FC5A0 /* PolygonBoolean.xcodeproj */,
 				00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */,
 				00712F581627A47B005FC5A0 /* QuaternionAccum.xcodeproj */,
 				00AE22C2164C5094007D532C /* QuickTimeBasic.xcodeproj */,
@@ -2108,14 +2074,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		00712F4F1627A46A005FC5A0 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				00712F571627A46A005FC5A0 /* PolygonBoolean.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		00712F591627A47B005FC5A0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2336,14 +2294,6 @@
 			isa = PBXGroup;
 			children = (
 				00D4949419889F1B00A44E4C /* ClipboardBasic.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		00D494981988A0C200A44E4C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				00D4949C1988A0C200A44E4C /* ConvexHull.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2582,10 +2532,6 @@
 					ProjectRef = 004307DB1BBCE18700B72510 /* ClothSimulation.xcodeproj */;
 				},
 				{
-					ProductGroup = 00D494981988A0C200A44E4C /* Products */;
-					ProjectRef = 00D494971988A0C200A44E4C /* ConvexHull.xcodeproj */;
-				},
-				{
 					ProductGroup = 006D7146199528BA008149E2 /* Products */;
 					ProjectRef = 006D7145199528BA008149E2 /* Cube.xcodeproj */;
 				},
@@ -2792,10 +2738,6 @@
 				{
 					ProductGroup = 004308061BBCE21E00B72510 /* Products */;
 					ProjectRef = 004308051BBCE21E00B72510 /* PickingFBO.xcodeproj */;
-				},
-				{
-					ProductGroup = 00712F4F1627A46A005FC5A0 /* Products */;
-					ProjectRef = 00712F4E1627A46A005FC5A0 /* PolygonBoolean.xcodeproj */;
 				},
 				{
 					ProductGroup = 0043080C1BBCE23000B72510 /* Products */;
@@ -3301,13 +3243,6 @@
 			remoteRef = 00712F4C1627A45B005FC5A0 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		00712F571627A46A005FC5A0 /* PolygonBoolean.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = PolygonBoolean.app;
-			remoteRef = 00712F561627A46A005FC5A0 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		00712F611627A47B005FC5A0 /* QuaternionAccum.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -3481,13 +3416,6 @@
 			fileType = wrapper.application;
 			path = ClipboardBasic.app;
 			remoteRef = 00D4949319889F1B00A44E4C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		00D4949C1988A0C200A44E4C /* ConvexHull.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = ConvexHull.app;
-			remoteRef = 00D4949B1988A0C200A44E4C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		00D494A21988A0E300A44E4C /* FallingGears.app */ = {
@@ -3874,11 +3802,6 @@
 			name = FrustumCulling;
 			targetProxy = 00712F621627A484005FC5A0 /* PBXContainerItemProxy */;
 		};
-		00712F651627A484005FC5A0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = PolygonBoolean;
-			targetProxy = 00712F641627A484005FC5A0 /* PBXContainerItemProxy */;
-		};
 		00712F671627A484005FC5A0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Instascope;
@@ -4013,11 +3936,6 @@
 			isa = PBXTargetDependency;
 			name = ClipboardBasic;
 			targetProxy = 00D4949519889F3300A44E4C /* PBXContainerItemProxy */;
-		};
-		00D494BC1988A24F00A44E4C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ConvexHull;
-			targetProxy = 00D494BB1988A24F00A44E4C /* PBXContainerItemProxy */;
 		};
 		00D494BE1988A24F00A44E4C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
