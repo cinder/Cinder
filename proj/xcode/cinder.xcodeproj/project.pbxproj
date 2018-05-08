@@ -1514,9 +1514,6 @@
 		B3EA40A01DD0F00900E34348 /* ftinit.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40771DD0F00900E34348 /* ftinit.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		B3EA40A11DD0F00900E34348 /* ftinit.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40771DD0F00900E34348 /* ftinit.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		B3EA40A21DD0F00900E34348 /* ftinit.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40771DD0F00900E34348 /* ftinit.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
-		B3EA40A31DD0F00900E34348 /* ftlcdfil.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40781DD0F00900E34348 /* ftlcdfil.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
-		B3EA40A41DD0F00900E34348 /* ftlcdfil.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40781DD0F00900E34348 /* ftlcdfil.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
-		B3EA40A51DD0F00900E34348 /* ftlcdfil.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40781DD0F00900E34348 /* ftlcdfil.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		B3EA40A61DD0F00900E34348 /* ftmm.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40791DD0F00900E34348 /* ftmm.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		B3EA40A71DD0F00900E34348 /* ftmm.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40791DD0F00900E34348 /* ftmm.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		B3EA40A81DD0F00900E34348 /* ftmm.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40791DD0F00900E34348 /* ftmm.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
@@ -2275,7 +2272,6 @@
 		B3EA40751DD0F00900E34348 /* ftglyph.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftglyph.c; path = ../../src/freetype/base/ftglyph.c; sourceTree = "<group>"; };
 		B3EA40761DD0F00900E34348 /* ftgxval.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftgxval.c; path = ../../src/freetype/base/ftgxval.c; sourceTree = "<group>"; };
 		B3EA40771DD0F00900E34348 /* ftinit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftinit.c; path = ../../src/freetype/base/ftinit.c; sourceTree = "<group>"; };
-		B3EA40781DD0F00900E34348 /* ftlcdfil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftlcdfil.c; path = ../../src/freetype/base/ftlcdfil.c; sourceTree = "<group>"; };
 		B3EA40791DD0F00900E34348 /* ftmm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftmm.c; path = ../../src/freetype/base/ftmm.c; sourceTree = "<group>"; };
 		B3EA407A1DD0F00900E34348 /* ftotval.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftotval.c; path = ../../src/freetype/base/ftotval.c; sourceTree = "<group>"; };
 		B3EA407B1DD0F00900E34348 /* ftpatent.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftpatent.c; path = ../../src/freetype/base/ftpatent.c; sourceTree = "<group>"; };
@@ -3623,7 +3619,6 @@
 				B3EA40751DD0F00900E34348 /* ftglyph.c */,
 				B3EA40761DD0F00900E34348 /* ftgxval.c */,
 				B3EA40771DD0F00900E34348 /* ftinit.c */,
-				B3EA40781DD0F00900E34348 /* ftlcdfil.c */,
 				B3EA40791DD0F00900E34348 /* ftmm.c */,
 				B3EA407A1DD0F00900E34348 /* ftotval.c */,
 				B3EA407B1DD0F00900E34348 /* ftpatent.c */,
@@ -4717,7 +4712,6 @@
 				B3EA40901DD0F00900E34348 /* ftcid.c in Sources */,
 				27C100091BD16D4800AF387F /* ImageFileTinyExr.cpp in Sources */,
 				27C1000A1BD16D4800AF387F /* tinyexr.cc in Sources */,
-				B3EA40A51DD0F00900E34348 /* ftlcdfil.c in Sources */,
 				27C1000B1BD16D4800AF387F /* DeviceManagerAudioSession.mm in Sources */,
 				B3EA40D91DD0F09C00E34348 /* ftgzip.c in Sources */,
 				27C1000C1BD16D4800AF387F /* Context.cpp in Sources */,
@@ -4970,7 +4964,6 @@
 				B3EA408F1DD0F00900E34348 /* ftcid.c in Sources */,
 				27C1FEB31BD0AE3400AF387F /* ImageFileTinyExr.cpp in Sources */,
 				27C1FEB41BD0AE3400AF387F /* tinyexr.cc in Sources */,
-				B3EA40A41DD0F00900E34348 /* ftlcdfil.c in Sources */,
 				27C1FEB51BD0AE3400AF387F /* DeviceManagerAudioSession.mm in Sources */,
 				B3EA40D81DD0F09C00E34348 /* ftgzip.c in Sources */,
 				27C1FEB61BD0AE3400AF387F /* Context.cpp in Sources */,
@@ -5244,7 +5237,6 @@
 				111A5EE1191F703D005C3166 /* synthesis.c in Sources */,
 				007438420EA7924F005DD3E6 /* Capture.cpp in Sources */,
 				0003F3F01992D64100647C8B /* Fbo.cpp in Sources */,
-				B3EA40A31DD0F00900E34348 /* ftlcdfil.c in Sources */,
 				00D23A540EAEB4C00002BF91 /* Color.cpp in Sources */,
 				111A5EBF191F703D005C3166 /* mapping0.c in Sources */,
 				B3EA40E11DD0F0C900E34348 /* gxvalid.c in Sources */,
