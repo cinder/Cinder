@@ -276,9 +276,6 @@
     <ClCompile Include="..\..\src\cinder\Color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\ConvexHull.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\cinder\DataSource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1146,9 +1143,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\Color.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\cinder\ConvexHull.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\DataSource.h">

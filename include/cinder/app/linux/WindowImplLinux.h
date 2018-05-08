@@ -6,10 +6,10 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
+	   the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	   the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -29,7 +29,7 @@
 
 #if defined( CINDER_LINUX_EGL_ONLY )
 	#include "EGL/eglplatform.h"
-#else
+#elif ! defined( CINDER_HEADLESS )
 	#include "glfw/glfw3.h"
 	#include "glfw/glfw3native.h"
 #endif
@@ -60,18 +60,21 @@ public:
 	virtual RendererRef	getRenderer() const { return mRenderer; }
 	virtual const std::vector<TouchEvent::Touch>&	getActiveTouches() const;
 
-#if defined( CINDER_LINUX_EGL_ONLY )
+#if defined( CINDER_HEADLESS )
+	virtual void*	getNative();
+	virtual void*	getNative() const;
+#elif defined( CINDER_GL_ES_2_RPI )
 	virtual EGLNativeWindowType	getNative();
 	virtual EGLNativeWindowType getNative() const;
 #else
-	virtual GLFWwindow  *getNative() { return mGlfwWindow; }
-	virtual GLFWwindow  *getNative() const { return mGlfwWindow; }
+	virtual GLFWwindow	*getNative() { return mGlfwWindow; }
+	virtual GLFWwindow	*getNative() const { return mGlfwWindow; }
 #endif
 
-	bool			    isBorderless() const { return mBorderless; }
-	void			    setBorderless( bool borderless );
-	bool			    isAlwaysOnTop() const { return mAlwayOnTop; }
-	void			    setAlwaysOnTop( bool alwaysOnTop );
+	bool				isBorderless() const { return mBorderless; }
+	void				setBorderless( bool borderless );
+	bool				isAlwaysOnTop() const { return mAlwayOnTop; }
+	void				setAlwaysOnTop( bool alwaysOnTop );
 
 	AppImplLinux*		getAppImpl() { return mAppImpl; }
 	WindowRef			getWindow() { return mWindowRef; }
@@ -81,26 +84,26 @@ public:
 	virtual void		resize();
 
 
-	void 				hideCursor();
-	void 				showCursor();
+	void				hideCursor();
+	void				showCursor();
 	ivec2				getMousePos() const;
 
 protected:
- 	AppImplLinux    	*mAppImpl = nullptr;
-	WindowRef       	mWindowRef;
+	AppImplLinux		*mAppImpl = nullptr;
+	WindowRef			mWindowRef;
 
-#if defined( CINDER_LINUX_EGL_ONLY )
+#if defined( CINDER_GL_ES_2_RPI )
 	struct NativeWindow;
 	std::unique_ptr<NativeWindow> mNativeWindow;
-	bool 				mShowCursor = true;
+	bool				mShowCursor = true;
 #else
-	GLFWwindow      	*mGlfwWindow = nullptr;
+	GLFWwindow			*mGlfwWindow = nullptr;
 #endif
 
-	std::string     	mTitle;
+	std::string			mTitle;
 	bool				mFullScreen = false;
-	bool            	mBorderless = false;
-	bool            	mAlwayOnTop = false;
+	bool				mBorderless = false;
+	bool				mAlwayOnTop = false;
 
 	ivec2			mWindowedSize, mWindowedPos; // used to preserve info when toggling fullscreen
 
@@ -109,7 +112,7 @@ protected:
 
 	// Always empty for now
 	std::vector<TouchEvent::Touch>	mActiveTouches;
-	
+
 	friend class AppImplLinux;
 };
 

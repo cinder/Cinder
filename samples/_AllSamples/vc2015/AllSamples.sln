@@ -78,13 +78,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StereoscopicRendering", "..
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CaptureBasic", "..\..\CaptureBasic\vc2015\CaptureBasic.vcxproj", "{829C0320-5FAE-497F-A99F-5924866F5058}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConvexHull", "..\..\ConvexHull\vc2015\ConvexHull.vcxproj", "{4A8AAFA1-F0D0-4EE4-A981-80299542C18A}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EaseGallery", "..\..\EaseGallery\vc2015\EaseGallery.vcxproj", "{F585A5AC-8836-40DF-BBDB-52AAC9A218DC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlickrTestMultithreaded", "..\..\FlickrTestMultithreaded\vc2015\FlickrTestMultithreaded.vcxproj", "{EC36C87E-CA3A-40C0-895B-C086C840C0C5}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PolygonBoolean", "..\..\PolygonBoolean\vc2015\PolygonBoolean.vcxproj", "{4AE191A2-0E2F-41A6-BA0C-8742E258B221}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuaternionAccum", "..\..\QuaternionAccum\vc2015\QuaternionAccum.vcxproj", "{052077E3-6CB2-4A4F-973C-94D199EE9FB1}"
 EndProject

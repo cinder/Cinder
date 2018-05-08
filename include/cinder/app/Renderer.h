@@ -7,10 +7,10 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
+	   the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	   the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -45,7 +45,7 @@
 		class RendererImpl2dMacQuartz;
 		class NSView;
 	#endif
-	typedef struct _CGLContextObject       *CGLContextObj;
+	typedef struct _CGLContextObject	   *CGLContextObj;
 	typedef struct _CGLPixelFormatObject   *CGLPixelFormatObj;
 	typedef struct CGContext				*CGContextRef;
 #elif defined( CINDER_COCOA_TOUCH )
@@ -65,7 +65,7 @@
 #elif defined( CINDER_ANDROID )
 	struct ANativeWindow;
 #elif defined( CINDER_LINUX )
-	typedef struct GLFWwindow 	GLFWwindow;	
+	typedef struct GLFWwindow	GLFWwindow;
 #endif
 
 
@@ -80,9 +80,9 @@ typedef std::shared_ptr<class Renderer>		RendererRef;
 class CI_API Renderer {
  public:
 	virtual ~Renderer() {}
-	
+
 	virtual RendererRef	clone() const = 0;
-	
+
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
 		virtual void	setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) = 0;
@@ -108,9 +108,13 @@ class CI_API Renderer {
 #elif defined( CINDER_UWP )
 	virtual void setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) = 0;
 #elif defined( CINDER_ANDROID )
-	virtual void setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) = 0;	
+	virtual void setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) = 0;
 #elif defined( CINDER_LINUX )
+#if defined( CINDER_HEADLESS )
+	virtual void	setup( ci::ivec2 renderSize, RendererRef sharedRenderer ) = 0;
+#else
 	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) = 0;
+#endif
 #endif
 
 	virtual Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) = 0;
@@ -122,7 +126,7 @@ class CI_API Renderer {
 	virtual void defaultResize() {}
 
  protected:
- 	Renderer() {}
+	Renderer() {}
 	Renderer( const Renderer &renderer );
 };
 
@@ -130,8 +134,8 @@ typedef std::shared_ptr<class Renderer2d>	Renderer2dRef;
 #if defined( CINDER_COCOA )
 class CI_API Renderer2d : public Renderer {
   public:
-  	Renderer2d();
-	
+	Renderer2d();
+
 	static Renderer2dRef	create()				{ return Renderer2dRef( new Renderer2d() ); }
 	RendererRef				clone() const override	{ return Renderer2dRef( new Renderer2d( *this ) ); }
 
@@ -167,13 +171,13 @@ class CI_API Renderer2d : public Renderer {
 class CI_API Renderer2d : public Renderer {
  public:
 	 Renderer2d( bool doubleBuffer = true, bool paintEvents = true );
- 
+
 	static Renderer2dRef	create( bool doubleBuffer = true, bool paintEvents = true ) { return Renderer2dRef( new Renderer2d( doubleBuffer, paintEvents ) ); }
 	virtual RendererRef		clone() const { return Renderer2dRef( new Renderer2d( *this ) ); }
-	
+
 	void setup( WindowImplMsw *windowImpl, RendererRef sharedRenderer );
 	void kill();
-	
+
 	HWND	getHwnd() const;
 	HDC		getDc() const;
 
@@ -185,10 +189,10 @@ class CI_API Renderer2d : public Renderer {
 	void			finishDraw() override;
 	void			defaultResize() override;
 	Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) override;
-	
+
  protected:
 	Renderer2d( const Renderer2d &renderer );
- 
+
 	class RendererImpl2dGdi	*mImpl;
 
 	WindowImplMsw	*mWindowImpl;
@@ -199,12 +203,12 @@ class CI_API Renderer2d : public Renderer {
 
 class CI_API Renderer2d : public Renderer {
  public:
-    Renderer2d();
+	Renderer2d();
 
  protected:
 	Renderer2d( const Renderer2d &renderer );
-    
-    class ApplImplAndroidRenderer2d *mImpl;
+
+	class ApplImplAndroidRenderer2d *mImpl;
 };
 
 #endif

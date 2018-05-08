@@ -22,6 +22,25 @@ function( ci_make_app )
 	option( CINDER_COPY_ASSETS "Copy assets to a folder next to the application. Default is OFF, and a symlink is created that points to the original assets folder." OFF )
 	include( "${ARG_CINDER_PATH}/proj/cmake/configure.cmake" )
 
+	# Give the user the option to define with which build type of Cinder the application should link.
+	# By default the application will link with Cinder based on CMAKE_CURRENT_BUILD_TYPE.
+	# Use CINDER_APP_LINK_RELEASE or CINDER_APP_LINK_DEBUG to force the app to link with a specific build version of Cinder.
+	#
+	# In order to achieve this we override the build type which is embedded
+	# in the CINDER_LIB_DIRECTORY path and included from the configure.cmake file.
+	#
+	# Disabling this option on MSW since the platform doesn't properly support mixing Debug and Release versions.
+	if( NOT CINDER_MSW )
+		get_filename_component( CINDER_LIB_PARENT_DIR "${CINDER_LIB_DIRECTORY}" DIRECTORY )
+		if( CINDER_APP_LINK_RELEASE )
+			set( CINDER_LIB_DIRECTORY "${CINDER_LIB_PARENT_DIR}/Release" )
+			message( "Forcing application to link with Release build of Cinder." )
+		elseif( CINDER_APP_LINK_DEBUG )
+			set( CINDER_LIB_DIRECTORY "${CINDER_LIB_PARENT_DIR}/Debug" )
+			message( "Forcing application to link with Debug build of Cinder." )
+		endif()
+	endif()
+
 	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
 		if( ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) OR ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
 			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
@@ -49,7 +68,7 @@ function( ci_make_app )
 
 	# This ensures that the application will link with the correct version of Cinder
 	# based on the current build type without the need to remove the entire build folder
-	# when switching build type after an initial configuration. See PR #1518 for more info. 
+	# when switching build type after an initial configuration. See PR #1518 for more info.
 	if( cinder_DIR )
 		unset( cinder_DIR CACHE )
 	endif()
@@ -89,13 +108,13 @@ function( ci_make_app )
 
 			unset( ARG_RESOURCES ) # Don't allow resources to be added to the executable on linux
 		endif()
-	elseif( CINDER_MSW )		
+	elseif( CINDER_MSW )
 		if( MSVC )
 			# Override the default /MD with /MT
-			foreach( 
+			foreach(
 				flag_var
-				CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO 
-				CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO 
+				CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO
+				CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
 			)
 				if( ${flag_var} MATCHES "/MD" )
 					string( REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}" )
@@ -103,7 +122,7 @@ function( ci_make_app )
 				endif()
 			endforeach()
 			# Force synchronous PDB writes
-			add_compile_options( /FS ) 
+			add_compile_options( /FS )
 			# Force multiprocess compilation
 			add_compile_options( /MP )
 			# Add lib dirs

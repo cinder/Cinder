@@ -6,10 +6,10 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
+	   the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	   the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -34,7 +34,7 @@
 		class RendererImplGlMac;
 		class NSOpenGLContext;
 	#endif
-	typedef struct _CGLContextObject       *CGLContextObj;
+	typedef struct _CGLContextObject	   *CGLContextObj;
 	typedef struct _CGLPixelFormatObject   *CGLPixelFormatObj;
 #elif defined( CINDER_COCOA_TOUCH )
 	#if defined __OBJC__
@@ -47,7 +47,7 @@
 		class EAGLContext;
 	#endif
 #elif defined( CINDER_LINUX )
-	typedef struct GLFWwindow 	GLFWwindow;
+	typedef struct GLFWwindow	GLFWwindow;
 #endif
 
 namespace cinder { namespace gl {
@@ -72,7 +72,7 @@ class CI_API RendererGl : public Renderer {
 #else
 			mMsaaSamples = 0;
 			mCoreProfile = true;
-			mVersion = std::pair<int,int>( 3, 2 );	
+			mVersion = std::pair<int,int>( 3, 2 );
 #endif
 #if ! defined( CINDER_GL_ES )
 			mDebugContext = false;
@@ -88,13 +88,13 @@ class CI_API RendererGl : public Renderer {
 		Options&	coreProfile( bool enable = true ) { mCoreProfile = enable; return *this; }
 		bool		getCoreProfile() const { return mCoreProfile; }
 		void		setCoreProfile( bool enable ) { mCoreProfile = enable; }
-		
+
 		Options&			version( int major, int minor ) { mVersion = std::make_pair( major, minor ); return *this; }
 		Options&			version( std::pair<int,int> version ) { mVersion = version; return *this; }
 		std::pair<int,int>	getVersion() const { return mVersion; }
 		void				setVersion( int major, int minor ) { mVersion = std::make_pair( major, minor ); }
 		void				setVersion( std::pair<int,int> version ) { mVersion = version; }
-		
+
 		//! Sets the number of samples used for Multisample Anti-Aliasing (MSAA). Valid values are powers of 2 (0, 2, 4, 8, 16). Defaults to \c 0.
 		Options&	msaa( int samples ) { mMsaaSamples = samples; return *this; }
 		//! Returns the number of samples used for Multisample Anti-Aliasing (MSAA).
@@ -126,7 +126,7 @@ class CI_API RendererGl : public Renderer {
 		int			getDepthBufferDepth() const { return mDepthBufferBits; }
 		//! Sets the number of bits dedicated to the depth buffer. Default is \c 24.
 		void		setDepthBufferDepth( int depthBufferBits ) { mDepthBufferBits = depthBufferBits; }
-		
+
 		//! Enables or disables a stencil buffer. Default is \c false
 		Options&	stencil( bool createStencil = true ) { mStencil = createStencil; return *this; }
 		//! Returns whether a stenci buffer is enabled. Default is \c false
@@ -159,7 +159,7 @@ class CI_API RendererGl : public Renderer {
 
 	static RendererGlRef	create( const Options &options = Options() )	{ return RendererGlRef( new RendererGl( options ) ); }
 	RendererRef				clone() const override							{ return RendererGlRef( new RendererGl( *this ) ); }
- 
+
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
 		void						setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) override;
@@ -182,11 +182,15 @@ class CI_API RendererGl : public Renderer {
 #elif defined( CINDER_UWP )
 	void			setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
 	void			prepareToggleFullScreen();
-	void			finishToggleFullScreen();	
+	void			finishToggleFullScreen();
 #elif defined( CINDER_ANDROID )
 	virtual void	setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) override;
 #elif defined( CINDER_LINUX )
+#if defined( CINDER_HEADLESS )
+	virtual void	setup( ci::ivec2 renderSize, RendererRef sharedRenderer ) override;
+#else
 	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) override;
+#endif
 #endif
 
 	const Options&	getOptions() const { return mOptions; }
@@ -225,12 +229,12 @@ protected:
 	friend class				RendererImplGlAngle;
 	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
 #elif defined( CINDER_ANDROID )
-	class RendererGlAndroid  	*mImpl;
-	RendererGlAndroid         *getImpl() { return mImpl; }
+	class RendererGlAndroid		*mImpl;
+	RendererGlAndroid		  *getImpl() { return mImpl; }
 	friend class WindowImplAndroid;
 #elif defined( CINDER_LINUX )
-	class RendererGlLinux  	*mImpl;
-	RendererGlLinux         *getImpl() { return mImpl; }
+	class RendererGlLinux	*mImpl;
+	RendererGlLinux			*getImpl() { return mImpl; }
 	friend class WindowImplLinux;
 #endif
 

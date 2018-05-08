@@ -19,7 +19,6 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/CinderMath.cpp
 	${CINDER_SRC_DIR}/cinder/Clipboard.cpp
 	${CINDER_SRC_DIR}/cinder/Color.cpp
-	${CINDER_SRC_DIR}/cinder/ConvexHull.cpp
 	${CINDER_SRC_DIR}/cinder/DataSource.cpp
 	${CINDER_SRC_DIR}/cinder/DataTarget.cpp
 	${CINDER_SRC_DIR}/cinder/Display.cpp
