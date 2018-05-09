@@ -342,7 +342,6 @@ if( NOT CINDER_FREETYPE_USE_SYSTEM )
 		${CINDER_SRC_DIR}/freetype/base/ftglyph.c
 		${CINDER_SRC_DIR}/freetype/base/ftgxval.c
 		${CINDER_SRC_DIR}/freetype/base/ftinit.c
-		${CINDER_SRC_DIR}/freetype/base/ftlcdfil.c
 		${CINDER_SRC_DIR}/freetype/base/ftmm.c
 		${CINDER_SRC_DIR}/freetype/base/ftotval.c
 		${CINDER_SRC_DIR}/freetype/base/ftpatent.c

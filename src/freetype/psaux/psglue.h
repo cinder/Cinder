@@ -1,8 +1,8 @@
 /***************************************************************************/
 /*                                                                         */
-/*  cf2fixed.h                                                             */
+/*  psglue.h                                                               */
 /*                                                                         */
-/*    Adobe's code for Fixed Point Mathematics (specification only).       */
+/*    Adobe's code for shared stuff (specification only).                  */
 /*                                                                         */
 /*  Copyright 2007-2013 Adobe Systems Incorporated.                        */
 /*                                                                         */
@@ -36,60 +36,109 @@
 /***************************************************************************/
 
 
-#ifndef CF2FIXED_H_
-#define CF2FIXED_H_
+#ifndef PSGLUE_H_
+#define PSGLUE_H_
+
+
+/* common includes for other modules */
+#include "pserror.h"
+#include "psfixed.h"
+#include "psarrst.h"
+#include "psread.h"
 
 
 FT_BEGIN_HEADER
 
 
-  /* rasterizer integer and fixed point arithmetic must be 32-bit */
+  /* rendering parameters */
 
-#define   CF2_Fixed  CF2_F16Dot16
-  typedef FT_Int32   CF2_Frac;   /* 2.30 fixed point */
+  /* apply hints to rendered glyphs */
+#define CF2_FlagsHinted    1
+  /* for testing */
+#define CF2_FlagsDarkened  2
 
-
-#define CF2_FIXED_MAX      ( (CF2_Fixed)0x7FFFFFFFL )
-#define CF2_FIXED_MIN      ( (CF2_Fixed)0x80000000L )
-#define CF2_FIXED_ONE      0x10000L
-#define CF2_FIXED_EPSILON  0x0001
-
-  /* in C 89, left and right shift of negative numbers is  */
-  /* implementation specific behaviour in the general case */
-
-#define cf2_intToFixed( i )                                              \
-          ( (CF2_Fixed)( (FT_UInt32)(i) << 16 ) )
-#define cf2_fixedToInt( x )                                              \
-          ( (FT_Short)( ( (FT_UInt32)(x) + 0x8000U ) >> 16 ) )
-#define cf2_fixedRound( x )                                              \
-          ( (CF2_Fixed)( ( (FT_UInt32)(x) + 0x8000U ) & 0xFFFF0000UL ) )
-#define cf2_floatToFixed( f )                                            \
-          ( (CF2_Fixed)( (f) * 65536.0 + 0.5 ) )
-#define cf2_fixedAbs( x )                                                \
-          ( (x) < 0 ? -(x) : (x) )
-#define cf2_fixedFloor( x )                                              \
-          ( (CF2_Fixed)( (FT_UInt32)(x) & 0xFFFF0000UL ) )
-#define cf2_fixedFraction( x )                                           \
-          ( (x) - cf2_fixedFloor( x ) )
-#define cf2_fracToFixed( x )                                             \
-          ( (x) < 0 ? -( ( -(x) + 0x2000 ) >> 14 )                       \
-                    :  ( (  (x) + 0x2000 ) >> 14 ) )
+  /* type for holding the flags */
+  typedef CF2_Int  CF2_RenderingFlags;
 
 
-  /* signed numeric types */
-  typedef enum  CF2_NumberType_
+  /* elements of a glyph outline */
+  typedef enum  CF2_PathOp_
   {
-    CF2_NumberFixed,    /* 16.16 */
-    CF2_NumberFrac,     /*  2.30 */
-    CF2_NumberInt       /* 32.0  */
+    CF2_PathOpMoveTo = 1,     /* change the current point */
+    CF2_PathOpLineTo = 2,     /* line                     */
+    CF2_PathOpQuadTo = 3,     /* quadratic curve          */
+    CF2_PathOpCubeTo = 4      /* cubic curve              */
 
-  } CF2_NumberType;
+  } CF2_PathOp;
+
+
+  /* a matrix of fixed point values */
+  typedef struct  CF2_Matrix_
+  {
+    CF2_F16Dot16  a;
+    CF2_F16Dot16  b;
+    CF2_F16Dot16  c;
+    CF2_F16Dot16  d;
+    CF2_F16Dot16  tx;
+    CF2_F16Dot16  ty;
+
+  } CF2_Matrix;
+
+
+  /* these typedefs are needed by more than one header file */
+  /* and gcc compiler doesn't allow redefinition            */
+  typedef struct CF2_FontRec_  CF2_FontRec, *CF2_Font;
+  typedef struct CF2_HintRec_  CF2_HintRec, *CF2_Hint;
+
+
+  /* A common structure for all callback parameters.                       */
+  /*                                                                       */
+  /* Some members may be unused.  For example, `pt0' is not used for       */
+  /* `moveTo' and `pt3' is not used for `quadTo'.  The initial point `pt0' */
+  /* is included for each path element for generality; curve conversions   */
+  /* need it.  The `op' parameter allows one function to handle multiple   */
+  /* element types.                                                        */
+
+  typedef struct  CF2_CallbackParamsRec_
+  {
+    FT_Vector  pt0;
+    FT_Vector  pt1;
+    FT_Vector  pt2;
+    FT_Vector  pt3;
+
+    CF2_Int  op;
+
+  } CF2_CallbackParamsRec, *CF2_CallbackParams;
+
+
+  /* forward reference */
+  typedef struct CF2_OutlineCallbacksRec_  CF2_OutlineCallbacksRec,
+                                           *CF2_OutlineCallbacks;
+
+  /* callback function pointers */
+  typedef void
+  (*CF2_Callback_Type)( CF2_OutlineCallbacks      callbacks,
+                        const CF2_CallbackParams  params );
+
+
+  struct  CF2_OutlineCallbacksRec_
+  {
+    CF2_Callback_Type  moveTo;
+    CF2_Callback_Type  lineTo;
+    CF2_Callback_Type  quadTo;
+    CF2_Callback_Type  cubeTo;
+
+    CF2_Int  windingMomentum;    /* for winding order detection */
+
+    FT_Memory  memory;
+    FT_Error*  error;
+  };
 
 
 FT_END_HEADER
 
 
-#endif /* CF2FIXED_H_ */
+#endif /* PSGLUE_H_ */
 
 
 /* END */

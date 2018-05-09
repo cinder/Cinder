@@ -1,10 +1,10 @@
 /***************************************************************************/
 /*                                                                         */
-/*  cf2font.h                                                              */
+/*  pstypes.h                                                              */
 /*                                                                         */
-/*    Adobe's CFF Interpreter (specification).                             */
+/*    Adobe's code for defining data types (specification only).           */
 /*                                                                         */
-/*  Copyright 2007-2013 Adobe Systems Incorporated.                        */
+/*  Copyright 2011-2013 Adobe Systems Incorporated.                        */
 /*                                                                         */
 /*  This software, and all works of authorship, whether in source or       */
 /*  object code form as indicated by the copyright notice(s) included      */
@@ -36,48 +36,43 @@
 /***************************************************************************/
 
 
-#ifndef CF2INTRP_H_
-#define CF2INTRP_H_
+#ifndef PSTYPES_H_
+#define PSTYPES_H_
 
-
-#include "cf2ft.h"
-#include "cf2hints.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 
 FT_BEGIN_HEADER
 
 
-  FT_LOCAL( void )
-  cf2_hintmask_init( CF2_HintMask  hintmask,
-                     FT_Error*     error );
-  FT_LOCAL( FT_Bool )
-  cf2_hintmask_isValid( const CF2_HintMask  hintmask );
-  FT_LOCAL( FT_Bool )
-  cf2_hintmask_isNew( const CF2_HintMask  hintmask );
-  FT_LOCAL( void )
-  cf2_hintmask_setNew( CF2_HintMask  hintmask,
-                       FT_Bool       val );
-  FT_LOCAL( FT_Byte* )
-  cf2_hintmask_getMaskPtr( CF2_HintMask  hintmask );
-  FT_LOCAL( void )
-  cf2_hintmask_setAll( CF2_HintMask  hintmask,
-                       size_t        bitCount );
+  /*
+   * The data models that we expect to support are as follows:
+   *
+   *   name  char short int long long-long pointer example
+   *  -----------------------------------------------------
+   *   ILP32  8    16    32  32     64*      32    32-bit MacOS, x86
+   *   LLP64  8    16    32  32     64       64    x64
+   *   LP64   8    16    32  64     64       64    64-bit MacOS
+   *
+   *    *) type may be supported by emulation on a 32-bit architecture
+   *
+   */
 
-  FT_LOCAL( void )
-  cf2_interpT2CharString( CF2_Font              font,
-                          CF2_Buffer            charstring,
-                          CF2_OutlineCallbacks  callbacks,
-                          const FT_Vector*      translation,
-                          FT_Bool               doingSeac,
-                          CF2_Fixed             curX,
-                          CF2_Fixed             curY,
-                          CF2_Fixed*            width );
+
+  /* integers at least 32 bits wide */
+#define CF2_UInt  FT_UFast
+#define CF2_Int   FT_Fast
+
+
+  /* fixed-float numbers */
+  typedef FT_Int32  CF2_F16Dot16;
 
 
 FT_END_HEADER
 
 
-#endif /* CF2INTRP_H_ */
+#endif /* PSTYPES_H_ */
 
 
 /* END */

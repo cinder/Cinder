@@ -8,7 +8,7 @@
 /*  be used to parse compressed PCF fonts, as found with many X11 server   */
 /*  distributions.                                                         */
 /*                                                                         */
-/*  Copyright 2005-2016 by                                                 */
+/*  Copyright 2005-2018 by                                                 */
 /*  David Turner.                                                          */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -374,7 +374,7 @@
       {
         while ( state->stack_top > 0 )
         {
-          --state->stack_top;
+          state->stack_top--;
 
           if ( buffer )
             buffer[result] = state->stack[state->stack_top];

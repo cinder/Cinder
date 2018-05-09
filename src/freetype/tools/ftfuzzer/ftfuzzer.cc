@@ -2,7 +2,7 @@
 //
 //   A fuzzing function to test FreeType with libFuzzer.
 //
-// Copyright 2015-2016 by
+// Copyright 2015-2018 by
 // David Turner, Robert Wilhelm, and Werner Lemberg.
 //
 // This file is part of the FreeType project, and may only be used,
@@ -43,8 +43,7 @@
 #include FT_OUTLINE_H
 #include FT_BBOX_H
 #include FT_MODULE_H
-#include FT_CFF_DRIVER_H
-#include FT_TRUETYPE_DRIVER_H
+#include FT_DRIVER_H
 #include FT_MULTIPLE_MASTERS_H
 
 
@@ -52,16 +51,84 @@
   static int         InitResult;
 
 
-  struct FT_Global {
-    FT_Global() {
+  struct FT_Global
+  {
+    FT_Global()
+    {
       InitResult = FT_Init_FreeType( &library );
+      if ( InitResult )
+        return;
+
+      // try to activate Adobe's CFF engine; it might not be the default
+      unsigned int  cff_hinting_engine = FT_HINTING_ADOBE;
+      FT_Property_Set( library,
+                       "cff",
+                       "hinting-engine", &cff_hinting_engine );
     }
-    ~FT_Global() {
+
+    ~FT_Global()
+    {
       FT_Done_FreeType( library );
     }
   };
 
   FT_Global  global_ft;
+
+
+  // We want to select n values at random (without repetition),
+  // with 0 < n <= N.  The algorithm is taken from TAoCP, Vol. 2
+  // (Algorithm S, selection sampling technique)
+  struct Random
+  {
+    int  n;
+    int  N;
+
+    int  t; // total number of values so far
+    int  m; // number of selected values so far
+
+    uint32_t  r; // the current pseudo-random number
+
+    Random( int n_,
+            int N_ )
+    : n( n_ ),
+      N( N_ )
+    {
+      t = 0;
+      m = 0;
+
+      // Ideally, this should depend on the input file,
+      // for example, taking the sha256 as input;
+      // however, this is overkill for fuzzying tests.
+      r = 12345;
+    }
+
+    int get()
+    {
+      if ( m >= n )
+        return -1;
+
+    Redo:
+      // We can't use `rand': different C libraries might provide
+      // different implementations of this function.  As a replacement,
+      // we use a 32bit version of the `xorshift' algorithm.
+      r ^= r << 13;
+      r ^= r >> 17;
+      r ^= r << 5;
+
+      double  U = double( r ) / UINT32_MAX;
+
+      if ( ( N - t ) * U >= ( n - m ) )
+      {
+        t++;
+        goto Redo;
+      }
+
+      t++;
+      m++;
+
+      return t;
+    }
+  };
 
 
   static int
@@ -202,11 +269,20 @@
     long  num_faces = face->num_faces;
     FT_Done_Face( face );
 
-    // loop over all faces
-    for ( long  face_index = 0;
-          face_index < num_faces;
-          face_index++ )
+    // loop over up to 20 arbitrarily selected faces
+    // from index range [0;num-faces-1]
+    long  max_face_cnt = num_faces < 20
+                           ? num_faces
+                           : 20;
+
+    Random  faces_pool( (int)max_face_cnt, (int)num_faces );
+
+    for ( long  face_cnt = 0;
+          face_cnt < max_face_cnt;
+          face_cnt++ )
     {
+      long  face_index = faces_pool.get() - 1;
+
       // get number of instances
       if ( FT_New_Memory_Face( library,
                                files[0].data(),
@@ -217,17 +293,41 @@
       long  num_instances = face->style_flags >> 16;
       FT_Done_Face( face );
 
-      // load face with and without instances
-      for ( long  instance_index = 0;
-            instance_index < num_instances + 1;
-            instance_index++ )
+      // loop over the face without instance (index 0)
+      // and up to 20 arbitrarily selected instances
+      // from index range [1;num_instances]
+      long  max_instance_cnt = num_instances < 20
+                                 ? num_instances
+                                 : 20;
+
+      Random  instances_pool( (int)max_instance_cnt, (int)num_instances );
+
+      for ( long  instance_cnt = 0;
+            instance_cnt <= max_instance_cnt;
+            instance_cnt++ )
       {
-        if ( FT_New_Memory_Face( library,
-                                 files[0].data(),
-                                 (FT_Long)files[0].size(),
-                                 ( instance_index << 16 ) + face_index,
-                                 &face ) )
-          continue;
+        long  instance_index = 0;
+
+        if ( !instance_cnt )
+        {
+          if ( FT_New_Memory_Face( library,
+                                   files[0].data(),
+                                   (FT_Long)files[0].size(),
+                                   face_index,
+                                   &face ) )
+            continue;
+        }
+        else
+        {
+          instance_index = instances_pool.get();
+
+          if ( FT_New_Memory_Face( library,
+                                   files[0].data(),
+                                   (FT_Long)files[0].size(),
+                                   ( instance_index << 16 ) + face_index,
+                                   &face ) )
+            continue;
+        }
 
         // if we have more than a single input file coming from an archive,
         // attach them (starting with the second file) using the order given
@@ -246,28 +346,46 @@
           FT_Attach_Stream( face, &open_args );
         }
 
-        // loop over all bitmap stroke sizes
-        // and an arbitrary size for outlines
-        for ( int  fixed_sizes_index = 0;
-              fixed_sizes_index < face->num_fixed_sizes + 1;
-              fixed_sizes_index++ )
+        // loop over an arbitrary size for outlines
+        // and up to ten arbitrarily selected bitmap strike sizes
+        // from the range [0;num_fixed_sizes - 1]
+        int  max_size_cnt = face->num_fixed_sizes < 10
+                              ? face->num_fixed_sizes
+                              : 10;
+
+        Random sizes_pool( max_size_cnt, face->num_fixed_sizes );
+
+        for ( int  size_cnt = 0;
+              size_cnt <= max_size_cnt;
+              size_cnt++ )
         {
           FT_Int32  flags = load_flags;
 
-          if ( !fixed_sizes_index )
+          int  size_index = 0;
+
+          if ( !size_cnt )
           {
             // set up 20pt at 72dpi as an arbitrary size
-            FT_Set_Char_Size( face, 20, 20, 72, 72 );
+            if ( FT_Set_Char_Size( face, 20 * 64, 20 * 64, 72, 72 ) )
+              continue;
             flags |= FT_LOAD_NO_BITMAP;
           }
           else
           {
-            FT_Select_Size( face, fixed_sizes_index - 1 );
+            // bitmap strikes are not active for font variations
+            if ( instance_index )
+              continue;
+
+            size_index = sizes_pool.get() - 1;
+
+            if ( FT_Select_Size( face, size_index ) )
+              continue;
             flags |= FT_LOAD_COLOR;
           }
 
           // test MM interface only for a face without a selected instance
-          if ( instance_index == 0 )
+          // and without a selected bitmap strike
+          if ( !instance_index && !size_cnt )
             setIntermediateAxis( face );
 
           // loop over all glyphs
