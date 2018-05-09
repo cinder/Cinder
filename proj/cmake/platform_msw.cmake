@@ -12,8 +12,11 @@ list( APPEND SRC_SET_MSW
 	${CINDER_SRC_DIR}/cinder/UrlImplWinInet.cpp
 	${CINDER_SRC_DIR}/glload/wgl_load_cpp.cpp
 	${CINDER_SRC_DIR}/glload/wgl_load.c
-	${CINDER_SRC_DIR}/AntTweakBar/TwDirect3D11.cpp
 )
+
+if( NOT CINDER_DISABLE_ANTTWEAKBAR )
+	list( APPEND SRC_SET_MSW ${CINDER_SRC_DIR}/AntTweakBar/TwDirect3D11.cpp )
+endif()
 
 list( APPEND SRC_SET_APP_MSW
 	# TODO: should these two files be added to "cinder\\app" group?
