@@ -21,12 +21,14 @@ list( APPEND SRC_SET_APP_COCOA
 	${CINDER_SRC_DIR}/cinder/app/cocoa/RendererImplGlMac.mm
 )
 
-list( APPEND SRC_SET_AUDIO_COCOA
-	${CINDER_SRC_DIR}/cinder/audio/cocoa/CinderCoreAudio.cpp
-	${CINDER_SRC_DIR}/cinder/audio/cocoa/ContextAudioUnit.cpp
-	${CINDER_SRC_DIR}/cinder/audio/cocoa/DeviceManagerCoreAudio.cpp
-	${CINDER_SRC_DIR}/cinder/audio/cocoa/FileCoreAudio.cpp
-)
+if( NOT CINDER_DISABLE_AUDIO )
+	list( APPEND SRC_SET_AUDIO_COCOA
+		${CINDER_SRC_DIR}/cinder/audio/cocoa/CinderCoreAudio.cpp
+		${CINDER_SRC_DIR}/cinder/audio/cocoa/ContextAudioUnit.cpp
+		${CINDER_SRC_DIR}/cinder/audio/cocoa/DeviceManagerCoreAudio.cpp
+		${CINDER_SRC_DIR}/cinder/audio/cocoa/FileCoreAudio.cpp
+	)
+endif()
 
 list( APPEND SRC_SET_QTIME
 	${CINDER_SRC_DIR}/cinder/qtime/AvfUtils.mm
@@ -90,9 +92,11 @@ list( APPEND CINDER_LIBS_DEPENDS
 find_library( COCOA_FRAMEWORK Cocoa REQUIRED )
 find_library( OPENGL_FRAMEWORK OpenGL REQUIRED )
 find_library( AVFOUNDATION_FRAMEWORK AVFoundation REQUIRED )
-find_library( AUDIOTOOLBOX_FRAMEWORK AudioToolbox REQUIRED )
-find_library( AUDIOUNIT_FRAMEWORK AudioUnit REQUIRED )
-find_library( COREAUDIO_FRAMEWORK CoreAudio REQUIRED )
+if( NOT CINDER_DISABLE_AUDIO )
+	find_library( AUDIOTOOLBOX_FRAMEWORK AudioToolbox REQUIRED )
+	find_library( AUDIOUNIT_FRAMEWORK AudioUnit REQUIRED )
+	find_library( COREAUDIO_FRAMEWORK CoreAudio REQUIRED )
+endif()
 find_library( COREMEDIA_FRAMEWORK CoreMedia REQUIRED )
 find_library( COREVIDEO_FRAMEWORK CoreVideo REQUIRED )
 find_library( ACCELERATE_FRAMEWORK Accelerate REQUIRED )

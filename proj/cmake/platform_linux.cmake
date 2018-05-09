@@ -28,18 +28,20 @@ list( APPEND SRC_SET_CINDER_APP_LINUX
 	${CINDER_SRC_DIR}/cinder/app/linux/PlatformLinux.cpp
 )
 
-list( APPEND SRC_SET_CINDER_AUDIO_LINUX
-#	${CINDER_SRC_DIR}/cinder/audio/linux/ContextJack.cpp
-	${CINDER_SRC_DIR}/cinder/audio/linux/ContextPulseAudio.cpp
-#	${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerJack.cpp
-	${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerPulseAudio.cpp
-	${CINDER_SRC_DIR}/cinder/audio/linux/FileAudioLoader.cpp
-)
+if( NOT CINDER_DISABLE_AUDIO )
+	list( APPEND SRC_SET_CINDER_AUDIO_LINUX
+	#	${CINDER_SRC_DIR}/cinder/audio/linux/ContextJack.cpp
+		${CINDER_SRC_DIR}/cinder/audio/linux/ContextPulseAudio.cpp
+	#	${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerJack.cpp
+		${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerPulseAudio.cpp
+		${CINDER_SRC_DIR}/cinder/audio/linux/FileAudioLoader.cpp
+	)
 
-list( APPEND SRC_SET_CINDER_AUDIO_DSP
-	${CINDER_SRC_DIR}/cinder/audio/dsp/ooura/fftsg.cpp
-	${CINDER_SRC_DIR}/cinder/audio/dsp/ConverterR8brain.cpp
-)
+	list( APPEND SRC_SET_CINDER_AUDIO_DSP
+		${CINDER_SRC_DIR}/cinder/audio/dsp/ooura/fftsg.cpp
+		${CINDER_SRC_DIR}/cinder/audio/dsp/ConverterR8brain.cpp
+	)
+endif()
 
 list( APPEND SRC_SET_CINDER_VIDEO_LINUX
 	${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp
@@ -153,18 +155,20 @@ list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${CURL_INCLUDE_DIR} )
 find_package( FontConfig REQUIRED )
 list( APPEND CINDER_LIBS_DEPENDS ${FONTCONFIG_LIBRARIES} )
 list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${FONTGONFIG_INCLUDE_DIRS} )
-# PulseAudio
-find_package( PulseAudio REQUIRED )
-list( APPEND CINDER_LIBS_DEPENDS ${PULSEAUDIO_LIBRARY} )
-list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${PULSEAUDIO_INCLUDE_DIR} )
-# mpg123
-find_package( MPG123 REQUIRED )
-list( APPEND CINDER_LIBS_DEPENDS ${MPG123_LIBRARY} )
-list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${MPG123_INCLUDE_DIR} )
-# sndfile
-find_package( SNDFILE REQUIRED )
-list( APPEND CINDER_LIBS_DEPENDS ${SNDFILE_LIBRARY} )
-list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${SNDFILE_INCLUDE_DIR} )
+if( NOT CINDER_DISABLE_AUDIO )
+	# PulseAudio
+	find_package( PulseAudio REQUIRED )
+	list( APPEND CINDER_LIBS_DEPENDS ${PULSEAUDIO_LIBRARY} )
+	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${PULSEAUDIO_INCLUDE_DIR} )
+	# mpg123
+	find_package( MPG123 REQUIRED )
+	list( APPEND CINDER_LIBS_DEPENDS ${MPG123_LIBRARY} )
+	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${MPG123_INCLUDE_DIR} )
+	# sndfile
+	find_package( SNDFILE REQUIRED )
+	list( APPEND CINDER_LIBS_DEPENDS ${SNDFILE_LIBRARY} )
+	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${SNDFILE_INCLUDE_DIR} )
+endif()
 # GStreamer and its dependencies.
 # Glib
 find_package( Glib REQUIRED COMPONENTS gobject )
