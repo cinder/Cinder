@@ -3,6 +3,9 @@
 
 option( CINDER_VERBOSE "Print verbose build configuration messages. " OFF )
 option( BUILD_SHARED_LIBS "Build Cinder as a shared library. " OFF )
+option( CINDER_DISABLE_AUDIO "Build Cinder without audio support. " OFF )
+option( CINDER_DISABLE_VIDEO "Build Cinder without video support. " OFF )
+option( CINDER_DISABLE_ANTTWEAKBAR "Build Cinder without AntTweakBar support. " OFF )
 
 include( ${CMAKE_CURRENT_LIST_DIR}/utilities.cmake )
 
