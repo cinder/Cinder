@@ -892,7 +892,6 @@
     <ClCompile Include="..\..\src\freetype\base\ftglyph.c" />
     <ClCompile Include="..\..\src\freetype\base\ftgxval.c" />
     <ClCompile Include="..\..\src\freetype\base\ftinit.c" />
-    <ClCompile Include="..\..\src\freetype\base\ftlcdfil.c" />
     <ClCompile Include="..\..\src\freetype\base\ftmm.c" />
     <ClCompile Include="..\..\src\freetype\base\ftotval.c" />
     <ClCompile Include="..\..\src\freetype\base\ftpatent.c" />
