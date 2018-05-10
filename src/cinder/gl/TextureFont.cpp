@@ -767,13 +767,47 @@ vec2 TextureFont::measureString( const std::string &str, const DrawOptions &opti
 #endif
 }
 
-#if defined( CINDER_COCOA )
 vec2 TextureFont::measureStringWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getSize() ).ligate( options.getLigate() );
+#if defined( CINDER_COCOA )
 	return tbox.measure();
-}
+#else
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	auto glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
+#else
+	auto glyphMeasures = tbox.measureGlyphs();
 #endif
+	if( ! glyphMeasures.empty() ) {
+		vec2 result = vec2( 0 );
+		ivec2 glyphIndices = ivec2( 0 );
+		uint16_t glyphIndexVert = 0;
+		for( const auto &gm : glyphMeasures ) {
+			if( gm.second.x > result.x ) {
+				glyphIndices.x = gm.first;
+				result.x = gm.second.x;
+			}
+			if( gm.second.y > result.y ) {
+				glyphIndices.y = gm.first;
+				result.y = gm.second.y;
+			}
+		}
+		auto glyphInfoIt = mGlyphMap.find( glyphIndices.x );
+		if( glyphInfoIt != mGlyphMap.end() ) {
+			result.x += glyphInfoIt->second.mOriginOffset.x + float( glyphInfoIt->second.mTexCoords.getWidth() );
+		}
+		glyphInfoIt = mGlyphMap.find( glyphIndices.y );
+		if( glyphInfoIt != mGlyphMap.end() ) {
+			result.y += glyphInfoIt->second.mOriginOffset.y + float( glyphInfoIt->second.mTexCoords.getHeight() );
+		}
+
+		return result;
+	}
+	else {
+		return vec2( 0 );
+	}
+#endif
+}
 
 vector<pair<Font::Glyph,vec2> > TextureFont::getGlyphPlacements( const std::string &str, const DrawOptions &options ) const
 {
