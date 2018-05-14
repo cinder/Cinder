@@ -780,7 +780,7 @@ vec2 TextureFont::measureStringWrapped( const std::string &str, const Rectf &fit
 #endif
 	if( ! glyphMeasures.empty() ) {
 		vec2 result = vec2( 0 );
-		ivec2 glyphIndices = ivec2( 0 );
+		ivec2 glyphIndices = ivec2( glyphMeasures.front().first );
 		uint16_t glyphIndexVert = 0;
 		for( const auto &gm : glyphMeasures ) {
 			if( gm.second.x > result.x ) {
