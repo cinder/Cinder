@@ -579,6 +579,12 @@ class CI_API GlslProgExc : public cinder::gl::Exception {
 class CI_API GlslProgCompileExc : public GlslProgExc {
   public:
 	GlslProgCompileExc( const std::string &log, GLint shaderType );
+	
+	//! Returns the glsl shader type: GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, ...
+	GLint getShaderType() const { return mShaderType; }
+	
+  protected:
+	GLint mShaderType;
 };
 
 class CI_API GlslProgLinkExc : public GlslProgExc {

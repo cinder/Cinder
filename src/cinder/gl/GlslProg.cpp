@@ -2028,7 +2028,7 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 
 //////////////////////////////////////////////////////////////////////////
 // GlslProgCompileExc
-GlslProgCompileExc::GlslProgCompileExc( const std::string &log, GLint shaderType )
+GlslProgCompileExc::GlslProgCompileExc( const std::string &log, GLint shaderType ) : mShaderType( shaderType )
 {
 	string typeString;
 
