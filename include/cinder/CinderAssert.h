@@ -33,6 +33,7 @@
 //
 // User-definable parameters:
 // - CI_DISABLE_ASSERTS: disables all asserts, they become no-ops (VERIFY variants still evaluate \a expr).
+// - CI_ENABLE_ASSERTS: forces asserts enabled, regardless of other build settings.
 // - CI_ENABLE_ASSERT_HANDLER: if this is set, users must define assertionFailed() and assertionFailedMessage()
 //	 to handle a failed assertion.
 // - CI_ASSERT_DEBUG_BREAK: overrides default assertion behavior to break into the debugger instead of
@@ -40,7 +41,7 @@
 
 #pragma once
 
-#if ! defined( NDEBUG ) && ! defined( CI_DISABLE_ASSERTS )
+#if ( ! defined( NDEBUG ) && ! defined( CI_DISABLE_ASSERTS ) ) || defined( CI_ENABLE_ASSERTS )
 
 	#include "cinder/Export.h"
 	#include "cinder/CurrentFunction.h"
