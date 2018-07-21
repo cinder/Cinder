@@ -175,9 +175,10 @@ void VaoImplCore::vertexAttribDivisorImpl( GLuint index, GLuint divisor )
 		glVertexAttribDivisor( index, divisor );
 	}
   #endif	
-#elif defined( glVertexAttribDivisor )
+#else
+	if( glVertexAttribDivisor )
 		glVertexAttribDivisor( index, divisor );
-#elif defined( glVertexAttribDivisorARB )
+	else if( glVertexAttribDivisorARB )
 		glVertexAttribDivisorARB( index, divisor );
 #endif
 
