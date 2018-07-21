@@ -28,7 +28,7 @@
 #include "cinder/Log.h"
 
 #if defined( CINDER_MSW )
-	#include "glload/wgl_all.h"
+	#include "glad/glad_wgl.h"
 #elif defined( CINDER_MAC )
 	#include <OpenGL/OpenGL.h>
 #elif defined( CINDER_LINUX )
@@ -53,7 +53,7 @@ void enableVerticalSync( bool enable )
 	::CGLSetParameter( ::CGLGetCurrentContext(), kCGLCPSwapInterval, &sync );
 #elif defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
 	GLint sync = ( enable ) ? 1 : 0;
-	if( wglext_EXT_swap_control )
+	if( WGL_EXT_swap_control )
 		::wglSwapIntervalEXT( sync );
 #elif defined( CINDER_LINUX )
 	#if ! defined( CINDER_LINUX_EGL_ONLY ) && ! defined( CINDER_HEADLESS_GL_OSMESA )
@@ -70,7 +70,7 @@ bool isVerticalSyncEnabled()
 	::CGLGetParameter( ::CGLGetCurrentContext(), kCGLCPSwapInterval, &enabled );
 	return enabled > 0;
 #elif defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
-	if( wglext_EXT_swap_control )
+	if( WGL_EXT_swap_control )
 		return ::wglGetSwapIntervalEXT() > 0;
 	else
 		return true;

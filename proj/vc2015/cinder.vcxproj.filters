@@ -130,9 +130,6 @@
     <Filter Include="Source Files\oggvorbis\vorbis\modes">
       <UniqueIdentifier>{54a3930c-e7ed-418e-83b6-977db7fadc51}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\glload">
-      <UniqueIdentifier>{989dc751-89fb-4b63-adb6-f745dd03ccb9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\app\msw">
       <UniqueIdentifier>{714beaed-38b5-4cf9-b6bb-f2ed1dd5eb1e}</UniqueIdentifier>
     </Filter>
@@ -243,6 +240,9 @@
     </Filter>
     <Filter Include="Source Files\freetype\cid">
       <UniqueIdentifier>{e6801720-6c42-446f-8833-c4ec2360bab8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\glad">
+      <UniqueIdentifier>{ae176410-bb73-4c73-be34-5fcfee9cf95c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -762,18 +762,6 @@
     <ClCompile Include="..\..\src\cinder\qtime\QuickTimeUtils.cpp">
       <Filter>Source Files\qtime</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\glload\gl_load.c">
-      <Filter>Source Files\glload</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\glload\gl_load_cpp.cpp">
-      <Filter>Source Files\glload</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\glload\wgl_load.c">
-      <Filter>Source Files\glload</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\glload\wgl_load_cpp.cpp">
-      <Filter>Source Files\glload</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\cinder\GeomIo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1061,6 +1049,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\FileWatcher.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glad\glad.c">
+      <Filter>Source Files\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glad\glad_wgl.c">
+      <Filter>Source Files\glad</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

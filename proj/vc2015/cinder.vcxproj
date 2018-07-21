@@ -923,30 +923,8 @@
     <ClCompile Include="..\..\src\freetype\type1\type1.c" />
     <ClCompile Include="..\..\src\freetype\type42\type42.c" />
     <ClCompile Include="..\..\src\freetype\winfonts\winfnt.c" />
-    <ClCompile Include="..\..\src\glload\gl_load.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|Win32'">
-      </ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\src\glload\gl_load_cpp.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|Win32'">
-      </ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\src\glload\wgl_load.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|Win32'">
-      </ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\src\glload\wgl_load_cpp.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|Win32'">
-      </ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\..\src\glad\glad.c" />
+    <ClCompile Include="..\..\src\glad\glad_wgl.c" />
     <ClCompile Include="..\..\src\jsoncpp\jsoncpp.cpp" />
     <ClCompile Include="..\..\src\libtess2\bucketalloc.c" />
     <ClCompile Include="..\..\src\libtess2\dict.c" />

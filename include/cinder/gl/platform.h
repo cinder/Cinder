@@ -107,15 +107,15 @@
 		#include "cinder/linux/GLES2/gl2ext.h" 
  		#define CINDER_GL_ES
 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_2
- 	#else
- 		#include "glload/gl_core.h"
- 	#endif
+	#else
+		#include "glad/glad.h"
+	#endif
 #elif ! defined( CINDER_COCOA_TOUCH ) // OS X
 	#if defined( __clang__ )
 		#pragma clang diagnostic push
 		#pragma clang diagnostic ignored "-Wtypedef-redefinition"
 	#endif
-	#include "glload/gl_core.h"
+	#include "glad/glad.h"
 	#if defined( __clang__ )
 		#pragma clang diagnostic pop
 	#endif

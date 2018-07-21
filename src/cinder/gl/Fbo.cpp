@@ -299,7 +299,7 @@ Fbo::~Fbo()
 void Fbo::initMultisamplingSettings( bool *useMsaa, bool *useCsaa, Format *format )
 {
 #if defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ES ) )
-	static bool csaaSupported = ( glext_NV_framebuffer_multisample_coverage != 0 );
+	static bool csaaSupported = ( GLAD_GL_NV_framebuffer_multisample_coverage != 0 );
 #else
 	static bool csaaSupported = false;
 #endif
