@@ -924,6 +924,7 @@
     <ClCompile Include="..\..\src\freetype\type42\type42.c" />
     <ClCompile Include="..\..\src\freetype\winfonts\winfnt.c" />
     <ClCompile Include="..\..\src\glad\glad.c" />
+    <ClCompile Include="..\..\src\glad\glad_es.c" />
     <ClCompile Include="..\..\src\glad\glad_wgl.c" />
     <ClCompile Include="..\..\src\jsoncpp\jsoncpp.cpp" />
     <ClCompile Include="..\..\src\libtess2\bucketalloc.c" />

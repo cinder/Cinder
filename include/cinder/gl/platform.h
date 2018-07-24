@@ -39,13 +39,15 @@
 	#define CINDER_GL_ES
 	// the default for ANGLE is GL ES 3, but can be overridden with CINDER_GL_ES_2
 	#if defined( CINDER_GL_ES_2 )
-		#include "GLES2/gl2.h"
-		#include "GLES2/gl2ext.h"
+		//#include "GLES2/gl2.h"
+		//#include "GLES2/gl2ext.h"
+		#include "glad/glad_es.h"
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2
 	#else
-		#include "GLES3/gl3.h"
-		#include "GLES3/gl3ext.h"
-		#include "GLES2/gl2ext.h"
+		//#include "GLES3/gl3.h"
+		//#include "GLES3/gl3ext.h"
+		//#include "GLES2/gl2ext.h"
+		#include "glad/glad_es.h"
 		#define CINDER_GL_ES_3
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
 	#endif
