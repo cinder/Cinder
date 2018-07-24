@@ -219,18 +219,17 @@ list( APPEND CINDER_SRC_FILES               ${SRC_SET_TINYEXR} )
 source_group( "thirdparty\\tinyexr" FILES   ${SRC_SET_TINYEXR} )
 
 # ----------------------------------------------------------------------------------------------------------------------
-# glload
+# glad
 # ----------------------------------------------------------------------------------------------------------------------
 
 if( NOT CINDER_GL_ES )
 
-list( APPEND SRC_SET_GLLOAD
-	${CINDER_SRC_DIR}/glload/gl_load_cpp.cpp
-	${CINDER_SRC_DIR}/glload/gl_load.c
+list( APPEND SRC_SET_GLAD
+	${CINDER_SRC_DIR}/glad/glad.c
 )
 
-list( APPEND CINDER_SRC_FILES               ${SRC_SET_GLLOAD} )
-source_group( "thirdparty\\glload" FILES    ${SRC_SET_GLLOAD} )
+list( APPEND CINDER_SRC_FILES               ${SRC_SET_GLAD} )
+source_group( "thirdparty\\glad" FILES      ${SRC_SET_GLAD} )
 
 endif()
 

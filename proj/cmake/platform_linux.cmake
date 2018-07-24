@@ -61,8 +61,7 @@ if( NOT CINDER_HEADLESS ) # Desktop ogl, es2, es3, RPi
 		)
 	else()
 		list( APPEND SRC_SET_CINDER_LINUX
-			${CINDER_SRC_DIR}/glload/glx_load.c
-			${CINDER_SRC_DIR}/glload/glx_load_cpp.cpp
+			${CINDER_SRC_DIR}/glad/glad_glx.c
 		)
 	endif()
 
