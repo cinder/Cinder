@@ -181,7 +181,7 @@ class CI_API GlslProg {
 		//! Supplies the GLSL source for the fragment shader
 		Format&		fragment( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the fragment shader
-		Format&		fragment( const std::string &vertexShader );
+		Format&		fragment( const std::string &fragmentShader );
 		//! Returns the GLSL source for the vertex shader. Returns an empty string if it isn't present.
 		const std::string&	getVertex() const { return mVertexShader; }
 		//! Returns the GLSL source for the fragment shader. Returns an empty string if it isn't present.
@@ -579,6 +579,12 @@ class CI_API GlslProgExc : public cinder::gl::Exception {
 class CI_API GlslProgCompileExc : public GlslProgExc {
   public:
 	GlslProgCompileExc( const std::string &log, GLint shaderType );
+	
+	//! Returns the glsl shader type: GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, ...
+	GLint getShaderType() const { return mShaderType; }
+	
+  protected:
+	GLint mShaderType;
 };
 
 class CI_API GlslProgLinkExc : public GlslProgExc {
