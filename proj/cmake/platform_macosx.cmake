@@ -21,21 +21,14 @@ list( APPEND SRC_SET_APP_COCOA
 	${CINDER_SRC_DIR}/cinder/app/cocoa/RendererImplGlMac.mm
 )
 
-list( APPEND SRC_SET_AUDIO_COCOA
-	${CINDER_SRC_DIR}/cinder/audio/cocoa/CinderCoreAudio.cpp
-	${CINDER_SRC_DIR}/cinder/audio/cocoa/ContextAudioUnit.cpp
-	${CINDER_SRC_DIR}/cinder/audio/cocoa/DeviceManagerCoreAudio.cpp
-	${CINDER_SRC_DIR}/cinder/audio/cocoa/FileCoreAudio.cpp
-)
-
-list( APPEND SRC_SET_QTIME
-	${CINDER_SRC_DIR}/cinder/qtime/AvfUtils.mm
-	${CINDER_SRC_DIR}/cinder/qtime/AvfWriter.mm
-	${CINDER_SRC_DIR}/cinder/qtime/MovieWriter.cpp
-	${CINDER_SRC_DIR}/cinder/qtime/QuickTimeGlImplAvf.cpp
-	${CINDER_SRC_DIR}/cinder/qtime/QuickTimeImplAvf.mm
-	${CINDER_SRC_DIR}/cinder/qtime/QuickTimeUtils.cpp
-)
+if( NOT CINDER_DISABLE_AUDIO )
+	list( APPEND SRC_SET_AUDIO_COCOA
+		${CINDER_SRC_DIR}/cinder/audio/cocoa/CinderCoreAudio.cpp
+		${CINDER_SRC_DIR}/cinder/audio/cocoa/ContextAudioUnit.cpp
+		${CINDER_SRC_DIR}/cinder/audio/cocoa/DeviceManagerCoreAudio.cpp
+		${CINDER_SRC_DIR}/cinder/audio/cocoa/FileCoreAudio.cpp
+	)
+endif()
 
 # specify what files need to be compiled as Objective-C++
 list( APPEND CINDER_SOURCES_OBJCPP
@@ -53,18 +46,35 @@ list( APPEND CINDER_SOURCES_OBJCPP
 	${CINDER_SRC_DIR}/cinder/app/cocoa/AppMac.cpp
 	${CINDER_SRC_DIR}/cinder/app/cocoa/PlatformCocoa.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Environment.cpp
-	${CINDER_SRC_DIR}/cinder/qtime/QuickTimeGlImplAvf.cpp
-
-	${CINDER_SRC_DIR}/AntTweakBar/TwColors.cpp
-	${CINDER_SRC_DIR}/AntTweakBar/TwFonts.cpp
-	${CINDER_SRC_DIR}/AntTweakBar/LoadOGL.cpp
-	${CINDER_SRC_DIR}/AntTweakBar/LoadOGLCore.cpp
-	${CINDER_SRC_DIR}/AntTweakBar/TwBar.cpp
-	${CINDER_SRC_DIR}/AntTweakBar/TwMgr.cpp
-	${CINDER_SRC_DIR}/AntTweakBar/TwOpenGl.cpp
-	${CINDER_SRC_DIR}/AntTweakBar/TwOpenGLCore.cpp
-	${CINDER_SRC_DIR}/AntTweakBar/TwPrecomp.cpp
 )
+
+if( NOT CINDER_DISABLE_VIDEO )
+	list( APPEND SRC_SET_QTIME
+		${CINDER_SRC_DIR}/cinder/qtime/AvfUtils.mm
+		${CINDER_SRC_DIR}/cinder/qtime/AvfWriter.mm
+		${CINDER_SRC_DIR}/cinder/qtime/MovieWriter.cpp
+		${CINDER_SRC_DIR}/cinder/qtime/QuickTimeGlImplAvf.cpp
+		${CINDER_SRC_DIR}/cinder/qtime/QuickTimeImplAvf.mm
+		${CINDER_SRC_DIR}/cinder/qtime/QuickTimeUtils.cpp
+	)
+
+	list( APPEND CINDER_SOURCES_OBJCPP ${CINDER_SRC_DIR}/cinder/qtime/QuickTimeGlImplAvf.cpp )
+endif()
+
+if( NOT CINDER_DISABLE_ANTTWEAKBAR )
+	list( APPEND CINDER_SOURCES_OBJCPP
+		${CINDER_SRC_DIR}/AntTweakBar/TwColors.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwFonts.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/LoadOGL.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/LoadOGLCore.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwBar.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwMgr.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGl.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGLCore.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwPrecomp.cpp
+	)
+endif()
+
 
 set_source_files_properties( ${CINDER_SOURCES_OBJCPP}
 	PROPERTIES COMPILE_FLAGS "-x objective-c++"
@@ -85,28 +95,36 @@ list( APPEND CINDER_LIBS_DEPENDS
 find_library( COCOA_FRAMEWORK Cocoa REQUIRED )
 find_library( OPENGL_FRAMEWORK OpenGL REQUIRED )
 find_library( AVFOUNDATION_FRAMEWORK AVFoundation REQUIRED )
-find_library( AUDIOTOOLBOX_FRAMEWORK AudioToolbox REQUIRED )
-find_library( AUDIOUNIT_FRAMEWORK AudioUnit REQUIRED )
-find_library( COREAUDIO_FRAMEWORK CoreAudio REQUIRED )
-find_library( COREMEDIA_FRAMEWORK CoreMedia REQUIRED )
-find_library( COREVIDEO_FRAMEWORK CoreVideo REQUIRED )
+if( NOT CINDER_DISABLE_AUDIO )
+	find_library( AUDIOTOOLBOX_FRAMEWORK AudioToolbox REQUIRED )
+	find_library( AUDIOUNIT_FRAMEWORK AudioUnit REQUIRED )
+	find_library( COREAUDIO_FRAMEWORK CoreAudio REQUIRED )
+endif()
+if( NOT CINDER_DISABLE_VIDEO )
+	find_library( COREMEDIA_FRAMEWORK CoreMedia REQUIRED )
+endif()
+# some Core Video functions are used inside CinderCocoa.mm so we have to link for
+# now even if CINDER_DISABLE_AUDIO is defined.
+find_library( COREVIDEO_FRAMEWORK CoreVideo REQUIRED )  
 find_library( ACCELERATE_FRAMEWORK Accelerate REQUIRED )
 find_library( IOSURFACE_FRAMEWORK IOSurface REQUIRED )
 find_library( IOKIT_FRAMEWORK IOKit REQUIRED )
 
 # Option for using GStreamer under OS X.
-if( CINDER_MAC )
+if( CINDER_MAC AND NOT CINDER_DISABLE_VIDEO )
 	option( CINDER_MAC_USE_GSTREAMER "Use GStreamer for video playback." OFF )
 endif()
 
-if( CINDER_MAC_USE_GSTREAMER )
-	find_library( GSTREAMER_FRAMEWORK GStreamer REQUIRED )
-	list( APPEND CINDER_LIBS_DEPENDS ${GSTREAMER_FRAMEWORK} ${GSTREAMER_FRAMEWORK}/Versions/Current/lib/libgstgl-1.0.dylib )
-	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${GSTREAMER_FRAMEWORK}/Headers ${CINDER_INC_DIR}/cinder/linux )
-	list( APPEND CINDER_SRC_FILES ${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp ${CINDER_SRC_DIR}/cinder/linux/Movie.cpp )
-	list( APPEND CINDER_DEFINES CINDER_MAC_USE_GSTREAMER )
-else()
-        list( APPEND CINDER_SRC_FILES ${SRC_SET_QTIME} )
+if( NOT CINDER_DISABLE_VIDEO )
+	if( CINDER_MAC_USE_GSTREAMER )
+		find_library( GSTREAMER_FRAMEWORK GStreamer REQUIRED )
+		list( APPEND CINDER_LIBS_DEPENDS ${GSTREAMER_FRAMEWORK} ${GSTREAMER_FRAMEWORK}/Versions/Current/lib/libgstgl-1.0.dylib )
+		list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${GSTREAMER_FRAMEWORK}/Headers ${CINDER_INC_DIR}/cinder/linux )
+		list( APPEND CINDER_SRC_FILES ${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp ${CINDER_SRC_DIR}/cinder/linux/Movie.cpp )
+		list( APPEND CINDER_DEFINES CINDER_MAC_USE_GSTREAMER )
+	else()
+		list( APPEND CINDER_SRC_FILES ${SRC_SET_QTIME} )
+	endif()
 endif()
 
 list( APPEND CINDER_LIBS_DEPENDS

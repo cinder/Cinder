@@ -63,6 +63,9 @@ make -j4
 <p><code>CINDER_BUILD_TESTS</code>: Builds the unit tests (You can then run the tests from the command line with <code>make test</code> / <code>make check</code>).</p>
 <p><code>CINDER_BUILD_SAMPLE</code>: Specify the name of a single sample to build, after libcinder successfully builds. It will end up in the current build folder. For example, adding the option <code>-DCINDER_BUILD_SAMPLE=BasicApp</code> will also build the BasicApp sample and place it at <code>build/Debug/BasicApp/BasicApp.app</code>.</p>
 <p><code>CINDER_BUILD_ALL_SAMPLES</code>: Specifying <code>True</code> here will tell CMake to try to build all of the samples within cinder's samples directory. Be prepared to wait a while.</p>
+<p><code>CINDER_DISABLE_ANTTWEAKBAR</code>: Build Cinder without GUI support. Can be used for reducing buid time when GUI support through AntTweakBar is not a requirement.</p>
+<p><code>CINDER_DISABLE_AUDIO</code>: Build Cinder without audio support. Can be used for reducing build time when there is no requirement for audio features.</p>
+<p><code>CINDER_DISABLE_VIDEO</code>: Build Cinder without video support. Can be used for reducing build time when there is no requirement for video features.</p>
 <h1 id="building-your-application-with-cmake">Building your application with CMake</h1>
 <p>Often the best thing to do when adding CMake support to your own project is to look at one of the samples as a starting point. You'll find the <code>CMakeLists.txt</code> file will be at <code>proj/cmake/CMakeListst.txt</code>. You can still build it from the base directory of your project if you choose, with something like:</p>
 <pre><code>cd my_project
