@@ -85,7 +85,7 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 		if( ! eglQueryDevicesEXT || ! eglQueryDevicesEXT( 0, nullptr, &numDevices ) || numDevices < 1 )
 			return false;
 
-		std::vector<EGLDeviceEXT> devices{ numDevices };
+		std::vector<EGLDeviceEXT> devices( numDevices );
 		if( ! eglQueryDevicesEXT( numDevices, devices.data(), &numDevices ) || numDevices < 1 )
 			return false;
 
