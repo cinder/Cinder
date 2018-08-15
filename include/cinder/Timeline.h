@@ -152,9 +152,8 @@ class CI_API Timeline : public TimelineItem {
 	void insert( TimelineItemRef item, float atTime ) { item->mStartTime = atTime; insert( item ); }
 	//! Returns the number of items in the Timeline
 	size_t				getNumItems() const { return mItems.size(); }
-	///! Returns items in the Timeline
+	///! Returns all items in the Timeline
 	std::multimap<void*,TimelineItemRef> getItems() const { return mItems; }
-	std::multimap<void*,TimelineItemRef> getItems()  { return mItems; }
 	//! Returns true if there are no items in the Timeline
 	bool				empty() const { return mItems.empty(); }
 	//! Returns the first item in the timeline the target of which matches \a target
