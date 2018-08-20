@@ -169,7 +169,7 @@ HWND Renderer2d::getHwnd() const
 
 HDC	Renderer2d::getDc() const
 {
-	return mWindowImpl->getDc();
+	return mImpl->getDc();
 }
 
 void Renderer2d::kill()
