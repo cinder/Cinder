@@ -147,16 +147,21 @@ class CI_API TextureFont {
 	//! Returns the default set of characters for a TextureFont, suitable for most English text, including some common ligatures and accented vowels.
 	//! \c "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphridséáèà"
 	static std::string		defaultChars() { return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphrids\303\251\303\241\303\250\303\240"; }
-
-  protected:
-	TextureFont( const Font &font, const std::string &supportedChars, const Format &format );
-
+	
 	struct GlyphInfo {
 		uint8_t		mTextureIndex;
 		Area		mTexCoords;
 		vec2		mOriginOffset;
 	};
-	
+
+	//! Returns the current set of characters along with its location into the set of textures
+	const std::unordered_map<Font::Glyph, GlyphInfo>& getGlyphMap() const { return mGlyphMap; }
+	//! Returns the vector of gl::TextureRef corresponding to each page of the atlas
+	const std::vector<gl::TextureRef>& getTextures() const { return mTextures; }
+
+  protected:
+	TextureFont( const Font &font, const std::string &supportedChars, const Format &format );
+
 	std::unordered_map<Font::Glyph, GlyphInfo>		mGlyphMap;
 	std::vector<gl::TextureRef>						mTextures;
 	Font											mFont;
