@@ -7698,7 +7698,29 @@ bool CTwBar::EditInPlaceGetClipboard(std::string *_OutString)
             GlobalUnlock(TextHandle);
         } 
     }
-    CloseClipboard(); 
+    CloseClipboard();
+	
+	// Patch from http://www.alecjacobson.com/weblog/?p=2378
+	// PATCH BEGIN Alec Jacobson, 2012
+#elif defined ANT_OSX
+	FILE* pipe = popen("pbpaste", "r");
+	if (!pipe)
+	{
+		return false;
+	}
+	char buffer[128];
+	string result = "";
+	while(!feof(pipe))
+	{
+		if(fgets(buffer, 128, pipe) != NULL)
+		{
+			result += buffer;
+		}
+	}
+	pclose(pipe);
+	*_OutString = result.c_str();
+	// PATCH END
+	
 
 #elif defined ANT_UNIX
 
@@ -7749,6 +7771,19 @@ bool CTwBar::EditInPlaceSetClipboard(const std::string& _String)
     GlobalUnlock(TextHandle); 
     SetClipboardData(CF_TEXT, TextHandle);
     CloseClipboard();
+	
+	
+	// Patch from http://www.alecjacobson.com/weblog/?p=2378
+	// PATCH BEGIN Alec Jacobson, 2012
+#elif defined ANT_OSX
+	stringstream cmd;
+	cmd << "echo \"" << _String << "\" | pbcopy";
+	FILE* pipe = popen(cmd.str().c_str(), "r");
+	if (!pipe)
+	{
+		return false;
+	}
+	// PATCH END
 
 #elif defined ANT_UNIX
 
