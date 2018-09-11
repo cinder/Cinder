@@ -148,7 +148,7 @@ class CI_API TextureFont {
 	//! \c "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphridséáèà"
 	static std::string		defaultChars() { return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphrids\303\251\303\241\303\250\303\240"; }
 	
-	struct GlyphInfo {
+	struct CI_API GlyphInfo {
 		uint8_t		mTextureIndex;
 		Area		mTexCoords;
 		vec2		mOriginOffset;
