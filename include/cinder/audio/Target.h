@@ -35,8 +35,8 @@ typedef std::shared_ptr<class TargetFile>		TargetFileRef;
 //! Base class that is used to create and write to an audio destination. Currently only supports .wav encoding.
 class CI_API TargetFile {
   public:
-	static std::unique_ptr<TargetFile> create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType = SampleType::INT_16, const std::string &extension = "" );
-	static std::unique_ptr<TargetFile> create( const fs::path &path, size_t sampleRate, size_t numChannels, SampleType sampleType = SampleType::INT_16, const std::string &extension = "" );
+	static std::unique_ptr<TargetFile> create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType = SampleType::INT_16, std::string extension = "" );
+	static std::unique_ptr<TargetFile> create( const fs::path &path, size_t sampleRate, size_t numChannels, SampleType sampleType = SampleType::INT_16, std::string extension = "" );
 	virtual ~TargetFile() {}
 
 	void write( const Buffer *buffer );
