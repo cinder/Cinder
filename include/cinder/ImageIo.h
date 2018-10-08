@@ -164,21 +164,27 @@ class CI_API ImageTarget : public ImageIo {
 	
 	class Options {
 	  public:
-		Options() : mQuality( 0.9f ), mColorModelDefault( true ) {}
+		Options() : mQuality( 0.9f ), mColorModelDefault( true ), mDataTypeDefault( true ) {}
 		
 		Options& quality( float quality ) { mQuality = quality; return *this; }
 		Options& colorModel( ImageIo::ColorModel cm ) { mColorModelDefault = false; mColorModel = cm; return *this; }
+		Options& dataType( ImageIo::DataType type ) { mDataTypeDefault = false; mDataType = type; return *this; }
 		
 		void	setColorModelDefault() { mColorModelDefault = true; }
+		void	setDataTypeDefault() { mDataTypeDefault = true; }
 		
 		float				getQuality() const { return mQuality; }
 		bool				isColorModelDefault() const { return mColorModelDefault; }
+		bool				isDataTypeDefault() const { return mDataTypeDefault; }
 		ImageIo::ColorModel	getColorModel() const { return mColorModel; }
+		ImageIo::DataType	getDataType() const { return mDataType; }
 		
 	  protected:
 		float					mQuality;
 		bool					mColorModelDefault;
 		ImageIo::ColorModel		mColorModel;
+		bool					mDataTypeDefault;
+		ImageIo::DataType		mDataType;
 	};
 	
   protected:
