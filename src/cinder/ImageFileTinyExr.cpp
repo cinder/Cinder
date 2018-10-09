@@ -1,6 +1,9 @@
 /*
  Copyright (c) 2015, The Cinder Project, All rights reserved.
- 
+ 
+
+
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -81,7 +84,7 @@ ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageS
 		status = ParseEXRHeaderFromMemory( mExrHeader.get(), &version, memory, &error );
 		if( status != TINYEXR_SUCCESS )
 			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR header; Error message: " ) + error );
-
+		
 		status = LoadEXRImageFromMemory( mExrImage.get(), mExrHeader.get(), memory, &error );
 		if( status != TINYEXR_SUCCESS )
 			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR file; Error message: " ) + error );
@@ -231,73 +234,66 @@ ImageTargetFileTinyExr::ImageTargetFileTinyExr( DataTargetRef dataTarget, ImageS
 		throw ImageIoExceptionIllegalColorModel();
 	}
 
-	setDataType( options.isDataTypeDefault() ? ImageIo::DataType::FLOAT32 : options.getDataType() );
-	mData.resize( mHeight * imageSource->getWidth() * mNumComponents );
+	// TODO: consider supporting half float and uint types as well
+	setDataType( ImageIo::DataType::FLOAT32 );
+	mData.resize( mHeight * mWidth * mNumComponents );
 }
 
 void *ImageTargetFileTinyExr::getRowPointer( int32_t row )
 {
-	return &mData[row * getWidth() * mNumComponents];
+	return &mData[row * mWidth * mNumComponents];
 }
 
 void ImageTargetFileTinyExr::finalize()
 {
-	// use smart pointers for exception safety
-	unique_ptr<EXRHeader> exrHeader( new EXRHeader );
-	unique_ptr<EXRImage>  exrImage( new EXRImage );
-
-	InitEXRHeader( exrHeader.get() );
-	InitEXRImage( exrImage.get() );
-
 	// turn interleaved data into a series of planar channels
-	unsigned char *imagePtr[4];
-
-	std::vector<Channel32f> channels;
-
-	float *srcData = mData.data();
+	vector<Channel32f> channels;
+	unsigned char *    imagePtr[4];
 	for( int c = 0; c < mNumComponents; ++c ) {
-		channels.emplace_back( getWidth(), getHeight(), mNumComponents * getWidth() * sizeof( float ), mNumComponents, srcData + c );
+		channels.emplace_back( getWidth(), getHeight() );
+		Channel32f srcChannel( getWidth(), getHeight(), mNumComponents * mWidth * sizeof(float), mNumComponents, mData.data() + c );
+		channels.back().copyFrom( srcChannel, srcChannel.getBounds() );
+
 		imagePtr[c] = reinterpret_cast<unsigned char *>( channels[c].getData() );
 	}
 
 	int pixelTypes[4], requested_pixel_types[4];
 	for( int i = 0; i < mNumComponents; i++ ) {
 		pixelTypes[i] = TINYEXR_PIXELTYPE_FLOAT;
-
-		switch( getDataType() ) {
-		case UINT8:
-		case UINT16:
-			requested_pixel_types[i] = TINYEXR_PIXELTYPE_UINT;
-			break;
-		case FLOAT16:
-			requested_pixel_types[i] = TINYEXR_PIXELTYPE_HALF;
-			break;
-		default:
-			requested_pixel_types[i] = TINYEXR_PIXELTYPE_FLOAT;
-		}
+		requested_pixel_types[i] = TINYEXR_PIXELTYPE_HALF; // export as half-floats to reduce file size
 	}
 
 	std::vector<EXRChannelInfo> info( mNumComponents );
 
-	exrImage->num_channels = mNumComponents;
-	exrImage->width = mWidth;
-	exrImage->height = mHeight;
+	// create image descriptor
+	EXRImage exrImage;
+	InitEXRImage( &exrImage );
 
-	exrImage->images = imagePtr;
+	exrImage.num_channels = mNumComponents;
+	exrImage.width = mWidth;
+	exrImage.height = mHeight;
+	exrImage.images = imagePtr;
 
-	exrHeader->num_channels = mNumComponents;
-	exrHeader->channels = info.data();
+	// create header descriptor
+	EXRHeader exrHeader;
+	InitEXRHeader( &exrHeader );
+
+	exrHeader.num_channels = mNumComponents;
+	exrHeader.channels = info.data();
 	for( int i = 0; i < mNumComponents; ++i ) {
-		strncpy( exrHeader->channels[i].name, mChannelNames[i].data(), mChannelNames[i].size() );
+		strncpy( exrHeader.channels[i].name, mChannelNames[i].data(), mChannelNames[i].size() );
 	}
-	exrHeader->pixel_types = pixelTypes;
-	exrHeader->requested_pixel_types = requested_pixel_types;
+	exrHeader.pixel_types = pixelTypes;
+	exrHeader.requested_pixel_types = requested_pixel_types;
+	exrHeader.compression_type = TINYEXR_COMPRESSIONTYPE_NONE; // TODO add option to enable compression
 
 	const char *error;
 
-	const int status = SaveEXRImageToFile( exrImage.get(), exrHeader.get(), mFilePath.string().c_str(), &error );
+	const int status = SaveEXRImageToFile( &exrImage, &exrHeader, mFilePath.string().c_str(), &error );
 	if( status != TINYEXR_SUCCESS )
 		throw ImageIoExceptionFailedWriteTinyExr( string( "TinyExr: failed to write. Error: " ) + error );
+
+	// Note: since header and image descriptors do not own any data, we explicitely do not call FreeEXRHeader and FreeEXRImage here!
 }
 
 } // namespace cinder
