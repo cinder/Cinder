@@ -113,8 +113,6 @@ DeviceManager* Context::deviceManager()
 #elif defined( CINDER_MSW )
 	#if( _WIN32_WINNT > 0x0600 ) // requires Windows Vista+
 		sDeviceManager.reset( new msw::DeviceManagerWasapi() );
-	//#else
-	//	CI_ASSERT( 0 && "TODO: simple DeviceManagerXp" );
 	#endif
 #elif defined( CINDER_ANDROID )
 		sDeviceManager.reset( new android::DeviceManagerOpenSl() );
