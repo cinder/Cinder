@@ -27,7 +27,9 @@
 
 #define USE_PLANAR_CHANNELS 1
 
-typedef struct _EXRImage EXRImage;
+typedef struct _EXRVersion EXRVersion;
+typedef struct _EXRHeader  EXRHeader;
+typedef struct _EXRImage   EXRImage;
 
 namespace cinder {
 
@@ -36,8 +38,8 @@ typedef std::shared_ptr<class ImageTargetFileTinyExr> ImageTargetFileTinyExrRef;
 typedef std::shared_ptr<class ImageSourceFileTinyExr>	ImageSourceFileTinyExrRef;
 
 class ImageSourceFileTinyExr : public ImageSource {
-public:
-	static ImageSourceRef	create( DataSourceRef dataSource, ImageSource::Options options = ImageSource::Options() );
+  public:
+	static ImageSourceRef create( DataSourceRef dataSource, ImageSource::Options options = ImageSource::Options() );
 
 	void load( ImageTargetRef target ) override;
 
@@ -46,7 +48,8 @@ public:
 protected:
 	ImageSourceFileTinyExr( DataSourceRef dataSourceRef, ImageSource::Options options );
 
-	std::unique_ptr<EXRImage>	mExrImage;
+	std::unique_ptr<EXRHeader, std::function<int( EXRHeader * )>> mExrHeader; // We're using the provided FreeEXRHeader function as a custom deleter
+	std::unique_ptr<EXRImage, std::function<int( EXRImage * )>>   mExrImage;  // We're using the provided FreeEXRImage function as a custom deleter
 };
 
 class ImageTargetFileTinyExr : public ImageTarget {
@@ -60,11 +63,11 @@ class ImageTargetFileTinyExr : public ImageTarget {
 	
   protected:
 	ImageTargetFileTinyExr( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
-	
-	uint8_t						mNumComponents;
-	fs::path					mFilePath;
-	std::vector<float>			mData;
-	std::vector<std::string>	mChannelNames;
+
+	uint8_t                  mNumComponents;
+	fs::path                 mFilePath;
+	std::vector<float>       mData;
+	std::vector<std::string> mChannelNames;
 };
 
 class ImageIoExceptionFailedLoadTinyExr : public ImageIoExceptionFailedLoad {
