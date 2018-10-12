@@ -66,14 +66,14 @@ ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageS
 		throw ImageIoExceptionFailedLoadTinyExr( string( "Multipart or DeepImage EXR's are not supported yet" ) );
 
 	if( dataSource->isFilePath() ) {
-		const auto filename = dataSource->getFilePath().string().c_str();
+		const string filename = dataSource->getFilePath().string();
 
 		const char *error;
-		status = ParseEXRHeaderFromFile( mExrHeader.get(), &version, filename, &error );
+		status = ParseEXRHeaderFromFile( mExrHeader.get(), &version, filename.c_str(), &error );
 		if( status != TINYEXR_SUCCESS )
 			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR header; Error message: " ) + error );
 
-		status = LoadEXRImageFromFile( mExrImage.get(), mExrHeader.get(), filename, &error );
+		status = LoadEXRImageFromFile( mExrImage.get(), mExrHeader.get(), filename.c_str(), &error );
 		if( status != TINYEXR_SUCCESS )
 			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR file; Error message: " ) + error );
 	}
