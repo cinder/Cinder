@@ -1,8 +1,5 @@
 /*
  Copyright (c) 2015, The Cinder Project, All rights reserved.
- 
-
-
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -98,30 +95,30 @@ ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageS
 	}
 
 	switch( pixelType ) {
-	case TINYEXR_PIXELTYPE_HALF:
-		setDataType( ImageIo::FLOAT16 );
-		break;
-	case TINYEXR_PIXELTYPE_FLOAT:
-		setDataType( ImageIo::FLOAT32 );
-		break;
-	default:
-		throw ImageIoExceptionFailedLoadTinyExr( "TinyExr: Unknown data type" );
-		break;
+		case TINYEXR_PIXELTYPE_HALF:
+			setDataType( ImageIo::FLOAT16 );
+			break;
+		case TINYEXR_PIXELTYPE_FLOAT:
+			setDataType( ImageIo::FLOAT32 );
+			break;
+		default:
+			throw ImageIoExceptionFailedLoadTinyExr( "TinyExr: Unknown data type" );
+			break;
 	}
 
 	setSize( mExrImage->width, mExrImage->height );
 
 	switch( mExrImage->num_channels ) {
-	case 3:
-		setColorModel( ImageIo::CM_RGB );
-		setChannelOrder( ImageIo::ChannelOrder::RGB );
-		break;
-	case 4:
-		setColorModel( ImageIo::CM_RGB );
-		setChannelOrder( ImageIo::ChannelOrder::RGBA );
-		break;
-	default:
-		throw ImageIoExceptionFailedLoadTinyExr( "TinyExr: Unsupported number of channels (" + to_string( mExrImage->num_channels ) + ")" );
+		case 3:
+			setColorModel( ImageIo::CM_RGB );
+			setChannelOrder( ImageIo::ChannelOrder::RGB );
+			break;
+		case 4:
+			setColorModel( ImageIo::CM_RGB );
+			setChannelOrder( ImageIo::ChannelOrder::RGBA );
+			break;
+		default:
+			throw ImageIoExceptionFailedLoadTinyExr( "TinyExr: Unsupported number of channels (" + to_string( mExrImage->num_channels ) + ")" );
 	}
 }
 
@@ -202,7 +199,7 @@ ImageTargetRef ImageTargetFileTinyExr::create( DataTargetRef dataTarget, ImageSo
 
 ImageTargetFileTinyExr::ImageTargetFileTinyExr( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string & /*extensionData*/ )
 {
-	if( !dataTarget->providesFilePath() ) {
+	if( ! dataTarget->providesFilePath() ) {
 		throw ImageIoExceptionFailedWrite( "ImageTargetFileTinyExr only supports writing to files." );
 	}
 
@@ -212,26 +209,26 @@ ImageTargetFileTinyExr::ImageTargetFileTinyExr( DataTargetRef dataTarget, ImageS
 	ImageIo::ColorModel cm = options.isColorModelDefault() ? imageSource->getColorModel() : options.getColorModel();
 
 	switch( cm ) {
-	case ImageIo::ColorModel::CM_RGB:
-		mNumComponents = ( imageSource->hasAlpha() ) ? 4 : 3;
-		setColorModel( ImageIo::ColorModel::CM_RGB );
-		setChannelOrder( ( mNumComponents == 3 ) ? ImageIo::ChannelOrder::BGR : ImageIo::ChannelOrder::ABGR );
-		if( mNumComponents == 3 )
-			mChannelNames = { "B", "G", "R" };
-		else
-			mChannelNames = { "A", "B", "G", "R" };
-		break;
-	case ImageIo::ColorModel::CM_GRAY:
-		mNumComponents = ( imageSource->hasAlpha() ) ? 2 : 1;
-		setColorModel( ImageIo::ColorModel::CM_GRAY );
-		setChannelOrder( ( mNumComponents == 2 ) ? ImageIo::ChannelOrder::YA : ImageIo::ChannelOrder::Y );
-		if( mNumComponents == 2 )
-			mChannelNames = { "Y", "A" };
-		else
-			mChannelNames = { "Y" };
-		break;
-	default:
-		throw ImageIoExceptionIllegalColorModel();
+		case ImageIo::ColorModel::CM_RGB:
+			mNumComponents = ( imageSource->hasAlpha() ) ? 4 : 3;
+			setColorModel( ImageIo::ColorModel::CM_RGB );
+			setChannelOrder( ( mNumComponents == 3 ) ? ImageIo::ChannelOrder::BGR : ImageIo::ChannelOrder::ABGR );
+			if( mNumComponents == 3 )
+				mChannelNames = { "B", "G", "R" };
+			else
+				mChannelNames = { "A", "B", "G", "R" };
+			break;
+		case ImageIo::ColorModel::CM_GRAY:
+			mNumComponents = ( imageSource->hasAlpha() ) ? 2 : 1;
+			setColorModel( ImageIo::ColorModel::CM_GRAY );
+			setChannelOrder( ( mNumComponents == 2 ) ? ImageIo::ChannelOrder::YA : ImageIo::ChannelOrder::Y );
+			if( mNumComponents == 2 )
+				mChannelNames = { "Y", "A" };
+			else
+				mChannelNames = { "Y" };
+			break;
+		default:
+			throw ImageIoExceptionIllegalColorModel();
 	}
 
 	// TODO: consider supporting half float and uint types as well
