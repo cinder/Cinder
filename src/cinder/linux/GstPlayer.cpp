@@ -23,6 +23,11 @@ namespace gst { namespace video {
 
 #if defined( CINDER_GST_HAS_GL )
 static GstGLDisplay* sGstGLDisplay = nullptr;
+static GstGLContext* sGstGLContext = nullptr;
+static gulong sSharedCtxSignalHandler = 0;
+static GstGLContext* createGstGLContext( GstGLDisplay* display, GstGLContext* context, gpointer userData ) {
+	return sGstGLContext;
+}
 #endif
 
 static bool			sUseGstGl = false;
@@ -155,9 +160,9 @@ GstBusSyncReply checkBusMessagesSync( GstBus* bus, GstMessage* message, gpointer
 				context = gst_context_new( "gst.gl.app_context", TRUE );
 				GstStructure *s = gst_context_writable_structure( context );
 				#if defined( GST_TYPE_GL_CONTEXT )
-					gst_structure_set( s, "context", GST_TYPE_GL_CONTEXT, data.context, nullptr );
+					gst_structure_set( s, "context", GST_TYPE_GL_CONTEXT, sGstGLContext, nullptr );
 				#else
-					gst_structure_set( s, "context", GST_GL_TYPE_CONTEXT, data.context, nullptr );
+					gst_structure_set( s, "context", GST_GL_TYPE_CONTEXT, sGstGLContext, nullptr );
 				#endif
 				gst_element_set_context( GST_ELEMENT( message->src ), context );
 			}
@@ -351,8 +356,8 @@ void GstPlayer::cleanup()
 
 	if( g_main_loop_is_running( mGMainLoop ) ) {
 		g_main_loop_quit( mGMainLoop );
-		g_main_loop_unref( mGMainLoop );
 	}
+	g_main_loop_unref( mGMainLoop );
 
 	if( mGMainLoopThread.joinable() ){
 		mGMainLoopThread.join();
@@ -420,9 +425,6 @@ void GstPlayer::resetPipeline()
 	mGstData.videoBin = nullptr;
 	if( sUseGstGl ) {
 #if defined( CINDER_GST_HAS_GL )
-		gst_object_unref( mGstData.context );
-		mGstData.context = nullptr;
-		gst_object_unref( sGstGLDisplay );
 		// Pipeline will unref and destroy its children..
 		mGstData.glupload = nullptr;
 		mGstData.glcolorconvert = nullptr;
@@ -501,49 +503,67 @@ bool GstPlayer::initialize()
 {
 #if defined( CINDER_GST_HAS_GL )
 	if( sUseGstGl ) {
-		// On the first run ref count = 1, from then on we need to ref it in order to keep
-		// the display alive until the last object is destroyed.
-		bool holdDisplayRef = false;
+		GstGLContext* sharedCtx = nullptr;
+		GError* err = nullptr;
 #if defined( CINDER_LINUX )
 		auto platformData = std::dynamic_pointer_cast<ci::gl::PlatformDataLinux>( ci::gl::context()->getPlatformData() );
 #if defined( CINDER_LINUX_EGL_ONLY )
 		if( ! sGstGLDisplay )
 			sGstGLDisplay = (GstGLDisplay*) gst_gl_display_egl_new_with_egl_display( platformData->mDisplay );
-		else
-			holdDisplayRef = true;
 
-		mGstData.context  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)platformData->mContext, GST_GL_PLATFORM_EGL, GST_GL_API_GLES2 );
+		if( ! sGstGLContext ) {
+			ci::gl::env()->makeContextCurrent( nullptr );
+			sGstGLContext = (GstGLContext*)gst_object_ref( gst_gl_context_new( sGstGLDisplay ) );
+			sharedCtx = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)platformData->mContext, GST_GL_PLATFORM_EGL, GST_GL_API_GLES2 );
+			ci::gl::context()->makeCurrent( true );
+		}
 #elif defined( CINDER_HEADLESS_GL_OSMESA )
 		if( ! sGstGLDisplay )
 			sGstGLDisplay = gst_gl_display_new();
-		else
-			holdDisplayRef = true;
-
-		mGstData.context  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)platformData->mContext, GST_GL_PLATFORM_ANY, GST_GL_API_ANY );
+		if( ! sGstGLContext ) {
+			ci::gl::env()->makeContextCurrent( nullptr );
+			sGstGLContext = (GstGLContext*)gst_object_ref( gst_gl_context_new( sGstGLDisplay ) );
+			sharedCtx = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)platformData->mContext, GST_GL_PLATFORM_ANY, GST_GL_API_ANY );
+			ci::gl::context()->makeCurrent( true );
+		}
 #else
 		if( ! sGstGLDisplay )
-			sGstGLDisplay = (GstGLDisplay*) gst_gl_display_x11_new_with_display( ::glfwGetX11Display() );
-		else
-			holdDisplayRef = true;
+			sGstGLDisplay = (GstGLDisplay*)gst_gl_display_x11_new_with_display( ::glfwGetX11Display() );
+		if( ! sGstGLContext ) {
+			ci::gl::env()->makeContextCurrent( nullptr );
+			sGstGLContext = (GstGLContext*)gst_object_ref( gst_gl_context_new( sGstGLDisplay ) );
   #if defined( CINDER_GL_ES )
-		mGstData.context  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)::glfwGetEGLContext( platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_GLES2 );
+			sharedCtx  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)::glfwGetEGLContext( platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_GLES2 );
   #else
-		mGstData.context  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)::glfwGetGLXContext( platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_OPENGL );
+			sharedCtx  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)::glfwGetGLXContext( platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_OPENGL );
   #endif
+			ci::gl::context()->makeCurrent( true );
+		}
 #endif
 #elif defined( CINDER_MAC )
+		auto platformData = std::dynamic_pointer_cast<ci::gl::PlatformDataMac>( ci::gl::context()->getPlatformData() );
 		if( ! sGstGLDisplay )
 			sGstGLDisplay = gst_gl_display_new ();
-		else
-			holdDisplayRef = true;
-
-		auto platformData = std::dynamic_pointer_cast<ci::gl::PlatformDataMac>( ci::gl::context()->getPlatformData() );
-		mGstData.context  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)platformData->mCglContext, GST_GL_PLATFORM_CGL, GST_GL_API_OPENGL );
-#endif
-		if( holdDisplayRef ) {
-			gst_object_ref( sGstGLDisplay );
+		if( ! sGstGLContext ) {
+			ci::gl::env()->makeContextCurrent( nullptr );
+			sGstGLContext = (GstGLContext*)gst_object_ref( gst_gl_context_new( sGstGLDisplay ) );
+			sharedCtx = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)platformData->mCglContext, GST_GL_PLATFORM_CGL, GST_GL_API_OPENGL );
+			ci::gl::context()->makeCurrent( true );
 		}
-	}
+#endif
+		ci::gl::env()->makeContextCurrent( nullptr );
+		if( sharedCtx ) {
+			if( ! gst_gl_context_create( sGstGLContext, sharedCtx, &err ) && err ) {
+				CI_LOG_E( "Failed to create shared context between Cinder and GStreamer : " << err->message );
+				g_free( err );
+			}
+			gst_object_unref( sharedCtx );
+		}
+		ci::gl::context()->makeCurrent( true );
+		if( sGstGLContext && ( sSharedCtxSignalHandler == 0 ) ) {
+			sSharedCtxSignalHandler = g_signal_connect( sGstGLDisplay, "create-context", G_CALLBACK( createGstGLContext ), nullptr );
+		}
+}
 #endif // defined( CINDER_GST_HAS_GL )
 	return true;
 }
@@ -610,12 +630,24 @@ void GstPlayer::constructPipeline()
 		if( ! mGstData.glcolorconvert ) CI_LOG_E( "Failed to create GL convert element!" );
 
 		mGstData.rawCapsFilter		= gst_element_factory_make( "capsfilter", "rawcapsfilter" );
+		GstCaps* caps = nullptr;
 #if defined( CINDER_LINUX_EGL_ONLY ) && defined( CINDER_GST_HAS_GL )
-		if( mGstData.rawCapsFilter ) g_object_set( G_OBJECT( mGstData.rawCapsFilter ), "caps", gst_caps_from_string( "video/x-raw(memory:GLMemory)" ), nullptr );
+		if( mGstData.rawCapsFilter ) {
+			caps = gst_caps_from_string( "video/x-raw(memory:GLMemory)" );
+		}
 #else
-		if( mGstData.rawCapsFilter ) g_object_set( G_OBJECT( mGstData.rawCapsFilter ), "caps", gst_caps_from_string( "video/x-raw" ), nullptr );
+		if( mGstData.rawCapsFilter ) {
+			caps = gst_caps_from_string( "video/x-raw" );
+		}
 #endif
-		else CI_LOG_E( "Failed to create raw caps filter element!" );
+		else {
+			CI_LOG_E( "Failed to create raw caps filter element!" );
+		}
+
+		if( caps ) {
+			g_object_set( G_OBJECT( mGstData.rawCapsFilter ), "caps", caps, nullptr );
+			gst_caps_unref( caps );
+		}
 
 		gst_bin_add_many( GST_BIN( mGstData.videoBin ),  mGstData.rawCapsFilter, mGstData.glupload, mGstData.glcolorconvert, mGstData.appSink, nullptr );
 

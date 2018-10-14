@@ -109,7 +109,6 @@ struct GstData {
 	GstElement* videoBin = nullptr;
 	GstPlayer* player = nullptr;
 #if defined( CINDER_GST_HAS_GL )
-	GstGLContext* context = nullptr;
 	GstElement* glupload = nullptr;
 	GstElement* glcolorconvert = nullptr;
 
