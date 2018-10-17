@@ -24,67 +24,64 @@
    <body id="guide-contents" class="language-c++">
 
       <!-- CONTENT STARTS HERE -->
-            <h1><a class="anchor" id="tourIntro"></a>
-               Introduction
-            </h1>
-            <p><br />
-               Hi. My name is <a href="http://www.roberthodgin.com/">Robert Hodgin</a>, and I am the author of this tutorial (with helpful input from <a href="http://www.drawnline.net/">Andrew Bell</a>, <a href="http://www.todaycreate.com/">Mike Creighton</a>, and <a href="http://www.digitalnoah.com">Noah King</a>). I want to help others get started with Cinder because learning a new framework can be intimidating.<br />
-               <br />
-               Things are going to be pretty informal. Think of this as a quick-start guide. Instead of exhaustively covering a topic before moving on to the next, I am going to meander around a bit and sample some of Cinder's many features along the way. Hopefully, this tutorial will inspire you to continue to explore Cinder and learn to love it as much as I do.<br />
-               <br />
-               In Section One, I will show you how to go from a brand new Cinder project to a particle engine with both local and global forces, and then use it to achieve some artistic effects. Along the way, I will point out a few of Cinder's features as well as explaining a bit about my personal coding practices. If you wish to see what you will be working towards, check the final video at the end of Chapter 5.<br />
-               <br />
-               In Section Two, I will tweak the particle engine from Section One and use it as a basis for a flocking simulation. Over five chapters, I will show how to create and control a 3D camera system and show how to set up a graphical interface for controlling variables in runtime. Then I will explain and implement four rules for a robust flocking simulation. By the end of Section Two, you will have a fully functioning 3D flocking simulation complete with predators and collision avoidance.<br />
-               <br />
-               Below you will find some brief chapter descriptions. Each chapter has a corresponding project, which you can find in the <em>cinder/tour</em> directory. If you don't already have the Hello Cinder tour, you can download it <a href="https://libcinder.org/docs/hello_cinder/tour.zip">here</a>.<br />
-               <br />
-            </p>
-            <div class="image">
-               <img src="images/tutorial_tour_location_shot.png" alt="tutorial_tour_location_shot.png"/>
-            </div>
-            <p> <br />
-            </p>
-            <h1><a class="anchor" id="section1"></a>
-               Section One: Introduction and Particle Engine
-            </h1>
-            <p><br />
-               <a class="el" href="hello_cinder_chapter1.html">Chapter 1: Getting Started</a><br />
-               In the first chapter, we will set up a new project and learn how to load and display images. We go on to show how to draw simple shapes and we even set up a basic Particle engine. <br />
-               <br />
-               <a class="el" href="hello_cinder_chapter2.html">Chapter 2: Personality and diversity</a><br />
-               We continue to expand our Particle engine. We also learn how to pull color data from images and put that information to good use. <br />
-               <br />
-               <a class="el" href="hello_cinder_chapter3.html">Chapter 3: Influence</a><br />
-               In chapter 3, we show how to use keyboard and mouse input to control our Particle engine. <br />
-               <br />
-               <a class="el" href="hello_cinder_chapter4.html">Chapter 4: Fine tuning</a><br />
-               A birth/death cycle is added to our Particle class and Perlin noise is introduced. <br />
-               <br />
-               <a class="el" href="hello_cinder_chapter5.html">Chapter 5: External Forces</a><br />
-               We show you how to use nested iterators to allow the Particles to interact with each other. We then tie everything together and marvel at how far we have come. <br />
-            </p>
-            <h1><a class="anchor" id="section2"></a>
-               Section Two: Flocking Simulation
-            </h1>
-            <p><br />
-               <a class="el" href="flocking_chapter1.html">Chapter 1: Camera and Parameters</a><br />
-               We will learn about the Cinder Camera class and use it to create a 3D environment for the Particle engine we made in Section One. Then we will show how to setup a Params class for controlling variables during runtime.<br />
-               <br />
-               <a class="el" href="flocking_chapter2.html">Chapter 2: Rule One - Separation</a><br />
-               The first rule of flocking is described and implemented. This rule states that all flocking objects should avoid getting too close to each other. This helps to mitigate overcrowding and collisions.<br />
-               <br />
-               <a class="el" href="flocking_chapter3.html">Chapter 3: Rule Two - Cohesion</a><br />
-               The second rule is one of attraction. Flocking objects will move towards each other in order to prevent any individual from becoming isolated and exposed.<br />
-               <br />
-               <a class="el" href="flocking_chapter4.html">Chapter 4: Rule Three - Alignment</a><br />
-               The third rule is arguably the most important. Alignment, or orientation, states that flocking objects will try to move in the general direction of the nearest neighbors. This inevitably leads to characteristic group behavior that is witnessed in large groups of birds and fish.<br />
-               <br />
-               <a class="el" href="flocking_chapter5.html">Chapter 5: Rule Four - Evasion</a><br />
-               In this final chapter, we will add a few predators to the simulation and show how to add personality and behavioral diversity to the flock in order to produce a more organic result. <br />
-               <br />
-               <br />
-               Okay, enough with the introduction. <a class="el" href="hello_cinder_chapter1.html">Let's dive right in</a>. 
-            </p>
+      <h1><a class="anchor" id="tourIntro"></a>
+         Introduction
+      </h1>
+      <p><br />
+         Hi. My name is <a href="http://www.roberthodgin.com/">Robert Hodgin</a>, and I am the author of this tutorial (with helpful input from <a href="http://www.drawnline.net/">Andrew Bell</a>, <a href="http://www.todaycreate.com/">Mike Creighton</a>, and <a href="http://www.digitalnoah.com">Noah King</a>). I want to help others get started with Cinder because learning a new framework can be intimidating.<br />
+         <br />
+         Things are going to be pretty informal. Think of this as a quick-start guide. Instead of exhaustively covering a topic before moving on to the next, I am going to meander around a bit and sample some of Cinder's many features along the way. Hopefully, this tutorial will inspire you to continue to explore Cinder and learn to love it as much as I do.<br />
+         <br />
+         In Section One, I will show you how to go from a brand new Cinder project to a particle engine with both local and global forces, and then use it to achieve some artistic effects. Along the way, I will point out a few of Cinder's features as well as explaining a bit about my personal coding practices. If you wish to see what you will be working towards, check the final video at the end of Chapter 5.<br />
+         <br />
+         In Section Two, I will tweak the particle engine from Section One and use it as a basis for a flocking simulation. Over five chapters, I will show how to create and control a 3D camera system and show how to set up a graphical interface for controlling variables in runtime. Then I will explain and implement four rules for a robust flocking simulation. By the end of Section Two, you will have a fully functioning 3D flocking simulation complete with predators and collision avoidance.<br />
+      </p>
+      <div class="image">
+         <img src="images/tutorial_tour_location_shot.png" alt="tutorial_tour_location_shot.png"/>
+      </div>
+      <p> <br />
+      </p>
+      <h1><a class="anchor" id="section1"></a>
+         Section One: Introduction and Particle Engine
+      </h1>
+      <p><br />
+         <a class="el" href="hello_cinder_chapter1.html">Chapter 1: Getting Started</a><br />
+         In the first chapter, we will set up a new project and learn how to load and display images. We go on to show how to draw simple shapes and we even set up a basic Particle engine. <br />
+         <br />
+         <a class="el" href="hello_cinder_chapter2.html">Chapter 2: Personality and diversity</a><br />
+         We continue to expand our Particle engine. We also learn how to pull color data from images and put that information to good use. <br />
+         <br />
+         <a class="el" href="hello_cinder_chapter3.html">Chapter 3: Influence</a><br />
+         In chapter 3, we show how to use keyboard and mouse input to control our Particle engine. <br />
+         <br />
+         <a class="el" href="hello_cinder_chapter4.html">Chapter 4: Fine tuning</a><br />
+         A birth/death cycle is added to our Particle class and Perlin noise is introduced. <br />
+         <br />
+         <a class="el" href="hello_cinder_chapter5.html">Chapter 5: External Forces</a><br />
+         We show you how to use nested iterators to allow the Particles to interact with each other. We then tie everything together and marvel at how far we have come. <br />
+      </p>
+      <h1><a class="anchor" id="section2"></a>
+         Section Two: Flocking Simulation
+      </h1>
+      <p><br />
+         <a class="el" href="../flocking/chapter1.html">Chapter 1: Camera and Parameters</a><br />
+         We will learn about the Cinder Camera class and use it to create a 3D environment for the Particle engine we made in Section One. Then we will show how to setup a Params class for controlling variables during runtime.<br />
+         <br />
+         <a class="el" href="../flocking/chapter2.html">Chapter 2: Rule One - Separation</a><br />
+         The first rule of flocking is described and implemented. This rule states that all flocking objects should avoid getting too close to each other. This helps to mitigate overcrowding and collisions.<br />
+         <br />
+         <a class="el" href="../flocking/chapter3.html">Chapter 3: Rule Two - Cohesion</a><br />
+         The second rule is one of attraction. Flocking objects will move towards each other in order to prevent any individual from becoming isolated and exposed.<br />
+         <br />
+         <a class="el" href="../flocking/chapter4.html">Chapter 4: Rule Three - Alignment</a><br />
+         The third rule is arguably the most important. Alignment, or orientation, states that flocking objects will try to move in the general direction of the nearest neighbors. This inevitably leads to characteristic group behavior that is witnessed in large groups of birds and fish.<br />
+         <br />
+         <a class="el" href="../flocking/chapter5.html">Chapter 5: Rule Four - Evasion</a><br />
+         In this final chapter, we will add a few predators to the simulation and show how to add personality and behavioral diversity to the flock in order to produce a more organic result. <br />
+         <br />
+         <br />
+         Okay, enough with the introduction. <a class="el" href="hello_cinder_chapter1.html">Let's dive right in</a>. 
+      </p>
       <!-- END CONTENT -->
 
       <!-- Scripts -->
