@@ -538,50 +538,41 @@ static std::vector<std::string> split_path_into_components( std::string path, ch
 //! Find pointer to node at specified path
 JsonTree* JsonTree::getNodePtr( const string &relativePath, bool caseSensitive, char separator ) const
 {
-    // Start search from this node
+	// Start search from this node
 	JsonTree *curNode = const_cast<JsonTree*>( this );
 
-    // Split address at dot and iterate tokens
+	// Split address at dot and iterate tokens
 	for( const std::string& component : split_path_into_components( relativePath, separator ) ) {
-        // Declare target node
-		ConstIter node;
+		// Declare target node
+		ConstIter node = curNode->getChildren().begin();
 
-        // The key is numeric
+		// The key is numeric
 		if( isIndex( component ) ) {
-            // Find child which uses this index as its key
+			// Find child which uses this index as its key
 			uint32_t index = std::stoi( component );
-			uint32_t i = 0;
-			for ( node = curNode->getChildren().begin(); node != curNode->getChildren().end(); ++node, i++ ) {
-				if ( i == index ) {
+			index = std::min<uint32_t>( index, (uint32_t) curNode->getChildren().size() );
+			std::advance( node, index );
+		} else {
+			// Iterate children
+			while( node != curNode->getChildren().end() ) {
+				// Compare child's key to path component
+				bool keysMatch = false;
+				if( caseSensitive ) {
+					keysMatch = node->getKey() == component;
+				} else {
+					keysMatch = ci::asciiCaseEqual( node->getKey(), component );
+				}
+
+				// Break if found, advance node if not
+				if( keysMatch ) {
 					break;
+				} else {
+					++node;
 				}
 			}
-		} else {	
-            // Iterate children
-            node = curNode->getChildren().begin();
-            while( node != curNode->getChildren().end() ) {
-                // Compare child's key to path component
-                bool keysMatch = false;
-                string key1 = node->getKey();
-                string key2 = component;
-                if( caseSensitive && key1 == key2 ) {
-                    keysMatch = true;
-                } else if ( !caseSensitive && ( ci::asciiCaseEqual( key1, key2 ) ) ) {
-                    keysMatch = true;
-                }
-                
-                // Break if found, advance node if not
-                if( keysMatch ) {
-                    break;
-                } else {
-                    ++node;
-                }
-                
-            }
-            
 		}
 
-        // Return null pointer if we're out of nodes to search, 
+        // Return null pointer if we're out of nodes to search,
         // otherwise assign node and continue to search its children
 		if( node == curNode->getChildren().end() ) {
             return 0;
