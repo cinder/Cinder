@@ -30,7 +30,7 @@
 #include "cinder/Utilities.h"
 
 #include <string>
-#include <boost/container/list.hpp>
+#include <list>
 
 namespace Json {
 	class Value;
@@ -40,9 +40,9 @@ namespace cinder {
 
 class CI_API JsonTree {
   public:
-	
+
 	//! \cond
-	typedef boost::container::list<JsonTree> Container;
+	typedef std::list<JsonTree> Container;
 
 	typedef Container::const_iterator ConstIter;
 	typedef Container::iterator Iter;

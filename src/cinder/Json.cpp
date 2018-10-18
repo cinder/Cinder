@@ -25,7 +25,6 @@
 */
 
 
-#include <boost/algorithm/string.hpp>
 #include "jsoncpp/json.h"
 
 #include "cinder/Json.h"
@@ -33,6 +32,8 @@
 #include "cinder/Utilities.h"
 
 #include <cstdlib>
+#include <algorithm>
+#include <iterator>
 
 using namespace std;
 
@@ -514,27 +515,41 @@ string JsonTree::getPath( char separator ) const
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+static std::vector<std::string> split_path_into_components( std::string path, char separator )
+{
+	for (char& c : path) {
+		if (c == '[') {
+			c = separator;
+		};
+	}
+
+	path.erase(
+		std::remove_if(
+			path.begin(),
+			path.end(),
+			[](char c) { return c == '\'' || c == ']'; }
+		),
+		path.end()
+	);
+
+	return split( path, separator );
+}
+
 //! Find pointer to node at specified path
 JsonTree* JsonTree::getNodePtr( const string &relativePath, bool caseSensitive, char separator ) const
 {
-    // Format path into dotted address
-	std::string path = boost::replace_all_copy( relativePath, "[", std::string( 1, separator ) );
-	path = boost::replace_all_copy( path, "'", "");
-	path = boost::replace_all_copy( path, "]", "");
-
     // Start search from this node
 	JsonTree *curNode = const_cast<JsonTree*>( this );
-    
+
     // Split address at dot and iterate tokens
-	vector<string> pathComponents = split( path, separator );
-	for( vector<string>::const_iterator pathIt = pathComponents.begin(); pathIt != pathComponents.end(); ++pathIt ) {
+	for( const std::string& component : split_path_into_components( relativePath, separator ) ) {
         // Declare target node
 		ConstIter node;
 
         // The key is numeric
-		if( isIndex( *pathIt ) ) {
+		if( isIndex( component ) ) {
             // Find child which uses this index as its key
-			uint32_t index = std::stoi( *pathIt );
+			uint32_t index = std::stoi( component );
 			uint32_t i = 0;
 			for ( node = curNode->getChildren().begin(); node != curNode->getChildren().end(); ++node, i++ ) {
 				if ( i == index ) {
@@ -544,11 +559,11 @@ JsonTree* JsonTree::getNodePtr( const string &relativePath, bool caseSensitive, 
 		} else {	
             // Iterate children
             node = curNode->getChildren().begin();
-            while( node != curNode->getChildren().end() ) {  
+            while( node != curNode->getChildren().end() ) {
                 // Compare child's key to path component
                 bool keysMatch = false;
                 string key1 = node->getKey();
-                string key2 = *pathIt;
+                string key2 = component;
                 if( caseSensitive && key1 == key2 ) {
                     keysMatch = true;
                 } else if ( !caseSensitive && ( ci::asciiCaseEqual( key1, key2 ) ) ) {
@@ -686,7 +701,18 @@ void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions 
 		// This routine serializes JsonCpp data and formats it
 		if( writeOptions.getIndented() ) {
 			jsonString = value.toStyledString();
-			boost::replace_all( jsonString, "\n", "\r\n" );
+
+			//NOTE: manual (maybe naive) implementation of boost::replace_all( jsonString, "\n", "\r\n" );
+			//      should use std::regex_replace when all supported compilers support it
+
+			const auto additional_space = std::count(jsonString.begin(), jsonString.end(), '\n');
+			jsonString.reserve( jsonString.size() + additional_space );
+			for( std::size_t pos = 0; pos < jsonString.size(); ++pos ) {
+				if( jsonString[pos] == '\n' ) {
+					jsonString.insert(jsonString.begin() + pos, '\r');
+					++pos;
+				}
+			}
 		} else {
 			Json::FastWriter writer;
 			jsonString = writer.write( value );
