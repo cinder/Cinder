@@ -357,7 +357,7 @@ $(document).ready(function() {
 		});
 	};
 
-	$( '#search-results-view-all' ).on( 'click', function(){
+	$( '#search-results-view-all, #search-button' ).on( 'click', function(){
 		var searchTerm = escape( input.value );
 		window.location = rootDir + 'search.html?' + searchTerm;
 	} );
