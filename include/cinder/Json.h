@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2012, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -68,7 +68,7 @@ class CI_API JsonTree {
 	  private:
 		bool	mIgnoreErrors, mAllowComments;
 	};
-	
+
 	//! Options for JSON writing. Passed to the \c write method.
 	class CI_API WriteOptions {
 	public:
@@ -82,17 +82,17 @@ class CI_API JsonTree {
 		bool	getCreateDocument() const;
 		//! Returns whether JSON string is indented.
 		bool	getIndented() const;
-		
+
 	private:
 		//! \cond
 		bool	mCreateDocument;
 		bool	mIndented;
 		//! \endcond
-		
+
 	};
-	
+
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	//! Creates a null JsonTree.
 	explicit JsonTree();
 	//! Parses the JSON contained in the string \a xmlString
@@ -120,12 +120,12 @@ class CI_API JsonTree {
 	explicit JsonTree( const std::string &key, int64_t value );
 	//! Creates a JsonTree with key \a key and uint64_t \a value .
 	explicit JsonTree( const std::string &key, uint64_t value );
-	
+
 	/**! Creates a JsonTree with key \a key and an empty array. **/
 	static JsonTree					makeArray( const std::string &key = "" );
 	/**! Creates a JsonTree with key \a key as an empty object. **/
 	static JsonTree					makeObject( const std::string &key = "" );
-	
+
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//! Returns the JsonTree as a string with standard formatting.
@@ -140,13 +140,13 @@ class CI_API JsonTree {
 	//! Returns a ConstIter which marks the end of the children of this node.
 	ConstIter						end() const;
 
-	//! Assigns the JsonTree a new value, and creates it if it doesn't exist. 
+	//! Assigns the JsonTree a new value, and creates it if it doesn't exist.
 	JsonTree&						operator=( const JsonTree &jsonTree );
-	
-	/**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches. 
+
+	/**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches.
 		<br><tt>JsonTree node = myNode[ "path.to.child" ];</tt> **/
 	JsonTree&						operator[]( const std::string &relativePath );
-	/**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches. 
+	/**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches.
 		<br><tt>JsonTree node = myNode[ "path.to.child" ];</tt> **/
 	const JsonTree&					operator[]( const std::string &relativePath ) const;
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
@@ -155,11 +155,11 @@ class CI_API JsonTree {
 	const JsonTree&					operator[]( size_t index ) const;
 	//! Streams the JsonTree \a json to std::ostream \a out with standard formatting.
 	friend CI_API std::ostream&		operator<<( std::ostream &out, const JsonTree &json );
-	
-	/**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches. 
+
+	/**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches.
 		<br><tt>JsonTree node = myNode.getChild( "path.to.child" );</tt> **/
 	JsonTree&						getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '.' );
-	/**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches. 
+	/**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches.
 		<br><tt>JsonTree node = myNode.getChild( "path.to.child" );</tt> **/
 	const JsonTree&					getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '.' ) const;
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
@@ -171,7 +171,7 @@ class CI_API JsonTree {
 	//! Returns the number of child nodes.
 	size_t							getNumChildren() const	{ return getChildren().size(); }
 
-	/**! Returns whether the child at \a relativePath exists. 
+	/**! Returns whether the child at \a relativePath exists.
 		<br><tt>bool nodeExists = myNode.hasChild( "path.to.child" );</tt> **/
 	bool							hasChild( const std::string &relativePath, bool caseSensitive = false, char separator = '.' ) const;
 	//! Returns whether this node has a parent node.
@@ -186,9 +186,9 @@ class CI_API JsonTree {
 
 	//! Removes all child nodes
 	void							clear();
-	/**! Appends a copy of the node \a newChild to the children of this node.  
-		If \a this is a value node, it will change to an object or an array. 
-		If \a newChild has a key, \a this becomes an object node. 
+	/**! Appends a copy of the node \a newChild to the children of this node.
+		If \a this is a value node, it will change to an object or an array.
+		If \a newChild has a key, \a this becomes an object node.
 		If not, \a this becomes an array node. Returns reference to itself. **/
 	JsonTree&						addChild( const JsonTree &newChild );
 	/**! Appends a copy of the node \a newChild to the children of this node.
@@ -205,24 +205,24 @@ class CI_API JsonTree {
 	//! Replaces the child at \a pos with JsonTree \a newChild. Throws ExcChildNotFound if none matches.
 	void							replaceChild( Iter pos, const JsonTree &newChild );
 
-	/**! Writes this JsonTree to \a path with standard formatting. 
+	/**! Writes this JsonTree to \a path with standard formatting.
 	 If \a writeOptions creates a document then an implicit parent object node is created when necessary and \a this is treated as the root element.
 	 If \a writeOptions indents then the JSON string will be indented.**/
 	void							write( const fs::path &path, WriteOptions writeOptions = WriteOptions() );
-	/**! Writes this JsonTree to \a target. 
+	/**! Writes this JsonTree to \a target.
 		If \a writeOptions creates a document then an implicit parent object node is created when necessary and \a this is treated as the root element.
-	    If \a writeOptions indents then the JSON string will be indented.**/
+		If \a writeOptions indents then the JSON string will be indented.**/
 	void							write( DataTargetRef target, WriteOptions writeOptions = WriteOptions() );
 
 	//! Returns the node's key as a string. Returns index if node does not have a key.
 	const std::string&				getKey() const;
-	
+
 	/**! Returns a path to this node, separated by the character \a separator. **/
 	std::string						getPath( char separator = '.' ) const;
-	
+
 	/**! \brief Returns the value of the node cast to T using ci::fromString().
 		<br><tt>float value = myNode.getValue<float>();</tt> **/
-	template <typename T> 
+	template <typename T>
 	inline T						getValue() const
 	{
 		try {
@@ -259,13 +259,13 @@ private:
 	Json::Value						createNativeDoc( WriteOptions writeOptions = WriteOptions() ) const;
 	static Json::Value				deserializeNative( const std::string &jsonString, ParseOptions parseOptions );
 	static std::string				serializeNative( const Json::Value &value );
-   
-	void							init( const std::string &key, const Json::Value &value, bool setType = false, 
+
+	void							init( const std::string &key, const Json::Value &value, bool setType = false,
 		NodeType nodeType = NODE_VALUE, ValueType valueType = VALUE_STRING );
-	
+
 	JsonTree*						getNodePtr( const std::string &relativePath, bool caseSensitive, char separator ) const;
 	static bool						isIndex( const std::string &key );
-	
+
 	Container						mChildren;
 	std::string						mKey;
 	JsonTree						*mParent;
@@ -279,7 +279,7 @@ private:
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//! Base class for JsonTree exceptions.
-	class CI_API Exception : public cinder::Exception 
+	class CI_API Exception : public cinder::Exception
 	{
 	};
 
@@ -287,9 +287,9 @@ private:
 	class CI_API ExcChildNotFound : public JsonTree::Exception {
 	  public:
 		ExcChildNotFound( const JsonTree &node, const std::string &key ) throw();
-		virtual const char* what() const throw() 
-		{ 
-			return mMessage; 
+		virtual const char* what() const throw()
+		{
+			return mMessage;
 		}
 
 	  private:
@@ -300,9 +300,9 @@ private:
 	class CI_API ExcNonConvertible : public JsonTree::Exception {
 	  public:
 		ExcNonConvertible( const JsonTree &node ) throw();
-		virtual const char* what() const throw() 
-		{ 
-			return mMessage; 
+		virtual const char* what() const throw()
+		{
+			return mMessage;
 		}
 
 	  private:
@@ -313,11 +313,11 @@ private:
 	class CI_API ExcJsonParserError : public JsonTree::Exception {
 	public:
 		ExcJsonParserError( const std::string &errorMessage ) throw();
-		virtual const char* what() const throw() 
-		{ 
-			return mMessage; 
+		virtual const char* what() const throw()
+		{
+			return mMessage;
 		}
-		
+
 	private:
 		char mMessage[ 2048 ];
 	};
