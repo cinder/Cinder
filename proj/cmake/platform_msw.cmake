@@ -55,13 +55,13 @@ list( APPEND CINDER_SRC_FILES
 	${SRC_SET_CINDER_AUDIO_DSP}
 )
 
-source_group( "cinder\\msw"       	FILES ${SRC_SET_MSW} )
-source_group( "cinder\\app\\msw"  	FILES ${SRC_SET_APP_MSW} )
-source_group( "cinder\\audio\\msw"  FILES ${SRC_SET_AUDIO_MSW} )
-source_group( "cinder\\audio\\dsp"  FILES ${SRC_SET_CINDER_AUDIO_DSP} )
+source_group( "cinder\\msw"			FILES ${SRC_SET_MSW} )
+source_group( "cinder\\app\\msw"	FILES ${SRC_SET_APP_MSW} )
+source_group( "cinder\\audio\\msw"	FILES ${SRC_SET_AUDIO_MSW} )
+source_group( "cinder\\audio\\dsp"	FILES ${SRC_SET_CINDER_AUDIO_DSP} )
 
 list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
-    ${CINDER_INC_DIR}/msw/zlib
+	${CINDER_INC_DIR}/msw/zlib
 )
 
 # NOTE: UNICODE and _UNICODE forces generator to use Unicode instead of MultiByte
@@ -82,15 +82,15 @@ if( MSVC )
 	add_compile_options( /FS )
 	# Force multiprocess compilation
 	add_compile_options( /MP )
-    # Static library flags
-    set( CINDER_STATIC_LIBS_FLAGS_DEBUG     "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
+	# Static library flags
+	set( CINDER_STATIC_LIBS_FLAGS_DEBUG		"/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
    
-    # Platform libraries 
-    set( MSW_PLATFORM_LIBS "Ws2_32.lib wldap32.lib shlwapi.lib OpenGL32.lib wmvcore.lib Strmiids.lib Msimg32.lib" )
+	# Platform libraries 
+	set( MSW_PLATFORM_LIBS "Ws2_32.lib wldap32.lib shlwapi.lib OpenGL32.lib wmvcore.lib Strmiids.lib Msimg32.lib" )
 
-    set( MSW_SUBFOLDER "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
-    # Static library debug depends
-    set( CINDER_STATIC_LIBS_DEPENDS_DEBUG   "${MSW_PLATFORM_LIBS}" )
-    # Static library release depends
-    set( CINDER_STATIC_LIBS_DEPENDS_RELEASE "${MSW_PLATFORM_LIBS}" )
+	set( MSW_SUBFOLDER "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
+	# Static library debug depends
+	set( CINDER_STATIC_LIBS_DEPENDS_DEBUG	"${MSW_PLATFORM_LIBS}" )
+	# Static library release depends
+	set( CINDER_STATIC_LIBS_DEPENDS_RELEASE "${MSW_PLATFORM_LIBS}" )
 endif()
