@@ -6,7 +6,7 @@
 
 #include "cinder/linux/GstPlayer.h"
 
-#if defined( CINDER_GST_HAS_GL ) && ! defined( CINDER_MAC )
+#if defined( CINDER_GST_HAS_GL ) && defined( CINDER_LINUX )
 	#if ! defined( CINDER_LINUX_EGL_ONLY )
 		// These files will include a glfw_config.h that's custom to Cinder.
 		#include "glfw/glfw3.h"
@@ -548,6 +548,16 @@ bool GstPlayer::initialize()
 			ci::gl::env()->makeContextCurrent( nullptr );
 			sGstGLContext = (GstGLContext*)gst_object_ref( gst_gl_context_new( sGstGLDisplay ) );
 			sharedCtx = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)platformData->mCglContext, GST_GL_PLATFORM_CGL, GST_GL_API_OPENGL );
+			ci::gl::context()->makeCurrent( true );
+		}
+#elif defined( CINDER_MSW )
+		auto platformData = std::dynamic_pointer_cast<ci::gl::PlatformDataMsw>( ci::gl::context()->getPlatformData() );
+		if( ! sGstGLDisplay )
+			sGstGLDisplay = gst_gl_display_new();
+		if( ! sGstGLContext ) {
+			ci::gl::env()->makeContextCurrent( nullptr );
+			sGstGLContext = (GstGLContext*)gst_object_ref( gst_gl_context_new( sGstGLDisplay ) );
+			sharedCtx = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)platformData->mGlrc, GST_GL_PLATFORM_WGL, GST_GL_API_OPENGL );
 			ci::gl::context()->makeCurrent( true );
 		}
 #endif

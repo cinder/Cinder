@@ -48,6 +48,46 @@ if( NOT CINDER_DISABLE_AUDIO )
 	)
 endif()
 
+if( NOT CINDER_DISABLE_VIDEO )
+	# Option for using GStreamer under MSW.
+	option( CINDER_MSW_USE_GSTREAMER "Use GStreamer for video playback." OFF )
+
+	if( CINDER_MSW_USE_GSTREAMER )
+		set( GST_ROOT $ENV{GSTREAMER_1_0_ROOT_X86_64} )
+		if( GST_ROOT )
+			list( APPEND CINDER_LIBS_DEPENDS 
+						${GST_ROOT}/lib/gstreamer-1.0.lib
+						${GST_ROOT}/lib/gstapp-1.0.lib
+						${GST_ROOT}/lib/gstvideo-1.0.lib
+						${GST_ROOT}/lib/gstbase-1.0.lib
+						${GST_ROOT}/lib/gstnet-1.0.lib
+						${GST_ROOT}/lib/gstaudio-1.0.lib
+						${GST_ROOT}/lib/gstgl-1.0.lib
+						${GST_ROOT}/lib/gobject-2.0.lib
+						${GST_ROOT}/lib/gmodule-2.0.lib
+						${GST_ROOT}/lib/gthread-2.0.lib
+						${GST_ROOT}/lib/glib-2.0.lib
+						${GST_ROOT}/lib/gio-2.0.lib )
+
+			list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE 
+						${GST_ROOT}/include 
+						${GST_ROOT}/include/gstreamer-1.0
+						${GST_ROOT}/include/glib-2.0
+						${GST_ROOT}/lib/gstreamer-1.0/include
+						${GST_ROOT}/lib/glib-2.0/include
+						${CINDER_INC_DIR}/cinder/linux )
+
+			list( APPEND CINDER_SRC_FILES 
+						${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp 
+						${CINDER_SRC_DIR}/cinder/linux/Movie.cpp )
+
+			list( APPEND CINDER_DEFINES CINDER_MSW_USE_GSTREAMER )
+		else()
+			message( WARNING "Requested GStreamer video playback support for MSW but no suitable GStreamer installation found. Make sure that GStreamer is installed properly and GSTREAMER_1_0_ROOT_X86_64 is defined in your env variables. " )
+		endif()
+	endif()
+endif()
+
 list( APPEND CINDER_SRC_FILES
 	${SRC_SET_MSW}
 	${SRC_SET_APP_MSW}
