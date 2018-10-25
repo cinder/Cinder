@@ -97,9 +97,8 @@ Context* Context::master()
 #elif defined( CINDER_LINUX )
 		sMasterContext.reset( new linux::ContextPulseAudio() );
 #endif
-		if( ! sIsRegisteredForCleanup )
-			registerClearStatics();
 	}
+
 	return sMasterContext.get();
 }
 
@@ -114,18 +113,14 @@ DeviceManager* Context::deviceManager()
 #elif defined( CINDER_MSW )
 	#if( _WIN32_WINNT > 0x0600 ) // requires Windows Vista+
 		sDeviceManager.reset( new msw::DeviceManagerWasapi() );
-	//#else
-	//	CI_ASSERT( 0 && "TODO: simple DeviceManagerXp" );
 	#endif
 #elif defined( CINDER_ANDROID )
 		sDeviceManager.reset( new android::DeviceManagerOpenSl() );
 #elif defined( CINDER_LINUX )
 		sDeviceManager.reset( new linux::DeviceManagerPulseAudio() );
 #endif
-
-		if( ! sIsRegisteredForCleanup )
-			registerClearStatics();
 	}
+
 	return sDeviceManager.get();
 }
 
@@ -139,6 +134,8 @@ void Context::setMaster( Context *masterContext, DeviceManager *deviceManager )
 Context::Context()
 	: mEnabled( false ), mAutoPullRequired( false ), mAutoPullCacheDirty( false ), mNumProcessedFrames( 0 ), mTimeDuringLastProcessLoop( -1.0 )
 {
+	if( ! sIsRegisteredForCleanup )
+		registerClearStatics();
 }
 
 Context::~Context()

@@ -179,8 +179,11 @@ void Node::enable()
 		initializeImpl();
 
 	// Need to cancel events regardless if node is already enabled as one might be disabling us
-	if( mEventScheduled && ! getContext()->isAudioThread() ) {
-		getContext()->cancelScheduledEvents( shared_from_this() );
+	if( mEventScheduled ) {
+		auto context = getContext();
+		if( context && ! context->isAudioThread() ) {
+			context->cancelScheduledEvents( shared_from_this() );
+		}
 	}
 
 	if( mEnabled )
@@ -193,8 +196,11 @@ void Node::enable()
 void Node::disable()
 {
 	// Need to cancel events regardless if node is already disabled as one might be enabling us
-	if( mEventScheduled && ! getContext()->isAudioThread() ) {
-		getContext()->cancelScheduledEvents( shared_from_this() );
+	if( mEventScheduled ) {
+		auto context = getContext();
+		if( context && ! context->isAudioThread() ) {
+			context->cancelScheduledEvents( shared_from_this() );
+		}
 	}
 
 	if( ! mEnabled )
