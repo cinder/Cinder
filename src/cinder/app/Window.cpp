@@ -272,7 +272,7 @@ void* Window::getNative() const
 #if defined( CINDER_COCOA )
 	return [mImpl getNative];
 #else
-	return mImpl->getNative();
+	return (void*)mImpl->getNative();
 #endif
 }
 
