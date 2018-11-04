@@ -281,6 +281,9 @@ class Message {
 	//! Returns a const reference of the Sender's (originator) Ip Address. Note: Will only
 	//! be set by the receiver when the message is received.
 	const asio::ip::address& getSenderIpAddress() const { return mSenderIpAddress; }
+	//! Returns the Sender's (originator) Port. Note: Will only
+	//! be set by the receiver when the message is received.
+	uint16_t getSenderPort() const { return mSenderPort; }
 	
   private:
 	//! Helper to calculate how many zeros to buffer to create a 4 byte
@@ -333,6 +336,7 @@ class Message {
 	mutable bool			mIsCached;
 	mutable ByteBufferRef	mCache;
 	asio::ip::address		mSenderIpAddress;
+	uint16_t				mSenderPort;
 	
 	//! Create the OSC message and store it in cache.
 	void createCache() const;
@@ -657,7 +661,7 @@ public:
 	
 	//! Decodes and routes messages from the networking layer stream. Dispatches all messages with
 	//! an address that has an associated listener.
-	void dispatchMethods( uint8_t *data, uint32_t size, const asio::ip::address &senderIpAddress );
+	void dispatchMethods( uint8_t *data, uint32_t size, const asio::ip::address &senderIpAddress, uint16_t senderPort );
 	//! Decodes a complete OSC Packet into it's individual parts. \a timetag is ignored within the
 	//! below implementations.
 	bool decodeData( uint8_t *data, uint32_t size, std::vector<Message> &messages, uint64_t timetag = 0 ) const;
