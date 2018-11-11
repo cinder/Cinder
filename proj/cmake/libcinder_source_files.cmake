@@ -60,12 +60,12 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Url.cpp
 	${CINDER_SRC_DIR}/cinder/Utilities.cpp
 	${CINDER_SRC_DIR}/cinder/Xml.cpp
+	${CINDER_SRC_DIR}/cinder/Serial.cpp
 )
 
 if( ( NOT CINDER_LINUX ) AND ( NOT CINDER_ANDROID ) )
 	list( APPEND SRC_SET_CINDER
 		${CINDER_SRC_DIR}/cinder/Capture.cpp
-		${CINDER_SRC_DIR}/cinder/Serial.cpp
 	)
 endif()
 
