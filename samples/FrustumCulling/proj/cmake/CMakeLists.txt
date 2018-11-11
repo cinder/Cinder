@@ -9,6 +9,7 @@ get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
 ci_make_app(
-	SOURCES     ${APP_PATH}/src/FrustumCullingApp.cpp
+	SOURCES		${APP_PATH}/src/FrustumCullingApp.cpp
+			${APP_PATH}/src/CullableObject.cpp
 	CINDER_PATH ${CINDER_PATH}
 )
