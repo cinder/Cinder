@@ -25,6 +25,7 @@
 
 #include "cinder/app/AppBase.h"
 #include "cinder/Log.h"
+#include "cinder/Utilities.h"
 
 //#define LOG_UPDATE( stream )	CI_LOG_I( stream )
 #define LOG_UPDATE( stream )	( (void)( 0 ) )
@@ -374,6 +375,8 @@ void FileWatcher::stopWatchPolling()
 
 void FileWatcher::threadEntry()
 {
+	setThreadName( "cinder::FileWatcher" );
+
 	while( ! mThreadShouldQuit ) {
 		LOG_UPDATE( "epoch seconds: " << getElapsedSeconds() );
 
