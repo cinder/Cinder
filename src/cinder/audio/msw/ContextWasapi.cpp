@@ -37,6 +37,7 @@
 #include "cinder/msw/CinderMsw.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
+#include "cinder/Utilities.h"
 
 #include <Audioclient.h>
 #include <mmdeviceapi.h>
@@ -539,6 +540,7 @@ DWORD WasapiRenderClientImpl::renderThreadEntryPoint( ::LPVOID lpParameter )
 
 void WasapiRenderClientImpl::runRenderThread()
 {
+	setThreadName( "cinder::audio::msw::ContextWasapi" );
 	increaseThreadPriority();
 
 	HANDLE waitEvents[2] = { mRenderShouldQuitEvent, mRenderSamplesReadyEvent };
