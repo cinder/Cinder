@@ -154,7 +154,7 @@ void TextInputTweenApp::draw()
 	for( auto &c : mCharacters )
 		c.draw();
 
-	for( auto &c : mCharacters )
+	for( auto &c : mDyingCharacters )
 		c.draw();
 
 	if( ( ! mDyingCharacters.empty() ) && mDyingCharacters.front().isDead() )
