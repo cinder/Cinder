@@ -7,7 +7,7 @@
 //THE SOFTWARE.
 #include  <iostream>
 
-#include "videoInput/videoInput.h"
+#include "msw/videoInput/videoInput.h"
 #include "cinder/msw/CinderMsw.h"
 #include <tchar.h>
 
