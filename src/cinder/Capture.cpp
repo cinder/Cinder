@@ -34,6 +34,9 @@
 #elif defined( CINDER_ANDROID )
 	#include "cinder/CaptureImplJni.h"
 	typedef cinder::CaptureImplJni CapturePlatformImpl;	
+#elif defined( CINDER_LINUX )
+	#include "cinder/CaptureImplLinux.h"
+	typedef cinder::CaptureImplLinux CapturePlatformImpl;
 #endif
 
 #include <set>
