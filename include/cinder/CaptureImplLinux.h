@@ -5,6 +5,7 @@
 
 #include <thread>
 #include <condition_variable>
+#include <atomic>
 
 namespace cinder {
 
