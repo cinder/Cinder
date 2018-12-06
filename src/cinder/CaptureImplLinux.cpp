@@ -109,6 +109,8 @@ mDevice( device )
 
 CaptureImplLinux::~CaptureImplLinux()
 {
+	stop();
+	
 	if ( mDeviceFileDescriptor >= 0 ) {
 		for ( size_t i = 0; i < 2; i++ ) {
 			v4l2_munmap( mRawBuffer[i].data, mRawBuffer[i].length );
@@ -130,13 +132,13 @@ void CaptureImplLinux::start()
 
 void CaptureImplLinux::stop()
 {
-	mRunning.store( false );
+	if ( mRunning ) {
+		mRunning.store( false );
+		mThread.join();
 
-	std::unique_lock<std::mutex> locker;
-	mStopCondition.wait( locker );
-
-	enum v4l2_buf_type bufferType = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	v4l2_ioctl( mDeviceFileDescriptor, VIDIOC_STREAMOFF, &bufferType );
+		enum v4l2_buf_type bufferType = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		v4l2_ioctl( mDeviceFileDescriptor, VIDIOC_STREAMOFF, &bufferType );
+	}
 }
 
 void CaptureImplLinux::update()
@@ -152,7 +154,6 @@ void CaptureImplLinux::update()
 		v4l2_ioctl( mDeviceFileDescriptor, VIDIOC_QBUF, &buffer );
 	}
 
-	mStopCondition.notify_one();
 }
 
 bool CaptureImplLinux::isCapturing()

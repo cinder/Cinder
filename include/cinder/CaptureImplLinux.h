@@ -54,7 +54,6 @@ protected:
 
 	std::thread mThread;
 	std::atomic<bool> mRunning;
-	std::condition_variable mStopCondition;
 	mutable std::atomic<bool> mNewFrameAvailable;
 
 	void update();
