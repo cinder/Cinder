@@ -1,0 +1,16 @@
+{
+  "name": "wasm-server",
+  "version": "0.0.4",
+  "description": "Simple test server that can be run to serve wasm files",
+  "main": "index.js",
+  "bin": {
+    "wasm-server": "./bin/cli.js"
+  },
+  "author": "Joseph Chow",
+  "license": "",
+  "dependencies": {
+    "finalhandler": "^1.1.1",
+    "minimist": "^1.2.0",
+    "serve-static": "^1.13.2"
+  }
+}
