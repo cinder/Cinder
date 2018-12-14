@@ -43,7 +43,7 @@
 	#include <Windows.h>
 	#undef min
 	#undef max
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	#include "cinder/linux/FreeTypeUtil.h" 
 #endif
 #include "cinder/Unicode.h"
@@ -722,7 +722,7 @@ void TextureFont::drawString( const std::string &str, const vec2 &baseline, cons
 void TextureFont::drawString( const std::string &str, const Rectf &fitRect, const vec2 &offset, const DrawOptions &options )
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, static_cast<int>( fitRect.getHeight() ) ).ligate( options.getLigate() );
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
 #else
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();
@@ -733,7 +733,7 @@ void TextureFont::drawString( const std::string &str, const Rectf &fitRect, cons
 void TextureFont::drawStringWrapped( const std::string &str, const Rectf &fitRect, const vec2 &offset, const DrawOptions &options )
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getSize() ).ligate( options.getLigate() );
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
 #else
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();
@@ -749,7 +749,7 @@ vec2 TextureFont::measureString( const std::string &str, const DrawOptions &opti
 	return tbox.measure();
 #else
 
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
 #else
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();

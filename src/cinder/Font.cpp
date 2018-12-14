@@ -56,7 +56,7 @@
 	#include FT_GLYPH_H
 
 	#include "cinder/winrt/FontEnumerator.h"
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
  	#include "ft2build.h"
 	#include FT_FREETYPE_H 
 	#include FT_OUTLINE_H 
@@ -67,7 +67,9 @@
 		#include "freetype/ttnameid.h"
 	#elif defined( CINDER_LINUX )
 		#include <fontconfig/fontconfig.h>
- 	#endif
+ 	#elif defined( CINDER_EMSCRIPTEN )
+		#include "./emscripten/DroidFont.h"
+	 #endif 
 #endif
 #include "cinder/Utilities.h"
 #include "cinder/Unicode.h"
@@ -80,6 +82,11 @@ using std::pair;
 #include "cinder/app/App.h"
 
 namespace cinder {
+	#if defined( CINDER_EMSCRIPTEN )
+	static std::string sDefaultFontKey  = "droid sans";
+	static std::string sDefaultFontName = "Droid Sans";
+	static std::string sDefaultFontPath = "<embedded";
+	#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FontObj
@@ -108,7 +115,7 @@ class FontObj : public std::enable_shared_from_this<FontObj> {
 	std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
 	void *mFileData;
 	FT_Face mFace;
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	BufferRef				mFileData;
 	FT_Face 				mFace = nullptr;
 	void 					releaseFreeTypeFace();
@@ -133,14 +140,14 @@ class FontManager
             mDefault = Font( "Helvetica", 12 );
 #elif defined( CINDER_MSW )
             mDefault = Font( "Arial", 12 );
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
             mDefault = Font( "Roboto", 12 );
 #endif
 		
 		return mDefault;
 	}
 
-#if defined( CINDER_ANDROID )
+#if defined( CINDER_ANDROID ) || defined( CINDER_EMSCRIPTEN )
 	struct FontInfo {
 		std::string 	key;
 		std::string 	name;
@@ -175,14 +182,14 @@ class FontManager
 	Gdiplus::Graphics	*mGraphics;
 #elif defined( CINDER_UWP )
 	FT_Library			mLibrary = nullptr;
-#elif defined( CINDER_ANDROID )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_EMSCRIPTEN )
 	FT_Library				mLibrary;
 	std::vector<FontInfo>	mFontInfos;
 #elif defined( CINDER_LINUX )	
 	FT_Library			mLibrary;
 #endif
 
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	std::set<std::shared_ptr<ci::FontObj>>	mTrackedFonts;
 	void fontCreated( const std::shared_ptr<ci::FontObj>& fontObj ) {
 		mTrackedFonts.insert( fontObj );
@@ -198,14 +205,14 @@ class FontManager
 	friend class Font;
 	friend class FontObj;
 
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	friend void FontManager_destroyStaticInstance();
 #endif	
 };
 
 FontManager* FontManager::sInstance = nullptr;
 
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 void FontManager_destroyStaticInstance() 
 {
 	if( nullptr != FontManager::sInstance ) {
@@ -263,8 +270,16 @@ FontManager::FontManager()
 	else {
 		throw FontInvalidNameExc("Failed to initialize FreeType");
 	}
-#elif defined( CINDER_LINUX )	
-	if( FT_Init_FreeType( &mLibrary ) ) {
+
+#elif defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )	
+	if( FT_Init_FreeType( &mLibrary ) )
+	 {
+		#if defined( CINDER_EMSCRIPTEN )
+        	// Currently there is only one "system font" available when using Emscripten
+        	mFontInfos.push_back( FontInfo( sDefaultFontKey, sDefaultFontName, sDefaultFontPath ) );
+  		#endif
+	}
+	else{	
 		throw FontInvalidNameExc("Failed to initialize freetype");
 	}
 #endif
@@ -276,7 +291,7 @@ FontManager::~FontManager()
 	[nsFontManager release];
 #elif defined( CINDER_UWP )
 	FT_Done_FreeType(mLibrary);
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	for( auto& fontObj : mTrackedFonts ) {
 		if( fontObj ) {
 			fontObj->releaseFreeTypeFace();
@@ -336,7 +351,17 @@ FontManager::FontInfo FontManager::getFontInfo( const std::string& fontName ) co
 
 	return result;
 }
-#endif
+#elif defined( CINDER_EMSCRIPTEN )
+FontManager::FontInfo FontManager::getFontInfo( const std::string& fontName ) const
+{
+    // Currently there is only one "system font" available when using Emscripten
+	FontManager::FontInfo result;
+	result.key  = sDefaultFontKey;
+	result.name = sDefaultFontName;
+	result.path = sDefaultFontPath;
+	return result;
+}
+#endif 
 
 const vector<string>& FontManager::getNames( bool forceRefresh )
 {
@@ -738,13 +763,13 @@ Rectf Font::getGlyphBoundingBox( Glyph glyphIndex ) const
 	);
 }
 
-#elif defined( CINDER_UWP )  || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_UWP )  || defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 std::string Font::getFullName() const
 {
 	return mObj->mName;
 }
 
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 float Font::getLinespace() const
 {
 	const FT_Size_Metrics& metrics  = mObj->mFace->size->metrics;
@@ -1068,7 +1093,24 @@ FontObj::FontObj( const string &aName, float aSize )
 
 	::FcPatternDestroy( font );
 	::FcPatternDestroy( pat );
-#endif
+#elif defined( CINDER_EMSCRIPTEN )
+// Currently there is only one "system font" available when using Emscripten
+	FT_Error error = FT_New_Memory_Face(
+		FontManager::instance()->mLibrary,
+		static_cast<const FT_Byte*>( sDroidFont ),
+        sDroidFontLength,
+		0,
+		&mFace
+	);
+	if( error ) {
+		throw FontInvalidNameExc( "Failed to create a face for " + aName );
+	}
+
+	FT_Select_Charmap( mFace, FT_ENCODING_UNICODE );
+	FT_Set_Char_Size( mFace, 0, (int)aSize*64, 0, 72 );
+
+	mName = sDefaultFontName;
+#endif 
 }
 
 #if defined( CINDER_COCOA )
@@ -1158,7 +1200,7 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 	);
 
 	FT_Set_Pixel_Sizes(mFace, 0, (int)size);
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	mFileData = dataSource->getBuffer();
 	FT_New_Memory_Face(
 		FontManager::instance()->mLibrary, 
@@ -1192,7 +1234,7 @@ FontObj::~FontObj()
 #endif
 }
 
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 void FontObj::releaseFreeTypeFace()
 {
 	if( nullptr != mFace ) {
@@ -1229,7 +1271,7 @@ void FontObj::finishSetup()
 #endif
 }
 
-#if defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 FT_Face Font::getFreetypeFace() const
 {
 	return mObj->mFace;

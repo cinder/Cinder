@@ -36,7 +36,7 @@ BufferObjRef BufferObj::create( GLenum target, GLsizeiptr allocationSize, const 
 BufferObj::BufferObj( GLenum target )
 	: mId( 0 ), mSize( 0 ), mTarget( target ),
 #if defined( CINDER_GL_ES )
-  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	mUsage( GL_DYNAMIC_DRAW )
   #else	
 	mUsage( 0 ) /* GL ES default buffer usage is undefined(?) */
@@ -130,6 +130,7 @@ void* BufferObj::map( GLenum access ) const
 #endif
 
 #if defined( CINDER_GL_HAS_MAP_BUFFER ) || defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
+#if ! defined( CINDER_EMSCRIPTEN )
 void* BufferObj::mapWriteOnly()
 {
 	void* result = nullptr;
@@ -143,6 +144,7 @@ void* BufferObj::mapWriteOnly()
 	return result;
 }
 
+#endif 
 void* BufferObj::mapReplace()
 {
 	ScopedBuffer bufferBind( mTarget, mId );

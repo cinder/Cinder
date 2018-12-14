@@ -64,8 +64,11 @@ class CI_API BufferObj {
 #endif
 
 #if defined( CINDER_GL_HAS_MAP_BUFFER ) || defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
+	#if ! defined( CINDER_EMSCRIPTEN )
 	//! Maps the Buffer for writing, but does not invalidate the Buffer's existing contents. Slower than mapReplace(). Abstracts glMapBuffer() vs. glMapBufferRange() with appropriate write-only parameters for the platform.
 	void*				mapWriteOnly();
+	#endif 
+	
 	//! Invalidates the Buffer's existing contents and maps it for writing. Preferable to mapWriteOnly() when invalidation is acceptable. Abstracts glMapBuffer() vs. glMapBufferRange() with appropriate write-only parameters for the platform.
 	void*				mapReplace();
 #endif

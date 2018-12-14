@@ -2097,7 +2097,7 @@ std::vector<std::pair<uint16_t,vec2> > TextSpan::getGlyphMeasures() const
 {
 	if( ! mGlyphMeasures ) {		
 		TextBox tbox = TextBox().font( *getFont() ).text( mString );
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 		auto tmpGlyphs = tbox.measureGlyphs();
 		mGlyphMeasures = shared_ptr<std::vector<std::pair<uint16_t,vec2> > >( 
 			new std::vector<std::pair<uint16_t,vec2> >( tmpGlyphs.size() ) );
