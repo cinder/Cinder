@@ -37,7 +37,7 @@
 #elif defined( CINDER_ANDROID )
 	#include <android/log.h>
  	#define TAG "cinder"
-#elif defined( CINDER_LINUX )
+#elif defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	#include <syslog.h>
 	#include <limits.h>
 #endif
@@ -303,7 +303,7 @@ void LoggerBreakpoint::write( const Metadata &meta, const string & /*text*/ )
 	}
 }
 
-#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 
 // ----------------------------------------------------------------------------------------------------
 // ImplSysLog
@@ -319,7 +319,7 @@ public:
 		NSString *bundlePath = [bundle bundlePath];
 		NSString *appName = [[NSFileManager defaultManager] displayNameAtPath: bundlePath];
 		const char *cAppName = [appName UTF8String];
-#elif defined( CINDER_LINUX )
+#elif defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
     	std::vector<char> buf( PATH_MAX );
 	    std::memset( &(buf[0]), 0, buf.size()  );
         ssize_t len = ::readlink("/proc/self/exe", &(buf[0]), buf.size() - 1 );

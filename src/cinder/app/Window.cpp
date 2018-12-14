@@ -36,8 +36,9 @@
 	#include "cinder/app/android/WindowImplAndroid.h"
 #elif defined( CINDER_LINUX )
 	#include "cinder/app/linux/WindowImplLinux.h"
+#elif defined( CINDER_EMSCRIPTEN )
+	#include "cinder/app/emscripten/WindowImplEmscripten.h"
 #endif
-
 namespace cinder { namespace app {
 
 bool Window::isFullScreen() const

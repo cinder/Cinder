@@ -4,6 +4,10 @@
  */
 
 #include "gzguts.h"
+// emscripten will throw an error due to implicit function use.
+#if defined(__EMSCRIPTEN__)
+#include <unistd.h>
+#endif
 
 #if defined(_WIN32) && !defined(__BORLANDC__) && !defined(__MINGW32__)
 #  define LSEEK _lseeki64

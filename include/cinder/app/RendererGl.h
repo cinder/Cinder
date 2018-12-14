@@ -191,7 +191,9 @@ class CI_API RendererGl : public Renderer {
 #else
 	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) override;
 #endif
-#endif
+#elif defined( CINDER_EMSCRIPTEN )
+	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) override;
+#endif 
 
 	const Options&	getOptions() const { return mOptions; }
 
@@ -236,7 +238,11 @@ protected:
 	class RendererGlLinux	*mImpl;
 	RendererGlLinux			*getImpl() { return mImpl; }
 	friend class WindowImplLinux;
-#endif
+#elif defined( CINDER_EMSCRIPTEN )
+	class RendererImplGlEmscripten	*mImpl;
+	RendererImplGlEmscripten	*getImpl() { return mImpl; }
+	friend class WindowImplEmscripten;
+#endif 
 
 	std::function<void( Renderer* )> mStartDrawFn;
 	std::function<void( Renderer* )> mFinishDrawFn;

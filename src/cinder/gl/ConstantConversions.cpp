@@ -202,7 +202,7 @@ std::string	constantToString( GLenum constant )
 #endif // defined( CINDER_HAS_GL_SRGB )
 
 #if defined( CINDER_GL_HAS_REQUIRED_INTERNALFORMAT )
-	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 		sSymbols[GL_RGB10] = "GL_RGB10";
 	#endif
 		sSymbols[GL_RGB10_A2] = "GL_RGB10_A2";
@@ -566,7 +566,7 @@ uint8_t typeToBytes( GLenum type )
 		case GL_UNSIGNED_INT_SAMPLER_CUBE:		return sizeof(int); break;		
 		case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:	return sizeof(int); break;
 #else
-	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	  #if defined( CINDER_GL_HAS_SHADOW_SAMPLERS )
 		case GL_SAMPLER_2D_SHADOW_EXT: return sizeof(int); break;
 	  #endif

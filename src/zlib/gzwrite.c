@@ -4,6 +4,10 @@
  */
 
 #include "gzguts.h"
+// emscripten will throw an error due to implicit function use.
+#if defined(__EMSCRIPTEN__)
+#include <unistd.h>
+#endif
 
 /* Local functions */
 local int gz_init OF((gz_statep));

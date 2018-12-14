@@ -28,14 +28,14 @@
 	#include <windows.h>
 #elif defined( CINDER_COCOA )
 	#include <CoreFoundation/CoreFoundation.h>
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
  	#include <sys/time.h>
  	#include <time.h>
 #endif
 
 namespace cinder {
 
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 static double LinuxGetElapsedSeconds() 
 {
 	struct timespec now;
@@ -70,7 +70,7 @@ Timer::Timer( bool startOnConstruction )
 	::QueryPerformanceFrequency( &nativeFreq );
 	mInvNativeFreq = 1.0 / nativeFreq.QuadPart;
 	mStartTime = mEndTime = -1;
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	mEndTime = mStartTime = -1;	
 #endif
 	if( startOnConstruction ) {
@@ -86,7 +86,7 @@ void Timer::start( double offsetSeconds )
 	::LARGE_INTEGER rawTime;
 	::QueryPerformanceCounter( &rawTime );
 	mStartTime = rawTime.QuadPart * mInvNativeFreq - offsetSeconds;
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	mStartTime = LinuxGetElapsedSeconds();
 #endif
 
@@ -104,7 +104,7 @@ double Timer::getSeconds() const
 	::LARGE_INTEGER rawTime;
 	::QueryPerformanceCounter( &rawTime );
 	return (rawTime.QuadPart * mInvNativeFreq) - mStartTime;
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	return LinuxGetElapsedSeconds() - mStartTime;
 #endif
 	}
@@ -119,7 +119,7 @@ void Timer::stop()
 		::LARGE_INTEGER rawTime;
 		::QueryPerformanceCounter( &rawTime );
 		mEndTime = rawTime.QuadPart * mInvNativeFreq;
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 		mEndTime = LinuxGetElapsedSeconds();
 #endif
 		mIsStopped = true;

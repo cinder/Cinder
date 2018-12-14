@@ -176,7 +176,7 @@ public:
 	
 protected:
 	Level mMinLevel;
-#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	class ImplSysLog;
 	std::unique_ptr<ImplSysLog> mImpl;
 #elif defined( CINDER_MSW_DESKTOP )

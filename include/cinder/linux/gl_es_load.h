@@ -105,7 +105,7 @@
 // -----------------------------------------------------------------------------
 // Android and Linux
 // -----------------------------------------------------------------------------
-#elif ( defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) )
+#elif ( defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN ) )
 	// ----------------------------------------------------------------------------
 	// OpenGL ES 3.0
 	// ----------------------------------------------------------------------------
@@ -1489,7 +1489,7 @@
 // ----------------------------------------------------------------------------
 // gl_es_load
 // ----------------------------------------------------------------------------
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	    
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )	    
 void gl_es_load();
 #endif
 

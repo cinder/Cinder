@@ -110,6 +110,14 @@
  	#else
  		#include "glload/gl_core.h"
  	#endif
+#elif defined (CINDER_EMSCRIPTEN)
+		#define GL_GLEXT_PROTOTYPES
+ 		#include "EGL/egl.h"
+		#include "cinder/linux/GLES3/gl3.h"
+		#include "cinder/linux/GLES2/gl2ext.h"
+ 		#define CINDER_GL_ES
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
+
 #elif ! defined( CINDER_COCOA_TOUCH ) // OS X
 	#if defined( __clang__ )
 		#pragma clang diagnostic push
@@ -136,13 +144,13 @@
 
 // OpenGL ES
 #if defined( CINDER_GL_ES )
-	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) 	
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 		#define GL_ES_EXT_VERSION_2_0
 	#endif 
 	#include "cinder/linux/gl_es_load.h"
 
 	// Android and Linux
-	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 		#if ! defined( CINDER_GL_ES_2_RPI )
 		    #define CINDER_GL_HAS_DRAW_INSTANCED
 		#endif
@@ -174,7 +182,7 @@
 		    #define CINDER_GL_HAS_MAP_BUFFER_RANGE
 		#endif
 		#define CINDER_GL_HAS_MAP_BUFFER
-		#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+		#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 			#define CINDER_GL_HAS_RENDER_SNORM
 			#define CINDER_GL_HAS_REQUIRED_INTERNALFORMAT
 		#endif

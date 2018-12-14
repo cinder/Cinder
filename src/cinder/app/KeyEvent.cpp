@@ -484,7 +484,7 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 		return sKeyTable[nativeKeyCode];
 }
 
-#elif defined( CINDER_LINUX )
+#elif defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 
 #if defined( CINDER_LINUX_EGL_ONLY )
 

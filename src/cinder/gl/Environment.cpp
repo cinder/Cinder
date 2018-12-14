@@ -201,6 +201,10 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 		GLFWwindow* sharedGlfwContext = ::glfwCreateWindow( 1, 1, "", NULL, sharedContextPlatformData->mContext );
 		shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( sharedGlfwContext ), destroyPlatformData );
 	#endif
+#elif defined( CINDER_EMSCRIPTEN )
+auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataEmscripten>( sharedContext->getPlatformData() );
+  	shared_ptr<Context::PlatformData> platformData( new PlatformDataEmscripten( sharedContextPlatformData->mContext ) );
+
 #endif
 
 	ContextRef result( new Context( platformData ) );

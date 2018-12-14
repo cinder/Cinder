@@ -1906,7 +1906,7 @@ GlslProgRef& Context::getStockShader( const ShaderDef &shaderDef )
 {
 	auto existing = mStockShaders.find( shaderDef );
 	if( existing == mStockShaders.end() ) {
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 		try {
 			auto result = gl::env()->buildShader( shaderDef );
 			mStockShaders[shaderDef] = result;
@@ -1915,7 +1915,7 @@ GlslProgRef& Context::getStockShader( const ShaderDef &shaderDef )
 		catch( const exception& e ) {
 	#if defined( CINDER_ANDROID )
 			ci::android::dbg_app_error( std::string( "getStockShader error: " ) + e.what() );
-	#elif defined( CINDER_LINUX )
+	#elif defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 			std::cout << "getStockShader error: " << e.what() << std::endl;
 	#endif
 		}

@@ -43,7 +43,7 @@
 // -----------------------------------------------------------------------------
 // Android and Linux
 // -----------------------------------------------------------------------------
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 
 static bool 	hasExtension( const std::string& extName );
 static void* 	loadEglProc( const std::string& procName ) ;
@@ -1393,7 +1393,7 @@ void gl_es_aep_load()
 // ----------------------------------------------------------------------------
 // gl_es_load
 // ----------------------------------------------------------------------------
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	    
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )	    
 static bool 	sInitialized = false;
 static uint32_t	sLoadCount = 0;
 

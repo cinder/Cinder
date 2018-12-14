@@ -1,8 +1,6 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2018, The Barbarian Group
  All rights reserved.
-
- Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -21,42 +19,26 @@
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
 */
-
 #pragma once
 
-#include "cinder/Cinder.h"
+#include <emscripten.h>
+#include <emscripten/bind.h>
 
-namespace cinder {
+/**
+ * Binding declaration for Emscripten - maps c++ structures to javascript values.
+ * Note that everything here should be available from the start since this is
+ * built with cinder. 
+ * 
+ * Primarily we want to make sure std::function / lambdas are mapped so we can easily 
+ * pass functions to the JS side.
+ */
 
-/** \brief A high-resolution timer class **/
-class CI_API Timer {
-  public:
-	//! Constructs a default timer which is initialized as stopped
-	Timer();
-	//! Constructs a default timer which is initialized as running unless \a startOnConstruction is false
-	Timer( bool startOnConstruction );
-	
-	//! Begins timing. Optional \a offsetSeconds parameter allows a relative offset
-	void	start( double offsetSeconds = 0 );
-	//! Returns the elapsed seconds if the timer is running, or the total time between calls to start() and stop() if it is stopped.
-	double	getSeconds() const;
-	//! Ends timing
-	void	stop();
-	//! Resumes timing without resetting the timer.
-	void	resume() { start( getSeconds() ); }
+namespace cinder { namespace bindings {
 
-	//! Returns whether the timer is currently running
-	bool	isStopped() const { return mIsStopped; }
-	
-  private:
-	bool	mIsStopped;
-#if defined( CINDER_COCOA )
-	double	mStartTime, mEndTime;
-#elif defined( CINDER_MSW )
-	double	mStartTime, mEndTime, mInvNativeFreq;
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
-	double	mStartTime, mEndTime;
-#endif
-};
-
-} // namespace cinder
+	EMSCRIPTEN_BINDINGS( CinderEmscripten ) {
+		emscripten::class_<std::function<void( emscripten::val e )> >( "ListenerCallback" )
+		.constructor<>()
+		.function( "onload", &std::function<void( emscripten::val e )>::operator());
+	};
+  }
+}
