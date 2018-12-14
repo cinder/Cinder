@@ -34,6 +34,7 @@ ignore = [
     "winrt",
     ".icns",
     ".ico",
+    "emsdk_set_env.sh",
     "environment_maps",
     "QuickTimeAvfWriter",
     "iosKeyboard",
@@ -53,7 +54,8 @@ ignore = [
     "NodeBasic",
     "NodeSubclassing",
     "VoiceBasic",
-    "VoiceBasicProcessing"
+    "VoiceBasicProcessing",
+    "PBOReadBack"
 ]
 
 # checks the filename you pass in against the ignore list to see if
