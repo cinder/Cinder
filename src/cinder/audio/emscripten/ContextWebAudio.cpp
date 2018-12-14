@@ -181,7 +181,7 @@ namespace cinder { namespace audio { namespace em {
       }
 
       // indicate that this is a native node and thus, needs slightly different processing.
-      //mIsNativeWebNode = true;
+      mIsNativeWebNode = true;
 
       // initialize stream - returns emscripten::val object
       mStreamRef = utils.call<emscripten::val>( "loadAudioInput",ci::em::helpers::generateCallback( cb ),val( name ) );
