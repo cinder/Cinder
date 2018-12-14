@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- Update title -->
+		<title>Cinder with Emscripten</title>
+
+		<!-- keywords used for searching -->
+		<meta name="keywords" content="guide, emscripten, cinder">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- reference to Cinder classes -->
+   		<!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+   		<!-- master stylesheet - these links will be replaced when compiled -->
+		<link rel="stylesheet" href="../../_assets/css/foundation.css">
+		<link rel="stylesheet" href="../../_assets/css/prism.css">
+		<link rel="stylesheet" href="../../_assets/css/style.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+		<!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+
+	</head>
+
+	<body id="guide-contents" class="language-c++">
+
+		<!-- CONTENT STARTS HERE -->
+
+		<section id="deployment">
+      <h1>Javascript</h1>
+
+      <p>If you&#39;re including any Javascript support files for your project, keep in mind that when building in release, the currently shipped version of Uglifyjs that comes with Emscripten appears to not like some ES6 semantics like the arrow function (<code>()=&gt;{}</code>)</p>
+
+      <p>In addition to that, if you add supplementary Javascript to your project and compile a release build, you&#39;ll likely need to add an externs file. In your <code>CMakeLists.txt</code> file you can add</p>
+
+      <p><code>
+      list(APPEND EMCC_CLOSURE_ARGS &quot;&lt;path to your externs file&rsaquo;&quot;)
+      </code>
+    </p>
+    <p>
+      If you&#39;ve never used an externs file, the idea is pretty straightforward. For every function and variable and object in your project you just need to add the basic definition. You could think of it as Javascript&#39;s forward declaration mechanism.</p>
+
+      <p>Cinder for example, includes a <code>helpers.js</code> file when dealing with video. In it there is a variable called <code>window.CINDER_VIDEO</code> which looks like</p>
+
+      <p>
+        <code>
+        createVideo:function(){
+          ... more code </code>
+
+        </p>
+      <p>In the externs file, all I would need to declare is <code>window.CINDER_VIDEO = {}</code> since <code>window.CINDER_VIDEO</code> is a Javascript object. If it were a function it would look like <code>window.CINDER_VIDEO = function(){}</code></p>
+
+      <h1>WebGL 1 / glsl 120 support</h1>
+
+      <p>Note that Cinder only supports WebGL 2 / GLSL 300 es as there really isn&#39;t a reason to support WebGL 1 at this point.</p>
+      <p>That being said, there really isn't any reason you couldn't set up the webgl portion of the Emscripten flags yourself, change the values, then copy over
+        what you need from Cinder.cmake</p>
+
+      <h1>Autoplaying media in Chrome</h1>
+
+      <p>In Chrome - auto-playing of media was disabled in May / 2018.
+      See
+       <a target="_blank" href="https://arstechnica.com/gaming/2018/05/chromes-autoplay-video-blocker-is-accidentally-killing-web-based-games/">this article from ArsTechnica</a>
+      <a target="_blank" href="https://twitter.com/Cabbibo/status/992854400061227008"> as well as this tweet from Twitter user Cabibbo</a></p>
+
+      <p>You&#39;ll have to do some sort of interaction before things will start playing.</p>
+    </section>
+
+		<!-- END CONTENT -->
+
+		<!-- Scripts -->
+		<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+		<!-- Place additional scripts here (optional) -->
+		<!-- <script type="text/javascript"></script> -->
+
+	</body>
+</html>
