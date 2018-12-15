@@ -70,6 +70,8 @@ elseif( CINDER_MAC )
 	)
 elseif( CINDER_COCOA_TOUCH )
 elseif( CINDER_LINUX )
+elseif( CINDER_EMSCRIPTEN )
+	set_target_properties( cinder PROPERTIES LINK_FLAGS ${CINDER_EMSCRIPTEN_LINK_FLAGS} )
 endif()
 
 # Check compiler support for enabling c++11 or c++14.
