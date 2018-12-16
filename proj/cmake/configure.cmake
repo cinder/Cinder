@@ -142,6 +142,8 @@ elseif( CINDER_MSW )
 		set( CINDER_ARCH "x64" )
 	endif()
 	set( CINDER_TARGET_SUBFOLDER "msw/${CINDER_ARCH}" ) # TODO: place in msw/arch folder (x64 or x86)
+elseif( CINDER_EMSCRIPTEN )
+	set( CINDER_TARGET_SUBFOLDER "emscripten" )
 endif()
 
 # CINDER_LIB_DIRECTORY is the platform-specific, relative path that will be used to define
