@@ -72,45 +72,8 @@ function(ci_emscripten_app)
 
     cmake_parse_arguments( ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    # set C++ standard. Important cause otherwise build will fail. 
-    set (CMAKE_CXX_STANDARD 11)
-
     if( ARG_UNPARSED_ARGUMENTS )
         message( WARNING "unhandled arguments: ${ARG_UNPARSED_ARGUMENTS}" )
-    endif()
-
-    # ========== SET OUTPUT DIRECTORY ============
-
-    # if build type isn't set - set things to "Debug"
-    if (NOT ARG_BUILD_TYPE)
-        set(CMAKE_BUILD_TYPE "Debug")
-    endif ()
-
-    # otherwise set build type to whatever was passed in. Note that you can only pass in "Debug" or "Release"
-    # not the most elegant of methods but does seem to work.
-    if (ARG_BUILD_TYPE)
-        if(${ARG_BUILD_TYPE} MATCHES "Debug")
-            set(CMAKE_BUILD_TYPE "Debug")
-        elseif(${ARG_BUILD_TYPE} MATCHES "Release")
-            set(CMAKE_BUILD_TYPE "Release")
-        else()
-            message(STATUS "Build type can only be set to \"Debug\" or \"Release\" - settings things to \"Debug\"")
-        endif()
-    endif ()
-
-    # set runtime output directory when doing Debug builds 
-    if("Debug" STREQUAL "${CMAKE_BUILD_TYPE}" )
-        set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "Debug" )
-    endif()
-
-    # set runtime output directory when doing Release builds 
-    if("Release" STREQUAL "${CMAKE_BUILD_TYPE}" )
-        set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "Release" )
-    endif()
-
-    # ensure the runtime output directory exists, in case we need to copy other files to it
-    if( NOT EXISTS "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-        file(MAKE_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
     endif()
 
     # Log current settings
@@ -132,11 +95,14 @@ function(ci_emscripten_app)
     endif ()    
     message("\n")
 
-    # ========= SETUP BUILD ============== #$
-    get_filename_component( CINDER_DIR "${ARG_CINDER_PATH}" ABSOLUTE PARENT_SCOPE)
-    include( ${CINDER_DIR}/emscripten/cmake/Cinder.cmake )
-
     set(CINDER_INCLUDE_DIR ${CINDER_DIR}/include)
+
+    # ========= SETUP BUILD ============== #
+    get_filename_component( CINDER_DIR "${ARG_CINDER_PATH}" ABSOLUTE PARENT_SCOPE)
+
+	# Include Cinder and Emscripten variables
+	include( "${CINDER_DIR}/proj/cmake/configure.cmake" )
+	include( "${CINDER_DIR}/proj/cmake/platform_emscripten.cmake" )
 
     # this is important, if not set you will only get JS files.
     if(NOT ARG_BUILD_AS_WORKER)
@@ -168,7 +134,7 @@ function(ci_emscripten_app)
     
      # Emscripten async libraries are included by default - need to test to see if user has opted out by passing in the NO_ASYNC param 
     if(NOT ARG_NO_ASYNC)
-      set(CXX_FLAGS "${CXX_FLAGS} -s EMTERPRETIFY=1 -s EMTERPRETIFY_FILE=${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/em.data.binary -s EMTERPRETIFY_ASYNC=1")  
+      set(CXX_FLAGS "${CXX_FLAGS} -s EMTERPRETIFY=1 -s EMTERPRETIFY_FILE=${CMAKE_BINARY_DIR}/em.data.binary -s EMTERPRETIFY_ASYNC=1")  
     endif()
 
     # also turn off async libs if building web worker.
@@ -200,7 +166,7 @@ function(ci_emscripten_app)
         set(CXX_FLAGS "${CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
         set(CXX_FLAGS "${CXX_FLAGS} ${ADD_OPTIMIZATIONS}")
         set(CXX_FLAGS "${CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
-        list(APPEND EMCC_CLOSURE_ARGS "--externs ${CINDER_INC_DIR}/cinder/emscripten/externs.js")
+        list(APPEND EMCC_CLOSURE_ARGS "--externs ${CINDER_INCLUDE_DIR}/cinder/emscripten/externs.js")
      
     endif()
     # =========== ADD OTHER OPTIONAL FLAGS ================ #
@@ -238,10 +204,17 @@ function(ci_emscripten_app)
     # ========== COMPILE ALL FLAGS TOGETHER ============== # 
 
     # compile all necessary flags
-    set(CMAKE_EXE_LINKER_FLAGS "${CXX_FLAGS}" PARENT_SCOPE)
+    set(CMAKE_EXE_LINKER_FLAGS "${CXX_FLAGS} ${CINDER_EMSCRIPTEN_LINK_FLAGS}" PARENT_SCOPE)
 
 
     # ========= COMPILE ALL BUILD PARAMETERS TOGETHER ============= #
+	if( NOT TARGET cinder )
+		find_package( cinder REQUIRED PATHS
+			"${CINDER_DIR}/${CINDER_LIB_DIRECTORY}"
+			"$ENV{CINDER_DIR}/${CINDER_LIB_DIRECTORY}"
+			NO_CMAKE_FIND_ROOT_PATH
+		)
+	endif()
 
     if(ARG_OUTPUT_NAME)
         set(OUTPUT_NAME "${ARG_OUTPUT_NAME}")
@@ -252,8 +225,6 @@ function(ci_emscripten_app)
     add_executable(${OUTPUT_NAME} ${ARG_SOURCES} )
     target_include_directories(
             ${OUTPUT_NAME} 
-            PUBLIC ${CINDER_DIR}/include
-
             # TODO check to if PUBLIC specifier works if multiple files are specified, otherwise we'll need to manually do this. 
             PUBLIC ${ARG_INCLUDES}
     )
@@ -262,12 +233,12 @@ function(ci_emscripten_app)
     if(ARG_OUTPUT_DIRECTORY)
         set_target_properties(${OUTPUT_NAME}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ARG_OUTPUT_DIRECTORY})
     endif()
-
+	message( STATUS "HERE: " ${EMSCRIPTEN_LIB_DIRECTORY} )
     target_link_libraries(
             ${OUTPUT_NAME} 
-            ${CINDER_DIR}/lib/emscripten/libboost_filesystem.bc
-            ${CINDER_DIR}/lib/emscripten/libboost_system.bc
-            ${CINDER_DIR}/lib/emscripten/libcinder_d.bc
+            ${EMSCRIPTEN_LIB_DIRECTORY}/libboost_filesystem.bc
+            ${EMSCRIPTEN_LIB_DIRECTORY}/libboost_system.bc
+			cinder
             ${ARG_LIBRARIES}
     )
 
