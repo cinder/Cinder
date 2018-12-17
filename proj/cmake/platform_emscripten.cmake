@@ -32,16 +32,8 @@ list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
 
 set( EMSCRIPTEN_LIB_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/../../lib/emscripten/" )
 
-# we need an externs file to get around closure compiler mangling names(or is it UglifyJS ? I see references to both!¯\_(ツ)_/¯ )
-list(APPEND EMCC_CLOSURE_ARGS "--externs ${CINDER_INCLUDE_DIR}/cinder/emscripten/externs.js" )
 ################### HELPER VARIABLES ##################################
-
 set(ALLOW_MEMORY_GROWTH "-s ALLOW_MEMORY_GROWTH=1" )
-
-# set variable for helper file when handling DOM related stuff. This should be a part of the --pre-js Emscripten flag
-set( CINDER_JS_HELPERS "--pre-js ${CINDER_INCLUDE_DIR}/cinder/emscripten/helpers.js" )
-
-set( CINDER_VIDEO "${CINDER_JS_HELPERS} ${CINDER_USE_EMBIND}" )
 
 # add to your project flags to build your file as a WebWorker.
 # note that you apparently need the --bind flag when building workers
