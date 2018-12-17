@@ -54,7 +54,7 @@ endfunction()
 set( USE_BROWSER_FOR_DECODING "--use-preload-plugins" )
 
 # adds optimizations to the final output
-set( ADD_OPTIMIZATIONS "-s WASM=1 -Os -g0 -closure 1" )
+set( ADD_OPTIMIZATIONS "-s WASM=1 -Os -g0 --closure 1" )
 
 # enables use of pthreads
 set( USE_THREADS "-s USE_PTHREADS=1" )
