@@ -1,4 +1,4 @@
-# TODO 
+# TODO
 # 1. Add CinderBlock support - not sure what the best way is at the moment.
 
 function(ci_emscripten_app)
@@ -66,8 +66,6 @@ function(ci_emscripten_app)
             # argument to tell what to name all the files it will output
             OUTPUT_NAME
 
-            # argument to tell Emscripten where to write all compiled files.
-            OUTPUT_DIRECTORY
             )
 
     cmake_parse_arguments( ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
@@ -76,6 +74,29 @@ function(ci_emscripten_app)
         message( WARNING "unhandled arguments: ${ARG_UNPARSED_ARGUMENTS}" )
     endif()
 
+	# https://blog.kitware.com/cmake-and-the-default-build-type/
+	#
+	# Set a default build type if none was specified
+	set( default_build_type "Debug" )
+	if( NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES )
+		message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
+		set( CMAKE_BUILD_TYPE "${default_build_type}" CACHE
+			STRING "Choose the type of build." FORCE )
+		# Set the possible values of build type for cmake-gui
+		set_property( CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+			"Debug" "Release" "MinSizeRel" "RelWithDebInfo" )
+	endif()
+	# Set CMAKE_RUNTIME_OUTPUT_DIRECTORY based on build type for single-config generator ( i.e Makefile ) otherwise ( i.e Xcode, VS )  use CMAKE_BINARY_DIR
+	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
+		if( ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) OR ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
+			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
+		else()
+			# Append the build type to the output dir
+			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
+		endif()
+	endif()
+
+
     # Log current settings
     message("\nCURRENT SETTINGS\n======")
     message( "APP_NAME: ${ARG_OUTPUT_NAME}" )
@@ -83,7 +104,7 @@ function(ci_emscripten_app)
     message( "INCLUDES: ${ARG_INCLUDES}" )
     message( "LIBRARIES: ${ARG_LIBRARIES}" )
     message( "CINDER_PATH: ${ARG_CINDER_PATH}" )
-    message( "CMAKE_RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_BINARY_DIR}/${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
+    message( "CMAKE_RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
     message( "CINDER_BUILD_TYPE: ${CMAKE_BUILD_TYPE}" )
 
     if (ARG_RESOURCES)
@@ -95,17 +116,15 @@ function(ci_emscripten_app)
     endif ()
     message("\n")
 
-    set(CINDER_INCLUDE_DIR ${CINDER_DIR}/include)
-
     # ========= SETUP BUILD ============== #
-    get_filename_component( CINDER_DIR "${ARG_CINDER_PATH}" ABSOLUTE PARENT_SCOPE)
+    get_filename_component( CINDER_PATH "${ARG_CINDER_PATH}" ABSOLUTE PARENT_SCOPE)
 
 	# Include Cinder and Emscripten variables
-	include( "${CINDER_DIR}/proj/cmake/configure.cmake" )
-	include( "${CINDER_DIR}/proj/cmake/platform_emscripten.cmake" )
+	include( "${CINDER_PATH}/proj/cmake/configure.cmake" )
+	include( "${CINDER_PATH}/proj/cmake/platform_emscripten.cmake" )
 
 	# set variable for helper file when handling DOM related stuff. This should be a part of the --pre-js Emscripten flag
-	set( CINDER_JS_HELPERS "--pre-js ${CINDER_DIR}/include/cinder/emscripten/helpers.js" )
+	set( CINDER_JS_HELPERS "--pre-js ${CINDER_PATH}/include/cinder/emscripten/helpers.js" )
 
     # this is important, if not set you will only get JS files.
     if(NOT ARG_BUILD_AS_WORKER)
@@ -136,8 +155,8 @@ function(ci_emscripten_app)
     endif()
 
      # Emscripten async libraries are included by default - need to test to see if user has opted out by passing in the NO_ASYNC param
-    if(NOT ARG_NO_ASYNC)
-      set(CXX_FLAGS "${CXX_FLAGS} -s EMTERPRETIFY=1 -s EMTERPRETIFY_FILE=${CMAKE_BINARY_DIR}/em.data.binary -s EMTERPRETIFY_ASYNC=1")
+    if( NOT ARG_NO_ASYNC )
+      set( CXX_FLAGS "${CXX_FLAGS} -s EMTERPRETIFY=1 -s EMTERPRETIFY_FILE=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/em.data.binary -s EMTERPRETIFY_ASYNC=1" )
     endif()
 
     # also turn off async libs if building web worker.
@@ -149,7 +168,7 @@ function(ci_emscripten_app)
     if(ARG_HTML_TEMPLATE)
         set(CXX_FLAGS "${CXX_FLAGS} --shell-file ${ARG_HTML_TEMPLATE}")
     else()
-        set(CXX_FLAGS "${CXX_FLAGS} --shell-file ${CINDER_DIR}/emscripten/shell.html")
+        set( CXX_FLAGS "${CXX_FLAGS} --shell-file ${CINDER_PATH}/proj/cmake/emscripten/shell.html" )
     endif()
 
     # if we need assertations set flags
@@ -165,12 +184,10 @@ function(ci_emscripten_app)
      # if building release add some extra flags to optimize final bundle.
     # see https://kripken.github.io/emscripten-site/docs/optimizing/Optimizing-Code.html for other tips on optimizing code.
     if( "Release" STREQUAL "${CMAKE_BUILD_TYPE}" )
-
-        set(CXX_FLAGS "${CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
-        set(CXX_FLAGS "${CXX_FLAGS} ${ADD_OPTIMIZATIONS}")
-        set(CXX_FLAGS "${CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
-        list(APPEND EMCC_CLOSURE_ARGS "--externs ${CINDER_INCLUDE_DIR}/cinder/emscripten/externs.js")
-
+        set( CXX_FLAGS "${CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}" )
+        set( CXX_FLAGS "${CXX_FLAGS} ${ADD_OPTIMIZATIONS}" )
+        set( CXX_FLAGS "${CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}" )
+        list( APPEND EMCC_CLOSURE_ARGS "--externs ${CINDER_PATH}/include/cinder/emscripten/externs.js" )
     endif()
     # =========== ADD OTHER OPTIONAL FLAGS ================ #
 
@@ -209,12 +226,18 @@ function(ci_emscripten_app)
     # compile all necessary flags
     set(CMAKE_EXE_LINKER_FLAGS "${CXX_FLAGS} ${CINDER_EMSCRIPTEN_LINK_FLAGS}" PARENT_SCOPE)
 
+	# This ensures that the application will link with the correct version of Cinder
+	# based on the current build type without the need to remove the entire build folder
+	# when switching build type after an initial configuration. See PR #1518 for more info.
+	if( cinder_DIR )
+		unset( cinder_DIR CACHE )
+	endif()
 
     # ========= COMPILE ALL BUILD PARAMETERS TOGETHER ============= #
 	if( NOT TARGET cinder )
 		find_package( cinder REQUIRED PATHS
-			"${CINDER_DIR}/${CINDER_LIB_DIRECTORY}"
-			"$ENV{CINDER_DIR}/${CINDER_LIB_DIRECTORY}"
+			"${CINDER_PATH}/${CINDER_LIB_DIRECTORY}"
+			"$ENV{CINDER_PATH}/${CINDER_LIB_DIRECTORY}"
 			NO_CMAKE_FIND_ROOT_PATH
 		)
 	endif()
@@ -247,7 +270,7 @@ function(ci_emscripten_app)
 
     # copy assets to build folder.
     if( ARG_ASSETS )
-        file( INSTALL ${ARG_ASSETS} DESTINATION "${CMAKE_BINARY_DIR}" )
+        file( INSTALL ${ARG_ASSETS} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
     endif()
 
 
