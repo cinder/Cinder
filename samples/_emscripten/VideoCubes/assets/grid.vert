@@ -1,4 +1,4 @@
-
+#version 300 es
 uniform mat4 ciProjectionMatrix;
 uniform mat4 ciModelView;
 uniform float time;
