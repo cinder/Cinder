@@ -37,8 +37,6 @@
 #include "cinder/Url.h"
 #include "cinder/Timer.h"
 
-
-
 namespace cinder { namespace em { namespace helpers {
 
 		//! A helper function to add an event listener to an element in a more simplified form.
@@ -47,31 +45,35 @@ namespace cinder { namespace em { namespace helpers {
 		  auto window = emscripten::val::global( "window" );
 
 			// this basically transforms your callback function so you don't have to call <function>.onload
-			auto functor_adapter = emscripten::val( functor )["onload"].call<emscripten::val>( "bind", emscripten::val(functor) );
+			auto functor_adapter = emscripten::val( functor )[ "onload" ].call<emscripten::val>( "bind", emscripten::val(functor) );
 
 			// add the listener to the element
 			//window.call<void>("addElementListener",element,val(eventName),(functor_adapter));
-			element.call<void>( "addEventListener", emscripten::val(eventName), functor_adapter );
+			element.call<void>( "addEventListener", emscripten::val( eventName ), functor_adapter );
 		}
 
 		//! Retrieve helper JS functions
-		static emscripten::val getCinderHelpers(){
-			return emscripten::val::global("window")["CINDER_HELPERS"];
+		static emscripten::val getCinderHelpers()
+    {
+			return emscripten::val::global( "window" )[ "CINDER_HELPERS" ];
 		}
 
 		//! retrieve audio JS helpers
-		static emscripten::val getAudioHelpers(){
-			return emscripten::val::global("window")["CINDER_AUDIO"];
+		static emscripten::val getAudioHelpers()
+    {
+			return emscripten::val::global( "window" )[ "CINDER_AUDIO" ];
 		}
 
 		//! retrieve video JS helpers
-		static emscripten::val getVideoHelpers(){
-			return emscripten::val::global("window")["CINDER_VIDEO"];
+		static emscripten::val getVideoHelpers()
+    {
+			return emscripten::val::global( "window" )[ "CINDER_VIDEO" ];
 		}
 
     // TODO get rid of this since functions mostly un-needed - keeping to ensure we don't break anything. 
-    static emscripten::val getFileHelpers(){
-      return emscripten::val::global("window")["CINDER_FILEIO"];
+    static emscripten::val getFileHelpers()
+    {
+      return emscripten::val::global( "window" )[ "CINDER_FILEIO" ];
     }
 
     /**
@@ -92,7 +94,8 @@ namespace cinder { namespace em { namespace helpers {
      * Same as copyToVector but works with regular arrays and floating point data. 
      */
     template<typename T>
-    static void copyFloatArrayToVector(const emscripten::val &typedArray,std::vector<T> &vec){
+    static void copyFloatArrayToVector(const emscripten::val &typedArray,std::vector<T> &vec)
+    {
       unsigned int length = typedArray["length"].as<unsigned int>();
 			emscripten::val memory = emscripten::val::module_property( "buffer" );
 			vec.reserve( length );
@@ -106,17 +109,18 @@ namespace cinder { namespace em { namespace helpers {
 		//! that utilize the string "onload" as their function name.
 		static emscripten::val generateCallback( std::function<void( emscripten::val )> functor )
     {
-			return emscripten::val( functor )["onload"].call<emscripten::val>( "bind", emscripten::val(functor) );
+			return emscripten::val( functor )[ "onload" ].call<emscripten::val>( "bind", emscripten::val(functor) );
 		}
 
     static emscripten::val getWorkletHelpers()
     {
-      return emscripten::val::global("window")["CINDER_WORKLETS"];
+      return emscripten::val::global( "window" )[ "CINDER_WORKLETS" ];
     }
 
     //! Returns an image. Assumes you don't need specialized processing.
     //! TODO return a Surface or something.
-    static char * getImage( DataSourceRef url ){
+    static char * getImage( DataSourceRef url )
+    {
 
       // determine the file type.
       fs::path filename =  fs::path( url->getUrl().str() );

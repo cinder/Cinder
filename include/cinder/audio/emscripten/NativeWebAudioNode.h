@@ -6,6 +6,19 @@
 #include <map>
 #include <string>
 
+/**
+ * NOTE - CURRENTLY SHOULD BE CONSIDERED NON-FUNCTIONAL
+ * This is more of a spec of what a native web audio node could look like on the c++ side of things.
+ * 
+ * The primary hurdle right now that's hindering completeness is extracting
+ * the raw audio data from a WebAudio api node. It does not appear that it is possible
+ * to  directly extract the data as it is not exposed in Javascript. You need to run things through either a 
+ * ScriptProcessorNode or an AudioWorklet in order to extract the information.
+ * 
+ * A ScriptProcessorNode is set up here but I haven't thought of a good path to connect things to 
+ * the rest of the graph yet. 
+ * 
+ */ 
 namespace cinder { namespace audio {
 
     // List of all native Web Audio nodes along with it's respective command to
