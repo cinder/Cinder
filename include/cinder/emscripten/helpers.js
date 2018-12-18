@@ -409,7 +409,7 @@ window.CINDER_FILEIO = {
     var context = window.CINDER_AUDIO.globalContext;
 
     context.audioWorklet.addModule(this.sourceToBlob(source)).then(cb)
-      .catch( e => {
+      .catch( function() {
         console.error("There was an error loading the processor");
       });
   }
@@ -480,7 +480,7 @@ window.CINDER_WORKLETS = {
 
     // check graph to see if any items are just functions, if they are we they are custom nodes and we need to instantiate
     // a custom AudioWorketNode
-    graph = graph.map(itm => {
+    graph = graph.map(function(itm) {
       if(itm !== undefined){
         if(typeof itm === "function"){
           return new CustomNode(itm);
