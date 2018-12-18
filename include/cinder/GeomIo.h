@@ -529,7 +529,7 @@ class CI_API Torus : public Source {
 	Torus&	twist( unsigned twist, float offset ) { mTwist = twist; mTwistOffset = offset; return *this; }
 	//! Specifies the major and minor radius as a ratio (minor : major). Resulting torus will fit unit cube.
 	Torus&	ratio( float ratio ) { ratio = math<float>::clamp( ratio ); mRadiusMajor = 1; mRadiusMinor = 1 - ratio; return *this; }
-	//! Specifies the major and minor radius separately.
+	//! Specifies the major and minor radius separately. \a major is the distance from the axis to the farthest point of the torus. \a minor is the distance between the axis and the center of the rotated circle.
 	Torus&	radius( float major, float minor ) { mRadiusMajor = math<float>::max(0, major); mRadiusMinor = math<float>::max(0, minor); return *this; }
 
 	size_t		getNumVertices() const override;
@@ -1151,7 +1151,7 @@ class CI_API WireTorus : public WireSource {
 	WireTorus&	subdivisionsCircle( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
 	//! Specifies the major and minor radius as a ratio (minor : major). Resulting torus will fit unit cube.
 	WireTorus&	ratio( float ratio ) { ratio = math<float>::clamp( ratio ); mRadiusMajor = 1; mRadiusMinor = 1 - ratio; return *this; }
-	//! Specifies the major and minor radius separately.
+	//! Specifies the major and minor radius separately. \a major is the distance from the axis to the farthest point of the torus. \a minor is the distance between the axis and the center of the rotated circle.
 	WireTorus&	radius( float major, float minor ) { mRadiusMajor = math<float>::max( 0, major ); mRadiusMinor = math<float>::max( 0, minor ); return *this; }
 
 	size_t		getNumVertices() const override;
