@@ -59,7 +59,12 @@
             <h1><a id="Building_Cinder_16"></a>Building Cinder</h1>
             <ul>
                 <li>First, run <code>emsdk activate latest</code>, then run <code>source emsdk_env.sh</code></li>
-                <li>Navigate into  <code>Cinder/emscripten</code> directory and run <code>./cibuild</code></li>
+                <li>
+                    
+                    Just like you would on the desktop if you were building Cinder for Linux, make a build folder at the root of your Cinder 
+                    installation and run <br/>
+                    <code>emcmake cmake .. -DCMAKE_TOOLCHAIN_FILE=../proj/cmake/modules/Emscripten.cmake</code> (plus any other CMake flags you'd like to set)
+                </li>
             </ul>
             <h1><a id="If_you_gotta_build_Boost_this_is_optional_21"></a>If you gotta build Boost (this is optional)</h1>
             <p>Emscripten support relies on Boost system and filesystem libraries which should be included. If for some reason you need to rebuild. Note that you will definitely need a Unix-y terminal for this, Git Bash won't work.</p>

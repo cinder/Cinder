@@ -68,6 +68,10 @@
 			{
 				"label":"ci_emscripten_app",
 				"link":"part9.html"
+			},
+			{
+				"label":"emscripten::val",
+				"link":"part9.5.html"
 			}
 		],
 		"seealso":
