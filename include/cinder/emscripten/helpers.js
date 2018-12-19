@@ -262,7 +262,7 @@ window.CINDER_AUDIO = {
 
    // the global context for all audio processing
    // This is done due to the issue of the audio context reference being
-   // deleted when attempted to use outside of the class.
+   // devared when attempted to use outside of the class.
    globalContext:new AudioContext(),
 
    /**
@@ -379,7 +379,7 @@ window.CINDER_FILEIO = {
 
   /**
    * Converts a source string into a Blob object that's suitable for 
-   * passing into new WebWorker and AudioWorklet instances. 
+   * passing into new WebWorker and Audioworklet instances. 
    * @param {String} source the source string that you want to make into a blob. 
    */
   sourceToBlob:function(source){
@@ -401,14 +401,14 @@ window.CINDER_FILEIO = {
   },
 
   /**
-   * Loads an AudioWorklet processor script
+   * Loads an Audioworklet processor script
    * @param {String} source The source for the script
    * @param {Function} cb a function to run when the script has been instantiated and registered.
    */
   loadProcessor:function(source,cb){
     var context = window.CINDER_AUDIO.globalContext;
 
-    context.audioWorklet.addModule(this.sourceToBlob(source)).then(cb)
+    context.audioworklet.addModule(this.sourceToBlob(source)).then(cb)
       .catch( function() {
         console.error("There was an error loading the processor");
       });
@@ -419,17 +419,17 @@ window.CINDER_FILEIO = {
 // =================== TESTING =======================//
 
 
-window.CINDER_WORKLETS = {
+window.CINDER_workletS = {
 
   // an array holding the chain of nodes to string together. 
   // will start out reversed, but eventually re-order itself properly
   graph:[],
 
   /**
-   * Creates a AudioWorkletNode that is used to handle custom processing. 
+   * Creates a AudioworkletNode that is used to handle custom processing. 
    * @param {Function} processFunc 
    */
-  createWorkletNode(processFunc){
+  createworkletNode(processFunc){
    
    this.graph.push(processFunc);
 
@@ -451,7 +451,7 @@ window.CINDER_WORKLETS = {
   {
     // first reverse graph cause things are gonna get inserted in the wrong order for 
     // ease of use
-    let graph = this.graph.reverse();
+    var graph = this.graph.reverse();
 
     // gotta remove the first item for some reason - probably cause we aren't setting AudioContext as "enabled"
     graph.shift();
@@ -470,10 +470,10 @@ window.CINDER_WORKLETS = {
     });
 
     // connect all the nodes together. 
-    for(let i = 0; i < graph.length-1; ++i){
+    for(var i = 0; i < graph.length-1; ++i){
       if(i !== graph.length - 1){
-        let start = graph[i];
-        let next = graph[i + 1];
+        var start = graph[i];
+        var next = graph[i + 1];
         start.connect(next);
       }
     }

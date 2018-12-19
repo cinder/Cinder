@@ -85,7 +85,7 @@ namespace cinder { namespace em {
         void pause();
 
         //! Sets the source for the video element. When the video is done loading and we
-        //! have the metadata for the video, the funciton
+        //! have the metadata for the video, the function onLoadMetadata gets called.
         void setSource( std::string url );
 
         //! Returns whether or not the video is playing.

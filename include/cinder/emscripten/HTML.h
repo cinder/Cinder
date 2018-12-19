@@ -11,7 +11,7 @@ namespace cinder { namespace em { namespace html {
 
     //! creates an HTML element. Pass in the tag name as the parameter. 
     //! Note that you could technically pass in anything so there will be no error 
-    //! if you pass in something that isn't an actual tag as according to the curren t
+    //! if you pass in something that isn't an actual tag as according to the current
     //! HTML spec. 
     static emscripten::val createElement( std::string el )
     {
