@@ -61,6 +61,18 @@
             For faster load times, assuming you don't need to examine the output, it may be a good idea to just do release builds.
           </p>
         </li>
+
+        <li>
+          <p>Though it does exist in the WebGL 2 spec, for some reason trying to create a <code>GL_RGB16F</code> format texture will cause an exception. 
+            The cause is currently unknown - the workaround for now is to use <code>GL_RGBA16F</code>. 
+          </p>
+        </li>
+
+        <li>
+          <p>
+            Also remember to specify precision in your fragment shaders.
+          </p>
+        </li>
       </ol>
 		</section>
 
