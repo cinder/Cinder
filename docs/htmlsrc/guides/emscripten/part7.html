@@ -61,6 +61,16 @@
             For faster load times, assuming you don't need to examine the output, it may be a good idea to just do release builds.
           </p>
         </li>
+
+        <li>
+          <p>For Transform Feedback - you must unbind your data buffer(s) after the Transform Feedback stage. </p>
+         
+        </li>
+
+        <li>
+          When dealing with GL_POINTS - there's no need to specifically enable GL_PROGRAM_POINT_SIZE; in fact doing so will cause a compilation error. 
+          Point size is already enabled automatically, you just need to set th epoint size in your shader.
+        </li>
       </ol>
 		</section>
 
