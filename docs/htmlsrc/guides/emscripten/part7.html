@@ -63,6 +63,7 @@
         </li>
 
         <li>
+
           <p>For Transform Feedback - you must unbind your data buffer(s) after the Transform Feedback stage. </p>
          
         </li>
@@ -70,6 +71,18 @@
         <li>
           When dealing with GL_POINTS - there's no need to specifically enable GL_PROGRAM_POINT_SIZE; in fact doing so will cause a compilation error. 
           Point size is already enabled automatically, you just need to set th epoint size in your shader.
+        </li>
+
+        <li>
+          <p>
+            Also remember to specify precision in your fragment shaders.
+          </p>
+        </li>
+
+        <li>
+          <p>Though it does exist in the WebGL 2 spec, for some reason trying to create a <code>GL_RGB16F</code> format texture will cause an exception. 
+            The cause is currently unknown - the workaround for now is to use <code>GL_RGBA16F</code>. 
+          </p>
         </li>
       </ol>
 		</section>

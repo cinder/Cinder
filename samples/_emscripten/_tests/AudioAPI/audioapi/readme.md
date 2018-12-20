@@ -26,8 +26,8 @@ Note that in this case, there is no output object on the context, the context it
 
 Things that still need to be thought out
 ===
-* It doesn't look like it's possible to extract any kind of a buffer out of built-in nodes, making it hard to tweak the output 
-* Can we just pass a function to a custom AudioWorkletNode that gets bound to the process function? 
+* It doesn't look like it's possible to extract any kind of a buffer out of built-in nodes, making it hard to custom tweak the output. 
+* ~~Can we just pass a function to a custom AudioWorkletNode that gets bound to the process function?~~ Solved!
 
 
 References

@@ -61,7 +61,8 @@ EM_JS(void,load_gui,(),{
  * https://kripken.github.io/emscripten-site/docs/porting/connecting_cpp_and_javascript/embind.html
  * 
  */ 
-class AppSettings {
+class AppSettings 
+{
   public:
   float radius = 5.0f;
 
@@ -71,15 +72,17 @@ class AppSettings {
 };
 
 // need a proxy so we can return a pointer
-AppSettings* makeAppSettings(){
+AppSettings* makeAppSettings()
+{
   return new AppSettings();
 }
 
 // here we expose our C++ to the JS side. 
-EMSCRIPTEN_BINDINGS(ApplicationSettings) {
-  class_<AppSettings>("AppSettings")
-    .constructor(&makeAppSettings, allow_raw_pointers())
-    .property("radius", &AppSettings::getRadius, &AppSettings::setRadius)
+EMSCRIPTEN_BINDINGS( ApplicationSettings ) 
+{
+  class_<AppSettings>( "AppSettings" )
+    .constructor( &makeAppSettings, allow_raw_pointers() )
+    .property( "radius", &AppSettings::getRadius, &AppSettings::setRadius )
     ;
 }
 

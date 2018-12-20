@@ -429,7 +429,7 @@ window.CINDER_workletS = {
    * Creates a AudioworkletNode that is used to handle custom processing. 
    * @param {Function} processFunc 
    */
-  createworkletNode(processFunc){
+  createworkletNode:function(processFunc){
    
    this.graph.push(processFunc);
 
