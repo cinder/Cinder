@@ -7,8 +7,6 @@
 #include "cinder/gl/Vao.h"
 #include "cinder/Camera.h"
 #include <vector>
-#include "cinder/gl/TransformFeedbackObj.h"
-#include "shaders.h"
 #include "cinder/Camera.h"
 #include "cinder/Rand.h"
 #define STRINGIFY(A) #A
