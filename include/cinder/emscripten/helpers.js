@@ -419,7 +419,7 @@ window.CINDER_FILEIO = {
 // =================== TESTING =======================//
 
 
-window.CINDER_workletS = {
+window.CINDER_WORKLETS = {
 
   // an array holding the chain of nodes to string together. 
   // will start out reversed, but eventually re-order itself properly
