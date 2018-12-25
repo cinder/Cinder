@@ -37,6 +37,7 @@
 #ifndef CIRCULAR_BUFFER_H
 #define CIRCULAR_BUFFER_H
 
+#include <algorithm>
 #include <exception>
 #include <iterator>
 #include <memory>
