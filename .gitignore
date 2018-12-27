@@ -70,7 +70,10 @@ cinderConfig.cmake
 # CinderBlocks
 blocks/
 !blocks/[__AppTemplates,Box2D,Cairo,FMOD,LocationManager,MotionManager,OSC,QuickTime,TUIO]
+
+# Emscripten 
 lib/emscripten/libcinder_d.bc
 #lib/emscripten/libboost_system.bc
 #lib/emscripten/libboost_filesystem.bc
 .vscode/settings.json
+node_modules
