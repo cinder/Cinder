@@ -7,7 +7,7 @@
 #include <emscripten.h>
 
 namespace cinder { namespace audio { namespace em {
-  class WebAudioLoader : public SourceFile 
+  class SourceFileWebAudio : public SourceFile 
   {
     
     ci::DataSourceRef mDataSource;
@@ -21,10 +21,10 @@ namespace cinder { namespace audio { namespace em {
     emscripten::val mHelpers;
     public:
 
-      WebAudioLoader():SourceFile( 0 ),
+      SourceFileWebAudio():SourceFile( 0 ),
       mHelpers( emscripten::val::undefined() ){}
       
-      WebAudioLoader( const DataSourceRef &dataSource ):
+      SourceFileWebAudio( const DataSourceRef &dataSource ):
       mDataSource( dataSource ),SourceFile( 0 ),
       mHelpers( emscripten::val::undefined() )
       {}
@@ -41,7 +41,7 @@ namespace cinder { namespace audio { namespace em {
         mHelpers = emscripten::val::global( "window" )[ "CINDER_AUDIO" ];
 
         // binding to member function is weird for some reason - use lambda for time being.
-        //std::function<void(val)> _func = std::bind(&WebAudioLoader::parseFile,this,std::placeholders::_1);
+        //std::function<void(val)> _func = std::bind(&SourceFileWebAudio::parseFile,this,std::placeholders::_1);
         std::function<void( val )> _func = [=]( val e )->void
         {
           mNumChannels = e[ "numberOfChannels" ].as<int>();

@@ -141,8 +141,8 @@ DataSourceRef PlatformEmscripten::loadResource( const fs::path &resourcePath )
 		has_suffix( name, std::string( ".ogv" ) ) )
 		{
 		
-		CI_LOG_I("Large files like audio and video should be loaded with loadAsset or loadAssetAsync as they cannot be efficiently bundled in the resource bundle");
-		return DataSourcePath::create( fs::path("") );
+		CI_LOG_I("Note - Large files like audio and video should be loaded with loadAsset or loadAssetAsync as they cannot be efficiently bundled in the resource bundle. Looking against assets folder instead.");
+		return DataSourcePath::create( "assets/" + resourcePath.string() );
 	}
 	else {
 		fs::path fullPath = getResourcePath( resourcePath );

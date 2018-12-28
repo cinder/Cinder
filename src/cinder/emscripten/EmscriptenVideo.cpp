@@ -1,7 +1,5 @@
 #include "cinder/emscripten/EmscriptenVideo.h"
 #include "cinder/emscripten/CinderEmscripten.h"
-//#include "cinder/emscripten/globalbindings.h"
-
 
 using namespace ci;
 using namespace emscripten;

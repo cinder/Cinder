@@ -29,9 +29,6 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/gl.h"
 
-using namespace ci;
-using namespace emscripten;
-
 namespace cinder { namespace em {
 
     typedef std::shared_ptr< class EmscriptenVideo >EmscriptenVideoRef;

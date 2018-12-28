@@ -47,10 +47,14 @@ void WebAudioApp::setup(){
   // Minor change on Emscripten - because all audio is loaded in an asynchronous manner,
   // it's necessary to provide a callback instead of assignment to a variable,
   // after which, once the callback runs you could then assign to mVoice.
-  audio::em::Voice::create( audio::load( loadResource( "assets/test.ogg" ) ) ,[=](VoiceSamplePlayerNodeRef ref)->void{
+  try {
+    audio::em::Voice::create( audio::load( loadResource( "test.ogg" ) ) ,[=](VoiceSamplePlayerNodeRef ref)->void{
     mVoice = ref;
   });
 
+  }catch(ci::Exception &e){
+    CI_LOG_E(e.what());
+  }
 }
 
 void WebAudioApp::mouseDown( MouseEvent event )
