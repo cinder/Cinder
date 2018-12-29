@@ -357,7 +357,7 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 		default: throw ExcUnknownNodeType();
 	}
 	rapidxml::xml_node<char> *node = 0;
-	if( type == rapidxml::node_data ) {
+	if( type == rapidxml::node_data || type == rapidxml::node_cdata ) {
 		node = doc.allocate_node( type, NULL, doc.allocate_string( getValue().c_str() ) );
 	}
 	else if( type == rapidxml::node_comment ) {
