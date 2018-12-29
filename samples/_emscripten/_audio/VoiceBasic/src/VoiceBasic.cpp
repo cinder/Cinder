@@ -62,7 +62,7 @@ void WebAudioApp::mouseDown( MouseEvent event )
   // you can call "isDoneLoading()" to determine whether or not
   // your file is done loading and is able to be played back / manipulated.
   if(mVoice->isDoneLoading()){
-    CI_LOG_I("done loading");
+    CI_LOG_I("Playing");
     // scale volume and pan from window coordinates to 0:1
     float volume = 1.0f - (float)event.getPos().y / (float)getWindowHeight();
     float pan = (float)event.getPos().x / (float)getWindowWidth();

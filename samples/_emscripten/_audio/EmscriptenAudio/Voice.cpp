@@ -294,22 +294,19 @@ VoiceSamplePlayerNode::VoiceSamplePlayerNode( const SourceFileRef &sourceFile, c
 
 
 		auto loader = (WebAudioLoader*)sourceFile.get();
-
-		loader->init( [=]()->void
+	
+		loader->init( [loader,sourceFile,options,cb,this]()->void
 		{
 			BufferRef buffer = MixerImpl::get()->loadBuffer( sourceFile );
 			BufferRef audio = loader->getAudioData();
-			mNode = Context::master()->makeNode( new BufferPlayerNode( audio ) );
-			mDoneParsing = true;
+			this->mNode = Context::master()->makeNode( new BufferPlayerNode( audio ) );
+			this->mDoneParsing = true;
 
 			VoiceSamplePlayerNodeRef result( this );
 
 			MixerImpl::get()->addVoice(result,options);
 
-			if(cb)
-			{
-				cb(result);
-			}
+			cb(result);
 		});
 
 

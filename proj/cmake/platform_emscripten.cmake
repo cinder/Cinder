@@ -15,7 +15,10 @@ list( APPEND SRC_SET_CINDER_EMSCRIPTEN
 	${CINDER_SRC_DIR}/cinder/emscripten/EmscriptenVideo.cpp
 	#${CINDER_SRC_DIR}/cinder/audio/emscripten/ContextWebAudio.cpp
 	${CINDER_SRC_DIR}/cinder/emscripten/globalbindings.cpp
+	${CINDER_SRC_DIR}/cinder/audio/emscripten/FileWebAudio.cpp
+	${CINDER_SRC_DIR}/cinder/emscripten/AudioPlayer.cpp
 )
+
 
 list( APPEND CINDER_SRC_FILES
 	${SRC_SET_CINDER_APP_EMSCRIPTEN}
