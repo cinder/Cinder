@@ -34,5 +34,5 @@ namespace cinder { namespace em {
     //! a particular file format, the browser will cycle through any additional sources
     //! until a suitable one is found, or simply not play. 
     AudioPlayer& addSource(fs::path src);
-  }
+  };
 }}

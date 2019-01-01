@@ -2,7 +2,6 @@
 #include "cinder/emscripten/CinderEmscripten.h"
 #include "cinder/audio/Buffer.h"
 #include "cinder/Log.h"
-#include "ContextWebAudio.h"
 #include <emscripten/bind.h>
 #include <emscripten.h>
 

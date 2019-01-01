@@ -292,10 +292,9 @@ VoiceSamplePlayerNode::VoiceSamplePlayerNode( const SourceFileRef &sourceFile, c
 		}
 	#else
 
-
 		auto loader = (WebAudioLoader*)sourceFile.get();
 	
-		loader->init( [loader,sourceFile,options,cb,this]()->void
+		loader->init( [ loader, sourceFile, options, cb, this ]()-> void
 		{
 			BufferRef buffer = MixerImpl::get()->loadBuffer( sourceFile );
 			BufferRef audio = loader->getAudioData();
@@ -308,8 +307,6 @@ VoiceSamplePlayerNode::VoiceSamplePlayerNode( const SourceFileRef &sourceFile, c
 
 			cb(result);
 		});
-
-
 
 		// TODO parse information into playable format.
 

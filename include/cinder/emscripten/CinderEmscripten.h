@@ -37,6 +37,11 @@
 #include "cinder/Url.h"
 #include "cinder/Timer.h"
 
+/**
+ * A file of different functions that are likely going to be used or are helpful 
+ * in some manner.
+ */
+
 namespace cinder { namespace em { namespace helpers {
 
 		//! A helper function to add an event listener to an element in a more simplified form.
@@ -48,7 +53,6 @@ namespace cinder { namespace em { namespace helpers {
 			auto functor_adapter = emscripten::val( functor )[ "onload" ].call<emscripten::val>( "bind", emscripten::val(functor) );
 
 			// add the listener to the element
-			//window.call<void>("addElementListener",element,val(eventName),(functor_adapter));
 			element.call<void>( "addEventListener", emscripten::val( eventName ), functor_adapter );
 		}
 
@@ -112,16 +116,28 @@ namespace cinder { namespace em { namespace helpers {
 			return emscripten::val( functor )[ "onload" ].call<emscripten::val>( "bind", emscripten::val(functor) );
 		}
 
+    //! Returns reference to Worklet helpers
     static emscripten::val getWorkletHelpers()
     {
       return emscripten::val::global( "window" )[ "CINDER_WORKLETS" ];
+    }
+
+    //! Returns the current width of the browser window. 
+    static int getWindowWidth()
+    {
+      return emscripten::val::global( "window" ) ["innerWidth" ];
+    }
+
+    //! Returns the current height of the browser window.
+    static int getWindowHeight()
+    {
+      return emscripten::val::global( "window" )[ "innerHeight" ];
     }
 
     //! Returns an image. Assumes you don't need specialized processing.
     //! TODO return a Surface or something.
     static char * getImage( DataSourceRef url )
     {
-
       // determine the file type.
       fs::path filename =  fs::path( url->getUrl().str() );
 

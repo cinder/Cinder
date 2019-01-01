@@ -8,7 +8,7 @@ namespace cinder { namespace em {
     AudioPlayer::AudioPlayer( fs::path src, bool useControls, bool loop ):audioNode( val::undefined() )
     {
 
-        audioNode = val::global( "document" ).createElement( "audio" );
+        audioNode = val::global( "document" ).call<val>("createElement", val( "audio" ) );
 
         // take the filename as the id of the element.
         auto id = p.stem();
@@ -45,7 +45,7 @@ namespace cinder { namespace em {
 
     AudioPlayer& AudioPlayer::appendSource( fs::path src )
     {
-        val source = val::global( "document" ).createElement( "source" );
+        val source = val::global( "document" ).call<val>("createElement", val( "source" ) );
         source.set( "src",val( src.string() ) );
         audioNode.call<void>( "append", source );
         return *this;
