@@ -25,7 +25,7 @@
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GainNode.h"
 #include "cinder/audio/PanNode.h"
-#include "WebAudioLoader.h"
+#include "cinder/audio/emscripten/FileWebAudio.h"
 #include "cinder/emscripten/CinderEmscripten.h"
 //#include "cinder/audio/emscripten/WebAudioLoader.h"
 #include "cinder/Log.h"
@@ -292,7 +292,7 @@ VoiceSamplePlayerNode::VoiceSamplePlayerNode( const SourceFileRef &sourceFile, c
 		}
 	#else
 
-		auto loader = (WebAudioLoader*)sourceFile.get();
+		auto loader = (SourceFileWebAudio*)sourceFile.get();
 	
 		loader->init( [ loader, sourceFile, options, cb, this ]()-> void
 		{
