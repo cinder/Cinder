@@ -8,10 +8,10 @@ namespace cinder { namespace em {
     AudioPlayer::AudioPlayer( fs::path src, bool useControls, bool loop ):audioNode( val::undefined() )
     {
 
-        audioNode = val::global( "document" ).call<val>("createElement", val( "audio" ) );
+        audioNode = val::global( "document" ).call<val>( "createElement", val( "audio" ) );
 
         // take the filename as the id of the element.
-        auto id = p.stem();
+        auto id = src.stem();
         audioNode.set( "id", val( id ) );
 
         // set cross-origin properties
@@ -43,9 +43,9 @@ namespace cinder { namespace em {
         audioNode.call<void>( "pause" );
     }
 
-    AudioPlayer& AudioPlayer::appendSource( fs::path src )
+    AudioPlayer& AudioPlayer::addSource( fs::path src )
     {
-        val source = val::global( "document" ).call<val>("createElement", val( "source" ) );
+        val source = val::global( "document" ).call<val>( "createElement", val( "source" ) );
         source.set( "src",val( src.string() ) );
         audioNode.call<void>( "append", source );
         return *this;
