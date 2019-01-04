@@ -1,5 +1,3 @@
-#version 150
-
 uniform samplerCube uCubeMapTex;
 
 in vec3	NormalWorldSpace;

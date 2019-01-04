@@ -1,5 +1,3 @@
-#version 150
-
 // inputs passed from the vertex shader
 in vec4				vVertex;
 in vec3				vNormal;

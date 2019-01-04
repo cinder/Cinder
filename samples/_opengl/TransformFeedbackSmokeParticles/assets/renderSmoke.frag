@@ -1,4 +1,4 @@
-#version 150
+
 #extension all : warn
 
 uniform sampler2D ParticleTex;

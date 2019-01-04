@@ -1,4 +1,3 @@
-#version 150 core
 
 in vec3 VertexPosition;
 in float VertexStartTime;

@@ -9,6 +9,22 @@
 using namespace ci;
 using namespace ci::app;
 
+// This is dependent on the C++ compiler structuring these vars in RAM the same way that GL's std140 does
+struct FormulaData{
+	float	mA1, mA2;
+	float	mB1, mB2;
+	float	mM1, mM2;
+	float	mN11, mN12;
+	float	mN21, mN22;
+	float	mN31, mN32;
+	float vvvv, vvvv2;
+};
+	
+
+#ifdef CINDER_EMSCRIPTEN
+	#include "Gui.h"
+#endif 
+
 class SuperformulaGpuApp : public App {
   public:
 	void	setup() override;
@@ -31,16 +47,13 @@ class SuperformulaGpuApp : public App {
 	int						mSubdivisions;
 	int						mCheckerFrequency;
 	
-	// This is dependent on the C++ compiler structuring these vars in RAM the same way that GL's std140 does
-	struct {
-		float	mA1, mA2;
-		float	mB1, mB2;
-		float	mM1, mM2;
-		float	mN11, mN12;
-		float	mN21, mN22;
-		float	mN31, mN32;
-	} mFormulaParams;
+	
+	FormulaData mFormulaParams;
 	gl::UboRef				mFormulaParamsUbo;
+
+#ifdef CINDER_EMSCRIPTEN
+	GuiRef gui;
+#endif 
 };
 
 void SuperformulaGpuApp::setupGeometry()
@@ -89,6 +102,10 @@ void SuperformulaGpuApp::setup()
 	mParams->addParam( "Normals Length", &mNormalsLength ).min( 0.0f ).max( 2.0f ).step( 0.025f );
 #endif
 
+#ifdef CINDER_EMSCRIPTEN
+	gui = Gui::create();
+#endif 
+
 	mCam.lookAt( vec3( 3, 2, 4 ) * 0.75f, vec3( 0 ) );
 
 #if defined( CINDER_GL_ES_3 )
@@ -125,6 +142,11 @@ void SuperformulaGpuApp::resize()
 
 void SuperformulaGpuApp::update()
 {
+	#ifdef CINDER_EMSCRIPTEN
+	gui->updateGUI(mFormulaParams);
+	#endif
+
+
 	// Rotate the by 2 degrees around an arbitrary axis
 	vec3 axis = vec3( cos( getElapsedSeconds() / 3 ), sin( getElapsedSeconds() / 2 ), sin( getElapsedSeconds() / 5 ) );
 	mRotation *= rotate( toRadians( 0.2f ), normalize( axis ) );
@@ -134,6 +156,8 @@ void SuperformulaGpuApp::update()
 	
 	mNormalsBatch->getGlslProg()->uniform( "uNormalsLength", mNormalsLength );
 	mBatch->getGlslProg()->uniform( "uCheckerFrequency", mCheckerFrequency );
+
+
 }
 
 void SuperformulaGpuApp::draw()

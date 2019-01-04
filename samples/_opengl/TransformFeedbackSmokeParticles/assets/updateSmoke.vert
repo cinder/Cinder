@@ -1,4 +1,4 @@
-#version 150 core
+
 
 in vec3 VertexPosition;
 in vec3 VertexVelocity;

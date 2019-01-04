@@ -207,7 +207,11 @@ console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset 
 
 	// load mesh file and create missing data (normals, tangents) if necessary
 	try {
-		fs::path mshFile = getAssetPath( "leprechaun.msh" );
+		#ifdef CINDER_EMSCRIPTEN
+			fs::path mshFile = fs::path( "leprechaun.msh" );
+		#else
+			fs::path mshFile = getAssetPath( "leprechaun.msh" );
+		#endif 
 		TriMesh mesh = createMesh( mshFile );
 
 		mMesh = gl::VboMesh::create( mesh );
@@ -382,20 +386,31 @@ TriMesh NormalMappingApp::createMesh( const fs::path& mshFile )
 	TriMesh mesh( TriMesh::Format().positions(3).texCoords(2).normals() );
 	Timer	timer;
 
-	// try to load the msh file
+	// It's technically not possible to check for the existance of a file on the Web so we 
+	// need to split things up a bit in the check. 
+	// Also for some reason - when loading as asset the version number is read incorrectly so bundle model as a resource
+	#ifdef CINDER_EMSCRIPTEN
+		timer.start();
+		mesh.read( loadResource( mshFile.string() ) );
+		CI_LOG_I( "Loading the mesh took " << timer.getSeconds() << " seconds." );
+	#else 
+// try to load the msh file
 #if defined( CINDER_ANDROID )
 	if( ci::android::fs::exists( mshFile ) ) {
 #else
 	if( fs::exists( mshFile ) ) {
 #endif
 		timer.start();
-		mesh.read( loadFile( mshFile ) );
+		
+		mesh.read( loadAsset( mshFile ) );
+
 		CI_LOG_I( "Loading the mesh took " << timer.getSeconds() << " seconds." );
 	}
 	else {
 		std::string msg = "File does not exist (" + mshFile.string() + ")";
 		throw std::runtime_error( msg );
 	}
+	#endif
 
 	// if the mesh does not have normals, calculate them on-the-fly
 	if( ! mesh.hasNormals() ) {
