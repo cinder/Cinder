@@ -21,7 +21,7 @@ struct FormulaData{
 };
 	
 
-#ifdef CINDER_EMSCRIPTEN
+#if defined( CINDER_EMSCRIPTEN )
 	#include "Gui.h"
 #endif 
 
@@ -51,7 +51,7 @@ class SuperformulaGpuApp : public App {
 	FormulaData mFormulaParams;
 	gl::UboRef				mFormulaParamsUbo;
 
-#ifdef CINDER_EMSCRIPTEN
+#if defined( CINDER_EMSCRIPTEN )
 	GuiRef gui;
 #endif 
 };
@@ -102,7 +102,7 @@ void SuperformulaGpuApp::setup()
 	mParams->addParam( "Normals Length", &mNormalsLength ).min( 0.0f ).max( 2.0f ).step( 0.025f );
 #endif
 
-#ifdef CINDER_EMSCRIPTEN
+#if defined( CINDER_EMSCRIPTEN )
 	gui = Gui::create();
 #endif 
 
@@ -142,7 +142,7 @@ void SuperformulaGpuApp::resize()
 
 void SuperformulaGpuApp::update()
 {
-	#ifdef CINDER_EMSCRIPTEN
+	#if defined( CINDER_EMSCRIPTEN )
 	gui->updateGUI(mFormulaParams);
 	#endif
 

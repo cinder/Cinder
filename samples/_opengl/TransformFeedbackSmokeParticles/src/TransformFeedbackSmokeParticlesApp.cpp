@@ -54,7 +54,7 @@ class TransformFeedbackSmokeParticlesApp : public App {
 	uint32_t						mDrawBuff;
 
 	// this only works on desktop 
-	#ifndef CINDER_EMSCRIPTEN
+	#if ! defined( CINDER_EMSCRIPTEN )
 	gl::TransformFeedbackObjRef		mPFeedbackObj[2];
 	#endif 
 };
@@ -100,7 +100,7 @@ void TransformFeedbackSmokeParticlesApp::loadShaders()
 		// in WebGL you need both shaders to make a complete program and are not allow to 
 		// leave out one, even if you don't need it as in the case with Transform Feedback
 		// Add a valid passthru shader.
-		#ifdef CINDER_EMSCRIPTEN
+		#if defined( CINDER_EMSCRIPTEN )
 		.fragment(STRINGIFY(
 			precision highp float;
 			out vec4 glFragColor;
@@ -215,13 +215,13 @@ void TransformFeedbackSmokeParticlesApp::loadBuffers()
 		// Create a TransformFeedbackObj, which is similar to Vao
 		// It's used to capture the output of a glsl and uses the
 		// index of the feedback's varying variable names.
-		#ifndef CINDER_EMSCRIPTEN
+		#if ! defined( CINDER_EMSCRIPTEN )
 		mPFeedbackObj[i] = gl::TransformFeedbackObj::create();
 		#endif 
 		
 		// Bind the TransformFeedbackObj and bind each corresponding buffer
 		// to it's index.
-		#ifndef CINDER_EMSCRIPTEN
+		#if ! defined( CINDER_EMSCRIPTEN )
 		mPFeedbackObj[i]->bind();
 		gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, PositionIndex, mPPositions[i] );
 		gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, VelocityIndex, mPVelocities[i] );
@@ -251,7 +251,7 @@ void TransformFeedbackSmokeParticlesApp::update()
 	
 	mPUpdateGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
 	
-	#ifndef CINDER_EMSCRIPTEN
+	#if ! defined( CINDER_EMSCRIPTEN)
 	// Opposite TransformFeedbackObj to catch the calculated values
 	// In the opposite buffer
 	mPFeedbackObj[1-mDrawBuff]->bind();
@@ -273,7 +273,7 @@ void TransformFeedbackSmokeParticlesApp::update()
 
 	// in WebGL - you need to remember to unbind buffer positions, things aren't automatically unbound.
 	// TransformFeedbackObj doesn't support unbinding for some reason so doing this manually. 
-	#ifdef CINDER_EMSCRIPTEN
+	#if defined( CINDER_EMSCRIPTEN )
 	gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, PositionIndex, nullptr );
 	gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, VelocityIndex, nullptr );
 	gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, StartTimeIndex, nullptr );
@@ -294,9 +294,9 @@ void TransformFeedbackSmokeParticlesApp::draw()
 	gl::ScopedTextureBind	texScope( mSmokeTexture );
 
 	// no need to enable point size, automatically utilized in WebGL if you call gl_PointSize in shader.
-#ifndef CINDER_EMSCRIPTEN
+	#if ! defined( CINDER_EMSCRIPTEN)
 	gl::ScopedState			stateScope( GL_PROGRAM_POINT_SIZE, true );
-#endif 
+	#endif 
 
 	gl::ScopedBlend			blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 	

@@ -45,7 +45,7 @@ void MotionBlurFboApp::setup()
 	
 	// For some reason - not sure if Emscripten or gl loader issue but GL_RGB16F doesn't exist, but this does exist in WebGL2,
 	// use RGBA for now. 
-	#ifdef CINDER_EMSCRIPTEN
+	#if defined( CINDER_EMSCRIPTEN ) 
 	mAccumFbo = gl::Fbo::create( getWindowWidth(), getWindowHeight(),
 						gl::Fbo::Format().colorTexture( gl::Fbo::Format().getDefaultColorTextureFormat().internalFormat( GL_RGBA16F ) ).disableDepth() );
 	#else

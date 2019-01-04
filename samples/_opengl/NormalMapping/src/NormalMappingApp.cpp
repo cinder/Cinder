@@ -207,7 +207,7 @@ console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset 
 
 	// load mesh file and create missing data (normals, tangents) if necessary
 	try {
-		#ifdef CINDER_EMSCRIPTEN
+		#if defined( CINDER_EMSCRIPTEN ) 
 			fs::path mshFile = fs::path( "leprechaun.msh" );
 		#else
 			fs::path mshFile = getAssetPath( "leprechaun.msh" );
@@ -389,7 +389,7 @@ TriMesh NormalMappingApp::createMesh( const fs::path& mshFile )
 	// It's technically not possible to check for the existance of a file on the Web so we 
 	// need to split things up a bit in the check. 
 	// Also for some reason - when loading as asset the version number is read incorrectly so bundle model as a resource
-	#ifdef CINDER_EMSCRIPTEN
+	#if defined( CINDER_EMSCRIPTEN )
 		timer.start();
 		mesh.read( loadResource( mshFile.string() ) );
 		CI_LOG_I( "Loading the mesh took " << timer.getSeconds() << " seconds." );
