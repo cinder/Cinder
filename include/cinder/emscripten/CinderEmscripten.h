@@ -125,13 +125,20 @@ namespace cinder { namespace em { namespace helpers {
     //! Returns the current width of the browser window. 
     static int getWindowWidth()
     {
-      return emscripten::val::global( "window" ) ["innerWidth" ];
+      return emscripten::val::global( "window" ) ["innerWidth" ].as<int>();
     }
 
     //! Returns the current height of the browser window.
     static int getWindowHeight()
     {
-      return emscripten::val::global( "window" )[ "innerHeight" ];
+      return emscripten::val::global( "window" )[ "innerHeight" ].as<int>();
+    }
+
+    //! Queries the current DOM tree for the desired element based on either it's id or classname. 
+    //! Note that if specifying  a class name, this will only return the first item. 
+    static emscripten::val querySelector( std::string selector )
+    {
+      return emscripten::val::global( "document" ).call<emscripten::val>( "querySelector", emscripten::val( selector ) );
     }
 
     //! Returns an image. Assumes you don't need specialized processing.
