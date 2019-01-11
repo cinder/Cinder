@@ -16,6 +16,16 @@ using namespace ci::app;
 using namespace ci::em;
 using namespace emscripten;
 
+/**
+ * An simple example to show two things. 
+ * 1. How to playback video with Emscripten.
+ * 2. How to use drag-n-drop functionality.
+ * 
+ * Drag a video file onto the canvas(the black box in the middle) and the video file should start playing.
+ * Note that for simplicity, this sample skips over some things that you probably ought to be doing, 
+ * such as checking for file compatibility with the current browser
+ * in addition to ensuring the file you drop is actually a video file.
+ */ 
 class DragDropApp : public App 
 {
 
@@ -70,7 +80,7 @@ void DragDropApp::setup()
 
   	mCam = CameraPersp( getWindowWidth(), getWindowHeight(), fov, near, far );
   	mCam.lookAt( eye, target );
-    
+
   // build positions
   vector<ci::vec3> positions;
   vector<ci::vec2> uvs;
