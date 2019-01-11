@@ -23,6 +23,7 @@ class DragDropApp : public App
 	void draw() override;
   void setup() override;
   void onLoad();
+  void onDropProcessed(emscripten::val e);
   CameraPersp mCam;
   gl::VboRef mInstancePosition,mInstanceUV;
 
@@ -44,11 +45,19 @@ void prepareSettings( DragDropApp::Settings* settings )
 	settings->setMultiTouchEnabled( false );
 }
 
+void DragDropApp::onDropProcessed(emscripten::val e){
+  auto url = val::global("URL").call<val>("createObjectURL",e);
+
+  // NOTE: not checking to ensure we dropped a video - probably a good idea to do so
+  video.setSource( url.as<string>() );
+}
+
 void DragDropApp::setup()
 {
-                                                                                            
-    dropper = DragDrop("#canvas");
-    
+   
+    std::function<void( emscripten::val )> func = std::bind( &DragDropApp::onDropProcessed, this, std::placeholders::_1) ;                                                                       
+    dropper = DragDrop( "#canvas", func );
+
     width = app::getWindowWidth();
     height = app::getWindowHeight();
 
@@ -61,9 +70,7 @@ void DragDropApp::setup()
 
   	mCam = CameraPersp( getWindowWidth(), getWindowHeight(), fov, near, far );
   	mCam.lookAt( eye, target );
-
-  video.setSource( "assets/sintel.ogv" );
-
+    
   // build positions
   vector<ci::vec3> positions;
   vector<ci::vec2> uvs;

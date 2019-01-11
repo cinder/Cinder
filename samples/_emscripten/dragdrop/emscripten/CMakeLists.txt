@@ -13,6 +13,5 @@ ci_emscripten_app(
 	SOURCES     ${APP_PATH}/src/DragDropApp.cpp ${APP_PATH}/src/dragdrop.cpp
 	CINDER_PATH ${CINDER_PATH}
     ASSETS ../assets
-	INCLUDES ${APP_PATH}/include 
-
+	INCLUDES ${APP_PATH}/include
 )
