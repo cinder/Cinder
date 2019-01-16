@@ -4,10 +4,10 @@
 root = true
 
 # Default settings:
-# Use 4 spaces as indentation
 [*]
 indent_style = tabs
 indent_size = 4
 
+# python:
 [*.py]
 indent_style = spaces
