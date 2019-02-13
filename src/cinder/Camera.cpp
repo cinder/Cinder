@@ -240,16 +240,6 @@ void Camera::calcInverseView() const
 	mInverseModelViewCached = true;
 }
 
-Ray Camera::calcRay( float uPos, float vPos, float imagePlaneApectRatio ) const
-{
-	calcMatrices();
-
-	float s = ( uPos - 0.5f ) * imagePlaneApectRatio;
-	float t = ( vPos - 0.5f );
-	float viewDistance = imagePlaneApectRatio / math<float>::abs( mFrustumRight - mFrustumLeft ) * mNearClip;
-	return Ray( mEyePoint, normalize( mU * s + mV * t - ( mW * viewDistance ) ) );
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////
 // CameraPersp
 // Creates a default camera resembling Maya Persp
@@ -302,13 +292,13 @@ void CameraPersp::setPerspective( float verticalFovDegrees, float aspectRatio, f
 	mProjectionCached = false;
 }
 
-Ray CameraPersp::calcRay( float uPos, float vPos, float imagePlaneApectRatio ) const
+Ray CameraPersp::calcRay( float uPos, float vPos, float imagePlaneAspectRatio ) const
 {
 	calcMatrices();
 
-	float s = ( uPos - 0.5f + 0.5f * mLensShift.x ) * imagePlaneApectRatio;
+	float s = ( uPos - 0.5f + 0.5f * mLensShift.x ) * imagePlaneAspectRatio;
 	float t = ( vPos - 0.5f + 0.5f * mLensShift.y );
-	float viewDistance = imagePlaneApectRatio / math<float>::abs( mFrustumRight - mFrustumLeft ) * mNearClip;
+	float viewDistance = imagePlaneAspectRatio / math<float>::abs( mFrustumRight - mFrustumLeft ) * mNearClip;
 	return Ray( mEyePoint, normalize( mU * s + mV * t - ( mW * viewDistance ) ) );
 }
 
@@ -474,6 +464,16 @@ void CameraOrtho::calcProjection() const
 	m[3][3] =  1;
 
 	mProjectionCached = true;
+}
+
+Ray CameraOrtho::calcRay( float uPos, float vPos, float imagePlaneAspectRatio ) const
+{
+	calcMatrices();
+
+	float s = ( uPos - 0.5f ) * imagePlaneAspectRatio;
+	float t = ( vPos - 0.5f );
+	vec3  eyePoint = mEyePoint + mU * s * ( mFrustumRight - mFrustumLeft ) + mV * t * ( mFrustumTop - mFrustumBottom );
+	return Ray( eyePoint, -mW );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////

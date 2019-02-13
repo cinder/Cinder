@@ -148,7 +148,7 @@ class CI_API Camera {
 	virtual void	calcInverseView() const;
 	virtual void	calcProjection() const = 0;
 
-	virtual Ray		calcRay( float u, float v, float imagePlaneAspectRatio ) const;
+	virtual Ray		calcRay( float u, float v, float imagePlaneAspectRatio ) const = 0;
 
 	vec3	mEyePoint;
 	vec3	mViewDirection;
@@ -239,6 +239,7 @@ class CI_API CameraOrtho : public Camera {
 	
   protected:
 	void	calcProjection() const override;
+	Ray		calcRay( float u, float v, float imagePlaneAspectRatio ) const override;
 };
 
 //! A Camera used for stereoscopic displays.
