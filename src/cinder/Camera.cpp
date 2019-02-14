@@ -244,14 +244,12 @@ void Camera::calcInverseView() const
 // CameraPersp
 // Creates a default camera resembling Maya Persp
 CameraPersp::CameraPersp()
-	: Camera()
 {
 	lookAt( vec3( 28, 21, 28 ), vec3(), vec3( 0, 1, 0 ) );
 	setPerspective( 35, 1.3333f, 0.1f, 1000 );
 }
 
 CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees )
-	: Camera()
 {
 	float eyeX 		= pixelWidth / 2.0f;
 	float eyeY 		= pixelHeight / 2.0f;
@@ -267,7 +265,6 @@ CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees )
 }
 
 CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees, float nearPlane, float farPlane )
-	: Camera()
 {
 	float halfFov, theTan, aspect;
 
@@ -386,14 +383,12 @@ CameraPersp	CameraPersp::calcFraming( const Sphere &worldSpaceSphere ) const
 ////////////////////////////////////////////////////////////////////////////////////////
 // CameraOrtho
 CameraOrtho::CameraOrtho()
-	: Camera()
 {
 	lookAt( vec3( 0, 0, 0.1f ), vec3(), vec3( 0, 1, 0 ) );
 	setFov( 35 );
 }
 
 CameraOrtho::CameraOrtho( float left, float right, float bottom, float top, float nearPlane, float farPlane )
-	: Camera()
 {
 	mFrustumLeft	= left;
 	mFrustumRight	= right;

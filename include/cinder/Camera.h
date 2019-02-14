@@ -138,9 +138,11 @@ class CI_API Camera {
 
   protected:
 	Camera()
-		: mModelViewCached( false ), mProjectionCached( false ), mInverseModelViewCached( false ), mWorldUp( vec3( 0, 1, 0 ) ),
-			mPivotDistance( 0 )
-	{}
+		: mWorldUp( vec3( 0, 1, 0 ) ), mFov( 35 ), mAspectRatio( 1 ), mNearClip( 0.1f ), mFarClip( 1000 )
+		, mPivotDistance( 1 ), mProjectionCached( false ), mModelViewCached( false ), mInverseModelViewCached( false )
+		, mFrustumLeft( -1 ), mFrustumRight( 1 ), mFrustumTop( 1 ), mFrustumBottom( -1 )
+	{
+	}
 
 	void			calcMatrices() const;
 
