@@ -422,10 +422,10 @@ void CameraOrtho::setOrtho( float left, float right, float bottom, float top, fl
 void CameraOrtho::calcProjection() const
 {
 	mat4 &p = mProjectionMatrix;
-	p[0][0] =  2 / (mFrustumRight - mFrustumLeft);
+	p[0][0] =  2 / ( (mFrustumRight - mFrustumLeft) * mAspectRatio );
 	p[1][0] =  0;
 	p[2][0] =  0;
-	p[3][0] =  -(mFrustumRight + mFrustumLeft) / (mFrustumRight - mFrustumLeft);
+	p[3][0] =  -(mFrustumRight + mFrustumLeft) / (mFrustumRight - mFrustumLeft) * mAspectRatio;
 
 	p[0][1] =  0;
 	p[1][1] =  2 / (mFrustumTop - mFrustumBottom);
