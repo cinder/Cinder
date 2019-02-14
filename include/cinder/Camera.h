@@ -138,9 +138,11 @@ class CI_API Camera {
 
   protected:
 	Camera()
-		: mModelViewCached( false ), mProjectionCached( false ), mInverseModelViewCached( false ), mWorldUp( vec3( 0, 1, 0 ) ),
-			mPivotDistance( 0 )
-	{}
+		: mWorldUp( vec3( 0, 1, 0 ) ), mFov( 35 ), mAspectRatio( 1 ), mNearClip( 0.1f ), mFarClip( 1000 )
+		, mPivotDistance( 1 ), mProjectionCached( false ), mModelViewCached( false ), mInverseModelViewCached( false )
+		, mFrustumLeft( -1 ), mFrustumRight( 1 ), mFrustumTop( 1 ), mFrustumBottom( -1 )
+	{
+	}
 
 	void			calcMatrices() const;
 
@@ -148,7 +150,7 @@ class CI_API Camera {
 	virtual void	calcInverseView() const;
 	virtual void	calcProjection() const = 0;
 
-	virtual Ray		calcRay( float u, float v, float imagePlaneAspectRatio ) const;
+	virtual Ray		calcRay( float u, float v, float imagePlaneAspectRatio ) const = 0;
 
 	vec3	mEyePoint;
 	vec3	mViewDirection;
@@ -239,6 +241,7 @@ class CI_API CameraOrtho : public Camera {
 	
   protected:
 	void	calcProjection() const override;
+	Ray		calcRay( float u, float v, float imagePlaneAspectRatio ) const override;
 };
 
 //! A Camera used for stereoscopic displays.
