@@ -1,9 +1,10 @@
 #include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
 #include "cinder/Camera.h"
 #include "cinder/Font.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 
 #include <boost/format.hpp>
 
@@ -13,7 +14,7 @@ using namespace std;
 
 class CameraLensShiftTestApp : public App {
 public:
-	void prepareSettings( Settings *settings );
+	static void prepareSettings( Settings *settings );
 
 	void setup();
 	void update();
@@ -29,7 +30,8 @@ private:
 	void render();
 private:
 	CameraPersp			mCamera;
-	MayaCamUI			mOverview;
+	CameraPersp			mOverviewCamera;
+	CameraUi			mOverview;
 
 	Font				mFont;
 
@@ -43,16 +45,17 @@ void CameraLensShiftTestApp::prepareSettings( Settings *settings )
 
 void CameraLensShiftTestApp::setup()
 {
-	CameraPersp cam( getWindowWidth() * 0.5f, getWindowHeight(), 40.0f, 0.1f, 1000.0f );
-	cam.setEyePoint( vec3(-50.0f, 0.0f, 0.0f) );
-	cam.setCenterOfInterestPoint( vec3::zero() );
+	mOverviewCamera = CameraPersp( getWindowWidth() * 0.5f, getWindowHeight(), 40.0f, 0.1f, 1000.0f );
+	mOverviewCamera.setEyePoint( vec3(-50.0f, 0.0f, 0.0f) );
+	mOverviewCamera.lookAt( vec3(0) );
 
-	mOverview.setCurrentCam(cam);
+	mOverview = CameraUi( &mOverviewCamera, getWindow() );
+	mOverview.setWindowSize( getWindow()->getSize() );
 
 	// set camera to size of half the window
 	mCamera = CameraPersp( getWindowWidth() * 0.5f, getWindowHeight(), 40.0f, 2.5f, 20.0f );
 	mCamera.setEyePoint( vec3(0.0f, 0.0f, -15.0f) );
-	mCamera.setCenterOfInterestPoint( vec3::zero() );
+	mCamera.lookAt( vec3(0) );
 
 	//
 	mFont = Font("Tahoma", 18);
@@ -75,8 +78,8 @@ void CameraLensShiftTestApp::draw()
 	gl::enableDepthWrite();
 
 	// draw the overview of the scene in the left half of the window
-	glPushAttrib( GL_VIEWPORT_BIT );
-	gl::setViewport( Area( getWindowWidth() * 0.0f, 0, getWindowWidth() * 0.5f, getWindowHeight() ) );
+	gl::pushViewport();
+	gl::viewport( ivec2(0, 0), ivec2(getWindowWidth() / 2, getWindowHeight()) );
 
 	gl::pushMatrices();
 	gl::setMatrices( mOverview.getCamera() );
@@ -88,11 +91,11 @@ void CameraLensShiftTestApp::draw()
 
 	gl::popMatrices();
 
-	glPopAttrib();
+	gl::popViewport();
 
 	// draw what the camera sees in the right half of the window
-	glPushAttrib( GL_VIEWPORT_BIT );
-	gl::setViewport( Area( getWindowWidth() * 0.5f, 0, getWindowWidth() * 1.0f, getWindowHeight() ) );
+	gl::pushViewport();
+	gl::viewport( ivec2(getWindowWidth() / 2, 0), ivec2(getWindowWidth() / 2, getWindowHeight()) );
 
 	gl::pushMatrices();
 	gl::setMatrices( mCamera );
@@ -101,7 +104,7 @@ void CameraLensShiftTestApp::draw()
 
 	gl::popMatrices();
 
-	glPopAttrib();
+	gl::popViewport();
 	
 	//
 	gl::disableDepthWrite();
@@ -155,11 +158,9 @@ void CameraLensShiftTestApp::keyDown( KeyEvent event )
 
 void CameraLensShiftTestApp::resize()
 {
-	mCamera.setAspectRatio( event.getAspectRatio() * 0.5f );
+	mCamera.setAspectRatio( getWindow()->getAspectRatio() * 0.5f );
 
-	CameraPersp cam( mOverview.getCamera() );
-	cam.setAspectRatio( event.getAspectRatio() * 0.5f );
-	mOverview.setCurrentCam( cam );
+	mOverviewCamera.setAspectRatio( getWindow()->getAspectRatio() * 0.5f );
 }
 
 void CameraLensShiftTestApp::render()
@@ -174,11 +175,11 @@ void CameraLensShiftTestApp::render()
 	gl::color( Color(0.75f, 0.75f, 0.75f) );
 	gl::enableWireframe();
 	gl::pushModelView();
-	gl::rotate( vec3::yAxis() * 5.0f * getElapsedSeconds() );
-	gl::drawSphere( vec3::zero(), 4.0f, 24 );
+	gl::rotate( 5.0f * getElapsedSeconds(), 0.0f, 1.0f, 0.0f );
+	gl::drawSphere( vec3(0), 4.0f, 24 );
 	gl::popModelView();
 	gl::disableWireframe();
 
 }
 
-CINDER_APP( CameraLensShiftTestApp, RendererGl )
+CINDER_APP( CameraLensShiftTestApp, RendererGl, &CameraLensShiftTestApp::prepareSettings )
