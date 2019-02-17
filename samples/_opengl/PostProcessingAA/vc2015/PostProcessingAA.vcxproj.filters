@@ -43,9 +43,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\Resources.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\assets\FXAA3_11.h">
       <Filter>Shader Files\FXAA</Filter>
     </ClInclude>

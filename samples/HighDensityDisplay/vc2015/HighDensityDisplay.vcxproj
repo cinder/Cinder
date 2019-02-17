@@ -1,4 +1,5 @@
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug_ANGLE|Win32">
       <Configuration>Debug_ANGLE</Configuration>
@@ -34,7 +35,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F77A4975-60F1-4291-B393-D98CAC1D837B}</ProjectGuid>
+    <ProjectGuid>{95098557-C545-4D9F-A803-3471BFBE6078}</ProjectGuid>
     <RootNamespace>HighDensityDisplay</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
