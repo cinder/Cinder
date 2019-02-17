@@ -18,7 +18,7 @@ using namespace ci::app;
 class ResizeTestApp : public App {
  public:	
 	
-	void prepareSettings( Settings *settings );
+	static void prepareSettings( Settings *settings );
 	void setup();
 	void draw();
 
@@ -55,4 +55,4 @@ void ResizeTestApp::draw()
 }
 
 
-CINDER_APP( ResizeTestApp, RendererGl )
+CINDER_APP( ResizeTestApp, RendererGl, &ResizeTestApp::prepareSettings )
