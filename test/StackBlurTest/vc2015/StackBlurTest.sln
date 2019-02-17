@@ -1,21 +1,30 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StackBlurTest", "StackBlurTest.vcxproj", "{F4A68DE3-9176-4B8A-8CDF-026363D700DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
 		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F4A68DE3-9176-4B8A-8CDF-026363D700DD}.Debug|Win32.ActiveCfg = Debug|Win32
 		{F4A68DE3-9176-4B8A-8CDF-026363D700DD}.Debug|Win32.Build.0 = Debug|Win32
+		{F4A68DE3-9176-4B8A-8CDF-026363D700DD}.Debug|x64.ActiveCfg = Debug|x64
+		{F4A68DE3-9176-4B8A-8CDF-026363D700DD}.Debug|x64.Build.0 = Debug|x64
 		{F4A68DE3-9176-4B8A-8CDF-026363D700DD}.Release|Win32.ActiveCfg = Release|Win32
 		{F4A68DE3-9176-4B8A-8CDF-026363D700DD}.Release|Win32.Build.0 = Release|Win32
+		{F4A68DE3-9176-4B8A-8CDF-026363D700DD}.Release|x64.ActiveCfg = Release|x64
+		{F4A68DE3-9176-4B8A-8CDF-026363D700DD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6D4C278F-02D8-44AF-80BB-0FC02D7EF893}
 	EndGlobalSection
 EndGlobal
