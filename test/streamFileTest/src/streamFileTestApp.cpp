@@ -22,7 +22,12 @@ class streamFileTestApp : public App {
 
 fs::path streamFileTestApp::createReadTestFile()
 {
-	fs::path resultPath = fs::unique_path( getAppPath() / "cinder_streamFileTest-%%%%-%%%%-%%%%-%%%%" );
+    // unique_path() is not in std::filesystem. 
+	//fs::path resultPath = fs::unique_path( getAppPath() / "cinder_streamFileTest-%%%%-%%%%-%%%%-%%%%" );
+	char buff[256] = { 0 };
+	snprintf(buff, 255, "cinder_streamFileTest-%llu", (unsigned long long)time(NULL));
+	fs::path resultPath = getAppPath() / buff;
+
 	FILE *f = fopen( resultPath.string().c_str(), "wb" );
 	for( size_t d = 0; d < DATA_SIZE; ++d ) {
 		uint8_t b = d % 256;
