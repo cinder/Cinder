@@ -59,12 +59,13 @@
 	using namespace Windows::Networking;
 	using namespace Windows::Networking::Connectivity;
 	using namespace cinder::winrt;
+#elif defined( CINDER_ANDROID)
+    #include <stdlib.h>
 #endif
-
 #if defined( __clang__ ) || defined( __GNUC__ )
-	#include <cxxabi.h>
-#endif
+#include <cxxabi.h>
 
+#endif
 #include <string>
 
 using namespace std;

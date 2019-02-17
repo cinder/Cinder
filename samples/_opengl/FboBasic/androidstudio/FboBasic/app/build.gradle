@@ -1,0 +1,59 @@
+
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion '26.0.2'
+    defaultConfig {
+        applicationId "org.libcinder.samples.fbobasic"
+
+        minSdkVersion 19
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+				arguments "-DCINDER_DIR=${projectDir}/../../../../../..",
+				"-DNDK_PLATFORM=21",
+				"-DNDK_STL=gnustl"
+				cppFlags "-std=c++11 -fexceptions -frtti"
+            }
+        }
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+    sourceSets {
+        main {
+            assets.srcDirs = ["${projectDir}/../../../assets"]
+        }
+    }
+}
+
+repositories {
+    jcenter()
+    flatDir {
+		dirs "${projectDir}/../../../../../../lib/android/"
+
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:21.0.0'
+    debugCompile 'org.libcinder:libcinder-debug:1.0@aar'
+    releaseCompile 'org.libcinder:libcinder-release:1.0@aar'
+}
+

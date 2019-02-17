@@ -57,6 +57,7 @@ lib/android/android-21/mips/libcinder*.a
 lib/android/android-21/mips64/libcinder*.a
 lib/android/android-21/x86/libcinder*.a
 lib/android/android-21/x86_64/libcinder*.a
+*.externalNativeBuild*
 
 *.iml
 local.properties
@@ -70,3 +71,5 @@ cinderConfig.cmake
 # CinderBlocks
 blocks/
 !blocks/[__AppTemplates,Box2D,Cairo,FMOD,LocationManager,MotionManager,OSC,QuickTime,TUIO]
+
+buildCinderForAndroid

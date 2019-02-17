@@ -32,7 +32,7 @@ namespace cinder { namespace android {
 
 void LogCatOutput( const char *text )
 {
-	CI_ANDROID_LOGI( text );
+	__android_log_print(ANDROID_LOG_INFO, "cinder", "%s", text);
 }
 
 } } // namespace cinder::android

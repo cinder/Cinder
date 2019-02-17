@@ -176,15 +176,16 @@ void EventManagerAndroid::enableRotationVector( SensorCallbackFn updateFn, int32
 		mRotationVectorSensor->mCallbackFn = updateFn;
 
 		usec = std::max( (int32_t)ASensor_getMinDelay( mRotationVectorSensor->mSensor ), usec );
-		ASensorEventQueue_setEventRate( mSensorEventQueue, mRotationVectorSensor->mSensor, usec );		
+		ASensorEventQueue_setEventRate( mSensorEventQueue, mRotationVectorSensor->mSensor, usec );
 	}
 }
 
 bool EventManagerAndroid::enableAccelerometer()
 {
 	bool result = false;
-	if( ( nullptr != mSensorEventQueue ) && isAccelerometerAvailable() ) {
+	if( ( nullptr != mSensorEventQueue ) && isAccelerometerAvailable() && !mAccelerometerSensor->mIsEnabled) {
 		result = ( ASensorEventQueue_enableSensor( mSensorEventQueue, mAccelerometerSensor->mSensor ) >= 0 );
+		mAccelerometerSensor->mIsEnabled = true;
 	}
 	return result;
 }
@@ -192,8 +193,9 @@ bool EventManagerAndroid::enableAccelerometer()
 bool EventManagerAndroid::enableMagneticField()
 {
 	bool result = false;
-	if( ( nullptr != mSensorEventQueue ) && isMagneticFieldAvailable() ) {
+	if( ( nullptr != mSensorEventQueue ) && isMagneticFieldAvailable() && !mMagneticFieldSensor->mIsEnabled) {
 		result = ( ASensorEventQueue_enableSensor( mSensorEventQueue, mMagneticFieldSensor->mSensor ) >= 0 );
+		mMagneticFieldSensor->mIsEnabled = true;
 	}
 	return result;
 }
@@ -201,8 +203,9 @@ bool EventManagerAndroid::enableMagneticField()
 bool EventManagerAndroid::enableGyroscope()
 {
 	bool result = false;
-	if( ( nullptr != mSensorEventQueue ) && isGyroscopeAvailable() ) {
+	if( ( nullptr != mSensorEventQueue ) && isGyroscopeAvailable() && !mGyroscopeSensor->mIsEnabled) {
 		result = ( ASensorEventQueue_enableSensor( mSensorEventQueue, mGyroscopeSensor->mSensor ) >= 0 );
+		mGyroscopeSensor->mIsEnabled = true;
 	}
 	return result;
 }
@@ -210,8 +213,9 @@ bool EventManagerAndroid::enableGyroscope()
 bool EventManagerAndroid::enableGravity()
 {
 	bool result = false;
-	if( ( nullptr != mSensorEventQueue ) && isGravityAvailable() ) {
+	if( ( nullptr != mSensorEventQueue ) && isGravityAvailable() && !mGravitySensor->mIsEnabled) {
 		result = ( ASensorEventQueue_enableSensor( mSensorEventQueue, mGravitySensor->mSensor ) >= 0 );
+		mGravitySensor->mIsEnabled = true;
 	}
 	return result;
 }
@@ -219,44 +223,50 @@ bool EventManagerAndroid::enableGravity()
 bool EventManagerAndroid::enableRotationVector()
 {
 	bool result = false;
-	if( ( nullptr != mSensorEventQueue ) && isRotationVectorAvailable() ) {
+	if( ( nullptr != mSensorEventQueue ) && isRotationVectorAvailable() && !mRotationVectorSensor->mIsEnabled) {
 		result = ( ASensorEventQueue_enableSensor( mSensorEventQueue, mRotationVectorSensor->mSensor ) >= 0 );
+		mRotationVectorSensor->mIsEnabled = true;
 	}
 	return result;
 }
 
 void EventManagerAndroid::disableAccelerometer()
 {
-	if( ( nullptr != mSensorEventQueue ) && isAccelerometerAvailable() ) {
+	if( ( nullptr != mSensorEventQueue ) && isAccelerometerAvailable() && mAccelerometerSensor->mIsEnabled) {
 		ASensorEventQueue_disableSensor( mSensorEventQueue, mAccelerometerSensor->mSensor );
+		mAccelerometerSensor->mIsEnabled = false;
 	}
 }
 
 void EventManagerAndroid::disableMagneticField()
 {
-	if( ( nullptr != mSensorEventQueue ) && isMagneticFieldAvailable() ) {
+	if( ( nullptr != mSensorEventQueue ) && isMagneticFieldAvailable() && mMagneticFieldSensor->mIsEnabled) {
 		ASensorEventQueue_disableSensor( mSensorEventQueue, mMagneticFieldSensor->mSensor );
+		mMagneticFieldSensor->mIsEnabled = false;
 	}
 }
 
 void EventManagerAndroid::disableGyroscope()
 {
-	if( ( nullptr != mSensorEventQueue ) && isGyroscopeAvailable() ) {
+	if( ( nullptr != mSensorEventQueue ) && isGyroscopeAvailable() && mGyroscopeSensor->mIsEnabled) {
 		ASensorEventQueue_disableSensor( mSensorEventQueue, mGyroscopeSensor->mSensor );
+		mGyroscopeSensor->mIsEnabled = false;
 	}
 }
 
 void EventManagerAndroid::disableGravity()
 {
-	if( ( nullptr != mSensorEventQueue ) && isGravityAvailable() ) {
+	if( ( nullptr != mSensorEventQueue ) && isGravityAvailable() && mGravitySensor->mIsEnabled) {
 		ASensorEventQueue_disableSensor( mSensorEventQueue, mGravitySensor->mSensor );
+		mGravitySensor->mIsEnabled = false;
 	}
 }
 
 void EventManagerAndroid::disableRotationVector()
 {
-	if( ( nullptr != mSensorEventQueue ) && isRotationVectorAvailable() ) {
+	if( ( nullptr != mSensorEventQueue ) && isRotationVectorAvailable() && mRotationVectorSensor->mIsEnabled) {
 		ASensorEventQueue_disableSensor( mSensorEventQueue, mRotationVectorSensor->mSensor );
+		mRotationVectorSensor->mIsEnabled = false;
 	}
 }
 

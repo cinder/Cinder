@@ -122,7 +122,7 @@ void TextTestApp::draw()
 
 	gl::color( Color::white() );
 	if( mTexture ) {
-		gl::draw(mTexture, vec2(10, 10) + offset);
+		gl::draw(mTexture, Rectf(0.f, 0.f, 1000.f, 1000.f));
 	}
 	if( mSimpleTexture ) {
 		int windowHeight = std::min( getWindowHeight(), 480 );
