@@ -49,6 +49,7 @@ class ComputeBasicApp : public App {
 public:	
 	void	setup() override;
 	void	update() override;
+	void	resize() override;
 	void	draw() override;
 	
 private:
@@ -182,6 +183,11 @@ void ComputeBasicApp::update()
 
 		vk::context()->getComputeQueue()->submit( mComputeCmdBuf, VK_NULL_HANDLE, 0, VK_NULL_HANDLE, mComputeDoneSemaphore );
 	}
+}
+
+void ComputeBasicApp::resize()
+{
+	update();
 }
 
 void ComputeBasicApp::draw()
