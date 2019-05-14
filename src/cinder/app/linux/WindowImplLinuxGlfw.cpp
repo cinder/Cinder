@@ -161,6 +161,7 @@ void WindowImplLinux::setPos( const ivec2 &pos )
 
 void WindowImplLinux::close()
 {
+	::glfwSetWindowShouldClose(	mGlfwWindow, 1 );
 }
 
 void WindowImplLinux::setTitle( const std::string &title )
