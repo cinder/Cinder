@@ -59,6 +59,9 @@
 	using namespace Windows::Networking;
 	using namespace Windows::Networking::Connectivity;
 	using namespace cinder::winrt;
+#elif defined( CINDER_LINUX )
+	#include <ifaddrs.h>
+	#include <netdb.h>
 #endif
 
 #if defined( __clang__ ) || defined( __GNUC__ )
@@ -624,7 +627,8 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 {
 	vector<System::NetworkAdapter> adapters;
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
+
 	struct ifaddrs *interfaces = nullptr;
 
 	if( getifaddrs( &interfaces ) == 0 ) {
