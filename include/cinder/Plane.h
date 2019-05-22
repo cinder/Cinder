@@ -75,7 +75,7 @@ typedef PlaneT<double>	Planed;
 template<typename T>
 std::ostream& operator<<( std::ostream &o, const PlaneT<T> &p )
 {
-	return o << "(" << p.mNormal << ", " << p.mDistance << ")";
+	return o << "(" << p.getNormal() << ", " << p.getDistance() << ")";
 }
 
 //! Exception type thrown when bad values are encountered.
