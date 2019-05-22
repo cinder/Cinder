@@ -12,7 +12,7 @@ using namespace std;
 
 class QueryTestApp : public App {
 public:
-	void prepareSettings( Settings * settings ) override;
+	static void prepareSettings( Settings * settings );
 	void setup() override;
 	void update() override;
 	void draw() override;
@@ -80,4 +80,4 @@ void QueryTestApp::draw()
 	
 }
 
-CINDER_APP( QueryTestApp, RendererGl )
+CINDER_APP( QueryTestApp, RendererGl, &QueryTestApp::prepareSettings )

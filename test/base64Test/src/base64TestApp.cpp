@@ -1,5 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Base64.h"
 
 using namespace ci;
@@ -16,11 +17,11 @@ class base64TestApp : public App {
 
 std::string toString( Buffer b )
 {
-	if( b.getDataSize() == 0 )
+	if( b.getSize() == 0 )
 		return std::string();
-	char *temp = new char[b.getDataSize()+1];
-	memcpy( temp, b.getData(), b.getDataSize() );
-	temp[b.getDataSize()] = 0;
+	char *temp = new char[b.getSize()+1];
+	memcpy( temp, b.getData(), b.getSize() );
+	temp[b.getSize()] = 0;
 	return string( temp );	
 }
 

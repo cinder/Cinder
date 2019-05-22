@@ -65,14 +65,19 @@ void prepareSettings( AppScreenSaver::Settings *settings )
 ScreenSaverTestApp::ScreenSaverTestApp()
 {
 #if LOAD_LOGO_IN_CONSTRUCTOR
-	log::manager()->enableSystemLogging();
+	//log::manager()->enableSystemLogging();
+	std::shared_ptr<log::LoggerSystem> sysLogger = log::makeLogger<log::LoggerSystem>();
+	sysLogger->setLoggingLevel(log::LEVEL_WARNING);
 	loadLogo();
 #endif
 }
 
 void ScreenSaverTestApp::setup()
 {
-	log::manager()->enableSystemLogging();
+	//log::manager()->enableSystemLogging();
+	std::shared_ptr<log::LoggerSystem> sysLogger = log::makeLogger<log::LoggerSystem>();
+	sysLogger->setLoggingLevel(log::LEVEL_WARNING);
+
 	CI_LOG_I( "called in " << getAppPath() );
 
 #if defined( CINDER_MAC )

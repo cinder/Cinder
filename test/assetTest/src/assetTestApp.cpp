@@ -1,4 +1,5 @@
 #include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/gl/Texture.h"
@@ -12,13 +13,13 @@ class assetTestApp : public App {
 	void setup();
 	void draw();
 
-	gl::Texture img;
+	gl::TextureRef img;
 };
 
 void assetTestApp::setup()
 {
 	app::console() << "The full path to asset1 is " << getAssetPath( "asset1.png" ) << std::endl;
-	img = loadImage( loadAsset( "asset1.png" ) );
+	img = gl::Texture::create( loadImage( loadAsset( "asset1.png" ) ) );
 }
 
 void assetTestApp::draw()
