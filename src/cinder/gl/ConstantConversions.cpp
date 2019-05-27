@@ -272,6 +272,12 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_COLOR_ATTACHMENT8] = "GL_COLOR_ATTACHMENT8";
 		sSymbols[GL_COLOR_ATTACHMENT9] = "GL_COLOR_ATTACHMENT9";
 #endif // ! defined( CINDER_GL_ES_2 )
+
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
+		sSymbols[GL_IMAGE_1D] = "GL_IMAGE_1D"; 
+		sSymbols[GL_IMAGE_2D] = "GL_IMAGE_2D"; 
+		sSymbols[GL_IMAGE_3D] = "GL_IMAGE_3D"; 
+#endif
 		
 		initialized = true;
 	}
@@ -601,6 +607,13 @@ uint8_t typeToBytes( GLenum type )
 		case GL_FLOAT_MAT2:			return sizeof(mat2); break;
 		case GL_FLOAT_MAT3:			return sizeof(mat3); break;
 		case GL_FLOAT_MAT4:			return sizeof(mat4); break;
+
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
+		case GL_IMAGE_1D:			return sizeof(int); break;
+		case GL_IMAGE_2D:			return sizeof(int); break;
+		case GL_IMAGE_3D:			return sizeof(int); break;
+#endif
+
 		default:
 			CI_LOG_E("Unknown gl type constant " << constantToString( type ));
 			return 0;
