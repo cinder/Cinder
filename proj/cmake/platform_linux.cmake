@@ -50,6 +50,13 @@ if( NOT CINDER_DISABLE_VIDEO )
 	)
 endif()
 
+if( NOT CINDER_DISABLE_CAPTURE )
+	list( APPEND SRC_SET_CINDER_VIDEO_LINUX
+		${CINDER_SRC_DIR}/cinder/CaptureImplLinux.cpp
+	)
+	list( APPEND CINDER_LIBS_DEPENDS libv4l2.so )
+endif()
+
 # Curl
 list( APPEND SRC_SET_CINDER_LINUX ${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp )
 
