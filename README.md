@@ -17,6 +17,6 @@ Cinder [guides](https://libcinder.org/docs/branch/master/guides/index.html) and 
 
 Cinder supports macOS, Windows, Linux, and iOS. It requires Xcode 7.1 or later for development on the Mac, and Visual C++ 2015 or later on Windows.
 
-Cinder is released under the [Modified BSD License](docs/COPYING). Please visit [our website](https://libcinder.org) for more information.
+Cinder is released under the [Modified BSD License](COPYING). Please visit [our website](https://libcinder.org) for more information.
 
 Also be sure to check out the [User Forum](http://discourse.libcinder.org).
