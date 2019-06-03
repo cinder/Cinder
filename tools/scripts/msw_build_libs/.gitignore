@@ -1,0 +1,7 @@
+bld_lib_bat
+cairo
+libpng
+include
+lib
+pixman
+zlib

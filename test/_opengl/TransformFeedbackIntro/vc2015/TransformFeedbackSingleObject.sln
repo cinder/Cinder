@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2046
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TransformFeedbackSingleObject", "TransformFeedbackSingleObject.vcxproj", "{2D14A833-C606-40A5-BBB4-A95BEB526851}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2D14A833-C606-40A5-BBB4-A95BEB526851}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2D14A833-C606-40A5-BBB4-A95BEB526851}.Debug|Win32.Build.0 = Debug|Win32
+		{2D14A833-C606-40A5-BBB4-A95BEB526851}.Debug|x64.ActiveCfg = Debug|x64
+		{2D14A833-C606-40A5-BBB4-A95BEB526851}.Debug|x64.Build.0 = Debug|x64
+		{2D14A833-C606-40A5-BBB4-A95BEB526851}.Release|Win32.ActiveCfg = Release|Win32
+		{2D14A833-C606-40A5-BBB4-A95BEB526851}.Release|Win32.Build.0 = Release|Win32
+		{2D14A833-C606-40A5-BBB4-A95BEB526851}.Release|x64.ActiveCfg = Release|x64
+		{2D14A833-C606-40A5-BBB4-A95BEB526851}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {29835A81-CA7E-412B-9B62-8DF4C3A193B9}
+	EndGlobalSection
+EndGlobal

@@ -1,3 +1,4 @@
 #include "../Resources.h"
 
-RES_IMAGE
+//RES_IMAGE
+128 PNG "..\\..\\..\\samples\\data\\cinder_logo.png"
