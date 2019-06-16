@@ -34,7 +34,7 @@
 #elif defined( CINDER_MAC_USE_GSTREAMER ) || defined( CINDER_MSW_USE_GSTREAMER )
 	#include "cinder/linux/Movie.h" 
 #elif defined( CINDER_ANDROID )
-	#include "cinder/android/MovieGl.h" 
+	#include "cinder/android/video/MovieGl.h"
 #elif defined( CINDER_LINUX ) 
 	#include "cinder/linux/Movie.h" 
 #else
