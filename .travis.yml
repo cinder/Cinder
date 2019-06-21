@@ -1,6 +1,7 @@
 language: cpp
 git:
   depth: 1
+  submodules: false
 
 fast_finish: false
 
@@ -13,6 +14,9 @@ matrix:
       dist: trusty
       compiler: gcc
       sudo: required
+      addons: 
+        apt:
+          update: true
       env:
         - TARGET="trusty"
         - DESCRIPTION="Ubuntu Trusty build/test via CMake & gcc"
@@ -24,6 +28,7 @@ matrix:
       sudo: required
       addons:
         apt:
+          update: true
           sources:
             - ubuntu-toolchain-r-test
           packages:
@@ -40,6 +45,7 @@ matrix:
       sudo: required
       addons:
         apt:
+          update: true
           sources:
             - ubuntu-toolchain-r-test
           packages:
@@ -55,6 +61,7 @@ matrix:
       sudo: required
       addons:
         apt:
+          update: true
           sources:
             - ubuntu-toolchain-r-test
           packages:
@@ -69,6 +76,7 @@ matrix:
       sudo: required
       addons:
         apt:
+          update: true
           sources:
             - ubuntu-toolchain-r-test
           packages:
@@ -150,6 +158,9 @@ matrix:
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       eval "${MATRIX_EVAL}";
+    fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      git submodule update --init --recursive;
     fi
 
 install:

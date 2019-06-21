@@ -10,4 +10,5 @@ libsndfile1 \
 libsndfile1-dev \
 libpulse-dev \
 libasound2-dev \
-libcurl4-gnutls-dev
+libcurl4-gnutls-dev \
+libboost-filesystem-dev

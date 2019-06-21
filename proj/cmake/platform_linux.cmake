@@ -199,17 +199,9 @@ if( NOT CINDER_DISABLE_VIDEO )
 endif()
 
 # Boost
-if( CINDER_BOOST_USE_SYSTEM )
-	find_package( Boost 1.54 REQUIRED COMPONENTS system filesystem )
-	list( APPEND CINDER_LIBS_DEPENDS ${Boost_LIBRARIES} )
-	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${Boost_INCLUDE_DIRS} )
-else()
-	set( LINUX_LIB_DIRECTORY "${CINDER_PATH}/lib/linux/${CINDER_ARCH}/" )
-	list( APPEND CINDER_LIBS_DEPENDS
-		${LINUX_LIB_DIRECTORY}/libboost_system.a
-		${LINUX_LIB_DIRECTORY}/libboost_filesystem.a
-	)
-endif()
+find_package( Boost 1.54 REQUIRED COMPONENTS system filesystem )
+list( APPEND CINDER_LIBS_DEPENDS ${Boost_LIBRARIES} )
+list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${Boost_INCLUDE_DIRS} )
 
 # Defaults... dl and pthread
 list( APPEND CINDER_LIBS_DEPENDS dl pthread )
@@ -258,14 +250,3 @@ elseif( NOT CINDER_GL_ES_2_RPI ) # If not headless and not on the RPi we need X.
 endif()
 
 list( APPEND CINDER_DEFINES "-D_UNIX" ${GLFW_FLAGS}  )
-
-if( NOT CINDER_BOOST_USE_SYSTEM )
-	execute_process( COMMAND gcc -dumpversion OUTPUT_VARIABLE GCC_VERSION )
-	if( GCC_VERSION VERSION_GREATER 5.1 OR GCC_VERSION VERSION_EQUAL 5.1 )
-		message( STATUS "Version >= 5.1 -- Disabling _GLIBCXX_USE_CXX11_ABI." )
-		list( APPEND CINDER_DEFINES "-D_GLIBCXX_USE_CXX11_ABI=0" )
-		if( CMAKE_COMPILER_IS_GNUXX )
-			set( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wabi-tag )
-		endif()
-	endif()
-endif()
