@@ -31,10 +31,11 @@ namespace cinder{ namespace app{
 //! Represents a keyboard event
 class CI_API KeyEvent : public Event {
   public:
-	KeyEvent() : Event()
+	KeyEvent()
+		: Event(), mCode( 0 ), mChar32( 0 ), mChar( 0 ), mModifiers( 0 ), mNativeKeyCode( 0 )
 	{}
-	KeyEvent( WindowRef win, int aCode, uint32_t aChar32, char aChar, unsigned int aModifiers, unsigned int aNativeKeyCode )
-		: Event( win ), mCode( aCode ), mChar32( aChar32 ), mChar( aChar ), mModifiers( aModifiers ), mNativeKeyCode( aNativeKeyCode )
+	KeyEvent( WindowRef win, int code, uint32_t c32, char c, unsigned int modifiers, unsigned int nativeKeyCode )
+		: Event( win ), mCode( code ), mChar32( c32 ), mChar( c ), mModifiers( modifiers ), mNativeKeyCode( nativeKeyCode )
 	{}
 
 	//! Returns the ASCII character associated with the event.
