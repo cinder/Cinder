@@ -43,6 +43,8 @@ class CI_API KeyEvent : public Event {
 	uint32_t	getCharUtf32() const { return mChar32; } 
 	//! Returns the key code associated with the event, which maps into the enum listed below
 	int			getCode() const { return mCode; }
+	//! Returns the modifiers associated with the event. Can also use the convenience methods below to check for a specific modifiered,
+	unsigned int	getModifiers() const	{ return mModifiers; }
 	//! Returns whether the Shift key was pressed during the event.
 	bool		isShiftDown() const { return (mModifiers & SHIFT_DOWN) ? true : false; }
 	//! Returns whether the Alt (or Option) key was pressed during the event.
