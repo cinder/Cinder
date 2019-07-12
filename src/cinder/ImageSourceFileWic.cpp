@@ -220,7 +220,8 @@ void ImageSourceFileWic::load( ImageTargetRef target )
 	// get a pointer to the ImageSource function appropriate for handling our data configuration
 	ImageSource::RowFunc func = setupRowFunc( target );
 
-	std::unique_ptr<uint8_t[]> data( new uint8_t[mRowBytes * mHeight] );
+	uint32_t dataSize = mRowBytes * mHeight;
+	std::unique_ptr<uint8_t[]> data( new uint8_t[dataSize] );
 
 	if( mRequiresConversion ) {
 		IWICFormatConverter *pIFormatConverter = NULL;	

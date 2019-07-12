@@ -2141,7 +2141,8 @@ ImageTargetGlTexture<T>::ImageTargetGlTexture( const Texture *texture, ImageIo::
 
 	// allocate enough room to hold all these pixels if we haven't been passed a data*
 	if( ! intermediateDataStore ) {
-		mDataStore = std::unique_ptr<T[]>( new T[mTexture->getHeight() * mRowInc] );
+		uint32_t dataSize = mTexture->getHeight() * mRowInc;
+		mDataStore = std::unique_ptr<T[]>( new T[dataSize] );
 		mDataBaseAddress = mDataStore.get();
 	}
 	else
