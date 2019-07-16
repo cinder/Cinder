@@ -44,7 +44,7 @@ namespace cinder {
 
 CI_API inline glm::mat4 transform2dTo3d( const glm::mat3 &m )
 {
-	glm::mat4 result( glm::uninitialize );
+	glm::mat4 result;
 	result[0][0] = m[0][0];
 	result[0][1] = m[0][1];
 	result[0][2] = m[0][2];
