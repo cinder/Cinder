@@ -147,4 +147,3 @@ ci_make_app(
 <h1 id="platform-specific-notes">Platform Specific Notes</h1>
 <h3 id="microsoft-windows">Microsoft Windows</h3>
 <p>As of this writing, we do not support building from CMake-generated Makefiles on Windows, simply because the GCC toolchain is too difficult to set up there with a compiler that supports the features we need (C++11). The best approach there is to use the provided Visual Studio project files, as <a href="https://libcinder.org/docs/guides/windows-setup/index.html">explained here</a>. You can however generate new Visual Studio project files from CMake, if that suits your needs.</p>
-<p>By default, runtime library is set to Multi-threaded Dll (<code>"/MD"</code>), set <code>CINDER_MSVC_MT</code> to <code>ON</code> to use <code>"/MT"</code></p>
