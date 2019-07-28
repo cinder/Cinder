@@ -139,8 +139,9 @@ void AppBase::Settings::setShouldQuit( bool shouldQuit )
 // AppBase
 
 AppBase::AppBase()
-	: mFrameCount( 0 ), mAverageFps( 0 ), mFpsSampleInterval( 1 ), mTimer( true ), mTimeline( Timeline::create() ),
-		mFpsLastSampleFrame( 0 ), mFpsLastSampleTime( 0 ), mLaunchCalled( false ), mQuitRequested( false )
+	: mFrameCount( 0 ), mAverageFps( 0 ), mFpsSampleInterval( 1 ), mTimer( true ), mFrameTimer( false ),
+	  mFrameDelta( 0 ), mTimeline( Timeline::create() ), mFpsLastSampleFrame( 0 ), mFpsLastSampleTime( 0 ),
+	  mLaunchCalled( false ), mQuitRequested( false )
 {
 	sInstance = this;
 
@@ -216,10 +217,15 @@ void AppBase::privateSetup__()
 	mTimeline->stepTo( static_cast<float>( getElapsedSeconds() ) );
 
 	setup();
+	
+	mFrameTimer.start();
 }
 
 void AppBase::privateUpdate__()
 {
+	mFrameDelta = mFrameTimer.getSeconds();
+	mFrameTimer.start();
+
 	mFrameCount++;
 
 	// service asio::io_service

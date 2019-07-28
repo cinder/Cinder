@@ -352,6 +352,8 @@ class CI_API AppBase {
 	double				getElapsedSeconds() const { return mTimer.getSeconds(); }
 	//! Returns the number of animation frames which have elapsed since application launch
 	uint32_t			getElapsedFrames() const { return mFrameCount; }
+	//! Returns the number of seconds which have elapsed since the last update call
+	double 				getFrameDelta() const { return mFrameDelta; }
 
 	//! Returns whether the app is registered to receive multiTouch events from the operating system, configurable via Settings at startup. Disabled by default on desktop platforms, enabled on mobile.
 	bool				isMultiTouchEnabled() const				{ return mMultiTouchEnabled; }
@@ -453,6 +455,8 @@ class CI_API AppBase {
 
 	Timer					mTimer;
 	uint32_t				mFrameCount;
+	Timer					mFrameTimer;
+	double 					mFrameDelta;
 	float					mAverageFps;
 	uint32_t				mFpsLastSampleFrame;
 	double					mFpsLastSampleTime;
@@ -551,6 +555,8 @@ inline	Rectf	toPoints( const Rectf &a ) { return getWindow()->toPoints( a ); }
 inline double	getElapsedSeconds() { return AppBase::get()->getElapsedSeconds(); }
 //! Returns the number of animation frames which have elapsed since the active App launched.
 inline uint32_t	getElapsedFrames()	{ return AppBase::get()->getElapsedFrames(); }
+//! Returns the number of seconds which have elapsed since the last update call
+inline double 	getFrameDelta() 	{ return AppBase::get()->getFrameDelta(); }
 //! Returns \c true if the calling thread is the Application's main thread (the thread running the main function), false otherwise.
 inline bool		isMainThread()		{ return AppBase::isMainThread(); }
 
