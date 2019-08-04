@@ -15,7 +15,6 @@ class TextBoxApp : public App {
 	static void prepareSettings( Settings *settings ) { settings->setMultiTouchEnabled( false ); }
 	void setup() override;
 	void keyDown( KeyEvent event ) override;
-	void keyUp( KeyEvent event ) override;
 	void mouseDrag( MouseEvent event ) override;
 	void update() override;
 	void draw() override;
@@ -47,19 +46,9 @@ void TextBoxApp::keyDown( KeyEvent event )
 		std::u32string strUtf32( 1, event.getCharUtf32() );
 		std::string str = ci::toUtf8( strUtf32 );
 		
-		CI_LOG_I( "char " << event.getChar() << ", Utf32: " << str );
-
 		mText += str;
 		render();
 	}
-}
-
-void TextBoxApp::keyUp( KeyEvent event )
-{
-	std::u32string strUtf32( 1, event.getCharUtf32() );
-	std::string str = ci::toUtf8( strUtf32 );
-	
-	CI_LOG_I( "char " << event.getChar() << ", Utf32: " << str );
 }
 
 void TextBoxApp::mouseDrag( MouseEvent event )
@@ -74,7 +63,7 @@ void TextBoxApp::render()
 	tbox.setColor( Color( 1.0f, 0.65f, 0.35f ) );
 	tbox.setBackgroundColor( ColorA( 0.5, 0, 0, 1 ) );
 	ivec2 sz = tbox.measure();
-	CI_LOG_I( "Height: " << sz.y );
+	CI_LOG_I( "text size: " << sz );
 	mTextTexture = gl::Texture2d::create( tbox.render() );
 }
 

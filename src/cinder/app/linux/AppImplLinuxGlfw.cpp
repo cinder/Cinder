@@ -199,20 +199,15 @@ public:
 			auto modifiers = extractKeyModifiers( mods );
 			auto convertedChar = modifyChar( key, modifiers, sCapsLockDown );
 
-			CI_LOG_I( "converterdChar: " << convertedChar << ", native keycode: " << nativeKeyCode << ", modifiers: " << modifiers << ", action: " << action );
-
 			if( GLFW_PRESS == action ) {
 				sKeyEvent = KeyEvent( cinderWindow, nativeKeyCode, 0, 0, modifiers, scancode );
 				// if convertedChar != 0, we'll get the unicode char value and wait until onCharInput is called.
 				// if convertedChar == 0, that means it is a non-unicode key (ex ctrl), so we'll emit the keydown here.
 				if( convertedChar == 0 ) {
-					CI_LOG_I( "\t- emitting key down" );
 					cinderWindow->emitKeyDown( &sKeyEvent );
-
 				}
 			}
 			else if( GLFW_RELEASE == action ) {
-				CI_LOG_I( "\t- emitting key up" );
 				KeyEvent event( cinderWindow, sKeyEvent.getCode(), sKeyEvent.getCharUtf32(), sKeyEvent.getChar(), modifiers, scancode );
 				sKeyEvent = {};
 				cinderWindow->emitKeyUp( &event );
@@ -230,7 +225,6 @@ public:
 
 			// create new sKeyEvent that includes same info as previous but also the utf32 char. emit key down signal with that
 			char asciiChar = codepoint < 256 ? (char)codepoint : 0;
-			CI_LOG_I( "codepoint: " << codepoint << ", ascii: " << asciiChar );
 			sKeyEvent = KeyEvent( cinderWindow, sKeyEvent.getCode(), codepoint, asciiChar, sKeyEvent.getModifiers(), sKeyEvent.getNativeKeyCode() );
 			cinderWindow->emitKeyDown( &sKeyEvent );
 		}
