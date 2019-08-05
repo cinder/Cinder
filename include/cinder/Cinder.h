@@ -28,6 +28,7 @@
 	#endif
 #endif
 
+#define GLM_FORCE_CTOR_INIT
 #include "glm/fwd.hpp"
 
 #include <cstdint>

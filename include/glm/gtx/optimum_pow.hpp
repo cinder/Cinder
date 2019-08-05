@@ -6,17 +6,21 @@
 /// @defgroup gtx_optimum_pow GLM_GTX_optimum_pow
 /// @ingroup gtx
 ///
-/// @brief Integer exponentiation of power functions.
+/// Include <glm/gtx/optimum_pow.hpp> to use the features of this extension.
 ///
-/// <glm/gtx/optimum_pow.hpp> need to be included to use these functionalities.
+/// Integer exponentiation of power functions.
 
 #pragma once
 
 // Dependency:
 #include "../glm.hpp"
 
-#if GLM_MESSAGES == GLM_MESSAGES_ENABLED && !defined(GLM_EXT_INCLUDED)
-#	pragma message("GLM: GLM_GTX_optimum_pow extension included")
+#if GLM_MESSAGES == GLM_ENABLE && !defined(GLM_EXT_INCLUDED)
+#	ifndef GLM_ENABLE_EXPERIMENTAL
+#		pragma message("GLM: GLM_GTX_optimum_pow is an experimental extension and may change in the future. Use #define GLM_ENABLE_EXPERIMENTAL before including it, if you really want to use it.")
+#	else
+#		pragma message("GLM: GLM_GTX_optimum_pow extension included")
+#	endif
 #endif
 
 namespace glm{
@@ -28,20 +32,20 @@ namespace gtx
 	/// Returns x raised to the power of 2.
 	///
 	/// @see gtx_optimum_pow
-	template <typename genType>
-	GLM_FUNC_DECL genType pow2(genType const & x);
+	template<typename genType>
+	GLM_FUNC_DECL genType pow2(genType const& x);
 
 	/// Returns x raised to the power of 3.
 	///
 	/// @see gtx_optimum_pow
-	template <typename genType>
-	GLM_FUNC_DECL genType pow3(genType const & x);
+	template<typename genType>
+	GLM_FUNC_DECL genType pow3(genType const& x);
 
 	/// Returns x raised to the power of 4.
 	///
 	/// @see gtx_optimum_pow
-	template <typename genType>
-	GLM_FUNC_DECL genType pow4(genType const & x);
+	template<typename genType>
+	GLM_FUNC_DECL genType pow4(genType const& x);
 
 	/// @}
 }//namespace gtx
