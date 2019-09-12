@@ -189,7 +189,11 @@ const std::vector<Serial::Device>& Serial::getDevices( bool forceRefresh )
 	else {
 		while( ( entry = ::readdir( dir ) ) != NULL ) {
 			std::string str( (char *)entry->d_name );
+#if defined( CINDER_MAC )
 			if( ( str.substr( 0, 4 ) == "tty." ) || ( str.substr( 0, 3 ) == "cu." ) ) {
+#else
+			if( ( str.substr( 0, 3 ) == "tty" ) ) {
+#endif
 				sDevices.push_back( Serial::Device( str ) );
 			}
 		}
