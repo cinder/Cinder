@@ -414,6 +414,18 @@ void CameraOrtho::setOrtho( float left, float right, float bottom, float top, fl
 	mProjectionCached = false;
 }
 
+void CameraOrtho::getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const
+{
+	calcMatrices();
+
+	vec3 viewDirection = normalize( mViewDirection );
+
+	*topLeft		= mEyePoint + (mFarClip * viewDirection) + (mFrustumTop * mV) + (mFrustumLeft * mU);
+	*topRight		= mEyePoint + (mFarClip * viewDirection) + (mFrustumTop * mV) + (mFrustumRight * mU);
+	*bottomLeft		= mEyePoint + (mFarClip * viewDirection) + (mFrustumBottom * mV) + (mFrustumLeft * mU);
+	*bottomRight	= mEyePoint + (mFarClip * viewDirection) + (mFrustumBottom * mV) + (mFrustumRight * mU);
+}
+
 void CameraOrtho::calcProjection() const
 {
 	mat4 &p = mProjectionMatrix;

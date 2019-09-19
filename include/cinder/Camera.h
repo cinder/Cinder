@@ -238,7 +238,8 @@ class CI_API CameraOrtho : public Camera {
 	void	setOrtho( float left, float right, float bottom, float top, float nearPlane, float farPlane );
 
 	bool	isPersp() const override { return false; }
-	
+    //! Returns the four corners of the Camera's Far clipping plane, expressed in world-space
+	void	getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const override;
   protected:
 	void	calcProjection() const override;
 	Ray		calcRay( float u, float v, float imagePlaneAspectRatio ) const override;
