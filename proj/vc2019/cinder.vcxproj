@@ -249,6 +249,7 @@
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
       <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -276,6 +277,7 @@
       <ProgramDataBaseFileName>..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
       <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -313,6 +315,7 @@
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
       <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -340,6 +343,7 @@
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
       <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -367,6 +371,7 @@
       <ProgramDataBaseFileName>..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
       <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -399,6 +404,7 @@
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
       <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -429,6 +435,7 @@
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
       <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -458,6 +465,7 @@
       <ProgramDataBaseFileName>..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
       <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -493,6 +501,7 @@
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
       <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -522,6 +531,7 @@
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
       <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -551,6 +561,7 @@
       <ProgramDataBaseFileName>..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
       <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -585,6 +596,7 @@
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
       <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
