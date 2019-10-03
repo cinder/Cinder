@@ -486,9 +486,6 @@
     <ClCompile Include="..\..\src\cinder\Base64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\Json.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\cinder\svg\Svg.cpp">
       <Filter>Source Files\svg</Filter>
     </ClCompile>
@@ -1371,9 +1368,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\Plane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\cinder\Json.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\svg\Svg.h">
