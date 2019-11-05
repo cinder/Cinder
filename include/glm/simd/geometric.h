@@ -108,7 +108,7 @@ GLM_FUNC_QUALIFIER __m128 glm_vec4_refract(glm_vec4 I, glm_vec4 N, glm_vec4 eta)
 	glm_vec4 const sub0 = _mm_sub_ps(_mm_set1_ps(1.0f), mul0);
 	glm_vec4 const sub1 = _mm_sub_ps(_mm_set1_ps(1.0f), mul1);
 	glm_vec4 const mul2 = _mm_mul_ps(sub0, sub1);
-	
+
 	if(_mm_movemask_ps(_mm_cmplt_ss(mul2, _mm_set1_ps(0.0f))) == 0)
 		return _mm_set1_ps(0.0f);
 

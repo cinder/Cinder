@@ -35,6 +35,7 @@ class GlfwCallbacks {
 public:
 	
 	static std::map<GLFWwindow*, std::pair<AppImplLinux*,WindowRef>> sWindowMapping;
+	static KeyEvent sKeyEvent;
 	static bool sCapsLockDown, sNumLockDown, sScrollLockDown;
 		
 	static void registerWindowEvents( GLFWwindow *glfwWindow, AppImplLinux* cinderAppImpl, const WindowRef& cinderWindow ) {
@@ -42,6 +43,7 @@ public:
 
 		::glfwSetWindowSizeCallback( glfwWindow, GlfwCallbacks::onWindowSize );
 		::glfwSetKeyCallback( glfwWindow, GlfwCallbacks::onKeyboard );
+		::glfwSetCharCallback( glfwWindow, GlfwCallbacks::onCharInput );
 		::glfwSetCursorPosCallback( glfwWindow, GlfwCallbacks::onMousePos );
 		::glfwSetMouseButtonCallback( glfwWindow, GlfwCallbacks::onMouseButton );
 		::glfwSetScrollCallback( glfwWindow, GlfwCallbacks::onMouseWheel );
@@ -186,7 +188,6 @@ public:
 			cinderAppImpl->setWindow( cinderWindow );
 
 			int32_t nativeKeyCode = KeyEvent::translateNativeKeyCode( key );
-			uint32_t char32 = 0;
 			
 			if( glfwGetKey( glfwWindow, GLFW_KEY_CAPS_LOCK ) )
 				sCapsLockDown = ! sCapsLockDown;
@@ -198,13 +199,34 @@ public:
 			auto modifiers = extractKeyModifiers( mods );
 			auto convertedChar = modifyChar( key, modifiers, sCapsLockDown );
 
-			KeyEvent event( cinderWindow, nativeKeyCode, char32, convertedChar, modifiers, scancode );
 			if( GLFW_PRESS == action ) {
-				cinderWindow->emitKeyDown( &event );
+				sKeyEvent = KeyEvent( cinderWindow, nativeKeyCode, 0, 0, modifiers, scancode );
+				// if convertedChar != 0, we'll get the unicode char value and wait until onCharInput is called.
+				// if convertedChar == 0, that means it is a non-unicode key (ex ctrl), so we'll emit the keydown here.
+				if( convertedChar == 0 ) {
+					cinderWindow->emitKeyDown( &sKeyEvent );
+				}
 			}
 			else if( GLFW_RELEASE == action ) {
+				KeyEvent event( cinderWindow, sKeyEvent.getCode(), sKeyEvent.getCharUtf32(), sKeyEvent.getChar(), modifiers, scancode );
+				sKeyEvent = {};
 				cinderWindow->emitKeyUp( &event );
-			}		
+			}
+		}
+	}
+
+	static void onCharInput( GLFWwindow *glfwWindow, unsigned int codepoint )
+	{
+		auto iter = sWindowMapping.find( glfwWindow );
+		if( sWindowMapping.end() != iter ) {
+			auto& cinderAppImpl = iter->second.first;
+			auto& cinderWindow = iter->second.second;
+			cinderAppImpl->setWindow( cinderWindow );
+
+			// create new sKeyEvent that includes same info as previous but also the utf32 char. emit key down signal with that
+			char asciiChar = codepoint < 256 ? (char)codepoint : 0;
+			sKeyEvent = KeyEvent( cinderWindow, sKeyEvent.getCode(), codepoint, asciiChar, sKeyEvent.getModifiers(), sKeyEvent.getNativeKeyCode() );
+			cinderWindow->emitKeyDown( &sKeyEvent );
 		}
 	}
 
@@ -289,6 +311,7 @@ public:
 };
 
 std::map<GLFWwindow*, std::pair<AppImplLinux*,WindowRef>> GlfwCallbacks::sWindowMapping;
+KeyEvent GlfwCallbacks::sKeyEvent;
 bool GlfwCallbacks::sCapsLockDown = false;
 bool GlfwCallbacks::sNumLockDown = false;
 bool GlfwCallbacks::sScrollLockDown = false;

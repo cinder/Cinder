@@ -8,9 +8,9 @@
 /// @defgroup gtx_number_precision GLM_GTX_number_precision
 /// @ingroup gtx
 ///
-/// @brief Defined size types.
+/// Include <glm/gtx/number_precision.hpp> to use the features of this extension.
 ///
-/// <glm/gtx/number_precision.hpp> need to be included to use these functionalities.
+/// Defined size types.
 
 #pragma once
 
@@ -18,15 +18,19 @@
 #include "../glm.hpp"
 #include "../gtc/type_precision.hpp"
 
-#if GLM_MESSAGES == GLM_MESSAGES_ENABLED && !defined(GLM_EXT_INCLUDED)
-#	pragma message("GLM: GLM_GTX_number_precision extension included")
+#if GLM_MESSAGES == GLM_ENABLE && !defined(GLM_EXT_INCLUDED)
+#	ifndef GLM_ENABLE_EXPERIMENTAL
+#		pragma message("GLM: GLM_GTX_number_precision is an experimental extension and may change in the future. Use #define GLM_ENABLE_EXPERIMENTAL before including it, if you really want to use it.")
+#	else
+#		pragma message("GLM: GLM_GTX_number_precision extension included")
+#	endif
 #endif
 
 namespace glm{
 namespace gtx
 {
 	/////////////////////////////
-	// Unsigned int vector types 
+	// Unsigned int vector types
 
 	/// @addtogroup gtx_number_precision
 	/// @{
@@ -37,18 +41,18 @@ namespace gtx
 	typedef u64			u64vec1;    //!< \brief 64bit unsigned integer scalar. (from GLM_GTX_number_precision extension)
 
 	//////////////////////
-	// Float vector types 
+	// Float vector types
 
-	typedef f32			f32vec1;    //!< \brief Single-precision floating-point scalar. (from GLM_GTX_number_precision extension)
-	typedef f64			f64vec1;    //!< \brief Single-precision floating-point scalar. (from GLM_GTX_number_precision extension)
+	typedef f32			f32vec1;    //!< \brief Single-qualifier floating-point scalar. (from GLM_GTX_number_precision extension)
+	typedef f64			f64vec1;    //!< \brief Single-qualifier floating-point scalar. (from GLM_GTX_number_precision extension)
 
 	//////////////////////
-	// Float matrix types 
+	// Float matrix types
 
-	typedef f32			f32mat1;	//!< \brief Single-precision floating-point scalar. (from GLM_GTX_number_precision extension)
-	typedef f32			f32mat1x1;	//!< \brief Single-precision floating-point scalar. (from GLM_GTX_number_precision extension)
-	typedef f64			f64mat1;	//!< \brief Double-precision floating-point scalar. (from GLM_GTX_number_precision extension)
-	typedef f64			f64mat1x1;	//!< \brief Double-precision floating-point scalar. (from GLM_GTX_number_precision extension)
+	typedef f32			f32mat1;	//!< \brief Single-qualifier floating-point scalar. (from GLM_GTX_number_precision extension)
+	typedef f32			f32mat1x1;	//!< \brief Single-qualifier floating-point scalar. (from GLM_GTX_number_precision extension)
+	typedef f64			f64mat1;	//!< \brief Double-qualifier floating-point scalar. (from GLM_GTX_number_precision extension)
+	typedef f64			f64mat1x1;	//!< \brief Double-qualifier floating-point scalar. (from GLM_GTX_number_precision extension)
 
 	/// @}
 }//namespace gtx

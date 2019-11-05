@@ -149,12 +149,11 @@ int asciiCaseCmp( const char *a, const char *b )
 	return ((int)std::toupper(*a)) - ((int)std::toupper(*b));
 }
 
-
 std::string trim( const std::string &str )
 {
-	auto wsFront = std::find_if_not( str.begin(), str.end(), [](int c){ return std::isspace(c); } );
-	auto wsBack = std::find_if_not( str.rbegin(), str.rend(),[](int c){ return std::isspace(c); } ).base();
-	return wsBack <= wsFront ? std::string() : std::string( wsFront, wsBack );
+	size_t wsFront = str.find_first_not_of( " \f\n\r\t\v" );
+	size_t wsBack = str.find_last_not_of( " \f\n\r\t\v" );
+	return wsBack <= wsFront ? std::string() : str.substr( wsFront, wsBack - wsFront + 1 );
 }
 
 void sleep( float milliseconds )
