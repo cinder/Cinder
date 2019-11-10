@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2012, The Cinder Project
+ Copyright (c) 2018, The Cinder Project
  All rights reserved.
  
  Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
@@ -25,7 +25,6 @@
 */
 
 
-#include <boost/algorithm/string.hpp>
 #include "jsoncpp/json.h"
 
 #include "cinder/Json.h"
@@ -518,9 +517,9 @@ string JsonTree::getPath( char separator ) const
 JsonTree* JsonTree::getNodePtr( const string &relativePath, bool caseSensitive, char separator ) const
 {
     // Format path into dotted address
-	std::string path = boost::replace_all_copy( relativePath, "[", std::string( 1, separator ) );
-	path = boost::replace_all_copy( path, "'", "");
-	path = boost::replace_all_copy( path, "]", "");
+	std::string path = replaceAll( relativePath, "[", std::string( 1, separator ) );
+	path = replaceAll( path, "'", "");
+	path = replaceAll( path, "]", "");
 
     // Start search from this node
 	JsonTree *curNode = const_cast<JsonTree*>( this );
@@ -685,8 +684,7 @@ void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions 
 
 		// This routine serializes JsonCpp data and formats it
 		if( writeOptions.getIndented() ) {
-			jsonString = value.toStyledString();
-			boost::replace_all( jsonString, "\n", "\r\n" );
+			jsonString = replaceAll( value.toStyledString(), "\n", "\r\n" );
 		} else {
 			Json::FastWriter writer;
 			jsonString = writer.write( value );
@@ -701,6 +699,20 @@ void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions 
 	OStreamRef os = target->getStream();
 	os->writeData( jsonString.c_str(), jsonString.length() );
 	
+}
+
+string JsonTree::replaceAll( const string& text, const string& search, const string& replace ) const
+{
+	string output = "";
+	const vector<string>& tokens = split( text, search );
+	for ( vector<string>::const_iterator iter = tokens.cbegin(); iter != tokens.cend(); ) {
+		output += *iter;
+		++iter;
+		if ( iter != tokens.cend() ) {
+			output += replace;
+		}
+	}
+	return output;
 }
 
 
