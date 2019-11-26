@@ -3,7 +3,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/Bspline.h"
+#include "cinder/BSpline.h"
 #include "cinder/Rand.h"
 #include "cinder/Camera.h"
 #include "cinder/ImageIo.h"
