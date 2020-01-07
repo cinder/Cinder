@@ -42,7 +42,7 @@ Connection::Connection( const Connection &other )
 {
 }
 
-Connection::Connection( Connection &&other )
+Connection::Connection( Connection &&other ) noexcept
 	: mDisconnector( move( other.mDisconnector ) ), mLink( move( other.mLink ) ), mPriority( move( other.mPriority ) )
 {
 }
@@ -56,7 +56,7 @@ Connection& Connection::operator=( const Connection &rhs )
 	return *this;
 }
 
-Connection& Connection::operator=( Connection &&rhs )
+Connection& Connection::operator=( Connection &&rhs ) noexcept
 {	
 	mDisconnector = move( rhs.mDisconnector );
 	mLink = move( rhs.mLink );
@@ -117,17 +117,17 @@ ScopedConnection::~ScopedConnection()
 	disconnect();
 }
 
-ScopedConnection::ScopedConnection( ScopedConnection &&other )
+ScopedConnection::ScopedConnection( ScopedConnection &&other ) noexcept
 	: Connection( std::move( other ) )
 {
 }
 
-ScopedConnection::ScopedConnection( Connection &&other )
+ScopedConnection::ScopedConnection( Connection &&other ) noexcept
 	: Connection( std::move( other ) )
 {
 }
 
-ScopedConnection& ScopedConnection::operator=( ScopedConnection &&rhs )
+ScopedConnection& ScopedConnection::operator=( ScopedConnection &&rhs ) noexcept
 {
 	disconnect(); // first disconnect from existing
 	Connection::operator=( std::move( rhs ) );
