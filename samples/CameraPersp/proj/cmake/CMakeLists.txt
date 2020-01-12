@@ -12,4 +12,5 @@ ci_make_app(
 	SOURCES		${APP_PATH}/src/CameraPerspApp.cpp
 	INCLUDES	${APP_PATH}/include
 	CINDER_PATH ${CINDER_PATH}
+	RESOURCES   ${APP_PATH}/../data/environment_maps/humus_sf.jpg
 )
