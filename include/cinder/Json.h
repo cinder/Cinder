@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2012, The Cinder Project
+ Copyright (c) 2018, The Cinder Project
  All rights reserved.
  
  This code is designed for use with the Cinder C++ library, http://libcinder.org
@@ -30,7 +30,6 @@
 #include "cinder/Utilities.h"
 
 #include <string>
-#include <boost/container/list.hpp>
 
 namespace Json {
 	class Value;
@@ -42,7 +41,7 @@ class CI_API JsonTree {
   public:
 	
 	//! \cond
-	typedef boost::container::list<JsonTree> Container;
+	typedef std::list<JsonTree> Container;
 
 	typedef Container::const_iterator ConstIter;
 	typedef Container::iterator Iter;
@@ -265,6 +264,8 @@ private:
 	
 	JsonTree*						getNodePtr( const std::string &relativePath, bool caseSensitive, char separator ) const;
 	static bool						isIndex( const std::string &key );
+
+	std::string						replaceAll( const std::string& text, const std::string& search, const std::string& replace ) const;
 	
 	Container						mChildren;
 	std::string						mKey;
