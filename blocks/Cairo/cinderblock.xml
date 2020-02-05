@@ -4,10 +4,11 @@
 	name="Cairo"
 	id="org.libcinder.cairo"
 	author="Cinder Project"
-	summary="Cairo support for Mac OS X and Windows."
+	summary="Cairo support for Mac OS X, linux and Windows."
 	>
 	<supports os="msw" />
 	<supports os="macosx" />
+	<supports os="linux" />
 	<includePath>include</includePath>
 	<source>src/Cairo.cpp</source>
 	<header>include/cinder/cairo/Cairo.h</header>
