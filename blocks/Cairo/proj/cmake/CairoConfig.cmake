@@ -20,5 +20,5 @@ if( NOT TARGET Cairo )
     # sudo apt-get install libfreetype6-dev
     find_package( Freetype REQUIRED )
     target_include_directories( Cairo PRIVATE ${FREETYPE_INCLUDE_DIRS} )
-    target_link_libraries( Cairo ${FREETYPE_LIBRARIES} )
+    target_link_libraries( Cairo PRIVATE ${FREETYPE_LIBRARIES} )
 endif()
