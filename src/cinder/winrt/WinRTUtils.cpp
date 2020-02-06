@@ -44,7 +44,7 @@ using namespace Windows::Storage;
 using namespace Concurrency;
 
 using namespace std;
-using namespace std::tr2;
+using namespace std::filesystem;
 
 namespace cinder { 	namespace winrt {
 
@@ -139,7 +139,7 @@ float getScaledDPIValue(float v) {
 	return v * dipFactor;
 }
 
-void deleteFileAsync(const sys::path &path)
+void deleteFileAsync(const path &path)
 {
 	if(path.empty()) {
 		throw Exception( "Must specify path to file to delete." );
@@ -158,7 +158,7 @@ void deleteFileAsync(const sys::path &path)
 	});
 }
 
-Concurrency::task<StorageFile^> copyFileToTempDirAsync(const sys::path &path)
+Concurrency::task<StorageFile^> copyFileToTempDirAsync(const path &path)
 {
 	String^ p = toPlatformString( path.string() );
 

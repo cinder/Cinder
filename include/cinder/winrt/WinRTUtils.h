@@ -17,7 +17,7 @@ float getScaledDPIValue(float v);
 int getUniqueID();
 std::string getUniqueIDString();
 
-void deleteFileAsync( const std::tr2::sys::path &path);
-Concurrency::task<Windows::Storage::StorageFile^> copyFileToTempDirAsync(const std::tr2::sys::path &path);
+void deleteFileAsync( const std::filesystem::path &path);
+Concurrency::task<Windows::Storage::StorageFile^> copyFileToTempDirAsync(const std::filesystem::path &path);
 
 } } // namespace cinder::winrt
