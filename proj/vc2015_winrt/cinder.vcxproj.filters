@@ -187,6 +187,9 @@
     <ClInclude Include="..\..\include\cinder\ConcurrentCircularBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\cinder\ConvexHull.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\cinder\CurrentFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -736,6 +739,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\Color.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\ConvexHull.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\DataSource.cpp">
