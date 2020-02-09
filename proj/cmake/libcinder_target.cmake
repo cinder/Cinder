@@ -29,16 +29,21 @@ target_compile_definitions( cinder PUBLIC ${CINDER_DEFINES} )
 # Visual Studio and Xcode generators adds a ${CMAKE_BUILD_TYPE} to the ARCHIVE 
 # and LIBRARY directories. Override the directories so, ${CMAKE_BUILD_TYPE} doesn't double up.
 if( CINDER_MSW )
-	set( PLATFORM_TOOLSET "$(PlatformToolset)" )
-	if( NOT ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) )
-		# Assume Visual Studio 2015
-		set( PLATFORM_TOOLSET "v140" )
-		if( MSVC_VERSION LESS 1900 ) # Visual Studio 2013
-			set( PLATFORM_TOOLSET "v120" )
+    string( COMPARE NOTEQUAL "${CMAKE_VS_PLATFORM_TOOLSET}" "" HAS_TOOLSET_SPECIFIED )
+    if( HAS_TOOLSET_SPECIFIED )
+        set( PLATFORM_TOOLSET "${CMAKE_VS_PLATFORM_TOOLSET}" )
+    else()
+        set( PLATFORM_TOOLSET "v142" ) # Visual Studio 2019
+    endif()
+	# if( NOT ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) )
+		if( MSVC_VERSION LESS 1920 )
+		    set( PLATFORM_TOOLSET "v140" ) # Visual Studio 2015
+		elseif( MSVC_VERSION LESS 1900 )
+			set( PLATFORM_TOOLSET "v120" ) # Visual Studio 2013
 		elseif( MSVC_VERSION LESS 1800 )
 			message( FATAL_ERROR "Unsupported MSVC version: ${MSVC_VERSION}" )
 		endif()
-	endif()
+	# endif()
 
     set( OUTPUT_DIRECTORY_BASE "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
     set_target_properties( cinder PROPERTIES 
@@ -46,14 +51,14 @@ if( CINDER_MSW )
         ARCHIVE_OUTPUT_DIRECTORY_RELEASE		"${OUTPUT_DIRECTORY_BASE}/Release/${PLATFORM_TOOLSET}"
         ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL		"${OUTPUT_DIRECTORY_BASE}/MinSizeRel/${PLATFORM_TOOLSET}"
         ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO	"${OUTPUT_DIRECTORY_BASE}/RelWithDebInfo/${PLATFORM_TOOLSET}"
-        LIBRARY_OUTPUT_DIRECTORY_DEBUG			"${OUTPUT_DIRECTORY_BASE}/Debug/${PLATFORM_TOOLSET}|"
+        LIBRARY_OUTPUT_DIRECTORY_DEBUG			"${OUTPUT_DIRECTORY_BASE}/Debug/${PLATFORM_TOOLSET}"
         LIBRARY_OUTPUT_DIRECTORY_RELEASE		"${OUTPUT_DIRECTORY_BASE}/Release/${PLATFORM_TOOLSET}"
         LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL		"${OUTPUT_DIRECTORY_BASE}/MinSizeRel/${PLATFORM_TOOLSET}"
         LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO	"${OUTPUT_DIRECTORY_BASE}/RelWithDebInfo/${PLATFORM_TOOLSET}"
         STATIC_LIBRARY_FLAGS_DEBUG				"${CINDER_STATIC_LIBS_FLAGS_DEBUG} ${CINDER_STATIC_LIBS_DEPENDS_DEBUG}" 
         STATIC_LIBRARY_FLAGS_RELEASE			"${CINDER_STATIC_LIBS_FLAGS_RELEASE} ${CINDER_STATIC_LIBS_DEPENDS_RELEASE}"
         STATIC_LIBRARY_FLAGS_MINSIZEREL			"${CINDER_STATIC_LIBS_FLAGS_RELEASE} ${CINDER_STATIC_LIBS_DEPENDS_RELEASE}"
-        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO		"${CINDER_STATIC_LIBS_FLAGS_RELEASE} ${CINDER_STATIC_LIBS_DEPENDS_RELEASE}" 
+        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO		"${CINDER_STATIC_LIBS_FLAGS_RELEASE} ${CINDER_STATIC_LIBS_DEPENDS_RELEASE}"
     )    
 elseif( CINDER_MAC )
     set( OUTPUT_DIRECTORY_BASE "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
@@ -72,15 +77,28 @@ elseif( CINDER_COCOA_TOUCH )
 elseif( CINDER_LINUX )
 endif()
 
-# Check compiler support for enabling c++11 or c++14.
+# Set the output directories for the shared libraries.
+set_target_properties( cinder PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY_BASE}/Debug/${PLATFORM_TOOLSET}"
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY_BASE}/Release/${PLATFORM_TOOLSET}"
+    RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${OUTPUT_DIRECTORY_BASE}/MinSizeRel/${PLATFORM_TOOLSET}"
+    RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${OUTPUT_DIRECTORY_BASE}/RelWithDebInfo/${PLATFORM_TOOLSET}"
+)
+
+# Check compiler support for enabling c++11, c++14 or c++17.
 if( CINDER_MSW AND MSVC )
     if( MSVC_VERSION LESS 1800 ) # Older version of Visual Studio
         message( FATAL_ERROR "Unsupported MSVC version: ${MSVC_VERSION}" )
     elseif( MSVC_VERSION LESS 1900 ) # Visual Studio 2013
         set( COMPILER_SUPPORTS_CXX11 true )
-    else() # Visual Studio 2015
+    elseif( MSVC_VERSION LESS 1920 ) # Visual Studio 2015
         set( COMPILER_SUPPORTS_CXX14 true )
         set( COMPILER_SUPPORTS_CXX11 true )
+    else()
+        include( CheckCXXCompilerFlag )
+        CHECK_CXX_COMPILER_FLAG("/std:c++17" COMPILER_SUPPORTS_CXX17 )
+        CHECK_CXX_COMPILER_FLAG("/std:c++14" COMPILER_SUPPORTS_CXX14 )
+        CHECK_CXX_COMPILER_FLAG("/std:c++11" COMPILER_SUPPORTS_CXX11 )
     endif()
 elseif( CINDER_ANDROID )
 	# Assume true for Android since compiler is Clang 3.8 at minimum
@@ -88,20 +106,31 @@ elseif( CINDER_ANDROID )
     set( COMPILER_SUPPORTS_CXX11 true )
 else()
     include( CheckCXXCompilerFlag )
+    CHECK_CXX_COMPILER_FLAG( "-std=c++17" COMPILER_SUPPORTS_CXX17 )
     CHECK_CXX_COMPILER_FLAG( "-std=c++14" COMPILER_SUPPORTS_CXX14 )
     CHECK_CXX_COMPILER_FLAG( "-std=c++11" COMPILER_SUPPORTS_CXX11 )
 endif()
 
-if( COMPILER_SUPPORTS_CXX14 )
-    if( NOT MSVC )
+if( CINDER_ENABLE_CXX17 AND COMPILER_SUPPORTS_CXX17 )
+    if( MSVC )
+    	set( CINDER_CXX_FLAGS "/std:c++17" )
+    else()
+    	set( CINDER_CXX_FLAGS "-std=c++17" )
+    endif()
+elseif( COMPILER_SUPPORTS_CXX14 )
+    if( MSVC )
+    	set( CINDER_CXX_FLAGS "/std:c++14" )
+    else()
     	set( CINDER_CXX_FLAGS "-std=c++14" )
     endif()
 elseif( COMPILER_SUPPORTS_CXX11 )
-    if( NOT MSVC )
+    if( MSVC )
+    	set( CINDER_CXX_FLAGS "/std:c++11" )
+    else()
         set( CINDER_CXX_FLAGS "-std=c++11" )
     endif()
 else()
-	message( FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has neither C++11 or C++14 support. Please use a different C++ compiler." )
+	message( FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has neither C++11, C++14 nor C++17 support. Please use a different C++ compiler." )
 endif()
 
 # TODO: it would be nice to the following, but we can't until min required cmake is 3.3

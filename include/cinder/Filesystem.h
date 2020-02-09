@@ -26,9 +26,13 @@
 
 #include "cinder/Cinder.h"
 
-
 #if defined( CINDER_UWP ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
+#if ( ( defined( _MSC_VER ) && ( _MSC_VER >= 1920 ) && ! _HAS_CXX17 ) )
+    #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+	#include <experimental/filesystem>
+#else
 	#include <filesystem>
+#endif
 #else
 	#define BOOST_FILESYSTEM_VERSION 3
 	#define BOOST_FILESYSTEM_NO_DEPRECATED
@@ -37,7 +41,11 @@
 
 namespace cinder {
 #if defined( CINDER_UWP ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
+#if ( ! _HAS_CXX17 )
+	namespace fs = std::experimental::filesystem;
+#else
 	namespace fs = std::filesystem;
+#endif
 } // namespace cinder
 #else
 	namespace fs = boost::filesystem;

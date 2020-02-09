@@ -2,7 +2,12 @@ cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 
 set( CINDER_PLATFORM "MSW" )
 
+list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
+	${CINDER_INC_DIR}/msw
+)
+
 list( APPEND SRC_SET_MSW
+	${CINDER_SRC_DIR}/videoInput/videoInput.cpp
 	${CINDER_SRC_DIR}/cinder/CaptureImplDirectShow.cpp
 	${CINDER_SRC_DIR}/cinder/msw/CinderMsw.cpp
 	${CINDER_SRC_DIR}/cinder/msw/CinderMswGdiPlus.cpp
@@ -14,18 +19,16 @@ list( APPEND SRC_SET_MSW
 	${CINDER_SRC_DIR}/glload/wgl_load.c
 )
 
-if( NOT CINDER_DISABLE_ANTTWEAKBAR )
+if( NOT ( CINDER_DISABLE_ANTTWEAKBAR OR BUILD_SHARED_LIBS ) )
 	list( APPEND SRC_SET_MSW ${CINDER_SRC_DIR}/AntTweakBar/TwDirect3D11.cpp )
 endif()
 
 list( APPEND SRC_SET_APP_MSW
-	# TODO: should these two files be added to "cinder\\app" group?
-	${CINDER_SRC_DIR}/cinder/app/AppScreenSaver.cpp
+	# TODO: should this file be added to "cinder\\app" group?
 	#${CINDER_SRC_DIR}/cinder/app/RendererDx.cpp
 
 	${CINDER_SRC_DIR}/cinder/app/msw/AppImplMsw.cpp
 	${CINDER_SRC_DIR}/cinder/app/msw/AppImplMswBasic.cpp
-	${CINDER_SRC_DIR}/cinder/app/msw/AppImplMswScreenSaver.cpp
 	${CINDER_SRC_DIR}/cinder/app/msw/AppMsw.cpp
 	${CINDER_SRC_DIR}/cinder/app/msw/PlatformMsw.cpp
 	${CINDER_SRC_DIR}/cinder/app/msw/RendererImpl2dGdi.cpp
@@ -33,6 +36,16 @@ list( APPEND SRC_SET_APP_MSW
 	#${CINDER_SRC_DIR}/cinder/app/msw/RendererImplGlAngle.cpp
 	${CINDER_SRC_DIR}/cinder/app/msw/RendererImplGlMsw.cpp
 )
+
+# The following files are excluded from the shared library.	
+if( NOT BUILD_SHARED_LIBS )
+list( APPEND SRC_SET_APP_MSW
+	# TODO: should this file be added to "cinder\\app" group?
+	${CINDER_SRC_DIR}/cinder/app/AppScreenSaver.cpp
+	
+	${CINDER_SRC_DIR}/cinder/app/msw/AppImplMswScreenSaver.cpp
+)
+endif()
 
 if( NOT CINDER_DISABLE_AUDIO )
 	list( APPEND SRC_SET_AUDIO_MSW
@@ -108,27 +121,26 @@ list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
 list( APPEND CINDER_DEFINES "_LIB;UNICODE;_UNICODE;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS" )
 
 if( MSVC )
-	# Override the default /MD with /MT
-	foreach( 
-		flag_var
-		CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO 
-		CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO 
-	)
-		if( ${flag_var} MATCHES "/MD" )
-			string( REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}" )
-		endif()
-	endforeach()
 	# Force synchronous PDB writes
 	add_compile_options( /FS )
 	# Force multiprocess compilation
 	add_compile_options( /MP )
+	
+	set( MSW_SUBFOLDER "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
+
+	if( BUILD_SHARED_LIBS )
+		# Platform libraries
+		list( APPEND CINDER_LIBS_DEPENDS Ws2_32.lib wldap32.lib shlwapi.lib OpenGL32.lib wmvcore.lib Strmiids.lib Msimg32.lib
+									kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib
+									ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+		)	
+	else()
+		# Platform libraries 
+		set( MSW_PLATFORM_LIBS "Ws2_32.lib wldap32.lib shlwapi.lib OpenGL32.lib wmvcore.lib Strmiids.lib Msimg32.lib" )
+	endif()
+
 	# Static library flags
 	set( CINDER_STATIC_LIBS_FLAGS_DEBUG		"/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
-   
-	# Platform libraries 
-	set( MSW_PLATFORM_LIBS "Ws2_32.lib wldap32.lib shlwapi.lib OpenGL32.lib wmvcore.lib Strmiids.lib Msimg32.lib" )
-
-	set( MSW_SUBFOLDER "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
 	# Static library debug depends
 	set( CINDER_STATIC_LIBS_DEPENDS_DEBUG	"${MSW_PLATFORM_LIBS}" )
 	# Static library release depends
