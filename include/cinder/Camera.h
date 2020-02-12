@@ -286,8 +286,8 @@ class CI_API CameraStereo : public CameraPersp {
 	//! Returns whether stereoscopic rendering is enabled.
 	bool			isStereoEnabled() const { return mIsStereo; }
 
-	void	getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const override;
-	void	getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const override;
+	void getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const override { return getShiftedClipCoordinates( mNearClip, topLeft, topRight, bottomLeft, bottomRight ); }
+	void getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const override { return getShiftedClipCoordinates( mFarClip, topLeft, topRight, bottomLeft, bottomRight ); }
 	
 	const mat4&	getProjectionMatrix() const override;
 	const mat4&	getViewMatrix() const override;
@@ -302,6 +302,8 @@ class CI_API CameraStereo : public CameraPersp {
 	void	calcViewMatrix() const override;
 	void	calcInverseView() const override;
 	void	calcProjection() const override;
+
+	void	getShiftedClipCoordinates( float clipDist, vec3* topLeft, vec3* topRight, vec3* bottomLeft, vec3* bottomRight ) const;
 	
   private:
 	bool			mIsStereo;
