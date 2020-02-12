@@ -97,7 +97,7 @@ class CI_API Camera {
 	void	setFarClip( float farClip ) { mFarClip = farClip; mProjectionCached = false; }
 
 	//! Returns the four corners of the Camera's Near clipping plane, expressed in world-space
-	virtual void	getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const { return getClipCoordinates( mNearClip, mFarClip / mNearClip, topLeft, topRight, bottomLeft, bottomRight ); }
+	virtual void	getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const { return getClipCoordinates( mNearClip, 1.0f, topLeft, topRight, bottomLeft, bottomRight ); }
 	//! Returns the four corners of the Camera's Far clipping plane, expressed in world-space
 	virtual void	getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const { getClipCoordinates( mFarClip, mFarClip / mNearClip, topLeft, topRight, bottomLeft, bottomRight ); }
 
@@ -286,8 +286,8 @@ class CI_API CameraStereo : public CameraPersp {
 	//! Returns whether stereoscopic rendering is enabled.
 	bool			isStereoEnabled() const { return mIsStereo; }
 
-	void getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const override { return getShiftedClipCoordinates( mNearClip, topLeft, topRight, bottomLeft, bottomRight ); }
-	void getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const override { return getShiftedClipCoordinates( mFarClip, topLeft, topRight, bottomLeft, bottomRight ); }
+	void getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const override { return getShiftedClipCoordinates( mNearClip, 1.0f, topLeft, topRight, bottomLeft, bottomRight ); }
+	void getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const override { return getShiftedClipCoordinates( mFarClip, mFarClip / mNearClip, topLeft, topRight, bottomLeft, bottomRight ); }
 	
 	const mat4&	getProjectionMatrix() const override;
 	const mat4&	getViewMatrix() const override;
@@ -303,7 +303,7 @@ class CI_API CameraStereo : public CameraPersp {
 	void	calcInverseView() const override;
 	void	calcProjection() const override;
 
-	void	getShiftedClipCoordinates( float clipDist, vec3* topLeft, vec3* topRight, vec3* bottomLeft, vec3* bottomRight ) const;
+	void	getShiftedClipCoordinates( float clipDist, float ratio, vec3* topLeft, vec3* topRight, vec3* bottomLeft, vec3* bottomRight ) const;
 	
   private:
 	bool			mIsStereo;
