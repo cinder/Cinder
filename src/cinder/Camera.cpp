@@ -100,28 +100,6 @@ void Camera::lookAt( const vec3 &eyePoint, const vec3 &target, const vec3 &aWorl
 	mModelViewCached = false;
 }
 
-void Camera::getClipCoordinates(float clipDist, float ratio, vec3* topLeft, vec3* topRight, vec3* bottomLeft, vec3* bottomRight) const
-{
-	calcMatrices();
-
-	vec3 viewDirection = normalize( mViewDirection );
-
-	*topLeft		= mEyePoint + (clipDist * viewDirection) + ratio * ((mFrustumTop * mV) + (mFrustumLeft * mU));
-	*topRight		= mEyePoint + (clipDist * viewDirection) + ratio * ((mFrustumTop * mV) + (mFrustumRight * mU));
-	*bottomLeft		= mEyePoint + (clipDist * viewDirection) + ratio * ((mFrustumBottom * mV) + (mFrustumLeft * mU));
-	*bottomRight	= mEyePoint + (clipDist * viewDirection) + ratio * ((mFrustumBottom * mV) + (mFrustumRight * mU));
-}
-
-void Camera::getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const
-{
-	getClipCoordinates(mNearClip, mFarClip/mNearClip, topLeft, topRight, bottomLeft, bottomRight);
-}
-
-void Camera::getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const
-{
-	getClipCoordinates(mFarClip, mFarClip/mNearClip, topLeft, topRight, bottomLeft, bottomRight);
-}
-
 void Camera::getFrustum( float *left, float *top, float *right, float *bottom, float *near, float *far ) const
 {
 	calcMatrices();
@@ -235,6 +213,18 @@ void Camera::calcInverseView() const
 
 	mInverseModelViewMatrix = glm::inverse( mViewMatrix );
 	mInverseModelViewCached = true;
+}
+
+void Camera::getClipCoordinates( float clipDist, float ratio, vec3* topLeft, vec3* topRight, vec3* bottomLeft, vec3* bottomRight ) const
+{
+	calcMatrices();
+
+	const vec3 viewDirection = normalize( mViewDirection );
+
+	*topLeft	= mEyePoint + clipDist * viewDirection + ratio * ( mFrustumTop * mV + mFrustumLeft * mU );
+	*topRight	= mEyePoint + clipDist * viewDirection + ratio * ( mFrustumTop * mV + mFrustumRight * mU );
+	*bottomLeft	= mEyePoint + clipDist * viewDirection + ratio * ( mFrustumBottom * mV + mFrustumLeft * mU );
+	*bottomRight= mEyePoint + clipDist * viewDirection + ratio * ( mFrustumBottom * mV + mFrustumRight * mU );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -409,15 +399,6 @@ void CameraOrtho::setOrtho( float left, float right, float bottom, float top, fl
 	mFarClip		= farPlane;
 
 	mProjectionCached = false;
-}
-void CameraOrtho::getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const
-{
-	getClipCoordinates(mNearClip, 1.f , topLeft, topRight, bottomLeft, bottomRight);
-}
-
-void CameraOrtho::getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const
-{
-	getClipCoordinates(mFarClip, 1.f, topLeft, topRight, bottomLeft, bottomRight);
 }
 
 void CameraOrtho::calcProjection() const
