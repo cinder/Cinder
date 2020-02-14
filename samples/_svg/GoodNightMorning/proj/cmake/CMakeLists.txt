@@ -8,7 +8,19 @@ get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
+set( SRC_FILES
+	${APP_PATH}/src/GoodNightMorningApp.cpp
+	${APP_PATH}/src/TweetStream.cpp
+)
+
+set( INC_PATHS
+	${APP_PATH}/include
+	${APP_PATH}/src
+)
+
 ci_make_app(
-	SOURCES     ${APP_PATH}/src/GoodNightMorningApp.cpp
+	SOURCES     ${SRC_FILES}
+	INCLUDES    ${INC_FILES}
 	CINDER_PATH ${CINDER_PATH}
+	BLOCKS      Cairo
 )
