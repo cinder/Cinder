@@ -41,6 +41,13 @@
 #elif defined( CINDER_MSW )
 	#include "cinder/app/App.h"
 	#include <cairo-win32.h>
+
+FILE _iob[] = {*stdin, *stdout, *stderr};
+
+extern "C" FILE * __cdecl __iob_func(void)
+{
+    return _iob;
+}
 #endif
 
 using std::vector;
