@@ -101,7 +101,7 @@
       <AdditionalIncludeDirectories>"..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;OpenGL32.lib;%(AdditionalDependencies);..\..\..\blocks\Cairo\lib\msw\x86\cairo-static.lib;..\..\..\blocks\Cairo\lib\msw\x86\pixman-1.lib;libpng.lib</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;OpenGL32.lib;%(AdditionalDependencies);..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\cairo-static.lib;..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\pixman-1.lib;libpng.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>"..\..\..\lib\msw\$(PlatformTarget)";"..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\"</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -127,7 +127,7 @@
       <AdditionalIncludeDirectories>"..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;OpenGL32.lib;%(AdditionalDependencies);..\..\..\blocks\Cairo\lib\msw\x86\cairo-static.lib;..\..\..\blocks\Cairo\lib\msw\x86\pixman-1.lib;libpng.lib</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;OpenGL32.lib;%(AdditionalDependencies);..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\cairo-static.lib;..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\pixman-1.lib;libpng.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>"..\..\..\lib\msw\$(PlatformTarget)";"..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\"</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -153,7 +153,7 @@
       <AdditionalIncludeDirectories>"..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;OpenGL32.lib;%(AdditionalDependencies);..\..\..\blocks\Cairo\lib\msw\x86\cairo-static.lib;..\..\..\blocks\Cairo\lib\msw\x86\pixman-1.lib;libpng.lib</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;OpenGL32.lib;%(AdditionalDependencies);..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\cairo-static.lib;..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\pixman-1.lib;libpng.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>"..\..\..\lib\msw\$(PlatformTarget)";"..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\"</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -182,7 +182,7 @@
       <AdditionalIncludeDirectories>"..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;OpenGL32.lib;%(AdditionalDependencies);..\..\..\blocks\Cairo\lib\msw\x86\cairo-static.lib;..\..\..\blocks\Cairo\lib\msw\x86\pixman-1.lib;libpng.lib</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;OpenGL32.lib;%(AdditionalDependencies);..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\cairo-static.lib;..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\pixman-1.lib;libpng.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>"..\..\..\lib\msw\$(PlatformTarget)\";"..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\"</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
