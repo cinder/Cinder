@@ -6,9 +6,9 @@
 #define GLM_VERSION_MAJOR			0
 #define GLM_VERSION_MINOR			9
 #define GLM_VERSION_PATCH			9
-#define GLM_VERSION_REVISION		4
-#define GLM_VERSION					995
-#define GLM_VERSION_MESSAGE			"GLM: version 0.9.9.5"
+#define GLM_VERSION_REVISION		7
+#define GLM_VERSION					997
+#define GLM_VERSION_MESSAGE			"GLM: version 0.9.9.7"
 
 #define GLM_SETUP_INCLUDED			GLM_VERSION
 
@@ -35,9 +35,9 @@
 ///////////////////////////////////////////////////////////////////////////////////
 // Build model
 
-#if defined(__arch64__) || defined(__LP64__) || defined(_M_X64) || defined(__ppc64__) || defined(__x86_64__)
+#if defined(_M_ARM64) || defined(__LP64__) || defined(_M_X64) || defined(__ppc64__) || defined(__x86_64__)
 #	define GLM_MODEL	GLM_MODEL_64
-#elif defined(__i386__) || defined(__ppc__)
+#elif defined(__i386__) || defined(__ppc__) || defined(__ILP32__) || defined(_M_ARM)
 #	define GLM_MODEL	GLM_MODEL_32
 #else
 #	define GLM_MODEL	GLM_MODEL_32
@@ -119,7 +119,7 @@
 #		define GLM_LANG (GLM_LANG_CXX2A | GLM_LANG_EXT)
 #	elif __cplusplus == 201703L || GLM_LANG_PLATFORM == 201703L
 #		define GLM_LANG (GLM_LANG_CXX17 | GLM_LANG_EXT)
-#	elif __cplusplus == 201402L || GLM_LANG_PLATFORM == 201402L
+#	elif __cplusplus == 201402L || __cplusplus == 201500L || GLM_LANG_PLATFORM == 201402L
 #		define GLM_LANG (GLM_LANG_CXX14 | GLM_LANG_EXT)
 #	elif __cplusplus == 201103L || GLM_LANG_PLATFORM == 201103L
 #		define GLM_LANG (GLM_LANG_CXX11 | GLM_LANG_EXT)
@@ -143,8 +143,7 @@
 #if GLM_PLATFORM == GLM_PLATFORM_ANDROID && !defined(GLM_LANG_STL11_FORCED)
 #	define GLM_HAS_CXX11_STL 0
 #elif GLM_COMPILER & GLM_COMPILER_CLANG
-#	if ((defined(_LIBCPP_VERSION) || defined(_MSC_VER)) && GLM_LANG & GLM_LANG_CXX11_FLAG) || \
-		defined(GLM_LANG_STL11_FORCED)
+#	if (defined(_LIBCPP_VERSION) || (GLM_LANG & GLM_LANG_CXX11_FLAG) || defined(GLM_LANG_STL11_FORCED))
 #		define GLM_HAS_CXX11_STL 1
 #	else
 #		define GLM_HAS_CXX11_STL 0
@@ -188,7 +187,7 @@
 #	define GLM_HAS_INITIALIZER_LISTS ((GLM_LANG & GLM_LANG_CXX0X_FLAG) && (\
 		((GLM_COMPILER & GLM_COMPILER_VC) && (GLM_COMPILER >= GLM_COMPILER_VC15)) || \
 		((GLM_COMPILER & GLM_COMPILER_INTEL) && (GLM_COMPILER >= GLM_COMPILER_INTEL14)) || \
-		((GLM_COMPILER & GLM_COMPILER_CUDA) && (GLM_COMPILER >= GLM_COMPILER_CUDA75))))
+		((GLM_COMPILER & GLM_COMPILER_CUDA))))
 #endif
 
 // N2544 Unrestricted unions http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2008/n2544.pdf
@@ -199,7 +198,7 @@
 #else
 #	define GLM_HAS_UNRESTRICTED_UNIONS (GLM_LANG & GLM_LANG_CXX0X_FLAG) && (\
 		(GLM_COMPILER & GLM_COMPILER_VC) || \
-		((GLM_COMPILER & GLM_COMPILER_CUDA) && (GLM_COMPILER >= GLM_COMPILER_CUDA75)))
+		((GLM_COMPILER & GLM_COMPILER_CUDA)))
 #endif
 
 // N2346
@@ -270,7 +269,7 @@
 #	define GLM_HAS_ALIGNOF ((GLM_LANG & GLM_LANG_CXX0X_FLAG) && (\
 		((GLM_COMPILER & GLM_COMPILER_INTEL) && (GLM_COMPILER >= GLM_COMPILER_INTEL15)) || \
 		((GLM_COMPILER & GLM_COMPILER_VC) && (GLM_COMPILER >= GLM_COMPILER_VC14)) || \
-		((GLM_COMPILER & GLM_COMPILER_CUDA) && (GLM_COMPILER >= GLM_COMPILER_CUDA70))))
+		((GLM_COMPILER & GLM_COMPILER_CUDA))))
 #endif
 
 // N2235 Generalized Constant Expressions http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2235.pdf
@@ -296,9 +295,11 @@
 //
 #if GLM_HAS_CONSTEXPR
 # if (GLM_COMPILER & GLM_COMPILER_CLANG)
-#	define GLM_HAS_IF_CONSTEXPR __has_feature(cxx_if_constexpr)
-# elif (GLM_COMPILER & GLM_COMPILER_GCC) 
-#	define GLM_HAS_IF_CONSTEXPR GLM_COMPILER >= GLM_COMPILER_GCC7
+#	if __has_feature(cxx_if_constexpr)
+#		define GLM_HAS_IF_CONSTEXPR 1
+#	else
+# 		define GLM_HAS_IF_CONSTEXPR 0
+#	endif
 # elif (GLM_LANG & GLM_LANG_CXX17_FLAG)
 # 	define GLM_HAS_IF_CONSTEXPR 1
 # else
@@ -530,6 +531,48 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////
+// SYCL
+
+#if GLM_COMPILER==GLM_COMPILER_SYCL
+
+#include <CL/sycl.hpp>
+#include <limits>
+
+namespace glm {
+namespace std {
+	// Import SYCL's functions into the namespace glm::std to force their usages.
+	// It's important to use the math built-in function (sin, exp, ...)
+	// of SYCL instead the std ones.
+	using namespace cl::sycl;
+
+	///////////////////////////////////////////////////////////////////////////////
+	// Import some "harmless" std's stuffs used by glm into
+	// the new glm::std namespace.
+	template<typename T>
+	using numeric_limits = ::std::numeric_limits<T>;
+
+	using ::std::size_t;
+
+	using ::std::uint8_t;
+	using ::std::uint16_t;
+	using ::std::uint32_t;
+	using ::std::uint64_t;
+
+	using ::std::int8_t;
+	using ::std::int16_t;
+	using ::std::int32_t;
+	using ::std::int64_t;
+
+	using ::std::make_unsigned;
+	///////////////////////////////////////////////////////////////////////////////
+} //namespace std
+} //namespace glm
+
+#endif
+
+///////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////
 // Length type: all length functions returns a length_t type.
 // When GLM_FORCE_SIZE_T_LENGTH is defined, length_t is a typedef of size_t otherwise
 // length_t is a typedef of int like GLSL defines it.
@@ -664,6 +707,12 @@ namespace detail
 
 	template<>
 	struct make_unsigned<char>
+	{
+		typedef unsigned char type;
+	};
+
+	template<>
+	struct make_unsigned<signed char>
 	{
 		typedef unsigned char type;
 	};

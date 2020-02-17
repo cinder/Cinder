@@ -22,29 +22,13 @@
 #include <limits>
 
 #if GLM_MESSAGES == GLM_ENABLE && !defined(GLM_EXT_INCLUDED)
-#	pragma message("GLM: GLM_GTC_integer extension included")
+#	pragma message("GLM: GLM_GTC_round extension included")
 #endif
 
 namespace glm
 {
 	/// @addtogroup gtc_round
 	/// @{
-
-	/// Return true if the value is a power of two number.
-	///
-	/// @see gtc_round
-	template<typename genIUType>
-	GLM_FUNC_DECL bool isPowerOfTwo(genIUType v);
-
-	/// Return true if the value is a power of two number.
-	///
-	/// @tparam L Integer between 1 and 4 included that qualify the dimension of the vector
-	/// @tparam T Floating-point or integer scalar types
-	/// @tparam Q Value from qualifier enum
-	///
-	/// @see gtc_round
-	template<length_t L, typename T, qualifier Q>
-	GLM_FUNC_DECL vec<L, bool, Q> isPowerOfTwo(vec<L, T, Q> const& v);
 
 	/// Return the power of two number which value is just higher the input value,
 	/// round up to a power of two.
@@ -97,32 +81,6 @@ namespace glm
 	/// @see gtc_round
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_DECL vec<L, T, Q> roundPowerOfTwo(vec<L, T, Q> const& v);
-
-	/// Return true if the 'Value' is a multiple of 'Multiple'.
-	///
-	/// @see gtc_round
-	template<typename genIUType>
-	GLM_FUNC_DECL bool isMultiple(genIUType v, genIUType Multiple);
-
-	/// Return true if the 'Value' is a multiple of 'Multiple'.
-	///
-	/// @tparam L Integer between 1 and 4 included that qualify the dimension of the vector
-	/// @tparam T Floating-point or integer scalar types
-	/// @tparam Q Value from qualifier enum
-	///
-	/// @see gtc_round
-	template<length_t L, typename T, qualifier Q>
-	GLM_FUNC_DECL vec<L, bool, Q> isMultiple(vec<L, T, Q> const& v, T Multiple);
-
-	/// Return true if the 'Value' is a multiple of 'Multiple'.
-	///
-	/// @tparam L Integer between 1 and 4 included that qualify the dimension of the vector
-	/// @tparam T Floating-point or integer scalar types
-	/// @tparam Q Value from qualifier enum
-	///
-	/// @see gtc_round
-	template<length_t L, typename T, qualifier Q>
-	GLM_FUNC_DECL vec<L, bool, Q> isMultiple(vec<L, T, Q> const& v, vec<L, T, Q> const& Multiple);
 
 	/// Higher multiple number of Source.
 	///

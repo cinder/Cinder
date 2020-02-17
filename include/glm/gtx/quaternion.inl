@@ -6,7 +6,7 @@
 namespace glm
 {
 	template<typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER qua<T, Q> quat_identity()
+	GLM_FUNC_QUALIFIER GLM_CONSTEXPR qua<T, Q> quat_identity()
 	{
 		return qua<T, Q>(static_cast<T>(1), static_cast<T>(0), static_cast<T>(0), static_cast<T>(0));
 	}
@@ -70,7 +70,7 @@ namespace glm
 	}
 
 	template<typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER T length2(qua<T, Q> const& q)
+	GLM_FUNC_QUALIFIER GLM_CONSTEXPR T length2(qua<T, Q> const& q)
 	{
 		return q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
 	}

@@ -119,5 +119,44 @@ namespace detail
 			return vec<4, T, Q>(Func(a.x, b), Func(a.y, b), Func(a.z, b), Func(a.w, b));
 		}
 	};
+
+	template<length_t L, typename T, qualifier Q>
+	struct functor2_vec_int {};
+
+	template<typename T, qualifier Q>
+	struct functor2_vec_int<1, T, Q>
+	{
+		GLM_FUNC_QUALIFIER static vec<1, int, Q> call(int (*Func) (T x, int y), vec<1, T, Q> const& a, vec<1, int, Q> const& b)
+		{
+			return vec<1, int, Q>(Func(a.x, b.x));
+		}
+	};
+
+	template<typename T, qualifier Q>
+	struct functor2_vec_int<2, T, Q>
+	{
+		GLM_FUNC_QUALIFIER static vec<2, int, Q> call(int (*Func) (T x, int y), vec<2, T, Q> const& a, vec<2, int, Q> const& b)
+		{
+			return vec<2, int, Q>(Func(a.x, b.x), Func(a.y, b.y));
+		}
+	};
+
+	template<typename T, qualifier Q>
+	struct functor2_vec_int<3, T, Q>
+	{
+		GLM_FUNC_QUALIFIER static vec<3, int, Q> call(int (*Func) (T x, int y), vec<3, T, Q> const& a, vec<3, int, Q> const& b)
+		{
+			return vec<3, int, Q>(Func(a.x, b.x), Func(a.y, b.y), Func(a.z, b.z));
+		}
+	};
+
+	template<typename T, qualifier Q>
+	struct functor2_vec_int<4, T, Q>
+	{
+		GLM_FUNC_QUALIFIER static vec<4, int, Q> call(int (*Func) (T x, int y), vec<4, T, Q> const& a, vec<4, int, Q> const& b)
+		{
+			return vec<4, int, Q>(Func(a.x, b.x), Func(a.y, b.y), Func(a.z, b.z), Func(a.w, b.w));
+		}
+	};
 }//namespace detail
 }//namespace glm

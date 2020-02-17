@@ -54,7 +54,7 @@ namespace glm
 	template<typename T> \
 	return_type_scalar_multiplication<T, Vec> \
 	operator/(Vec lh, T const& s){ \
-		return lh *= 1.0f / s; \
+		return lh *= 1.0f / static_cast<float>(s); \
 	}
 
 GLM_IMPLEMENT_SCAL_MULT(vec2)

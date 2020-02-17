@@ -62,7 +62,7 @@ namespace std
 	}
 
 	template<typename T, glm::qualifier Q>
-	GLM_FUNC_QUALIFIER size_t hash<glm::tquat<T, Q>>::operator()(glm::tquat<T,Q> const& q) const
+	GLM_FUNC_QUALIFIER size_t hash<glm::qua<T, Q>>::operator()(glm::qua<T,Q> const& q) const
 	{
 		size_t seed = 0;
 		hash<T> hasher;
@@ -77,7 +77,7 @@ namespace std
 	GLM_FUNC_QUALIFIER size_t hash<glm::tdualquat<T, Q>>::operator()(glm::tdualquat<T, Q> const& q) const
 	{
 		size_t seed = 0;
-		hash<glm::tquat<T, Q>> hasher;
+		hash<glm::qua<T, Q>> hasher;
 		glm::detail::hash_combine(seed, hasher(q.real));
 		glm::detail::hash_combine(seed, hasher(q.dual));
 		return seed;

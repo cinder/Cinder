@@ -509,8 +509,8 @@ namespace glm
 	///
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/frexp.xml">GLSL frexp man page</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 8.3 Common Functions</a>
-	template<typename genType, typename genIType>
-	GLM_FUNC_DECL genType frexp(genType const& x, genIType& exp);
+	template<typename genType>
+	GLM_FUNC_DECL genType frexp(genType x, int& exp);
 	
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_DECL vec<L, T, Q> frexp(vec<L, T, Q> const& v, vec<L, int, Q>& exp);
@@ -526,8 +526,8 @@ namespace glm
 	///
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/ldexp.xml">GLSL ldexp man page</a>;
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 8.3 Common Functions</a>
-	template<typename genType, typename genIType>
-	GLM_FUNC_DECL genType ldexp(genType const& x, genIType const& exp);
+	template<typename genType>
+	GLM_FUNC_DECL genType ldexp(genType const& x, int const& exp);
 	
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_DECL vec<L, T, Q> ldexp(vec<L, T, Q> const& v, vec<L, int, Q> const& exp);
