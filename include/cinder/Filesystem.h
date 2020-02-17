@@ -36,8 +36,8 @@
 #endif
 
 namespace cinder {
-#if defined( CINDER_UWP ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
-	namespace fs = std::experimental::filesystem;
+#if defined( CINDER_UWP ) || ( defined( _MSC_VER ) )
+	namespace fs = std::filesystem;
 } // namespace cinder
 #else
 	namespace fs = boost::filesystem;
