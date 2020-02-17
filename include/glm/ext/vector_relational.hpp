@@ -1,6 +1,9 @@
 /// @ref ext_vector_relational
 /// @file glm/ext/vector_relational.hpp
 ///
+/// @see core (dependence)
+/// @see ext_scalar_integer (dependence)
+///
 /// @defgroup ext_vector_relational GLM_EXT_vector_relational
 /// @ingroup ext
 ///

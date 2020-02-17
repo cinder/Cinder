@@ -25,10 +25,7 @@ namespace glm
 
 		// Different signs means they do not match.
 		if(a.negative() != b.negative())
-		{
-			// Check for equality to make sure +0==-0
-			return a.mantissa() == b.mantissa() && a.exponent() == b.exponent();
-		}
+			return false;
 
 		// Find the difference in ULPs.
 		typename detail::float_t<genType>::int_type const DiffULPs = abs(a.i - b.i);

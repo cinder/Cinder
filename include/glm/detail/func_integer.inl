@@ -260,6 +260,8 @@ namespace detail
 	template<typename genIUType>
 	GLM_FUNC_QUALIFIER genIUType bitfieldInsert(genIUType const& Base, genIUType const& Insert, int Offset, int Bits)
 	{
+		GLM_STATIC_ASSERT(std::numeric_limits<genIUType>::is_integer, "'bitfieldInsert' only accept integer values");
+
 		return bitfieldInsert(vec<1, genIUType>(Base), vec<1, genIUType>(Insert), Offset, Bits).x;
 	}
 
@@ -273,15 +275,19 @@ namespace detail
 	}
 
 	// bitfieldReverse
-	template<typename genType>
-	GLM_FUNC_QUALIFIER genType bitfieldReverse(genType x)
+	template<typename genIUType>
+	GLM_FUNC_QUALIFIER genIUType bitfieldReverse(genIUType x)
 	{
-		return bitfieldReverse(glm::vec<1, genType, glm::defaultp>(x)).x;
+		GLM_STATIC_ASSERT(std::numeric_limits<genIUType>::is_integer, "'bitfieldReverse' only accept integer values");
+
+		return bitfieldReverse(glm::vec<1, genIUType, glm::defaultp>(x)).x;
 	}
 
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, T, Q> bitfieldReverse(vec<L, T, Q> const& v)
 	{
+		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_integer, "'bitfieldReverse' only accept integer values");
+
 		vec<L, T, Q> x(v);
 		x = detail::compute_bitfieldReverseStep<L, T, Q, detail::is_aligned<Q>::value, sizeof(T) * 8>=  2>::call(x, static_cast<T>(0x5555555555555555ull), static_cast<T>( 1));
 		x = detail::compute_bitfieldReverseStep<L, T, Q, detail::is_aligned<Q>::value, sizeof(T) * 8>=  4>::call(x, static_cast<T>(0x3333333333333333ull), static_cast<T>( 2));
@@ -293,15 +299,19 @@ namespace detail
 	}
 
 	// bitCount
-	template<typename genType>
-	GLM_FUNC_QUALIFIER int bitCount(genType x)
+	template<typename genIUType>
+	GLM_FUNC_QUALIFIER int bitCount(genIUType x)
 	{
-		return bitCount(glm::vec<1, genType, glm::defaultp>(x)).x;
+		GLM_STATIC_ASSERT(std::numeric_limits<genIUType>::is_integer, "'bitCount' only accept integer values");
+
+		return bitCount(glm::vec<1, genIUType, glm::defaultp>(x)).x;
 	}
 
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, int, Q> bitCount(vec<L, T, Q> const& v)
 	{
+		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_integer, "'bitCount' only accept integer values");
+
 #		if GLM_COMPILER & GLM_COMPILER_VC
 #			pragma warning(push)
 #			pragma warning(disable : 4310) //cast truncates constant value

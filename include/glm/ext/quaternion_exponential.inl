@@ -1,3 +1,5 @@
+#include "scalar_constants.hpp"
+
 namespace glm
 {
 	template<typename T, qualifier Q>
@@ -46,16 +48,30 @@ namespace glm
 		//To deal with non-unit quaternions
 		T magnitude = sqrt(x.x * x.x + x.y * x.y + x.z * x.z + x.w *x.w);
 
-		//Equivalent to raising a real number to a power
-		//Needed to prevent a division by 0 error later on
-		if(abs(x.w / magnitude) > static_cast<T>(1) - epsilon<T>() && abs(x.w / magnitude) < static_cast<T>(1) + epsilon<T>())
-			return qua<T, Q>(pow(x.w, y), 0, 0, 0);
+		T Angle;
+		if(abs(x.w / magnitude) > cos_one_over_two<T>())
+		{
+			//Scalar component is close to 1; using it to recover angle would lose precision
+			//Instead, we use the non-scalar components since sin() is accurate around 0
 
-		T Angle = acos(x.w / magnitude);
+			//Prevent a division by 0 error later on
+			T VectorMagnitude = x.x * x.x + x.y * x.y + x.z * x.z;
+			if (glm::abs(VectorMagnitude - static_cast<T>(0)) < glm::epsilon<T>()) {
+				//Equivalent to raising a real number to a power
+				return qua<T, Q>(pow(x.w, y), 0, 0, 0);
+			}
+
+			Angle = asin(sqrt(VectorMagnitude) / magnitude);
+		}
+		else
+		{
+			//Scalar component is small, shouldn't cause loss of precision
+			Angle = acos(x.w / magnitude);
+		}
+
 		T NewAngle = Angle * y;
 		T Div = sin(NewAngle) / sin(Angle);
 		T Mag = pow(magnitude, y - static_cast<T>(1));
-
 		return qua<T, Q>(cos(NewAngle) * magnitude * Mag, x.x * Div * Mag, x.y * Div * Mag, x.z * Div * Mag);
 	}
 

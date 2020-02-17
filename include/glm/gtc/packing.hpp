@@ -601,7 +601,7 @@ namespace glm
 
 
 
-	/// Convert each component from an integer vector into a packed unsigned integer.
+	/// Convert each component from an integer vector into a packed integer.
 	///
 	/// @see gtc_packing
 	/// @see i8vec2 unpackInt2x8(int16 p)
@@ -625,7 +625,7 @@ namespace glm
 	/// @see uint16 packInt2x8(u8vec2 const& v)
 	GLM_FUNC_DECL u8vec2 unpackUint2x8(uint16 p);
 
-	/// Convert each component from an integer vector into a packed unsigned integer.
+	/// Convert each component from an integer vector into a packed integer.
 	///
 	/// @see gtc_packing
 	/// @see i8vec4 unpackInt4x8(int32 p)
@@ -649,7 +649,7 @@ namespace glm
 	/// @see uint32 packUint4x8(u8vec2 const& v)
 	GLM_FUNC_DECL u8vec4 unpackUint4x8(uint32 p);
 
-	/// Convert each component from an integer vector into a packed unsigned integer.
+	/// Convert each component from an integer vector into a packed integer.
 	///
 	/// @see gtc_packing
 	/// @see i16vec2 unpackInt2x16(int p)
@@ -661,7 +661,7 @@ namespace glm
 	/// @see int packInt2x16(i16vec2 const& v)
 	GLM_FUNC_DECL i16vec2 unpackInt2x16(int p);
 
-	/// Convert each component from an integer vector into a packed unsigned integer.
+	/// Convert each component from an integer vector into a packed integer.
 	///
 	/// @see gtc_packing
 	/// @see i16vec4 unpackInt4x16(int64 p)
@@ -697,7 +697,7 @@ namespace glm
 	/// @see uint64 packUint4x16(u16vec4 const& v)
 	GLM_FUNC_DECL u16vec4 unpackUint4x16(uint64 p);
 
-	/// Convert each component from an integer vector into a packed unsigned integer.
+	/// Convert each component from an integer vector into a packed integer.
 	///
 	/// @see gtc_packing
 	/// @see i32vec2 unpackInt2x32(int p)
