@@ -280,7 +280,7 @@ source_group( "thirdparty\\libtess" FILES   ${SRC_SET_LIBTESS} )
 # libpng
 # ----------------------------------------------------------------------------------------------------------------------
 
-if( PNG_FOUND )
+if( PNG_FOUND AND NOT BUILD_SHARED_LIBS )
 	list( APPEND SRC_SET_TINYEXR
 		${CINDER_SRC_DIR}/cinder/ImageSourcePng.cpp
 	)

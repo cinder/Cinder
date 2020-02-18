@@ -67,7 +67,7 @@ else()
 endif()
 
 # declare whether AntTweakBar is available (isn't on mobile devices)
-if( CINDER_GL_ES OR CINDER_DISABLE_ANTTWEAKBAR )
+if( CINDER_DISABLE_ANTTWEAKBAR OR CINDER_GL_ES OR BUILD_SHARED_LIBS )
 	set( CINDER_ANTTWEAKBAR_ENABLED FALSE )
 else()
 	set( CINDER_ANTTWEAKBAR_ENABLED TRUE )

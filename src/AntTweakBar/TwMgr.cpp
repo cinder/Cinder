@@ -7,6 +7,9 @@
 //
 //  ---------------------------------------------------------------------------
 
+#if defined( _MSC_VER )
+#	define _HAS_AUTO_PTR_ETC 1
+#endif
 
 #include "TwPrecomp.h"
 #include <AntTweakBar.h>
