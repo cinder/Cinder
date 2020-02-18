@@ -76,12 +76,6 @@
     <Filter Include="Source Files\linebreak">
       <UniqueIdentifier>{32843c15-443f-4fa7-ab9c-be6125f164f3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\qtime">
-      <UniqueIdentifier>{90ff4519-84c5-42d5-bece-b27ed8b4beb8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\qtime">
-      <UniqueIdentifier>{c8db6b91-0c81-4c5b-ae73-994db8d58d64}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\dx">
       <UniqueIdentifier>{1a305511-2204-4100-81d9-aecef552ae09}</UniqueIdentifier>
     </Filter>
@@ -749,18 +743,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\gl\VboMesh.cpp">
       <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\cinder\qtime\MovieWriter.cpp">
-      <Filter>Source Files\qtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\cinder\qtime\QuickTimeGlImplLegacy.cpp">
-      <Filter>Source Files\qtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\cinder\qtime\QuickTimeImplLegacy.cpp">
-      <Filter>Source Files\qtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\cinder\qtime\QuickTimeUtils.cpp">
-      <Filter>Source Files\qtime</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\glload\gl_load.c">
       <Filter>Source Files\glload</Filter>
@@ -1753,24 +1735,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\gl\VboMesh.h">
       <Filter>Header Files\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\cinder\qtime\MovieWriter.h">
-      <Filter>Header Files\qtime</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\cinder\qtime\QuickTime.h">
-      <Filter>Header Files\qtime</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\cinder\qtime\QuickTimeGl.h">
-      <Filter>Header Files\qtime</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\cinder\qtime\QuickTimeGlImplLegacy.h">
-      <Filter>Header Files\qtime</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\cinder\qtime\QuickTimeImplLegacy.h">
-      <Filter>Header Files\qtime</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\cinder\qtime\QuickTimeUtils.h">
-      <Filter>Header Files\qtime</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\GeomIo.h">
       <Filter>Header Files</Filter>
