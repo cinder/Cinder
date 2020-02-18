@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTests", "unit.vcxproj", "{D3DC7E53-261C-49E1-835A-81084DE4B3BB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_ANGLE|x64 = Debug_ANGLE|x64
+		Debug|x64 = Debug|x64
+		Release_ANGLE|x64 = Release_ANGLE|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D3DC7E53-261C-49E1-835A-81084DE4B3BB}.Debug_ANGLE|x64.ActiveCfg = Debug_ANGLE|x64
+		{D3DC7E53-261C-49E1-835A-81084DE4B3BB}.Debug_ANGLE|x64.Build.0 = Debug_ANGLE|x64
+		{D3DC7E53-261C-49E1-835A-81084DE4B3BB}.Debug|x64.ActiveCfg = Debug|x64
+		{D3DC7E53-261C-49E1-835A-81084DE4B3BB}.Debug|x64.Build.0 = Debug|x64
+		{D3DC7E53-261C-49E1-835A-81084DE4B3BB}.Release_ANGLE|x64.ActiveCfg = Release_ANGLE|x64
+		{D3DC7E53-261C-49E1-835A-81084DE4B3BB}.Release_ANGLE|x64.Build.0 = Release_ANGLE|x64
+		{D3DC7E53-261C-49E1-835A-81084DE4B3BB}.Release|x64.ActiveCfg = Release|x64
+		{D3DC7E53-261C-49E1-835A-81084DE4B3BB}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3C05B6A5-2FDD-4F36-8AEE-B6553848C9A8}
+	EndGlobalSection
+EndGlobal
