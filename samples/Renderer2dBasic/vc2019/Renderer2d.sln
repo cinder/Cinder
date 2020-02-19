@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Renderer2d", "Renderer2d.vcxproj", "{629459D3-8445-496E-A396-83663365102F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{629459D3-8445-496E-A396-83663365102F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{629459D3-8445-496E-A396-83663365102F}.Debug|Win32.Build.0 = Debug|Win32
+		{629459D3-8445-496E-A396-83663365102F}.Debug|x64.ActiveCfg = Debug|x64
+		{629459D3-8445-496E-A396-83663365102F}.Debug|x64.Build.0 = Debug|x64
+		{629459D3-8445-496E-A396-83663365102F}.Release|Win32.ActiveCfg = Release|Win32
+		{629459D3-8445-496E-A396-83663365102F}.Release|Win32.Build.0 = Release|Win32
+		{629459D3-8445-496E-A396-83663365102F}.Release|x64.ActiveCfg = Release|x64
+		{629459D3-8445-496E-A396-83663365102F}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {83DFCF1F-A64C-4111-85DF-F9730C93E69F}
+	EndGlobalSection
+EndGlobal
