@@ -1,0 +1,42 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MipMap", "MipMap.vcxproj", "{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_ANGLE|Win32 = Debug_ANGLE|Win32
+		Debug_ANGLE|x64 = Debug_ANGLE|x64
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release_ANGLE|Win32 = Release_ANGLE|Win32
+		Release_ANGLE|x64 = Release_ANGLE|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Debug_ANGLE|Win32.ActiveCfg = Debug_ANGLE|Win32
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Debug_ANGLE|Win32.Build.0 = Debug_ANGLE|Win32
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Debug_ANGLE|x64.ActiveCfg = Debug_ANGLE|x64
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Debug_ANGLE|x64.Build.0 = Debug_ANGLE|x64
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Debug|Win32.Build.0 = Debug|Win32
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Debug|x64.ActiveCfg = Debug|x64
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Debug|x64.Build.0 = Debug|x64
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Release_ANGLE|Win32.ActiveCfg = Release_ANGLE|Win32
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Release_ANGLE|Win32.Build.0 = Release_ANGLE|Win32
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Release_ANGLE|x64.ActiveCfg = Release_ANGLE|x64
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Release_ANGLE|x64.Build.0 = Release_ANGLE|x64
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Release|Win32.ActiveCfg = Release|Win32
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Release|Win32.Build.0 = Release|Win32
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Release|x64.ActiveCfg = Release|x64
+		{9A47ECEB-CBFE-4AC3-94BF-26B42AD75570}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B918E903-69E1-42F0-8103-24AA061C0723}
+	EndGlobalSection
+EndGlobal

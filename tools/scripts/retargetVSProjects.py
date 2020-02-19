@@ -11,8 +11,8 @@ if len(sys.argv) != 2:
 START_DIR = sys.argv[1]
 
 # Customize these for the current upgrade:
-VC_DIR_OLD = 'vc2013'
-VC_DIR_NEW = 'vc2015'
+VC_DIR_OLD = 'vc2015'
+VC_DIR_NEW = 'vc2019'
 DEVENV_EXE = "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe"
 
 # These only need to be changed for debugging purposes
