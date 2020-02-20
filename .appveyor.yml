@@ -16,9 +16,6 @@ configuration:
 image: 
   - Visual Studio 2019
 
-install:
-  - git submodule update --init include/boost
-
 clone_depth: 10
 
 before_test:
