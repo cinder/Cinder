@@ -30,6 +30,8 @@
 	#include "glfw/glfw3.h"
 #endif
 
+#include <list>
+
 namespace cinder { namespace app {
 
 class AppLinux;
