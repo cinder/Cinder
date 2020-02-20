@@ -26,6 +26,7 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
 
+#include "glad/glad.h"
 #include "glfw/glfw3.h"
 
 namespace cinder { namespace app {

@@ -9,6 +9,7 @@
 #if defined( CINDER_GST_HAS_GL ) && defined( CINDER_LINUX )
 	#if ! defined( CINDER_LINUX_EGL_ONLY )
 		// These files will include a glfw_config.h that's custom to Cinder.
+		#include "glad/glad.h"
 		#include "glfw/glfw3.h"
 		#include "glfw/glfw3native.h"
 	#endif

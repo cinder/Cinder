@@ -57,32 +57,22 @@ list( APPEND SRC_SET_CINDER_LINUX ${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp )
 if( NOT CINDER_HEADLESS ) # Desktop ogl, es2, es3, RPi
 	if( CINDER_GL_ES )
 		list( APPEND SRC_SET_CINDER_LINUX
-			${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
+			${CINDER_SRC_DIR}/glad/glad_es.c
 		)
 	else()
 		list( APPEND SRC_SET_CINDER_LINUX
-			${CINDER_SRC_DIR}/glload/glx_load.c
-			${CINDER_SRC_DIR}/glload/glx_load_cpp.cpp
+			${CINDER_SRC_DIR}/glad/glad_glx.c
 		)
 	endif()
 
-	if( NOT CINDER_GL_ES_2_RPI ) # GLFW
-		list( APPEND SRC_SET_CINDER_LINUX
-			${SRC_SET_GLFW}
-		)
-		list( APPEND SRC_SET_CINDER_APP_LINUX
-			${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxGlfw.cpp
-			${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGlfw.cpp
-			${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGlfw.cpp
-		)
-	else() # RPi
-		list( APPEND SRC_SET_CINDER_LINUX
-			${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
-			${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxRpi.cpp
-			${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxRpi.cpp
-			${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxRpi.cpp
-		)
-	endif()
+	list( APPEND SRC_SET_CINDER_LINUX
+		${SRC_SET_GLFW}
+	)
+	list( APPEND SRC_SET_CINDER_APP_LINUX
+		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxGlfw.cpp
+		${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGlfw.cpp
+		${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGlfw.cpp
+	)
 else() # Headless egl, osmesa
 	list( APPEND SRC_SET_CINDER_LINUX
 		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxHeadless.cpp
@@ -91,7 +81,7 @@ else() # Headless egl, osmesa
 	)
 	if( CINDER_GL_ES )
 		list( APPEND SRC_SET_CINDER_LINUX
-			${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
+			${CINDER_SRC_DIR}/glad/glad_es.c
 		)
 	endif()
 endif()
@@ -125,23 +115,10 @@ if( CINDER_GL_CORE )
 		list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${OSMESA_INCLUDE_DIR} )
 	endif()
 elseif( CINDER_GL_ES )
-	if( NOT CINDER_GL_ES_2_RPI )
-		find_package( X11 REQUIRED )
-		list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
-		list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${X11_INCLUDE_DIR} )
-		list( APPEND CINDER_LIBS_DEPENDS EGL GLESv2 )
-	else()
-		list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
-			/opt/vc/include
-			/opt/vc/include/interface/vmcs_host/linux/
-			/opt/vc/include/interface/vcos/pthreads
-		)
-		list( APPEND CINDER_LIBS_DEPENDS
-			/opt/vc/lib/libEGL.so
-			/opt/vc/lib/libGLESv2.so
-			/opt/vc/lib/libbcm_host.so
-		)
-	endif()
+	find_package( X11 REQUIRED )
+	list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
+	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${X11_INCLUDE_DIR} )
+	list( APPEND CINDER_LIBS_DEPENDS EGL GLESv2 )
 endif()
 
 # Common libs for Linux.
@@ -218,18 +195,17 @@ if( CINDER_GL_CORE )
 	list( APPEND CINDER_DEFINES "-DCINDER_GL_CORE" )
 elseif( CINDER_GL_ES )
 	list( APPEND CINDER_DEFINES "-DCINDER_GL_ES" )
-	if( NOT CINDER_GL_ES_2_RPI )
-		if( CINDER_GL_ES_2 )
-			list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_2" )
-		elseif( CINDER_GL_ES_3 )
-			list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3" )
-		elseif( CINDER_GL_ES_3_1 )
-			list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3_1" )
-		elseif( CINDER_GL_ES_3_2 )
-			list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3_2" )
-		endif()
-	else() # rpi
-		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_2" "-DCINDER_LINUX_EGL_ONLY" "-DCINDER_GL_ES_2_RPI" )
+	
+	if( CINDER_GL_ES_2 )
+		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_2" )
+	elseif( CINDER_GL_ES_3 )
+		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3" )
+	elseif( CINDER_GL_ES_3_1 )
+		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3_1" )
+	elseif( CINDER_GL_ES_3_2 )
+		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3_2" )
+	elseif( CINDER_GL_ES_3_RPI )
+		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3" "-DCINDER_GL_ES_3_RPI" )
 	endif()
 endif()
 
@@ -240,7 +216,7 @@ if( CINDER_HEADLESS )
 	elseif( CINDER_HEADLESS_GL_OSMESA )
 		list( APPEND CINDER_DEFINES "-DCINDER_HEADLESS -DCINDER_HEADLESS_GL_OSMESA" )
 	endif()
-elseif( NOT CINDER_GL_ES_2_RPI ) # If not headless and not on the RPi we need X.
+else() # If not headless we need X.
 	list( APPEND GLFW_FLAGS "-D_GLFW_X11" )
 endif()
 

@@ -10,10 +10,7 @@
 #ifndef ANGLEGL_H_
 #define ANGLEGL_H_
 
-#include "GLES2/gl2.h"
-#include "GLES2/gl2ext.h"
-#include "GLES3/gl3.h"
-#include "GLES3/gl3ext.h"
+#include "glad/glad_es.h"
 
 // The following enum is used in ANGLE, but is from desktop GL
 #ifndef GL_SAMPLER_2D_RECT_ARB

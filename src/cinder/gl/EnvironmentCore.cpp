@@ -24,7 +24,7 @@
 
 #include "cinder/gl/Environment.h"
 #include "cinder/gl/platform.h"
-#include "glload/gl_load.h"
+#include "glad/glad.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Vao.h"
@@ -71,8 +71,7 @@ void EnvironmentCore::initializeFunctionPointers()
 {
 	static bool sInitialized = false;
 	if( ! sInitialized ) {
-		ogl_LoadFunctions();
-		sInitialized = true;
+		sInitialized = ( gladLoadGL() != 0 );
 	}
 }
 

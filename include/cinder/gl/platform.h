@@ -35,17 +35,13 @@
 #endif
 
 #if defined( CINDER_GL_ANGLE )
-	#define GL_GLEXT_PROTOTYPES
 	#define CINDER_GL_ES
 	// the default for ANGLE is GL ES 3, but can be overridden with CINDER_GL_ES_2
 	#if defined( CINDER_GL_ES_2 )
-		#include "GLES2/gl2.h"
-		#include "GLES2/gl2ext.h"
+		#include "glad/glad_es.h"
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2
 	#else
-		#include "GLES3/gl3.h"
-		#include "GLES3/gl3ext.h"
-		#include "GLES2/gl2ext.h"
+		#include "glad/glad_es.h"
 		#define CINDER_GL_ES_3
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
 	#endif
@@ -56,66 +52,50 @@
 	#define CINDER_GL_ES
  	#include "EGL/egl.h" 
  	#if defined( CINDER_GL_ES_2 )
- 		#define GL_GLEXT_PROTOTYPES
-		#include "cinder/linux/GLES2/gl2.h"
-		#include "cinder/linux/GLES2/gl2ext.h"
+		#include "glad/glad_es.h"
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2
 	#elif defined( CINDER_GL_ES_3_1 )
-		#define GL_GLEXT_PROTOTYPES
-		#include "cinder/linux/GLES3/gl31.h"
-		#include "cinder/linux/GLES2/gl2ext.h"
+		#include "glad/glad_es.h"
 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_1
 	#elif defined( CINDER_GL_ES_3_2 )
-		#define GL_GLEXT_PROTOTYPES
-		#include "cinder/linux/GLES3/gl32.h"
-		#include "cinder/linux/GLES2/gl2ext.h"  
+		#include "glad/glad_es.h"
 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_2
  	#else
- 		#define GL_GLEXT_PROTOTYPES
-		#include "cinder/linux/GLES3/gl3.h"
-		#include "cinder/linux/GLES2/gl2ext.h"
+		#include "glad/glad_es.h"
 		#define CINDER_GL_ES_3
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
  	#endif
 #elif defined( CINDER_LINUX )
 	// Default is Desktop
  	#if defined( CINDER_GL_ES_2 )
- 		#define GL_GLEXT_PROTOTYPES
  		#include "EGL/egl.h" 
-		#include "cinder/linux/GLES2/gl2.h"
-		#include "cinder/linux/GLES2/gl2ext.h"
+		#include "glad/glad_es.h"
  		#define CINDER_GL_ES
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2
  	#elif defined( CINDER_GL_ES_3 )
- 		#define GL_GLEXT_PROTOTYPES
  		#include "EGL/egl.h"
-		#include "cinder/linux/GLES3/gl3.h"
-		#include "cinder/linux/GLES2/gl2ext.h"
+		#include "glad/glad_es.h"
  		#define CINDER_GL_ES
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
 	#elif defined( CINDER_GL_ES_3_1 )
-		#define GL_GLEXT_PROTOTYPES
  		#include "EGL/egl.h" 
-		#include "cinder/linux/GLES3/gl31.h"
-		#include "cinder/linux/GLES2/gl2ext.h"
+		#include "glad/glad_es.h"
  		#define CINDER_GL_ES
 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_1
 	#elif defined( CINDER_GL_ES_3_2 )
-		#define GL_GLEXT_PROTOTYPES
  		#include "EGL/egl.h" 
-		#include "cinder/linux/GLES3/gl32.h"
-		#include "cinder/linux/GLES2/gl2ext.h" 
+		#include "glad/glad_es.h"
  		#define CINDER_GL_ES
 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_2
- 	#else
- 		#include "glload/gl_core.h"
- 	#endif
+	#else
+		#include "glad/glad.h"
+	#endif
 #elif ! defined( CINDER_COCOA_TOUCH ) // OS X
 	#if defined( __clang__ )
 		#pragma clang diagnostic push
 		#pragma clang diagnostic ignored "-Wtypedef-redefinition"
 	#endif
-	#include "glload/gl_core.h"
+	#include "glad/glad.h"
 	#if defined( __clang__ )
 		#pragma clang diagnostic pop
 	#endif
@@ -138,15 +118,17 @@
 #if defined( CINDER_GL_ES )
 	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) 	
 		#define GL_ES_EXT_VERSION_2_0
-	#endif 
-	#include "cinder/linux/gl_es_load.h"
+	#endif
+	#if ! defined( CINDER_COCOA_TOUCH )
+		#include "glad/glad_es.h"
+	#endif
 
 	// Android and Linux
 	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-		#if ! defined( CINDER_GL_ES_2_RPI )
+		#if ! defined( CINDER_GL_ES_3_RPI )
 		    #define CINDER_GL_HAS_DRAW_INSTANCED
+			#define CINDER_GL_HAS_TEXTURE_NORM16
 		#endif
-		#define CINDER_GL_HAS_TEXTURE_NORM16
 
 		// Requires: GL_ANDROID_extension_pack_es31a
 		#if defined( CINDER_ANDROID ) && ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
@@ -168,7 +150,7 @@
 		#define CINDER_GL_HAS_SAMPLERS
 	#else 
 		// OpenGL ES 2
-		#if ! defined( CINDER_GL_ES_2_RPI )
+		#if ! defined( CINDER_GL_ES_3_RPI )
 		    #define CINDER_GL_HAS_DRAW_INSTANCED
 		    #define CINDER_GL_HAS_FBO_MULTISAMPLING
 		    #define CINDER_GL_HAS_MAP_BUFFER_RANGE
