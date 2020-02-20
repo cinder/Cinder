@@ -30,6 +30,7 @@
 #include "cinder/Utilities.h"
 
 #include <string>
+#include <list>
 
 namespace Json {
 	class Value;

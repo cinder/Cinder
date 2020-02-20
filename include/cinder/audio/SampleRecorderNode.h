@@ -77,7 +77,7 @@ class CI_API BufferRecorderNode : public SampleRecorderNode {
 	//!
 	//! The encoding format is derived from \a filePath's extension and \a sampleType (default = SampleType::INT_16).
 	//! \note throws AudioFileExc if the write request cannot be completed.
-	void writeToFile( const ci::fs::path &filePath, SampleType sampleType = SampleType::INT_16 );
+	void writeToFile( const cinder::fs::path &filePath, SampleType sampleType = SampleType::INT_16 );
 
 	//! Returns the frame of the last buffer overrun or 0 if none since the last time this method was called. When this happens, it means the recorded buffer probably has skipped some frames.
 	uint64_t getLastOverrun();
