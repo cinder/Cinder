@@ -203,7 +203,7 @@ std::string	constantToString( GLenum constant )
 
 #if defined( CINDER_GL_HAS_REQUIRED_INTERNALFORMAT )
 	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-		sSymbols[GL_RGB10_EXT] = "GL_RGB10";
+		sSymbols[GL_RGB10_EXT] = "GL_RGB10_EXT";
 	#endif
 		sSymbols[GL_RGB10_A2] = "GL_RGB10_A2";
 
