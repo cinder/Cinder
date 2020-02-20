@@ -47,6 +47,7 @@
 #endif
 
 #include <mutex>
+#include <algorithm>
 #include <time.h>
 
 using namespace std;
