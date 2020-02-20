@@ -40,6 +40,7 @@
 #elif defined( CINDER_LINUX )
 	#include <syslog.h>
 	#include <limits.h>
+	#include <unistd.h>
 #endif
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
