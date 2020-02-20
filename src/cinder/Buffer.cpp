@@ -27,6 +27,7 @@
 #include <zlib.h>
 #include <cmath>
 #include <iostream>
+#include <string.h>
 
 namespace cinder {
 

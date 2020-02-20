@@ -23,6 +23,8 @@
 #include "cinder/UrlImplCurl.h"
 #include <curl/curl.h>
 
+#include <cstring>
+
 namespace cinder {
 
 // -------------------------------------------------------------------------------------------------

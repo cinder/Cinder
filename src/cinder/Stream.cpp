@@ -29,7 +29,10 @@
 #include <stdio.h>
 #include <limits>
 #include <iostream>
+#include <string>
+#include <cstring>
 using std::string;
+using std::memcpy;
 
 namespace cinder {
 

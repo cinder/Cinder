@@ -30,6 +30,8 @@
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
+#include <cstring>
+
 using namespace std;
 
 namespace cinder {

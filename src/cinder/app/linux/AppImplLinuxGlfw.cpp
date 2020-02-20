@@ -28,6 +28,7 @@
 #include "cinder/Log.h"
 
 #include <iostream>
+#include <unistd.h>
 
 namespace cinder { namespace app {
 

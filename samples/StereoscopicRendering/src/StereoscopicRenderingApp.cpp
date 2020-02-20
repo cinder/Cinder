@@ -602,7 +602,7 @@ void StereoscopicRenderingApp::renderUI()
 	// \n is not supported on the mac, so we draw separate strings
 	std::vector< std::string > left, right;
 	left = ci::split( labels, "\n", false );
-	right = ci::split( values.str(), "\n", false );
+	right = ci::split( valueStr, "\n", false );
 
 	gl::enableAlphaBlending();
 	for( size_t i = 0; i < 4; ++i ) {

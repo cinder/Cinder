@@ -36,6 +36,8 @@
 	#include "cinder/app/linux/PlatformLinux.h"
 #endif
 
+#include <algorithm>
+
 using namespace std;
 
 namespace cinder { namespace app {

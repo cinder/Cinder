@@ -198,11 +198,6 @@ if( NOT CINDER_DISABLE_VIDEO )
 	endif()
 endif()
 
-# Boost
-find_package( Boost 1.54 REQUIRED COMPONENTS system filesystem )
-list( APPEND CINDER_LIBS_DEPENDS ${Boost_LIBRARIES} )
-list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${Boost_INCLUDE_DIRS} )
-
 # Defaults... dl and pthread
 list( APPEND CINDER_LIBS_DEPENDS dl pthread )
 

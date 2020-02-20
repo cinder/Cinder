@@ -27,6 +27,9 @@
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
 
+#include <cstring>
+#include <algorithm>
+
 using namespace std;
 
 namespace cinder { namespace gl {

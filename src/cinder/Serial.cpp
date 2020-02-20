@@ -35,6 +35,7 @@
 	#include <sys/ioctl.h>
 	#include <getopt.h>
 	#include <dirent.h>
+	#include <unistd.h>
 #elif defined( CINDER_MSW )
 	#include <windows.h>
 	#include <setupapi.h>

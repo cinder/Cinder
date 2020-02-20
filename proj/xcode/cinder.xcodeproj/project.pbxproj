@@ -68,6 +68,9 @@
 		001E3561115D5EFA000C228C /* Xml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 001E355E115D5EFA000C228C /* Xml.cpp */; };
 		001E3565115D5F14000C228C /* Xml.h in Headers */ = {isa = PBXBuildFile; fileRef = 001E3562115D5F14000C228C /* Xml.h */; };
 		001F520A0FCF99A10021731E /* Path2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 001F52090FCF99A10021731E /* Path2d.cpp */; };
+		0023064523FE06F5002FB696 /* Filesystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0023064423FE06F5002FB696 /* Filesystem.cpp */; };
+		0023064623FE06F5002FB696 /* Filesystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0023064423FE06F5002FB696 /* Filesystem.cpp */; };
+		0023064723FE06F5002FB696 /* Filesystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0023064423FE06F5002FB696 /* Filesystem.cpp */; };
 		00241A0D0E80375A004D34EB /* Cinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 00241A0C0E80375A004D34EB /* Cinder.h */; };
 		00241AB40E830DBA004D34EB /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = 00241AAE0E830DBA004D34EB /* Camera.h */; };
 		00241AB50E830DBA004D34EB /* CinderMath.h in Headers */ = {isa = PBXBuildFile; fileRef = 00241AAF0E830DBA004D34EB /* CinderMath.h */; };
@@ -1648,6 +1651,7 @@
 		001E355E115D5EFA000C228C /* Xml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Xml.cpp; sourceTree = "<group>"; };
 		001E3562115D5F14000C228C /* Xml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Xml.h; sourceTree = "<group>"; };
 		001F52090FCF99A10021731E /* Path2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Path2d.cpp; sourceTree = "<group>"; };
+		0023064423FE06F5002FB696 /* Filesystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Filesystem.cpp; sourceTree = "<group>"; };
 		002419CD0E8035D3004D34EB /* App.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = App.h; path = app/App.h; sourceTree = "<group>"; };
 		00241A0C0E80375A004D34EB /* Cinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cinder.h; sourceTree = "<group>"; };
 		00241AAE0E830DBA004D34EB /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
@@ -2723,6 +2727,7 @@
 				00BC898A10D2BE9400D6DC59 /* DataTarget.cpp */,
 				0071BD080FB9FA2C0092E7D6 /* Display.cpp */,
 				0032FD2A10BB472E00C63A9D /* Exception.cpp */,
+				0023064423FE06F5002FB696 /* Filesystem.cpp */,
 				11A38FB21E7769CE008C452D /* FileWatcher.cpp */,
 				00C071AF0FF16244004801EA /* Font.cpp */,
 				004172FE14C9BE760070C0D1 /* Frustum.cpp */,
@@ -4667,7 +4672,7 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastUpgradeCheck = 1130;
 			};
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "cinder" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -4735,6 +4740,7 @@
 				27C100271BD16D4800AF387F /* Color.cpp in Sources */,
 				27C100281BD16D4800AF387F /* Checkerboard.cpp in Sources */,
 				27C100291BD16D4800AF387F /* Device.cpp in Sources */,
+				0023064723FE06F5002FB696 /* Filesystem.cpp in Sources */,
 				27C1002A1BD16D4800AF387F /* Rect.cpp in Sources */,
 				B3EA40F71DD0F12200E34348 /* psnames.c in Sources */,
 				27C1002B1BD16D4800AF387F /* Utilities.cpp in Sources */,
@@ -4986,6 +4992,7 @@
 				27C1FED11BD0AE3400AF387F /* Color.cpp in Sources */,
 				27C1FED21BD0AE3400AF387F /* Checkerboard.cpp in Sources */,
 				27C1FED31BD0AE3400AF387F /* Device.cpp in Sources */,
+				0023064623FE06F5002FB696 /* Filesystem.cpp in Sources */,
 				27C1FED41BD0AE3400AF387F /* Rect.cpp in Sources */,
 				B3EA40F61DD0F12200E34348 /* psnames.c in Sources */,
 				27C1FED51BD0AE3400AF387F /* Utilities.cpp in Sources */,
@@ -5354,6 +5361,7 @@
 				006D705319942BF5008149E2 /* QuickTimeGlImplLegacy.cpp in Sources */,
 				0003F41A1992D64100647C8B /* VaoImplEs.cpp in Sources */,
 				00419C7511057CC6007EC9AD /* Threshold.cpp in Sources */,
+				0023064523FE06F5002FB696 /* Filesystem.cpp in Sources */,
 				B3EA40641DD0EF6D00E34348 /* type42.c in Sources */,
 				006D704D19942BF5008149E2 /* MovieWriter.cpp in Sources */,
 				00419C7611057CC6007EC9AD /* Trim.cpp in Sources */,
@@ -5499,11 +5507,8 @@
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					../../lib/macosx/libboost_filesystem.a,
-					../../lib/macosx/libboost_system.a,
-				);
-				PRELINK_LIBS = "../../lib/macosx/libboost_filesystem.a ../../lib/macosx/libboost_system.a";
+				OTHER_LDFLAGS = "";
+				PRELINK_LIBS = "";
 				PRODUCT_NAME = cinder;
 				SYMROOT = "../../lib/macosx/$(CONFIGURATION)";
 			};
@@ -5543,11 +5548,8 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = (
-					../../lib/macosx/libboost_filesystem.a,
-					../../lib/macosx/libboost_system.a,
-				);
-				PRELINK_LIBS = "../../lib/macosx/libboost_filesystem.a ../../lib/macosx/libboost_system.a";
+				OTHER_LDFLAGS = "";
+				PRELINK_LIBS = "";
 				PRODUCT_NAME = cinder;
 				SYMROOT = "../../lib/macosx/$(CONFIGURATION)";
 			};
@@ -5659,11 +5661,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"../../lib/ios-sim/libboost_system.a",
-					"../../lib/ios-sim/libboost_filesystem.a",
-				);
-				PRELINK_LIBS = "../../lib/ios-sim/libboost_system.a ../../lib/ios-sim/libboost_filesystem.a";
+				OTHER_LDFLAGS = "";
+				PRELINK_LIBS = "";
 				PRODUCT_NAME = cinder;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
@@ -5702,11 +5701,8 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"../../lib/ios-sim/libboost_system.a",
-					"../../lib/ios-sim/libboost_filesystem.a",
-				);
-				PRELINK_LIBS = "../../lib/ios-sim/libboost_system.a ../../lib/ios-sim/libboost_filesystem.a";
+				OTHER_LDFLAGS = "";
+				PRELINK_LIBS = "";
 				PRODUCT_NAME = cinder;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
@@ -5742,11 +5738,8 @@
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					../../lib/ios/libboost_filesystem.a,
-					../../lib/ios/libboost_system.a,
-				);
-				PRELINK_LIBS = "../../lib/ios/libboost_filesystem.a ../../lib/ios/libboost_system.a";
+				OTHER_LDFLAGS = "";
+				PRELINK_LIBS = "";
 				PRODUCT_NAME = cinder;
 				SDKROOT = iphoneos;
 				SYMROOT = "../../lib/ios/$(CONFIGURATION)";
@@ -5787,11 +5780,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					../../lib/ios/libboost_filesystem.a,
-					../../lib/ios/libboost_system.a,
-				);
-				PRELINK_LIBS = "../../lib/ios/libboost_filesystem.a ../../lib/ios/libboost_system.a";
+				OTHER_LDFLAGS = "";
+				PRELINK_LIBS = "";
 				PRODUCT_NAME = cinder;
 				SDKROOT = iphoneos;
 				SYMROOT = "../../lib/ios/$(CONFIGURATION)";
