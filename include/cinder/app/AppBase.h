@@ -450,6 +450,7 @@ class CI_API AppBase {
 	//! \endcond
 
   private:
+	static void		onTerminate();
 
 	Timer					mTimer;
 	uint32_t				mFrameCount;
