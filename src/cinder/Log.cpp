@@ -49,6 +49,7 @@
 #include <mutex>
 #include <algorithm>
 #include <time.h>
+#include <cstring>
 
 using namespace std;
 
