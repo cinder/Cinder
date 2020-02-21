@@ -412,35 +412,7 @@ bool ImGui::ListBox( const char* label, int* currIndex, std::vector<std::string>
 	return ListBox( label, currIndex, vector_getter, static_cast<void*>( &values ), static_cast<int>( values.size() ) );
 }
 
-bool ImGui::InputText( const char* label, std::string* buf, ImGuiInputTextFlags flags, ImGuiTextEditCallback callback, void* user_data )
-{
-	// conversion
-	char* buffer = new char[buf->size() + 128];
-	std::strcpy( buffer, buf->c_str() );
-	bool result = InputText( label, buffer, buf->size() + 128, flags, callback, user_data );
-	if( result ) {
-		*buf = std::string( buffer );
-	}
-	// cleanup
-	delete[] buffer;
-	return result;
-}
-bool ImGui::InputTextMultiline( const char* label, std::string* buf, const ImVec2& size, ImGuiInputTextFlags flags, ImGuiTextEditCallback callback, void* user_data )
-{
-	// conversion
-	constexpr size_t extraSpace = 16384;
-	char* buffer = new char[buf->size() + extraSpace];
-	std::strcpy( buffer, buf->c_str() );
-	bool result = InputTextMultiline( label, buffer, buf->size() + extraSpace, size, flags, callback, user_data );
-	if( result ) {
-		*buf = std::string( buffer );
-	}
-	// cleanup
-	delete[] buffer;
-	return result;
-}
-
 CI_API void ImGui::Image( const ci::gl::Texture2dRef& texture, const ci::vec2& size, const ci::vec2& uv0, const ci::vec2& uv1, const ci::vec4& tint_col, const ci::vec4& border_col )
 {
-	ImGui::Image( (ImTextureID)texture->getId(), size, uv0, uv1, tint_col, border_col );
+	ImGui::Image( (void*)(intptr_t)texture->getId(), size, uv0, uv1, tint_col, border_col );
 }

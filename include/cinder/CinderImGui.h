@@ -1,6 +1,7 @@
 #pragma once
 
 #include "imgui/imgui.h"
+#include "imgui/imgui_stdlib.h"
 #include "cinder/Filesystem.h"
 #include "cinder/CinderGlm.h"
 #include "cinder/Noncopyable.h"
@@ -67,9 +68,6 @@ namespace ImGui {
 
 	CI_API bool Combo( const char* label, int* currIndex, std::vector<std::string>& values );
 	CI_API bool ListBox( const char* label, int* currIndex, std::vector<std::string>& values );
-
-	CI_API bool InputText( const char* label, std::string* buf, ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL );
-	CI_API bool InputTextMultiline( const char* label, std::string* buf, const ImVec2& size = ImVec2( 0, 0 ), ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL );
 
 	CI_API void	Image( const ci::gl::Texture2dRef& texture, const ci::vec2& size, const ci::vec2& uv0 = ci::vec2( 0, 0 ), const ci::vec2& uv1 = ci::vec2( 1, 1 ), const ci::vec4& tint_col = ci::vec4( 1, 1, 1, 1 ), const ci::vec4& border_col = ci::vec4( 0, 0, 0, 0 ) );
 
