@@ -368,7 +368,6 @@ void ImGui::Initialize( const ImGui::Options& options )
 
 	io.DisplaySize = ImVec2( static_cast<float>( app::getWindow()->getSize().x ), static_cast<float>( app::getWindow()->getSize().y ) );
 	io.DeltaTime = 1.0f / 60.0f;
-	io.IniFilename = ( getAssetPath( "" ) / "imgui.ini" ).string().c_str();
 	io.WantCaptureMouse = true;
 	io.KeyMap[ImGuiKey_Tab] = KeyEvent::KEY_TAB;
 	io.KeyMap[ImGuiKey_LeftArrow] = KeyEvent::KEY_LEFT;
@@ -391,9 +390,13 @@ void ImGui::Initialize( const ImGui::Options& options )
 	io.KeyMap[ImGuiKey_Space] = KeyEvent::KEY_SPACE;
 
 	// setup config file path
-	static std::string path = ( getAssetPath( "" ) / "imgui.ini" ).string();
-	if( ! options.getIniPath().empty() )
+	static std::string path;
+	if( options.getIniPath().empty() ) {
+		path = ( getAssetPath( "" ) / "imgui.ini" ).string();
+	}
+	else {
 		path = options.getIniPath().string().c_str();
+	}
 	io.IniFilename = path.c_str();
 
 	auto window = options.getWindow();
