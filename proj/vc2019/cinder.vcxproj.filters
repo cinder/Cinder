@@ -238,6 +238,12 @@
     <Filter Include="Source Files\glad">
       <UniqueIdentifier>{ae176410-bb73-4c73-be34-5fcfee9cf95c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gl\nv">
+      <UniqueIdentifier>{a601d014-b852-46fa-9829-896bfdee2d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gl\nv">
+      <UniqueIdentifier>{7ff32b0d-8190-49b2-ab18-187db6196a2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\cinder\Area.cpp">
@@ -744,7 +750,6 @@
     <ClCompile Include="..\..\src\cinder\gl\VboMesh.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
-
     <ClCompile Include="..\..\src\cinder\GeomIo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1041,6 +1046,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\glad\glad_es.c">
       <Filter>Source Files\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\gl\nv\Multicast.cpp">
+      <Filter>Source Files\gl\nv</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2198,6 +2206,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\FileWatcher.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\gl\nv\Multicast.h">
+      <Filter>Header Files\gl\nv</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

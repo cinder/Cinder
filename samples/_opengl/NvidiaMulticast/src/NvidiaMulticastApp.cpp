@@ -1,0 +1,273 @@
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
+#include "cinder/ImageIo.h"
+#include "cinder/Log.h"
+#include "cinder/CameraUi.h"
+#include "cinder/gl/Ubo.h"
+#include "cinder/gl/Ssbo.h"
+#include "cinder/gl/nv/Multicast.h"
+
+#include "jsoncpp/json.h"
+
+using namespace ci;
+using namespace ci::app;
+namespace multicast = ci::gl::nv::multicast;
+
+static Json::Value settings;
+
+#define ASYMMETRICAL_CAMERAS
+
+namespace cinder {
+	namespace gl {
+		struct ScopedSsboBind {
+			ScopedSsboBind( const gl::SsboRef& bufferObj, uint8_t bufferUnit )
+				: mSsbo{ bufferObj }
+			{
+				mSsbo->bindBase( static_cast<GLuint>( bufferUnit ) );
+				gl::context()->pushBufferBinding( mSsbo->getTarget(), mSsbo->getId() );
+			}
+
+			~ScopedSsboBind()
+			{
+				mSsbo->unbindBase();
+				gl::context()->popBufferBinding( mSsbo->getTarget() );
+			}
+		private:
+			gl::SsboRef mSsbo;
+		};
+	}
+}
+
+struct CameraMatrices {
+	glm::mat4 view;
+	glm::mat4 projection;
+};
+
+class NvidiaMulticastApp : public App {
+public:
+	NvidiaMulticastApp();
+	void	setup() override;
+	void	resize() override;
+	void	update() override;
+	void	draw() override;
+	void	drawScene();
+	void	keyDown( KeyEvent event ) override;
+
+	CameraPersp			mCam;
+	CameraUi			mCamUi;
+	gl::UboRef			mCamUbo;
+
+	gl::BatchRef		mBatch;
+	gl::Texture2dRef	mTexture;
+	mat4				mCubeRotation;
+
+	vec3				mColor;
+	gl::UboRef			mUbo;
+	gl::SsboRef			mSsbo;
+	size_t				mInstanceCount;
+	gl::FboRef			mFbo;
+	gl::Texture2dRef	mTextureSecondary;
+
+	std::vector<multicast::Device> mGPUs;
+};
+
+NvidiaMulticastApp::NvidiaMulticastApp()
+	: mCamUi{ &mCam, app::getWindow() }
+	, mGPUs{ multicast::getDevices() }
+{
+	log::makeLogger<log::LoggerFileRotating>( getAppPath(), "%Y_%m_%d_%H_%M_%S.log" )->setTimestampEnabled( true );
+
+	std::vector<glm::vec4> positions;
+	for( int x = -25; x <= 25; ++x ) {
+		for( int z = -25; z <= 25; ++z ) {
+			positions.push_back( 2.0f * vec4( x, 0, z, 1 ) );
+		}
+	}
+	mSsbo = gl::Ssbo::create( sizeof( vec4 ) * positions.size(), positions.data(), GL_STATIC_DRAW );
+	mInstanceCount = positions.size();
+
+	if( settings["vsync"].asBool() ) {
+		gl::enableVerticalSync();
+	}
+}
+
+void NvidiaMulticastApp::setup()
+{
+	CI_LOG_I( gl::getString( GL_VERSION ) );
+
+	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
+
+	// Same format for primary and staging texture
+	auto texFmt = gl::Texture::Format().perGpuStorage( true ).mipmap( true );
+	auto img0 = loadImage( loadAsset( "texture.png" ) );
+	auto img1 = loadImage( loadAsset( "tiles.png" ) );
+
+	// Ensure that both texture have the same size, format & properties.
+	CI_ASSERT( img0->getWidth() == img1->getWidth() );
+	CI_ASSERT( img0->getHeight() == img1->getHeight() );
+	CI_ASSERT( img0->getChannelOrder() == img1->getChannelOrder() );
+	CI_ASSERT( img0->getColorModel() == img1->getColorModel() );
+	CI_ASSERT( img0->getDataType() == img1->getDataType() );
+	CI_ASSERT( img0->hasAlpha() == img1->hasAlpha() );
+
+	mTexture = gl::Texture2d::create( img0->getWidth(), img0->getHeight(), texFmt );
+
+	multicast::enableUploadMask( mGPUs[0] );
+	mTexture->update( ci::Surface{ img0 } );
+	// Replace texture on secondary GPU
+	multicast::enableUploadMask( mGPUs[1] );
+	mTexture->update( ci::Surface{ img1 } );
+
+	multicast::disableUploadMask();
+
+	try {
+		auto shaderPreproc = std::make_shared<gl::ShaderPreprocessor>();
+#ifdef ASYMMETRICAL_CAMERAS
+		shaderPreproc->addDefine( "ASYMMETRICAL" );
+#endif
+		mBatch = gl::Batch::create( geom::Teapot(), gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "shader.vert" ) ).fragment( loadAsset( "shader.frag" ) ).preprocessor( shaderPreproc ) ) );
+		mBatch->getGlslProg()->uniformBlock( "uMaterial", 0 );
+	}
+	catch( const std::exception & e ) {
+		CI_LOG_E( "Shader Error: " << e.what() );
+	}
+
+	gl::enable( GL_SCISSOR_TEST, GL_TRUE );
+	gl::enableDepth();
+
+
+	// Per gpu color buffer (Red/Green)
+	mColor = vec3( 1, 0, 0 );
+	mUbo = gl::Ubo::create();
+	mUbo->namedBufferStorage( sizeof( vec3 ), &mColor, GL_DYNAMIC_STORAGE_BIT | GL_PER_GPU_STORAGE_BIT_NV );
+	mColor = vec3( 0, 1, 0 );
+	multicast::updateMasked( mUbo, sizeof( vec3 ), &mColor, mGPUs[1].getMask() );
+	mUbo->bindBufferBase( 0 );
+
+	// Per-gpu camera transformation (for the subdivided view columns).
+	mCamUbo = gl::Ubo::create();
+	mCamUbo->namedBufferStorage( sizeof( CameraMatrices ), nullptr, GL_DYNAMIC_STORAGE_BIT | GL_PER_GPU_STORAGE_BIT_NV );
+	mCamUbo->bindBufferBase( 1 );
+}
+
+void NvidiaMulticastApp::resize()
+{
+	mFbo = gl::Fbo::create( app::getWindowWidth() / 2, app::getWindowHeight() );
+	mTextureSecondary = gl::Texture2d::create( mFbo->getWidth(), mFbo->getHeight() );
+
+	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
+}
+
+void NvidiaMulticastApp::update()
+{
+	getWindow()->setTitle( std::to_string( getAverageFps() ) );
+}
+
+void NvidiaMulticastApp::draw()
+{
+	gl::clear();
+	gl::setMatrices( mCam );
+
+	if( settings["copy_to_primary"].asBool() ) {
+		{
+			gl::ScopedFramebuffer pusFbo{ mFbo };
+			gl::clear();
+#ifndef ASYMMETRICAL_CAMERAS
+			gl::viewport( app::getWindowSize() );
+			nvmc::viewport( mGPUs[0], ivec2( 0 ), getWindowSize() );
+			nvmc::viewport( mGPUs[1], ivec2( -getWindowWidth() / 2, 0 ), getWindowSize() );
+#else
+			gl::viewport( ivec2( getWindowWidth() / 2, getWindowHeight() ) );
+#endif
+			drawScene();
+		}
+
+		multicast::copyTexture( mFbo->getColorTexture(), mTextureSecondary, mGPUs[1].getIndex(), mGPUs[0].getMask() );
+
+		multicast::signalWaitSync( mGPUs[1], mGPUs[0] );
+		multicast::enableRenderMask( mGPUs[0] );
+
+		gl::viewport( app::getWindowSize() );
+		gl::setMatricesWindow( app::getWindowSize() );
+		gl::draw( mFbo->getColorTexture() );
+		gl::translate( vec2( mFbo->getWidth(), 0.0f ) );
+		gl::draw( mTextureSecondary );
+
+		//GPU 1 should wait for GPU0 to be done with screen rendering.
+		multicast::signalWaitSync( mGPUs[0], mGPUs[1] );
+		multicast::disableRenderMask();
+	}
+	else {
+#ifndef ASYMMETRICAL_CAMERAS
+		gl::viewport( app::getWindowSize() );
+		nvmc::scissor( mGPUs[0], ivec2( 0 ), ivec2( getWindowWidth() / 2, getWindowHeight() ) );
+		nvmc::scissor( mGPUs[1], ivec2( getWindowWidth() / 2, 0 ), ivec2( getWindowWidth() / 2, getWindowHeight() ) );
+#endif
+		drawScene();
+	}
+}
+
+void NvidiaMulticastApp::drawScene()
+{
+#ifdef ASYMMETRICAL_CAMERAS
+	for( size_t i = 0; i < mGPUs.size(); ++i ) {
+		auto tileCamera = mCam.subdivide( mGPUs.size(), 1, i, 0 );
+
+		CameraMatrices cm;
+		cm.view = tileCamera.getViewMatrix();
+		cm.projection = tileCamera.getProjectionMatrix();
+		multicast::updateMasked( mCamUbo, sizeof( CameraMatrices ), &cm, mGPUs[i].getMask() );
+	}
+#endif
+	gl::ScopedTextureBind push( mTexture, 0 );
+	gl::ScopedSsboBind pushBuffer{ mSsbo, 0 };
+	mBatch->drawInstanced( mInstanceCount );
+}
+
+void NvidiaMulticastApp::keyDown( KeyEvent event )
+{
+	if( event.isControlDown() && event.getCode() == KeyEvent::KEY_q ) {
+		quit();
+	}
+}
+
+void loadSettings()
+{
+	static bool alreadyLoaded = false;
+	if( !alreadyLoaded ) {
+		std::ifstream in{ getAssetPath( "settings.json" ) };
+		Json::Reader reader;
+		reader.parse( in, settings );
+	}
+}
+
+RendererGl::Options getRendererGlOptions()
+{
+	loadSettings();
+	RendererGl::Options options;
+	if( settings["multicast_multidisplay"].asBool() ) {
+		options.nvidiaMGpuMDisplayMulticast();
+	}
+	else {
+		options.nvidiaMGpuMulticast();
+	}
+	options.msaa( 0 );
+	options.setVersion( 4, 5 );
+	options.debug();
+	options.debugLog();
+	options.debugBreak();
+	return options;
+}
+
+void prepareSettings( App::Settings* set )
+{
+	loadSettings();
+	set->setWindowSize( settings["resolution"][0].asInt(), settings["resolution"][1].asInt() );
+	set->setFullScreen( settings["fullscreen"].asBool() );
+	set->setBorderless( settings["borderless"].asBool() );
+	if( settings["vsync"].asBool() ) set->disableFrameRate();
+}
+
+
+CINDER_APP( NvidiaMulticastApp, RendererGl( getRendererGlOptions() ), prepareSettings )

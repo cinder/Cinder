@@ -45,17 +45,29 @@ BufferObj::BufferObj( GLenum target )
 	mUsage( GL_READ_WRITE )
 #endif
 {
-	glGenBuffers( 1, &mId );
+	if( glad_glCreateBuffers ) {
+		glCreateBuffers( 1, &mId );
+	}
+	else {
+		glGenBuffers( 1, &mId );
+	}
 	gl::context()->bufferCreated( this );
 }
 
 BufferObj::BufferObj( GLenum target, GLsizeiptr allocationSize, const void *data, GLenum usage )
 	: mId( 0 ), mTarget( target ), mSize( allocationSize ), mUsage( usage )
 {
-	glGenBuffers( 1, &mId );
+	if( glad_glCreateBuffers ) {
+		glCreateBuffers( 1, &mId );
+		glNamedBufferData( mId, mSize, data, mUsage );
+	}
+	else {
+		glGenBuffers( 1, &mId );
+
+		ScopedBuffer bufferBind( mTarget, mId );
+		glBufferData( mTarget, mSize, data, mUsage );
+	}
 	
-	ScopedBuffer bufferBind( mTarget, mId );
-	glBufferData( mTarget, mSize, data, mUsage );
 	gl::context()->bufferCreated( this );
 }
 
@@ -240,6 +252,16 @@ void BufferObj::setLabel( const std::string &label )
 #elif defined( CINDER_HAS_KHR_DEBUG )
 	env()->objectLabel( GL_BUFFER, mId, (GLsizei)label.size(), label.c_str() );
 #endif
+}
+
+void BufferObj::bufferStorage( GLsizeiptr size, const void* data, GLbitfield flags ) const
+{
+	glBufferStorage( mTarget, size, data, flags );
+}
+
+void BufferObj::namedBufferStorage( GLsizeiptr size, const void* data, GLbitfield flags ) const
+{
+	glNamedBufferStorage( mId, size, data, flags );
 }
 
 std::ostream& operator<<( std::ostream &os, const BufferObj &rhs )

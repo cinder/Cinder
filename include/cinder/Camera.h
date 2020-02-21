@@ -224,6 +224,8 @@ class CI_API CameraPersp : public Camera {
 	//! Returns a Camera whose eyePoint is positioned to exactly frame \a worldSpaceSphere but is equivalent in other parameters (including orientation). Sets the result's pivotDistance to be the distance to \a worldSpaceSphere's center.
 	CameraPersp		calcFraming( const Sphere &worldSpaceSphere ) const;
 
+	//! Returns a subdivided portion of this camera's view frustrum as a new CameraPersp; useful for multi-gpu or tiled-rendering for instance.
+	CameraPersp		subdivide( uint8_t columns, uint8_t rows, uint8_t columnIndex, uint8_t rowIndex ) const;
   protected:
 	vec2	mLensShift;
 

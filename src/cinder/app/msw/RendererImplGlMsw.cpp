@@ -179,7 +179,7 @@ bool getWglFunctionPointers( PFNWGLCREATECONTEXTATTRIBSARB *resultCreateContextA
 	}
 }
 
-HGLRC createContext( HDC dc, bool coreProfile, bool debug, int majorVersion, int minorVersion )
+HGLRC createContext( HDC dc, bool coreProfile, bool debug, int majorVersion, int minorVersion, GLenum multigpu = 0 )
 {
 	HGLRC result = 0;
 	static bool initializedLoadOGL = false;
@@ -192,9 +192,13 @@ HGLRC createContext( HDC dc, bool coreProfile, bool debug, int majorVersion, int
 			WGL_CONTEXT_MINOR_VERSION_ARB, minorVersion,
 			WGL_CONTEXT_FLAGS_ARB, (debug) ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
 			WGL_CONTEXT_PROFILE_MASK_ARB, (coreProfile) ? WGL_CONTEXT_CORE_PROFILE_BIT_ARB : WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
-			0, 0
+			0, 0,
+			0
 		};
- 
+		if( multigpu != 0 ) {
+			attribList[8] = WGL_CONTEXT_MULTIGPU_ATTRIB_NV;
+			attribList[9] = multigpu;
+		} 
 		result = (*wglCreateContextAttribsARBPtr)( dc, 0, attribList );
 		return result;
 	}
@@ -265,7 +269,19 @@ bool initializeGl( HWND /*wnd*/, HDC dc, HGLRC sharedRC, const RendererGl::Optio
 	if( ! setPixelFormat( dc, options ) )
 		throw ExcRendererAllocation( "Failed to find suitable WGL pixel format" );
 
-	if( ! ( *resultRc = createContext( dc, options.getCoreProfile(), options.getDebug(), options.getVersion().first, options.getVersion().second ) ) ) {
+	GLenum multigpu = 0;
+	if( options.isNvidiaMGpuEnabled() ) {
+		switch( options.getNvidiaMGpuMode() ) {
+		case RendererGl::Options::NvidiaMGpuMode::SINGLE: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_SINGLE_NV; break;
+		case RendererGl::Options::NvidiaMGpuMode::AFR: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_AFR_NV; break;
+		case RendererGl::Options::NvidiaMGpuMode::MULTICAST: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_MULTICAST_NV; break;
+		case RendererGl::Options::NvidiaMGpuMode::MULTI_DISPLAY_MULTICAST: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_MULTI_DISPLAY_MULTICAST_NV; break;
+		default: break;
+		}
+	}
+
+
+	if( ! ( *resultRc = createContext( dc, options.getCoreProfile(), options.getDebug(), options.getVersion().first, options.getVersion().second, multigpu ) ) ) {
 		return false;								
 	}
 

@@ -1,0 +1,8 @@
+{
+	"resolution": [1920, 1080],
+	"fullscreen": false,
+	"borderless": false,
+	"multicast_multidisplay": false,
+	"copy_to_primary": true,
+	"vsync": false
+}

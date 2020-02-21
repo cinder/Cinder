@@ -189,6 +189,9 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat, GLint
 		mInternalFormat = format.mInternalFormat;
 	}
 
+	if( format.mPerGpuStorage )
+		glTexParameteri( mTarget, GL_PER_GPU_STORAGE_NV, GL_TRUE );
+
 	//if( ( format.mDataType == -1 ) && ( defaultDataType > 0 ) )
 	//	format.mDataType = defaultDataType;
 
@@ -1706,6 +1709,14 @@ class ImageSourceTexture : public ImageSource {
 	int32_t						mRowBytes;
 };
 
+void Texture2d::regenerateMipmap()
+{
+	if( mMipmapping ) {
+		ScopedTextureBind tbs( mTarget, mTextureId );
+		glGenerateMipmap( mTarget );
+	}
+}
+
 ImageSourceRef Texture2d::createSource()
 {
 	return ImageSourceRef( new ImageSourceTexture( *this ) );
@@ -2103,6 +2114,14 @@ void TextureCubeMap::replace( const TextureData &textureData )
 	mMaxMipmapLevel = (int32_t)textureData.getNumLevels() - 1;
 	glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, mMaxMipmapLevel );
 #endif
+}
+
+void TextureCubeMap::regenerateMipmap()
+{
+	if( mMipmapping ) {
+		ScopedTextureBind tbs( mTarget, mTextureId );
+		glGenerateMipmap( mTarget );
+	}
 }
 
 void TextureCubeMap::printDims( std::ostream &os ) const
