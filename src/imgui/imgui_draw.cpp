@@ -1,4 +1,4 @@
-// dear imgui, v1.75
+// dear imgui, v1.76 WIP
 // (drawing and font code)
 
 /*
@@ -218,6 +218,8 @@ void ImGui::StyleColorsDark(ImGuiStyle* dst)
     colors[ImGuiCol_TabActive]              = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
     colors[ImGuiCol_TabUnfocused]           = ImLerp(colors[ImGuiCol_Tab],          colors[ImGuiCol_TitleBg], 0.80f);
     colors[ImGuiCol_TabUnfocusedActive]     = ImLerp(colors[ImGuiCol_TabActive],    colors[ImGuiCol_TitleBg], 0.40f);
+    colors[ImGuiCol_DockingPreview]         = colors[ImGuiCol_HeaderActive] * ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
+    colors[ImGuiCol_DockingEmptyBg]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
     colors[ImGuiCol_PlotLines]              = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
     colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
     colors[ImGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
@@ -273,6 +275,8 @@ void ImGui::StyleColorsClassic(ImGuiStyle* dst)
     colors[ImGuiCol_TabActive]              = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
     colors[ImGuiCol_TabUnfocused]           = ImLerp(colors[ImGuiCol_Tab],          colors[ImGuiCol_TitleBg], 0.80f);
     colors[ImGuiCol_TabUnfocusedActive]     = ImLerp(colors[ImGuiCol_TabActive],    colors[ImGuiCol_TitleBg], 0.40f);
+    colors[ImGuiCol_DockingPreview]         = colors[ImGuiCol_Header] * ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
+    colors[ImGuiCol_DockingEmptyBg]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
     colors[ImGuiCol_PlotLines]              = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
     colors[ImGuiCol_PlotLinesHovered]       = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
     colors[ImGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
@@ -329,6 +333,8 @@ void ImGui::StyleColorsLight(ImGuiStyle* dst)
     colors[ImGuiCol_TabActive]              = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
     colors[ImGuiCol_TabUnfocused]           = ImLerp(colors[ImGuiCol_Tab],          colors[ImGuiCol_TitleBg], 0.80f);
     colors[ImGuiCol_TabUnfocusedActive]     = ImLerp(colors[ImGuiCol_TabActive],    colors[ImGuiCol_TitleBg], 0.40f);
+    colors[ImGuiCol_DockingPreview]         = colors[ImGuiCol_Header] * ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
+    colors[ImGuiCol_DockingEmptyBg]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
     colors[ImGuiCol_PlotLines]              = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
     colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
     colors[ImGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
@@ -617,8 +623,8 @@ void ImDrawList::PrimQuadUV(const ImVec2& a, const ImVec2& b, const ImVec2& c, c
 
 // On AddPolyline() and AddConvexPolyFilled() we intentionally avoid using ImVec2 and superflous function calls to optimize debug/non-inlined builds.
 // Those macros expects l-values.
-#define IM_NORMALIZE2F_OVER_ZERO(VX,VY)     { float d2 = VX*VX + VY*VY; if (d2 > 0.0f) { float inv_len = 1.0f / ImSqrt(d2); VX *= inv_len; VY *= inv_len; } }
-#define IM_FIXNORMAL2F(VX,VY)               { float d2 = VX*VX + VY*VY; if (d2 < 0.5f) d2 = 0.5f; float inv_lensq = 1.0f / d2; VX *= inv_lensq; VY *= inv_lensq; }
+#define IM_NORMALIZE2F_OVER_ZERO(VX,VY)     do { float d2 = VX*VX + VY*VY; if (d2 > 0.0f) { float inv_len = 1.0f / ImSqrt(d2); VX *= inv_len; VY *= inv_len; } } while (0)
+#define IM_FIXNORMAL2F(VX,VY)               do { float d2 = VX*VX + VY*VY; if (d2 < 0.5f) d2 = 0.5f; float inv_lensq = 1.0f / d2; VX *= inv_lensq; VY *= inv_lensq; } while (0)
 
 // TODO: Thickness anti-aliased lines cap are missing their AA fringe.
 // We avoid using the ImVec2 math operators here to reduce cost to a minimum for debug/non-inlined builds.
@@ -680,7 +686,7 @@ void ImDrawList::AddPolyline(const ImVec2* points, const int points_count, ImU32
                 // Average normals
                 float dm_x = (temp_normals[i1].x + temp_normals[i2].x) * 0.5f;
                 float dm_y = (temp_normals[i1].y + temp_normals[i2].y) * 0.5f;
-                IM_FIXNORMAL2F(dm_x, dm_y)
+                IM_FIXNORMAL2F(dm_x, dm_y);
                 dm_x *= AA_SIZE;
                 dm_y *= AA_SIZE;
 
@@ -1942,7 +1948,7 @@ bool    ImFontAtlasBuildWithStbTruetype(ImFontAtlas* atlas)
 {
     IM_ASSERT(atlas->ConfigData.Size > 0);
 
-    ImFontAtlasBuildRegisterDefaultCustomRects(atlas);
+    ImFontAtlasBuildInit(atlas);
 
     // Clear atlas
     atlas->TexID = (ImTextureID)NULL;
@@ -2194,7 +2200,8 @@ bool    ImFontAtlasBuildWithStbTruetype(ImFontAtlas* atlas)
     return true;
 }
 
-void ImFontAtlasBuildRegisterDefaultCustomRects(ImFontAtlas* atlas)
+// Register default custom rectangles (this is called/shared by both the stb_truetype and the FreeType builder)
+void ImFontAtlasBuildInit(ImFontAtlas* atlas)
 {
     if (atlas->CustomRectIds[0] >= 0)
         return;
@@ -2621,6 +2628,7 @@ void ImFont::BuildLookupTable()
     for (int i = 0; i != Glyphs.Size; i++)
         max_codepoint = ImMax(max_codepoint, (int)Glyphs[i].Codepoint);
 
+    // Build lookup table
     IM_ASSERT(Glyphs.Size < 0xFFFF); // -1 is reserved
     IndexAdvanceX.clear();
     IndexLookup.clear();
@@ -2637,7 +2645,7 @@ void ImFont::BuildLookupTable()
     // FIXME: Needs proper TAB handling but it needs to be contextualized (or we could arbitrary say that each string starts at "column 0" ?)
     if (FindGlyph((ImWchar)' '))
     {
-        if (Glyphs.back().Codepoint != '\t')   // So we can call this function multiple times
+        if (Glyphs.back().Codepoint != '\t')   // So we can call this function multiple times (FIXME: Flaky)
             Glyphs.resize(Glyphs.Size + 1);
         ImFontGlyph& tab_glyph = Glyphs.back();
         tab_glyph = *FindGlyph((ImWchar)' ');
@@ -2647,11 +2655,22 @@ void ImFont::BuildLookupTable()
         IndexLookup[(int)tab_glyph.Codepoint] = (ImWchar)(Glyphs.Size-1);
     }
 
+    // Mark special glyphs as not visible (note that AddGlyph already mark as non-visible glyphs with zero-size polygons)
+    SetGlyphVisible((ImWchar)' ', false);
+    SetGlyphVisible((ImWchar)'\t', false);
+
+    // Setup fall-backs
     FallbackGlyph = FindGlyphNoFallback(FallbackChar);
     FallbackAdvanceX = FallbackGlyph ? FallbackGlyph->AdvanceX : 0.0f;
     for (int i = 0; i < max_codepoint + 1; i++)
         if (IndexAdvanceX[i] < 0.0f)
             IndexAdvanceX[i] = FallbackAdvanceX;
+}
+
+void ImFont::SetGlyphVisible(ImWchar c, bool visible)
+{
+    if (ImFontGlyph* glyph = (ImFontGlyph*)(void*)FindGlyph((ImWchar)c))
+        glyph->Visible = visible ? 1 : 0;
 }
 
 void ImFont::SetFallbackChar(ImWchar c)
@@ -2675,7 +2694,8 @@ void ImFont::AddGlyph(ImWchar codepoint, float x0, float y0, float x1, float y1,
 {
     Glyphs.resize(Glyphs.Size + 1);
     ImFontGlyph& glyph = Glyphs.back();
-    glyph.Codepoint = (ImWchar)codepoint;
+    glyph.Codepoint = (unsigned int)codepoint;
+    glyph.Visible = (x0 != x1) && (y0 != y1);
     glyph.X0 = x0;
     glyph.Y0 = y0;
     glyph.X1 = x1;
@@ -2924,16 +2944,14 @@ ImVec2 ImFont::CalcTextSizeA(float size, float max_width, float wrap_width, cons
 
 void ImFont::RenderChar(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col, ImWchar c) const
 {
-    if (c == ' ' || c == '\t' || c == '\n' || c == '\r') // Match behavior of RenderText(), those 4 codepoints are hard-coded.
+    const ImFontGlyph* glyph = FindGlyph(c);
+    if (!glyph || !glyph->Visible)
         return;
-    if (const ImFontGlyph* glyph = FindGlyph(c))
-    {
-        float scale = (size >= 0.0f) ? (size / FontSize) : 1.0f;
-        pos.x = IM_FLOOR(pos.x + DisplayOffset.x);
-        pos.y = IM_FLOOR(pos.y + DisplayOffset.y);
-        draw_list->PrimReserve(6, 4);
-        draw_list->PrimRectUV(ImVec2(pos.x + glyph->X0 * scale, pos.y + glyph->Y0 * scale), ImVec2(pos.x + glyph->X1 * scale, pos.y + glyph->Y1 * scale), ImVec2(glyph->U0, glyph->V0), ImVec2(glyph->U1, glyph->V1), col);
-    }
+    float scale = (size >= 0.0f) ? (size / FontSize) : 1.0f;
+    pos.x = IM_FLOOR(pos.x + DisplayOffset.x);
+    pos.y = IM_FLOOR(pos.y + DisplayOffset.y);
+    draw_list->PrimReserve(6, 4);
+    draw_list->PrimRectUV(ImVec2(pos.x + glyph->X0 * scale, pos.y + glyph->Y0 * scale), ImVec2(pos.x + glyph->X1 * scale, pos.y + glyph->Y1 * scale), ImVec2(glyph->U0, glyph->V0), ImVec2(glyph->U1, glyph->V1), col);
 }
 
 void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col, const ImVec4& clip_rect, const char* text_begin, const char* text_end, float wrap_width, bool cpu_fine_clip) const
@@ -3046,73 +3064,70 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col
                 continue;
         }
 
-        float char_width = 0.0f;
-        if (const ImFontGlyph* glyph = FindGlyph((ImWchar)c))
+        const ImFontGlyph* glyph = FindGlyph((ImWchar)c);
+        if (glyph == NULL)
+            continue;
+
+        float char_width = glyph->AdvanceX * scale;
+        if (glyph->Visible)
         {
-            char_width = glyph->AdvanceX * scale;
-
-            // Arbitrarily assume that both space and tabs are empty glyphs as an optimization
-            if (c != ' ' && c != '\t')
+            // We don't do a second finer clipping test on the Y axis as we've already skipped anything before clip_rect.y and exit once we pass clip_rect.w
+            float x1 = x + glyph->X0 * scale;
+            float x2 = x + glyph->X1 * scale;
+            float y1 = y + glyph->Y0 * scale;
+            float y2 = y + glyph->Y1 * scale;
+            if (x1 <= clip_rect.z && x2 >= clip_rect.x)
             {
-                // We don't do a second finer clipping test on the Y axis as we've already skipped anything before clip_rect.y and exit once we pass clip_rect.w
-                float x1 = x + glyph->X0 * scale;
-                float x2 = x + glyph->X1 * scale;
-                float y1 = y + glyph->Y0 * scale;
-                float y2 = y + glyph->Y1 * scale;
-                if (x1 <= clip_rect.z && x2 >= clip_rect.x)
+                // Render a character
+                float u1 = glyph->U0;
+                float v1 = glyph->V0;
+                float u2 = glyph->U1;
+                float v2 = glyph->V1;
+
+                // CPU side clipping used to fit text in their frame when the frame is too small. Only does clipping for axis aligned quads.
+                if (cpu_fine_clip)
                 {
-                    // Render a character
-                    float u1 = glyph->U0;
-                    float v1 = glyph->V0;
-                    float u2 = glyph->U1;
-                    float v2 = glyph->V1;
-
-                    // CPU side clipping used to fit text in their frame when the frame is too small. Only does clipping for axis aligned quads.
-                    if (cpu_fine_clip)
+                    if (x1 < clip_rect.x)
                     {
-                        if (x1 < clip_rect.x)
-                        {
-                            u1 = u1 + (1.0f - (x2 - clip_rect.x) / (x2 - x1)) * (u2 - u1);
-                            x1 = clip_rect.x;
-                        }
-                        if (y1 < clip_rect.y)
-                        {
-                            v1 = v1 + (1.0f - (y2 - clip_rect.y) / (y2 - y1)) * (v2 - v1);
-                            y1 = clip_rect.y;
-                        }
-                        if (x2 > clip_rect.z)
-                        {
-                            u2 = u1 + ((clip_rect.z - x1) / (x2 - x1)) * (u2 - u1);
-                            x2 = clip_rect.z;
-                        }
-                        if (y2 > clip_rect.w)
-                        {
-                            v2 = v1 + ((clip_rect.w - y1) / (y2 - y1)) * (v2 - v1);
-                            y2 = clip_rect.w;
-                        }
-                        if (y1 >= y2)
-                        {
-                            x += char_width;
-                            continue;
-                        }
+                        u1 = u1 + (1.0f - (x2 - clip_rect.x) / (x2 - x1)) * (u2 - u1);
+                        x1 = clip_rect.x;
                     }
-
-                    // We are NOT calling PrimRectUV() here because non-inlined causes too much overhead in a debug builds. Inlined here:
+                    if (y1 < clip_rect.y)
                     {
-                        idx_write[0] = (ImDrawIdx)(vtx_current_idx); idx_write[1] = (ImDrawIdx)(vtx_current_idx+1); idx_write[2] = (ImDrawIdx)(vtx_current_idx+2);
-                        idx_write[3] = (ImDrawIdx)(vtx_current_idx); idx_write[4] = (ImDrawIdx)(vtx_current_idx+2); idx_write[5] = (ImDrawIdx)(vtx_current_idx+3);
-                        vtx_write[0].pos.x = x1; vtx_write[0].pos.y = y1; vtx_write[0].col = col; vtx_write[0].uv.x = u1; vtx_write[0].uv.y = v1;
-                        vtx_write[1].pos.x = x2; vtx_write[1].pos.y = y1; vtx_write[1].col = col; vtx_write[1].uv.x = u2; vtx_write[1].uv.y = v1;
-                        vtx_write[2].pos.x = x2; vtx_write[2].pos.y = y2; vtx_write[2].col = col; vtx_write[2].uv.x = u2; vtx_write[2].uv.y = v2;
-                        vtx_write[3].pos.x = x1; vtx_write[3].pos.y = y2; vtx_write[3].col = col; vtx_write[3].uv.x = u1; vtx_write[3].uv.y = v2;
-                        vtx_write += 4;
-                        vtx_current_idx += 4;
-                        idx_write += 6;
+                        v1 = v1 + (1.0f - (y2 - clip_rect.y) / (y2 - y1)) * (v2 - v1);
+                        y1 = clip_rect.y;
                     }
+                    if (x2 > clip_rect.z)
+                    {
+                        u2 = u1 + ((clip_rect.z - x1) / (x2 - x1)) * (u2 - u1);
+                        x2 = clip_rect.z;
+                    }
+                    if (y2 > clip_rect.w)
+                    {
+                        v2 = v1 + ((clip_rect.w - y1) / (y2 - y1)) * (v2 - v1);
+                        y2 = clip_rect.w;
+                    }
+                    if (y1 >= y2)
+                    {
+                        x += char_width;
+                        continue;
+                    }
+                }
+
+                // We are NOT calling PrimRectUV() here because non-inlined causes too much overhead in a debug builds. Inlined here:
+                {
+                    idx_write[0] = (ImDrawIdx)(vtx_current_idx); idx_write[1] = (ImDrawIdx)(vtx_current_idx+1); idx_write[2] = (ImDrawIdx)(vtx_current_idx+2);
+                    idx_write[3] = (ImDrawIdx)(vtx_current_idx); idx_write[4] = (ImDrawIdx)(vtx_current_idx+2); idx_write[5] = (ImDrawIdx)(vtx_current_idx+3);
+                    vtx_write[0].pos.x = x1; vtx_write[0].pos.y = y1; vtx_write[0].col = col; vtx_write[0].uv.x = u1; vtx_write[0].uv.y = v1;
+                    vtx_write[1].pos.x = x2; vtx_write[1].pos.y = y1; vtx_write[1].col = col; vtx_write[1].uv.x = u2; vtx_write[1].uv.y = v1;
+                    vtx_write[2].pos.x = x2; vtx_write[2].pos.y = y2; vtx_write[2].col = col; vtx_write[2].uv.x = u2; vtx_write[2].uv.y = v2;
+                    vtx_write[3].pos.x = x1; vtx_write[3].pos.y = y2; vtx_write[3].col = col; vtx_write[3].uv.x = u1; vtx_write[3].uv.y = v2;
+                    vtx_write += 4;
+                    vtx_current_idx += 4;
+                    idx_write += 6;
                 }
             }
         }
-
         x += char_width;
     }
 
@@ -3130,8 +3145,10 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, ImVec2 pos, ImU32 col
 // (progressively moved from imgui.cpp to here when they are redesigned to stop accessing ImGui global state)
 //-----------------------------------------------------------------------------
 // - RenderMouseCursor()
+// - RenderArrowDockMenu()
 // - RenderArrowPointingAt()
 // - RenderRectFilledRangeH()
+// - RenderRectFilledWithHole()
 //-----------------------------------------------------------------------------
 
 void ImGui::RenderMouseCursor(ImDrawList* draw_list, ImVec2 pos, float scale, ImGuiMouseCursor mouse_cursor, ImU32 col_fill, ImU32 col_border, ImU32 col_shadow)
@@ -3166,6 +3183,14 @@ void ImGui::RenderArrowPointingAt(ImDrawList* draw_list, ImVec2 pos, ImVec2 half
     case ImGuiDir_Down:  draw_list->AddTriangleFilled(ImVec2(pos.x - half_sz.x, pos.y - half_sz.y), ImVec2(pos.x + half_sz.x, pos.y - half_sz.y), pos, col); return;
     case ImGuiDir_None: case ImGuiDir_COUNT: break; // Fix warnings
     }
+}
+
+// This is less wide than RenderArrow() and we use in dock nodes instead of the regular RenderArrow() to denote a change of functionality,
+// and because the saved space means that the left-most tab label can stay at exactly the same position as the label of a loose window.
+void ImGui::RenderArrowDockMenu(ImDrawList* draw_list, ImVec2 p_min, float sz, ImU32 col)
+{
+    draw_list->AddRectFilled(p_min + ImVec2(sz * 0.10f, sz * 0.15f), p_min + ImVec2(sz * 0.70f, sz * 0.30f), col);
+    RenderArrowPointingAt(draw_list, p_min + ImVec2(sz * 0.40f, sz * 0.85f), ImVec2(sz * 0.30f, sz * 0.40f), ImGuiDir_Down, col);
 }
 
 static inline float ImAcos01(float x)
@@ -3235,6 +3260,24 @@ void ImGui::RenderRectFilledRangeH(ImDrawList* draw_list, const ImRect& rect, Im
         }
     }
     draw_list->PathFillConvex(col);
+}
+
+// For CTRL+TAB within a docking node we need to render the dimming background in 8 steps
+// (Because the root node renders the background in one shot, in order to avoid flickering when a child dock node is not submitted)
+void ImGui::RenderRectFilledWithHole(ImDrawList* draw_list, ImRect outer, ImRect inner, ImU32 col, float rounding)
+{
+    const bool fill_L = (inner.Min.x > outer.Min.x);
+    const bool fill_R = (inner.Max.x < outer.Max.x);
+    const bool fill_U = (inner.Min.y > outer.Min.y);
+    const bool fill_D = (inner.Max.y < outer.Max.y);
+    if (fill_L) draw_list->AddRectFilled(ImVec2(outer.Min.x, inner.Min.y), ImVec2(inner.Min.x, inner.Max.y), col, rounding, (fill_U ? 0 : ImDrawCornerFlags_TopLeft) | (fill_D ? 0 : ImDrawCornerFlags_BotLeft));
+    if (fill_R) draw_list->AddRectFilled(ImVec2(inner.Max.x, inner.Min.y), ImVec2(outer.Max.x, inner.Max.y), col, rounding, (fill_U ? 0 : ImDrawCornerFlags_TopRight) | (fill_D ? 0 : ImDrawCornerFlags_BotRight));
+    if (fill_U) draw_list->AddRectFilled(ImVec2(inner.Min.x, outer.Min.y), ImVec2(inner.Max.x, inner.Min.y), col, rounding, (fill_L ? 0 : ImDrawCornerFlags_TopLeft) | (fill_R ? 0 : ImDrawCornerFlags_TopRight));
+    if (fill_D) draw_list->AddRectFilled(ImVec2(inner.Min.x, inner.Max.y), ImVec2(inner.Max.x, outer.Max.y), col, rounding, (fill_L ? 0 : ImDrawCornerFlags_BotLeft) | (fill_R ? 0 : ImDrawCornerFlags_BotRight));
+    if (fill_L && fill_U) draw_list->AddRectFilled(ImVec2(outer.Min.x, outer.Min.y), ImVec2(inner.Min.x, inner.Min.y), col, rounding, ImDrawCornerFlags_TopLeft);
+    if (fill_R && fill_U) draw_list->AddRectFilled(ImVec2(inner.Max.x, outer.Min.y), ImVec2(outer.Max.x, inner.Min.y), col, rounding, ImDrawCornerFlags_TopRight);
+    if (fill_L && fill_D) draw_list->AddRectFilled(ImVec2(outer.Min.x, inner.Max.y), ImVec2(inner.Min.x, outer.Max.y), col, rounding, ImDrawCornerFlags_BotLeft);
+    if (fill_R && fill_D) draw_list->AddRectFilled(ImVec2(inner.Max.x, inner.Max.y), ImVec2(outer.Max.x, outer.Max.y), col, rounding, ImDrawCornerFlags_BotRight);
 }
 
 //-----------------------------------------------------------------------------
