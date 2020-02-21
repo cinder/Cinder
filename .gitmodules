@@ -6,7 +6,3 @@
 	path = tools/TinderBox-Win
 	url = git://github.com/cinder/TinderBox-Win.git
 	branch = 0.9.3
-[submodule "include/boost"]
-	path = include/boost
-	url = git://github.com/cinder/Cinder-Boost.git
-	branch = boost_1_60
