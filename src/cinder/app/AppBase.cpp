@@ -191,7 +191,10 @@ void AppBase::onTerminate()
 			std::rethrow_exception( excptr );
 		}
 		catch( const std::exception & exc ) {
-			CI_LOG_F( "Uncaught exception, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
+			CI_LOG_F( "Terminating due to uncaught exception, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
+		}
+		catch( ... ) {
+			CI_LOG_F( "Terminating due to unknown uncaught exception" );
 		}
 	}
 	std::exit( EXIT_FAILURE );
