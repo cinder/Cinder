@@ -38,6 +38,8 @@
 	#include "cinder/app/emscripten/PlatformEmscripten.h"
 #endif 
 
+#include <algorithm>
+
 using namespace std;
 
 namespace cinder { namespace app {

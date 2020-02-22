@@ -12,6 +12,9 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+typedef PolyLineT<vec3>		PolyLine3;
+
+
 const float cCircleRadius = 40;
 const float cGridStep = cCircleRadius * 2.2f;
 
@@ -135,7 +138,7 @@ void ConvenienceDrawingMethodsApp::drawBasicOverview()
 		gl::translate( cGridStep, cGridStep * 4 );
 		gl::rotate( getElapsedSeconds(), 0, 1, 0 );
 		gl::color( Color( 1, 0, 0 ) );
-		gl::draw( mPolyline3D );
+		gl::draw( mPolyline3D.getPoints() );
 	}
 
 	// draw a 3D line back into space

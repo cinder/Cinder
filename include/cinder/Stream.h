@@ -355,16 +355,16 @@ class CI_API IStreamStateRestore {
 };
 
 //! Opens the file lcoated at \a path for read access as a stream.
-IStreamFileRef	loadFileStream( const fs::path &path );
+CI_API IStreamFileRef	loadFileStream( const fs::path &path );
 //! Opens the file located at \a path for write access as a stream, and creates it if it does not exist. Optionally creates any intermediate directories when \a createParents is true.
-OStreamFileRef	writeFileStream( const fs::path &path, bool createParents = true );
+CI_API OStreamFileRef	writeFileStream( const fs::path &path, bool createParents = true );
 //! Opens a path for read-write access as a stream.
-IoStreamFileRef readWriteFileStream( const fs::path &path );
+CI_API IoStreamFileRef readWriteFileStream( const fs::path &path );
 
 //! Loads the contents of a stream into a contiguous block of memory, pointed to by \a resultData. The size of this block is stored in \a resultDataSize.
-void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size_t *resultDataSize );
+CI_API void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size_t *resultDataSize );
 //! Loads the contents of a stream into a ref counted Buffer
-BufferRef loadStreamBuffer( IStreamRef is );
+CI_API BufferRef loadStreamBuffer( IStreamRef is );
 
 
 #if defined( CINDER_ANDROID )

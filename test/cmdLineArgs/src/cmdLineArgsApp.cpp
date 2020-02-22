@@ -1,4 +1,6 @@
 #include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Utilities.h"
 
 using namespace ci;
@@ -10,6 +12,9 @@ class cmdLineArgsApp : public App {
  public:
 	void setup();
 	void draw();
+
+	static void prepareSettings( App::Settings *settings ) { getArgs() = settings->getCommandLineArgs(); }
+	static vector<string>& getArgs() { static vector<string> args; return args; }
 };
 
 void cmdLineArgsApp::setup()
@@ -28,4 +33,4 @@ void cmdLineArgsApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP( cmdLineArgsApp, RendererGl )
+CINDER_APP( cmdLineArgsApp, RendererGl, &cmdLineArgsApp::prepareSettings )

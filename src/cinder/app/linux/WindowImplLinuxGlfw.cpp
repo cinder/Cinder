@@ -72,6 +72,8 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux 
 	int32_t minorVersion = options.getVersion().second;
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, majorVersion );
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, minorVersion );
+	::glfwWindowHint( GLFW_DECORATED, format.isBorderless() ? GL_FALSE : GL_TRUE );
+	::glfwWindowHint( GLFW_RESIZABLE, format.isResizable() ? GL_TRUE : GL_FALSE );
 	if( options.getCoreProfile() ) {
 		::glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
 		std::cout << "Rendering with OpenGL Core Profile " << majorVersion << "." << minorVersion << std::endl;
@@ -161,6 +163,7 @@ void WindowImplLinux::setPos( const ivec2 &pos )
 
 void WindowImplLinux::close()
 {
+	::glfwSetWindowShouldClose( mGlfwWindow, 1 );
 }
 
 void WindowImplLinux::setTitle( const std::string &title )

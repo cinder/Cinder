@@ -345,17 +345,25 @@ void Param::resetImpl()
 
 void Param::removeEventsAt( double time )
 {
-	for( auto &event : mEvents ) {
-		if( event->getTimeBegin() >= time ) {
-			event->cancel();
+	auto context = mParentNode->getContext();
+	bool contextDisabled = ! context || ! context->isEnabled();
+	for( auto eventIt = mEvents.begin(); eventIt != mEvents.end(); /* */ ) {
+		Event &event = **eventIt;
+		if( event.getTimeBegin() >= time ) {
+			if( contextDisabled ) {
+				eventIt = mEvents.erase( eventIt );
+			}
+			else {
+				event.cancel();
+			}
 		}
-		else if( event->getTimeEnd() >= time ) {
+		else if( event.getTimeEnd() >= time ) {
 			// Handle cancel later to allow the ramp to continue until the cancel point. Only reset cancel time if it is newer than a previous setting.
-			if( event->mTimeCancel > 0 ) {
-				event->mTimeCancel = min( event->mTimeCancel, time );
+			if( event.mTimeCancel > 0 ) {
+				event.mTimeCancel = min( event.mTimeCancel, time );
 			}
 			else
-				event->mTimeCancel = time;
+				event.mTimeCancel = time;
 		}
 	}
 }

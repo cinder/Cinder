@@ -1,4 +1,5 @@
 #include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Unicode.h"
 #include "cinder/Text.h"
@@ -105,7 +106,7 @@ void LineBreakTestApp::draw()
 	box.setSize( ivec2( maxWidth, TextBox::GROW ) );
 	box.setFont( font );
 	box.setText( s );
-	gl::Texture t = box.render();
+	gl::TextureRef t = gl::Texture2d::create( box.render() );
 	gl::draw( t );
 	gl::color( Color( 0, 1, 0 ) );
 	gl::drawStrokedRect( Rectf( 0, 10, maxWidth, 800 ) );

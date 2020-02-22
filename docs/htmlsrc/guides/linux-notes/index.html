@@ -34,12 +34,6 @@
 				<li><a href="jetsontk1.html">NVIDIA Jetson TK1</a></li>
 			</ul>
 		</p>
-		
-		<p><h3>GCC 5.1+</h3>
-		In the GCC 5.1 release libstdc++ introduced a new library ABI which breaks compatibility with binaries built using previous versions. Cinder defaults to using the pre-5.1 ABI.
-		This is auto-detected when building libcinder or Cinder applications using the default CMake configurations. This can be enforced using the GCC command line option <code>-D_GLIBCXX_USE_CXX11_ABI=0</code>.
-		Please note that if you have special cause to use the new GCC 5.1+ ABI, in addition to setting this macro to <code>1</code>, you'll need to rebuild Cinder's Boost binaries.
-		</p>
 		<!-- END CONTENT -->
 
 		<!-- Scripts -->

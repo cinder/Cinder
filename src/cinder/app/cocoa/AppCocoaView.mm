@@ -28,6 +28,8 @@
 #include "cinder/app/cocoa/PlatformCocoa.h"
 #include "cinder/Log.h"
 
+#include <list>
+
 using namespace std;
 using namespace cinder;
 using namespace cinder::app;

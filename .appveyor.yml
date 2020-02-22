@@ -2,33 +2,27 @@
 
 build:
   parallel: true
-  project: proj/vc2015/cinder.sln
+  project: proj/vc2019/cinder.sln
 
 platform:
     - x64
-    - Win32
 
 configuration:
   - Debug
   - Release
-  - Debug_ANGLE
-  - Release_ANGLE
+#  - Debug_ANGLE
+#  - Release_ANGLE
 
 image: 
-  - Visual Studio 2015
-
-install:
-  - git submodule update --init include/boost
+  - Visual Studio 2019
 
 clone_depth: 10
 
 before_test:
-  - msbuild test\unit\vc2015\unit.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - msbuild test\unit\vc2019\unit.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 # in the future we'll need to figure out how to tell what version (v140, v150) we are targeting from within AppVeyor
 test_script:
-  # translate "Win32" to "x86" to get the appropriate folder
   - set ARCH_FOLDER=%platform%
-  - if "%platform%" == "Win32" set ARCH_FOLDER=x86
-  - echo Binary resolving to test\unit\vc2015\build\v140\%configuration%\%ARCH_FOLDER%\CinderUnitTests.exe
-  - test\unit\vc2015\build\v140\%configuration%\%ARCH_FOLDER%\CinderUnitTests.exe
+  - echo Binary resolving to test\unit\vc2019\build\v142\%configuration%\%ARCH_FOLDER%\CinderUnitTests.exe
+  - test\unit\vc2019\build\v142\%configuration%\%ARCH_FOLDER%\CinderUnitTests.exe

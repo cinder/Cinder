@@ -57,8 +57,6 @@
 
 #include "StereoAutoFocuser.h"
 
-#include <boost/format.hpp>
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -591,18 +589,20 @@ void StereoscopicRenderingApp::renderUI()
 	}
 
 	std::string labels( "Render mode (F1-F5):\nFocus mode (1-3):\nFocal Length:\nEye Distance:\nAuto Focus Depth (Up/Down):\nAuto Focus Speed (Left/Right):" );
-	boost::format values = boost::format( "%s\n%s\n%.2f\n%.2f\n%.2f\n%.2f" ) % renderMode % focusMode % mCamera.getConvergence() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
+	//boost::format values = boost::format( "%s\n%s\n%.2f\n%.2f\n%.2f\n%.2f" ) % renderMode % focusMode % mCamera.getConvergence() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
+	char valueStr[1024];
+	sprintf( valueStr, "%s\n%s\n%.2f\n%.2f\n%.2f\n%.2f", renderMode.c_str(), focusMode.c_str(), mCamera.getConvergence(), mCamera.getEyeSeparation() , mAF.getDepth(), mAF.getSpeed() );
 
 #if(defined CINDER_MSW)
 	gl::enableAlphaBlending();
 	gl::drawString( labels, vec2( w - 350.0f, h - 150.0f ), Color::black(), mFont );
-	gl::drawStringRight( values.str(), vec2( w + 350.0f, h - 150.0f ), Color::black(), mFont );
+	gl::drawStringRight( std::string( valueStr ), vec2( w + 350.0f, h - 150.0f ), Color::black(), mFont );
 	gl::disableAlphaBlending();
 #else
 	// \n is not supported on the mac, so we draw separate strings
 	std::vector< std::string > left, right;
 	left = ci::split( labels, "\n", false );
-	right = ci::split( values.str(), "\n", false );
+	right = ci::split( valueStr, "\n", false );
 
 	gl::enableAlphaBlending();
 	for( size_t i = 0; i < 4; ++i ) {

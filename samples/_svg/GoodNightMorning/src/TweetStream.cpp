@@ -7,8 +7,6 @@
 #include "cinder/Surface.h"
 #include "cinder/Log.h"
 
-#include <boost/algorithm/string/replace.hpp>
-
 using namespace std;
 using namespace ci;
 
@@ -85,13 +83,22 @@ JsonTree queryTwitter( const std::string &query )
 	return JsonTree( loadUrl( url ) );
 }
 
+void findAndReplaceAll( std::string& data, const std::string &toSearch, const std::string &replaceStr )
+{
+	size_t pos = data.find(toSearch);
+	while( pos != std::string::npos ) {
+		data.replace(pos, toSearch.size(), replaceStr);
+		pos = data.find(toSearch, pos + replaceStr.size());
+	}
+}
+
 // Replaces XML escaped characters with their equivalents
 string replaceEscapes( const string &original )
 {
 	string result = original;
-	boost::algorithm::replace_all( result, "&lt;", "<" );
-	boost::algorithm::replace_all( result, "&gt;", ">" );	
-	boost::algorithm::replace_all( result, "&amp;", "&" );	
+	findAndReplaceAll( result, "&lt;", "<" );
+	findAndReplaceAll( result, "&gt;", ">" );
+	findAndReplaceAll( result, "&amp;", "&" );
 	return result;
 }
 
