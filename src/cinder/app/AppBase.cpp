@@ -184,19 +184,32 @@ void AppBase::initialize( Settings *settings, const RendererRef &defaultRenderer
 	sSettingsFromMain = settings;
 }
 
+void AppBase::onTerminate()
+{
+	if( auto excptr = std::current_exception() ) {
+		try {
+			std::rethrow_exception( excptr );
+		}
+		catch( const std::exception & exc ) {
+			CI_LOG_F( "Terminating due to uncaught exception, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
+		}
+		catch( ... ) {
+			CI_LOG_F( "Terminating due to unknown uncaught exception" );
+		}
+	}
+	std::exit( EXIT_FAILURE );
+}
+
 void AppBase::executeLaunch()
 {
-	try {
-		// a quit() was called from the app constructor; don't launch
-		if( mQuitRequested )
-			return;
-		mLaunchCalled = true;
-		launch();
-	}
-	catch( std::exception &exc ) {
-		CI_LOG_F( "Uncaught exception, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
-		throw;
-	}
+	std::set_terminate( onTerminate );
+
+	// a quit() was called from the app constructor; don't launch
+	if( mQuitRequested )
+		return;
+
+	mLaunchCalled = true;
+	launch();
 }
 
 // static
