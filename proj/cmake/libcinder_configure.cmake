@@ -38,6 +38,7 @@ list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
 	${CINDER_INC_DIR}
 	${CINDER_INC_DIR}/oggvorbis
 	${CINDER_SRC_DIR}/AntTweakBar
+	${CINDER_SRC_DIR}/imgui
 )
 
 # find cross-platform packages
