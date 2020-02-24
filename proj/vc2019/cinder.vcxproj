@@ -925,7 +925,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\glad\glad_wgl.c" />
-    <ClCompile Include="..\..\src\imgui\binary_to_compressed_c.cpp" />
     <ClCompile Include="..\..\src\imgui\imgui.cpp" />
     <ClCompile Include="..\..\src\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\..\src\imgui\imgui_draw.cpp" />

@@ -1047,9 +1047,6 @@
     <ClCompile Include="..\..\src\glad\glad_es.c">
       <Filter>Source Files\glad</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\imgui\binary_to_compressed_c.cpp">
-      <Filter>Source Files\imgui</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\imgui\imgui.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
