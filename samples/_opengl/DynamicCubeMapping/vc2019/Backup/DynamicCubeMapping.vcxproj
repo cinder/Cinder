@@ -125,7 +125,7 @@
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder-$(PlatformToolset)-angle_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -136,9 +136,9 @@
       <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCPMT</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "..\..\..\..\lib\msw\x86\libGLESv2.dll" "$(OutDir)"
-xcopy /y "..\..\..\..\lib\msw\x86\libEGL.dll" "$(OutDir)"
-xcopy /y "..\..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y "..\..\..\..\lib\msw\$(PlatformTarget)\libGLESv2.dll" "$(OutDir)"
+xcopy /y "..\..\..\..\lib\msw\$(PlatformTarget)\libEGL.dll" "$(OutDir)"
+xcopy /y "..\..\..\..\lib\msw\$(PlatformTarget)\d3dcompiler_46.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -188,7 +188,7 @@ xcopy /y "..\..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder-$(PlatformToolset)-angle.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -202,9 +202,9 @@ xcopy /y "..\..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "..\..\..\..\lib\msw\x86\libGLESv2.dll" "$(OutDir)"
-xcopy /y "..\..\..\..\lib\msw\x86\libEGL.dll" "$(OutDir)"
-xcopy /y "..\..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y "..\..\..\..\lib\msw\$(PlatformTarget)\libGLESv2.dll" "$(OutDir)"
+xcopy /y "..\..\..\..\lib\msw\$(PlatformTarget)\libEGL.dll" "$(OutDir)"
+xcopy /y "..\..\..\..\lib\msw\$(PlatformTarget)\d3dcompiler_46.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

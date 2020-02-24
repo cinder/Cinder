@@ -212,9 +212,9 @@
       <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCPMT</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "..\..\..\lib\msw\x86\libGLESv2.dll" "$(OutDir)"
-xcopy /y "..\..\..\lib\msw\x86\libEGL.dll" "$(OutDir)"
-xcopy /y "..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y "..\..\..\lib\msw\$(PlatformTarget)\libGLESv2.dll" "$(OutDir)"
+xcopy /y "..\..\..\lib\msw\$(PlatformTarget)\libEGL.dll" "$(OutDir)"
+xcopy /y "..\..\..\lib\msw\$(PlatformTarget)\d3dcompiler_46.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">
@@ -229,6 +229,7 @@ xcopy /y "..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>"..\..\..\include";..\include</AdditionalIncludeDirectories>
@@ -326,9 +327,9 @@ xcopy /y "..\..\..\lib\msw\x64\d3dcompiler_46.dll" "$(OutDir)"</Command>
       <AdditionalIncludeDirectories>"..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>xcopy /y "..\..\..\lib\msw\x86\libGLESv2.dll" "$(OutDir)"
-xcopy /y "..\..\..\lib\msw\x86\libEGL.dll" "$(OutDir)"
-xcopy /y "..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y "..\..\..\lib\msw\$(PlatformTarget)\libGLESv2.dll" "$(OutDir)"
+xcopy /y "..\..\..\lib\msw\$(PlatformTarget)\libEGL.dll" "$(OutDir)"
+xcopy /y "..\..\..\lib\msw\$(PlatformTarget)\d3dcompiler_46.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">
@@ -337,6 +338,7 @@ xcopy /y "..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;CINDER_GL_ANGLE;NEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <Optimization>Disabled</Optimization>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>cinder.lib;libEGL.lib;libGLESv2.lib;%(AdditionalDependencies)</AdditionalDependencies>
