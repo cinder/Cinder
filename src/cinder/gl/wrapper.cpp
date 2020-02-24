@@ -27,7 +27,7 @@
 #include "cinder/gl/scoped.h"
 #include "cinder/Log.h"
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
 	#include "glad/glad_wgl.h"
 #elif defined( CINDER_MAC )
 	#include <OpenGL/OpenGL.h>

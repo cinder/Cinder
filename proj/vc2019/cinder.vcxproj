@@ -920,6 +920,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\glad\glad_wgl.c" />
     <ClCompile Include="..\..\src\jsoncpp\jsoncpp.cpp" />
