@@ -25,6 +25,7 @@ list( APPEND CINDER_INCLUDE_USER_PRIVATE
 	${CINDER_INC_DIR}
 	${CINDER_INC_DIR}/jsoncpp
 	${CINDER_INC_DIR}/tinyexr
+	${CINDER_INC_DIR}/imgui
 	${CINDER_SRC_DIR}/linebreak
 	${CINDER_SRC_DIR}/oggvorbis/vorbis
 	${CINDER_SRC_DIR}/r8brain
@@ -38,7 +39,6 @@ list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
 	${CINDER_INC_DIR}
 	${CINDER_INC_DIR}/oggvorbis
 	${CINDER_SRC_DIR}/AntTweakBar
-	${CINDER_SRC_DIR}/imgui
 )
 
 # find cross-platform packages
