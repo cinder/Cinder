@@ -247,10 +247,10 @@ RendererGl::Options getRendererGlOptions()
 	loadSettings();
 	RendererGl::Options options;
 	if( settings["multicast_multidisplay"].asBool() ) {
-		options.nvidiaMGpuMDisplayMulticast();
+		options.nvidiaMultiGpuMultiDisplayMulticast();
 	}
 	else {
-		options.nvidiaMGpuMulticast();
+		options.nvidiaMultiGpuMulticast();
 	}
 	options.msaa( 0 );
 	options.setVersion( 4, 5 );
