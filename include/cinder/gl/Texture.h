@@ -248,7 +248,7 @@ class CI_API TextureBase {
 #if ! defined( CINDER_GL_ES )
 		//! Supplies an intermediate PBO that Texture constructors optionally make use of. A PBO of an inadequate size may result in an exception.
 		void			setIntermediatePbo( const PboRef &intermediatePbo ) { mIntermediatePbo = intermediatePbo; }
-		//! Returns the optional intermediate PBO that Texture constructors may make use of.
+		//! Returns the optional intermediate PBO that Texture constructors may make use of.mPerGpuStorage
 		const PboRef&	getIntermediatePbo() const { return mIntermediatePbo; }
 #endif
 		//! Sets the texture's border color. Ignored in OpenGL ES.
@@ -269,13 +269,14 @@ class CI_API TextureBase {
 		void				setLabel( const std::string &label ) { mLabel = label; }
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
-		
+#if ! defined( CINDER_GL_ES )
 		//! (NVIDIA only) Returns whether per-gpu storage is enabled.
-		bool				isPerGpuStorage() const { return mPerGpuStorage; }
+		bool				isPerGpuStorageNV() const { return mPerGpuStorageSpecifiedNV && mPerGpuStorageEnabledNV; }
 		//! (NVIDIA only) Enables per-gpu storage for multi-gpu multicast.
-		void				setPerGpuStorage( bool perGpuStorage ) { mPerGpuStorage = perGpuStorage; }
+		void				setPerGpuStorageNV( bool enable ) { mPerGpuStorageSpecifiedNV = true; mPerGpuStorageEnabledNV = enable; }
 		//! (NVIDIA only) Enables per-gpu storage for multi-gpu multicast.
-		Format&				perGpuStorage( bool enable = true ) { mPerGpuStorage = enable; return *this; }
+		Format&				perGpuStorageNV( bool enable = true ) { setPerGpuStorageNV( enable ); return *this; }
+#endif
 	protected:
 		Format();
 	
@@ -288,7 +289,6 @@ class CI_API TextureBase {
 		GLuint				mBaseMipmapLevel;
 		GLint				mMaxMipmapLevel;
 		bool				mImmutableStorage;
-		bool				mPerGpuStorage;
 		GLfloat				mMaxAnisotropy;
 		GLint				mInternalFormat, mDataType;
 		bool				mSwizzleSpecified;
@@ -297,7 +297,9 @@ class CI_API TextureBase {
 		std::array<GLfloat,4>	mBorderColor;
 		std::string			mLabel; // debug label
 
-#if ! defined( CINDER_GL_ES )		
+#if ! defined( CINDER_GL_ES )
+		bool				mPerGpuStorageSpecifiedNV;
+		bool				mPerGpuStorageEnabledNV;
 		PboRef				mIntermediatePbo;
 #endif
 		friend class TextureBase;
@@ -434,8 +436,10 @@ class CI_API Texture1d : public TextureBase {
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
 		//! Sets a custom deleter for destruction of the shared_ptr<Texture1d>
 		Format&	deleter( const std::function<void(Texture1d*)> &sharedPtrDeleter ) { mDeleter = sharedPtrDeleter; return *this; }
+#if ! defined( CINDER_GL_ES )
 		//! (NVIDIA only) Enables per-gpu storage for multi-gpu multicast.
-		Format& perGpuStorage( bool enable = true ) { mPerGpuStorage = enable; return *this; }
+		Format& perGpuStorageNV( bool enable = true ) { setPerGpuStorageNV( enable ); return *this; }
+#endif
 	  protected:
 		std::function<void(Texture1d*)>		mDeleter;
 		
@@ -510,8 +514,10 @@ class CI_API Texture2d : public TextureBase {
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
 		//! Sets a custom deleter for destruction of the shared_ptr<Texture2d>
 		Format&	deleter( const std::function<void(Texture2d*)> &sharedPtrDeleter ) { mDeleter = sharedPtrDeleter; return *this; }
+#if ! defined( CINDER_GL_ES )
 		//! (NVIDIA only) Enables per-gpu storage for multi-gpu multicast.
-		Format& perGpuStorage( bool enable = true ) { mPerGpuStorage = enable; return *this; }
+		Format& perGpuStorageNV( bool enable = true ) { setPerGpuStorageNV( enable ); return *this; }
+#endif
 	  protected:
 		bool								mLoadTopDown;
 		std::function<void(Texture2d*)>		mDeleter;
@@ -674,8 +680,10 @@ class CI_API Texture3d : public TextureBase {
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
 		//! Sets a custom deleter for destruction of the shared_ptr<Texture3d>
 		Format&	deleter( const std::function<void(Texture3d*)> &sharedPtrDeleter ) { mDeleter = sharedPtrDeleter; return *this; }
+#if ! defined( CINDER_GL_ES )
 		//! (NVIDIA only) Enables per-gpu storage for multi-gpu multicast.
-		Format& perGpuStorage( bool enable = true ) { mPerGpuStorage = enable; return *this; }
+		Format& perGpuStorageNV( bool enable = true ) { setPerGpuStorageNV( enable ); return *this; }
+#endif
 	  protected:
 		std::function<void(Texture3d*)>		mDeleter;
 		
@@ -735,8 +743,10 @@ class CI_API TextureCubeMap : public TextureBase
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
 		//! Sets a custom deleter for destruction of the shared_ptr<TextureCubeMap>
 		Format&	deleter( const std::function<void(TextureCubeMap*)> &sharedPtrDeleter ) { mDeleter = sharedPtrDeleter; return *this; }
+#if ! defined( CINDER_GL_ES )
 		//! (NVIDIA only) Enables per-gpu storage for multi-gpu multicast.
-		Format& perGpuStorage( bool enable = true ) { mPerGpuStorage = enable; return *this; }
+		Format& perGpuStorageNV( bool enable = true ) { setPerGpuStorageNV( enable ); return *this; }
+#endif
 	  protected:
 		std::function<void(TextureCubeMap*)>	mDeleter;
 		

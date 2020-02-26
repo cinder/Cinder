@@ -225,7 +225,7 @@ class CI_API CameraPersp : public Camera {
 	CameraPersp		calcFraming( const Sphere &worldSpaceSphere ) const;
 
 	//! Returns a subdivided portion of this camera's view frustrum as a new CameraPersp; useful for multi-gpu or tiled-rendering for instance.
-	CameraPersp		subdivide( uint8_t columns, uint8_t rows, uint8_t columnIndex, uint8_t rowIndex ) const;
+	CameraPersp		subdivide( unsigned int columns, unsigned int rows, unsigned int columnIndex, unsigned int rowIndex ) const;
   protected:
 	vec2	mLensShift;
 

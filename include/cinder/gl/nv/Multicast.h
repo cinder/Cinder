@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cinder/gl/platform.h"
-#include "cinder/Noncopyable.h"
 
 #include <memory>
 #include <vector>
@@ -13,61 +12,70 @@ namespace cinder {
 		class TextureBase;
 
 		namespace nv {
+			//! Multicast convenience functions relying on the GL_NV_gpu_multicast, GL_NVX_gpu_multicast2 and WGL_NV_multigpu_context extensions.
 			namespace multicast {
-
-				class Device {
+				//! Gpu device as used by the multicast extension, which is essentially an index and an associated bitfield mask.
+				class Device final {
 				public:
 					explicit Device( GLuint index ) : mIndex{ index }, mMask{ 1u << index } { }
-					virtual ~Device() { }
+					
 					Device( const Device& other ) = default;
 					Device( Device&& other ) = default;
 					Device& operator=( const Device& other ) = default;
 					Device& operator=( Device&& other ) = default;
 
-					GLuint getIndex() const;
-					GLbitfield getMask() const;
+					//! Returns the device index.
+					GLuint getIndex() const { return mIndex; }
+					//! Returns the device mask bitfield.
+					GLbitfield getMask() const { return mMask; }
 				protected:
 					GLuint			mIndex;
 					GLbitfield		mMask;
 				};
-
-				class Context : public Noncopyable {
-				public:
-					static Context&				instance();
-					bool						isEnabled() const;
-					const std::vector<Device>&	getDevices() const;
-					GLbitfield					getMaskAll() const;
-				private:
-					Context();
-
-					std::vector<Device> mLinkedDevices;
-					GLbitfield mMaskAll;
-				};
-
-				bool isEnabled();
-
+				//! Returns all "linked" devices visible to the nvidia multicast extension (GL_MULTICAST_GPUS_NV).
 				const std::vector<Device>& getDevices();
+				//! Returns the bitfield mask for all listed devices.
+				GLbitfield getMask( const std::vector<Device>& devices );
 
-				//! Note: If a function restricted by UploadGpuMaskNVX operates on textures or buffer objects with GPU-shared storage type (as opposed to per-GPU storage ), UPLOAD_GPU_MASK_NVX is ignored.
-				void enableUploadMask( const Device& device );
+				//! Restricts buffer object data uploads to the specified device mask.
+				//! Note: If a function restricted by UploadGpuMaskNVX operates on textures or buffer objects
+				//! with GPU-shared storage type (as opposed to per-GPU storage ), UPLOAD_GPU_MASK_NVX is ignored.
 				void enableUploadMask( GLbitfield mask );
+				//! Restricts buffer object data uploads to the specified device.
+				void enableUploadMask( const Device& device );
+				//! Disable buffer object data uploads (device) restrictions.
 				void disableUploadMask();
 
-				void enableRenderMask( const Device& device );
+				//! Restricts render commands to the specified device mask.
 				void enableRenderMask( GLbitfield mask );
+				//! Restricts render commands to the specified device.
+				void enableRenderMask( const Device& device );
+				//! Disable render commands (device) restrictions.
 				void disableRenderMask();
 
-				//! Signal other device to wait for this GPU to finish its work.
+				//! Signal other device to wait for this GPU to finish its work. (For multiple target devices, use the bitfield method.)
 				void signalWaitSync( const Device& source, const Device& target );
-
 				//! Signal all masked devices to wait for this GPU to finish its work.
 				void signalWaitSync( GLbitfield indexSource, GLbitfield targetMask );
 
-				void updateMasked( const std::shared_ptr<BufferObj>& buffer, GLsizeiptr size, const void* data, GLbitfield gpuMask );
+				//! Buffer subdata only on the target (masked) devices. 
+				void bufferSubData( const std::shared_ptr<BufferObj>& buffer, GLsizeiptr size, const void* data, GLbitfield targetMask );
+				//! Buffer subdata only on the target device. (For multiple target devices, use the bitfield method.)
+				void bufferSubData( const std::shared_ptr<BufferObj>& buffer, GLsizeiptr size, const void* data, const Device& targetDevice );
+				
+				//! Copy image subdata from the source device index onto the target (masked) devices.
+				void copyImageSubData( const std::shared_ptr<TextureBase>& source, const std::shared_ptr<TextureBase>& destination, GLuint sourceDeviceIndex, GLbitfield destinationMask );
+				//! Copy image subdata from the source device index onto the target device. (For multiple target devices, use the bitfield method.)
+				void copyImageSubData( const std::shared_ptr<TextureBase>& source, const std::shared_ptr<TextureBase>& destination, const Device& sourceDevice, const Device& targetDevice );
 
-				void copyTexture( const std::shared_ptr<TextureBase>& source, const std::shared_ptr<TextureBase>& destination, GLuint sourceDeviceIndex, GLbitfield destinationMask );
-
+				//! Specify a multicast scissor per device index.
+				void scissor( GLuint deviceIndex, const glm::ivec2& position, const glm::ivec2& size );
+				//! Specify a multicast scissor per device.
 				void scissor( const Device& device, const glm::ivec2& position, const glm::ivec2& size );
+				
+				//! Specify a multicast viewport per device index.
+				void viewport( GLuint deviceIndex, const glm::ivec2& position, const glm::ivec2& size );
+				//! Specify a multicast viewport per device.
 				void viewport( const Device& device, const glm::ivec2& position, const glm::ivec2& size );
 			}
 		}

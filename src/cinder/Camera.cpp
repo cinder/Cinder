@@ -367,7 +367,7 @@ CameraPersp	CameraPersp::calcFraming( const Sphere &worldSpaceSphere ) const
 	return result;
 }
 
-CameraPersp CameraPersp::subdivide( uint8_t columns, uint8_t rows, uint8_t columnIndex, uint8_t rowIndex ) const
+CameraPersp CameraPersp::subdivide( unsigned int columns, unsigned int rows, unsigned int columnIndex, unsigned int rowIndex ) const
 {
 	CameraPersp result = *this;
 	result.setAspectRatio( getAspectRatio() * float( rows ) / float( columns ) );

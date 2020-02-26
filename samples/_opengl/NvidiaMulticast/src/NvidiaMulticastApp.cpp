@@ -76,6 +76,10 @@ NvidiaMulticastApp::NvidiaMulticastApp()
 	: mCamUi{ &mCam, app::getWindow() }
 	, mGPUs{ multicast::getDevices() }
 {
+	if( mGPUs.size() < 2 ) {
+		throw ci::Exception( "This samples required (at least) two NVIDIA GPU devices in Mosaic or SLI mode." );
+	}
+
 	log::makeLogger<log::LoggerFileRotating>( getAppPath(), "%Y_%m_%d_%H_%M_%S.log" )->setTimestampEnabled( true );
 
 	std::vector<glm::vec4> positions;
@@ -98,29 +102,6 @@ void NvidiaMulticastApp::setup()
 
 	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
 
-	// Same format for primary and staging texture
-	auto texFmt = gl::Texture::Format().perGpuStorage( true ).mipmap( true );
-	auto img0 = loadImage( loadAsset( "texture.png" ) );
-	auto img1 = loadImage( loadAsset( "tiles.png" ) );
-
-	// Ensure that both texture have the same size, format & properties.
-	CI_ASSERT( img0->getWidth() == img1->getWidth() );
-	CI_ASSERT( img0->getHeight() == img1->getHeight() );
-	CI_ASSERT( img0->getChannelOrder() == img1->getChannelOrder() );
-	CI_ASSERT( img0->getColorModel() == img1->getColorModel() );
-	CI_ASSERT( img0->getDataType() == img1->getDataType() );
-	CI_ASSERT( img0->hasAlpha() == img1->hasAlpha() );
-
-	mTexture = gl::Texture2d::create( img0->getWidth(), img0->getHeight(), texFmt );
-
-	multicast::enableUploadMask( mGPUs[0] );
-	mTexture->update( ci::Surface{ img0 } );
-	// Replace texture on secondary GPU
-	multicast::enableUploadMask( mGPUs[1] );
-	mTexture->update( ci::Surface{ img1 } );
-
-	multicast::disableUploadMask();
-
 	try {
 		auto shaderPreproc = std::make_shared<gl::ShaderPreprocessor>();
 #if defined( ASYMMETRICAL_CAMERAS )
@@ -136,13 +117,32 @@ void NvidiaMulticastApp::setup()
 	gl::enable( GL_SCISSOR_TEST, GL_TRUE );
 	gl::enableDepth();
 
+	// Same format for primary and staging texture
+	auto texFmt = gl::Texture::Format().perGpuStorageNV( true ).mipmap( true );
+	auto img0 = loadImage( loadAsset( "texture.png" ) );
+	auto img1 = loadImage( loadAsset( "tiles.png" ) );
+	// Ensure that both texture have the same size, format & properties.
+	CI_ASSERT( img0->getWidth() == img1->getWidth() );
+	CI_ASSERT( img0->getHeight() == img1->getHeight() );
+	CI_ASSERT( img0->getChannelOrder() == img1->getChannelOrder() );
+	CI_ASSERT( img0->getColorModel() == img1->getColorModel() );
+	CI_ASSERT( img0->getDataType() == img1->getDataType() );
+	CI_ASSERT( img0->hasAlpha() == img1->hasAlpha() );
+	mTexture = gl::Texture2d::create( img0->getWidth(), img0->getHeight(), texFmt );
+	
+	multicast::enableUploadMask( mGPUs[0] );
+	mTexture->update( ci::Surface{ img0 } );
+	// Replace texture on secondary GPU
+	multicast::enableUploadMask( mGPUs[1] );
+	mTexture->update( ci::Surface{ img1 } );
+	multicast::disableUploadMask();
 
 	// Per gpu color buffer (Red/Green)
 	mColor = vec3( 1, 0, 0 );
 	mUbo = gl::Ubo::create();
 	mUbo->namedBufferStorage( sizeof( vec3 ), &mColor, GL_DYNAMIC_STORAGE_BIT | GL_PER_GPU_STORAGE_BIT_NV );
 	mColor = vec3( 0, 1, 0 );
-	multicast::updateMasked( mUbo, sizeof( vec3 ), &mColor, mGPUs[1].getMask() );
+	multicast::bufferSubData( mUbo, sizeof( vec3 ), &mColor, mGPUs[1] );
 	mUbo->bindBufferBase( 0 );
 
 	// Per-gpu camera transformation (for the subdivided view columns).
@@ -183,7 +183,7 @@ void NvidiaMulticastApp::draw()
 			drawScene();
 		}
 
-		multicast::copyTexture( mFbo->getColorTexture(), mTextureSecondary, mGPUs[1].getIndex(), mGPUs[0].getMask() );
+		multicast::copyImageSubData( mFbo->getColorTexture(), mTextureSecondary, mGPUs[1], mGPUs[0] );
 
 		multicast::signalWaitSync( mGPUs[1], mGPUs[0] );
 		multicast::enableRenderMask( mGPUs[0] );
@@ -211,18 +211,18 @@ void NvidiaMulticastApp::draw()
 void NvidiaMulticastApp::drawScene()
 {
 #if defined( ASYMMETRICAL_CAMERAS )
-	for( size_t i = 0; i < mGPUs.size(); ++i ) {
-		auto tileCamera = mCam.subdivide( mGPUs.size(), 1, i, 0 );
+	for( unsigned int i = 0; i < (unsigned int)mGPUs.size(); ++i ) {
+		auto tileCamera = mCam.subdivide( (unsigned int)mGPUs.size(), 1, i, 0 );
 
 		CameraMatrices cm;
 		cm.view = tileCamera.getViewMatrix();
 		cm.projection = tileCamera.getProjectionMatrix();
-		multicast::updateMasked( mCamUbo, sizeof( CameraMatrices ), &cm, mGPUs[i].getMask() );
+		multicast::bufferSubData( mCamUbo, sizeof( CameraMatrices ), &cm, mGPUs.at(i) );
 	}
 #endif
 	gl::ScopedTextureBind push( mTexture, 0 );
 	gl::ScopedSsboBind pushBuffer{ mSsbo, 0 };
-	mBatch->drawInstanced( mInstanceCount );
+	mBatch->drawInstanced( (GLsizei)mInstanceCount );
 }
 
 void NvidiaMulticastApp::keyDown( KeyEvent event )
@@ -232,37 +232,32 @@ void NvidiaMulticastApp::keyDown( KeyEvent event )
 	}
 }
 
-void loadSettings()
-{
-	static bool alreadyLoaded = false;
-	if( !alreadyLoaded ) {
-		std::ifstream in{ getAssetPath( "settings.json" ) };
-		Json::Reader reader;
-		reader.parse( in, settings );
-	}
-}
-
 RendererGl::Options getRendererGlOptions()
 {
-	loadSettings();
+	// Load settings first!
+	std::ifstream in{ getAssetPath( "settings.json" ) };
+	Json::Reader reader;
+	reader.parse( in, settings );
+
 	RendererGl::Options options;
 	if( settings["multicast_multidisplay"].asBool() ) {
+		//! This options should be use on Quadro setups with Mosaic enabled, with each display connected to independent GPUs.
 		options.multiGpuMultiDisplayMulticastNV();
 	}
 	else {
+		//! This option should be used on GeForce setups, with SLI "Maximize 3D Performance" enabled.
 		options.multiGpuMulticastNV();
 	}
 	options.msaa( 0 );
 	options.setVersion( 4, 5 );
 	options.debug();
-	options.debugLog();
+	//options.debugLog();
 	options.debugBreak();
 	return options;
 }
 
 void prepareSettings( App::Settings* set )
 {
-	loadSettings();
 	set->setWindowSize( settings["resolution"][0].asInt(), settings["resolution"][1].asInt() );
 	set->setFullScreen( settings["fullscreen"].asBool() );
 	set->setBorderless( settings["borderless"].asBool() );
