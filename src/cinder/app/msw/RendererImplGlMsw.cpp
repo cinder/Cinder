@@ -270,12 +270,12 @@ bool initializeGl( HWND /*wnd*/, HDC dc, HGLRC sharedRC, const RendererGl::Optio
 		throw ExcRendererAllocation( "Failed to find suitable WGL pixel format" );
 
 	GLenum multigpu = 0;
-	if( options.isNvidiaMultiGpuEnabled() ) {
-		switch( options.getNvidiaMultiGpuMode() ) {
-		case RendererGl::Options::NvidiaMultiGpuMode::SINGLE: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_SINGLE_NV; break;
-		case RendererGl::Options::NvidiaMultiGpuMode::AFR: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_AFR_NV; break;
-		case RendererGl::Options::NvidiaMultiGpuMode::MULTICAST: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_MULTICAST_NV; break;
-		case RendererGl::Options::NvidiaMultiGpuMode::MULTI_DISPLAY_MULTICAST: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_MULTI_DISPLAY_MULTICAST_NV; break;
+	if( options.isMultiGpuEnabledNV() ) {
+		switch( options.getMultiGpuModeNV() ) {
+		case RendererGl::Options::MultiGpuModeNV::SINGLE: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_SINGLE_NV; break;
+		case RendererGl::Options::MultiGpuModeNV::AFR: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_AFR_NV; break;
+		case RendererGl::Options::MultiGpuModeNV::MULTICAST: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_MULTICAST_NV; break;
+		case RendererGl::Options::MultiGpuModeNV::MULTI_DISPLAY_MULTICAST: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_MULTI_DISPLAY_MULTICAST_NV; break;
 		default: break;
 		}
 	}

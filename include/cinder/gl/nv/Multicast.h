@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cinder/gl/platform.h"
+#include "cinder/Noncopyable.h"
 
 #include <memory>
 #include <vector>
@@ -30,9 +31,9 @@ namespace cinder {
 					GLbitfield		mMask;
 				};
 
-				class Context {
+				class Context : public Noncopyable {
 				public:
-					static Context& instance();
+					static Context&				instance();
 					bool						isEnabled() const;
 					const std::vector<Device>&	getDevices() const;
 					GLbitfield					getMaskAll() const;

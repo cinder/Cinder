@@ -123,7 +123,7 @@ void NvidiaMulticastApp::setup()
 
 	try {
 		auto shaderPreproc = std::make_shared<gl::ShaderPreprocessor>();
-#ifdef ASYMMETRICAL_CAMERAS
+#if defined( ASYMMETRICAL_CAMERAS )
 		shaderPreproc->addDefine( "ASYMMETRICAL" );
 #endif
 		mBatch = gl::Batch::create( geom::Teapot(), gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "shader.vert" ) ).fragment( loadAsset( "shader.frag" ) ).preprocessor( shaderPreproc ) ) );
@@ -173,12 +173,12 @@ void NvidiaMulticastApp::draw()
 		{
 			gl::ScopedFramebuffer pusFbo{ mFbo };
 			gl::clear();
-#ifndef ASYMMETRICAL_CAMERAS
-			gl::viewport( app::getWindowSize() );
-			nvmc::viewport( mGPUs[0], ivec2( 0 ), getWindowSize() );
-			nvmc::viewport( mGPUs[1], ivec2( -getWindowWidth() / 2, 0 ), getWindowSize() );
-#else
+#if defined( ASYMMETRICAL_CAMERAS )
 			gl::viewport( ivec2( getWindowWidth() / 2, getWindowHeight() ) );
+#else
+			gl::viewport( app::getWindowSize() );
+			multicast::viewport( mGPUs[0], ivec2( 0 ), getWindowSize() );
+			multicast::viewport( mGPUs[1], ivec2( -getWindowWidth() / 2, 0 ), getWindowSize() );
 #endif
 			drawScene();
 		}
@@ -199,10 +199,10 @@ void NvidiaMulticastApp::draw()
 		multicast::disableRenderMask();
 	}
 	else {
-#ifndef ASYMMETRICAL_CAMERAS
+#if ! defined( ASYMMETRICAL_CAMERAS )
 		gl::viewport( app::getWindowSize() );
-		nvmc::scissor( mGPUs[0], ivec2( 0 ), ivec2( getWindowWidth() / 2, getWindowHeight() ) );
-		nvmc::scissor( mGPUs[1], ivec2( getWindowWidth() / 2, 0 ), ivec2( getWindowWidth() / 2, getWindowHeight() ) );
+		multicast::scissor( mGPUs[0], ivec2( 0 ), ivec2( getWindowWidth() / 2, getWindowHeight() ) );
+		multicast::scissor( mGPUs[1], ivec2( getWindowWidth() / 2, 0 ), ivec2( getWindowWidth() / 2, getWindowHeight() ) );
 #endif
 		drawScene();
 	}
@@ -210,7 +210,7 @@ void NvidiaMulticastApp::draw()
 
 void NvidiaMulticastApp::drawScene()
 {
-#ifdef ASYMMETRICAL_CAMERAS
+#if defined( ASYMMETRICAL_CAMERAS )
 	for( size_t i = 0; i < mGPUs.size(); ++i ) {
 		auto tileCamera = mCam.subdivide( mGPUs.size(), 1, i, 0 );
 
@@ -247,10 +247,10 @@ RendererGl::Options getRendererGlOptions()
 	loadSettings();
 	RendererGl::Options options;
 	if( settings["multicast_multidisplay"].asBool() ) {
-		options.nvidiaMultiGpuMultiDisplayMulticast();
+		options.multiGpuMultiDisplayMulticastNV();
 	}
 	else {
-		options.nvidiaMultiGpuMulticast();
+		options.multiGpuMulticastNV();
 	}
 	options.msaa( 0 );
 	options.setVersion( 4, 5 );
