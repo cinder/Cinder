@@ -212,8 +212,8 @@ void NvidiaMulticastApp::draw()
 void NvidiaMulticastApp::drawScene()
 {
 #if defined( ASYMMETRICAL_CAMERAS )
-	for( unsigned int i = 0; i < (unsigned int)mGPUs.size(); ++i ) {
-		auto cameraTile = mCam.subdivide( (unsigned int)mGPUs.size(), 1, i, 0 );
+	for( size_t i = 0; i < mGPUs.size(); ++i ) {
+		auto cameraTile = mCam.subdivide( uvec2( 1, mGPUs.size() ), uvec2( 0, i ) );
 		mCameraMatrices.view = cameraTile.getViewMatrix();
 		mCameraMatrices.projection = cameraTile.getProjectionMatrix();
 		multicast::bufferSubData( mCamUbo, sizeof( CameraMatrices ), &mCameraMatrices, mGPUs.at(i) );

@@ -367,11 +367,11 @@ CameraPersp	CameraPersp::calcFraming( const Sphere &worldSpaceSphere ) const
 	return result;
 }
 
-CameraPersp CameraPersp::subdivide( unsigned int columns, unsigned int rows, unsigned int columnIndex, unsigned int rowIndex ) const
+CameraPersp CameraPersp::subdivide( const glm::uvec2& gridSize, const glm::uvec2& gridIndex ) const
 {
 	CameraPersp result = *this;
-	result.setAspectRatio( getAspectRatio() * float( rows ) / float( columns ) );
-	result.setLensShift( vec2( 1.0f ) - vec2( columns, rows ) + 2.0f * vec2( columnIndex, rowIndex ) );
+	result.setAspectRatio( getAspectRatio() * float( gridSize.x ) / float( gridSize.y ) );
+	result.setLensShift( vec2( 1.0f ) - vec2( gridSize.y, gridSize.x ) + 2.0f * vec2( gridIndex.y, gridIndex.x ) );
 	return result;
 }
 
