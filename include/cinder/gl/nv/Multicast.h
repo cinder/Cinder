@@ -15,7 +15,7 @@ namespace cinder {
 			//! Multicast convenience functions relying on the GL_NV_gpu_multicast, GL_NVX_gpu_multicast2 and WGL_NV_multigpu_context extensions.
 			namespace multicast {
 				//! Gpu device as used by the multicast extension, which is essentially an index and an associated bitfield mask.
-				class Device final {
+				class CI_API Device final {
 				public:
 					explicit Device( GLuint index ) : mIndex{ index }, mMask{ 1u << index } { }
 					
@@ -33,50 +33,50 @@ namespace cinder {
 					GLbitfield		mMask;
 				};
 				//! Returns all "linked" devices visible to the nvidia multicast extension (GL_MULTICAST_GPUS_NV).
-				const std::vector<Device>& getDevices();
+				CI_API const std::vector<Device>& getDevices();
 				//! Returns the bitfield mask for all listed devices.
-				GLbitfield getMask( const std::vector<Device>& devices );
+				CI_API GLbitfield getMask( const std::vector<Device>& devices );
 
 				//! Restricts buffer object data uploads to the specified device mask.
 				//! Note: If a function restricted by UploadGpuMaskNVX operates on textures or buffer objects
 				//! with GPU-shared storage type (as opposed to per-GPU storage ), UPLOAD_GPU_MASK_NVX is ignored.
-				void enableUploadMask( GLbitfield mask );
+				CI_API void enableUploadMask( GLbitfield mask );
 				//! Restricts buffer object data uploads to the specified device.
-				void enableUploadMask( const Device& device );
+				CI_API void enableUploadMask( const Device& device );
 				//! Disable buffer object data uploads (device) restrictions.
-				void disableUploadMask();
+				CI_API void disableUploadMask();
 
 				//! Restricts render commands to the specified device mask.
-				void enableRenderMask( GLbitfield mask );
+				CI_API void enableRenderMask( GLbitfield mask );
 				//! Restricts render commands to the specified device.
-				void enableRenderMask( const Device& device );
+				CI_API void enableRenderMask( const Device& device );
 				//! Disable render commands (device) restrictions.
-				void disableRenderMask();
+				CI_API void disableRenderMask();
 
 				//! Signal other device to wait for this GPU to finish its work. (For multiple target devices, use the bitfield method.)
-				void signalWaitSync( const Device& source, const Device& target );
+				CI_API void signalWaitSync( const Device& source, const Device& target );
 				//! Signal all masked devices to wait for this GPU to finish its work.
-				void signalWaitSync( GLbitfield indexSource, GLbitfield targetMask );
+				CI_API void signalWaitSync( GLbitfield indexSource, GLbitfield targetMask );
 
 				//! Buffer subdata only on the target (masked) devices. 
-				void bufferSubData( const std::shared_ptr<BufferObj>& buffer, GLsizeiptr size, const void* data, GLbitfield targetMask );
+				CI_API void bufferSubData( const std::shared_ptr<BufferObj>& buffer, GLsizeiptr size, const void* data, GLbitfield targetMask );
 				//! Buffer subdata only on the target device. (For multiple target devices, use the bitfield method.)
-				void bufferSubData( const std::shared_ptr<BufferObj>& buffer, GLsizeiptr size, const void* data, const Device& targetDevice );
+				CI_API void bufferSubData( const std::shared_ptr<BufferObj>& buffer, GLsizeiptr size, const void* data, const Device& targetDevice );
 				
 				//! Copy image subdata from the source device index onto the target (masked) devices.
-				void copyImageSubData( const std::shared_ptr<TextureBase>& source, const std::shared_ptr<TextureBase>& destination, GLuint sourceDeviceIndex, GLbitfield destinationMask );
+				CI_API void copyImageSubData( const std::shared_ptr<TextureBase>& source, const std::shared_ptr<TextureBase>& destination, GLuint sourceDeviceIndex, GLbitfield destinationMask );
 				//! Copy image subdata from the source device index onto the target device. (For multiple target devices, use the bitfield method.)
-				void copyImageSubData( const std::shared_ptr<TextureBase>& source, const std::shared_ptr<TextureBase>& destination, const Device& sourceDevice, const Device& targetDevice );
+				CI_API void copyImageSubData( const std::shared_ptr<TextureBase>& source, const std::shared_ptr<TextureBase>& destination, const Device& sourceDevice, const Device& targetDevice );
 
 				//! Specify a multicast scissor per device index.
-				void scissor( GLuint deviceIndex, const glm::ivec2& position, const glm::ivec2& size );
+				CI_API void scissor( GLuint deviceIndex, const glm::ivec2& position, const glm::ivec2& size );
 				//! Specify a multicast scissor per device.
-				void scissor( const Device& device, const glm::ivec2& position, const glm::ivec2& size );
+				CI_API void scissor( const Device& device, const glm::ivec2& position, const glm::ivec2& size );
 				
 				//! Specify a multicast viewport per device index.
-				void viewport( GLuint deviceIndex, const glm::ivec2& position, const glm::ivec2& size );
+				CI_API void viewport( GLuint deviceIndex, const glm::ivec2& position, const glm::ivec2& size );
 				//! Specify a multicast viewport per device.
-				void viewport( const Device& device, const glm::ivec2& position, const glm::ivec2& size );
+				CI_API void viewport( const Device& device, const glm::ivec2& position, const glm::ivec2& size );
 			}
 		}
 	}
