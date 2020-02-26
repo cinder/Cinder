@@ -45,7 +45,7 @@ BufferObj::BufferObj( GLenum target )
 	mUsage( GL_READ_WRITE )
 #endif
 {
-	if( glad_glCreateBuffers ) {
+	if( GLAD_GL_VERSION_4_5 ) {
 		glCreateBuffers( 1, &mId );
 	}
 	else {
@@ -57,7 +57,7 @@ BufferObj::BufferObj( GLenum target )
 BufferObj::BufferObj( GLenum target, GLsizeiptr allocationSize, const void *data, GLenum usage )
 	: mId( 0 ), mTarget( target ), mSize( allocationSize ), mUsage( usage )
 {
-	if( glad_glCreateBuffers ) {
+	if( GLAD_GL_VERSION_4_5 ) {
 		glCreateBuffers( 1, &mId );
 		glNamedBufferData( mId, mSize, data, mUsage );
 	}
@@ -256,11 +256,13 @@ void BufferObj::setLabel( const std::string &label )
 
 void BufferObj::bufferStorage( GLsizeiptr size, const void* data, GLbitfield flags ) const
 {
+	CI_ASSERT( GLAD_GL_VERSION_4_4 );
 	glBufferStorage( mTarget, size, data, flags );
 }
 
 void BufferObj::namedBufferStorage( GLsizeiptr size, const void* data, GLbitfield flags ) const
 {
+	CI_ASSERT( GLAD_GL_VERSION_4_5 );
 	glNamedBufferStorage( mId, size, data, flags );
 }
 

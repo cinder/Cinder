@@ -57,6 +57,7 @@ public:
 	CameraPersp			mCam;
 	CameraUi			mCamUi;
 	gl::UboRef			mCamUbo;
+	CameraMatrices		mCameraMatrices;
 
 	gl::BatchRef		mBatch;
 	gl::Texture2dRef	mTexture;
@@ -212,12 +213,10 @@ void NvidiaMulticastApp::drawScene()
 {
 #if defined( ASYMMETRICAL_CAMERAS )
 	for( unsigned int i = 0; i < (unsigned int)mGPUs.size(); ++i ) {
-		auto tileCamera = mCam.subdivide( (unsigned int)mGPUs.size(), 1, i, 0 );
-
-		CameraMatrices cm;
-		cm.view = tileCamera.getViewMatrix();
-		cm.projection = tileCamera.getProjectionMatrix();
-		multicast::bufferSubData( mCamUbo, sizeof( CameraMatrices ), &cm, mGPUs.at(i) );
+		auto cameraTile = mCam.subdivide( (unsigned int)mGPUs.size(), 1, i, 0 );
+		mCameraMatrices.view = cameraTile.getViewMatrix();
+		mCameraMatrices.projection = cameraTile.getProjectionMatrix();
+		multicast::bufferSubData( mCamUbo, sizeof( CameraMatrices ), &mCameraMatrices, mGPUs.at(i) );
 	}
 #endif
 	gl::ScopedTextureBind push( mTexture, 0 );
