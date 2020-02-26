@@ -2,6 +2,8 @@
 
 #include "cinder/gl/platform.h"
 
+#if defined( CINDER_MSW_DESKTOP ) && ! defined( CINDER_GL_ES )
+
 #include <memory>
 #include <vector>
 
@@ -81,3 +83,5 @@ namespace cinder {
 		}
 	}
 }
+
+#endif

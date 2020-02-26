@@ -1,4 +1,7 @@
 #include "cinder/gl/nv/Multicast.h"
+
+#if defined( CINDER_MSW_DESKTOP ) && ! defined( CINDER_GL_ES )
+
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/BufferObj.h"
 #include "cinder/gl/scoped.h"
@@ -126,3 +129,5 @@ void multicast::viewport( const Device& device, const ivec2& position, const ive
 }
 
 } } } // ci::gl::nv namespaces
+
+#endif
