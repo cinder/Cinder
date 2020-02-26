@@ -200,7 +200,10 @@ void NvidiaMulticastApp::draw()
 		multicast::disableRenderMask();
 	}
 	else {
-#if ! defined( ASYMMETRICAL_CAMERAS )
+#if defined( ASYMMETRICAL_CAMERAS )
+		multicast::viewport( mGPUs[0], ivec2( 0 ), ivec2( getWindowWidth() / 2, getWindowHeight() ) );
+		multicast::viewport( mGPUs[1], ivec2( getWindowWidth() / 2, 0 ), ivec2( getWindowWidth() / 2, getWindowHeight() ) );
+#else
 		gl::viewport( app::getWindowSize() );
 		multicast::scissor( mGPUs[0], ivec2( 0 ), ivec2( getWindowWidth() / 2, getWindowHeight() ) );
 		multicast::scissor( mGPUs[1], ivec2( getWindowWidth() / 2, 0 ), ivec2( getWindowWidth() / 2, getWindowHeight() ) );
