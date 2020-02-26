@@ -248,7 +248,7 @@ class CI_API TextureBase {
 #if ! defined( CINDER_GL_ES )
 		//! Supplies an intermediate PBO that Texture constructors optionally make use of. A PBO of an inadequate size may result in an exception.
 		void			setIntermediatePbo( const PboRef &intermediatePbo ) { mIntermediatePbo = intermediatePbo; }
-		//! Returns the optional intermediate PBO that Texture constructors may make use of.mPerGpuStorage
+		//! Returns the optional intermediate PBO that Texture constructors may make use of.
 		const PboRef&	getIntermediatePbo() const { return mIntermediatePbo; }
 #endif
 		//! Sets the texture's border color. Ignored in OpenGL ES.
