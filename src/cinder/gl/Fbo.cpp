@@ -299,7 +299,7 @@ Fbo::~Fbo()
 void Fbo::initMultisamplingSettings( bool *useMsaa, bool *useCsaa, Format *format )
 {
 #if defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ES ) )
-	static bool csaaSupported = ( glext_NV_framebuffer_multisample_coverage != 0 );
+	static bool csaaSupported = ( GLAD_GL_NV_framebuffer_multisample_coverage != 0 );
 #else
 	static bool csaaSupported = false;
 #endif
@@ -333,7 +333,7 @@ void Fbo::prepareAttachments( const Fbo::Format &format, bool /*multisampling*/ 
 										|| mAttachmentsTexture.count( GL_DEPTH_STENCIL_ATTACHMENT ) || mAttachmentsBuffer.count( GL_DEPTH_STENCIL_ATTACHMENT );
 #endif
 	if( format.mDepthTexture && ( ! preexistingDepthAttachment ) ) {
-#if ! defined( CINDER_GL_ES_2_RPI )
+#if ! defined( CINDER_GL_ES_3_RPI )
 		mAttachmentsTexture[GL_DEPTH_ATTACHMENT] = Texture::create( mWidth, mHeight, format.mDepthTextureFormat );
 #else
 		CI_LOG_W( "No depth texture support on the RPi2." );

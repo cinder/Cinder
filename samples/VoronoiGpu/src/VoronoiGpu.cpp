@@ -90,7 +90,7 @@ ci::Surface32f calcDiscreteVoronoiGpu( const std::vector<ci::ivec2> &points, int
 	// allocate the FBOs
 	gl::Fbo::Format format;
 	format.setColorTextureFormat( gl::Texture::Format().target( GL_TEXTURE_RECTANGLE_ARB ).minFilter( GL_NEAREST ).
-		magFilter( GL_NEAREST ).internalFormat( GL_RGB32F_ARB ).wrap( GL_CLAMP_TO_EDGE ) );
+		magFilter( GL_NEAREST ).internalFormat( GL_RGB32F ).wrap( GL_CLAMP_TO_EDGE ) );
 	gl::FboRef fbo[2];
 	fbo[0] = gl::Fbo::create( width, height, format );
 	fbo[1] = gl::Fbo::create( width, height, format );
@@ -127,7 +127,7 @@ ci::Channel32f calcDistanceMapGpu( const vector<ivec2> &points, int width, int h
 	// allocate the FBOs
 	gl::Fbo::Format format;
 	format.setColorTextureFormat( gl::Texture::Format().target( GL_TEXTURE_RECTANGLE_ARB ).minFilter( GL_NEAREST ).
-		magFilter( GL_NEAREST ).internalFormat( GL_RGB32F_ARB ).wrap( GL_CLAMP_TO_EDGE ) );
+		magFilter( GL_NEAREST ).internalFormat( GL_RGB32F ).wrap( GL_CLAMP_TO_EDGE ) );
 	gl::FboRef fbo[2];
 	fbo[0] = gl::Fbo::create( width, height, format );
 	fbo[1] = gl::Fbo::create( width, height, format );

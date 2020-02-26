@@ -49,6 +49,7 @@
 #elif defined( CINDER_LINUX )
 	#include "cinder/app/App.h"
 	#include "cinder/app/RendererGl.h"
+	#include "glad/glad.h"
 	#include "glfw/glfw3.h"
 #endif
 

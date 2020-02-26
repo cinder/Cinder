@@ -30,6 +30,7 @@
 #if defined( CINDER_LINUX_EGL_ONLY )
 	#include "EGL/eglplatform.h"
 #elif ! defined( CINDER_HEADLESS )
+	#include "glad/glad.h"
 	#include "glfw/glfw3.h"
 	#include "glfw/glfw3native.h"
 #endif
@@ -63,9 +64,6 @@ public:
 #if defined( CINDER_HEADLESS )
 	virtual void*	getNative();
 	virtual void*	getNative() const;
-#elif defined( CINDER_GL_ES_2_RPI )
-	virtual EGLNativeWindowType	getNative();
-	virtual EGLNativeWindowType getNative() const;
 #else
 	virtual GLFWwindow	*getNative() { return mGlfwWindow; }
 	virtual GLFWwindow	*getNative() const { return mGlfwWindow; }
@@ -91,14 +89,7 @@ public:
 protected:
 	AppImplLinux		*mAppImpl = nullptr;
 	WindowRef			mWindowRef;
-
-#if defined( CINDER_GL_ES_2_RPI )
-	struct NativeWindow;
-	std::unique_ptr<NativeWindow> mNativeWindow;
-	bool				mShowCursor = true;
-#else
 	GLFWwindow			*mGlfwWindow = nullptr;
-#endif
 
 	std::string			mTitle;
 	bool				mFullScreen = false;

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Cinder on Raspberry Pi 4</title>
+
+		<!-- keywords used for searching -->
+		<meta name="keywords" content="guide, linux, raspberry, pi">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- reference to Cinder classes -->
+   		<!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+   		<!-- master stylesheet - these links will be replaced when compiled -->
+		<link rel="stylesheet" href="../../_assets/css/foundation.css">
+		<link rel="stylesheet" href="../../_assets/css/prism.css">
+		<link rel="stylesheet" href="../../_assets/css/style.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+		<!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+		
+	</head>
+
+	<body id="guide-contents" class="language-c++">
+
+		<!-- CONTENT STARTS HERE -->
+
+		<h1>Raspberry Pi 4 Notes</h1>
+		<h3 id="cmake">Requirements</h3>
+		<ul>
+			<li>Raspbian GNU/Linux 10 (buster) or later</li>
+			<li>CMake 3.0+</li>
+		</ul>
+		<h4 id="cmake">CMake</h4>
+		<p>To install CMake:</p>
+		<pre><code>sudo apt-get install cmake</code></pre>
+		
+		<h3 id="library-dependencies">Cinder Dependencies</h3>
+<pre><code>sudo apt-get install libxcursor-dev \
+libgles2-mesa-dev \
+zlib1g-dev \
+libfontconfig1-dev \
+libmpg123-dev \
+libsndfile1 \
+libsndfile1-dev \
+libpulse-dev \
+libasound2-dev \
+libcurl4-gnutls-dev \
+libgstreamer1.0-dev \
+libgstreamer-plugins-bad1.0-dev \
+libgstreamer-plugins-base1.0-dev \
+gstreamer1.0-libav \
+gstreamer1.0-alsa \
+gstreamer1.0-pulseaudio \
+gstreamer1.0-plugins-bad \
+libboost-filesystem-dev \
+xcb \
+libxcb-xkb-dev \
+x11-xkb-utils \
+libx11-xcb-dev \
+libxkbcommon-x11-dev
+</code></pre>
+
+		<h1 id="building-cinder">Building Cinder</h1>
+		<h3 id="fetching-and-building-cinder">Fetching and Building Cinder</h3>
+<pre><code>git clone --recursive https://github.com/cinder/Cinder.git
+cd Cinder
+mkdir build &amp;&amp; cd build
+cmake .. -DCINDER_TARGET_GL=es3-rpi
+make -j 3
+</code></pre>
+
+<p>NOTE: Attempting to build Cinder with more than 3 jobs (specified with the <code>-j 3</code> parameter) will likely cause a hard crash due to GCC memory requirements.</p>
+
+		<h4 id="clang">Clang</h4>
+		<p>Cinder can also be used with the version of Clang (v3.5.0) packaged for Raspbian Jessie. Install it using <code>apt-get</code>:</p>
+		<pre><code>sudo apt-get install clang</code></pre>
+		<p>To set Clang as the default compiler, select <code>/usr/bin/clang++</code> when prompted by this command:
+		<pre><code>sudo update-alternatives --config c++</code></pre>
+		</p>
+
+		<h1 id="building-and-running-basicapp">Building and Running BasicApp</h1>
+		<h3 id="building">Building</h3>
+<pre><code>cd samples/BasicApp/proj/cmake
+mkdir build &amp;&amp; cd build
+cmake .. -DCINDER_TARGET_GL=es3-rpi
+make</code></pre>
+
+		<h3 id="running">Running</h3>
+		<p>Starting from <code>samples/BasicApp/proj/cmake/build</code>:</p>
+		<pre><code>./Debug/BasicApp</code></pre>
+
+		<h3 id="exiting">Exiting</h3>
+		<p>Hit the <code>Esc</code> key to exit the BasicApp. Cinder for Linux on the Raspberry Pi 3 currently has <code>Esc</code> hardcoded to exit an application. Otherwise it's non-trivial to return to the OS. A future version will offer a more graceful way to handle this.</p>
+		<h1 id="troubleshooting">Troubleshooting</h1>
+		<h3 id="audio">Audio</h3>
+
+		<h4 id="context_create_failed">Starting the pulsedeamon</h4>
+		<p>Raspbian ships with Pulse Audio installed, however you must start the <code>pulsedeamon</code> before you can use audio in your application. Do that by running the following:</p>
+		<pre><code>pulseaudio -D</code></pre>
+
+		<h4 id="no-output-using-35-jack">No Output Using 3.5mm headphone jack</h4>
+		<p>Try the following, it will force output to the 3.5mm jack (<a href="https://www.raspberrypi.org/documentation/configuration/audio-config.md">more information here</a>):</p>
+		<pre><code>sudo amixer cset numid=3 1</code></pre>
+		<!-- END CONTENT -->
+
+		<!-- Scripts -->
+		<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+		<!-- Place additional scripts here (optional) -->
+		<!-- <script type="text/javascript"></script> -->
+
+	</body>
+</html>
