@@ -1,5 +1,6 @@
 #include "cinder/CinderImGui.h"
 #include "imgui/imgui_impl_opengl3.h"
+#include "imgui/imgui_impl_cinder.h"
 
 #include "cinder/app/App.h"
 #include "cinder/Log.h"
@@ -7,6 +8,7 @@
 #include "cinder/app/MouseEvent.h"
 #include "cinder/app/KeyEvent.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/gl/Context.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -16,131 +18,15 @@ namespace {
 	static bool sTriggerNewFrame = true;
 	std::vector<int> sAccelKeys;
 	signals::ConnectionList sAppConnections;
-	std::unordered_map<Window*, signals::ConnectionList> sWindowConnections;
 
 	void newFrameGuard() {
 		if( ! sTriggerNewFrame )
 			return;
 
 		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplCinder_NewFrame();
 		ImGui::NewFrame();
 		sTriggerNewFrame = false;
-	}
-
-	void mouseDown( ci::app::MouseEvent& event )
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.MousePos = app::toPixels( event.getPos() );
-		if( event.isLeftDown() ) {
-			io.MouseDown[0] = true;
-			io.MouseDown[1] = false;
-			io.MouseDown[2] = false;
-		}
-		else if( event.isRightDown() ) {
-			io.MouseDown[0] = false;
-			io.MouseDown[1] = true;
-			io.MouseDown[2] = false;
-		}
-		else if( event.isMiddleDown() ) {
-			io.MouseDown[0] = false;
-			io.MouseDown[1] = false;
-			io.MouseDown[2] = true;
-		}
-
-		event.setHandled( io.WantCaptureMouse );
-	}
-
-	void mouseMove( ci::app::MouseEvent& event )
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.MousePos = toPixels( event.getPos() );
-
-		event.setHandled( io.WantCaptureMouse );
-	}
-
-	void mouseDrag( ci::app::MouseEvent& event )
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.MousePos = toPixels( event.getPos() );
-
-		event.setHandled( io.WantCaptureMouse );
-	}
-
-	void mouseUp( ci::app::MouseEvent& event )
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.MouseDown[0] = false;
-		io.MouseDown[1] = false;
-		io.MouseDown[2] = false;
-
-		event.setHandled( io.WantCaptureMouse );
-	}
-
-	void mouseWheel( ci::app::MouseEvent& event )
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.MouseWheel += event.getWheelIncrement();
-
-		event.setHandled( io.WantCaptureMouse );
-	}
-
-	void keyDown( ci::app::KeyEvent& event )
-	{
-		ImGuiIO& io = ImGui::GetIO();
-
-#if defined CINDER_LINUX
-		auto character = event.getChar();
-#else
-		uint32_t character = event.getCharUtf32();
-#endif
-
-		io.KeysDown[event.getCode()] = true;
-
-		if( !event.isAccelDown() && character > 0 && character <= 255 ) {
-			io.AddInputCharacter( (char)character );
-		}
-		else if( event.getCode() != KeyEvent::KEY_LMETA
-			&& event.getCode() != KeyEvent::KEY_RMETA
-			&& event.isAccelDown()
-			&& find( sAccelKeys.begin(), sAccelKeys.end(), event.getCode() ) == sAccelKeys.end() ) {
-			sAccelKeys.push_back( event.getCode() );
-		}
-
-		io.KeyCtrl = io.KeysDown[KeyEvent::KEY_LCTRL] || io.KeysDown[KeyEvent::KEY_RCTRL];
-		io.KeyShift = io.KeysDown[KeyEvent::KEY_LSHIFT] || io.KeysDown[KeyEvent::KEY_RSHIFT];
-		io.KeyAlt = io.KeysDown[KeyEvent::KEY_LALT] || io.KeysDown[KeyEvent::KEY_RALT];
-		io.KeySuper = io.KeysDown[KeyEvent::KEY_LMETA] || io.KeysDown[KeyEvent::KEY_RMETA] || io.KeysDown[KeyEvent::KEY_LSUPER] || io.KeysDown[KeyEvent::KEY_RSUPER];
-
-		event.setHandled( io.WantCaptureKeyboard );
-	}
-
-	void keyUp( ci::app::KeyEvent& event )
-	{
-		ImGuiIO& io = ImGui::GetIO();
-
-		io.KeysDown[event.getCode()] = false;
-
-		for( auto key : sAccelKeys ) {
-			io.KeysDown[key] = false;
-		}
-		sAccelKeys.clear();
-
-		io.KeyCtrl = io.KeysDown[KeyEvent::KEY_LCTRL] || io.KeysDown[KeyEvent::KEY_RCTRL];
-		io.KeyShift = io.KeysDown[KeyEvent::KEY_LSHIFT] || io.KeysDown[KeyEvent::KEY_RSHIFT];
-		io.KeyAlt = io.KeysDown[KeyEvent::KEY_LALT] || io.KeysDown[KeyEvent::KEY_RALT];
-		io.KeySuper = io.KeysDown[KeyEvent::KEY_LMETA] || io.KeysDown[KeyEvent::KEY_RMETA] || io.KeysDown[KeyEvent::KEY_LSUPER] || io.KeysDown[KeyEvent::KEY_RSUPER];
-
-		event.setHandled( io.WantCaptureKeyboard );
-	}
-
-	void resize()
-	{
-		newFrameGuard();
-
-		int w = ci::app::getWindow()->getWidth();
-		int h = ci::app::getWindow()->getHeight();
-		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2( (float)w, (float)h );
 	}
 
 	//! Used by Combo and ListBox below.
@@ -178,26 +64,6 @@ namespace ImGui {
 		return *this;
 	}
 
-	void connectWindow( ci::app::WindowRef window )
-	{
-		ci::app::Window* windowPtr = window.get();
-		if( sWindowConnections.count( windowPtr ) ) {
-			CI_LOG_W( "Window is already connected." );
-			return;
-		}
-
-		sWindowConnections[windowPtr] += window->getSignalMouseDown().connect( mouseDown );
-		sWindowConnections[windowPtr] += window->getSignalMouseUp().connect( mouseUp );
-		sWindowConnections[windowPtr] += window->getSignalMouseDrag().connect( mouseDrag );
-		sWindowConnections[windowPtr] += window->getSignalMouseMove().connect( mouseMove );
-		sWindowConnections[windowPtr] += window->getSignalMouseWheel().connect( mouseWheel );
-		sWindowConnections[windowPtr] += window->getSignalKeyDown().connect( keyDown );
-		sWindowConnections[windowPtr] += window->getSignalKeyUp().connect( keyUp );
-		sWindowConnections[windowPtr] += window->getSignalResize().connect( resize );
-		sWindowConnections[windowPtr] += window->getSignalClose().connect( [&] {
-			sWindowConnections.erase( windowPtr );
-		} );
-	}
 	ScopedId::ScopedId( int int_id )
 	{
 		ImGui::PushID( int_id );
@@ -353,41 +219,19 @@ namespace ImGui {
 void ImGui::Initialize( const ImGui::Options& options )
 {
 	IMGUI_CHECKVERSION();
-	ImGuiContext* context = ImGui::CreateContext();
-
-	ImGui::StyleColorsDark();
-
-	ImGui_ImplOpenGL3_Init( "#version 150" );
+	ImGui::CreateContext();
+	WindowRef window = options.getWindow();
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-	//io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;
 
-	io.DisplaySize = ImVec2( static_cast<float>( app::getWindow()->getSize().x ), static_cast<float>( app::getWindow()->getSize().y ) );
+	io.DisplaySize = ImVec2( static_cast<float>( ci::app::getWindow()->getSize().x ), static_cast<float>( ci::app::getWindow()->getSize().y ) );
 	io.DeltaTime = 1.0f / 60.0f;
 	io.WantCaptureMouse = true;
-	io.KeyMap[ImGuiKey_Tab] = KeyEvent::KEY_TAB;
-	io.KeyMap[ImGuiKey_LeftArrow] = KeyEvent::KEY_LEFT;
-	io.KeyMap[ImGuiKey_RightArrow] = KeyEvent::KEY_RIGHT;
-	io.KeyMap[ImGuiKey_UpArrow] = KeyEvent::KEY_UP;
-	io.KeyMap[ImGuiKey_DownArrow] = KeyEvent::KEY_DOWN;
-	io.KeyMap[ImGuiKey_Home] = KeyEvent::KEY_HOME;
-	io.KeyMap[ImGuiKey_End] = KeyEvent::KEY_END;
-	io.KeyMap[ImGuiKey_Delete] = KeyEvent::KEY_DELETE;
-	io.KeyMap[ImGuiKey_Backspace] = KeyEvent::KEY_BACKSPACE;
-	io.KeyMap[ImGuiKey_Enter] = KeyEvent::KEY_RETURN;
-	io.KeyMap[ImGuiKey_Escape] = KeyEvent::KEY_ESCAPE;
-	io.KeyMap[ImGuiKey_A] = KeyEvent::KEY_a;
-	io.KeyMap[ImGuiKey_C] = KeyEvent::KEY_c;
-	io.KeyMap[ImGuiKey_V] = KeyEvent::KEY_v;
-	io.KeyMap[ImGuiKey_X] = KeyEvent::KEY_x;
-	io.KeyMap[ImGuiKey_Y] = KeyEvent::KEY_y;
-	io.KeyMap[ImGuiKey_Z] = KeyEvent::KEY_z;
-	io.KeyMap[ImGuiKey_Insert] = KeyEvent::KEY_INSERT;
-	io.KeyMap[ImGuiKey_Space] = KeyEvent::KEY_SPACE;
 
 	// setup config file path
 	static std::string path;
@@ -399,26 +243,39 @@ void ImGui::Initialize( const ImGui::Options& options )
 	}
 	io.IniFilename = path.c_str();
 
-	auto window = options.getWindow();
-	if( window ) {
-		connectWindow( window );
-		if( options.isAutoRenderEnabled() ) {
-			sWindowConnections[window.get()] += window->getSignalPostDraw().connect( [] {
-				ImGui::Render();
-				ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
-				sTriggerNewFrame = true;
-				App::get()->dispatchAsync( []() {
-					newFrameGuard();
-				} );
+	ImGui_ImplCinder_Init( window, true );
+	ImGui_ImplOpenGL3_Init( "#version 150" );
+
+	if( options.isAutoRenderEnabled() ) {
+		window->getSignalPostDraw().connect( [] {
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
+			
+			ImGuiIO& io = ImGui::GetIO();
+			if( io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable )
+			{
+				auto backup_current_context = gl::context()->getCurrent();
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault();
+				gl::context()->makeCurrent( backup_current_context );
+			}
+			
+			
+			sTriggerNewFrame = true;
+			App::get()->dispatchAsync( []() {
+				newFrameGuard();
 			} );
-		}
-		else {
-			sTriggerNewFrame = false; //prevents resize() event from calling begin frame.
-		}
+		} );
+	}
+	else {
+		sTriggerNewFrame = false; //prevents resize() event from calling begin frame.
 	}
 	
-	sAppConnections += app::App::get()->getSignalCleanup().connect( [context]() {
+	sAppConnections += app::App::get()->getSignalCleanup().connect( []() {
 		ImGui_ImplOpenGL3_Shutdown();
-		ImGui::DestroyContext( context );
+		ImGui_ImplCinder_Shutdown();
+		ImGui::DestroyContext();
 	} );
+
+	newFrameGuard();
 }

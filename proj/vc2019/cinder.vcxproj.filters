@@ -1071,6 +1071,9 @@
     <ClCompile Include="..\..\src\cinder\CinderImGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\imgui\imgui_impl_cinder.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\AntTweakBar\AntPerfTimer.h">
@@ -2257,6 +2260,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\CinderImGui.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\imgui\imgui_impl_cinder.h">
+      <Filter>Header Files\imgui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

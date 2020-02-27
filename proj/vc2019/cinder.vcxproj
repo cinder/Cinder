@@ -929,6 +929,7 @@
     <ClCompile Include="..\..\src\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\..\src\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\..\src\imgui\imgui_freetype.cpp" />
+    <ClCompile Include="..\..\src\imgui\imgui_impl_cinder.cpp" />
     <ClCompile Include="..\..\src\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\..\src\imgui\imgui_stdlib.cpp" />
     <ClCompile Include="..\..\src\imgui\imgui_widgets.cpp" />
@@ -1234,6 +1235,7 @@
     <ClInclude Include="..\..\include\imgui\imconfig.h" />
     <ClInclude Include="..\..\include\imgui\imgui.h" />
     <ClInclude Include="..\..\include\imgui\imgui_freetype.h" />
+    <ClInclude Include="..\..\include\imgui\imgui_impl_cinder.h" />
     <ClInclude Include="..\..\include\imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="..\..\include\imgui\imgui_internal.h" />
     <ClInclude Include="..\..\include\imgui\imgui_stdlib.h" />
