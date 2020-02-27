@@ -264,6 +264,16 @@ FOUND:
 	return true;
 }
 
+GLenum getMultiGpuContextMode( const app::RendererGl::Options::MultiGpuModeNV& mode ) {
+	switch( mode ) {
+	case RendererGl::Options::MultiGpuModeNV::SINGLE: return WGL_CONTEXT_MULTIGPU_ATTRIB_SINGLE_NV; break;
+	case RendererGl::Options::MultiGpuModeNV::AFR: return WGL_CONTEXT_MULTIGPU_ATTRIB_AFR_NV; break;
+	case RendererGl::Options::MultiGpuModeNV::MULTICAST: return WGL_CONTEXT_MULTIGPU_ATTRIB_MULTICAST_NV; break;
+	case RendererGl::Options::MultiGpuModeNV::MULTI_DISPLAY_MULTICAST: return WGL_CONTEXT_MULTIGPU_ATTRIB_MULTI_DISPLAY_MULTICAST_NV; break;
+	default: return 0;
+	}
+}
+
 bool initializeGl( HWND /*wnd*/, HDC dc, HGLRC sharedRC, const RendererGl::Options &options, HGLRC *resultRc )
 {
 	if( ! setPixelFormat( dc, options ) )
@@ -271,15 +281,8 @@ bool initializeGl( HWND /*wnd*/, HDC dc, HGLRC sharedRC, const RendererGl::Optio
 
 	GLenum multigpu = 0;
 	if( options.isMultiGpuEnabledNV() ) {
-		switch( options.getMultiGpuModeNV() ) {
-		case RendererGl::Options::MultiGpuModeNV::SINGLE: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_SINGLE_NV; break;
-		case RendererGl::Options::MultiGpuModeNV::AFR: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_AFR_NV; break;
-		case RendererGl::Options::MultiGpuModeNV::MULTICAST: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_MULTICAST_NV; break;
-		case RendererGl::Options::MultiGpuModeNV::MULTI_DISPLAY_MULTICAST: multigpu = WGL_CONTEXT_MULTIGPU_ATTRIB_MULTI_DISPLAY_MULTICAST_NV; break;
-		default: break;
-		}
+		multigpu = getMultiGpuContextMode( options.getMultiGpuModeNV() );
 	}
-
 
 	if( ! ( *resultRc = createContext( dc, options.getCoreProfile(), options.getDebug(), options.getVersion().first, options.getVersion().second, multigpu ) ) ) {
 		return false;								
@@ -322,6 +325,12 @@ bool RendererImplGlMsw::initialize( WindowImplMsw *windowImpl, RendererRef share
 	platformData->mDebugLogSeverity = mRenderer->getOptions().getDebugLogSeverity();
 	platformData->mDebugBreakSeverity = mRenderer->getOptions().getDebugBreakSeverity();
 	platformData->mObjectTracking = mRenderer->getOptions().getObjectTracking();
+	platformData->mCoreProfile = mRenderer->getOptions().getCoreProfile();
+	platformData->mVersion = mRenderer->getOptions().getVersion();
+#if ! defined( CINDER_GL_ES )
+	platformData->mMultiGpuEnabledNV = mRenderer->getOptions().isMultiGpuEnabledNV();
+	platformData->mMultiGpuModeNV = getMultiGpuContextMode( mRenderer->getOptions().getMultiGpuModeNV() );
+#endif
 	mCinderContext = gl::Context::createFromExisting( platformData );
 	mCinderContext->makeCurrent();
 
