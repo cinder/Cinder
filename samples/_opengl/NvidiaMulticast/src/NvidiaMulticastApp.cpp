@@ -243,11 +243,11 @@ RendererGl::Options getRendererGlOptions()
 
 	RendererGl::Options options;
 	if( settings["multicast_multidisplay"].asBool() ) {
-		//! This options should be use on Quadro setups with Mosaic enabled, with each display connected to independent GPUs.
+		//! This options should be use with Quadro devices with Mosaic enabled, with each display connected to independent GPUs.
 		options.multiGpuMultiDisplayMulticastNV();
 	}
 	else {
-		//! This option should be used on GeForce setups, with SLI "Maximize 3D Performance" enabled.
+		//! This option can be used with GeForce or Quadro devices, with SLI "Maximize 3D Performance" enabled.
 		options.multiGpuMulticastNV();
 	}
 	options.msaa( 0 );

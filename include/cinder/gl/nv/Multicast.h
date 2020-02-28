@@ -55,10 +55,10 @@ namespace cinder {
 				//! Disable render commands (device) restrictions.
 				CI_API void disableRenderMask();
 
-				//! Signal other device to wait for this GPU to finish its work. (For multiple target devices, use the bitfield method.)
-				CI_API void signalWaitSync( const Device& source, const Device& target );
 				//! Signal all masked devices to wait for this GPU to finish its work.
 				CI_API void signalWaitSync( GLbitfield indexSource, GLbitfield targetMask );
+				//! Signal other device to wait for this GPU to finish its work. (For multiple target devices, use the bitfield method.)
+				CI_API void signalWaitSync( const Device& source, const Device& target );
 
 				//! Buffer subdata only on the target (masked) devices. 
 				CI_API void bufferSubData( const std::shared_ptr<BufferObj>& buffer, GLsizeiptr size, const void* data, GLbitfield targetMask );
