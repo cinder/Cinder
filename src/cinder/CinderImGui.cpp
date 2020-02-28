@@ -304,10 +304,7 @@ static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window ) {
 	IM_ASSERT( io.Fonts->IsBuilt() ); // Font atlas needs to be built, call renderer _NewFrame() function e.g. ImGui_ImplOpenGL3_NewFrame() 
 
 	// Setup display size
-	int w = ci::app::toPixels( window->getWidth() ), h = ci::app::toPixels( window->getHeight() );
-	int display_w = w, display_h = h;
-	io.DisplaySize = ImVec2( (float)w, (float)h );
-	io.DisplayFramebufferScale = ImVec2( w > 0 ? ( (float)display_w / w ) : 0, h > 0 ? ( (float)display_h / h ) : 0 );
+	io.DisplaySize = ci::app::toPixels( window->getSize() );
 
 	// Setup time step
 	static double g_Time = 0.0f;
