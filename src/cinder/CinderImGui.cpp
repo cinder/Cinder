@@ -290,10 +290,8 @@ static void ImGui_ImplCinder_KeyUp( ci::app::KeyEvent& event )
 
 static void ImGui_ImplCinder_Resize()
 {
-	int w = ci::app::getWindow()->getWidth();
-	int h = ci::app::getWindow()->getHeight();
 	ImGuiIO& io = ImGui::GetIO();
-	io.DisplaySize = ImVec2( (float)w, (float)h );
+	io.DisplaySize = ci::vec2( ci::app::toPixels( ci::app::getWindow()->getSize() ) );
 }
 
 static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window ) {
@@ -306,7 +304,7 @@ static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window ) {
 	IM_ASSERT( io.Fonts->IsBuilt() ); // Font atlas needs to be built, call renderer _NewFrame() function e.g. ImGui_ImplOpenGL3_NewFrame() 
 
 	// Setup display size
-	int w = window->getWidth(), h = window->getHeight();
+	int w = ci::app::toPixels( window->getWidth() ), h = ci::app::toPixels( window->getHeight() );
 	int display_w = w, display_h = h;
 	io.DisplaySize = ImVec2( (float)w, (float)h );
 	io.DisplayFramebufferScale = ImVec2( w > 0 ? ( (float)display_w / w ) : 0, h > 0 ? ( (float)display_h / h ) : 0 );
@@ -408,7 +406,7 @@ void ImGui::Initialize( const ImGui::Options& options )
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	ci::app::WindowRef window = options.getWindow();
-	io.DisplaySize = ci::vec2( window->getSize() );
+	io.DisplaySize = ci::vec2( ci::app::toPixels( window->getSize() ) );
 	io.DeltaTime = 1.0f / 60.0f;
 	io.WantCaptureMouse = true;
 
