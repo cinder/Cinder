@@ -21,7 +21,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/CameraUi.h"
 #if !defined( CINDER_GL_ES )
-#include "cinder/params/Params.h"
+#include "cinder/CinderImGui.h"
 #endif
 
 #include "Light.h"
@@ -34,6 +34,7 @@ public:
 	void						draw() override;
 	void						resize() override;
 	void						update() override;
+	void						keyDown( ci::app::KeyEvent event ) override;
 private:
 	ci::CameraPersp				mCamera;
 	ci::CameraUi				mCamUi;
@@ -64,7 +65,6 @@ private:
 #if !defined( CINDER_GL_ES )
 	float						mFrameRate;
 	bool						mFullScreen;
-	ci::params::InterfaceGlRef	mParams;
 	void						screenShot();
 #endif
 };
@@ -137,18 +137,7 @@ DeferredShadingApp::DeferredShadingApp()
 #if !defined( CINDER_GL_ES )
 	mFrameRate	= 0.0f;
 	mFullScreen	= isFullScreen();
-	
-	// Set up parameters
-	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 220 ) );
-	mParams->addParam( "Frame rate",	&mFrameRate, "", true );
-	mParams->addParam( "Debug mode",	&mDebugMode ).key( "d" );
-	mParams->addParam( "Fullscreen",	&mFullScreen ).key( "f" );
-	mParams->addButton( "Load shaders",	[ & ]() { loadShaders(); },	"key=l" );
-	mParams->addButton( "Screen shot",	[ & ]() { screenShot(); },	"key=space" );
-	mParams->addButton( "Quit",			[ & ]() { quit(); },		"key=q" );
-	mParams->addSeparator();
-	mParams->addParam( "FXAA",			&mEnabledFxaa ).key( "a" );
-	mParams->addParam( "Shadows",		&mEnabledShadow ).key( "s" );
+	ImGui::Initialize();
 #endif
 }
 
@@ -332,10 +321,6 @@ void DeferredShadingApp::draw()
 			mBatchStockTextureRect->draw();
 		}
 	}
-	
-#if !defined( CINDER_GL_ES )
-	mParams->draw();
-#endif
 }
 
 void DeferredShadingApp::loadShaders()
@@ -485,6 +470,25 @@ void DeferredShadingApp::update()
 	if( mFullScreen != isFullScreen() ) {
 		setFullScreen( mFullScreen );
 	}
+
+	// Update parameters
+	ImGui::Begin( "Parameters" );
+	ImGui::Text( "Framerate: %f", mFrameRate );
+	ImGui::Checkbox( "Debug mode", &mDebugMode );// .key( "d" );
+	ImGui::Checkbox( "Fullscreen", &mFullScreen ); //.key( "f" );
+	if( ImGui::Button( "Load shaders" ) ) {
+		loadShaders();
+	}
+	if( ImGui::Button( "Screen shot" ) ) {
+		screenShot();
+	}
+	if( ImGui::Button( "Quit" ) ) {
+		quit();
+	}
+	ImGui::Separator();
+	ImGui::Checkbox( "FXAA", &mEnabledFxaa );
+	ImGui::Checkbox( "Shadows", &mEnabledShadow );
+	ImGui::End();
 #endif
 	
 	// Update light positions
@@ -506,6 +510,31 @@ void DeferredShadingApp::update()
 		t					= e * 0.333f;
 		mLights.front().setPosition( vec3( glm::sin( t ), 7.0f, glm::cos( t ) ) );
 		mShadowCamera.setEyePoint( mLights.front().getPosition() );
+	}
+}
+
+void DeferredShadingApp::keyDown( KeyEvent event )
+{
+	if( event.getCode() == KeyEvent::KEY_d ) {
+		mDebugMode = !mDebugMode;
+	}
+	else if( event.getCode() == KeyEvent::KEY_f ) {
+		mFullScreen = !mFullScreen;
+	}
+	else if( event.getCode() == KeyEvent::KEY_l ) {
+		loadShaders();
+	}
+	else if( event.getCode() == KeyEvent::KEY_SPACE ) {
+		screenShot();
+	}
+	else if( event.getCode() == KeyEvent::KEY_q ) {
+		quit();
+	}
+	else if( event.getCode() == KeyEvent::KEY_a ) {
+		mEnabledFxaa = ! mEnabledFxaa;
+	}
+	else if( event.getCode() == KeyEvent::KEY_s ) {
+		mEnabledShadow = !mEnabledShadow;
 	}
 }
 

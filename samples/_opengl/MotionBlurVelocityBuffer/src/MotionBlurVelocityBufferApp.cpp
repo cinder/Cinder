@@ -20,7 +20,7 @@
 #include "cinder/Rand.h"
 
 #include "cinder/Log.h"
-#include "cinder/params/Params.h"
+#include "cinder/CinderImGui.h"
 
 #include "BlurrableThings.h"
 
@@ -72,10 +72,6 @@ class MotionBlurVelocityBufferApp : public App {
 	float					mAverageGpuTime = 0.0f;
 	float					mAverageCpuTime = 0.0f;
 
-#if ! defined( CINDER_GL_ES )
-	params::InterfaceGlRef	mParams;
-#endif
-
 	int						mTileSize = 20;		// TileMax program samples a TileSize x TileSize region of pixels for each of its output pixels.
 	int						mSampleCount = 31;	// Number of samples used when calculating motion blur. Low-movement areas skip calculation.
 	float					mAnimationSpeed = 1.0f;
@@ -95,17 +91,8 @@ void MotionBlurVelocityBufferApp::setup()
 	createBuffers();
 	loadShaders();
 
-#if ! defined( CINDER_ANDROID )
-	mParams = params::InterfaceGl::create( "Motion Blur Options", ivec2( 250, 300 ) );
-	mParams->addParam( "Average GPU Draw (ms)", &mAverageGpuTime );
-	mParams->addParam( "Average CPU Draw (ms)", &mAverageCpuTime );
-	mParams->addSeparator();
-	mParams->addParam( "Enable Blur", &mBlurEnabled );
-	mParams->addParam( "Show Velocity Buffers", &mDisplayVelocityBuffers );
-	mParams->addParam( "Pause Animation", &mPaused );
-	mParams->addParam( "Animation Speed", &mAnimationSpeed ).min( 0.05f ).step( 0.2f );
-	mParams->addParam( "Max Samples", &mSampleCount ).min( 1 ).step( 2 );
-	mParams->addParam( "Blur Noise", &mBlurNoise ).min( 0.0f ).step( 0.01f );
+#if ! defined( CINDER_GL_ES )
+	ImGui::Initialize();
 #endif
 
 #if defined( CINDER_COCOA_TOUCH )
@@ -206,8 +193,21 @@ void MotionBlurVelocityBufferApp::keyDown( KeyEvent event )
 
 void MotionBlurVelocityBufferApp::update()
 {
-	if( ! mPaused )
-	{
+#if ! defined( CINDER_GL_ES )
+	ImGui::Begin( "Motion Blur Options" );
+	ImGui::Text( "Average GPU Draw (ms): %f", mAverageGpuTime );
+	ImGui::Text( "Average CPU Draw (ms): %f", mAverageCpuTime );
+	ImGui::Separator();
+	ImGui::Checkbox( "Enable Blur", &mBlurEnabled );
+	ImGui::Checkbox( "Show Velocity Buffers", &mDisplayVelocityBuffers );
+	ImGui::Checkbox( "Pause Animation", &mPaused );
+	ImGui::DragFloat( "Animation Speed", &mAnimationSpeed, 0.2f, 0.05f, FLT_MAX );
+	ImGui::DragInt( "Max Samples", &mSampleCount, 2, 1, INT_MAX );
+	ImGui::DragFloat( "Blur Noise", &mBlurNoise, 0.01f, 0.0f, FLT_MAX );
+	ImGui::End();
+#endif
+
+	if( ! mPaused ) {
 		for( auto &mesh : mMeshes ) {
 			mesh->update( mAnimationSpeed / 60.0f );
 		}
@@ -316,10 +316,6 @@ void MotionBlurVelocityBufferApp::draw()
 
 	mAverageCpuTime = (mCpuTimer.getSeconds() * 200) + mAverageCpuTime * 0.8f;
 	mAverageGpuTime = mGpuTimer->getElapsedMilliseconds() * 0.2f + mAverageGpuTime * 0.8f;
-
-#if ! defined( CINDER_GL_ES )
-	mParams->draw();
-#endif
 }
 
 void MotionBlurVelocityBufferApp::drawVelocityBuffers()

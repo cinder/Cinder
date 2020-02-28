@@ -27,7 +27,7 @@ http://www.cgtrader.com/3d-models/character-people/fantasy/the-leprechaun-the-go
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/params/Params.h"
+#include "cinder/CinderImGui.h"
 #include "cinder/Camera.h"
 #include "cinder/ImageIo.h"
 #include "cinder/CameraUi.h"
@@ -125,10 +125,6 @@ private:
 	bool				mShowNormalsAndTangents;
 
 	float				mTime;
-
-#if ! defined( CINDER_GL_ES )
-	params::InterfaceGlRef	mParams;
-#endif
 };
 
 void NormalMappingApp::setup()
@@ -220,26 +216,8 @@ console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset 
 		quit();
 	}
 
-	// create a parameter window, so we can toggle stuff
-	std::vector<std::string> viewmodes;
-	viewmodes.push_back( "Final" );
-	viewmodes.push_back( "Glossy" );
-	viewmodes.push_back( "Normals");
-	viewmodes.push_back( "Lighting" );
-	viewmodes.push_back( "Mesh" );
-
 #if ! defined( CINDER_GL_ES )
-	mParams = params::InterfaceGl::create( getWindow(), "Normal Mapping Demo", ivec2(340, 150) );
-	mParams->setOptions( "", "valueswidth=100" );
-
-	mParams->addParam( "Enable Normal Mapping", &mEnableNormalMap );
-	mParams->addParam( "Viewing Mode", viewmodes, (int*) &mViewMode );
-
-	mParams->addSeparator();
-
-	mParams->addParam( "Rotate Model", &mAutoRotate );
-	mParams->addParam( "Animate Light", &mAnimateLantern );
-	mParams->addParam( "Show Normals & Tangents", &mShowNormalsAndTangents );
+	ImGui::Initialize();
 #endif
 
 	mCamUi = CameraUi( &mCamera, getWindow(), -1 );
@@ -250,7 +228,22 @@ console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset 
 
 void NormalMappingApp::update()
 {
-
+#if ! defined( CINDER_GL_ES )
+	static std::vector<std::string> viewmodes;
+	viewmodes.push_back( "Final" );
+	viewmodes.push_back( "Glossy" );
+	viewmodes.push_back( "Normals" );
+	viewmodes.push_back( "Lighting" );
+	viewmodes.push_back( "Mesh" );
+	ImGui::Begin( "Normal Mapping Demo" );
+	ImGui::Checkbox( "Enable Normal Mapping", &mEnableNormalMap );
+	ImGui::Combo( "Viewing Mode", (int*)&mViewMode, viewmodes );
+	ImGui::Separator();
+	ImGui::Checkbox( "Rotate Model", &mAutoRotate );
+	ImGui::Checkbox( "Animate Light", &mAnimateLantern );
+	ImGui::Checkbox( "Show Normals & Tangents", &mShowNormalsAndTangents );
+	ImGui::End();
+#endif
 	// keep track of time
 	float fElapsed = (float)getElapsedSeconds() - mTime;
 	mTime += fElapsed;
@@ -348,12 +341,6 @@ void NormalMappingApp::draw()
 		gl::disableDepthRead();
 
 		gl::popMatrices();
-
-		// render our parameter window
-#if ! defined( CINDER_GL_ES )
-		if( mParams )
-			mParams->draw();
-#endif
 
 		// render the copyright message
 		Area centered = Area::proportionalFit( mCopyrightMap->getBounds(), getWindowBounds(), true, false );
