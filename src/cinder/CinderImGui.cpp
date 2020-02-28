@@ -11,6 +11,7 @@
 #include "cinder/gl/Context.h"
 #include "cinder/Clipboard.h"
 
+static bool sInitialized = false;
 static bool sTriggerNewFrame = true;
 static std::vector<int> sAccelKeys;
 static ci::signals::ConnectionList sAppConnections;
@@ -396,6 +397,10 @@ static void ImGui_ImplCinder_Shutdown()
 
 void ImGui::Initialize( const ImGui::Options& options )
 {
+	if( sInitialized ) {
+		throw ci::Exception( "ImGui is already initialized." );
+	}
+
 	IMGUI_CHECKVERSION();
 	auto context = ImGui::CreateContext();
 	
@@ -432,4 +437,6 @@ void ImGui::Initialize( const ImGui::Options& options )
 		ImGui_ImplCinder_Shutdown();
 		ImGui::DestroyContext( context );
 	} );
+
+	sInitialized = true;
 }
