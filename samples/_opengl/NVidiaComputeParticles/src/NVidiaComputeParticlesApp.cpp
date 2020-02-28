@@ -135,10 +135,11 @@ NVidiaComputeParticlesApp::NVidiaComputeParticlesApp()
 
 	CI_CHECK_GL();
 
+	//Must precede CameraUi to receive (non-captured) mouse events.
+	ImGui::Initialize();
+
 	mCam.lookAt( vec3( 0.0f, 0.0f, -3.0f ), vec3( 0 ) );
 	mCamUi = CameraUi( &mCam, getWindow() );
-
-	ImGui::Initialize();
 }
 
 void NVidiaComputeParticlesApp::setupShaders()
@@ -199,7 +200,7 @@ void NVidiaComputeParticlesApp::update()
 	ImGui::Checkbox( "Animate", &mAnimate );
 	ImGui::Checkbox( "Enable attractor", &mEnableAttractor );
 	ImGui::Separator();
-	ImGui::DragFloat( "Sprite size", &mSpriteSize, 0.01f, 0.0f, 0.04f );
+	ImGui::DragFloat( "Sprite size", &mSpriteSize, 0.001f, 0.0f, 0.04f );
 	ImGui::DragFloat( "Noise strength", &mParticleParams.noiseStrength, 0.001f, 0.0f, 0.01f );
 	ImGui::DragFloat( "Noise frequency", &mParticleParams.noiseFreq, 1.0f, 0.0f, 20.0f );
 	ImGui::Separator();
