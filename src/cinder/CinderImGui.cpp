@@ -225,9 +225,6 @@ void ImGui::Initialize( const ImGui::Options& options )
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-	io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;
 
 	io.DisplaySize = ImVec2( static_cast<float>( ci::app::getWindow()->getSize().x ), static_cast<float>( ci::app::getWindow()->getSize().y ) );
 	io.DeltaTime = 1.0f / 60.0f;
@@ -249,17 +246,7 @@ void ImGui::Initialize( const ImGui::Options& options )
 	if( options.isAutoRenderEnabled() ) {
 		window->getSignalPostDraw().connect( [] {
 			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
-			
-			ImGuiIO& io = ImGui::GetIO();
-			if( io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable )
-			{
-				auto backup_current_context = gl::context()->getCurrent();
-				ImGui::UpdatePlatformWindows();
-				ImGui::RenderPlatformWindowsDefault();
-				gl::context()->makeCurrent( backup_current_context );
-			}
-			
+			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );			
 			
 			sTriggerNewFrame = true;
 			App::get()->dispatchAsync( []() {
