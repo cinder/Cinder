@@ -4,7 +4,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
-#include "cinder/params/Params.h"
+#include "cinder/CinderImGui.h"
 #include "Resources.h"
 
 #define SIZE 512
@@ -26,9 +26,7 @@ class RDiffusionApp : public App {
 	void	mouseUp( MouseEvent event ) override;
   private:
 	void	resetFBOs();
-	
-	params::InterfaceGlRef	mParams;
-		
+			
 	int					mCurrentFBO, mOtherFBO;
 	gl::FboRef			mFBOs[2];
 	gl::GlslProgRef		mRDShader;
@@ -81,12 +79,8 @@ void RDiffusionApp::setup()
 	mMousePressed = false;
 	
 	// Setup the parameters
-	mParams = params::InterfaceGl::create( "Parameters", ivec2( 175, 100 ) );
-	mParams->addParam( "Reaction u", &mReactionU, "min=0.0 max=0.4 step=0.01 keyIncr=u keyDecr=U" );
-	mParams->addParam( "Reaction v", &mReactionV, "min=0.0 max=0.4 step=0.01 keyIncr=v keyDecr=V" );
-	mParams->addParam( "Reaction k", &mReactionK, "min=0.0 max=1.0 step=0.001 keyIncr=k keyDecr=K" );	
-	mParams->addParam( "Reaction f", &mReactionF, "min=0.0 max=1.0 step=0.001 keyIncr=f keyDecr=F" );
-	
+	ImGui::Initialize();
+
 	mCurrentFBO = 0;
 	mOtherFBO = 1;
 	mFBOs[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, gl::Fbo::Format().colorTexture().disableDepth() );
@@ -101,7 +95,15 @@ void RDiffusionApp::setup()
 }
 
 void RDiffusionApp::update()
-{	
+{
+	ImGui::SetNextWindowCollapsed( true, ImGuiCond_FirstUseEver );
+	ImGui::Begin( "Params" );
+	ImGui::DragFloat( "Reaction u", &mReactionU, 0.001, 0.0, 0.4 );
+	ImGui::DragFloat( "Reaction v", &mReactionV, 0.001, 0.0, 0.4 );
+	ImGui::DragFloat( "Reaction k", &mReactionK, 0.001, 0.0, 1.0 );
+	ImGui::DragFloat( "Reaction f", &mReactionF, 0.001, 0.0, 1.0 );
+	ImGui::End();
+
 	const int ITERATIONS = 25;
 	// normally setMatricesWindow flips the projection vertically so that the upper left corner is 0,0
 	// but we don't want to do that when we are rendering the FBOs onto each other, so the last param is false
@@ -146,8 +148,6 @@ void RDiffusionApp::draw()
 		gl::ScopedTextureBind bind( mFBOs[mCurrentFBO]->getColorTexture() );
 		gl::drawSolidRect( getWindowBounds() );
 	}
-	
-	mParams->draw();
 }
 
 void RDiffusionApp::resetFBOs()

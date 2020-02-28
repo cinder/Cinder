@@ -19,7 +19,7 @@
 #include "cinder/Timeline.h"
 #include "cinder/Rand.h"
 #include "cinder/Text.h"
-#include "cinder/params/Params.h"
+#include "cinder/CinderImGui.h"
 
 #include "cinder/audio/Utilities.h"
 #include "AudioController.h"
@@ -44,7 +44,6 @@ class FallingGearsApp : public App {
 
   private:
 	void setupGraphics();
-	void setupParams();
 	void drawBackground();
 	void drawDebug();
 	void drawInfo();
@@ -54,7 +53,6 @@ class FallingGearsApp : public App {
 	bool					mDrawDebug, mDrawInfo;
 	AudioController			mAudio;
 	gl::TextureRef			mBackgroundTex;
-	params::InterfaceGlRef	mParams;
 	float					mFps;
 	float					mMasterGain;
 };
@@ -72,7 +70,8 @@ void FallingGearsApp::setup()
 	mScene.getWorld()->SetDebugDraw( &mDebugDraw );
 
 	setupGraphics();
-	setupParams();
+	
+	ImGui::Initialize();
 }
 
 void FallingGearsApp::setupGraphics()
@@ -83,22 +82,6 @@ void FallingGearsApp::setupGraphics()
 		format.setWrap( GL_REPEAT, GL_REPEAT );
 		mBackgroundTex = gl::Texture::create( imageSource, format );
 	}
-}
-
-void FallingGearsApp::setupParams()
-{
-	mParams = params::InterfaceGl::create( "params", ivec2( 250, 350 ) );
-	mParams->minimize();
-	
-	mParams->addParam( "fps", &mFps, "", true );
-	mParams->addParam( "show info", &mDrawInfo ).key( "i" );
-	mParams->addParam( "show debug", &mDrawDebug ).key( "d" );
-	mParams->addSeparator();
-	mParams->addParam( "gain (db)", &mMasterGain ).step( 5 ).keyIncr( "=" ).keyDecr( "-" ).updateFn( [this] { mAudio.setMasterGain( mMasterGain ); } );
-	mParams->addParam( "island lowpass", &mAudio.getParams().mAltoLowPassFreq );
-	mParams->addSeparator();
-	mParams->addParam( "gear scale", &mScene.getParams().mGearScale );
-	mParams->addParam( "decent speed", &mScene.getParams().mDecentSpeed );
 }
 
 void FallingGearsApp::keyDown( KeyEvent event )
@@ -123,6 +106,19 @@ void FallingGearsApp::keyDown( KeyEvent event )
 		else if( event.getChar() == 'c' )
 			mDebugDraw.setCenterOfMassEnabled( ! mDebugDraw.isCenterOfMassEnabled() );
 	}
+
+	if( event.getCode() == KeyEvent::KEY_i ) {
+		mDrawInfo = ! mDrawInfo;
+	}
+	else if( event.getCode() == KeyEvent::KEY_d ) {
+		mDrawDebug = ! mDrawDebug;
+	}
+	else if( event.getCode() == KeyEvent::KEY_EQUALS ) {
+		mMasterGain += 5.0f;
+	}
+	else if( event.getCode() == KeyEvent::KEY_MINUS ) {
+		mMasterGain -= 5.0f;
+	}
 }
 
 void FallingGearsApp::mouseDown( MouseEvent event )
@@ -141,6 +137,19 @@ void FallingGearsApp::mouseUp( MouseEvent event )
 
 void FallingGearsApp::update()
 {
+	ImGui::Begin( "Settings" );
+	ImGui::Text( "framerate: %f", mFps );
+	ImGui::Checkbox( "show info", &mDrawInfo );
+	ImGui::Checkbox( "show debug", &mDrawDebug );
+	if( ImGui::DragFloat( "gain (db)", &mMasterGain, 5.0f ) ) {
+		mAudio.setMasterGain( mMasterGain );
+	}
+	ImGui::DragFloat( "island lowpass", &mAudio.getParams().mAltoLowPassFreq );
+	ImGui::Separator();
+	ImGui::DragFloat( "gear scale", &mScene.getParams().mGearScale );
+	ImGui::DragFloat( "decent speed", &mScene.getParams().mDecentSpeed );
+	ImGui::End();
+
 	mScene.update();
 
 	mAudio.update();
@@ -173,8 +182,6 @@ void FallingGearsApp::draw()
 
 	if( mDrawInfo )
 		drawInfo();
-
-	mParams->draw();
 }
 
 void FallingGearsApp::drawBackground()
