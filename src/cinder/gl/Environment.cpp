@@ -49,6 +49,7 @@
 		#endif
 		#include "GL/osmesa.h"
 	#else
+		#include "glad/glad.h"
 		#include "glfw/glfw3.h"
 	#endif
 #endif

@@ -28,8 +28,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
-#include "glload/wgl_all.h"
-#include "glload/wgl_load.h"
+#include "glad/glad_wgl.h"
 #include "cinder/app/AppBase.h"
 #include "cinder/Camera.h"
 #include "cinder/Log.h"
@@ -277,7 +276,7 @@ bool initializeGl( HWND /*wnd*/, HDC dc, HGLRC sharedRC, const RendererGl::Optio
 	gl::Environment::setCore();
 	gl::env()->initializeFunctionPointers();
 
-	wgl_LoadFunctions( dc );								// Initialize WGL function pointers
+	gladLoadWGL( dc );											// Initialize WGL function pointers
 
 	::wglMakeCurrent( NULL, NULL );
 	

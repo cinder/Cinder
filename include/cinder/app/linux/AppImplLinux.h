@@ -27,6 +27,7 @@
 #if defined( CINDER_LINUX_EGL_ONLY )
 	#include "EGL/egl.h"
 #else
+	#include "glad/glad.h"
 	#include "glfw/glfw3.h"
 #endif
 
@@ -68,10 +69,6 @@ class AppImplLinux {
 	void						showCursor();
 	ivec2						getMousePos() const;
 
-#if defined( CINDER_GL_ES_2_RPI )
-	ivec2						getDefaultDisplaySize() const;
-#endif
-
 private:
 	AppLinux					*mApp = nullptr;
 	WindowRef					mMainWindow;
@@ -79,10 +76,6 @@ private:
 	std::list<WindowImplLinux*>	mWindows;
 	WindowRef					mActiveWindow;
 	WindowRef					mForegroundWindow;
-
-#if defined( CINDER_GL_ES_2_RPI )
-	ivec2						mDefaultDisplaySize = ivec2( 0, 0 );
-#endif
 
 	float						mFrameRate;
 	bool						mFrameRateEnabled;

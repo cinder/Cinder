@@ -176,13 +176,10 @@ void VaoImplCore::vertexAttribDivisorImpl( GLuint index, GLuint divisor )
 	}
   #endif	
 #else
-	if( glVertexAttribDivisor ) {
-		// not always available
+	if( glVertexAttribDivisor )
 		glVertexAttribDivisor( index, divisor );
-	}
-	else if( glVertexAttribDivisorARB ) {
+	else if( glVertexAttribDivisorARB )
 		glVertexAttribDivisorARB( index, divisor );
-	}
 #endif
 
 /*

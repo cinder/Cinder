@@ -10,8 +10,7 @@ list( APPEND SRC_SET_MSW
 	${CINDER_SRC_DIR}/cinder/ImageSourceFileWic.cpp
 	${CINDER_SRC_DIR}/cinder/ImageTargetFileWic.cpp
 	${CINDER_SRC_DIR}/cinder/UrlImplWinInet.cpp
-	${CINDER_SRC_DIR}/glload/wgl_load_cpp.cpp
-	${CINDER_SRC_DIR}/glload/wgl_load.c
+	${CINDER_SRC_DIR}/glad/glad_wgl.c
 )
 
 if( NOT CINDER_DISABLE_ANTTWEAKBAR )
