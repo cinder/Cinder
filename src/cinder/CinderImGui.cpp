@@ -289,10 +289,14 @@ static void ImGui_ImplCinder_KeyUp( ci::app::KeyEvent& event )
 	event.setHandled( io.WantCaptureKeyboard );
 }
 
+void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window );
+
 static void ImGui_ImplCinder_Resize()
 {
 	ImGuiIO& io = ImGui::GetIO();
 	io.DisplaySize = ci::vec2( ci::app::toPixels( ci::app::getWindow()->getSize() ) );
+
+	ImGui_ImplCinder_NewFrameGuard( ci::app::getWindow() );
 }
 
 static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window ) {
