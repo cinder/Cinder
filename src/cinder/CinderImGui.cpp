@@ -421,7 +421,7 @@ void ImGui::Initialize( const ImGui::Options& options )
 	}
 	io.IniFilename = path.c_str();
 
-	ImGui_ImplOpenGL3_Init( "#version 150" );
+	ImGui_ImplOpenGL3_Init();
 	
 	if( options.isAutoRenderEnabled() ) {
 		ImGui_ImplCinder_Init( window, true, options.getSignalPriority() );

@@ -16,9 +16,12 @@
 #include "cinder/Color.h"
 #include "cinder/Vector.h"
 #include "cinder/CinderAssert.h"
+#include "cinder/gl/platform.h"
 
-//#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM "cinder/gl/gl.h"
-#define IMGUI_IMPL_OPENGL_LOADER_GLAD
+#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM "cinder/gl/platform.h"
+#if defined( CINDER_GL_ES_3 )
+#define IMGUI_IMPL_OPENGL_ES3
+#endif
 
 //---- Define assertion handler. Defaults to calling assert().
 // If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.
