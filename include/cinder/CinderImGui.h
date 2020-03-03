@@ -44,25 +44,41 @@ namespace cinder {
 //! Additional convenience initializaiont and overloads for cinder types
 namespace ImGui {
 	struct CI_API Options {
-		//! defaults to using the current window, the basic ImGui font and the dark theme
+		//! Defaults to using the current window, the basic ImGui font and the dark theme
 		Options();
-		//! sets the window that will be used to connect the signals and render ImGui
-		Options& window( const ci::app::WindowRef& window, int signalPriority = 1 );
-		//! species whether the block should call ImGui::NewFrame and ImGui::Render automatically. Default to true.
-		Options& autoRender( bool autoRender );
-		//! sets imgui ini file path
-		Options& iniPath( const ci::fs::path& path );
 
+		//! Sets the window that will be used to connect the signals and render ImGui
+		Options& window( const ci::app::WindowRef& window, int signalPriority = 1 );
+		//! Returns the window that will be use to connect the signals and render ImGui
+		ci::app::WindowRef getWindow() const { return mWindow; }
+
+		//! Specify whether the block should call ImGui::NewFrame and ImGui::Render automatically. Default to true.
+		Options& autoRender( bool autoRender );
 		//! returns whether the block should call ImGui::NewFrame and ImGui::Render automatically
 		bool isAutoRenderEnabled() const { return mAutoRender; }
-		//! returns the window that will be use to connect the signals and render ImGui
-		ci::app::WindowRef getWindow() const { return mWindow; }
-		//! returns the signal priority that will be use to connect the signals and render ImGui
-		int getSignalPriority() const { return mSignalPriority; }
-		//! returns imgui ini file path
+
+		//! Sets imgui ini file path
+		Options& iniPath( const ci::fs::path& path );
+		//! Returns imgui ini file path
 		const ci::fs::path& getIniPath() const { return mIniPath; }
+
+		//! Enables keyboard input. Default to true.
+		Options& enableKeyboard( bool enable );
+		//! Returns whether the keyboard input is enabled
+		bool isKeyboardEnabled() const { return mKeyboardEnabled; }
+
+		//! Enables gamepad input. Default to true.
+		Options& enableGamepad( bool enable );
+		//! Returns whether the gamepad input is enabled
+		bool isGamepadEnabled() const { return mGamepadEnabled; }
+
+		Options& signalPriority( int signalPriority );
+		//! Returns the signal priority that will be use to connect the signals and render ImGui
+		int getSignalPriority() const { return mSignalPriority; }
 	protected:
 		bool							mAutoRender;
+		bool							mKeyboardEnabled;
+		bool							mGamepadEnabled;
 		ci::app::WindowRef				mWindow;
 		ci::fs::path					mIniPath;
 		int								mSignalPriority;

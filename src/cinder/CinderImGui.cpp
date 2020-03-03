@@ -28,7 +28,7 @@ static auto vector_getter = []( void* vec, int idx, const char** out_text )
 
 namespace ImGui {
 	Options::Options()
-		: mWindow( ci::app::getWindow() ), mAutoRender( true ), mIniPath(), mSignalPriority{ 1 }
+		: mWindow( ci::app::getWindow() ), mAutoRender( true ), mIniPath(), mSignalPriority( 1 ), mKeyboardEnabled( true ), mGamepadEnabled( true )
 	{
 	}
 
@@ -48,6 +48,24 @@ namespace ImGui {
 	Options& Options::iniPath( const ci::fs::path& path )
 	{
 		mIniPath = path;
+		return *this;
+	}
+
+	Options& Options::enableKeyboard( bool enable )
+	{
+		mKeyboardEnabled = enable;
+		return *this;
+	}
+
+	Options& Options::enableGamepad( bool enable )
+	{
+		mGamepadEnabled = enable;
+		return *this;
+	}
+
+	Options& Options::signalPriority( int signalPriority )
+	{
+		mSignalPriority = signalPriority;
 		return *this;
 	}
 
@@ -405,8 +423,8 @@ void ImGui::Initialize( const ImGui::Options& options )
 	auto context = ImGui::CreateContext();
 	
 	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	if( options.isKeyboardEnabled() ) io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+	if( options.isGamepadEnabled() ) io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls	
 	ci::app::WindowRef window = options.getWindow();
 	io.DisplaySize = ci::vec2( ci::app::toPixels( window->getSize() ) );
 	io.DeltaTime = 1.0f / 60.0f;
