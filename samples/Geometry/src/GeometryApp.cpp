@@ -353,8 +353,8 @@ void GeometryApp::updateGui()
 	static vector<string> viewModes = { "Shaded", "Wireframe" };
 	static vector<string> texturingModes = { "None", "Procedural", "Sampler" };
 
-	ImGui::ScopedWindow window{ "Geometry Demo" };
-
+	ImGui::Begin( "Geometry Demo" );
+	
 	ImGui::Combo( "Primitive", (int*)&mPrimitiveSelected, primitives );
 	ImGui::Combo( "Quality", (int*)&mQualitySelected, qualities );
 	ImGui::Combo( "Viewing Mode", (int*)&mViewMode, viewModes );
@@ -411,6 +411,7 @@ void GeometryApp::updateGui()
 	default:
 		break;
 	}
+	ImGui::End();
 
 	if( changed ) createGeometry();
 #endif

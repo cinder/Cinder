@@ -177,9 +177,7 @@ void ShadowMappingApp::setup()
 	mShadowMap		= ShadowMap::create( mShadowMapSize );
 	mLight.camera.setPerspective( mLight.fov, mShadowMap->getAspectRatio(), 0.5, 500.0 );
 	
-#if ! defined( CINDER_GL_ES )
 	ImGui::Initialize();
-#endif
 	
 	auto positionGlsl = gl::getStockShader( gl::ShaderDef() );
 	
@@ -210,32 +208,29 @@ void ShadowMappingApp::setup()
 
 void ShadowMappingApp::update()
 {
-#if ! defined( CINDER_GL_ES )
-	{
-		ImGui::ScopedWindow window{ "Settings" };
-		ImGui::Text( "Framerate: %f", mFrameRate );
-		ImGui::Separator();
-		ImGui::Checkbox( "Light viewpoint", &mLight.toggleViewpoint );
-		ImGui::DragFloat( "Light distance radius", &mLight.distanceRadius, 1.0f, 0.0f, 450.0f );
-		ImGui::Checkbox( "Render only shadow map", &mOnlyShadowmap );
-		ImGui::Separator();
-		std::vector<std::string> techniques = { "Hard", "PCF3x3", "PCF4x4", "Random" };
-		ImGui::Combo( "Technique", &mShadowTechnique, techniques );
-		ImGui::Separator();
-		ImGui::DragFloat( "Polygon offset factor", &mPolygonOffsetFactor, 0.025f, 0.0f );
-		ImGui::DragFloat( "Polygon offset units", &mPolygonOffsetUnits, 0.025f, 0.0f );
-		if( ImGui::DragInt( "Shadow map size", &mShadowMapSize, 16, 16, 2048 ) ) {
-			mShadowMap->reset( mShadowMapSize );
-		};
-		ImGui::DragFloat( "Depth bias", &mDepthBias, 0.00001f, -1.0f, 0.0f, "%.5f" );
-		ImGui::Text( "(PCF radius is const: tweak in shader.)" );
-		ImGui::Separator();
-		ImGui::Text( "Random sampling params" );
-		ImGui::DragFloat( "Offset radius", &mRandomOffset, 0.05f, 0.0f );
-		ImGui::Checkbox( "Auto normal slope offset", &mEnableNormSlopeOffset );
-		ImGui::DragInt( "Num samples", &mNumRandomSamples, 1.0f, 1, 256 );
-	}
-#endif
+	ImGui::Begin( "Settings" );
+	ImGui::Text( "Framerate: %f", mFrameRate );
+	ImGui::Separator();
+	ImGui::Checkbox( "Light viewpoint", &mLight.toggleViewpoint );
+	ImGui::DragFloat( "Light distance radius", &mLight.distanceRadius, 1.0f, 0.0f, 450.0f );
+	ImGui::Checkbox( "Render only shadow map", &mOnlyShadowmap );
+	ImGui::Separator();
+	std::vector<std::string> techniques = { "Hard", "PCF3x3", "PCF4x4", "Random" };
+	ImGui::Combo( "Technique", &mShadowTechnique, techniques );
+	ImGui::Separator();
+	ImGui::DragFloat( "Polygon offset factor", &mPolygonOffsetFactor, 0.025f, 0.0f );
+	ImGui::DragFloat( "Polygon offset units", &mPolygonOffsetUnits, 0.025f, 0.0f );
+	if( ImGui::DragInt( "Shadow map size", &mShadowMapSize, 16, 16, 2048 ) ) {
+		mShadowMap->reset( mShadowMapSize );
+	};
+	ImGui::DragFloat( "Depth bias", &mDepthBias, 0.00001f, -1.0f, 0.0f, "%.5f" );
+	ImGui::Text( "(PCF radius is const: tweak in shader.)" );
+	ImGui::Separator();
+	ImGui::Text( "Random sampling params" );
+	ImGui::DragFloat( "Offset radius", &mRandomOffset, 0.05f, 0.0f );
+	ImGui::Checkbox( "Auto normal slope offset", &mEnableNormSlopeOffset );
+	ImGui::DragInt( "Num samples", &mNumRandomSamples, 1.0f, 1, 256 );
+	ImGui::End();
 
 	float e	= (float) getElapsedSeconds();
 	float c = cos( e );
