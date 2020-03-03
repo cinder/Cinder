@@ -12,25 +12,16 @@
 //-----------------------------------------------------------------------------
 
 #pragma once
-#include "cinder/Export.h"
-#include "cinder/Color.h"
-#include "cinder/Vector.h"
-#include "cinder/CinderAssert.h"
-#include "cinder/gl/platform.h"
-
-#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM "cinder/gl/platform.h"
-#if defined( CINDER_GL_ES_3 )
-#define IMGUI_IMPL_OPENGL_ES3
-#endif
 
 //---- Define assertion handler. Defaults to calling assert().
 // If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.
-#define IM_ASSERT(_EXPR)  CI_ASSERT(_EXPR)
+//#define IM_ASSERT(_EXPR)  MyAssert(_EXPR)
 //#define IM_ASSERT(_EXPR)  ((void)(_EXPR))     // Disable asserts
 
 //---- Define attributes of all API symbols declarations, e.g. for DLL under Windows
 // Using dear imgui via a shared library is not recommended, because of function call overhead and because we don't guarantee backward nor forward ABI compatibility.
-#define IMGUI_API CI_API
+//#define IMGUI_API __declspec( dllexport )
+//#define IMGUI_API __declspec( dllimport )
 
 //---- Don't define obsolete functions/enums/behaviors. Consider enabling from time to time after updating to avoid using soon-to-be obsolete function/names.
 //#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
@@ -79,23 +70,6 @@
         ImVec4(const MyVec4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }     \
         operator MyVec4() const { return MyVec4(x,y,z,w); }
 */
-
-// Custom implicit cast operators
-#ifndef CINDER_IMGUI_NO_IMPLICIT_CASTS
-#define IM_VEC2_CLASS_EXTRA                                            \
-ImVec2(const ci::vec2& f) { x = f.x; y = f.y; }                        \
-operator ci::vec2() const { return ci::vec2(x,y); }                    \
-ImVec2(const ci::ivec2& f) { x = static_cast<float>( f.x ); y = static_cast<float>( f.y ); }  \
-operator ci::ivec2() const { return ci::ivec2(x,y); }
-
-#define IM_VEC4_CLASS_EXTRA                                            \
-ImVec4(const glm::vec4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }     \
-operator glm::vec4() const { return ci::vec4(x,y,z,w); }               \
-ImVec4(const ci::ColorA& f) { x = f.r; y = f.g; z = f.b; w = f.a; }    \
-operator ci::ColorA() const { return ci::ColorA(x,y,z,w); }            \
-ImVec4(const ci::Color& f) { x = f.r; y = f.g; z = f.b; w = 1.0f; }    \
-operator ci::Color() const { return ci::Color(x,y,z); }
-#endif
 
 //---- Use 32-bit vertex indices (default is 16-bit) is one way to allow large meshes with more than 64K vertices.
 // Your renderer back-end will need to support it (most example renderer back-ends support both 16/32-bit indices).
