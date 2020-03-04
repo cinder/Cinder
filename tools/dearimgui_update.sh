@@ -6,8 +6,12 @@ fi
 
 dearimgui_path=$1
 libcinder_path=$2
+
+target_inc=$libcinder_path/include/imgui
+target_src=$libcinder_path/src/imgui
+
 cd $dearimgui_path
-cp *.h $libcinder_path/include/imgui; cp *.cpp $libcinder_path/src/imgui
-cp --parents misc/cpp/*.h $libcinder_path/include/imgui; cp --parents misc/cpp/*.cpp $libcinder_path/src/imgui
-cp --parents misc/freetype/*.h $libcinder_path/include/imgui; cp --parents misc/freetype/*.cpp $libcinder_path/src/imgui
-cp --parents examples/imgui_impl_opengl3.h $libcinder_path/include/imgui; cp --parents examples/imgui_impl_opengl3.cpp $libcinder_path/src/imgui
+cp -v *.h $target_inc; cp -v *.cpp $target_src
+cp -v misc/cpp/*.h $target_inc; cp -v misc/cpp/*.cpp $target_src
+cp -v misc/freetype/*.h $target_inc; cp -v misc/freetype/*.cpp $target_src
+cp -v examples/imgui_impl_opengl3.h $target_inc; cp -v examples/imgui_impl_opengl3.cpp $target_src
