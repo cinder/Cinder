@@ -234,9 +234,9 @@ static void ImGui_ImplCinder_MouseDown( ci::app::MouseEvent& event )
 static void ImGui_ImplCinder_MouseUp( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.MouseDown[0] = event.isLeftDown();
-	io.MouseDown[1] = event.isRightDown();
-	io.MouseDown[2] = event.isMiddleDown();
+	io.MouseDown[0] = false;
+	io.MouseDown[1] = false;
+	io.MouseDown[2] = false;
 }
 static void ImGui_ImplCinder_MouseWheel( ci::app::MouseEvent& event )
 {
@@ -307,7 +307,7 @@ static void ImGui_ImplCinder_KeyUp( ci::app::KeyEvent& event )
 	event.setHandled( io.WantCaptureKeyboard );
 }
 
-void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window );
+static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window );
 
 static void ImGui_ImplCinder_Resize()
 {
@@ -439,7 +439,11 @@ void ImGui::Initialize( const ImGui::Options& options )
 	}
 	io.IniFilename = path.c_str();
 
+#if ! defined( CINDER_GL_ES )
+	ImGui_ImplOpenGL3_Init( "#version 150" );
+#else
 	ImGui_ImplOpenGL3_Init();
+#endif
 	
 	if( options.isAutoRenderEnabled() ) {
 		ImGui_ImplCinder_Init( window, true, options.getSignalPriority() );
