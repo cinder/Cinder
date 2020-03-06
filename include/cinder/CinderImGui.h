@@ -33,7 +33,6 @@
 #include "cinder/CinderGlm.h"
 #include "cinder/Noncopyable.h"
 
-#include <unordered_map>
 #include <vector>
 
 namespace cinder {

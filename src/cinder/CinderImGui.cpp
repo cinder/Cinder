@@ -1,6 +1,5 @@
 #include "cinder/CinderImGui.h"
 #include "imgui/imgui_impl_opengl3.h"
-//#include "imgui_internal.h"
 
 #include "cinder/app/App.h"
 #include "cinder/Log.h"
@@ -10,6 +9,8 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/Context.h"
 #include "cinder/Clipboard.h"
+
+#include <unordered_map>
 
 static bool sInitialized = false;
 static bool sTriggerNewFrame = true;
