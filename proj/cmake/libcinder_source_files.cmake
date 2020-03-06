@@ -321,6 +321,26 @@ if( CINDER_ANTTWEAKBAR_ENABLED )
 
 endif()
 
+if( CINDER_IMGUI_ENABLED )
+	list( APPEND SRC_SET_CINDER_IMGUI ${CINDER_SRC_DIR}/cinder/CinderImGui.cpp )
+	list( APPEND SRC_SET_IMGUI
+		${CINDER_SRC_DIR}/imgui/imgui.cpp
+		${CINDER_SRC_DIR}/imgui/imgui_demo.cpp
+		${CINDER_SRC_DIR}/imgui/imgui_draw.cpp
+		${CINDER_SRC_DIR}/imgui/imgui_freetype.cpp
+		${CINDER_SRC_DIR}/imgui/imgui_impl_opengl3.cpp
+		${CINDER_SRC_DIR}/imgui/imgui_stdlib.cpp
+		${CINDER_SRC_DIR}/imgui/imgui_widgets.cpp
+	)
+
+	list( APPEND CINDER_SRC_FILES
+		${SRC_SET_CINDER_IMGUI}
+		${SRC_SET_IMGUI}
+	)
+	source_group( "cinder"					FILES ${SRC_SET_CINDER_IMGUI} )
+	source_group( "thirdparty\\imgui"	    FILES ${SRC_SET_IMGUI} )
+endif()
+
 # ----------------------------------------------------------------------------------------------------------------------
 # FreeType
 # ----------------------------------------------------------------------------------------------------------------------
