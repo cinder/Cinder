@@ -5,7 +5,7 @@
 #include "cinder/Utilities.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
-#include "cinder/params/Params.h"
+#include "cinder/CinderImGui.h"
 
 // Define this to blow up the selection area that is picked.
 //#define DEBUG_PICKING
@@ -22,7 +22,6 @@ class PickingFBOApp : public App {
 	void mouseDrag( MouseEvent event ) override;
 
 	int pick( const ivec2 &mousePos );
-	void setupParams();
 	void setupShader();
 	void setupGeometry();
 	void setupGrid( int xSize, int zSize, int spacing );
@@ -62,7 +61,6 @@ class PickingFBOApp : public App {
 	bool				mNeedsRedraw;
 	bool				mSelectVertices;
 	bool				mSelectEdges;
-	params::InterfaceGlRef		mParams;
 };
 
 void PickingFBOApp::setup()
@@ -76,7 +74,6 @@ void PickingFBOApp::setup()
 	mSelectVertices = true;
 	mSelectEdges = true;
 
-	setupParams();
 	setupShader();
 	setupGradient();
 	setupGrid( 200, 200, 10 );
@@ -93,6 +90,8 @@ void PickingFBOApp::setup()
 	mNeedsRedraw = true;
 	mDebugDisplaySize = 20.0f;
 
+	ImGui::Initialize();
+
 	gl::enableDepthWrite();
 	gl::enableDepthRead();
 }
@@ -108,6 +107,19 @@ void PickingFBOApp::resize()
 
 void PickingFBOApp::draw()
 {
+#if ! defined( CINDER_GL_ES )
+	ImGui::Begin( "Settings" );
+	if( ImGui::Checkbox( "Select Vertices", &mSelectVertices ) ) {
+		setPickingColors( mSelectVertices, mSelectEdges );
+		renderScene();
+	}
+	if( ImGui::Checkbox( "Select Edges", &mSelectEdges ) ) {
+		setPickingColors( mSelectVertices, mSelectEdges );
+		renderScene();
+	}
+	ImGui::End();
+#endif
+
 	if( mNeedsRedraw )
 		renderScene();
 
@@ -119,9 +131,6 @@ void PickingFBOApp::draw()
 		gl::color( Color::white() );
 		gl::draw( mDebugTexture, Rectf( mPickPos.x - mDebugDisplaySize, mPickPos.y - mDebugDisplaySize, mPickPos.x + mDebugDisplaySize, mPickPos.y + mDebugDisplaySize ) );
 	}
-#if ! defined( CINDER_GL_ES )
-	mParams->draw();
-#endif
 	gl::enableDepthRead();
 }
 
@@ -208,15 +217,6 @@ int PickingFBOApp::pick( const ivec2 &mousePos )
 #endif
 
 	return selectedIndex;
-}
-
-void PickingFBOApp::setupParams()
-{
-#if ! defined( CINDER_GL_ES )
-	mParams = params::InterfaceGl::create( "Settings", ivec2( 200, 60 ) );
-	mParams->addParam( "Select Vertices", &mSelectVertices ).updateFn( [&] { setPickingColors( mSelectVertices, mSelectEdges ); renderScene(); } );
-	mParams->addParam( "Select Edges", &mSelectEdges ).updateFn( [&] { setPickingColors( mSelectVertices, mSelectEdges ); renderScene(); } );
-#endif
 }
 
 void PickingFBOApp::setupGeometry()

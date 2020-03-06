@@ -3,7 +3,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Batch.h"
-#include "cinder/params/Params.h"
+#include "cinder/CinderImGui.h"
 #include "cinder/CameraUi.h"
 
 #include "Resources.h"
@@ -40,7 +40,6 @@ class CameraPerspApp : public App {
 	size_t						mCurrObject;
 	
 	// params for the main camera
-	params::InterfaceGlRef		mParams;
 	vec3						mEyePoint;
 	vec3						mLookAt;
 	float						mFov;
@@ -89,31 +88,10 @@ void CameraPerspApp::setup()
 	mObjects.push_back( gl::Batch::create( geom::Helix().subdivisionsAxis( 32 ), mObjectGlsl ) );
 	mObjects.push_back( gl::Batch::create( geom::Cylinder().subdivisionsAxis( 32 ), mObjectGlsl ) );
 	
-	mParams = params::InterfaceGl::create( getWindow(), "CameraPersp", toPixels( ivec2( 200, 300 ) ) );
-	
+	ImGui::Initialize();
+
 	mObjectSelection = 0;
 	mObjectNames = { "Teapot", "Torus", "Cone", "Helix", "Cylinder" };
-
-	mParams->addParam( "Object", mObjectNames, &mObjectSelection )
-		.keyDecr( "[" )
-		.keyIncr( "]" )
-		.updateFn( [this] { mCurrObject = (size_t)mObjectSelection; } );
-	mParams->addSeparator();
-	mParams->addParam( "Eye Point X", &mEyePoint.x ).step( 0.01f );
-	mParams->addParam( "Eye Point Y", &mEyePoint.y ).step( 0.01f );
-	mParams->addParam( "Eye Point Z", &mEyePoint.z ).step( 0.01f );
-	mParams->addSeparator();
-	mParams->addParam( "Look At X", &mLookAt.x ).step( 0.01f );
-	mParams->addParam( "Look At Y", &mLookAt.y ).step( 0.01f );
-	mParams->addParam( "Look At Z", &mLookAt.z ).step( 0.01f );
-	mParams->addSeparator();
-	mParams->addParam( "FOV", &mFov ).min( 1.0f ).max( 179.0f );
-	mParams->addParam( "Near Plane", &mNearPlane ).step( 0.02f ).min( 0.1f );
-	mParams->addParam( "Far Plane", &mFarPlane ).step( 0.02f ).min( 0.1f );
-	mParams->addParam( "Lens Shift X", &mLensShift.x ).step( 0.01f );
-	mParams->addParam( "Lens Shift Y", &mLensShift.y ).step( 0.01f );
-	mParams->addSeparator();
-	mParams->addButton( "Reset Defaults", bind ( &CameraPerspApp::setDefaultValues, this ) );
 	
 	mViewCam.setEyePoint( vec3( 0.0f, 0.0f, 10.0f) );
 	mViewCam.setPerspective( 60, getWindowWidth() * 0.5f / getWindowHeight(), 1, 1000 );
@@ -147,6 +125,23 @@ void CameraPerspApp::mouseDrag( MouseEvent event )
 
 void CameraPerspApp::update()
 {
+	ImGui::Begin( "CameraPersp" );
+	if( ImGui::Combo( "Object", &mObjectSelection, mObjectNames ) ) {
+		mCurrObject = (size_t)mObjectSelection;
+	}
+	ImGui::Separator();
+	ImGui::DragFloat3( "Eye Point", &mEyePoint, 0.01f );
+	ImGui::DragFloat3( "Look At", &mLookAt, 0.01f );
+	ImGui::DragFloat( "FOV", &mFov, 1.0f, 1.0f, 179.0f );
+	ImGui::DragFloat( "Near Plane", &mNearPlane, 0.02f, 0.1f, FLT_MAX );
+	ImGui::DragFloat( "Far Plane", &mFarPlane, 0.02f, 0.1f, FLT_MAX );
+	ImGui::DragFloat2( "Lens Shift X", &mLensShift, 0.01f );
+	ImGui::Separator();
+	if( ImGui::Button( "Reset Defaults" ) ) {
+		setDefaultValues();
+	}
+	ImGui::End();
+
 	renderObjectToFbo();
 }
 
@@ -260,9 +255,6 @@ void CameraPerspApp::draw()
 	gl::drawSolidRect( Rectf( 0.0f, 0.0f, 640, 480 ) );
 
 	mObjectFbo->unbindTexture();
-	
-	// Draw Params
-	mParams->draw();
 }
 
 CINDER_APP( CameraPerspApp, RendererGl( RendererGl::Options().msaa( 16 ) ), CameraPerspApp::prepareSettings )

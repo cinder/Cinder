@@ -20,7 +20,7 @@
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/CameraUi.h"
-#include "cinder/params/Params.h"
+#include "cinder/CinderImGui.h"
 
 #include "Light.h"
 #include "Material.h"
@@ -41,6 +41,7 @@ public:
 	void						draw() override;
 	void						resize() override;
 	void						update() override;
+	void						updateGui();
 private:
 	ci::CameraPersp				mCamera;
 	ci::CameraUi				mCamUi;
@@ -140,7 +141,6 @@ private:
 	
 	float						mFrameRate;
 	bool						mFullScreen;
-	ci::params::InterfaceGlRef	mParams;
 	void						screenShot();
 };
 
@@ -233,31 +233,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	// Call resize to create FBOs
 	resize();
 
-	// Set up parameters
-	const vector<string> ao = { "None", "HBAO", "SAO" };
-
-	mParams = params::InterfaceGl::create( "Params", toPixels( ivec2( 240, 400 ) ) );
-	mParams->addParam( "Frame rate",		&mFrameRate,					"", true );
-	mParams->addParam( "Fullscreen",		&mFullScreen ).key( "f" );
-	mParams->addButton( "Load shaders",		[ & ]() { createBatches(); },	"key=l" );
-	mParams->addButton( "Screen shot",		[ & ]() { screenShot(); },		"key=space" );
-	mParams->addButton( "Quit",				[ & ]() { quit(); },			"key=q" );
-	mParams->addSeparator();
-	mParams->addParam( "AO view",			&mDrawAo ).key( "o" ).group( "Draw" );
-	mParams->addParam( "Debug view",		&mDrawDebug ).key( "d" ).group( "Draw" );
-	mParams->addParam( "High quality",		&mHighQuality ).key( "h" ).group( "Draw" );
-	mParams->addParam( "Light volume",		&mDrawLightVolume ).key( "v" ).group( "Draw" );
-	mParams->addParam( "Pause",				&mPaused ).key( "p" ).group( "Draw" );
-	mParams->addSeparator();
-	mParams->addParam( "AO",				ao, &mAo, "keyDecr=a keyIncr=A group=`Pass`" );
-	mParams->addParam( "AO blur",			&mEnabledAoBlur ).key( "1" ).group( "Pass" );
-	mParams->addParam( "Bloom",				&mEnabledBloom ).key( "2" ).group( "Pass" );
-	mParams->addParam( "Color",				&mEnabledColor ).key( "3" ).group( "Pass" );
-	mParams->addParam( "Depth of field",	&mEnabledDoF ).key( "4" ).group( "Pass" );
-	mParams->addParam( "Fog",				&mEnabledFog ).key( "5" ).group( "Pass" );
-	mParams->addParam( "FXAA",				&mEnabledFxaa ).key( "6" ).group( "Pass" );
-	mParams->addParam( "Rays",				&mEnabledRay ).key( "7" ).group( "Pass" );
-	mParams->addParam( "Shadows",			&mEnabledShadow ).key( "8" ).group( "Pass" );
+	ImGui::Initialize();
 	
 	gl::enableVerticalSync();
 	gl::color( ColorAf::white() );
@@ -1169,8 +1145,6 @@ void DeferredShadingAdvancedApp::draw()
 		// Draw to screen without FXAA
 		mBatchStockTextureRect->draw();
 	}
-
-	mParams->draw();
 }
 
 void DeferredShadingAdvancedApp::resize()
@@ -1449,10 +1423,47 @@ void DeferredShadingAdvancedApp::setUniforms()
 	mBatchRayScatterRect->getGlslProg()->uniform(		"uWindowSize",	szRay );
 }
 
+
+void DeferredShadingAdvancedApp::updateGui()
+{
+	static vector<string> ao = { "None", "HBAO", "SAO" };
+	ImGui::Begin( "Params" );
+	ImGui::Text( "Frame rate %f", mFrameRate );
+	ImGui::Checkbox( "Fullscreen", &mFullScreen );
+	if( ImGui::Button( "Load shaders" ) ) createBatches();
+	ImGui::SameLine();
+	if( ImGui::Button( "Screen shot" ) ) screenShot();
+	ImGui::SameLine();
+	if( ImGui::Button( "Quit" ) ) quit();
+	ImGui::Separator();
+	if( ImGui::CollapsingHeader( "Draw", ImGuiTreeNodeFlags_DefaultOpen ) ) {
+		ImGui::Checkbox( "AO view", &mDrawAo );
+		ImGui::Checkbox( "Debug view", &mDrawDebug );
+		ImGui::Checkbox( "High quality", &mHighQuality );
+		ImGui::Checkbox( "Light volume", &mDrawLightVolume );
+		ImGui::Checkbox( "Pause", &mPaused );
+	}
+	ImGui::Separator();
+	if( ImGui::CollapsingHeader( "Pass", ImGuiTreeNodeFlags_DefaultOpen ) ) {
+		ImGui::Combo( "AO", (int*)&mAo, ao );
+		ImGui::Checkbox( "AO blur", &mEnabledAoBlur );
+		ImGui::Checkbox( "Bloom", &mEnabledBloom );
+		ImGui::Checkbox( "Color", &mEnabledColor );
+		ImGui::Checkbox( "Depth of field", &mEnabledDoF );
+		ImGui::Checkbox( "Fog", &mEnabledFog );
+		ImGui::Checkbox( "FXAA", &mEnabledFxaa );
+		ImGui::Checkbox( "Rays", &mEnabledRay );
+		ImGui::Checkbox( "Shadows", &mEnabledShadow );
+	}
+	ImGui::End();
+}
+
 void DeferredShadingAdvancedApp::update()
 {
 	float e		= (float)getElapsedSeconds();
 	mFrameRate	= getAverageFps();
+
+	updateGui();
 
 	if ( mFullScreen != isFullScreen() ) {
 		setFullScreen( mFullScreen );

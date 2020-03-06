@@ -2,13 +2,14 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Log.h"
-#include "cinder/params/Params.h"
 #include "cinder/CameraUi.h"
 
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/Vbo.h"
 #include "cinder/gl/BufferTexture.h"
 #include "cinder/gl/GlslProg.h"
+
+#include "cinder/CinderImGui.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -36,7 +37,7 @@ class ClothSimulationApp : public App {
 	
 	void setupBuffers();
 	void setupGlsl();
-	void setupParams();
+	void updateParams();
 	
 	std::array<gl::VaoRef, 2>			mVaos;
 	std::array<gl::VboRef, 2>			mPositions, mVelocities, mConnections;
@@ -49,10 +50,6 @@ class ClothSimulationApp : public App {
 	float								mCurrentCamRotation;
 	uint32_t							mIterationsPerFrame, mIterationIndex;
 	bool								mDrawPoints, mDrawLines, mUpdate;
-
-#if ! defined( CINDER_LINUX )	
-	ci::params::InterfaceGlRef			mParams;
-#endif
 };
 
 ClothSimulationApp::ClothSimulationApp()
@@ -69,7 +66,8 @@ ClothSimulationApp::ClothSimulationApp()
 	
 	setupGlsl();
 	setupBuffers();
-	setupParams();
+
+	ImGui::Initialize();
 }
 
 void ClothSimulationApp::setupBuffers()
@@ -197,6 +195,8 @@ void ClothSimulationApp::setupGlsl()
 
 void ClothSimulationApp::update()
 {
+	updateParams();
+
 	if( ! mUpdate ) return;
 	
 	gl::ScopedGlslProg	scopeGlsl( mUpdateGlsl );
@@ -255,9 +255,6 @@ void ClothSimulationApp::draw()
 		gl::drawElements( GL_LINES, CONNECTIONS_TOTAL * 2, GL_UNSIGNED_INT, nullptr );
 	}
 
-#if ! defined( CINDER_LINUX )
-	mParams->draw();
-#endif
 }
 
 void ClothSimulationApp::mouseDown( MouseEvent event )
@@ -289,61 +286,51 @@ void ClothSimulationApp::updateRayPosition( const ci::ivec2 &mousePos, bool useD
 	mUpdateGlsl->uniform( "rayPosition", rayPosition );
 }
 
-void ClothSimulationApp::setupParams()
+void ClothSimulationApp::updateParams()
 {
 	static vec3 gravity = vec3( 0.0, -0.08, 0.0 );
 	static float restLength = 0.88;
 	static float dampingConst = 2.8;
 	static float springConstant = 7.1;
 
-#if ! defined( CINDER_LINUX )	
-	mParams = params::InterfaceGl::create( "Cloth Simulation", ivec2( 250, 250 ) );
-	mParams->addText( "Update Params" );
-	mParams->addParam( "Update", &mUpdate );
-	mParams->addParam( "Updates/Frame", &mIterationsPerFrame ).min( 1 );
-	mParams->addParam( "Gravity", &gravity ).updateFn(
-		[&](){
-			mUpdateGlsl->uniform( "gravity", gravity );
-		});
-	mParams->addParam( "Rest Length", &restLength )
-		.min( 0.0f ).max( 30.0f ).updateFn(
-		[&](){
-			mUpdateGlsl->uniform( "rest_length", restLength );
-		});
-	mParams->addParam( "Damping Constant", &dampingConst )
-		.min( 1.5f ).max( 25.0f ).updateFn(
-		[&](){
-			mUpdateGlsl->uniform( "c", dampingConst );
-		});
-	mParams->addParam( "Spring Constant", &springConstant )
-		.min( 0.1f ).max( 17.0f ).updateFn(
-		[&](){
-			mUpdateGlsl->uniform( "k", springConstant );
-		});
-	mParams->addButton( "Eject Button",
-		[&](){
-			restLength = 2.0;
-			mUpdateGlsl->uniform( "rest_length", restLength );
-			dampingConst = 5.0;
-			mUpdateGlsl->uniform( "c", dampingConst );
-		});
-	mParams->addButton( "Reset",
-		[&](){
-			gravity = vec3( 0.0, -0.08, 0.0 );
-			mUpdateGlsl->uniform( "gravity", gravity );
-			restLength = 0.88;
-			mUpdateGlsl->uniform( "rest_length", restLength );
-			dampingConst = 2.8;
-			mUpdateGlsl->uniform( "c", dampingConst );
-			springConstant = 7.1;
-			mUpdateGlsl->uniform( "k", springConstant );
-		});
-	mParams->addSeparator();
-	mParams->addText( "Render Params" );
-	mParams->addParam( "Draw Lines", &mDrawLines );
-	mParams->addParam( "Draw Points", &mDrawPoints );
-	mParams->addText( "Right Mouse Button Rotates" );
-#endif
+	ImGui::Begin( "Cloth Simulation" );
+	ImGui::Text( "Update Params" );
+	ImGui::Checkbox( "Update", &mUpdate );
+	ImGui::SliderInt( "Updates/Frame", (int*)&mIterationsPerFrame, 1, 16 );
+	if( ImGui::DragFloat3( "Gravity", &gravity, 0.01f ) ) {
+		mUpdateGlsl->uniform( "gravity", gravity );
+	}
+	if( ImGui::DragFloat( "Rest Length", &restLength, 0.01f, 0.0f, 30.0f ) ) {
+		mUpdateGlsl->uniform( "rest_length", restLength );
+	}
+	if( ImGui::DragFloat( "Damping Constant", &dampingConst, 0.01f, 1.5f, 25.0f ) ) {
+		mUpdateGlsl->uniform( "c", dampingConst );
+	}
+	if( ImGui::DragFloat( "Spring Constant", &springConstant, 0.01f, 0.1f, 17.0f ) ) {
+		mUpdateGlsl->uniform( "k", springConstant );
+	}
+	if( ImGui::Button( "Eject Button" ) ) {
+		restLength = 2.0;
+		mUpdateGlsl->uniform( "rest_length", restLength );
+		dampingConst = 5.0;
+		mUpdateGlsl->uniform( "c", dampingConst );
+	}
+	if( ImGui::Button( "Reset" ) ) {
+		gravity = vec3( 0.0, -0.08, 0.0 );
+		mUpdateGlsl->uniform( "gravity", gravity );
+		restLength = 0.88;
+		mUpdateGlsl->uniform( "rest_length", restLength );
+		dampingConst = 2.8;
+		mUpdateGlsl->uniform( "c", dampingConst );
+		springConstant = 7.1;
+		mUpdateGlsl->uniform( "k", springConstant );
+	}
+	ImGui::Separator();
+	ImGui::Text( "Render Params" );
+	ImGui::Checkbox( "Draw Lines", &mDrawLines );
+	ImGui::Checkbox( "Draw Points", &mDrawPoints );
+	ImGui::Text( "Right Mouse Button Rotates" );
+	ImGui::End();
 }
 
 CINDER_APP( ClothSimulationApp, RendererGl(),
