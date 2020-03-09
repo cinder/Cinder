@@ -78,6 +78,8 @@ class CI_API RendererGl : public Renderer {
 			mDebugContext = false;
 			mDebugLogSeverity = 0;
 			mDebugBreakSeverity = 0;
+			mMultiGpuEnabledNV = false;
+			mMultiGpuModeNV = MultiGpuModeNV::SINGLE;
 #endif
 			mObjectTracking = false;
 			mStencil = false;
@@ -101,6 +103,8 @@ class CI_API RendererGl : public Renderer {
 		int			getMsaa() const { return mMsaaSamples; }
 
 #if ! defined( CINDER_GL_ES )
+		enum class MultiGpuModeNV { SINGLE, AFR, MULTICAST, MULTI_DISPLAY_MULTICAST };
+
 		//! Enables a debug context (per \c ARB_debug_output). Currently only implemented by MSW and Linux GL implementations. By default this is made \c GL_DEBUG_OUTPUT_SYNCHRONOUS
 		Options&	debug() { mDebugContext = true; return *this; }
 		//! Returns whether the context has debug enabled
@@ -113,6 +117,18 @@ class CI_API RendererGl : public Renderer {
 		Options&	debugBreak( GLenum severity = GL_DEBUG_SEVERITY_HIGH ) { mDebugBreakSeverity = severity; mDebugContext = true; return *this; }
 		//! Returns the severity threshold for debug breaking. A value of \c 0 indicates debugBreak is off.
 		GLenum		getDebugBreakSeverity() const { return mDebugBreakSeverity; }
+		//! (NVIDIA ONLY) Specify the multi-GPU strategy (SLI mode) to be WGL_CONTEXT_MULTIGPU_ATTRIB_SINGLE_NV.
+		Options&	multiGpuSingleNV() { mMultiGpuEnabledNV = true; mMultiGpuModeNV = MultiGpuModeNV::SINGLE; return *this; }
+		//! (NVIDIA ONLY) Specify the multi-GPU strategy (SLI mode) to be WGL_CONTEXT_MULTIGPU_ATTRIB_AFR_NV.
+		Options&	multiGpuAFRNV() { mMultiGpuEnabledNV = true; mMultiGpuModeNV = MultiGpuModeNV::AFR; return *this; }
+		//! (NVIDIA ONLY) Specify the multi-GPU strategy (SLI mode) to be WGL_CONTEXT_MULTIGPU_ATTRIB_MULTICAST_NV.
+		Options&	multiGpuMulticastNV() { mMultiGpuEnabledNV = true; mMultiGpuModeNV = MultiGpuModeNV::MULTICAST; return *this; }
+		//! (NVIDIA ONLY) Specify the multi-GPU strategy (SLI mode) to be WGL_CONTEXT_MULTIGPU_ATTRIB_MULTI_DISPLAY_MULTICAST_NV.
+		Options&	multiGpuMultiDisplayMulticastNV() { mMultiGpuEnabledNV = true; mMultiGpuModeNV = MultiGpuModeNV::MULTI_DISPLAY_MULTICAST; return *this; }
+		//! (NVIDIA ONLY) Returns whether multi-GPU (SLI mode) is active or not.
+		bool		isMultiGpuEnabledNV() const { return mMultiGpuEnabledNV; }
+		//! (NVIDIA ONLY) Returns the multi-GPU strategy (SLI mode).
+		MultiGpuModeNV	getMultiGpuModeNV() const { return mMultiGpuModeNV; }
 #endif
 
 		//! Enables Context-level tracking of live objects. Defaults to \c false.
@@ -149,6 +165,8 @@ class CI_API RendererGl : public Renderer {
 		bool					mDebugContext;
 		GLenum					mDebugLogSeverity; // initial value of 0 means debug logging is disabled
 		GLenum					mDebugBreakSeverity; // initial value of 0 means debug break is disabled
+		bool					mMultiGpuEnabledNV;
+		MultiGpuModeNV			mMultiGpuModeNV;
 #endif
 		bool					mObjectTracking;
 	};

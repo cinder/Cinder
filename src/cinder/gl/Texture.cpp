@@ -189,6 +189,11 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat, GLint
 		mInternalFormat = format.mInternalFormat;
 	}
 
+#if ! defined( CINDER_GL_ES )
+	if( format.mPerGpuStorageSpecifiedNV )
+		glTexParameteri( mTarget, GL_PER_GPU_STORAGE_NV, (GLint)format.mPerGpuStorageEnabledNV );
+#endif
+
 	//if( ( format.mDataType == -1 ) && ( defaultDataType > 0 ) )
 	//	format.mDataType = defaultDataType;
 
@@ -760,6 +765,10 @@ TextureBase::Format::Format()
 	mSwizzleMask[0] = GL_RED; mSwizzleMask[1] = GL_GREEN; mSwizzleMask[2] = GL_BLUE; mSwizzleMask[3] = GL_ALPHA;
 	mCompareMode = -1;
 	mCompareFunc = -1;
+#if ! defined( CINDER_GL_ES )
+	mPerGpuStorageSpecifiedNV = false;
+	mPerGpuStorageEnabledNV = false;
+#endif
 }
 
 void TextureBase::Format::setSwizzleMask( GLint r, GLint g, GLint b, GLint a )
@@ -1706,6 +1715,14 @@ class ImageSourceTexture : public ImageSource {
 	int32_t						mRowBytes;
 };
 
+void Texture2d::regenerateMipmap()
+{
+	if( mMipmapping ) {
+		ScopedTextureBind tbs( mTarget, mTextureId );
+		glGenerateMipmap( mTarget );
+	}
+}
+
 ImageSourceRef Texture2d::createSource()
 {
 	return ImageSourceRef( new ImageSourceTexture( *this ) );
@@ -2103,6 +2120,14 @@ void TextureCubeMap::replace( const TextureData &textureData )
 	mMaxMipmapLevel = (int32_t)textureData.getNumLevels() - 1;
 	glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, mMaxMipmapLevel );
 #endif
+}
+
+void TextureCubeMap::regenerateMipmap()
+{
+	if( mMipmapping ) {
+		ScopedTextureBind tbs( mTarget, mTextureId );
+		glGenerateMipmap( mTarget );
+	}
 }
 
 void TextureCubeMap::printDims( std::ostream &os ) const
