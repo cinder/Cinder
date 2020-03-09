@@ -135,7 +135,6 @@ NVidiaComputeParticlesApp::NVidiaComputeParticlesApp()
 
 	CI_CHECK_GL();
 
-	//Must precede CameraUi to receive (non-captured) mouse events.
 	ImGui::Initialize();
 
 	mCam.lookAt( vec3( 0.0f, 0.0f, -3.0f ), vec3( 0 ) );
