@@ -18,15 +18,6 @@ static std::vector<int> sAccelKeys;
 static ci::signals::ConnectionList sAppConnections;
 static std::unordered_map<ci::app::WindowRef, ci::signals::ConnectionList> sWindowConnections;
 
-//! Used by Combo and ListBox below.
-static auto vector_getter = []( void* vec, int idx, const char** out_text )
-{
-	auto& vector = *static_cast<std::vector<std::string>*>( vec );
-	if( idx < 0 || idx >= static_cast<int>( vector.size() ) ) return false;
-	*out_text = vector.at( idx ).c_str();
-	return true;
-};
-
 namespace ImGui {
 	Options::Options()
 		: mWindow( ci::app::getWindow() ), mAutoRender( true ), mIniPath(), mSignalPriority( 1 ), mKeyboardEnabled( true ), mGamepadEnabled( true )
@@ -204,16 +195,48 @@ namespace ImGui {
 		return ColorPicker4( label, color->ptr(), flags );
 	}
 
-	bool Combo( const char* label, int* currIndex, std::vector<std::string>& values )
+	bool Combo( const char* label, int* currIndex, const std::vector<std::string>& values, ImGuiComboFlags flags )
 	{
 		if( values.empty() ) return false;
-		return Combo( label, currIndex, vector_getter, static_cast<void*>( &values ), static_cast<int>( values.size() ) );
+
+		bool changed = false;
+		static const char* previewItem = values.at(0).c_str();
+		if( ImGui::BeginCombo( label, previewItem, flags ) ) {
+			for( int i = 0; i < (int)values.size(); ++i ) {
+				ImGui::PushID( (void*)(intptr_t)i );
+				bool selected = ( *currIndex == i );
+				if( ImGui::Selectable( values.at( i ).c_str(), selected ) ) {
+					previewItem = values.at( i ).c_str();
+					*currIndex = i;
+					changed = true;
+				}
+				if( selected ) ImGui::SetItemDefaultFocus();
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+		}
+		return changed;
 	}
 
-	bool ListBox( const char* label, int* currIndex, std::vector<std::string>& values )
+	bool ListBox( const char* label, int* currIndex, const std::vector<std::string>& values, int height_in_items )
 	{
 		if( values.empty() ) return false;
-		return ListBox( label, currIndex, vector_getter, static_cast<void*>( &values ), static_cast<int>( values.size() ) );
+		
+		bool changed = false;
+		if( ImGui::ListBoxHeader( label, (int)values.size(), height_in_items ) ) {
+			for( int i = 0; i < (int)values.size(); ++i ) {
+				ImGui::PushID( (void*)(intptr_t)i );
+				bool selected = ( *currIndex == i );
+				if( ImGui::Selectable( values.at( i ).c_str(), selected ) ) {
+					*currIndex = i;
+					changed = true;
+				}
+				if( selected ) ImGui::SetItemDefaultFocus();
+				ImGui::PopID();
+			}
+			ImGui::ListBoxFooter();
+		}
+		return changed;
 	}
 
 	void Image( const ci::gl::Texture2dRef& texture, const ci::vec2& size, const ci::vec2& uv0, const ci::vec2& uv1, const ci::vec4& tint_col, const ci::vec4& border_col )
