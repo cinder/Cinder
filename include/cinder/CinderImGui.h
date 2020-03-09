@@ -71,13 +71,20 @@ namespace ImGui {
 		//! Returns whether the gamepad input is enabled
 		bool isGamepadEnabled() const { return mGamepadEnabled; }
 
+		//! Sets the signal priority that will be use to connect the signals and render ImGui
 		Options& signalPriority( int signalPriority );
 		//! Returns the signal priority that will be use to connect the signals and render ImGui
 		int getSignalPriority() const { return mSignalPriority; }
+
+		//! Sets the ImGuiStyle used during initialization.
+		Options& style( const ImGuiStyle& style );
+		//! Returns the ImGuiStyle used during initialization.
+		const ImGuiStyle& getStyle() const { return mStyle; }
 	protected:
 		bool							mAutoRender;
 		bool							mKeyboardEnabled;
 		bool							mGamepadEnabled;
+		ImGuiStyle						mStyle;
 		ci::app::WindowRef				mWindow;
 		ci::fs::path					mIniPath;
 		int								mSignalPriority;

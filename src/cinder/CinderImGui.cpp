@@ -22,6 +22,89 @@ namespace ImGui {
 	Options::Options()
 		: mWindow( ci::app::getWindow() ), mAutoRender( true ), mIniPath(), mSignalPriority( 1 ), mKeyboardEnabled( true ), mGamepadEnabled( true )
 	{
+		//! Default Cinder styling
+		mStyle.Alpha = 1.0f;                            // Global alpha applies to everything in ImGui
+		mStyle.WindowPadding = ImVec2( 8, 8 );          // Padding within a window
+		mStyle.WindowRounding = 7.0f;                   // Radius of window corners rounding. Set to 0.0f to have rectangular windows
+		mStyle.WindowBorderSize = 1.0f;                 // Thickness of border around windows. Generally set to 0.0f or 1.0f. Other values not well tested.
+		mStyle.WindowMinSize = ImVec2( 32, 32 );        // Minimum window size
+		mStyle.WindowTitleAlign = ImVec2( 0.0f, 0.5f ); // Alignment for title bar text
+		mStyle.ChildRounding = 0.0f;                    // Radius of child window corners rounding. Set to 0.0f to have rectangular child windows
+		mStyle.ChildBorderSize = 1.0f;                  // Thickness of border around child windows. Generally set to 0.0f or 1.0f. Other values not well tested.
+		mStyle.PopupRounding = 0.0f;                    // Radius of popup window corners rounding. Set to 0.0f to have rectangular child windows
+		mStyle.PopupBorderSize = 1.0f;                  // Thickness of border around popup or tooltip windows. Generally set to 0.0f or 1.0f. Other values not well tested.
+		mStyle.FramePadding = ImVec2( 4, 3 );           // Padding within a framed rectangle (used by most widgets)
+		mStyle.FrameRounding = 0.0f;                    // Radius of frame corners rounding. Set to 0.0f to have rectangular frames (used by most widgets).
+		mStyle.FrameBorderSize = 0.0f;                  // Thickness of border around frames. Generally set to 0.0f or 1.0f. Other values not well tested.
+		mStyle.ItemSpacing = ImVec2( 8, 4 );            // Horizontal and vertical spacing between widgets/lines
+		mStyle.ItemInnerSpacing = ImVec2( 4, 4 );       // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label)
+		mStyle.TouchExtraPadding = ImVec2( 0, 0 );      // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
+		mStyle.IndentSpacing = 21.0f;                   // Horizontal spacing when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
+		mStyle.ColumnsMinSpacing = 6.0f;                // Minimum horizontal spacing between two columns
+		mStyle.ScrollbarSize = 16.0f;                   // Width of the vertical scrollbar, Height of the horizontal scrollbar
+		mStyle.ScrollbarRounding = 9.0f;                // Radius of grab corners rounding for scrollbar
+		mStyle.GrabMinSize = 10.0f;                     // Minimum width/height of a grab box for slider/scrollbar
+		mStyle.GrabRounding = 0.0f;                     // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
+		mStyle.TabRounding = 4.0f;                      // Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
+		mStyle.TabBorderSize = 0.0f;                    // Thickness of border around tabs.
+		mStyle.ButtonTextAlign = ImVec2( 0.5f, 0.5f );  // Alignment of button text when button is larger than text.
+		mStyle.DisplayWindowPadding = ImVec2( 20, 20 ); // Window position are clamped to be visible within the display area or monitors by at least this amount. Only applies to regular windows.
+		mStyle.DisplaySafeAreaPadding = ImVec2( 3, 3 ); // If you cannot see the edge of your screen (e.g. on a TV) increase the safe area padding. Covers popups/tooltips as well regular windows.
+		mStyle.MouseCursorScale = 1.0f;                 // Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). May be removed later.
+		mStyle.AntiAliasedLines = true;                 // Enable anti-aliasing on lines/borders. Disable if you are really short on CPU/GPU.
+		mStyle.AntiAliasedFill = true;                  // Enable anti-aliasing on filled shapes (rounded rectangles, circles, etc.)
+		mStyle.CurveTessellationTol = 1.25f;            // Tessellation tolerance when using PathBezierCurveTo() without a specific number of segments. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality.
+
+		mStyle.Colors[ImGuiCol_Text] = ImVec4( 0.86f, 0.93f, 0.89f, 0.78f );
+		mStyle.Colors[ImGuiCol_TextDisabled] = ImVec4( 0.86f, 0.93f, 0.89f, 0.28f );
+		mStyle.Colors[ImGuiCol_WindowBg] = ImVec4( 0.14f, 0.15f, 0.15f, 0.96f );
+		mStyle.Colors[ImGuiCol_ChildBg] = ImVec4( 0.14f, 0.15f, 0.15f, 1.00f );
+		mStyle.Colors[ImGuiCol_PopupBg] = ImVec4( 0.16f, 0.18f, 0.17f, 0.96f );
+		mStyle.Colors[ImGuiCol_Border] = ImVec4( 0.16f, 0.18f, 0.17f, 1.00f );
+		mStyle.Colors[ImGuiCol_BorderShadow] = ImVec4( 0.00f, 0.00f, 0.00f, 0.00f );
+		mStyle.Colors[ImGuiCol_FrameBg] = ImVec4( 0.16f, 0.18f, 0.17f, 1.00f );
+		mStyle.Colors[ImGuiCol_FrameBgHovered] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_FrameBgActive] = ImVec4( 0.84f, 0.10f, 0.14f, 1.00f );
+		mStyle.Colors[ImGuiCol_TitleBg] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_TitleBgActive] = ImVec4( 0.84f, 0.10f, 0.14f, 1.00f );
+		mStyle.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4( 0.84f, 0.10f, 0.14f, 1.00f );
+		mStyle.Colors[ImGuiCol_MenuBarBg] = ImVec4( 0.14f, 0.15f, 0.15f, 1.00f );
+		mStyle.Colors[ImGuiCol_ScrollbarBg] = ImVec4( 0.16f, 0.18f, 0.17f, 1.00f );
+		mStyle.Colors[ImGuiCol_ScrollbarGrab] = ImVec4( 0.14f, 0.15f, 0.15f, 1.00f );
+		mStyle.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4( 0.84f, 0.10f, 0.14f, 1.00f );
+		mStyle.Colors[ImGuiCol_CheckMark] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_SliderGrab] = ImVec4( 0.14f, 0.15f, 0.15f, 1.00f );
+		mStyle.Colors[ImGuiCol_SliderGrabActive] = ImVec4( 0.16f, 0.18f, 0.17f, 1.00f );
+		mStyle.Colors[ImGuiCol_Button] = ImVec4( 0.16f, 0.18f, 0.17f, 1.00f );
+		mStyle.Colors[ImGuiCol_ButtonHovered] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_ButtonActive] = ImVec4( 0.84f, 0.10f, 0.14f, 1.00f );
+		mStyle.Colors[ImGuiCol_Header] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_HeaderHovered] = ImVec4( 0.84f, 0.10f, 0.14f, 1.00f );
+		mStyle.Colors[ImGuiCol_HeaderActive] = ImVec4( 0.88f, 0.17f, 0.21f, 1.00f );
+		mStyle.Colors[ImGuiCol_Separator] = ImVec4( 0.14f, 0.16f, 0.19f, 1.00f );
+		mStyle.Colors[ImGuiCol_SeparatorHovered] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_SeparatorActive] = ImVec4( 0.84f, 0.10f, 0.14f, 1.00f );
+		mStyle.Colors[ImGuiCol_ResizeGrip] = ImVec4( 0.16f, 0.18f, 0.17f, 1.00f );
+		mStyle.Colors[ImGuiCol_ResizeGripHovered] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_ResizeGripActive] = ImVec4( 0.84f, 0.10f, 0.14f, 1.00f );
+		mStyle.Colors[ImGuiCol_Tab] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_TabHovered] = ImVec4( 0.84f, 0.10f, 0.14f, 1.00f );
+		mStyle.Colors[ImGuiCol_TabActive] = ImVec4( 0.88f, 0.17f, 0.21f, 1.00f );
+		mStyle.Colors[ImGuiCol_TabUnfocused] = ImVec4( 0.84f, 0.10f, 0.14f, 1.00f );
+		mStyle.Colors[ImGuiCol_TabUnfocusedActive] = ImVec4( 0.84f, 0.10f, 0.14f, 1.00f );
+		//mStyle.Colors[ImGuiCol_DockingPreview] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		//mStyle.Colors[ImGuiCol_DockingEmptyBg] = ImVec4( 0.20f, 0.20f, 0.20f, 1.00f );
+		mStyle.Colors[ImGuiCol_PlotLines] = ImVec4( 0.86f, 0.93f, 0.89f, 0.63f );
+		mStyle.Colors[ImGuiCol_PlotLinesHovered] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_PlotHistogram] = ImVec4( 0.86f, 0.93f, 0.89f, 0.63f );
+		mStyle.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_TextSelectedBg] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_DragDropTarget] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_NavHighlight] = ImVec4( 0.75f, 0.24f, 0.18f, 1.00f );
+		mStyle.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4( 1.00f, 1.00f, 1.00f, 0.70f );
+		mStyle.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4( 0.80f, 0.80f, 0.80f, 0.20f );
+		mStyle.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4( 0.20f, 0.22f, 0.27f, 0.73f );
 	}
 
 	Options& Options::window( const ci::app::WindowRef& window, int signalPriority )
@@ -58,6 +141,12 @@ namespace ImGui {
 	Options& Options::signalPriority( int signalPriority )
 	{
 		mSignalPriority = signalPriority;
+		return *this;
+	}
+
+	Options& Options::style( const ImGuiStyle& style )
+	{
+		mStyle = style;
 		return *this;
 	}
 
@@ -371,7 +460,7 @@ static void ImGui_ImplCinder_PostDraw()
 	sTriggerNewFrame = true;
 }
 
-static bool ImGui_ImplCinder_Init( const ci::app::WindowRef& window, bool auto_render, int signalPriority )
+static bool ImGui_ImplCinder_Init( const ci::app::WindowRef& window, const ImGui::Options& options )
 {
 	// Setup back-end capabilities flags
 	ImGuiIO& io = ImGui::GetIO();
@@ -398,6 +487,9 @@ static bool ImGui_ImplCinder_Init( const ci::app::WindowRef& window, bool auto_r
 	io.KeyMap[ImGuiKey_Insert] = ci::app::KeyEvent::KEY_INSERT;
 	io.KeyMap[ImGuiKey_Space] = ci::app::KeyEvent::KEY_SPACE;
 
+	ImGuiStyle& imGuiStyle = ImGui::GetStyle();
+	imGuiStyle = options.getStyle();
+
 #ifndef CINDER_LINUX
 	// clipboard callbacks
 	io.SetClipboardTextFn = []( void* user_data, const char* text ) {
@@ -411,6 +503,7 @@ static bool ImGui_ImplCinder_Init( const ci::app::WindowRef& window, bool auto_r
 		return (const char*)&strCopy[0];
 	};
 #endif
+	int signalPriority = options.getSignalPriority();
 	sWindowConnections[window] += window->getSignalMouseDown().connect( signalPriority, ImGui_ImplCinder_MouseDown );
 	sWindowConnections[window] += window->getSignalMouseUp().connect( signalPriority, ImGui_ImplCinder_MouseUp );
 	sWindowConnections[window] += window->getSignalMouseMove().connect( signalPriority, ImGui_ImplCinder_MouseMove );
@@ -419,7 +512,7 @@ static bool ImGui_ImplCinder_Init( const ci::app::WindowRef& window, bool auto_r
 	sWindowConnections[window] += window->getSignalKeyDown().connect( signalPriority, ImGui_ImplCinder_KeyDown );
 	sWindowConnections[window] += window->getSignalKeyUp().connect( signalPriority, ImGui_ImplCinder_KeyUp );
 	sWindowConnections[window] += window->getSignalResize().connect( signalPriority, ImGui_ImplCinder_Resize );
-	if( auto_render ) {
+	if( options.isAutoRenderEnabled() ) {
 		sWindowConnections[window] += ci::app::App::get()->getSignalUpdate().connect( std::bind( ImGui_ImplCinder_NewFrameGuard, window ) );
 		sWindowConnections[window] += window->getSignalPostDraw().connect( ImGui_ImplCinder_PostDraw );
 	}
@@ -469,12 +562,11 @@ void ImGui::Initialize( const ImGui::Options& options )
 	ImGui_ImplOpenGL3_Init();
 #endif
 	
+	ImGui_ImplCinder_Init( window, options );
 	if( options.isAutoRenderEnabled() ) {
-		ImGui_ImplCinder_Init( window, true, options.getSignalPriority() );
 		ImGui_ImplCinder_NewFrameGuard( window );
 	}
 	else {
-		ImGui_ImplCinder_Init( window, false, options.getSignalPriority() );
 		sTriggerNewFrame = false; //prevents resize() event from calling begin frame.
 	}
 	
