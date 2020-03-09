@@ -289,13 +289,13 @@ namespace ImGui {
 		if( values.empty() ) return false;
 
 		bool changed = false;
-		static const char* previewItem = values.at(0).c_str();
-		if( ImGui::BeginCombo( label, previewItem, flags ) ) {
+		static std::string previewItem = values.at( 0 );
+		if( ImGui::BeginCombo( label, previewItem.c_str(), flags ) ) {
 			for( int i = 0; i < (int)values.size(); ++i ) {
 				ImGui::PushID( (void*)(intptr_t)i );
 				bool selected = ( *currIndex == i );
 				if( ImGui::Selectable( values.at( i ).c_str(), selected ) ) {
-					previewItem = values.at( i ).c_str();
+					previewItem = values.at( i );
 					*currIndex = i;
 					changed = true;
 				}
