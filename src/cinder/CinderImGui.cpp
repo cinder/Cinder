@@ -13,7 +13,7 @@
 #include <unordered_map>
 
 static bool sInitialized = false;
-static bool sTriggerNewFrame = true;
+static bool sTriggerNewFrame = false;
 static std::vector<int> sAccelKeys;
 static ci::signals::ConnectionList sAppConnections;
 static std::unordered_map<ci::app::WindowRef, ci::signals::ConnectionList> sWindowConnections;
@@ -577,9 +577,7 @@ void ImGui::Initialize( const ImGui::Options& options )
 	ImGui_ImplCinder_Init( window, options );
 	if( options.isAutoRenderEnabled() ) {
 		ImGui_ImplCinder_NewFrameGuard( window );
-	}
-	else {
-		sTriggerNewFrame = false; //prevents resize() event from calling begin frame.
+		sTriggerNewFrame = true;
 	}
 	
 	sAppConnections += ci::app::App::get()->getSignalCleanup().connect( [context]() {
