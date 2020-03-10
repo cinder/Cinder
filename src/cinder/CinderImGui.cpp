@@ -81,7 +81,7 @@ namespace ImGui {
 		mStyle.Colors[ImGuiCol_ScrollbarGrab] = grayLight;
 		mStyle.Colors[ImGuiCol_ScrollbarGrabHovered] = grayInactive;
 		mStyle.Colors[ImGuiCol_ScrollbarGrabActive] = orangeActive;
-		mStyle.Colors[ImGuiCol_CheckMark] = grayLight;
+		mStyle.Colors[ImGuiCol_CheckMark] = ImVec4( 0.93f, 0.96f, 0.95f, 0.88f );
 		mStyle.Colors[ImGuiCol_SliderGrab] = grayLight;
 		mStyle.Colors[ImGuiCol_SliderGrabActive] = grayBg;
 		mStyle.Colors[ImGuiCol_Button] = grayBg;
