@@ -35,7 +35,7 @@ namespace ImGui {
 		mStyle.PopupBorderSize = 1.0f;                  // Thickness of border around popup or tooltip windows. Generally set to 0.0f or 1.0f. Other values not well tested.
 		mStyle.FramePadding = ImVec2( 4, 3 );           // Padding within a framed rectangle (used by most widgets)
 		mStyle.FrameRounding = 0.0f;                    // Radius of frame corners rounding. Set to 0.0f to have rectangular frames (used by most widgets).
-		mStyle.FrameBorderSize = 0.0f;                  // Thickness of border around frames. Generally set to 0.0f or 1.0f. Other values not well tested.
+		mStyle.FrameBorderSize = 1.0f;                  // Thickness of border around frames. Generally set to 0.0f or 1.0f. Other values not well tested.
 		mStyle.ItemSpacing = ImVec2( 8, 4 );            // Horizontal and vertical spacing between widgets/lines
 		mStyle.ItemInnerSpacing = ImVec2( 4, 4 );       // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label)
 		mStyle.TouchExtraPadding = ImVec2( 0, 0 );      // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
@@ -46,7 +46,7 @@ namespace ImGui {
 		mStyle.GrabMinSize = 10.0f;                     // Minimum width/height of a grab box for slider/scrollbar
 		mStyle.GrabRounding = 0.0f;                     // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
 		mStyle.TabRounding = 4.0f;                      // Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
-		mStyle.TabBorderSize = 0.0f;                    // Thickness of border around tabs.
+		mStyle.TabBorderSize = 1.0f;                    // Thickness of border around tabs.
 		mStyle.ButtonTextAlign = ImVec2( 0.5f, 0.5f );  // Alignment of button text when button is larger than text.
 		mStyle.DisplayWindowPadding = ImVec2( 20, 20 ); // Window position are clamped to be visible within the display area or monitors by at least this amount. Only applies to regular windows.
 		mStyle.DisplaySafeAreaPadding = ImVec2( 3, 3 ); // If you cannot see the edge of your screen (e.g. on a TV) increase the safe area padding. Covers popups/tooltips as well regular windows.
@@ -57,18 +57,18 @@ namespace ImGui {
 
 
 		ImVec4 grayDarkBg{ 0.07f, 0.09f, 0.08f, 0.96f };
-		ImVec4 grayBg{ 0.10f, 0.12f, 0.11f, 0.96f };
-		ImVec4 grayLight{ 0.20f, 0.22f, 0.21f, 0.96f };
-		ImVec4 grayInactive{ 0.12f, 0.14f, 0.13f, 0.96f };
-		ImVec4 orangeDimmed{ 0.56f, 0.18f, 0.065f, 1.00f };
-		ImVec4 orangeActive{ 0.663f, 0.235f, 0.082f, 1.00f };
+		ImVec4 grayBg{ 0.13f, 0.15f, 0.14f, 0.96f };
+		ImVec4 grayLight{ 0.29f, 0.31f, 0.30f, 0.93f };
+		ImVec4 grayInactive{ 0.22f, 0.25f, 0.24f, 0.95f };
+		ImVec4 orangeDimmed = grayLight;
+		ImVec4 orangeActive{ 0.663f, 0.235f, 0.082f, 0.96f };
 
 		mStyle.Colors[ImGuiCol_Text] = ImVec4( 0.93f, 0.96f, 0.95f, 0.88f );
 		mStyle.Colors[ImGuiCol_TextDisabled] = ImVec4( 0.93f, 0.96f, 0.95f, 0.28f );
 		mStyle.Colors[ImGuiCol_WindowBg] = grayDarkBg;
 		mStyle.Colors[ImGuiCol_ChildBg] = grayDarkBg;
 		mStyle.Colors[ImGuiCol_PopupBg] = ImVec4( 0.16f, 0.18f, 0.17f, 0.96f );
-		mStyle.Colors[ImGuiCol_Border] = ImVec4( 0.16f, 0.18f, 0.17f, 1.00f );
+		mStyle.Colors[ImGuiCol_Border] = ImVec4( grayLight.x, grayLight.y, grayLight.z, 0.6f );
 		mStyle.Colors[ImGuiCol_BorderShadow] = ImVec4( 0.00f, 0.00f, 0.00f, 0.00f );
 		mStyle.Colors[ImGuiCol_FrameBg] = grayBg;
 		mStyle.Colors[ImGuiCol_FrameBgHovered] = grayInactive;
@@ -81,7 +81,7 @@ namespace ImGui {
 		mStyle.Colors[ImGuiCol_ScrollbarGrab] = grayLight;
 		mStyle.Colors[ImGuiCol_ScrollbarGrabHovered] = grayInactive;
 		mStyle.Colors[ImGuiCol_ScrollbarGrabActive] = orangeActive;
-		mStyle.Colors[ImGuiCol_CheckMark] = grayInactive;
+		mStyle.Colors[ImGuiCol_CheckMark] = grayLight;
 		mStyle.Colors[ImGuiCol_SliderGrab] = grayLight;
 		mStyle.Colors[ImGuiCol_SliderGrabActive] = grayBg;
 		mStyle.Colors[ImGuiCol_Button] = grayBg;
