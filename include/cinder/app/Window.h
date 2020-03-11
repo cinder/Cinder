@@ -467,6 +467,7 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	}
 
 	void		setApp( AppBase *app ) { mApp = app; }	
+	void		applyCurrentContext();
 
 #if defined( CINDER_COCOA )
   #if defined( __OBJC__ )

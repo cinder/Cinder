@@ -244,6 +244,12 @@
     <Filter Include="Source Files\imgui">
       <UniqueIdentifier>{66e0e824-1b84-4813-9c9f-397728387389}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gl\nv">
+      <UniqueIdentifier>{a601d014-b852-46fa-9829-896bfdee2d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gl\nv">
+      <UniqueIdentifier>{7ff32b0d-8190-49b2-ab18-187db6196a2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\cinder\Area.cpp">
@@ -1070,6 +1076,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\CinderImGui.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\gl\nv\Multicast.cpp">
+      <Filter>Source Files\gl\nv</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2257,6 +2266,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\CinderImGui.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\gl\nv\Multicast.h">
+      <Filter>Header Files\gl\nv</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

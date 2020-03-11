@@ -780,6 +780,7 @@
     <ClCompile Include="..\..\src\cinder\gl\EnvironmentEs.cpp" />
     <ClCompile Include="..\..\src\cinder\gl\Fbo.cpp" />
     <ClCompile Include="..\..\src\cinder\gl\GlslProg.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\nv\Multicast.cpp" />
     <ClCompile Include="..\..\src\cinder\gl\Pbo.cpp" />
     <ClCompile Include="..\..\src\cinder\gl\Query.cpp" />
     <ClCompile Include="..\..\src\cinder\gl\scoped.cpp" />
@@ -1101,6 +1102,7 @@
     <ClInclude Include="..\..\include\cinder\gl\Fbo.h" />
     <ClInclude Include="..\..\include\cinder\gl\gl.h" />
     <ClInclude Include="..\..\include\cinder\gl\GlslProg.h" />
+    <ClInclude Include="..\..\include\cinder\gl\nv\Multicast.h" />
     <ClInclude Include="..\..\include\cinder\gl\Pbo.h" />
     <ClInclude Include="..\..\include\cinder\gl\platform.h" />
     <ClInclude Include="..\..\include\cinder\gl\Query.h" />

@@ -96,6 +96,10 @@ class CI_API BufferObj {
 	//! Sets the debugging label associated with the Buffer. Calls glObjectLabel() when available.
 	void				setLabel( const std::string &label );
 	
+	//! Analogous to glBufferStorage .
+	void				bufferStorage( GLsizeiptr size, const void* data, GLbitfield flags ) const;
+	//! Analogous to glNamedBufferStorage.
+	void				namedBufferStorage( GLsizeiptr size, const void* data, GLbitfield flags ) const;
   protected:
 	BufferObj( GLenum target );
 	BufferObj( GLenum target, GLsizeiptr allocationSize, const void *data, GLenum usage );

@@ -45,17 +45,37 @@ BufferObj::BufferObj( GLenum target )
 	mUsage( GL_READ_WRITE )
 #endif
 {
-	glGenBuffers( 1, &mId );
+	bool initialized = false;
+#if defined( GL_VERSION_4_5 )
+	if( GLAD_GL_VERSION_4_5 ) {
+		glCreateBuffers( 1, &mId );
+		initialized = true;
+	}
+#endif
+	if( ! initialized ) {
+		glGenBuffers( 1, &mId );
+	}
 	gl::context()->bufferCreated( this );
 }
 
 BufferObj::BufferObj( GLenum target, GLsizeiptr allocationSize, const void *data, GLenum usage )
 	: mId( 0 ), mTarget( target ), mSize( allocationSize ), mUsage( usage )
 {
-	glGenBuffers( 1, &mId );
+	bool initialized = false;
+#if defined( GL_VERSION_4_5 )
+	if( GLAD_GL_VERSION_4_5 ) {
+		glCreateBuffers( 1, &mId );
+		glNamedBufferData( mId, mSize, data, mUsage );
+		initialized = true;
+	}
+#endif
+	if( ! initialized ) {
+		glGenBuffers( 1, &mId );
+
+		ScopedBuffer bufferBind( mTarget, mId );
+		glBufferData( mTarget, mSize, data, mUsage );
+	}
 	
-	ScopedBuffer bufferBind( mTarget, mId );
-	glBufferData( mTarget, mSize, data, mUsage );
 	gl::context()->bufferCreated( this );
 }
 
@@ -239,6 +259,26 @@ void BufferObj::setLabel( const std::string &label )
 	env()->objectLabel( GL_BUFFER_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
 #elif defined( CINDER_HAS_KHR_DEBUG )
 	env()->objectLabel( GL_BUFFER, mId, (GLsizei)label.size(), label.c_str() );
+#endif
+}
+
+void BufferObj::bufferStorage( GLsizeiptr size, const void* data, GLbitfield flags ) const
+{
+#if defined( GL_VERSION_4_4 )
+	CI_ASSERT( GLAD_GL_VERSION_4_4 );
+	glBufferStorage( mTarget, size, data, flags );
+#else
+	throw gl::Exception( "bufferStorage unimplemented if GL_VERSION_4_4 is not accessible." );
+#endif
+}
+
+void BufferObj::namedBufferStorage( GLsizeiptr size, const void* data, GLbitfield flags ) const
+{
+#if defined( GL_VERSION_4_5 )
+	CI_ASSERT( GLAD_GL_VERSION_4_5 );
+	glNamedBufferStorage( mId, size, data, flags );
+#else
+	throw gl::Exception( "namedBufferStorage unimplemented if GL_VERSION_4_5 is not accessible." );
 #endif
 }
 

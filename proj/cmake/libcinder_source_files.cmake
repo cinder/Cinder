@@ -170,6 +170,7 @@ list( APPEND SRC_SET_CINDER_GL
 	${CINDER_SRC_DIR}/cinder/gl/Vbo.cpp
 	${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
 	${CINDER_SRC_DIR}/cinder/gl/wrapper.cpp
+	${CINDER_SRC_DIR}/cinder/gl/nv/Multicast.cpp
 )
 
 list( APPEND CINDER_SRC_FILES       ${SRC_SET_CINDER_GL} )
