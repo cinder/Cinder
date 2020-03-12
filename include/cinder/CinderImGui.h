@@ -36,8 +36,14 @@
 #include <vector>
 
 namespace cinder {
-	namespace app { typedef std::shared_ptr<class Window> WindowRef; }
-	namespace gl { typedef std::shared_ptr<class Texture2d> Texture2dRef; }
+	namespace app {
+		class Window;
+		typedef std::shared_ptr<Window> WindowRef;
+	}
+	namespace gl {
+		class Texture2d;
+		typedef std::shared_ptr<Texture2d> Texture2dRef;
+	}
 }
 
 //! Additional convenience initializaiont and overloads for cinder types
