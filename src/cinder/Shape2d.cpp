@@ -73,6 +73,12 @@ void Shape2d::append( const Shape2d &shape )
 		appendContour( *pathIt );
 }
 
+void Shape2d::translate( const vec2 &offset )
+{
+	for( vector<Path2d>::iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt )
+		contIt->translate( offset );
+}
+
 void Shape2d::scale( const vec2 &amount, vec2 scaleCenter )
 {
 	for( vector<Path2d>::iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt )
