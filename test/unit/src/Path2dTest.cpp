@@ -168,4 +168,15 @@ TEST_CASE("Path2d")
 		float t = p.calcNormalizedTime( 0.5f );
 		REQUIRE( glm::distance( p.getPosition( t ), vec2( 50, 50 ) ) == Approx( 0 ).epsilon( 0.001 ) );
 	}
+	
+	SECTION("translate")
+	{
+		Path2d p;
+		p.moveTo( 0, 0 );
+		p.lineTo( 10, 10 );
+		Path2d q = p;
+		p.translate( vec2( 1, 2 ) );
+		REQUIRE( glm::distance( p.getPosition( 0 ), vec2( 1, 2 ) ) == Approx( 0 ).epsilon( 0.001 ) );
+		REQUIRE( glm::distance( p.getPosition( 1.0 ), vec2( 11, 12 ) ) == Approx( 0 ).epsilon( 0.001 ) );
+	}
 }
