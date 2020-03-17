@@ -63,7 +63,8 @@ void Shape2d::arcTo( const vec2 &p, const vec2 &t, float radius )
 
 void Shape2d::close()
 {
-	mContours.back().close();
+	if( ! mContours.empty() )
+		mContours.back().close();
 }
 
 void Shape2d::append( const Shape2d &shape )
