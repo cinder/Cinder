@@ -2,7 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #if ! defined( CINDER_GL_ES )
-#include "cinder/params/Params.h"
+#include "cinder/CinderImGui.h"
 #endif
 
 using namespace ci;
@@ -23,16 +23,13 @@ class TessellationShaderApp : public App {
 #if defined( CINDER_GL_ES )
 	void mouseDown( MouseEvent event ) override;
 #endif
+	void update() override;
 	void draw() override;
 
   private:
 	gl::GlslProgRef			mGlsl;
 	float					mRadius;
 	gl::VertBatchRef		mBatch;
-
-#if ! defined( CINDER_GL_ES )
-	params::InterfaceGlRef	mParams;
-#endif
 
 	int mTessLevelInner;
 	int mTessLevelOuter;
@@ -45,16 +42,10 @@ void TessellationShaderApp::setup()
 	glGetIntegerv( GL_MAX_PATCH_VERTICES, &maxPatchVertices );
 	app::console() << "Max supported patch vertices " << maxPatchVertices << std::endl;
 
-
-
 #if ! defined( CINDER_GL_ES )
 	fs::path glDir = "ogl";
 	mRadius = 200.0f;
-
-	mParams = params::InterfaceGl::create( "Settings", ivec2( 200, 200 ) );
-	mParams->addParam( "Radius", &mRadius, "step=1.0" );
-	mParams->addParam( "Tess level inner", &mTessLevelInner, "min=0" );
-	mParams->addParam( "Tess level outer", &mTessLevelOuter, "min=0" );
+	ImGui::Initialize();
 #else
 	fs::path glDir = "es31a";
 	mRadius = 400.0f;
@@ -101,6 +92,15 @@ void TessellationShaderApp::mouseDown( MouseEvent event )
 }
 #endif
 
+void TessellationShaderApp::update()
+{
+#if ! defined( CINDER_GL_ES )
+	ImGui::DragFloat( "Radius", &mRadius );
+	ImGui::DragInt( "Tess level inner", &mTessLevelInner );
+	ImGui::DragInt( "Tess level outer", &mTessLevelOuter );
+#endif
+}
+
 void TessellationShaderApp::draw()
 {
 	gl::clear();
@@ -120,7 +120,6 @@ void TessellationShaderApp::draw()
 
 #if ! defined( CINDER_GL_ES )
 	gl::disableWireframe();
-	mParams->draw();
 #endif
 }
 
