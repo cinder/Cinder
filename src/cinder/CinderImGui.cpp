@@ -542,11 +542,10 @@ static void ImGui_ImplCinder_Shutdown()
 	sWindowConnections.clear();
 }
 
-void ImGui::Initialize( const ImGui::Options& options )
+bool ImGui::Initialize( const ImGui::Options& options )
 {
-	if( sInitialized ) {
-		throw ci::Exception( "ImGui is already initialized." );
-	}
+	if( sInitialized )
+		return false;
 
 	IMGUI_CHECKVERSION();
 	auto context = ImGui::CreateContext();
@@ -587,4 +586,5 @@ void ImGui::Initialize( const ImGui::Options& options )
 	} );
 
 	sInitialized = true;
+	return sInitialized;
 }

@@ -100,7 +100,7 @@ namespace ImGui {
 	//! By default, automatic rendering into ci::app::getWindow() will be used.
 	//! In a multi-window context, only call ImGui in App::draw() if the active window matches the one
 	//! used here for initialization, or in App::update() only if the this window is still open.
-	CI_API void Initialize( const Options& options = Options() );
+	CI_API bool Initialize( const Options& options = Options() );
 
 	CI_API bool DragFloat2( const char* label, glm::vec2* v2, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* format = "%.3f", float power = 1.0f );
 	CI_API bool DragFloat3( const char* label, glm::vec3* v2, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* format = "%.3f", float power = 1.0f );
