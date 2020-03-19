@@ -297,7 +297,7 @@ namespace ImGui {
 		if( values.empty() ) return false;
 
 		bool changed = false;
-		int itemsCount = values.size();
+		int itemsCount = (int)values.size();
 		const char* previewItem = NULL;
 		if( *currIndex >= 0 && *currIndex < itemsCount ) {
 			previewItem = values.at( *currIndex ).c_str();
