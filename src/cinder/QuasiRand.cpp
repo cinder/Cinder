@@ -1,8 +1,8 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2020, The Cinder Project: http://libcinder.org
  All rights reserved.
 
- Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -22,15 +22,12 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/Rand.h"
+#include "cinder/QuasiRand.h"
 
 namespace cinder {
 
-std::mt19937                                RandT<float>::sBase( 310u );
-std::uniform_real_distribution<float>       RandT<float>::sFloatGen;
-std::mt19937                                RandT<double>::sBase( 310u );
-std::uniform_real_distribution<double>      RandT<double>::sFloatGen;
-std::mt19937                                RandT<long double>::sBase( 310u );
-std::uniform_real_distribution<long double> RandT<long double>::sFloatGen;
+uint32_t QuasiRandT<float>::sSeed = 0;
+uint32_t QuasiRandT<double>::sSeed = 0;
+uint32_t QuasiRandT<long double>::sSeed = 0;
 
 } // namespace cinder

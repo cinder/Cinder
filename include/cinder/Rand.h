@@ -27,226 +27,185 @@
 
 namespace cinder {
 
-class CI_API Rand {
- public:
-	Rand() = default;
+template <typename T = float, std::enable_if_t<std::is_floating_point<T>::value, int> = 0>
+class CI_API RandT {
+  public:
+	RandT() = default;
 
-	Rand( uint32_t seed )
+	RandT( uint32_t seed )
 		: mBase( seed )
-	{}
+	{
+	}
 
 	//! Re-seeds the random generator
-	void seed( uint32_t seedValue )
-	{
-		mBase.seed( seedValue );
-	}
+	void seed( uint32_t seedValue ) { mBase.seed( seedValue ); }
 
 	//! returns a random boolean value
-	bool nextBool()
-	{
-		return mBase() & 1;
-	}
+	bool nextBool() { return mBase() & 1; }
 
 	//! returns a random integer in the range [-2147483648,2147483647]
-	int32_t nextInt()
-	{
-		return mBase();
-	}
+	int32_t nextInt() { return mBase(); }
 
 	//! returns a random integer in the range [0,4294967296)
-	uint32_t nextUint()
-	{
-		return mBase();
-	}
+	uint32_t nextUint() { return mBase(); }
 
 	//! returns a random integer in the range [0,v)
 	int32_t nextInt( int32_t v )
 	{
-		if( v <= 0 ) return 0;
+		if( v <= 0 )
+			return 0;
 		return mBase() % v;
 	}
 
 	//! returns a random integer in the range [0,v)
 	uint32_t nextUint( uint32_t v )
 	{
-		if( v == 0 ) return 0;
+		if( v == 0 )
+			return 0;
 		return mBase() % v;
 	}
 
 	//! returns a random integer in the range [a,b)
-	int32_t nextInt( int32_t a, int32_t b )
-	{
-		return nextInt( b - a ) + a;
-	}
+	int32_t nextInt( int32_t a, int32_t b ) { return nextInt( b - a ) + a; }
 
 	//! returns a random float in the range [0.0f,1.0f)
-	float nextFloat()
-	{
-		return mFloatGen( mBase );
-	}
+	T nextFloat() { return mFloatGen( mBase ); }
 
 	//! returns a random float in the range [0.0f,v)
-	float nextFloat( float v )
-	{
-		return mFloatGen( mBase ) * v;
-	}
+	T nextFloat( T v ) { return nextFloat() * v; }
 
 	//! returns a random float in the range [a,b)
-	float nextFloat( float a, float b )
-	{
-		return mFloatGen( mBase ) * ( b - a ) + a;
-	}
+	T nextFloat( T a, T b ) { return nextFloat() * ( b - a ) + a; }
 
 	//! returns a random float in the range [a,b] or the range [-b,-a)
-	float posNegFloat( float a, float b )
+	T posNegFloat( T a, T b )
 	{
 		if( nextBool() )
 			return nextFloat( a, b );
-		else
-			return -nextFloat( a, b );
+
+		return -nextFloat( a, b );
 	}
 
 	//! returns a random vec3 that represents a point on the unit sphere
-	vec3 nextVec3()
+	glm::vec<3, T, glm::defaultp> nextVec3()
 	{
-		float phi = nextFloat( (float)M_PI * 2.0f );
-		float costheta = nextFloat( -1.0f, 1.0f );
+		const T phi = nextFloat( T{ M_PI * 2.0 } );
+		const T cosTheta = nextFloat( T{ -1 }, T{ 1 } );
 
-		float rho = math<float>::sqrt( 1.0f - costheta * costheta );
-		float x = rho * math<float>::cos( phi );
-		float y = rho * math<float>::sin( phi );
-		float z = costheta;
+		const T rho = sqrt( T{ 1 } - cosTheta * cosTheta );
+		const T x = rho * cos( phi );
+		const T y = rho * sin( phi );
+		const T z = cosTheta;
 
-		return vec3( x, y, z );
+		return glm::vec<3, T, glm::defaultp>( x, y, z );
 	}
 
 	//! returns a random vec2 that represents a point on the unit circle
-	vec2 nextVec2()
+	glm::vec<2, T, glm::defaultp> nextVec2()
 	{
-		float theta = nextFloat( (float)M_PI * 2.0f );
-		return vec2( math<float>::cos( theta ), math<float>::sin( theta ) );
+		const T theta = nextFloat( T{ M_PI * 2.0 } );
+		return glm::vec<2, T, glm::defaultp>( cos( theta ), sin( theta ) );
 	}
 
 	//! returns a random float via Gaussian distribution, with a mean of 0 and a standard deviation of 1.0
-	float nextGaussian()
-	{
-		return mNormDist( mBase );
-	}
+	T nextGaussian() { return mNormDist( mBase ); }
 
 	// STATICS
 	//! Resets the static random generator to a random seed
-	static void randomize()
-	{
-		sBase.seed( std::random_device{}() );
-	}
+	static void randomize() { sBase.seed( std::random_device{}() ); }
 
 	//! Resets the static random generator to the specific seed \a seedValue
-	static void	randSeed( uint32_t seedValue )
-	{
-		sBase.seed( seedValue );
-	}
+	static void randSeed( uint32_t seedValue ) { sBase.seed( seedValue ); }
 
 	//! returns a random boolean value
-	static bool randBool()
-	{
-		return sBase() & 1;
-	}
+	static bool randBool() { return sBase() & 1; }
 
 	//! returns a random integer in the range [-2147483648,2147483647]
-	static int32_t randInt()
-	{
-		return sBase();
-	}
+	static int32_t randInt() { return sBase(); }
 
 	//! returns a random integer in the range [0,4294967296)
-	static uint32_t randUint()
-	{
-		return sBase();
-	}
+	static uint32_t randUint() { return sBase(); }
 
 	//! returns a random integer in the range [0,v)
 	static int32_t randInt( int32_t v )
 	{
-		if( v <= 0 ) return 0;
-		else return sBase() % v;
+		if( v <= 0 )
+			return 0;
+
+		return sBase() % v;
 	}
 
 	//! returns a random integer in the range [0,v)
 	static uint32_t randUint( uint32_t v )
 	{
-		if( v == 0 ) return 0;
-		else return sBase() % v;
+		if( v == 0 )
+			return 0;
+
+		return sBase() % v;
 	}
 
 	//! returns a random integer in the range [a,b)
-	static int32_t randInt( int32_t a, int32_t b )
-	{
-		return randInt( b - a ) + a;
-	}
+	static int32_t randInt( int32_t a, int32_t b ) { return randInt( b - a ) + a; }
 
 	//! returns a random float in the range [0.0f,1.0f)
-	static float randFloat()
-	{
-		return sFloatGen( sBase );
-	}
+	static T randFloat() { return sFloatGen( sBase ); }
 
 	//! returns a random float in the range [0.0f,v)
-	static float randFloat( float v )
-	{
-		return sFloatGen( sBase ) * v;
-	}
+	static T randFloat( T v ) { return randFloat() * v; }
 
 	//! returns a random float in the range [a,b)
-	static float randFloat( float a, float b )
-	{
-		return sFloatGen( sBase ) * ( b - a ) + a;
-	}
+	static T randFloat( T a, T b ) { return randFloat() * ( b - a ) + a; }
 
 	//! returns a random float in the range [a,b) or the range [-b,-a)
-	static float randPosNegFloat( float a, float b )
+	static T randPosNegFloat( T a, T b )
 	{
 		if( randBool() )
 			return randFloat( a, b );
-		else
-			return -randFloat( a, b );
+
+		return -randFloat( a, b );
 	}
 
 	//! returns a random vec3 that represents a point on the unit sphere
-	static vec3 randVec3()
+	static glm::vec<3, T, glm::defaultp> randVec3()
 	{
-		float phi = randFloat( (float)M_PI * 2.0f );
-		float costheta = randFloat( -1.0f, 1.0f );
+		const T phi = randFloat( T{ M_PI * 2.0 } );
+		const T cosTheta = randFloat( T{ -1 }, T{ 1 } );
 
-		float rho = math<float>::sqrt( 1.0f - costheta * costheta );
-		float x = rho * math<float>::cos( phi );
-		float y = rho * math<float>::sin( phi );
-		float z = costheta;
+		const T rho = sqrt( T{ 1 } - cosTheta * cosTheta );
+		const T x = rho * cos( phi );
+		const T y = rho * sin( phi );
+		const T z = cosTheta;
 
-		return vec3( x, y, z );
+		return glm::vec<3, T, glm::defaultp>( x, y, z );
 	}
 
 	//! returns a random vec2 that represents a point on the unit circle
-	static vec2 randVec2()
+	static glm::vec<2, T, glm::defaultp> randVec2()
 	{
-		float theta = randFloat( (float)M_PI * 2.0f );
-		return vec2( math<float>::cos( theta ), math<float>::sin( theta ) );
+		const T theta = randFloat( T{ M_PI * 2.0 } );
+		return glm::vec<2, T, glm::defaultp>( math<float>::cos( theta ), math<float>::sin( theta ) );
 	}
 
 	//! returns a random float via Gaussian distribution
-	static float randGaussian()
+	static T randGaussian()
 	{
-		static std::normal_distribution<float> dist{};
+		static std::normal_distribution<T> dist{};
 		return dist( sBase );
 	}
 
   private:
-	std::mt19937 mBase;
-	std::uniform_real_distribution<float>	mFloatGen;
-	std::normal_distribution<float>			mNormDist;
+	std::mt19937                      mBase;
+	std::uniform_real_distribution<T> mFloatGen;
+	std::normal_distribution<T>       mNormDist;
 
-	static std::mt19937 sBase;
-	static std::uniform_real_distribution<float> sFloatGen;
+	static std::mt19937                      sBase;
+	static std::uniform_real_distribution<T> sFloatGen;
 };
+
+using Rand = RandT<float>;
+using Randf = RandT<float>;
+using Randd = RandT<double>;
+using Randld = RandT<long double>;
 
 //! Resets the static random generator to the specific seed \a seedValue
 CI_API inline void randSeed( uint32_t seedValue ) { Rand::randSeed( seedValue ); }

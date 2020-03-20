@@ -825,6 +825,7 @@
     <ClCompile Include="..\..\src\cinder\Perlin.cpp" />
     <ClCompile Include="..\..\src\cinder\Plane.cpp" />
     <ClCompile Include="..\..\src\cinder\PolyLine.cpp" />
+    <ClCompile Include="..\..\src\cinder\QuasiRand.cpp" />
     <ClCompile Include="..\..\src\cinder\Rand.cpp" />
     <ClCompile Include="..\..\src\cinder\Ray.cpp" />
     <ClCompile Include="..\..\src\cinder\Rect.cpp" />
@@ -1135,6 +1136,7 @@
     <ClInclude Include="..\..\include\cinder\Matrix44.h" />
     <ClInclude Include="..\..\include\cinder\Plane.h" />
     <ClInclude Include="..\..\include\cinder\Function.h" />
+    <ClInclude Include="..\..\include\cinder\QuasiRand.h" />
     <ClInclude Include="..\..\include\cinder\Signals.h" />
     <ClInclude Include="..\..\include\cinder\svg\Svg.h" />
     <ClInclude Include="..\..\include\cinder\svg\SvgGl.h" />
