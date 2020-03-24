@@ -651,7 +651,11 @@ public:
 	void		setListener( const std::string &address, ListenerFn listener );
 	//! Removes the listener associated with \a address.
 	void		removeListener( const std::string &address );
-	
+	//! Removes all listeners
+	void		removeAllListeners();
+	//! Returns all listeners by value
+	Listeners getListeners() const;
+
   protected:
 	ReceiverBase() = default;
 	//! Non-copyable.
@@ -680,7 +684,7 @@ public:
 	virtual void closeImpl() = 0;
 	
 	Listeners				mListeners;
-	std::mutex				mListenerMutex;
+	mutable std::mutex		mListenerMutex;
 	std::set<std::string>	mDisregardedAddresses;
 };
 	
