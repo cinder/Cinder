@@ -19,6 +19,7 @@ set( SOURCES
 	${UNIT_DIR}/src/TestMain.cpp
 	${UNIT_DIR}/src/UnicodeTest.cpp
 	${UNIT_DIR}/src/Utilities.cpp
+	${UNIT_DIR}/src/MediaTime.cpp
 	${UNIT_DIR}/src/Path2dTest.cpp
 	${UNIT_DIR}/src/PolyLineTest.cpp
 	${UNIT_DIR}/src/audio/BufferUnit.cpp
