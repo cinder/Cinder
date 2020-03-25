@@ -1080,6 +1080,9 @@
     <ClCompile Include="..\..\src\cinder\gl\nv\Multicast.cpp">
       <Filter>Source Files\gl\nv</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\cinder\MediaTime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\AntTweakBar\AntPerfTimer.h">
@@ -2269,6 +2272,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\gl\nv\Multicast.h">
       <Filter>Header Files\gl\nv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\MediaTime.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
