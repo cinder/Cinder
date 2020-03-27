@@ -1,0 +1,5 @@
+{
+    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+    "cmake.sourceDirectory": "${workspaceFolder}/proj/cmake",
+    "cmake.buildDirectory": "${workspaceFolder}/proj/cmake/build"
+}
