@@ -25,14 +25,19 @@
 // SOFTWARE.
 //
 //---------------------------------------------------------------------------------------
-// fs_fwd.hpp - The forwarding header for the header/implementation seperated usage of
-//              ghc::filesystem.
-// This file can be include at any place, where ghc::filesystem api is needed while
-// not bleeding implementation details (e.g. system includes) into the global namespace,
-// as long as one cpp includes fs_impl.hpp to deliver the matching implementations.
+// fs_std_impl.hpp - The implementation header for the header/implementation seperated usage of
+//                   ghc::filesystem that does nothing if std::filesystem is detected.
+// This file can be used to hide the implementation of ghc::filesystem into a single cpp.
+// The cpp has to include this before including fs_std_fwd.hpp directly or via a different
+// header to work.
 //---------------------------------------------------------------------------------------
-#ifndef GHC_FILESYSTEM_FWD_H
-#define GHC_FILESYSTEM_FWD_H
-#define GHC_FILESYSTEM_FWD
+#if defined(__cplusplus) && __cplusplus >= 201703L && defined(__has_include)
+#if __has_include(<filesystem>)
+#define GHC_USE_STD_FS
+#endif
+#endif
+#ifndef GHC_USE_STD_FS
+#define GHC_WIN_WSTRING_STRING_TYPE
+#define GHC_FILESYSTEM_IMPLEMENTATION
 #include <ghc/filesystem.hpp>
-#endif // GHC_FILESYSTEM_FWD_H
+#endif

@@ -180,7 +180,7 @@
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // ghc::filesystem version in decimal (major * 10000 + minor * 100 + patch)
-#define GHC_FILESYSTEM_VERSION 10300L
+#define GHC_FILESYSTEM_VERSION 10301L
 
 namespace ghc {
 namespace filesystem {
@@ -2683,7 +2683,7 @@ GHC_INLINE path path::lexically_relative(const path& base) const
     }
     int count = 0;
     for (const auto& element : input_iterator_range<const_iterator>(b, base.end())) {
-        if (element != "." && element != "..") {
+        if (element != "." && element != "" && element != "..") {
             ++count;
         }
         else if (element == "..") {
@@ -2951,24 +2951,25 @@ template <class charT, class traits>
 inline std::basic_istream<charT, traits>& operator>>(std::basic_istream<charT, traits>& is, path& p)
 {
     std::basic_string<charT, traits> tmp;
-    auto c = is.get();
+    charT c;
+    is >> c;
     if (c == '"') {
         auto sf = is.flags();
         is >> std::noskipws;
         while (is) {
-            c = is.get();
+            auto c2 = is.get();
             if (is) {
-                if (c == '\\') {
-                    c = is.get();
+                if (c2 == '\\') {
+                    c2 = is.get();
                     if (is) {
-                        tmp += static_cast<charT>(c);
+                        tmp += static_cast<charT>(c2);
                     }
                 }
-                else if (c == '"') {
+                else if (c2 == '"') {
                     break;
                 }
                 else {
-                    tmp += static_cast<charT>(c);
+                    tmp += static_cast<charT>(c2);
                 }
             }
         }
@@ -3396,6 +3397,7 @@ GHC_INLINE bool create_directories(const path& p, std::error_code& ec) noexcept
 {
     path current;
     ec.clear();
+    bool didCreate = false;
     for (path::string_type part : p) {
         current /= part;
         if (current != p.root_name() && current != p.root_path()) {
@@ -3415,6 +3417,7 @@ GHC_INLINE bool create_directories(const path& p, std::error_code& ec) noexcept
                         return false;
                     }
                 }
+                didCreate = true;
             }
 #ifndef LWG_2935_BEHAVIOUR
             else if (!is_directory(fs)) {
@@ -3424,7 +3427,7 @@ GHC_INLINE bool create_directories(const path& p, std::error_code& ec) noexcept
 #endif
         }
     }
-    return true;
+    return didCreate;
 }
 
 GHC_INLINE bool create_directory(const path& p)
@@ -3961,8 +3964,8 @@ GHC_INLINE void last_write_time(const path& p, file_time_type new_time, std::err
     struct ::timespec times[2];
     times[0].tv_sec = 0;
     times[0].tv_nsec = UTIME_OMIT;
-    times[1].tv_sec = std::chrono::duration_cast<std::chrono::seconds>(d).count();
-    times[1].tv_nsec = std::chrono::duration_cast<std::chrono::nanoseconds>(d).count() % 1000000000;
+    times[1].tv_sec = static_cast<decltype(times[1].tv_sec)>(std::chrono::duration_cast<std::chrono::seconds>(d).count());
+    times[1].tv_nsec = static_cast<decltype(times[1].tv_nsec)>(std::chrono::duration_cast<std::chrono::nanoseconds>(d).count() % 1000000000);
     if (::utimensat(AT_FDCWD, p.c_str(), times, AT_SYMLINK_NOFOLLOW) != 0) {
         ec = detail::make_system_error();
     }
@@ -4222,7 +4225,11 @@ GHC_INLINE void resize_file(const path& p, uintmax_t size, std::error_code& ec) 
     LARGE_INTEGER lisize;
     lisize.QuadPart = static_cast<LONGLONG>(size);
     if(lisize.QuadPart < 0) {
+#ifdef ERROR_FILE_TOO_LARGE
         ec = detail::make_system_error(ERROR_FILE_TOO_LARGE);
+#else
+        ec = detail::make_system_error(223);
+#endif
         return;
     }
     std::shared_ptr<void> file(CreateFileW(detail::fromUtf8<std::wstring>(p.u8string()).c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL), CloseHandle);
@@ -4646,6 +4653,7 @@ GHC_INLINE uintmax_t directory_entry::file_size() const
 GHC_INLINE uintmax_t directory_entry::file_size(std::error_code& ec) const noexcept
 {
     if (_status.type() != file_type::none) {
+        ec.clear();
         return _file_size;
     }
     return filesystem::file_size(path(), ec);
@@ -4665,6 +4673,7 @@ GHC_INLINE uintmax_t directory_entry::hard_link_count(std::error_code& ec) const
 {
 #ifndef GHC_OS_WINDOWS
     if (_status.type() != file_type::none) {
+        ec.clear();
         return _hard_link_count;
     }
 #endif
@@ -4682,6 +4691,7 @@ GHC_INLINE file_time_type directory_entry::last_write_time() const
 GHC_INLINE file_time_type directory_entry::last_write_time(std::error_code& ec) const noexcept
 {
     if (_status.type() != file_type::none) {
+        ec.clear();
         return std::chrono::system_clock::from_time_t(_last_write_time);
     }
     return filesystem::last_write_time(path(), ec);
@@ -4698,6 +4708,7 @@ GHC_INLINE file_status directory_entry::status() const
 GHC_INLINE file_status directory_entry::status(std::error_code& ec) const noexcept
 {
     if (_status.type() != file_type::none) {
+        ec.clear();
         return _status;
     }
     return filesystem::status(path(), ec);
@@ -4714,6 +4725,7 @@ GHC_INLINE file_status directory_entry::symlink_status() const
 GHC_INLINE file_status directory_entry::symlink_status(std::error_code& ec) const noexcept
 {
     if (_symlink_status.type() != file_type::none) {
+        ec.clear();
         return _symlink_status;
     }
     return filesystem::symlink_status(path(), ec);
