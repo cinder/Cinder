@@ -27,6 +27,7 @@
 #include <Windows.h>
 #include <Wininet.h>
 #include <Strsafe.h>
+#include <algorithm>
 #pragma comment( lib, "wininet.lib" )
 
 namespace cinder {
