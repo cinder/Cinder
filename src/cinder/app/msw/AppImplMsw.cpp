@@ -809,6 +809,12 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 						return false;
 					else
 						return DefWindowProc( mWnd, uMsg, wParam, lParam );
+				case SC_KEYMENU:				    // Is native menu invoked?
+					if (HISHORT(lParam) <= 0)		// Is it invoked by keyboard?
+						return false;
+					else
+						return DefWindowProc(mWnd, uMsg, wParam, lParam);
+					break;
 			}
 		break;
 		case WM_ACTIVATEAPP:
