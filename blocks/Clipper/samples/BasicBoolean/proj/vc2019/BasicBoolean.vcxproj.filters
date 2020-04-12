@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Blocks">
+      <UniqueIdentifier>{A9D86EAA-5CA3-441B-B2DB-ADD21FA0D7E1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Clipper">
+      <UniqueIdentifier>{6BF6D3BD-8C2D-432E-B11C-112C6D2FFE6E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Clipper\src">
+      <UniqueIdentifier>{52161C77-4752-4005-99DF-D5B2B080B68C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Clipper\include">
+      <UniqueIdentifier>{44CBFBE1-63CB-4EA6-95C1-A2EFDA2EE99F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\BasicBooleanApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\clipper.cpp">
+      <Filter>Blocks\Clipper\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\CinderClipper.cpp">
+      <Filter>Blocks\Clipper\src</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\..\include\clipper.hpp">
+      <Filter>Blocks\Clipper\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\CinderClipper.h">
+      <Filter>Blocks\Clipper\include</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\src\BasicBooleanApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
