@@ -91,10 +91,28 @@ class CI_API Camera {
 	float	getNearClip() const { return mNearClip; }
 	//! Sets the distance along the view direction to the Near clipping plane.
 	void	setNearClip( float nearClip ) { mNearClip = nearClip; mProjectionCached = false; }
-	//! Returns the distance along the view direction to the Far clipping plane.
+	//! Returns the distance along the view direction to the Far clipping plane. This value is ignored if `isInfiniteFarClip()` evaluates to \c TRUE.
 	float	getFarClip() const { return mFarClip; }
-	//! Sets the distance along the view direction to the Far clipping plane.
-	void	setFarClip( float farClip ) { mFarClip = farClip; mProjectionCached = false; }
+	//! Sets the distance along the view direction to the Far clipping plane. Will override a previous call to `setInfiniteFarClip( true );'
+	void	setFarClip( float farClip ) { mFarClip = farClip; mProjectionCached = false; setInfiniteFarClip(false); }
+
+
+	//! Returns whether the Far clipping plane is set to an infinite distance.
+	bool	isInfiniteFarClip() const { return mInfiniteFarClip; }
+	//! Sets the Far clipping plane to an infinite distance.
+	void	setInfiniteFarClip(bool enable = true) { mProjectionCached &= (mInfiniteFarClip == enable); mInfiniteFarClip = enable; }
+
+#if ! defined( CINDER_GL_ES )
+	//! Returns whether the projection uses depth values between zero and one. Defaults to false.
+	bool	isClipZeroToOne() const { return mClipZeroToOne; }
+	//! Tells the camera to adjust the projection to use depth values between zero and one. Defaults to false.
+	void	setClipZeroToOne(bool enable = true) const { mProjectionCached &= (mClipZeroToOne == enable); mClipZeroToOne = enable; }
+	//! Returns whether Reverse Z mode is enabled. Use this in combination with gl::clipControl( GL_LOWER_LEFT, GL_ZERO_TO_ONE ) to use the depth values of 1 (near) to 0 (far).
+	bool	isDepthReversedEnabled() const { return mDepthReversed; }
+	//! Sets Reverse Z mode. Use this in combination with gl::clipControl( GL_LOWER_LEFT, GL_ZERO_TO_ONE ) to use the depth values of 1 (near) to 0 (far).
+	void	enableDepthReversed(bool enable = true) const { mProjectionCached &= (mDepthReversed == enable); mDepthReversed = enable; }
+#endif
+
 
 	//! Returns the four corners of the Camera's Near clipping plane, expressed in world-space
 	virtual void	getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const { return getClipCoordinates( mNearClip, 1.0f, topLeft, topRight, bottomLeft, bottomRight ); }
@@ -177,6 +195,11 @@ class CI_API Camera {
 	mutable bool	mInverseModelViewCached;
 	
 	mutable float	mFrustumLeft, mFrustumRight, mFrustumTop, mFrustumBottom;
+
+	bool			mInfiniteFarClip = false;
+	mutable bool	mClipZeroToOne = false;
+	mutable bool	mDepthReversed = false;
+
 };
 
 //! A perspective Camera.
@@ -192,6 +215,9 @@ class CI_API CameraPersp : public Camera {
 	//! Configures the camera's projection according to the provided parameters.
 	void	setPerspective( float verticalFovDegrees, float aspectRatio, float nearPlane, float farPlane );
 	
+	//! Configures the camera's projection according to the provided parameters, with the Far clipping plane set to infinite distance.
+	void	setInfinitePerspective(float verticalFovDegrees, float aspectRatio, float nearPlane);
+
 	/** Returns both the horizontal and vertical lens shift. 
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
 		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
