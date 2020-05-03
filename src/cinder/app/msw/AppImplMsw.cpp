@@ -522,7 +522,8 @@ void WindowImplMsw::getScreenSize( int clientWidth, int clientHeight, int *resul
 void WindowImplMsw::setPos( const ivec2 &windowPos )
 {
 	RECT clientArea;
-	clientArea.left = windowPos.x; clientArea.top = windowPos.y;
+	clientArea.left = windowPos.x * getContentScale();
+	clientArea.top = windowPos.y * getContentScale();
 	clientArea.right = windowPos.x + 1; clientArea.bottom = windowPos.y + 1; // we don't actually care about the lower-right
 	::AdjustWindowRectEx( &clientArea, mWindowStyle, FALSE, mWindowExStyle );
 	::SetWindowPos( mWnd, HWND_TOP, clientArea.left, clientArea.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER );

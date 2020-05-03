@@ -370,8 +370,14 @@ BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC /*hdc*/, LPREC
 		if( sGetDpiForMonitorFnPtr ) {
 			UINT x, y;
 			HRESULT hr = sGetDpiForMonitorFnPtr( hMonitor, (DWORD)0 /*MDT_Effective_DPI*/, &x, &y );
-			if( SUCCEEDED( hr ) )
-				newDisplay->mContentScale = x / 96.0f;
+			if( SUCCEEDED( hr ) ) {
+				const float contentScale = x / 96.0f;
+				newDisplay->mContentScale = contentScale;
+				newDisplay->mArea.x1 = newDisplay->mArea.x1 / contentScale;
+				newDisplay->mArea.x2 = newDisplay->mArea.x2 / contentScale;
+				newDisplay->mArea.y1 = newDisplay->mArea.y1 / contentScale;
+				newDisplay->mArea.y2 = newDisplay->mArea.y2 / contentScale;
+			}
 		}
 	}
 
