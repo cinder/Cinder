@@ -168,7 +168,7 @@ fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string
 namespace {
 
 // see http://support.microsoft.com/kb/179378 "How To Browse for Folders from the Current Directory"
-INT CALLBACK getFolderPathBrowseCallbackProc( HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData )
+INT CALLBACK getFolderPathBrowseCallbackProc( HWND hwnd, UINT uMsg, LPARAM /* lp */, LPARAM pData )
 {
 	switch( uMsg ) {
 		case BFFM_INITIALIZED:
@@ -188,7 +188,7 @@ fs::path AppImplMsw::getFolderPath( const fs::path &initialPath )
 	string result;
 
 	::BROWSEINFO bi = { 0 };
-	bi.lParam = reinterpret_cast<LPARAM>( initialPath.wstring().c_str() );
+	bi.lParam = reinterpret_cast<LPARAM>( initialPath.c_str() );
 	bi.lpfn = getFolderPathBrowseCallbackProc;
 	bi.lpszTitle = L"Pick a Directory";
 	::LPITEMIDLIST pidl = ::SHBrowseForFolder( &bi );
