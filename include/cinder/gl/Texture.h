@@ -269,7 +269,14 @@ class CI_API TextureBase {
 		void				setLabel( const std::string &label ) { mLabel = label; }
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
-		
+#if ! defined( CINDER_GL_ES )
+		//! (NVIDIA only) Returns whether per-gpu storage is enabled.
+		bool				isPerGpuStorageNV() const { return mPerGpuStorageSpecifiedNV && mPerGpuStorageEnabledNV; }
+		//! (NVIDIA only) Enables per-gpu storage for multi-gpu multicast.
+		void				setPerGpuStorageNV( bool enable ) { mPerGpuStorageSpecifiedNV = true; mPerGpuStorageEnabledNV = enable; }
+		//! (NVIDIA only) Enables per-gpu storage for multi-gpu multicast.
+		Format&				perGpuStorageNV( bool enable = true ) { setPerGpuStorageNV( enable ); return *this; }
+#endif
 	protected:
 		Format();
 	
@@ -290,7 +297,9 @@ class CI_API TextureBase {
 		std::array<GLfloat,4>	mBorderColor;
 		std::string			mLabel; // debug label
 
-#if ! defined( CINDER_GL_ES )		
+#if ! defined( CINDER_GL_ES )
+		bool				mPerGpuStorageSpecifiedNV;
+		bool				mPerGpuStorageEnabledNV;
 		PboRef				mIntermediatePbo;
 #endif
 		friend class TextureBase;
@@ -425,10 +434,12 @@ class CI_API Texture1d : public TextureBase {
 		Format& immutableStorage( bool immutable = true ) { setImmutableStorage( immutable ); return *this; }
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
-		
 		//! Sets a custom deleter for destruction of the shared_ptr<Texture1d>
 		Format&	deleter( const std::function<void(Texture1d*)> &sharedPtrDeleter ) { mDeleter = sharedPtrDeleter; return *this; }
-
+#if ! defined( CINDER_GL_ES )
+		//! (NVIDIA only) Enables per-gpu storage for multi-gpu multicast.
+		Format& perGpuStorageNV( bool enable = true ) { setPerGpuStorageNV( enable ); return *this; }
+#endif
 	  protected:
 		std::function<void(Texture1d*)>		mDeleter;
 		
@@ -503,7 +514,10 @@ class CI_API Texture2d : public TextureBase {
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
 		//! Sets a custom deleter for destruction of the shared_ptr<Texture2d>
 		Format&	deleter( const std::function<void(Texture2d*)> &sharedPtrDeleter ) { mDeleter = sharedPtrDeleter; return *this; }
-
+#if ! defined( CINDER_GL_ES )
+		//! (NVIDIA only) Enables per-gpu storage for multi-gpu multicast.
+		Format& perGpuStorageNV( bool enable = true ) { setPerGpuStorageNV( enable ); return *this; }
+#endif
 	  protected:
 		bool								mLoadTopDown;
 		std::function<void(Texture2d*)>		mDeleter;
@@ -597,6 +611,8 @@ class CI_API Texture2d : public TextureBase {
 	bool			isTopDown() const { return mTopDown; }
 	//!	Marks whether the scanlines of the image are stored top-down in memory relative to the base address. Default is \c false.
 	void			setTopDown( bool topDown = true ) { mTopDown = topDown; }
+	//! Explicitly regenerate mipmaps assuming mipmapping is enabled.
+	void			regenerateMipmap();
 	
 	//! Returns an ImageSource pointing to this Texture
 	ImageSourceRef	createSource();
@@ -662,10 +678,12 @@ class CI_API Texture3d : public TextureBase {
 		Format& immutableStorage( bool immutable = true ) { setImmutableStorage( immutable ); return *this; }
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
-		
 		//! Sets a custom deleter for destruction of the shared_ptr<Texture3d>
 		Format&	deleter( const std::function<void(Texture3d*)> &sharedPtrDeleter ) { mDeleter = sharedPtrDeleter; return *this; }
-		
+#if ! defined( CINDER_GL_ES )
+		//! (NVIDIA only) Enables per-gpu storage for multi-gpu multicast.
+		Format& perGpuStorageNV( bool enable = true ) { setPerGpuStorageNV( enable ); return *this; }
+#endif
 	  protected:
 		std::function<void(Texture3d*)>		mDeleter;
 		
@@ -723,10 +741,12 @@ class CI_API TextureCubeMap : public TextureBase
 		Format& immutableStorage( bool immutable = true ) { setImmutableStorage( immutable ); return *this; }
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
-		
 		//! Sets a custom deleter for destruction of the shared_ptr<TextureCubeMap>
 		Format&	deleter( const std::function<void(TextureCubeMap*)> &sharedPtrDeleter ) { mDeleter = sharedPtrDeleter; return *this; }
-		
+#if ! defined( CINDER_GL_ES )
+		//! (NVIDIA only) Enables per-gpu storage for multi-gpu multicast.
+		Format& perGpuStorageNV( bool enable = true ) { setPerGpuStorageNV( enable ); return *this; }
+#endif
 	  protected:
 		std::function<void(TextureCubeMap*)>	mDeleter;
 		
@@ -756,7 +776,8 @@ class CI_API TextureCubeMap : public TextureBase
 
 	//! Replaces the pixels (and data store) of a Texture with contents of \a textureData.
 	void			replace( const TextureData &textureData );
-	
+	//! Explicitly regenerate mipmaps assuming mipmapping is enabled.
+	void			regenerateMipmap();
   protected:
 	TextureCubeMap( int32_t width, int32_t height, Format format );
 	template<typename T>

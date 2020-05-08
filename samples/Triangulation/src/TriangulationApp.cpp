@@ -4,7 +4,7 @@
 #include "cinder/TriMesh.h"
 #include "cinder/Triangulate.h"
 #include "cinder/gl/gl.h"
-#include "cinder/params/Params.h"
+#include "cinder/CinderImGui.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -13,6 +13,7 @@ using namespace std;
 class TriangulationApp : public App {
   public:
 	void		setup();
+	void		update();
 	void		draw();
 
 	void		keyDown( KeyEvent event ) { setRandomGlyph(); }
@@ -26,29 +27,18 @@ class TriangulationApp : public App {
 	Shape2d				mShape;
 	vector<string>		mFontNames;
 	gl::VboMeshRef		mVboMesh;
-	params::InterfaceGl	mParams;
-	bool				mDrawWireframe;
-	int					mFontSize;
-	float				mZoom;
-	float				mPrecision, mOldPrecision;
-	int32_t				mNumPoints;
+	bool				mDrawWireframe = true;
+	int					mFontSize = 256;
+	float				mZoom = 1.0f;
+	float				mPrecision = 1.0f;
+	float				mOldPrecision = 1.0f;
+	int					mNumPoints = 0;
 };
 
 void TriangulationApp::setup()
 {
-	mParams = params::InterfaceGl( "Parameters", ivec2( 220, 170 ) );
-	mFontSize = 256;
-	mDrawWireframe = true;
-	mParams.addParam( "Draw Wireframe", &mDrawWireframe, "key=w" );
-	mParams.addButton( "Random Font", bind( &TriangulationApp::setRandomFont, this ), "key=f" );
-	mParams.addButton( "Random Glyph", bind( &TriangulationApp::setRandomGlyph, this ) );
-	mZoom = 1.0f;
-	mParams.addParam( "Zoom", &mZoom, "min=0.25 max=20 keyIncr=z keyDecr=Z" );
-	mOldPrecision = mPrecision = 1.0f;
-	mParams.addParam( "Precision", &mPrecision, "min=0.001 max=10 step=0.25 keyIncr=p keyDecr=P" );
-	mNumPoints = 0;
-	mParams.addParam( "Num Points", &mNumPoints, "", true );
-
+	ImGui::Initialize();
+	
 	mFontNames = Font::getNames();
 	mFont = Font( "Times", mFontSize );
 	mShape = mFont.getGlyphShape( mFont.getGlyphChar( 'A' ) );
@@ -84,6 +74,19 @@ void TriangulationApp::setRandomGlyph()
 	}
 }
 
+void TriangulationApp::update()
+{
+	ImGui::SetNextWindowCollapsed( true, ImGuiCond_FirstUseEver );
+	ImGui::Begin( "Settings" );
+	ImGui::Checkbox( "Draw Wireframe", &mDrawWireframe );
+	if( ImGui::Button( "Random Font" ) ) setRandomFont();
+	if( ImGui::Button( "Random Glyph" ) ) setRandomGlyph();
+	ImGui::DragFloat( "Zoom", &mZoom, 0.1f, 0.25f, 20.0f );
+	ImGui::DragFloat( "Precision", &mPrecision, 0.25f, 0.001f, 10.0f );
+	ImGui::Text( "Num Points %i", &mNumPoints );
+	ImGui::End();
+}
+
 void TriangulationApp::draw()
 {
 	if( mOldPrecision != mPrecision )
@@ -102,8 +105,6 @@ void TriangulationApp::draw()
 			gl::disableWireframe();
 		}
 	gl::popModelView();
-	
-	mParams.draw();
 }
 
 

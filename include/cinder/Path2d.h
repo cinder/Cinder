@@ -79,7 +79,9 @@ class CI_API Path2d {
 	std::vector<vec2>	subdivide( float approximationScale = 1.0f ) const;
 	//! if \a resultTangents aren't null then un-normalized tangents corresponding to \a resultPositions are calculated.
 	void				subdivide( std::vector<vec2> *resultPositions, std::vector<vec2> *resultTangents, float approximationScale = 1.0f ) const;
-	
+
+	//! Translates the Path2d by \a offset
+	void		translate( const vec2 &offset );
 	//! Scales the Path2d by \a amount.x on X and \a amount.y on Y around the center \a scaleCenter
 	void		scale( const vec2 &amount, vec2 scaleCenter = vec2() );
 	//! Transforms the Path2d by \a matrix.

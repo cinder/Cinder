@@ -38,6 +38,7 @@
 	#include "EGL/egl.h"
 #elif defined( CINDER_MSW )
 	#include <windows.h>
+	#include "glad/glad_wgl.h"
 #elif defined( CINDER_ANDROID )
 	#include "EGL/egl.h"
 #elif defined( CINDER_LINUX )
@@ -49,6 +50,7 @@
 		#endif
 		#include "GL/osmesa.h"
 	#else
+		#include "glad/glad.h"
 		#include "glfw/glfw3.h"
 	#endif
 #endif
@@ -160,11 +162,20 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataMsw>( sharedContext->getPlatformData() );
 	HGLRC sharedContextRc = sharedContextPlatformData->mGlrc;
 	HDC sharedContextDc = sharedContextPlatformData->mDc;
-	HGLRC rc = ::wglCreateContext( sharedContextDc );
 	::wglMakeCurrent( NULL, NULL );
-	if( ! ::wglShareLists( sharedContextRc, rc ) ) {
-		throw ExcContextAllocation();
+	int attribList[] = {
+		WGL_CONTEXT_MAJOR_VERSION_ARB, sharedContextPlatformData->mVersion.first,
+		WGL_CONTEXT_MINOR_VERSION_ARB, sharedContextPlatformData->mVersion.second,
+		WGL_CONTEXT_FLAGS_ARB, sharedContextPlatformData->mDebug ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
+		WGL_CONTEXT_PROFILE_MASK_ARB, ( sharedContextPlatformData->mCoreProfile ) ? WGL_CONTEXT_CORE_PROFILE_BIT_ARB : WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
+		0, 0,
+		0
+	};
+	if( sharedContextPlatformData->mMultiGpuEnabledNV ) {
+		attribList[8] = WGL_CONTEXT_MULTIGPU_ATTRIB_NV;
+		attribList[9] = sharedContextPlatformData->mMultiGpuModeNV;
 	}
+	HGLRC rc = wglCreateContextAttribsARB( sharedContextDc, sharedContextRc, attribList );
 	::wglMakeCurrent( sharedContextDc, rc );
 	shared_ptr<Context::PlatformData> platformData = shared_ptr<Context::PlatformData>( new PlatformDataMsw( sharedContextPlatformData, rc, sharedContextDc ), destroyPlatformData );
 #elif defined( CINDER_ANDROID )

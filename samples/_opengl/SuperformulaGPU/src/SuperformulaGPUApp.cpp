@@ -3,7 +3,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
-#include "cinder/params/Params.h"
+#include "cinder/CinderImGui.h"
 #include "cinder/GeomIo.h"
 
 using namespace ci;
@@ -22,9 +22,6 @@ class SuperformulaGpuApp : public App {
 	gl::BatchRef			mBatch, mNormalsBatch;
 	gl::GlslProgRef			mGlsl, mNormalsGlsl;
 	mat4					mRotation;
-#if ! defined( CINDER_GL_ES )
-	params::InterfaceGlRef	mParams;
-#endif
 
 	bool					mDrawNormals;
 	float					mNormalsLength;
@@ -67,26 +64,7 @@ void SuperformulaGpuApp::setup()
 	mCheckerFrequency = 7;
 
 #if ! defined( CINDER_GL_ES )
-	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
-	mParams->addParam( "A (1)", &mFormulaParams.mA1 ).min( 0 ).max( 5 ).step( 0.05f );
-	mParams->addParam( "B (1)", &mFormulaParams.mB1 ).min( 0 ).max( 5 ).step( 0.05f );
-	mParams->addParam( "M (1)", &mFormulaParams.mM1 ).min( 0 ).max( 20 ).step( 0.25f );
-	mParams->addParam( "N1 (1)", &mFormulaParams.mN11 ).min( 0 ).max( 100 ).step( 1.0f );
-	mParams->addParam( "N2 (1)", &mFormulaParams.mN21 ).min( -50 ).max( 100 ).step( 0.5f );
-	mParams->addParam( "N3 (1)", &mFormulaParams.mN31 ).min( -50 ).max( 100 ).step( 0.5f );
-	mParams->addSeparator();
-	mParams->addParam( "A (2)", &mFormulaParams.mA2 ).min( 0 ).max( 5 ).step( 0.05f );
-	mParams->addParam( "B (2)", &mFormulaParams.mB2 ).min( 0 ).max( 5 ).step( 0.05f );
-	mParams->addParam( "M (2)", &mFormulaParams.mM2 ).min( 0 ).max( 20 ).step( 0.25f );
-	mParams->addParam( "N1 (2)", &mFormulaParams.mN12 ).min( 0 ).max( 100 ).step( 1.0f );
-	mParams->addParam( "N2 (2)", &mFormulaParams.mN22 ).min( -50 ).max( 100 ).step( 0.5f );
-	mParams->addParam( "N3 (2)", &mFormulaParams.mN32 ).min( -50 ).max( 100 ).step( 0.5f );
-	mParams->addSeparator();
-	mParams->addParam( "Subdivisions", &mSubdivisions ).min( 5 ).max( 500 ).step( 30 ).updateFn( [&] { setupGeometry(); } );
-	mParams->addParam( "Checkerboard", &mCheckerFrequency ).min( 1 ).max( 500 ).step( 3 );
-	mParams->addSeparator();
-	mParams->addParam( "Draw Normals", &mDrawNormals );
-	mParams->addParam( "Normals Length", &mNormalsLength ).min( 0.0f ).max( 2.0f ).step( 0.025f );
+	ImGui::Initialize();
 #endif
 
 	mCam.lookAt( vec3( 3, 2, 4 ) * 0.75f, vec3( 0 ) );
@@ -125,6 +103,31 @@ void SuperformulaGpuApp::resize()
 
 void SuperformulaGpuApp::update()
 {
+#if ! defined( CINDER_GL_ES )
+	ImGui::Begin( "Settings" );
+	ImGui::DragFloat( "A (1)", &mFormulaParams.mA1, 0.05f, 0.0f, 5.0f );
+	ImGui::DragFloat( "B (1)", &mFormulaParams.mB1, 0.05f, 0.0f, 5.0f );
+	ImGui::DragFloat( "M (1)", &mFormulaParams.mM1, 0.25f, 0.0f, 20.f );
+	ImGui::DragFloat( "N1 (1)", &mFormulaParams.mN11, 1.0f, 0.0f, 100.f );
+	ImGui::DragFloat( "N2 (1)", &mFormulaParams.mN21, 0.5f, -50.f, 100.f );
+	ImGui::DragFloat( "N3 (1)", &mFormulaParams.mN31, 0.5f, -50.f, 100.f );
+	ImGui::Separator();
+	ImGui::DragFloat( "A (2)", &mFormulaParams.mA2, 0.05f, 0.0f, 5.0f );
+	ImGui::DragFloat( "B (2)", &mFormulaParams.mB2, 0.05f, 0.0f, 5.0f );
+	ImGui::DragFloat( "M (2)", &mFormulaParams.mM2, 0.05f, 0.0f, 20.0f );
+	ImGui::DragFloat( "N1 (2)", &mFormulaParams.mN12, 1.0f, 0.0f, 100.f );
+	ImGui::DragFloat( "N2 (2)", &mFormulaParams.mN22, 0.5f, -50.f, 100.f );
+	ImGui::DragFloat( "N3 (2)", &mFormulaParams.mN32, 0.5f, -50.f, 100.f );
+	ImGui::Separator();
+	if( ImGui::DragInt( "Subdivisions", &mSubdivisions, 30, 5, 500 ) ) {
+		setupGeometry();
+	}
+	ImGui::DragInt( "Checkerboard", &mCheckerFrequency, 3, 1, 500 );
+	ImGui::Separator();
+	ImGui::Checkbox( "Draw Normals", &mDrawNormals );
+	ImGui::DragFloat( "Normals Length", &mNormalsLength, 0.025f, 0.0f, 2.0f );
+	ImGui::End();
+#endif
 	// Rotate the by 2 degrees around an arbitrary axis
 	vec3 axis = vec3( cos( getElapsedSeconds() / 3 ), sin( getElapsedSeconds() / 2 ), sin( getElapsedSeconds() / 5 ) );
 	mRotation *= rotate( toRadians( 0.2f ), normalize( axis ) );
@@ -148,10 +151,6 @@ void SuperformulaGpuApp::draw()
 		if( mDrawNormals )
 			mNormalsBatch->draw();
 	gl::popMatrices();
-
-#if ! defined( CINDER_GL_ES )
-	mParams->draw();
-#endif
 }
 
 CINDER_APP( SuperformulaGpuApp, RendererGl )

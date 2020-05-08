@@ -67,7 +67,8 @@ if( ( NOT CINDER_LINUX ) AND ( NOT CINDER_ANDROID ) AND ( NOT CINDER_EMSCRIPTEN 
 	list( APPEND SRC_SET_CINDER
 		${CINDER_SRC_DIR}/cinder/Capture.cpp
 	)
-elseif( NOT CINDER_ANDROID AND NOT CINDER_EMSCRIPTEN )
+endif()
+if( ( NOT CINDER_COCOA_TOUCH ) AND ( NOT CINDER_ANDROID ) AND (NOT CINDER_EMSCRIPTEN ) )
 	list( APPEND SRC_SET_CINDER
 		${CINDER_SRC_DIR}/cinder/Serial.cpp
 	)
@@ -170,6 +171,7 @@ list( APPEND SRC_SET_CINDER_GL
 	${CINDER_SRC_DIR}/cinder/gl/Vbo.cpp
 	${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
 	${CINDER_SRC_DIR}/cinder/gl/wrapper.cpp
+	${CINDER_SRC_DIR}/cinder/gl/nv/Multicast.cpp
 )
 
 list( APPEND CINDER_SRC_FILES       ${SRC_SET_CINDER_GL} )
@@ -220,18 +222,17 @@ list( APPEND CINDER_SRC_FILES               ${SRC_SET_TINYEXR} )
 source_group( "thirdparty\\tinyexr" FILES   ${SRC_SET_TINYEXR} )
 
 # ----------------------------------------------------------------------------------------------------------------------
-# glload
+# glad
 # ----------------------------------------------------------------------------------------------------------------------
 
 if( NOT CINDER_GL_ES )
 
-list( APPEND SRC_SET_GLLOAD
-	${CINDER_SRC_DIR}/glload/gl_load_cpp.cpp
-	${CINDER_SRC_DIR}/glload/gl_load.c
+list( APPEND SRC_SET_GLAD
+	${CINDER_SRC_DIR}/glad/glad.c
 )
 
-list( APPEND CINDER_SRC_FILES               ${SRC_SET_GLLOAD} )
-source_group( "thirdparty\\glload" FILES    ${SRC_SET_GLLOAD} )
+list( APPEND CINDER_SRC_FILES               ${SRC_SET_GLAD} )
+source_group( "thirdparty\\glad" FILES      ${SRC_SET_GLAD} )
 
 endif()
 
@@ -320,6 +321,26 @@ if( CINDER_ANTTWEAKBAR_ENABLED )
 	source_group( "cinder\\params"	            FILES ${SRC_SET_CINDER_PARAMS} )
 	source_group( "thirdparty\\AntTweakBar"	    FILES ${SRC_SET_ANTTWEAKBAR} )
 
+endif()
+
+if( CINDER_IMGUI_ENABLED )
+	list( APPEND SRC_SET_CINDER_IMGUI ${CINDER_SRC_DIR}/cinder/CinderImGui.cpp )
+	list( APPEND SRC_SET_IMGUI
+		${CINDER_SRC_DIR}/imgui/imgui.cpp
+		${CINDER_SRC_DIR}/imgui/imgui_demo.cpp
+		${CINDER_SRC_DIR}/imgui/imgui_draw.cpp
+		${CINDER_SRC_DIR}/imgui/imgui_freetype.cpp
+		${CINDER_SRC_DIR}/imgui/imgui_impl_opengl3.cpp
+		${CINDER_SRC_DIR}/imgui/imgui_stdlib.cpp
+		${CINDER_SRC_DIR}/imgui/imgui_widgets.cpp
+	)
+
+	list( APPEND CINDER_SRC_FILES
+		${SRC_SET_CINDER_IMGUI}
+		${SRC_SET_IMGUI}
+	)
+	source_group( "cinder"					FILES ${SRC_SET_CINDER_IMGUI} )
+	source_group( "thirdparty\\imgui"	    FILES ${SRC_SET_IMGUI} )
 endif()
 
 # ----------------------------------------------------------------------------------------------------------------------

@@ -189,6 +189,11 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat, GLint
 		mInternalFormat = format.mInternalFormat;
 	}
 
+#if ! defined( CINDER_GL_ES )
+	if( format.mPerGpuStorageSpecifiedNV )
+		glTexParameteri( mTarget, GL_PER_GPU_STORAGE_NV, (GLint)format.mPerGpuStorageEnabledNV );
+#endif
+
 	//if( ( format.mDataType == -1 ) && ( defaultDataType > 0 ) )
 	//	format.mDataType = defaultDataType;
 
@@ -760,6 +765,10 @@ TextureBase::Format::Format()
 	mSwizzleMask[0] = GL_RED; mSwizzleMask[1] = GL_GREEN; mSwizzleMask[2] = GL_BLUE; mSwizzleMask[3] = GL_ALPHA;
 	mCompareMode = -1;
 	mCompareFunc = -1;
+#if ! defined( CINDER_GL_ES )
+	mPerGpuStorageSpecifiedNV = false;
+	mPerGpuStorageEnabledNV = false;
+#endif
 }
 
 void TextureBase::Format::setSwizzleMask( GLint r, GLint g, GLint b, GLint a )
@@ -1629,12 +1638,12 @@ class ImageSourceTexture : public ImageSource {
 			case GL_DEPTH_COMPONENT16: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::UINT16 ); format = GL_DEPTH_COMPONENT; break;
 			case GL_DEPTH_COMPONENT24: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_DEPTH_COMPONENT; break;
 			case GL_DEPTH_COMPONENT32: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_DEPTH_COMPONENT; break;
-			case GL_RGBA32F_ARB: setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); format = GL_RGBA; break;
-			case GL_RGB32F_ARB: setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); format = GL_RGB; break;
+			case GL_RGBA32F: setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); format = GL_RGBA; break;
+			case GL_RGB32F: setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); format = GL_RGB; break;
 			case GL_R32F: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_RED; break;
 			case GL_RG32F: setChannelOrder( ImageIo::YA ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_RG; break;
-			case GL_RGBA16F_ARB: setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 ); format = GL_RGBA; break;
-			case GL_RGB16F_ARB: setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 ); format = GL_RGB; break;
+			case GL_RGBA16F: setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 ); format = GL_RGBA; break;
+			case GL_RGB16F: setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 ); format = GL_RGB; break;
 			case GL_R16F: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT16 ); format = GL_RED; break;
 			case GL_RG16F: setChannelOrder( ImageIo::YA ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT16 ); format = GL_RG; break;
 			default:
@@ -1705,6 +1714,14 @@ class ImageSourceTexture : public ImageSource {
 	std::unique_ptr<uint8_t[]>	mData;
 	int32_t						mRowBytes;
 };
+
+void Texture2d::regenerateMipmap()
+{
+	if( mMipmapping ) {
+		ScopedTextureBind tbs( mTarget, mTextureId );
+		glGenerateMipmap( mTarget );
+	}
+}
 
 ImageSourceRef Texture2d::createSource()
 {
@@ -2103,6 +2120,14 @@ void TextureCubeMap::replace( const TextureData &textureData )
 	mMaxMipmapLevel = (int32_t)textureData.getNumLevels() - 1;
 	glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, mMaxMipmapLevel );
 #endif
+}
+
+void TextureCubeMap::regenerateMipmap()
+{
+	if( mMipmapping ) {
+		ScopedTextureBind tbs( mTarget, mTextureId );
+		glGenerateMipmap( mTarget );
+	}
 }
 
 void TextureCubeMap::printDims( std::ostream &os ) const

@@ -63,13 +63,20 @@ void Shape2d::arcTo( const vec2 &p, const vec2 &t, float radius )
 
 void Shape2d::close()
 {
-	mContours.back().close();
+	if( ! mContours.empty() )
+		mContours.back().close();
 }
 
 void Shape2d::append( const Shape2d &shape )
 {
 	for( vector<Path2d>::const_iterator pathIt = shape.getContours().begin(); pathIt != shape.getContours().end(); ++pathIt )
 		appendContour( *pathIt );
+}
+
+void Shape2d::translate( const vec2 &offset )
+{
+	for( vector<Path2d>::iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt )
+		contIt->translate( offset );
 }
 
 void Shape2d::scale( const vec2 &amount, vec2 scaleCenter )

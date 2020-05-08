@@ -77,3 +77,5 @@ lib/emscripten/libcinder_d.bc
 #lib/emscripten/libboost_filesystem.bc
 .vscode/settings.json
 node_modules
+#ImGui stored settings
+imgui.ini

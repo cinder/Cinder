@@ -6,16 +6,19 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RDiffusion", "RDiffusion.vc
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Win32 = Debug|Win32
-		Release|Win32 = Release|Win32
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D746FDE4-6705-4EA6-9793-C68F5868A5C0}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D746FDE4-6705-4EA6-9793-C68F5868A5C0}.Debug|Win32.Build.0 = Debug|Win32
-		{D746FDE4-6705-4EA6-9793-C68F5868A5C0}.Release|Win32.ActiveCfg = Release|Win32
-		{D746FDE4-6705-4EA6-9793-C68F5868A5C0}.Release|Win32.Build.0 = Release|Win32
+		{D746FDE4-6705-4EA6-9793-C68F5868A5C0}.Debug|x64.ActiveCfg = Debug|x64
+		{D746FDE4-6705-4EA6-9793-C68F5868A5C0}.Debug|x64.Build.0 = Debug|x64
+		{D746FDE4-6705-4EA6-9793-C68F5868A5C0}.Release|x64.ActiveCfg = Release|x64
+		{D746FDE4-6705-4EA6-9793-C68F5868A5C0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE14E5DB-3A4E-4237-9522-D43EFDA8C3C1}
 	EndGlobalSection
 EndGlobal

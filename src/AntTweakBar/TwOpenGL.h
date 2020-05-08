@@ -14,7 +14,7 @@
 #if !defined ANT_TW_OPENGL_INCLUDED
 #define ANT_TW_OPENGL_INCLUDED
 
-// Cinder: this makes use of glload just for its core type declerations; no function pointers
+// Cinder: these are just OpenGL's core type declerations; no function pointers
 #include "TwPrecomp.h"
 typedef unsigned int GLenum;
 typedef unsigned char GLboolean;
