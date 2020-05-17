@@ -4,6 +4,7 @@ set( CINDER_PLATFORM "MSW" )
 
 list( APPEND SRC_SET_MSW
 	${CINDER_SRC_DIR}/cinder/CaptureImplDirectShow.cpp
+	${CINDER_SRC_DIR}/videoInput/videoInput.cpp
 	${CINDER_SRC_DIR}/cinder/msw/CinderMsw.cpp
 	${CINDER_SRC_DIR}/cinder/msw/CinderMswGdiPlus.cpp
 	${CINDER_SRC_DIR}/cinder/msw/StackWalker.cpp
