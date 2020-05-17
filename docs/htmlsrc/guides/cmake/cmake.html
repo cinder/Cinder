@@ -23,6 +23,11 @@
 <li><a href="#running-a-cinder-sample-directly-from-cinders-main-project">Running a Cinder sample directly from Cinder's main project.</a></li>
 </ul>
 </li>
+<li><a href="#using-vscode-to-build-libcinder-and-your-application">Using Visual Studio Code to build libcinder and your application</a><ul>
+<li><a href="#custom-configure-vscode">Custom configuration arguments using VS Code when building libcinder</a></li>
+<li><a href="#custom-formatting-vscode">Custom code formatting via .clang-format</a></li>
+</ul>
+</li>
 <li><a href="#structure-of-cinders-cmake-files">Structure of Cinder's CMake Files</a><ul>
 <li><a href="#configurecmake">configure.cmake</a></li>
 <li><a href="#configuring-libcinder">Configuring libcinder</a></li>
@@ -120,6 +125,26 @@ ci_make_app(
 <p>Note that by default, CLion will output build files into a folder called <code>cmake-build-debug</code>. If you want to change this to the usual <code>build</code>, which will automatically get ignored by Cinder's <code>.gitignore</code> file, then navigate to <code>Preferences -&gt; Build, Execution, Deployment</code>, and change the field called 'Generation path:' to 'build'.</p>
 <h3 id="running-a-cinder-sample-directly-from-cinders-main-project">Running a Cinder sample directly from Cinder's main project.</h3>
 <p>There are a couple CMakeCache.txt options that will allow you to conveniently build and run a sample that ships with Cinder alongside building the main library. First, you can set the option <code>CINDER_BUILD_SAMPLE</code> to any of the sample names (ex. <code>CINDER_BUILD_SAMPLE=_opengl/Cube</code>), and then you will be able to run that sample by selecting it in the the <code>Select/Run Configuration</code> drop-down in the top right. Alternatively, you could set <code>CINDER_BUILD_ALL_SAMPLES=On</code>, which will load the configurations for all Cinder samples, and you can then run any one of them from within the IDE.</p>
+<h1 id="using-vscode-to-build-libcinder-and-your-application">Using Visual Studio Code to build libcinder and your application</h1>
+<p>Aside from the command line and the commercial CLion IDE, you can also use <a href="https://code.visualstudio.com/">Visual Studio Code</a> to build and work on both libcinder and your application. By itself, VS Code is an open source code-editor developed by Microsoft but its real power lies in its &quot;Extensions System&quot;. To set up an environment suitable for C++ in general and Cinder in specific, you will need to install two extension in VS Code. One is the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools">CPP Tools</a> and the other is the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools"> Cmake Tools</a>. Another extension which is optional but could help with CMake syntaxing is <a href="https://marketplace.visualstudio.com/items?itemName=twxs.cmake">Cmake</a> so you might want to have that installed as well. To install these extensions, launch VS Code Quick Open (Ctrl + P) and type these commands:</p>
+<p><code>ext install ms-vscode.cmake-tools</code></p>
+<p><code>ext install ms-vscode.cpptools</code></p>
+<p><code>ext install twxs.cmake (Optional)</code></p>
+<p>&nbsp;</p>
+<p>The C++ extension enables a multitude of features by utilizing its intellisense, a mechanism that when connected to Cmake Tools as a compilation toolchain, will make a nice cross-platform route to write and debug Cinder code. Much like a full-fledged IDE (resembling Visual Studio), you will have code completion and suggestions, quick fixes, peaking and jumping to declarations/definitions and using <code>clang-format</code> definitions, you can even have custom code formatting. Plus you&rsquo;ll have all the console tabs you&rsquo;ll need and also the ability to attach a debugger to your build to debug and trace. It will be a powerful system for a free and cross-platform solution.</p>
+<p>To build libcinder or any of the samples go to <code>ROOT_PATH/proj/cmake</code> and open the related <code>.workspace</code> file in VS Code. When opened, the extensions will take a little time to set up the environment for you. If it&rsquo;s your first time using this toolchain, you will need to tell the cmake extension which compiler you prefer (here called <code>Kits</code>):<br /></p>
+<ul>
+<li>On linux, GCC already exists but Cinder suggests clang (read the installation guide<a href="https://libcinder.org/docs/branch/master/guides/linux-notes/index.html">here</a>)</li>
+<li>On Windows, you will need to install Visual Studio 2019 C++ Build tools to enable the compiler (download from <a href="https://visualstudio.microsoft.com/visual-cpp-build-tools/">here</a>)</li>
+<li>On macOS, you will need to have Xcode installed to have clang.&nbsp;</li>
+</ul>
+<p>When done, you can configure and build the library and its samples using Ctrl+P + <code>Cmake:Configure</code> command along with the blue footer in VS Code. We encourage everyone to learn more about the Cmake Tools to be able to find their way around better. </span><a href="https://vector-of-bool.github.io/docs/vscode-cmake-tools/getting_started.html#cmake-tools-quick-start">Here</a> is a nice intro with notes about Kit selection, configuration and building.</p>
+<h3 id="custom-configure-vscode">Custom configuration arguments using VS Code when building libcinder</h3>
+<p>When the workspace is opened, navigate to the root and find the <code>.vs-code</code> folder using the explorer pane of VS Code and open the <code>settings.json</code> file in the editor. Add or modify arguments in to <code>cmake.configureSettings</code> to have them passed to Cmake when configuring the project. By the default you will find <code>BUILD_SHARED_LIBS:off</code> which means that static libraries will be built. To find more about these possible arguments you can check the <code>CmakeCache.txt</code> in the build folder on root after the first configuration.</p>
+<p>There&rsquo;s no need to pass arguments about build type (i.e Debug, Release etc.) because VS Code gives access to those using the blue footer.</p>
+<h3 id="custom-formatting-vscode">Custom code formatting via .clang-format</h3>
+<p>If you needed to change the formatting rules of the C++ extension, you can use the <code>C_CPP:Clang_format_fallback Style</code> settings. As a sample you can use this parameter to follow Cinder&rsquo;s <a href="https://github.com/cinder/Cinder/blob/master/CONTRIBUTING.md">contribution guidelines</a>:</p>
+<p><code>{ BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 0, SpaceAfterLogicalNot: true, SpaceBeforeAssignmentOperators: true, SpaceBeforeCpp11BracedList: true, SpaceBeforeCtorInitializerColon: true, SpacesInParentheses: true, SpaceBeforeRangeBasedForLoopColon: true, IndentPPDirectives: BeforeHash, Cpp11BracedListStyle: true, BreakBeforeBraces: Custom, BraceWrapping: {BeforeElse: true, AfterFunction: true} , NamespaceIndentation: None, SortIncludes: false, SortUsingDeclarations: false, AllowShortIfStatementsOnASingleLine: Never, AlignConsecutiveDeclarations: true, AccessModifierOffset: -3}</code></p>
 <h1 id="structure-of-cinders-cmake-files">Structure of Cinder's CMake Files</h1>
 <p>This section provides an overview of how CMake build support is structured within the Cinder repo.</p>
 <p>Cinder's CMake scripts live in the common folder <a href="https://github.com/cinder/Cinder/tree/master/proj/cmake">proj/cmake</a>. The root <code>CMakeLists.txt</code> file is largely there so that it is easy to find, and so that our build configuration plays nicely with CMake-based IDEs like CLion.</p>
