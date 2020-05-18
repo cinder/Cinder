@@ -102,6 +102,7 @@ source_group( "cinder\\audio\\dsp"	FILES ${SRC_SET_CINDER_AUDIO_DSP} )
 
 list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
 	${CINDER_INC_DIR}/msw/zlib
+	${CINDER_INC_DIR}/msw
 )
 
 # NOTE: UNICODE and _UNICODE forces generator to use Unicode instead of MultiByte
