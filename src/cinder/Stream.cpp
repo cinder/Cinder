@@ -31,6 +31,7 @@
 #include <iostream>
 #include <string>
 #include <cstring>
+#include <algorithm>
 using std::string;
 using std::memcpy;
 
