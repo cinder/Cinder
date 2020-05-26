@@ -27,6 +27,9 @@
 
 namespace cinder {
 
+const int32_t MediaTime::DEFAULT_TIME_BASE;
+const int64_t MediaTime::MAX_TIME_BASE;
+
 MediaTime::MediaTime( int64_t value, int32_t base, int64_t epoch )
 	: value( value ), base( base ), epoch( epoch )
 {
