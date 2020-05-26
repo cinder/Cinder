@@ -50,8 +50,14 @@ struct MediaTime {
 	//! Scale value to 'newBase'. value is set to floor if necessary.
 	void		setBase( int32_t newBase );
 
+	void		setEpoch( int64_t newEpoch ) { epoch = newEpoch; }
+
 	//! Returns value as scaled to \a otherBase
 	int64_t		getValueAsBase( int32_t otherBase ) const { return ( base == otherBase ) ? value : ( value * otherBase / base ); }
+
+	MediaTime	asBase( int32_t otherBase ) const { auto temp = *this; temp.setBase( otherBase ); return temp; }
+	MediaTime	asEpoch( int64_t otherEpoch ) const { return MediaTime( value, base, otherEpoch ); }
+	MediaTime	as( int32_t otherBase, int64_t otherEpoch ) const { auto temp = *this; temp.setBase( otherBase ); temp.setEpoch( otherEpoch ); return temp; }
 
 	bool operator<( const MediaTime &rhs ) const {
 		if( epoch != rhs.epoch ) return epoch < rhs.epoch;
@@ -170,7 +176,7 @@ struct MediaTime {
 	//! Divides the value and base by the greatest common common divisor of both. Does not affect epoch
 	void simplify();
 
-	//! returns a new common base, and re-bases 'lhsValue' and 'rhsValue' to this new base. If no legal common base, then uses DEFAULT_TIME_BASE
+	//! returns a new common base, and re-bases \a lhsValue and \a rhsValue to this new base. If no legal common base, then uses DEFAULT_TIME_BASE
 	static int32_t simplifyBases( int64_t *lhsValue, int32_t lhsBase, int64_t *rhsValue, int32_t rhsBase );
 
 	int64_t		value;

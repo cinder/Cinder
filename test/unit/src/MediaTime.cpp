@@ -141,6 +141,7 @@ TEST_CASE( "MediaTime" )
 		// suffix
 		{
 			REQUIRE( MediaTime( 2 ) == 2_sec );
+			REQUIRE( MediaTime( 0 ) == 0_sec );
 			REQUIRE( (2.5_sec).getSeconds() == Approx(2.5) );
 		}
 		
@@ -149,6 +150,21 @@ TEST_CASE( "MediaTime" )
 			auto twoOverTwo = MediaTime( 2, 2 );
 			auto twoOverTwoSimplified = twoOverTwo; twoOverTwoSimplified.simplify();
 			REQUIRE( twoOverTwoSimplified == MediaTime( 1 ) );
+		}
+
+		// "as" convenience
+		{
+			auto oneOverTwo = MediaTime( 1, 2 );
+			REQUIRE( oneOverTwo.asBase( 4 ) == oneOverTwo );
+			REQUIRE( oneOverTwo.asBase( 4 ).base == 4 );
+			REQUIRE( oneOverTwo.asEpoch( 1 ) != oneOverTwo );
+			REQUIRE( oneOverTwo.asEpoch( 1 ) == MediaTime( 1, 2, 1 ) );
+			REQUIRE( oneOverTwo.asEpoch( 1 ).epoch == 1 );
+			REQUIRE( oneOverTwo.asEpoch( 1 ) != oneOverTwo );
+			REQUIRE( oneOverTwo.asEpoch( 1 ) == MediaTime( 1, 2, 1 ) );
+			REQUIRE( oneOverTwo.as( 4, 1 ) != oneOverTwo );
+			REQUIRE( oneOverTwo.as( 4, 1 ).base == 4 );
+			REQUIRE( oneOverTwo.as( 4, 1 ).epoch == 1 );
 		}
 	}
 }
