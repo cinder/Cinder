@@ -208,24 +208,44 @@ struct CI_API ScopedViewport : private Noncopyable {
 };
 
 struct CI_API ScopedModelMatrix : private Noncopyable {
-	ScopedModelMatrix()		{ gl::pushModelMatrix(); }
-	~ScopedModelMatrix()	{ gl::popModelMatrix(); }
+	ScopedModelMatrix() { gl::pushModelMatrix(); }
+	explicit ScopedModelMatrix( const mat4 &m )
+	{
+		gl::pushModelMatrix();
+		gl::setModelMatrix( m );
+	}
+	~ScopedModelMatrix() { gl::popModelMatrix(); }
 };
 
 struct CI_API ScopedViewMatrix : private Noncopyable {
-	ScopedViewMatrix()	{ gl::pushViewMatrix(); }
-	~ScopedViewMatrix()	{ gl::popViewMatrix(); }
+	ScopedViewMatrix() { gl::pushViewMatrix(); }
+	explicit ScopedViewMatrix( const mat4 &m )
+	{
+		gl::pushViewMatrix();
+		gl::setViewMatrix( m );
+	}
+	~ScopedViewMatrix() { gl::popViewMatrix(); }
 };
 
 struct CI_API ScopedProjectionMatrix : private Noncopyable {
-	ScopedProjectionMatrix()	{ gl::pushProjectionMatrix(); }
-	~ScopedProjectionMatrix()	{ gl::popProjectionMatrix(); }
+	ScopedProjectionMatrix() { gl::pushProjectionMatrix(); }
+	explicit ScopedProjectionMatrix( const mat4 &m )
+	{
+		gl::pushProjectionMatrix();
+		gl::setProjectionMatrix( m );
+	}
+	~ScopedProjectionMatrix() { gl::popProjectionMatrix(); }
 };
 
 //! Preserves all matrices
 struct CI_API ScopedMatrices : private Noncopyable {
-	ScopedMatrices()	{ gl::pushMatrices(); }
-	~ScopedMatrices()	{ gl::popMatrices(); }
+	ScopedMatrices() { gl::pushMatrices(); }
+	explicit ScopedMatrices( const Camera &cam )
+	{
+		gl::pushMatrices();
+		gl::setMatrices( cam );
+	}
+	~ScopedMatrices() { gl::popMatrices(); }
 };
 
 //! Scopes state of face culling.
