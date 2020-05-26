@@ -112,7 +112,7 @@ struct MediaTime {
 
 	//! Epoch is max of epochs. If base overflows, DEFAULT_TIME_BASE is selected
 	MediaTime operator*( const MediaTime &rhs ) const {
-		if( base * rhs.base <= DEFAULT_TIME_BASE ) return MediaTime( value * rhs.value, base * rhs.base, epoch > rhs.epoch ? epoch : rhs.epoch );
+		if( base * (int64_t)rhs.base <= (int64_t)DEFAULT_TIME_BASE ) return MediaTime( value * rhs.value, base * rhs.base, epoch > rhs.epoch ? epoch : rhs.epoch );
 		else {
 			int64_t lhsValue = value * DEFAULT_TIME_BASE / base, rhsValue = rhs.value * DEFAULT_TIME_BASE / rhs.base;
 			return MediaTime( lhsValue * rhsValue / DEFAULT_TIME_BASE, DEFAULT_TIME_BASE, epoch > rhs.epoch ? epoch : rhs.epoch );
@@ -122,7 +122,7 @@ struct MediaTime {
 	//! Epoch is max of epochs. If base overflows, DEFAULT_TIME_BASE is selected
 	MediaTime operator/( const MediaTime &rhs ) const {
 		// exchanges 'value' and 'base' of 'rhs' and multiplies
-		if( base * rhs.value <= (int64_t)DEFAULT_TIME_BASE ) return MediaTime( value * rhs.base, (int32_t)(base * rhs.value), epoch > rhs.epoch ? epoch : rhs.epoch );
+		if( base * (int64_t)rhs.value <= (int64_t)DEFAULT_TIME_BASE ) return MediaTime( value * rhs.base, (int32_t)(base * rhs.value), epoch > rhs.epoch ? epoch : rhs.epoch );
 		else {
 			int64_t lhsValue = value * DEFAULT_TIME_BASE / base, rhsValue = (int64_t)rhs.base * DEFAULT_TIME_BASE / rhs.value;
 			return MediaTime( lhsValue * rhsValue / DEFAULT_TIME_BASE, DEFAULT_TIME_BASE, epoch > rhs.epoch ? epoch : rhs.epoch );

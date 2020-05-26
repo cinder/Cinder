@@ -68,6 +68,8 @@ TEST_CASE( "MediaTime" )
 		MediaTime oneEpoch1( 1, 1, 1 );
 		MediaTime oneOverFour( 1, 4 );
 		MediaTime oneOverFourEpoch1( 1, 4, 1 );
+		MediaTime oneOverTwoBigBase( 500000, 1000000 );
+		MediaTime oneOverFourBigBase( 500000, 2000000 );
 		
 		// -
 		REQUIRE( oneOverOne - zero == oneOverOne );
@@ -92,6 +94,9 @@ TEST_CASE( "MediaTime" )
 		REQUIRE( 2 * oneOverFour == oneOverTwo );
 		REQUIRE( 2 * oneOverFourEpoch1 == oneOverTwoEpoch1 );
 		REQUIRE( (2.5 * oneOverFourEpoch1).getSeconds() == Approx( 0.625f ) );
+		REQUIRE( (2.5 * oneOverFourEpoch1).getSeconds() == Approx( 0.625f ) );
+		REQUIRE( (oneOverTwoBigBase * oneOverFourBigBase).getSeconds() == Approx( 0.125f ) );
+		REQUIRE( (oneOverTwoBigBase * oneOverFourBigBase).base == MediaTime::DEFAULT_TIME_BASE );
 
 		// /
 		REQUIRE( oneOverOne / oneOverOne == oneOverOne );
@@ -99,6 +104,8 @@ TEST_CASE( "MediaTime" )
 		REQUIRE( oneOverOne / oneOverTwo == twoOverOne );
 		REQUIRE( oneOverOne / 2 == oneOverTwo );
 		REQUIRE( oneOverOneEpoch1 / 2 == oneOverTwoEpoch1 );
+		REQUIRE( (oneOverTwoBigBase / oneOverFourBigBase).getSeconds() == Approx( 2.0f ) );
+		REQUIRE( (oneOverTwoBigBase / oneOverFourBigBase).base == MediaTime::DEFAULT_TIME_BASE );
 		
 		// unary -
 		REQUIRE( -oneOverOne == MediaTime( -1, 1 ) );
