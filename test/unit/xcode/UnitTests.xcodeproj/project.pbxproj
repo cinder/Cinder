@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		000703221DEB7DE00086D6CA /* Path2dTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000703211DEB7DE00086D6CA /* Path2dTest.cpp */; };
+		00C7BBC024120160001D5238 /* MediaTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C7BBBF24120160001D5238 /* MediaTime.cpp */; };
 		114CE0E91E2F03930002A384 /* ShaderPreprocessorTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 114CE0E71E2F03930002A384 /* ShaderPreprocessorTest.cpp */; };
 		114CE0EA1E2F03930002A384 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 114CE0E81E2F03930002A384 /* Utilities.cpp */; };
 		117BC7781E836FDF003D8F25 /* FileWatcherTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 117BC7771E836FDF003D8F25 /* FileWatcherTest.cpp */; };
@@ -59,6 +60,7 @@
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		00C7BBBF24120160001D5238 /* MediaTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MediaTime.cpp; sourceTree = "<group>"; };
 		0BFCCD63DF794B1EAE655DCC /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		114CE0E71E2F03930002A384 /* ShaderPreprocessorTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderPreprocessorTest.cpp; sourceTree = "<group>"; };
@@ -210,6 +212,7 @@
 				117BC7771E836FDF003D8F25 /* FileWatcherTest.cpp */,
 				9CA851B81C1F74000049358B /* JsonTest.cpp */,
 				9CA851B91C1F74000049358B /* ObjLoaderTest.cpp */,
+				00C7BBBF24120160001D5238 /* MediaTime.cpp */,
 				4989E06B1DB6889500503C9A /* PolyLineTest.cpp */,
 				9CA851BA1C1F74000049358B /* RandTest.cpp */,
 				114CE0E71E2F03930002A384 /* ShaderPreprocessorTest.cpp */,
@@ -292,6 +295,7 @@
 				117BC7781E836FDF003D8F25 /* FileWatcherTest.cpp in Sources */,
 				9CA851C01C1F74000049358B /* Base64Test.cpp in Sources */,
 				9CA851C31C1F74000049358B /* RandTest.cpp in Sources */,
+				00C7BBC024120160001D5238 /* MediaTime.cpp in Sources */,
 				11E4FC4D1C267DB70082A67E /* FftUnit.cpp in Sources */,
 				4989E06C1DB6889500503C9A /* PolyLineTest.cpp in Sources */,
 				9CA851C11C1F74000049358B /* JsonTest.cpp in Sources */,

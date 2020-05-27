@@ -36,6 +36,7 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Json.cpp
 	${CINDER_SRC_DIR}/cinder/Log.cpp
 	${CINDER_SRC_DIR}/cinder/Matrix.cpp
+	${CINDER_SRC_DIR}/cinder/MediaTime.cpp
 	${CINDER_SRC_DIR}/cinder/ObjLoader.cpp
 	${CINDER_SRC_DIR}/cinder/Path2d.cpp
 	${CINDER_SRC_DIR}/cinder/Perlin.cpp
