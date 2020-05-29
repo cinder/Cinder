@@ -2,6 +2,8 @@ cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 
 set( CINDER_PLATFORM "Emscripten" )
 
+set(CINDER_SRC_DIR ../src)
+
 list( APPEND SRC_SET_CINDER_APP_EMSCRIPTEN
 	${CINDER_SRC_DIR}/cinder/app/emscripten/AppEmscripten.cpp
 	${CINDER_SRC_DIR}/cinder/app/emscripten/AppImplEmscripten.cpp
@@ -9,14 +11,11 @@ list( APPEND SRC_SET_CINDER_APP_EMSCRIPTEN
 )
 
 list( APPEND SRC_SET_CINDER_EMSCRIPTEN
-	${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
+	#${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
 	${CINDER_SRC_DIR}/cinder/app/emscripten/RendererImplGlEmscripten.cpp
 	${CINDER_SRC_DIR}/cinder/app/emscripten/WindowImplEmscripten.cpp
 	${CINDER_SRC_DIR}/cinder/emscripten/EmscriptenVideo.cpp
-	#${CINDER_SRC_DIR}/cinder/audio/emscripten/ContextWebAudio.cpp
 	${CINDER_SRC_DIR}/cinder/emscripten/globalbindings.cpp
-	${CINDER_SRC_DIR}/cinder/audio/emscripten/FileWebAudio.cpp
-	${CINDER_SRC_DIR}/cinder/emscripten/AudioPlayer.cpp
 )
 
 
@@ -40,7 +39,7 @@ set(ALLOW_MEMORY_GROWTH "-s ALLOW_MEMORY_GROWTH=1" )
 
 # add to your project flags to build your file as a WebWorker.
 # note that you apparently need the --bind flag when building workers
-set( BUILD_AS_WORKER "-s BUILD_AS_WORKER=1" )
+# set( BUILD_AS_WORKER "-s BUILD_AS_WORKER=1" )
 
 # the flag to set when you want to include an assets folder and it's contents.
 # this assumes that your assets directory is one directory behind. Note that
