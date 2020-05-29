@@ -116,6 +116,9 @@
 		003ADB9B1038974A00ACF6F2 /* TwColors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003ADB8D1038974A00ACF6F2 /* TwColors.cpp */; };
 		003ADB9D1038974A00ACF6F2 /* TwBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003ADB8F1038974A00ACF6F2 /* TwBar.cpp */; };
 		003ADBA01038996800ACF6F2 /* AntTweakBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 003ADB9E1038996800ACF6F2 /* AntTweakBar.h */; };
+		003CE47F242A9823007BE072 /* MediaTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003CE47E242A9823007BE072 /* MediaTime.cpp */; };
+		003CE480242A9823007BE072 /* MediaTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003CE47E242A9823007BE072 /* MediaTime.cpp */; };
+		003CE481242A9823007BE072 /* MediaTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003CE47E242A9823007BE072 /* MediaTime.cpp */; };
 		003FAA9F1290CC90002D6860 /* Clipboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003FAA9E1290CC90002D6860 /* Clipboard.cpp */; };
 		003FAAA31290CCB1002D6860 /* Clipboard.h in Headers */ = {isa = PBXBuildFile; fileRef = 003FAAA21290CCB1002D6860 /* Clipboard.h */; };
 		004172FA14C9BE520070C0D1 /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 004172F914C9BE520070C0D1 /* Frustum.h */; };
@@ -1717,6 +1720,8 @@
 		003ADB8D1038974A00ACF6F2 /* TwColors.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = TwColors.cpp; path = ../../src/AntTweakBar/TwColors.cpp; sourceTree = SOURCE_ROOT; };
 		003ADB8F1038974A00ACF6F2 /* TwBar.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = TwBar.cpp; path = ../../src/AntTweakBar/TwBar.cpp; sourceTree = SOURCE_ROOT; };
 		003ADB9E1038996800ACF6F2 /* AntTweakBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AntTweakBar.h; path = ../../src/AntTweakBar/AntTweakBar.h; sourceTree = SOURCE_ROOT; };
+		003CE47E242A9823007BE072 /* MediaTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MediaTime.cpp; sourceTree = "<group>"; };
+		003CE482242A983C007BE072 /* MediaTime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MediaTime.h; sourceTree = "<group>"; };
 		003FAA9E1290CC90002D6860 /* Clipboard.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Clipboard.cpp; sourceTree = "<group>"; };
 		003FAAA21290CCB1002D6860 /* Clipboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Clipboard.h; sourceTree = "<group>"; };
 		004172F914C9BE520070C0D1 /* Frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frustum.h; sourceTree = "<group>"; };
@@ -2687,6 +2692,7 @@
 				277C2CEC1366632B00178A29 /* Matrix22.h */,
 				277C2CED1366632B00178A29 /* Matrix33.h */,
 				277C2CEE1366632B00178A29 /* Matrix44.h */,
+				003CE482242A983C007BE072 /* MediaTime.h */,
 				00FF554C1AEADF9C0085071E /* CameraUi.h */,
 				002DFD530FA5602900E45AE0 /* ObjLoader.h */,
 				00CFE37B113B85F60091E310 /* Path2d.h */,
@@ -2772,6 +2778,7 @@
 				43F78EF11516DAB700EB63B5 /* Json.cpp */,
 				0003F47E1992DA9A00647C8B /* Log.cpp */,
 				00241ABD0E830DD5004D34EB /* Matrix.cpp */,
+				003CE47E242A9823007BE072 /* MediaTime.cpp */,
 				002DFD500FA5600900E45AE0 /* ObjLoader.cpp */,
 				001F52090FCF99A10021731E /* Path2d.cpp */,
 				00D2F1850F8D8ACD00A7189A /* Perlin.cpp */,
@@ -4813,6 +4820,7 @@
 				27C100231BD16D4800AF387F /* Stream.cpp in Sources */,
 				27C100241BD16D4800AF387F /* ChannelRouterNode.cpp in Sources */,
 				27C100251BD16D4800AF387F /* framing.c in Sources */,
+				003CE481242A9823007BE072 /* MediaTime.cpp in Sources */,
 				27C100261BD16D4800AF387F /* AppBase.cpp in Sources */,
 				27C100271BD16D4800AF387F /* Color.cpp in Sources */,
 				27C100281BD16D4800AF387F /* Checkerboard.cpp in Sources */,
@@ -5065,6 +5073,7 @@
 				27C1FECD1BD0AE3400AF387F /* Stream.cpp in Sources */,
 				27C1FECE1BD0AE3400AF387F /* ChannelRouterNode.cpp in Sources */,
 				27C1FECF1BD0AE3400AF387F /* framing.c in Sources */,
+				003CE480242A9823007BE072 /* MediaTime.cpp in Sources */,
 				27C1FED01BD0AE3400AF387F /* AppBase.cpp in Sources */,
 				27C1FED11BD0AE3400AF387F /* Color.cpp in Sources */,
 				27C1FED21BD0AE3400AF387F /* Checkerboard.cpp in Sources */,
@@ -5423,6 +5432,7 @@
 				B322C4791DC7DC7100D2E661 /* inffast.c in Sources */,
 				00419C6F11057CC6007EC9AD /* Fill.cpp in Sources */,
 				B3EA40AC1DD0F00900E34348 /* ftpatent.c in Sources */,
+				003CE47F242A9823007BE072 /* MediaTime.cpp in Sources */,
 				00419C7011057CC6007EC9AD /* Flip.cpp in Sources */,
 				00419C7111057CC6007EC9AD /* Grayscale.cpp in Sources */,
 				00419C7211057CC6007EC9AD /* Hdr.cpp in Sources */,
