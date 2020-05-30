@@ -11,7 +11,6 @@ list( APPEND SRC_SET_CINDER_APP_EMSCRIPTEN
 )
 
 list( APPEND SRC_SET_CINDER_EMSCRIPTEN
-	#${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
 	${CINDER_SRC_DIR}/cinder/app/emscripten/RendererImplGlEmscripten.cpp
 	${CINDER_SRC_DIR}/cinder/app/emscripten/WindowImplEmscripten.cpp
 	${CINDER_SRC_DIR}/cinder/emscripten/EmscriptenVideo.cpp

@@ -1001,7 +1001,7 @@ ivec3 getMaxComputeWorkGroupSize()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // debug groups
-#if defined( CINDER_GL_HAS_KHR_DEBUG )
+#if defined( CINDER_GL_HAS_KHR_DEBUG ) && ! defined( CINDER_EMSCRIPTEN )
 void pushDebugGroup( const std::string &message )
 {
 	glPushDebugGroup( GL_DEBUG_SOURCE_APPLICATION, 0, -1, message.c_str() );

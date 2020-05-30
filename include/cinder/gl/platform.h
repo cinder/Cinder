@@ -91,17 +91,15 @@
 		#include "glad/glad_es.h"
  		#define CINDER_GL_ES
 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_2
-	#elif defined (CINDER_EMSCRIPTEN)
-		#define GL_GLEXT_PROTOTYPES
- 		#include "EGL/egl.h"
-		#include "cinder/linux/GLES3/gl3.h"
-		#include "cinder/linux/GLES2/gl2ext.h"
- 		#define CINDER_GL_ES
- 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
-
 	#else
 		#include "glad/glad.h"
 	#endif
+#elif defined( CINDER_EMSCRIPTEN)
+		#define GL_GLEXT_PROTOTYPES
+		#include <GL/gl.h>
+ 		#define CINDER_GL_ES
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
+
 #elif ! defined( CINDER_COCOA_TOUCH ) // OS X
 	#if defined( __clang__ )
 		#pragma clang diagnostic push
@@ -131,9 +129,13 @@
 	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 		#define GL_ES_EXT_VERSION_2_0
 	#endif
-	#if ! defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ANGLE )
+	#if ! defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ANGLE ) && ! defined( CINDER_EMSCRIPTEN )
 		#include "glad/glad_es.h"
 	#endif
+
+	#ifdef CINDER_EMSCRIPTEN
+		#include <GL/gl.h>
+	#endif 
 
 	// Android and Linux
 	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
@@ -227,7 +229,7 @@
 #if defined( CINDER_GL_ES )
 	#if defined( GL_KHR_debug ) && ( CINDER_GL_ES_VERSION <= CINDER_GL_ES_VERSION_3_1 ) && ( ! defined( CINDER_GL_ANGLE ) )
 		#define CINDER_GL_HAS_KHR_DEBUG
-		#if ! defined( CINDER_GL_ANGLE )
+		#if ! defined( CINDER_GL_ANGLE ) && ! defined( CIDNER_EMSCRIPTEN )
 			#define GL_BUFFER 			GL_BUFFER_KHR
 			#define GL_SHADER 			GL_SHADER_KHR
 			#define GL_PROGRAM 			GL_PROGRAM_KHR

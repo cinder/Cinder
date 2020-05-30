@@ -27,7 +27,8 @@
 
 // Use the system version, not the one that ships with Cinder.
 #include <GLFW/glfw3.h>
-
+#include <list>
+#include <unistd.h>
 namespace cinder { namespace app {
 
 class AppEmscripten;

@@ -656,7 +656,10 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 
 #else
 
-#include "glad/glad.h"
+#ifndef CINDER_EMSCRIPTEN
+	#include "glad/glad.h"
+#endif 
+
 #include "glfw/glfw3.h"
 static bool sTableInited = false;
 static const int MAX_KEYCODE = GLFW_KEY_LAST + 1;

@@ -154,8 +154,9 @@ function(ci_emscripten_app)
         endif()
     endif()
 
-     # Emscripten async libraries are included by default - need to test to see if user has opted out by passing in the NO_ASYNC param
-    if( NOT ARG_NO_ASYNC )
+   
+   # TODO this will have to be removed eventually as Emscripted changed to a new backend roughly around 10/2019 and the Emterpreter doesn't exist anymore 
+   if( NOT ARG_NO_ASYNC )
       set( CXX_FLAGS "${CXX_FLAGS} -s EMTERPRETIFY=1 -s EMTERPRETIFY_FILE=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/em.data.binary -s EMTERPRETIFY_ASYNC=1" )
     endif()
 
@@ -262,8 +263,8 @@ function(ci_emscripten_app)
 	message( STATUS "HERE: " ${EMSCRIPTEN_LIB_DIRECTORY} )
     target_link_libraries(
             ${OUTPUT_NAME}
-            ${EMSCRIPTEN_LIB_DIRECTORY}/libboost_filesystem.bc
-            ${EMSCRIPTEN_LIB_DIRECTORY}/libboost_system.bc
+            #${EMSCRIPTEN_LIB_DIRECTORY}/libboost_filesystem.bc
+            #${EMSCRIPTEN_LIB_DIRECTORY}/libboost_system.bc
 			cinder
             ${ARG_LIBRARIES}
     )
