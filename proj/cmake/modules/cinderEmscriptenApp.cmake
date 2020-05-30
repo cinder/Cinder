@@ -54,7 +54,7 @@ function(ci_emscripten_app)
             EXPORT_FROM_WORKER
 
             # Tells Emscripten to not build with async libraries bundled.
-            # note that this will disable ci::app::loadAsset and you will have to rely on async functions.
+            # note that this will disable ci::app::loadAsset and you will have to rely on async functions, native emscripten functions or write your own JS.
             NO_ASYNC
 
             # Sepecifies the type of build you want to do, either "Debug" or "Release"
@@ -143,8 +143,8 @@ function(ci_emscripten_app)
       set(CXX_FLAGS "${CXX_FLAGS} ${BUILD_AS_WORKER}")
     endif()
 
-
-    set(CXX_FLAGS "${CXX_FLAGS} ${ALLOW_MEMORY_GROWTH}")
+    # trying to set memory growth to be on by default.
+    set(CXX_FLAGS "${CXX_FLAGS} -s ALLOW_MEMORY_GROWTH=1")
 
     if(ARG_BUILD_AS_WORKER)
         if(ARG_EXPORT_FROM_WORKER)
@@ -155,14 +155,15 @@ function(ci_emscripten_app)
     endif()
 
    
-   # TODO this will have to be removed eventually as Emscripted changed to a new backend roughly around 10/2019 and the Emterpreter doesn't exist anymore 
+   # New WASM oriented backend(as of 10/2019) for Emscripten requires you to set stack size to something at least greater than 10000
+   # TODO may need to experiement to find a more logical value, currently can't seem to find information regarding what the value is measured in.
    if( NOT ARG_NO_ASYNC )
-      set( CXX_FLAGS "${CXX_FLAGS} -s EMTERPRETIFY=1 -s EMTERPRETIFY_FILE=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/em.data.binary -s EMTERPRETIFY_ASYNC=1" )
+      set( CXX_FLAGS "${CXX_FLAGS} -s ASYNCIFY=1 -s ASYNCIFY_STACK_SIZE=60000" )
     endif()
 
     # also turn off async libs if building web worker.
     if(ARG_BUILD_AS_WORKER)
-      set(CXX_FLAGS "${CXX_FLAGS} -s EMTERPRETIFY=0 -s EMTERPRETIFY_ASYNC=0")
+       set( CXX_FLAGS "${CXX_FLAGS} -s ASYNCIFY=0 -s ASYNCIFY_STACK_SIZE=0" )
     endif()
 
     # if custom html template is wanted, use that, otherwise, use default
@@ -190,11 +191,12 @@ function(ci_emscripten_app)
         set( CXX_FLAGS "${CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}" )
         list( APPEND EMCC_CLOSURE_ARGS "--externs ${CINDER_PATH}/include/cinder/emscripten/externs.js" )
     endif()
+
     # =========== ADD OTHER OPTIONAL FLAGS ================ #
 
     # if we have resources to bundle, build and append flags for that
     if (ARG_RESOURCES)
-        message(WARNING "Note that some resources(really large media files), while it is possible to bundle, they may not load as expected." )
+        message(WARNING "Note that some resources(really large media files), while it is possible to bundle, they may not load as expected. It would be better to use native JS based methods to load instead." )
         set(CXX_FLAGS "${CXX_FLAGS} --preload-file ${ARG_RESOURCES}@")
     endif ()
 
@@ -250,6 +252,7 @@ function(ci_emscripten_app)
     endif()
 
     add_executable(${OUTPUT_NAME} ${ARG_SOURCES} )
+
     target_include_directories(
             ${OUTPUT_NAME}
             # TODO check to if PUBLIC specifier works if multiple files are specified, otherwise we'll need to manually do this.
@@ -260,7 +263,8 @@ function(ci_emscripten_app)
     if(ARG_OUTPUT_DIRECTORY)
         set_target_properties(${OUTPUT_NAME}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ARG_OUTPUT_DIRECTORY})
     endif()
-	message( STATUS "HERE: " ${EMSCRIPTEN_LIB_DIRECTORY} )
+	
+
     target_link_libraries(
             ${OUTPUT_NAME}
             #${EMSCRIPTEN_LIB_DIRECTORY}/libboost_filesystem.bc

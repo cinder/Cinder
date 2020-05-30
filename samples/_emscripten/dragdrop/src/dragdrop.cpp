@@ -4,6 +4,11 @@
 using namespace ci;
 using namespace emscripten;
 using namespace std;
+	EMSCRIPTEN_BINDINGS( CinderEEmscripten ) {
+		emscripten::class_<std::function<void( emscripten::val e )> >( "Lislback" )
+		.constructor<>()
+		.function( "onload", &std::function<void( emscripten::val e )>::operator());
+	};
 
 DragDrop::DragDrop( std::string elId, std::function<void(emscripten::val)> onProcess ):
 mEl( emscripten::val::undefined() ),
@@ -43,13 +48,14 @@ void DragDrop::setup()
     onDrop = [func]( emscripten::val e )-> void {
         e.call<void>( "preventDefault" );
 
-        // if there are items being dropped
+   
+         // if there are items being dropped
         if( e["dataTransfer"]["items"].as<bool>() )
         {
 
             // loop through and process whatever the last file was that was dropped. 
             auto len = e["dataTransfer"]["items"]["length"].as<int>();
-
+      
             for(int i = 0; i < len; ++i){
                 emscripten::val itm = e["dataTransfer"]["items"][i];
 
@@ -69,6 +75,10 @@ void DragDrop::setup()
     };
 
 
-    mEl.set( "ondrop" , em::helpers::generateCallback( onDrop ) );
-    mEl.set( "ondragover" , em::helpers::generateCallback( onDragOver ) );
+    // TEMP - need to figure out why Embind call at the top of the page isn't getting compiled in. 
+	auto functor_adapter = emscripten::val( onDrop )[ "onload" ].call<emscripten::val>( "bind", emscripten::val(onDrop) );
+    auto functor_adapter2 = emscripten::val( onDrop )[ "onload" ].call<emscripten::val>( "bind", emscripten::val(onDrop) );
+
+    mEl.set( "ondrop" , functor_adapter);
+    mEl.set( "ondragover" , functor_adapter2 );
 }

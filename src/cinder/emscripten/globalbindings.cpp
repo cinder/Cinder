@@ -20,10 +20,8 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #include <emscripten/bind.h>
-#endif
 
 /**
  This file holds any C++ to JS bindings you want to use globally.
@@ -34,13 +32,11 @@ namespace cinder {
 
 	namespace bindings {
 
-	#ifdef __EMSCRIPTEN__
 	EMSCRIPTEN_BINDINGS( CinderEmscripten ) {
 		class_<std::function<void(emscripten::val e)> >( "ListenerCallback" )
 		.constructor<>()
 		.function("onload", &std::function<void(emscripten::val e)>::operator() );
 
 	};
-	#endif
   }
 }

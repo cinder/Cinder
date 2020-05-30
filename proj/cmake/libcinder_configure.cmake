@@ -21,25 +21,58 @@ list( APPEND CINDER_INCLUDE_SYSTEM_INTERFACE
 )
 
 # *_PRIVATE includes are used by cinder internally, user apps explicitly add these as needed.
-list( APPEND CINDER_INCLUDE_USER_PRIVATE
-	${CINDER_INC_DIR}
-	${CINDER_INC_DIR}/jsoncpp
-	${CINDER_INC_DIR}/tinyexr
-	${CINDER_INC_DIR}/imgui
-	${CINDER_SRC_DIR}/linebreak
-	${CINDER_SRC_DIR}/oggvorbis/vorbis
-	${CINDER_SRC_DIR}/r8brain
-)
+
+# Remove vorbis stuff when on web, include eotherwise.
+if( CINDER_EMSCRIPTEN )
+	list( APPEND CINDER_INCLUDE_USER_PRIVATE
+		${CINDER_INC_DIR}
+		${CINDER_INC_DIR}/jsoncpp
+		${CINDER_INC_DIR}/tinyexr
+		${CINDER_INC_DIR}/imgui
+		${CINDER_SRC_DIR}/linebreak
+		${CINDER_SRC_DIR}/r8brain
+	)
+
+else()
+
+	list( APPEND CINDER_INCLUDE_USER_PRIVATE
+		${CINDER_INC_DIR}
+		${CINDER_INC_DIR}/jsoncpp
+		${CINDER_INC_DIR}/tinyexr
+		${CINDER_INC_DIR}/imgui
+		${CINDER_SRC_DIR}/linebreak
+		${CINDER_SRC_DIR}/oggvorbis/vorbis
+		${CINDER_SRC_DIR}/r8brain
+	)
+
+endif()
 
 if( CINDER_HEADLESS_GL_EGL )
 	list( APPEND CINDER_INCLUDE_USER_PRIVATE ${CINDER_INC_DIR}/EGL-Registry )
 endif()
 
-list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
-	${CINDER_INC_DIR}
-	${CINDER_INC_DIR}/oggvorbis
-	${CINDER_SRC_DIR}/AntTweakBar
-)
+# zlib seems to need to be included at around this point. Also take out some stuff we won't need on the Web.
+if( CINDER_EMSCRIPTEN )
+	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
+		${CINDER_INC_DIR}
+		${CINDER_INC_DIR}/emscripten
+		${CINDER_SRC_DIR}/zlib
+	)
+
+	
+	# on Emscripten, set to no audio as we'll rely on native capabilities as much as possible
+	set( CINDER_DISABLE_AUDIO TRUE)
+
+else()
+
+	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
+		${CINDER_INC_DIR}
+		${CINDER_INC_DIR}/oggvorbis
+		${CINDER_SRC_DIR}/AntTweakBar
+	)
+
+endif()
+
 
 # find cross-platform packages
 

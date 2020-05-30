@@ -3,7 +3,7 @@
 #include "cinder/gl/gl.h"
 #include <vector>
 #include "cinder/emscripten/HTML.h"
-
+#include <emscripten/emscripten.h>
 using namespace std;
 using namespace ci;
 using namespace ci::app;
@@ -21,7 +21,7 @@ class HTMLApp : public App
   void onLoad();
   
   //! Helper element so you don't have to worry about nuaunces of val elements
-  HTMLElement img;
+  //HTMLElement img;
 
 };
 
@@ -32,11 +32,15 @@ void prepareSettings( HTMLApp::Settings* settings )
 
 void HTMLApp::setup()
 {
-    img = HTMLElement("img");
-    img.setAttribute("src","https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Flickr_wordmark.svg/514px-Flickr_wordmark.svg.png");
 
-    img.appendToEl(".emscripten_border");
-    img.setAttribute("style", "left: 50%;position: relative;transform: translateX(-50%);");
+  auto el = emscripten::val::global( "document" );
+
+
+    //img = HTMLElement("img");
+    //img.setAttribute("src","https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Flickr_wordmark.svg/514px-Flickr_wordmark.svg.png");
+
+    //img.appendToEl(".emscripten_border");
+    //img.setAttribute("style", "left: 50%;position: relative;transform: translateX(-50%);");
 }
 
 void HTMLApp::draw()

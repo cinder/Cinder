@@ -56,7 +56,7 @@ void prepareSettings( DragDropApp::Settings* settings )
 }
 
 void DragDropApp::onDropProcessed(emscripten::val e){
-  auto url = val::global("URL").call<val>("createObjectURL",e);
+  auto url = val::global( "URL" ).call<val>( "createObjectURL" ,e);
 
   // NOTE: not checking to ensure we dropped a video - probably a good idea to do so
   video.setSource( url.as<string>() );
