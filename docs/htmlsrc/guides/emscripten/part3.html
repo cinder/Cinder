@@ -40,8 +40,14 @@
         </li>
       
         <li>
-          <p>While the audio api is technically available, it is still largely un-tested and may still have kinks that need to be worked out. </p>
-        </li>
+		  <p> Due to changes in the WebAudio ecosystem and the preference of the web world for using the <a href="https://developers.google.com/web/updates/2017/12/audio-worklet" target="_blank">AudioWorklet api</a>, there is currently no built-in audio support as the 
+			AudioWorklet api relies heavily on writing Javascript which does make it more difficult to fully integrate. 
+		</p>
+		</li>
+		
+		<li>
+			<p> When doing TransformFeedback, you have to remember to unbind your transform feedback buffers. It is unclear as to why this is a requirement but it appears to be an underlying Emscripten issue.</p>
+		</li>
       </ol>
     </section>
 

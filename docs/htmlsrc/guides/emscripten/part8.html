@@ -42,15 +42,16 @@
 
 				<br/>
 				<li>
-					<b>I can't load files hosted on my server.</b>
+					<b>I can't load files hosted on another server.</b>
 					<br/>
 						Browsers operate on the principle that all content loaded must be on the same server as the page you're 
 						requesting. The process of making a request for content on another server is called a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank">Cross-Origin Request Sharing</a>, 
 						or CORS for short.
 
+
 						<br/>
 						<br/>
-						If you must load content from another server, it is possible to get around this restriction by enabling CORS handling on your server which is 
+						CORS is not enabled by default. If you must load content from another server, it is possible to get around this restriction by enabling CORS handling on your server which is 
 						a pretty basic option these days on common open-source server software. If you don't have access to the server, then you'll have to contact someone that does. 
 					
 				</li>
@@ -69,27 +70,6 @@
 					
 				</li>
 
-				<br/>
-				<li>
-
-					<b>Can I build for mobile?</b>
-					<br/>
-				
-							Since there is an alternate asm.js build whenever you compile applications, it should be possible to build for mobile as well in theory though this has not
-							been throughly tested yet. Note that IOS does not support WebGL 2 and that when using an asm.js build, performance may suffer somewhat.
-				</li>
-
-				<br/>
-				<li>
-					<b>I still want to build for IOS or Safari </b>
-					<br/>
-						You will have to then make alterations to the script at root/tools/emscripten/cibuilder or take the CMakeLists.txt file found in root/emscripten to 
-						concoct your own build script. By default since WebGL 2 has fairly good support that was what we chose to go with. Note that on the web, with WebGL 1, 
-						things are much more limited and a lot of things are hidden behind extensions which Emscripten may or may not enable. There will also be 
-						things you'll need to keep in mind like being restricted to power of 2 textures. 
-					
-
-				</li>
 			
 			</ul>
         </section>

@@ -49,11 +49,6 @@
         </p>
       <p>In the externs file, all I would need to declare is <code>window.CINDER_VIDEO = {}</code> since <code>window.CINDER_VIDEO</code> is a Javascript object. If it were a function it would look like <code>window.CINDER_VIDEO = function(){}</code></p>
 
-      <h1>WebGL 1 / glsl 120 support</h1>
-
-      <p>Note that Cinder only supports WebGL 2 / GLSL 300 es as there really isn&#39;t a reason to support WebGL 1 at this point.</p>
-      <p>That being said, there really isn't any reason you couldn't set up the webgl portion of the Emscripten flags yourself, change the values, then copy over
-        what you need from Cinder.cmake</p>
 
       <h1>Autoplaying media in Chrome</h1>
 
@@ -61,7 +56,7 @@
       See
        <a target="_blank" href="https://arstechnica.com/gaming/2018/05/chromes-autoplay-video-blocker-is-accidentally-killing-web-based-games/">this article from ArsTechnica</a>
       <a target="_blank" href="https://twitter.com/Cabbibo/status/992854400061227008"> as well as this tweet from Twitter user Cabibbo</a></p>
-
+      
       <p>You&#39;ll have to do some sort of interaction before things will start playing.</p>
     </section>
 

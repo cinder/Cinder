@@ -39,14 +39,14 @@
       <p>To build your project, from within your build folder(note I'm assuming it's within the root of your project)</p>
       <ul>
 	  <li>run <code>emcmake cmake ..</code></li>
-	  <li>run <code>make</code> (or <code>mingw32-make</code> etc if on Windows)</li>
+	  <li>run <code>make</code> (or <code>mingw32-make</code> etc if on Windows or not using WSL)</li>
       <li>When the build is done, everything you need to upload will end up in your build folder. </li>
 
 		
 		<li>
 			<!-- TODO I believe we can probably address this issue with CMake -JC -->
 			Note that resource and asset bundling/copying is not automatically done because builds will fail if the compiler can't find the 
-			resources directory. To add your asseet folders :
+			resources directory. To add your asset folders :
 			<br/>
 			<p><b>For Resources</b></p>
 			<p>If you're not using ci_emscripten_app(which will be talked about later on) you can add the flag</p>
@@ -54,7 +54,7 @@
 			
 			<p><b>For Assets</b></p>
 			<p>If you're not using ci_emscripten_app, unless your CMake file is already set up to copy it over, you will have to manually copy your assets folder into your output directory.</p>
-		
+			<p>Otherwise your assets will be copied automatically.</p>
 			
 		</li>
 	</ul>
@@ -72,17 +72,10 @@
 		</li>
 	 </ul>
 	
-	<h1><a id="Building_the_samples_24"></a>Building the samples</h1>
-      <p> If you'd like to generate Cmake project folder for the the samples, there is a helper python script in
-		   <code>Cinder/emscripten/sample_generation</code> called <code>gensamples.py</code>. 
-		   It will also generate a sample CMakeLists.txt file for each sample as well. 
-		   Note that while the script attempts to avoid generating things in projects where there is known incompatibility with Emscripten, 
-		   there is no guarantee that all the samples will run against Emscripten.</p>
+
   
 	  <h1><a id="ci_emscripten_app"></a>ci_emscripten_app</h1>
-      <p>If you're not comfortable writing your own CMakeLists.txt file, there is helper function to make things a 
-		  little bit easier. If you run <code>gensamples.py</code> and then check the samples, 
-		  you can see how to use the function. Also see the <a href="/part9.html">ci_emscripten_app section</a> for a more in-depth look as to the options and other functionality
+      <p> See the <a href="/part9.html">ci_emscripten_app section</a> for a more in-depth look as to the options and other functionality
 		it can provide. </p>
 	  <p>If you've been using <code>ci_make_app</code>, the functionality and usage is very similar. 
 		Check out <code>/proj/cmake/cinderEmscriptenApp.cmake</code> to see what the function looks like. All options have comments describing what they are for. </p>
