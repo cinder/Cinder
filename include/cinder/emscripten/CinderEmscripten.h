@@ -86,12 +86,25 @@ namespace cinder { namespace em { namespace helpers {
     */
 		template<typename T>
 		static void copyToVector( const emscripten::val &typedArray,std::vector<T> &vec ) {
-			unsigned int length = typedArray["length"].as<unsigned int>();
+		
+    		
+      const auto l = typedArray["length"].as<unsigned>();
+      vec.resize(l);
+
+
+      emscripten::val memoryView{emscripten::typed_memory_view(l, vec.data())};
+      memoryView.call<void>("set",typedArray);
+
+
+    
+    
+    /*
+    	unsigned int length = typedArray["length"].as<unsigned int>();
 			emscripten::val memory = emscripten::val::module_property( "buffer" );
 			vec.reserve( length );
 			vec.resize( length );
 			emscripten::val memoryView = typedArray["constructor"].new_( memory, reinterpret_cast<uintptr_t>(vec.data() ), length);
-		    memoryView.call<void>( "set", typedArray );
+		    memoryView.call<void>( "set", typedArray );*/
     }
 
     /**

@@ -12,6 +12,12 @@ using namespace ci;
 using namespace ci::app;
 using namespace ci::em;
 
+//TODO this is temporary - this function isn' getting bundled in for some reason currently. 
+EMSCRIPTEN_BINDINGS( CinderEEmscripten ) {
+		emscripten::class_<std::function<void( emscripten::val e )> >( "Lislback" )
+		.constructor<>()
+		.function( "onload", &std::function<void( emscripten::val e )>::operator());
+	};
 /**
  * This is just a simple test of loading images and a video while demonstrating 
  * examples of how loading assets would work. 
@@ -21,6 +27,8 @@ using namespace ci::em;
  * The difference being that, loading resources will be much faster as that will be ready and all loaded when 
  * your project starts. 
  * 
+ * The downside is that bundling your assets with your build WASM file can result in a much larger bundle size resulting in a longer time to screeen.
+ * 
  * When loading assets, unfortunately, that will require an http request which can slow things down a bit depending
  * on the size and where you're loading from. 
  * 
@@ -28,7 +36,7 @@ using namespace ci::em;
  * will not quite work(in addition to greatly increasing your project's load time.) though this 
  * may have changed in newer versions. 
  * 
- * It's recommended to use your assets folder for larger files and your resources folder for smaller ones. 
+ * It's recommended to just use an assets folder and use the various loadAsset methods, especially the async one.  
  * 
  */
 class AssetLoadTest : public App 
