@@ -27,14 +27,7 @@ if( CMAKE_SYSTEM_NAME MATCHES "Emscripten" )
 elseif( CMAKE_SYSTEM_NAME MATCHES "Darwin" )
 	set( CINDER_TARGET_DEFAULT "macosx" )
 elseif( CMAKE_SYSTEM_NAME MATCHES "Linux" )
-
-	# for some reason on WSL, Emscripten enviroment setup does not properly set CMAKE_SYSTEM_NAME and WSL stil thinks 
-	# environment is Linux. Add WSL_TARGET to try to compensate
-	if(WSL_TARGET)
-		set( CINDER_TARGET_DEFAULT "emscripten" )
-	else()
-		set( CINDER_TARGET_DEFAULT "linux" )
-	endif()
+	set( CINDER_TARGET_DEFAULT "linux" )
 elseif( CMAKE_SYSTEM_NAME MATCHES "Windows" )
 	set( CINDER_TARGET_DEFAULT "msw" )
 else()

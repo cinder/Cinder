@@ -5,7 +5,7 @@ project( HTMLApp )
 
 get_filename_component( CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../" ABSOLUTE )
 get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../" ABSOLUTE )
-message(${APP_PATH})
+
 include( "${CINDER_PATH}/proj/cmake/modules/cinderEmscriptenApp.cmake" )
 
 
