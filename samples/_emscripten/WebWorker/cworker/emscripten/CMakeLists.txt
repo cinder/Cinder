@@ -13,6 +13,6 @@ ci_emscripten_app(
 	CINDER_PATH ${CINDER_PATH}
 	EXPORT_FROM_WORKER '_onmessage'
 	BUILD_AS_WORKER TRUE
-	OUTPUT_NAME worker
+	OUTPUT_NAME worker 
 	OUTPUT_DIRECTORY ../../../emscripten/build/Debug
 )

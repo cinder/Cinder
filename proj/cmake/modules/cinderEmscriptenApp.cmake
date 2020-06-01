@@ -66,6 +66,8 @@ function(ci_emscripten_app)
             # argument to tell what to name all the files it will output
             OUTPUT_NAME
 
+            # in case you want to override the default output directory
+            OUTPUT_DIRECTORY 
             )
 
     cmake_parse_arguments( ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
@@ -86,7 +88,7 @@ function(ci_emscripten_app)
 		set_property( CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
 			"Debug" "Release" "MinSizeRel" "RelWithDebInfo" )
 	endif()
-    
+
 	# Set CMAKE_RUNTIME_OUTPUT_DIRECTORY based on build type for single-config generator ( i.e Makefile ) otherwise ( i.e Xcode, VS )  use CMAKE_BINARY_DIR
 	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
 		if( ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) OR ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
@@ -96,6 +98,14 @@ function(ci_emscripten_app)
 			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
 		endif()
 	endif()
+
+    if (ARG_OUTPUT_DIRECTORY)
+		set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ARG_OUTPUT_DIRECTORY} )
+    endif()
+
+    if(ARG_BUILD_AS_WORKER)
+        set(WORKER_MESSAGE "YES")
+    endif()
 
 
     # Log current settings
@@ -107,6 +117,7 @@ function(ci_emscripten_app)
     message( "CINDER_PATH: ${ARG_CINDER_PATH}" )
     message( "CMAKE_RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
     message( "CINDER_BUILD_TYPE: ${CMAKE_BUILD_TYPE}" )
+    message( "BUILDING AS WEB WORKER: ${WORKER_MESSAGE}" )
 
     if (ARG_RESOURCES)
         message( "Resources folder is set to ${ARG_RESOURCES}" )
@@ -141,7 +152,8 @@ function(ci_emscripten_app)
 
     # if user wants to build as a worker
     if (ARG_BUILD_AS_WORKER)
-      set(CXX_FLAGS "${CXX_FLAGS} ${BUILD_AS_WORKER}")
+    
+      set(CXX_FLAGS "${CXX_FLAGS} -s BUILD_AS_WORKER=1")
     endif()
 
     # trying to set memory growth to be on by default.
@@ -158,13 +170,10 @@ function(ci_emscripten_app)
    
    # New WASM oriented backend(as of 10/2019) for Emscripten requires you to set stack size to something at least greater than 10000
    # TODO may need to experiement to find a more logical value, currently can't seem to find information regarding what the value is measured in.
-   if( NOT ARG_NO_ASYNC )
-      set( CXX_FLAGS "${CXX_FLAGS} -s ASYNCIFY=1 -s ASYNCIFY_STACK_SIZE=60000" )
-    endif()
-
-    # also turn off async libs if building web worker.
-    if(ARG_BUILD_AS_WORKER)
+    if(ARG_BUILD_AS_WORKER OR ARG_NO_ASYNC)
        set( CXX_FLAGS "${CXX_FLAGS} -s ASYNCIFY=0 -s ASYNCIFY_STACK_SIZE=0" )
+    elseif( NOT ARG_NO_ASYNC )
+        set( CXX_FLAGS "${CXX_FLAGS} -s ASYNCIFY=1 -s ASYNCIFY_STACK_SIZE=60000" )
     endif()
 
     # if custom html template is wanted, use that, otherwise, use default
