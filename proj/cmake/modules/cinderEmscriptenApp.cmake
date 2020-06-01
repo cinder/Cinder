@@ -7,7 +7,7 @@ function(ci_emscripten_app)
             # the path to Cinder installation
             CINDER_PATH
 
-            # path to your
+            # path to your assets folder. 
             ASSETS
 
             MEMORY_DEBUG
@@ -86,6 +86,7 @@ function(ci_emscripten_app)
 		set_property( CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
 			"Debug" "Release" "MinSizeRel" "RelWithDebInfo" )
 	endif()
+    
 	# Set CMAKE_RUNTIME_OUTPUT_DIRECTORY based on build type for single-config generator ( i.e Makefile ) otherwise ( i.e Xcode, VS )  use CMAKE_BINARY_DIR
 	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
 		if( ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) OR ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )

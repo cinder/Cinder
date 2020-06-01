@@ -58,6 +58,23 @@
 	  Currently - only Firefox has good support for OffscreenCanvas but it has been rumored that Chrome is set to get better support in the next version</p>
 	  <a href="https://developers.google.com/web/updates/2018/08/offscreen-canvas" target="_blank">See this article for more information.</a>
 
+	  <br/>
+	  <br/>
+
+	  <h2>Audio Support</h2>
+		<p>Currently there is very limited built-in audio support when it comes to Emscripten. As you might expect, this is primarily due to the nature of the web and 
+			how Javascript is the primarily language for the web. 
+		</p>
+		<ul>
+			<li>Currently, the only built-in support is for basic audio playback. See <code>Audioplayer.h</code></li>
+		</ul>
+
+		<p>
+			Why the lack of support? To do proper audio analysis, the current recommendedation is to use the <a href="https://developers.google.com/web/updates/2017/12/audio-worklet" target="_blank">AudioWorklet standard</a>. That being said, that is easier said than done as initial explorations, some parts of the workflow
+				are difficult to do in C++ alone and require Javascript to run properly. 
+				If you would like to experiment regardless, there is the older <a href="https://developer.mozilla.org/en-US/docs/Web/API/ScriptProcessorNode" target="_blank">ScriptProcessorNode</a> which is known to be working
+				with C++ but keep in mind that it is due to be deprecated at some point.
+		</p>
 	</section>
 
 	

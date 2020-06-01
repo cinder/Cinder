@@ -8,13 +8,13 @@ list( APPEND SRC_SET_CINDER_APP_EMSCRIPTEN
 	${CINDER_SRC_DIR}/cinder/app/emscripten/AppEmscripten.cpp
 	${CINDER_SRC_DIR}/cinder/app/emscripten/AppImplEmscripten.cpp
 	${CINDER_SRC_DIR}/cinder/app/emscripten/PlatformEmscripten.cpp
+
 )
 
 list( APPEND SRC_SET_CINDER_EMSCRIPTEN
 	${CINDER_SRC_DIR}/cinder/app/emscripten/RendererImplGlEmscripten.cpp
 	${CINDER_SRC_DIR}/cinder/app/emscripten/WindowImplEmscripten.cpp
 	${CINDER_SRC_DIR}/cinder/emscripten/EmscriptenVideo.cpp
-	${CINDER_SRC_DIR}/cinder/emscripten/globalbindings.cpp
 )
 
 

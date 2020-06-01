@@ -11,13 +11,9 @@
 using namespace ci;
 using namespace ci::app;
 using namespace ci::em;
+using namespace emscripten;
 
-//TODO this is temporary - this function isn' getting bundled in for some reason currently. 
-EMSCRIPTEN_BINDINGS( CinderEEmscripten ) {
-		emscripten::class_<std::function<void( emscripten::val e )> >( "Lislback" )
-		.constructor<>()
-		.function( "onload", &std::function<void( emscripten::val e )>::operator());
-	};
+
 /**
  * This is just a simple test of loading images and a video while demonstrating 
  * examples of how loading assets would work. 

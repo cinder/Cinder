@@ -59,8 +59,8 @@ if( CINDER_EMSCRIPTEN )
 		${CINDER_SRC_DIR}/zlib
 	)
 
-	
-	# on Emscripten, set to no audio as we'll rely on native capabilities as much as possible
+	# on Emscripten, set to no audio as we'll rely on native capabilities as much as possible which unfortunately
+	# requires a ton of JS
 	set( CINDER_DISABLE_AUDIO TRUE)
 
 else()

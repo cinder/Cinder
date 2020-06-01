@@ -23,6 +23,21 @@
 
 #include "cinder/app/emscripten/AppEmscripten.h"
 #include "cinder/app/emscripten/AppImplEmscripten.h"
+#include <emscripten.h>
+#include <emscripten/bind.h>
+
+
+/**
+  Creates the necessary bindings for C++ -> JS callback conversions. 
+  a little ugly here but won't work if only placed in globalbindings.cpp for some reason(though it did use to). 
+ */
+EMSCRIPTEN_BINDINGS( CinderEmscripten ) {
+	emscripten::class_<std::function<void(emscripten::val e)> >( "ListenerCallback" )
+	.constructor<>()
+	.function("onload", &std::function<void(emscripten::val e)>::operator() );
+
+};
+
 
 namespace cinder { namespace app {
 
