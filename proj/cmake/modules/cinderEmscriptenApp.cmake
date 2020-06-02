@@ -120,7 +120,7 @@ function(ci_emscripten_app)
     message( "BUILDING AS WEB WORKER: ${WORKER_MESSAGE}" )
 
     if (ARG_RESOURCES)
-        message( "Resources folder is set to ${ARG_RESOURCES}" )
+        message( "RESOURCES FOLDER IS SET TO ${ARG_RESOURCES}" )
     endif ()
 
     if (ARG_ASSETS)

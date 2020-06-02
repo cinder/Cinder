@@ -37,24 +37,23 @@ void HTMLApp::setup()
   CI_LOG_I( "The HTMLElement class makes it easy to add HTML to your project if needed." );
   CI_LOG_I( "For the audio, controls can be turned off but the browser will need user interaction before the audio plays if you don't use the controls." );
 
-  img = HTMLElement("img");
-  img.setAttribute("src","https://www.html5rocks.com/static/images/html5rocks-logo-wings.png");
+  img = HTMLElement( "img" );
+  img.setAttribute( "src", "https://www.html5rocks.com/static/images/html5rocks-logo-wings.png" );
 
-  img.appendToEl(".emscripten_border");
-  img.setAttribute("style", "left: 50%;position: relative;transform: translateX(-50%);");
+  img.appendToEl( ".emscripten_border" );
+  img.setAttribute( "style", "left: 50%;position: relative;transform: translateX(-50%);" );
 
 
   auto el = emscripten::val::global( "document" );
-  player = AudioPlayer::create("https://ia802900.us.archive.org/16/items/mythium/PVD_TSOWA.mp3",true);
+  player = AudioPlayer::create( "https://ia802900.us.archive.org/16/items/mythium/PVD_TSOWA.mp3", true );
 
   player->play();
+
 }
 
 void HTMLApp::draw()
 {
   gl::clear( Color( 0,0,0 ));
-
-	
 }
 
 CINDER_APP( HTMLApp, RendererGl, prepareSettings )
