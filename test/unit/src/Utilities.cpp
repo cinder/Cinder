@@ -30,6 +30,101 @@ std::istream& operator>>( std::istream &i, CustomType &t )
 	return i;
 }
 
+void testStreamingBufferBlockSize( int blockSize )
+{
+ 	StreamingBuffer sb( blockSize );
+	sb.pushFront( "abc", 4 );
+	REQUIRE( sb.getSize() == 4 );
+	REQUIRE( ! sb.empty() );
+	std::vector<char> chv( ' ', 4 );
+	REQUIRE( sb.popBack( &chv[0], 4 ) == 4 );
+	REQUIRE( std::string( &chv[0] ) == "abc" );
+	REQUIRE( sb.empty() );
+	REQUIRE( sb.getSize() == 0 );
+
+	// push 2; sz = 2
+	sb.pushFront( "a", 2 );
+	REQUIRE( sb.getSize() == 2 );
+	// push 2; sz = 4
+	sb.pushFront( "a", 2 );
+	REQUIRE( sb.getSize() == 4 );
+	// pop 2; sz = 2
+	REQUIRE( sb.popBack( &chv[0], 2 ) == 2 );
+	REQUIRE( sb.getSize() == 2 );
+	// pop 2 (attempting 10 ); sz = 0
+	REQUIRE( sb.popBack( &chv[0], 10 ) == 2 );
+	REQUIRE( sb.getSize() == 0 );
+
+	// popping on empty
+	REQUIRE( sb.popBack( &chv[0], 100 ) == 0 );
+	// 0 length pop on empty
+	REQUIRE( sb.popBack( &chv[0], 0 ) == 0 );
+	// 0 length pop on non-empty
+	sb.pushFront( "abc", 4 );
+	REQUIRE( sb.popBack( &chv[0], 0 ) == 0 );
+	sb.clear();
+	REQUIRE( sb.empty() );
+	// attempt to clear empty
+	sb.clear();
+
+	// rolling read/write activity that forces block reallocation
+	for( int i = 0; i < 100; ++i ) {
+		sb.pushFront( "abc", 4 );
+		REQUIRE( sb.getSize() == 4 );
+		REQUIRE( ! sb.empty() );
+		std::vector<char> chv( ' ', 4 );
+		REQUIRE( sb.popBack( &chv[0], 4 ) == 4 );
+		REQUIRE( std::string( &chv[0] ) == "abc" );
+		REQUIRE( sb.empty() );
+	}
+
+	// build up with pushes, then empty out with pops; verify FIFO values
+	for( int i = 0; i < 100; ++i ) {
+		uint16_t v = i;
+		sb.pushFront( &v, sizeof(uint16_t) );
+		REQUIRE( sb.getSize() == (i + 1) * sizeof(uint16_t) );
+	}
+	for( int i = 0; i < 100; ++i ) {
+		uint16_t v = i;
+		REQUIRE( sb.popBack( &v, sizeof( uint16_t ) ) == sizeof( uint16_t ) );
+		REQUIRE( v == i );
+		REQUIRE( sb.getSize() == (100 - i - 1 ) * sizeof(uint16_t) );
+	}
+
+	// build up with pushes, then verify copyTo of entirety
+	for( int i = 0; i < 100; ++i ) {
+		uint16_t v = i;
+		sb.pushFront( &v, sizeof(uint16_t) );
+	}
+	REQUIRE( sb.getSize() == 100 * sizeof(uint16_t) );
+	std::vector<uint16_t> vec;
+	vec.resize( 100, 0 );
+	REQUIRE( sb.copyTo( vec.data(), vec.size() * sizeof(uint16_t) ) == vec.size() * sizeof(uint16_t) );
+	REQUIRE( sb.getSize() == 100 * sizeof(uint16_t) );
+	for( int i = 0; i < 100; ++i )
+		REQUIRE( vec[i] == i );
+	sb.clear();
+
+	// build up with pushes, then verify copyTo of subset
+	for( int i = 0; i < 100; ++i ) {
+		uint16_t v = i;
+		sb.pushFront( &v, sizeof(uint16_t) );
+	}
+	for( int i = 0; i < 100; ++i )
+		vec[i] = 65535; // guard values
+	//   first half copy; make sure second half remained guard value
+	REQUIRE( sb.copyTo( &vec[0], 50 * sizeof(uint16_t) ) == 50 * sizeof(uint16_t) );
+	for( int i = 0; i < 50; ++i )
+		REQUIRE( vec[i] == i );
+	for( int i = 50; i < 100; ++i )
+		REQUIRE( vec[i] == 65535 );
+	// test copyTo attempting to read more than full buffer
+	REQUIRE( sb.copyTo( vec.data(), 1000000 ) == vec.size() * sizeof(uint16_t) );
+	REQUIRE( sb.getSize() == 100 * sizeof(uint16_t) );
+	for( int i = 0; i < 100; ++i )
+		REQUIRE( vec[i] == i );
+}
+
 TEST_CASE( "Utilities" )
 {
 	SECTION( "ConcurrentCircularBuffer" )
@@ -201,5 +296,12 @@ TEST_CASE( "Utilities" )
 		REQUIRE( ci::asciiCaseCmp( "aBc", "AbC" ) == 0 );
 		REQUIRE( ci::asciiCaseCmp( "aBc", "abcD" ) < 0 );
 		REQUIRE( ci::asciiCaseCmp( "aBcD", "ab" ) > 0 );
+	}
+	SECTION( "StreamingBuffer" )
+	{
+		testStreamingBufferBlockSize( 1 ); // edge
+		testStreamingBufferBlockSize( 2 ); // edge
+		testStreamingBufferBlockSize( 10 ); // wrap for i/o
+		testStreamingBufferBlockSize( 65535 ); // no wrap for i/o
 	}
 }
