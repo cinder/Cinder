@@ -102,9 +102,10 @@ window.CINDER_HELPERS = {
      * Logs the node to the console if you need to examine any attributes / values
      * @param {emscripten::val} e 
      */
-    logNode:function(e){
+    logNode:function( e ) {
       console.log(e);
     },
+    
     // returns the browser you're using. Looking for Firefox / Chrome since those
     // present the best experiences. If it's not Firefox / Chrome, return full user agent string
     getBrowser:function()
