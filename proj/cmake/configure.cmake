@@ -135,4 +135,4 @@ endif()
 
 # CINDER_LIB_DIRECTORY is the platform-specific, relative path that will be used to define
 # CMAKE_ARCHIVE_OUTPUT_DIRECTORY for libcinder and also specifies where user apps will locate the cinder package
-set( CINDER_LIB_DIRECTORY "lib/${CINDER_TARGET_SUBFOLDER}/${CMAKE_BUILD_TYPE}/" )
+set( CINDER_LIB_DIRECTORY "lib/${CINDER_TARGET_SUBFOLDER}/${CMAKE_BUILD_TYPE}" )
