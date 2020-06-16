@@ -526,6 +526,10 @@ static bool ImGui_ImplCinder_Init( const ci::app::WindowRef& window, const ImGui
 	sWindowConnections[window] += window->getSignalResize().connect( signalPriority, ImGui_ImplCinder_Resize );
 	if( options.isAutoRenderEnabled() ) {
 		sWindowConnections[window] += ci::app::App::get()->getSignalUpdate().connect( std::bind( ImGui_ImplCinder_NewFrameGuard, window ) );
+#if defined( CINDER_MAC )
+		// Note: Window resize triggers draw/resize calls without update on the Mac. Remove this if fixed in Obj-C.
+		sWindowConnections[window] += window->getSignalDraw().connect( std::bind( ImGui_ImplCinder_NewFrameGuard, window ) );
+#endif
 		sWindowConnections[window] += window->getSignalPostDraw().connect( ImGui_ImplCinder_PostDraw );
 	}
 
