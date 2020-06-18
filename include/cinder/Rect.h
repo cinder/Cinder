@@ -102,6 +102,11 @@ class CI_API RectT {
 	T		getX2() const { return x2; }
 	T		getY2() const { return y2; }
 
+	T		getLeft() const   { return x1; }
+	T		getTop() const    { return y1; }
+	T		getRight() const  { return x2; }
+	T		getBottom() const { return y2; }
+
 	Vec2T		getUpperLeft() const	{ return Vec2T( x1, y1 ); };
 	Vec2T		getUpperRight() const	{ return Vec2T( x2, y1 ); };
 	Vec2T		getLowerRight() const	{ return Vec2T( x2, y2 ); };
