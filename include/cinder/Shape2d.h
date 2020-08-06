@@ -63,6 +63,8 @@ class CI_API Shape2d {
     void			appendContour( const Path2d &contour ) { mContours.push_back( contour ); }
 	void			removeContour( size_t i ) { mContours.erase( mContours.begin() + i ); }
 
+	//! Translates the Shape2d by \a offset
+	void		translate( const vec2 &offset );
 	//! Scales the Shape2d by \a amount.x on X and \a amount.y on Y around the center \a scaleCenter
 	void		scale( const vec2 &amount, vec2 scaleCenter = vec2() );
 

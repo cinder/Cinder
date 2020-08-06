@@ -55,7 +55,7 @@
 #include "cinder/Log.h"
 #include "cinder/Color.h"
 #if ! defined( CINDER_GL_ES )
-	#include "cinder/params/Params.h"
+	#include "cinder/CinderImGui.h"
 #endif
 #include "glm/gtx/euler_angles.hpp"
 
@@ -116,9 +116,6 @@ class ShadowMappingApp : public App {
 	void keyDown( KeyEvent event ) override;
   private:
 	void drawScene( float spinAngle, const gl::GlslProgRef& glsl = nullptr );
-#if ! defined( CINDER_GL_ES )
-	params::InterfaceGlRef		mParams;
-#endif	
 
 	float						mFrameRate;
 	CameraPersp					mCamera;
@@ -180,31 +177,7 @@ void ShadowMappingApp::setup()
 	mShadowMap		= ShadowMap::create( mShadowMapSize );
 	mLight.camera.setPerspective( mLight.fov, mShadowMap->getAspectRatio(), 0.5, 500.0 );
 	
-#if ! defined( CINDER_GL_ES )
-	mParams = params::InterfaceGl::create( "Settings", toPixels( ivec2( 300, 325 ) ) );
-	mParams->addParam( "Framerate", &mFrameRate, "", true );
-	mParams->addSeparator();
-	mParams->addParam( "Light viewpoint", &mLight.toggleViewpoint );
-	mParams->addParam( "Light distance radius", &mLight.distanceRadius ).min( 0 ).max( 450 ).step( 1 );
-	mParams->addParam( "Render only shadow map", &mOnlyShadowmap );
-	mParams->addSeparator();
-	std::vector<std::string> techniques = { "Hard", "PCF3x3", "PCF4x4", "Random" };
-	mParams->addParam( "Technique", techniques, &mShadowTechnique );
-	mParams->addSeparator();
-	mParams->addParam( "Polygon offset factor", &mPolygonOffsetFactor ).step( 0.025f ).min( 0.0f );
-	mParams->addParam( "Polygon offset units", &mPolygonOffsetUnits ).step( 0.025f ).min( 0.0f );
-	mParams->addParam( "Shadow map size",  &mShadowMapSize ).min( 16 ).step( 16 ).updateFn( [this]() {
-		mShadowMap->reset( mShadowMapSize );
-	} );
-	mParams->addParam( "Depth bias", &mDepthBias ).step( 0.00001f ).max( 0.0 );
-	mParams->addText( "(PCF radius is const: tweak in shader.)" );
-	mParams->addSeparator();
-	mParams->addText( "Random sampling params" );
-	mParams->addParam( "Offset radius", &mRandomOffset ).min( 0.0f ).step( 0.05f );
-	mParams->addParam( "Auto normal slope offset", &mEnableNormSlopeOffset );
-	mParams->addParam( "Num samples", &mNumRandomSamples ).min( 1 );
-//	mParams->minimize();
-#endif
+	ImGui::Initialize();
 	
 	auto positionGlsl = gl::getStockShader( gl::ShaderDef() );
 	
@@ -235,6 +208,30 @@ void ShadowMappingApp::setup()
 
 void ShadowMappingApp::update()
 {
+	ImGui::Begin( "Settings" );
+	ImGui::Text( "Framerate: %f", mFrameRate );
+	ImGui::Separator();
+	ImGui::Checkbox( "Light viewpoint", &mLight.toggleViewpoint );
+	ImGui::DragFloat( "Light distance radius", &mLight.distanceRadius, 1.0f, 0.0f, 450.0f );
+	ImGui::Checkbox( "Render only shadow map", &mOnlyShadowmap );
+	ImGui::Separator();
+	std::vector<std::string> techniques = { "Hard", "PCF3x3", "PCF4x4", "Random" };
+	ImGui::Combo( "Technique", &mShadowTechnique, techniques );
+	ImGui::Separator();
+	ImGui::DragFloat( "Polygon offset factor", &mPolygonOffsetFactor, 0.025f, 0.0f );
+	ImGui::DragFloat( "Polygon offset units", &mPolygonOffsetUnits, 0.025f, 0.0f );
+	if( ImGui::DragInt( "Shadow map size", &mShadowMapSize, 16, 16, 2048 ) ) {
+		mShadowMap->reset( mShadowMapSize );
+	};
+	ImGui::DragFloat( "Depth bias", &mDepthBias, 0.00001f, -1.0f, 0.0f, "%.5f" );
+	ImGui::Text( "(PCF radius is const: tweak in shader.)" );
+	ImGui::Separator();
+	ImGui::Text( "Random sampling params" );
+	ImGui::DragFloat( "Offset radius", &mRandomOffset, 0.05f, 0.0f );
+	ImGui::Checkbox( "Auto normal slope offset", &mEnableNormSlopeOffset );
+	ImGui::DragInt( "Num samples", &mNumRandomSamples, 1.0f, 1, 256 );
+	ImGui::End();
+
 	float e	= (float) getElapsedSeconds();
 	float c = cos( e );
 	float s	= sin( e );
@@ -324,21 +321,12 @@ void ShadowMappingApp::draw()
 	
 	// Render light direction vector
 	gl::drawVector( mLight.viewpoint, 4.5f * normalize( mLight.viewpoint ) );
-
-#if ! defined( CINDER_GL_ES )
-	mParams->draw();
-#endif
 }
 
 void ShadowMappingApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'f' ) {
 		app::setFullScreen( !app::isFullScreen() );
-	}
-	else if( event.getChar() == KeyEvent::KEY_SPACE ) {
-#if ! defined( CINDER_GL_ES )
-		mParams->maximize( ! mParams->isMaximized() );
-#endif
 	}
 }
 

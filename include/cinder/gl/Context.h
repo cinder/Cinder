@@ -60,12 +60,20 @@ class CI_API Context {
   public:
 	struct CI_API PlatformData {
 		PlatformData() : mDebug( false ), mObjectTracking( false ), mDebugLogSeverity( 0 ), mDebugBreakSeverity( 0 )
+			, mCoreProfile( true ), mVersion( std::pair<int, int>( 3, 2 ) )
 		{}
 
 		virtual ~PlatformData() {}
 
-		bool		mDebug, mObjectTracking;
-		GLenum		mDebugLogSeverity, mDebugBreakSeverity;
+		bool				mDebug, mObjectTracking;
+		GLenum				mDebugLogSeverity, mDebugBreakSeverity;
+
+		bool				mCoreProfile;
+		std::pair<int, int>	mVersion;
+#if ! defined( CINDER_GL_ES )
+		bool				mMultiGpuEnabledNV = false;
+		GLenum				mMultiGpuModeNV = 0;
+#endif
 	};
 
 	//! Creates a new OpenGL context, sharing resources and pixel format with sharedContext. This (essentially) must be done from the primary thread on MSW. ANGLE doesn't support multithreaded use. Destroys the platform Context on destruction.

@@ -53,7 +53,7 @@ They each illustrate an example of how to use the frame for different scenarios.
 #include "cinder/Text.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Utilities.h"
-#include "cinder/params/Params.h"
+#include "cinder/CinderImGui.h"
 #include "cinder/gl/gl.h"
 
 #include "Tube.h"
@@ -91,7 +91,6 @@ class TubularApp : public App {
 	int32_t					mNumSegs;
 	int						mShape;
 	CameraUi				mCamUi;
-	params::InterfaceGlRef	mParams;
 };
 
 void TubularApp::setup()
@@ -131,16 +130,7 @@ void TubularApp::setup()
 	
 	mTubeMesh = TriMesh::create( TriMesh::Format().positions() );
 
-	mParams = params::InterfaceGl::create( getWindow(), "Parameters", ivec2( 200, 200 ) );
-	mParams->addParam( "Parallel Transport", &mParallelTransport, "keyIncr=f" );
-	mParams->addParam( "Draw Curve", &mDrawCurve, "keyIncr=c" );
-	mParams->addParam( "Wireframe", &mWireframe, "keyIncr=w" );
-	mParams->addParam( "Draw Mesh", &mDrawMesh, "keyIncr=m" );
-	mParams->addParam( "Draw Slices", &mDrawSlices, "keyIncr=l" );
-	mParams->addParam( "Draw Frames", &mDrawFrames, "keyIncr=t" );
-	vector<string> shapes = { "circle", "star", "hypotrochoid", "epicycloid" };
-	mParams->addParam( "Shape", shapes, &mShape, "keyIncr=s" );
-	mParams->addParam( "Segments", &mNumSegs, "min=4 max=1024 keyIncr== keyDecr=-" );
+	ImGui::Initialize();
 
 	mCamUi = CameraUi( &mCam, getWindow() );
 }
@@ -156,6 +146,18 @@ void TubularApp::keyDown( KeyEvent event )
 
 void TubularApp::update()
 {
+	ImGui::Begin( "Parameters" );
+	ImGui::Checkbox( "Parallel Transport", &mParallelTransport );
+	ImGui::Checkbox( "Draw Curve", &mDrawCurve );
+	ImGui::Checkbox( "Wireframe", &mWireframe );
+	ImGui::Checkbox( "Draw Mesh", &mDrawMesh );
+	ImGui::Checkbox( "Draw Slices", &mDrawSlices );
+	ImGui::Checkbox( "Draw Frames", &mDrawFrames );
+	static vector<string> shapes = { "circle", "star", "hypotrochoid", "epicycloid" };
+	ImGui::Combo( "Shape", &mShape, shapes );
+	ImGui::DragInt( "Segments", &mNumSegs, 1, 4, 1024 );
+	ImGui::End();
+
 	// Profile
 	std::vector<vec3> prof;
 	switch( mShape ) {
@@ -241,8 +243,6 @@ void TubularApp::draw()
 	if( mDrawFrames ) {
 		mTube.drawFrames( 0.5f );
 	}
-	
-	mParams->draw();	
 }
 
 

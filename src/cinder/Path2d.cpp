@@ -721,6 +721,12 @@ void Path2d::subdivide( std::vector<vec2> *resultPositions, std::vector<vec2> *r
 	}
 }
 
+void Path2d::translate( const vec2 &offset )
+{
+	for( vector<vec2>::iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
+		*ptIt += offset;
+}
+
 void Path2d::scale( const vec2 &amount, vec2 scaleCenter )
 {
 	for( vector<vec2>::iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )

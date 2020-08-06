@@ -25,6 +25,10 @@
 
 #include "cinder/Cinder.h"
 
+#if defined( CINDER_MSW )
+#include <windows.h> // Prevents 'APIENTRY': macro redefinition warning.
+#endif
+
 #define CINDER_GL_ES_VERSION_2		200
 #define CINDER_GL_ES_VERSION_3		300
 #define CINDER_GL_ES_VERSION_3_1	310

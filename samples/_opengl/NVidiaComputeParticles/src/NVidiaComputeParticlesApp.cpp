@@ -40,7 +40,7 @@
 #include "cinder/CameraUi.h"
 #include "cinder/Utilities.h"
 #include "cinder/Rand.h"
-#include "cinder/params/Params.h"
+#include "cinder/CinderImGui.h"
 #include "cinder/gl/Ssbo.h"
 
 using namespace ci;
@@ -80,10 +80,7 @@ class NVidiaComputeParticlesApp : public App {
 	void update() override;
 	void draw() override;
 	
-	void renderScene( gl::GlslProgRef effect );
 	void setupShaders();
-	void setupTextures();
-	void setupFbos();
 	void setupBuffers();
 	void resetParticleSystem( float size );
 	void updateParticleSystem();
@@ -101,7 +98,6 @@ class NVidiaComputeParticlesApp : public App {
 	gl::UboRef mParticleUpdateUbo;
 
 	gl::Texture3dRef mNoiseTex;
-	params::InterfaceGlRef mParams;
 	CameraPersp	mCam;
 	CameraUi mCamUi;
 	int mNoiseSize;
@@ -139,19 +135,9 @@ NVidiaComputeParticlesApp::NVidiaComputeParticlesApp()
 
 	CI_CHECK_GL();
 
+	ImGui::Initialize();
+
 	mCam.lookAt( vec3( 0.0f, 0.0f, -3.0f ), vec3( 0 ) );
-
-	mParams = params::InterfaceGl::create( "Settings", toPixels( ivec2( 225, 180 ) ) );
-	mParams->addSeparator();
-	mParams->addParam( "Animate", &mAnimate );
-	mParams->addParam( "Enable attractor", &mEnableAttractor );
-	mParams->addSeparator();
-	mParams->addParam( "Sprite size", &( mSpriteSize ) ).min( 0.0f ).max( 0.04f ).step( 0.01f );
-	mParams->addParam( "Noise strength", &( mParticleParams.noiseStrength ) ).min( 0.0f ).max( 0.01f ).step( 0.001f );
-	mParams->addParam( "Noise frequency", &( mParticleParams.noiseFreq ) ).min( 0.0f ).max( 20.0f ).step( 1.0f );
-	mParams->addSeparator();
-	mParams->addParam( "Reset", &mReset );
-
 	mCamUi = CameraUi( &mCam, getWindow() );
 }
 
@@ -209,6 +195,17 @@ void NVidiaComputeParticlesApp::setupBuffers()
 
 void NVidiaComputeParticlesApp::update()
 {
+	ImGui::Begin( "Settings" );
+	ImGui::Checkbox( "Animate", &mAnimate );
+	ImGui::Checkbox( "Enable attractor", &mEnableAttractor );
+	ImGui::Separator();
+	ImGui::DragFloat( "Sprite size", &mSpriteSize, 0.001f, 0.0f, 0.04f );
+	ImGui::DragFloat( "Noise strength", &mParticleParams.noiseStrength, 0.001f, 0.0f, 0.01f );
+	ImGui::DragFloat( "Noise frequency", &mParticleParams.noiseFreq, 1.0f, 0.0f, 20.0f );
+	ImGui::Separator();
+	ImGui::Checkbox( "Reset", &mReset );
+	ImGui::End();
+
 	if( mAnimate )
 		updateParticleSystem();
 }
@@ -244,8 +241,6 @@ void NVidiaComputeParticlesApp::draw()
 	}
 	
 	gl::disableAlphaBlending();
-
-	mParams->draw();
 }
 
 void NVidiaComputeParticlesApp::resetParticleSystem( float size )

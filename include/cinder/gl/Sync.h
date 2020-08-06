@@ -39,7 +39,7 @@ class CI_API Sync {
 	~Sync();
 
 	//! Analogous to glClientWaitSync(). Returns \c GL_ALREADY_SIGNALED, \c GL_TIMEOUT_EXPIRED, \c GL_CONDITION_SATISFIED, or \c GL_WAIT_FAILED
-	GLenum	clientWaitSync( GLbitfield flags = GL_SYNC_FLUSH_COMMANDS_BIT, GLuint64 timeoutNanoseconds = 0 );
+	GLenum	clientWaitSync( GLbitfield flags = GL_SYNC_FLUSH_COMMANDS_BIT, GLuint64 timeoutNanoseconds = GL_TIMEOUT_IGNORED );
 
 	//! Analogous to glWaitSync(). As of this writing \a flags and \a timeout must be their default values, \c 0 and \c GL_TIMEOUT_IGNORED
 	void	waitSync( GLbitfield flags = 0, GLuint64 timeout = GL_TIMEOUT_IGNORED );

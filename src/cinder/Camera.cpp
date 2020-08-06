@@ -367,6 +367,14 @@ CameraPersp	CameraPersp::calcFraming( const Sphere &worldSpaceSphere ) const
 	return result;
 }
 
+CameraPersp CameraPersp::subdivide( const glm::uvec2& gridSize, const glm::uvec2& gridIndex ) const
+{
+	CameraPersp result = *this;
+	result.setAspectRatio( getAspectRatio() * float( gridSize.x ) / float( gridSize.y ) );
+	result.setLensShift( vec2( 1.0f ) - vec2( gridSize.y, gridSize.x ) + 2.0f * vec2( gridIndex.y, gridIndex.x ) );
+	return result;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 // CameraOrtho
 CameraOrtho::CameraOrtho()
