@@ -45,65 +45,6 @@ if( "" STREQUAL "${CMAKE_BUILD_TYPE}" )
 endif()
 message( "${BoldGreen}CMake Build Type: ${CMAKE_BUILD_TYPE} ${ColorReset}" )
 
-# See if we can find the NDK located next to the Cinder directory
-if( NOT NDK_ROOT )
-    # Most recent first
-    set( _supported_ndks 
-        "android-ndk"
-        "android-ndk-r10e"
-        "android-ndk-r10d"
-        "android-ndk-r9d"
-        "android-ndk-r9c"
-    )
-
-    set( _curDirStr "${CMAKE_CURRENT_SOURCE_DIR}" )
-    # If string begins with "/" - remove the first "/"
-    string( SUBSTRING "${_curDirStr}" 0 1 _firstChar )
-    if( "/" STREQUAL "${_firstChar}" )
-        string( LENGTH "${_curDirStr}" strLen )
-        string( SUBSTRING "${_curDirStr}" 1 -1 _curDirStr )
-    endif()
-
-    # Create list of path components
-    string( REPLACE "/" ";" _curDirList "${_curDirStr}" )
-    list( LENGTH _curDirList _numToks )
-    # Find Cinder directory
-    foreach( val RANGE ${_numToks} )
-        #math( EXPR _index "${_numToks} - ${val}" )
-        #list( GET _curDirList ${_index} item )
-
-        list( LENGTH _curDirList _listLen )
-
-        string( REPLACE ";" "/" _dirStr "${_curDirList}" )
-        if( ${_listLen} GREATER 0 )
-            set( _dirStr "/${_dirStr}" )
-        endif()
-
-        set( incDir "${_dirStr}/include/cinder/app/android" )
-        if( IS_DIRECTORY "${incDir}" )
-            set( CINDER_DIR "${_dirStr}" ) 
-            break()
-        endif()
-
-        if( ${_listLen} GREATER 0 )
-            math( EXPR _lastIndex "${_listLen} - 1" )
-            list( REMOVE_AT _curDirList ${_lastIndex} )
-        endif()
-    endforeach()
-
-    if( CINDER_DIR )
-        foreach( val in ${_supported_ndks} )
-            get_filename_component( ndk_dir "${CINDER_DIR}/../${val}" ABSOLUTE )
-            if( IS_DIRECTORY "${ndk_dir}" )
-                message( "${BoldGreen}Detected NDK, version: ${val}, at ${ndk_dir}${ColorReset}" )
-                message( "" )
-                set( NDK_ROOT "${ndk_dir}" )            
-                break()
-            endif() 
-        endforeach()
-    endif()
-endif()
-
 # Bail if we haven't set NDK_ROOT
 if( NOT NDK_ROOT )
     set( _suggestedDir ${CMAKE_CURRENT_SOURCE_DIR}/../../android-ndk )
@@ -389,7 +330,6 @@ if( APPLE )
 endif()
 
 # Compiler, build tool settings
-if( NDK_TOOLCHAIN_CLANG )
     set( CMAKE_C_COMPILER   ${NKD_TOOLCHAIN_ROOT}/bin/clang     CACHE FILEPATH "" FORCE )
     set( CMAKE_CXX_COMPILER ${NKD_TOOLCHAIN_ROOT}/bin/clang++   CACHE FILEPATH "" FORCE )
     set( CMAKE_AR           ${NKD_TOOLCHAIN_ROOT}/bin/llvm-ar   CACHE FILEPATH "" FORCE )
@@ -398,17 +338,8 @@ if( NDK_TOOLCHAIN_CLANG )
     #set( CMAKE_RANLIB       ${NKD_TOOLCHAIN_ROOT}/bin/llvm-ar   CACHE FILEPATH "" FORCE )
     set( CMAKE_RANLIB       ${NDK_ROOT}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ranlib   CACHE FILEPATH "" FORCE )
     set( CMAKE_STRIP        ${NKD_TOOLCHAIN_ROOT}/bin/ndk-strip CACHE FILEPATH "" FORCE )
-else()
-    set( CMAKE_C_COMPILER   ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-gcc    CACHE FILEPATH "" FORCE )
-    set( CMAKE_CXX_COMPILER ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-g++    CACHE FILEPATH "" FORCE )
-    set( CMAKE_AR           ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-ar     CACHE FILEPATH "" FORCE )
-    set( CMAKE_LINKER       ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-ld     CACHE FILEPATH "" FORCE )
-    set( CMAKE_NM           ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-nm     CACHE FILEPATH "" FORCE )
-    set( CMAKE_RANLIB       ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-ranlib CACHE FILEPATH "" FORCE )
-    set( CMAKE_STRIP        ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-strip  CACHE FILEPATH "" FORCE )
-endif()
 
-get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE )
+get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE )
 set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR ${CINDER_DIR}/boost )
@@ -502,8 +433,8 @@ set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
 if( NDK_TOOLCHAIN_CLANG )
     set( CXX_FLAGS "-gcc-toolchain ${NDK_ROOT}/toolchains/arm-linux-androideabi-4.9/prebuilt/${NDK_TOOLCHAIN_HOST} ${ARCH_FLAGS} -fvisibility=default -std=c++11 -stdlib=libstdc++ -ffunction-sections -funwind-tables -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -no-canonical-prefixes -fomit-frame-pointer -DANDROID -DFT2_BUILD_LIBRARY" )
 	include_directories(
-		${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/include
-		${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/${NDK_ARCH}/include
+		${NDK_ROOT}/sources/cxx-stl/llvm-libc++/include
+        ${NDK_ROOT}/sources/cxx-stl/llvm-libc++/libs/${NDK_ARCH}/include
 	)
 else()
     set( CXX_FLAGS "${ARCH_FLAGS} -fvisibility=default -std=c++11 -DFT2_BUILD_LIBRARY" )
