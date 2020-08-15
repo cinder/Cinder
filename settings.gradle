@@ -1,0 +1,7 @@
+include ':proj:android'
+include ':src'
+include ':include'
+include ':lib'
+include ':blocks'
+include ':samples'
+rootProject.name = "Cinder"

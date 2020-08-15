@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.10.2 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
 # Configure the Android toolchain before the project start
@@ -8,7 +8,6 @@ if( CINDER_TARGET )
 	    include( "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake/modules/cinderAndroidToolchain.cmake" )
     endif()
 endif()
-
 # Project start
 project( cinder )
 
