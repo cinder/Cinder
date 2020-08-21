@@ -1740,13 +1740,14 @@ void getDate( uint64_t ntpTime, uint32_t *year, uint32_t *month, uint32_t *day, 
 	// Convert to unix timestamp.
 	std::time_t sec_since_epoch = ( ntpTime - ( uint64_t( 0x83AA7E80 ) << 32 ) ) >> 32;
 	
-	auto tm = std::localtime( &sec_since_epoch );
-	if( year ) *year = tm->tm_year + 1900;
-	if( month ) *month = tm->tm_mon + 1;
-	if( day ) *day = tm->tm_mday;
-	if( hours ) *hours = tm->tm_hour;
-	if( minutes ) *minutes = tm->tm_min;
-	if( seconds )*seconds = tm->tm_sec;
+	std::tm tm;
+	localtime_s(&tm, &sec_since_epoch);
+	if( year ) *year = tm.tm_year + 1900;
+	if( month ) *month = tm.tm_mon + 1;
+	if( day ) *day = tm.tm_mday;
+	if( hours ) *hours = tm.tm_hour;
+	if( minutes ) *minutes = tm.tm_min;
+	if( seconds )*seconds = tm.tm_sec;
 }
 
 std::string getClockString( uint64_t ntpTime, bool includeDate )
@@ -1757,9 +1758,9 @@ std::string getClockString( uint64_t ntpTime, bool includeDate )
 	char buffer[128];
 	
 	if( includeDate )
-		sprintf( buffer, "%d/%d/%d %02d:%02d:%02d", month, day, year, hours, minutes, seconds );
+		sprintf_s( buffer, "%d/%d/%d %02d:%02d:%02d", month, day, year, hours, minutes, seconds );
 	else
-		sprintf( buffer, "%02d:%02d:%02d", hours, minutes, seconds );
+		sprintf_s( buffer, "%02d:%02d:%02d", hours, minutes, seconds );
 	
 	return std::string( buffer );
 }
