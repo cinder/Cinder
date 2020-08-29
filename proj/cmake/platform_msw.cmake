@@ -4,6 +4,7 @@ set( CINDER_PLATFORM "MSW" )
 
 list( APPEND SRC_SET_MSW
 	${CINDER_SRC_DIR}/cinder/CaptureImplDirectShow.cpp
+	${CINDER_SRC_DIR}/videoInput/videoInput.cpp
 	${CINDER_SRC_DIR}/cinder/msw/CinderMsw.cpp
 	${CINDER_SRC_DIR}/cinder/msw/CinderMswGdiPlus.cpp
 	${CINDER_SRC_DIR}/cinder/msw/StackWalker.cpp
@@ -105,6 +106,7 @@ source_group( "cinder\\video\\msw"	FILES ${SRC_SET_VIDEO_MSW} )
 
 list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
 	${CINDER_INC_DIR}/msw/zlib
+	${CINDER_INC_DIR}/msw
 )
 
 # NOTE: UNICODE and _UNICODE forces generator to use Unicode instead of MultiByte
