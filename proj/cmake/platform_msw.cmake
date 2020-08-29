@@ -85,12 +85,15 @@ if( NOT CINDER_DISABLE_VIDEO )
 			message( WARNING "Requested GStreamer video playback support for MSW but no suitable GStreamer installation found. Make sure that GStreamer is installed properly and GSTREAMER_1_0_ROOT_X86_64 is defined in your env variables. " )
 		endif()
 	endif()
+
+	list( APPEND SRC_SET_VIDEO_MSW ${CINDER_SRC_DIR}/videoInput/videoInput.cpp )
 endif()
 
 list( APPEND CINDER_SRC_FILES
 	${SRC_SET_MSW}
 	${SRC_SET_APP_MSW}
 	${SRC_SET_AUDIO_MSW}
+	${SRC_SET_VIDEO_MSW}
 	${SRC_SET_CINDER_AUDIO_DSP}
 )
 
@@ -98,6 +101,7 @@ source_group( "cinder\\msw"			FILES ${SRC_SET_MSW} )
 source_group( "cinder\\app\\msw"	FILES ${SRC_SET_APP_MSW} )
 source_group( "cinder\\audio\\msw"	FILES ${SRC_SET_AUDIO_MSW} )
 source_group( "cinder\\audio\\dsp"	FILES ${SRC_SET_CINDER_AUDIO_DSP} )
+source_group( "cinder\\video\\msw"	FILES ${SRC_SET_VIDEO_MSW} )
 
 list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
 	${CINDER_INC_DIR}/msw/zlib
