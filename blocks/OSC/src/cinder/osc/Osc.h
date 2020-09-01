@@ -289,7 +289,11 @@ class Message {
 	//! Helper to calculate how many zeros to buffer to create a 4 byte
 	static uint8_t getTrailingZeros( size_t bufferSize ) { return 4 - ( bufferSize % 4 ); }
 	//! Helper to get current offset into the buffer.
-	size_t getCurrentOffset() { return mDataBuffer.size(); }
+	int32_t getCurrentOffset() {
+		CI_ASSERT_MSG( mDataBuffer.size() <= std::numeric_limits<int32_t>::max(),
+			"Argument offset must fit in int32_t" );
+		return static_cast<int32_t>( mDataBuffer.size() );
+	}
 	//! Helper to retrieve the data view of an Argument. Checks the type provided and
 	//! throws ExcNonConvertible if data view cannot convert the type.
 	template<typename T>
@@ -323,7 +327,7 @@ class Message {
 	
 	//! Helper to to insert data starting at \a begin for \a with resize/fill in the amount
 	//! of \a trailingZeros
-	void appendDataBuffer( const void *begin, uint32_t size, uint32_t trailingZeros = 0 );
+	void appendDataBuffer( const void *begin, size_t size, uint32_t trailingZeros = 0 );
 	
 	//! Returns a complete byte array of this OSC message as a ByteBufferRef type.
 	//! The byte buffer is constructed lazily and is cached until the cache is
