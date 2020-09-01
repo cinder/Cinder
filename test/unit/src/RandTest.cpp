@@ -120,7 +120,7 @@ TEST_CASE("Rand", "[noisy]")
 		printDistribution( nums, 20 );	
 	}
 
-	#ifndef DEBUG
+	#ifdef NDEBUG
 	SECTION("test timing for 100000000 floats")
 	{
 		Timer t;
