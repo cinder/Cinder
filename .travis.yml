@@ -90,22 +90,23 @@ matrix:
         - TOOL="xcode-ios-sim"
         - DESCRIPTION=OS X build/test via Xcode"
 
-    # OS X CMake
+    #OS X CMake
     - os: osx
       osx_image: xcode9.2
       env:
         - TOOL="cmake"
         - DESCRIPTION="OS X build/test via CMake"
-    - os: osx
-      osx_image: xcode8.3
-      env:
-        - TOOL="cmake"
-        - DESCRIPTION="OS X build/test via CMake"
-    - os: osx
-      osx_image: xcode7.3
-      env:
-        - TOOL="cmake"
-        - DESCRIPTION="OS X build/test via CMake"
+    # TODO: find fast way to install cmake 3.10 on these systems
+    #- os: osx
+    #  osx_image: xcode8.3
+    #  env:
+    #    - TOOL="cmake"
+    #    - DESCRIPTION="OS X build/test via CMake"
+    #- os: osx
+    #  osx_image: xcode7.3
+    #  env:
+    #    - TOOL="cmake"
+    #    - DESCRIPTION="OS X build/test via CMake"
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
