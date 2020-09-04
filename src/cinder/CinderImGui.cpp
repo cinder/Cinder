@@ -406,10 +406,10 @@ static void ImGui_ImplCinder_KeyDown( ci::app::KeyEvent& event )
 		sAccelKeys.push_back( event.getCode() );
 	}
 
-	io.KeyCtrl = io.KeysDown[ci::app::KeyEvent::KEY_LCTRL] || io.KeysDown[ci::app::KeyEvent::KEY_RCTRL];
-	io.KeyShift = io.KeysDown[ci::app::KeyEvent::KEY_LSHIFT] || io.KeysDown[ci::app::KeyEvent::KEY_RSHIFT];
-	io.KeyAlt = io.KeysDown[ci::app::KeyEvent::KEY_LALT] || io.KeysDown[ci::app::KeyEvent::KEY_RALT];
-	io.KeySuper = io.KeysDown[ci::app::KeyEvent::KEY_LMETA] || io.KeysDown[ci::app::KeyEvent::KEY_RMETA] || io.KeysDown[ci::app::KeyEvent::KEY_LSUPER] || io.KeysDown[ci::app::KeyEvent::KEY_RSUPER];
+	io.KeyCtrl = event.isControlDown();
+	io.KeyShift = event.isShiftDown();
+	io.KeyAlt = event.isAltDown();
+	io.KeySuper = event.isMetaDown();
 
 	event.setHandled( io.WantCaptureKeyboard );
 }
@@ -425,9 +425,10 @@ static void ImGui_ImplCinder_KeyUp( ci::app::KeyEvent& event )
 	}
 	sAccelKeys.clear();
 
-	io.KeyCtrl = io.KeysDown[ci::app::KeyEvent::KEY_LCTRL] || io.KeysDown[ci::app::KeyEvent::KEY_RCTRL] || io.KeysDown[ci::app::KeyEvent::KEY_LMETA] || io.KeysDown[ci::app::KeyEvent::KEY_RMETA];
-	io.KeyShift = io.KeysDown[ci::app::KeyEvent::KEY_LSHIFT] || io.KeysDown[ci::app::KeyEvent::KEY_RSHIFT];
-	io.KeyAlt = io.KeysDown[ci::app::KeyEvent::KEY_LALT] || io.KeysDown[ci::app::KeyEvent::KEY_RALT];
+	io.KeyCtrl = event.isControlDown();
+	io.KeyShift = event.isShiftDown();
+	io.KeyAlt = event.isAltDown();
+	io.KeySuper = event.isMetaDown();
 
 	event.setHandled( io.WantCaptureKeyboard );
 }
