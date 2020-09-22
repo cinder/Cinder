@@ -6399,8 +6399,6 @@ CTwMgr::CCursor CTwMgr::PixmapCursor(int _CurIdx)
     [img addRepresentation: imgr];
     NSCursor *cur = [[NSCursor alloc] initWithImage: img hotSpot: NSMakePoint(g_CurHot[_CurIdx][0],g_CurHot[_CurIdx][1])];
 
-    [imgr autorelease];
-    [img autorelease];
     if (cur)
         return cur;
     else

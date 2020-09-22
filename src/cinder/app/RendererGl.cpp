@@ -67,16 +67,12 @@ RendererGl::RendererGl( const RendererGl &renderer )
 #if defined( CINDER_MAC )
 RendererGl::~RendererGl()
 {
-	if( mImpl )
-		::CFRelease( mImpl );
 }
 
 void RendererGl::setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled )
 {
 	RendererGlRef sharedGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
 	mImpl = [[RendererImplGlMac alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView renderer:this sharedRenderer:sharedGl withRetina:retinaEnabled];
-	// This is necessary for Objective-C garbage collection to do the right thing
-	::CFRetain( mImpl );
 }
 
 void RendererGl::startDraw()
