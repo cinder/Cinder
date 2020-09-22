@@ -699,12 +699,9 @@ void MovieBase::processAssetTracks( AVAsset* asset )
 
 void MovieBase::createPlayerItemOutput( const AVPlayerItem* playerItem )
 {
-	AVPlayerItemVideoOutput *oldPlayerVideoOutput = mPlayerVideoOutput;
 	mPlayerVideoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:avPlayerItemOutputDictionary()];
-	[oldPlayerVideoOutput release];
 	dispatch_queue_t outputQueue = dispatch_queue_create("movieVideoOutputQueue", DISPATCH_QUEUE_SERIAL);
 	[mPlayerVideoOutput setDelegate:mPlayerDelegate queue:outputQueue];
-	dispatch_release(outputQueue);
 	mPlayerVideoOutput.suppressesPlayerRendering = YES;
 	[playerItem addOutput:mPlayerVideoOutput];
 }

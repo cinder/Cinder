@@ -123,7 +123,6 @@ class PlatformCocoa : public Platform {
 #endif
 
   private:
-	NSAutoreleasePool*		mAutoReleasePool;
 	mutable NSBundle*		mBundle;
 	
 	bool					mDisplaysInitialized;
