@@ -4,7 +4,7 @@
   <img src="https://libcinder.org/docs/_assets/images/cinder_logo.svg" alt="Cinder Logo" width="256" height="auto"/>
 </p>
 
-**Cinder is a peer-reviewed, free, open source C++ library for creative coding.**
+**Cinder is a great peer-reviewed, free and open source C++ library for creative coding.**
 
 Please note that Cinder depends on a few submodules. The simplest way to clone it is:<br />
 ```
