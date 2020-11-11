@@ -1605,7 +1605,7 @@ asio::error_code ReceiverTcp::closeConnection( uint64_t connectionIdentifier, as
 		return ec;
 	
 	std::lock_guard<std::mutex> lock( mConnectionMutex );
-	auto rem = remove_if( mConnections.begin(), mConnections.end(),
+	auto rem = find_if( mConnections.begin(), mConnections.end(),
 	[connectionIdentifier]( const UniqueConnection &cached ) {
 		return cached->mIdentifier == connectionIdentifier;
 	} );

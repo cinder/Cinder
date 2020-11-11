@@ -76,7 +76,7 @@ make -j4
 </code></pre>
 
 <p>To simplify configuring your project and the many platform-specific particulars, we use a utility function called <code>ci_make_app()</code>, which takes a number of arguments to build your application. For example, <a href="https://github.com/cinder/Cinder/blob/master/samples/_opengl/ObjLoader/proj/cmake/CMakeLists.txt">here</a> is the CMakeLists.txt file used for building the <code>_opengl/ObjLoader</code> sample:</p>
-<pre><code class="cmake">cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
+<pre><code class="cmake">cmake_minimum_required( VERSION 3.10 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
 project( opengl-ObjLoader )

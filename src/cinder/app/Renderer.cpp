@@ -72,15 +72,11 @@ Renderer2d::Renderer2d()
 #if defined( CINDER_MAC )
 Renderer2d::~Renderer2d()
 {
-	if( mImpl )
-		::CFRelease( mImpl );
 }
 
 void Renderer2d::setup( CGRect frame, NSView *cinderView, RendererRef /*sharedRenderer*/, bool retinaEnabled )
 {
 	mImpl = [[RendererImpl2dMacQuartz alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView];
-	// This is necessary for Objective-C garbage collection to do the right thing
-	::CFRetain( mImpl );
 }
 
 #else

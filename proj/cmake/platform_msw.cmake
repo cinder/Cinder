@@ -1,9 +1,10 @@
-cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.10 FATAL_ERROR )
 
 set( CINDER_PLATFORM "MSW" )
 
 list( APPEND SRC_SET_MSW
 	${CINDER_SRC_DIR}/cinder/CaptureImplDirectShow.cpp
+	${CINDER_SRC_DIR}/videoInput/videoInput.cpp
 	${CINDER_SRC_DIR}/cinder/msw/CinderMsw.cpp
 	${CINDER_SRC_DIR}/cinder/msw/CinderMswGdiPlus.cpp
 	${CINDER_SRC_DIR}/cinder/msw/StackWalker.cpp
@@ -98,9 +99,11 @@ source_group( "cinder\\msw"			FILES ${SRC_SET_MSW} )
 source_group( "cinder\\app\\msw"	FILES ${SRC_SET_APP_MSW} )
 source_group( "cinder\\audio\\msw"	FILES ${SRC_SET_AUDIO_MSW} )
 source_group( "cinder\\audio\\dsp"	FILES ${SRC_SET_CINDER_AUDIO_DSP} )
+source_group( "cinder\\video\\msw"	FILES ${SRC_SET_VIDEO_MSW} )
 
 list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
 	${CINDER_INC_DIR}/msw/zlib
+	${CINDER_INC_DIR}/msw
 )
 
 # NOTE: UNICODE and _UNICODE forces generator to use Unicode instead of MultiByte

@@ -52,8 +52,6 @@ PlatformCocoa::PlatformCocoa()
 	, mInsideModalLoop( false )
 #endif
 {
-	mAutoReleasePool = [[NSAutoreleasePool alloc] init];
-	
 	// This is necessary to force the linker not to strip these symbols from libboost_filesystem.a,
 	// which in turn would force users to explicitly link to that lib from their own apps.
 	auto dummy2 = fs::temp_directory_path();
@@ -72,7 +70,6 @@ void PlatformCocoa::prepareLaunch()
 
 void PlatformCocoa::cleanupLaunch()
 {
-	[mAutoReleasePool drain];
 }
 
 void PlatformCocoa::setBundle( NSBundle *bundle )
