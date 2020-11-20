@@ -97,6 +97,8 @@ else()
     CHECK_CXX_COMPILER_FLAG( "-std=c++11" COMPILER_SUPPORTS_CXX11 )
 endif()
 
+# Prevent gcc and clang adding -std=gnu++XX instead of -stdc++XX
+set_target_properties(cinder PROPERTIES CXX_EXTENSIONS OFF)
 if( COMPILER_SUPPORTS_CXX17 )
     target_compile_features(cinder PUBLIC cxx_std_17)
 elseif( COMPILER_SUPPORTS_CXX14 )
