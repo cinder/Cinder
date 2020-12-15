@@ -155,6 +155,7 @@ namespace ImGui {
 	struct CI_API ScopedId : public ci::Noncopyable {
 		ScopedId( int int_id );
 		ScopedId( const char* label );
+		ScopedId( const void *ptrId );
 		~ScopedId();
 	};
 

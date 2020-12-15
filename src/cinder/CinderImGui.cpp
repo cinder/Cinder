@@ -166,6 +166,10 @@ namespace ImGui {
 	{
 		ImGui::PushID( label );
 	}
+	ScopedId::ScopedId( const void *ptrId )
+	{
+		ImGui::PushID( ptrId );
+	}
 	ScopedId::~ScopedId()
 	{
 		ImGui::PopID();
