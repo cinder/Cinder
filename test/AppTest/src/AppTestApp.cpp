@@ -282,7 +282,7 @@ void AppTestApp::drawInfo()
 	layout.setFont( Font( "Arial", 16 ) );
 	layout.setColor( ColorA::gray( 0.9f, 0.75f ) );
 
-	auto fps = boost::format( "%0.2f" ) % getAverageFps();
+	auto fps = getAverageFps();
 	layout.addLine( "fps: " + fps.str() );
 	layout.addLine( "v-sync enabled: " + string( gl::isVerticalSyncEnabled() ? "true" : "false" ) );
 
