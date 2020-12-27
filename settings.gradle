@@ -1,5 +1,6 @@
 include ':proj:android'
 include ':proj:src:cinder:app:android'
+include ':proj:src:cinder:android:app'
 include ':app'
 include ':src'
 include ':include'
