@@ -2,7 +2,7 @@
 // detail/impl/socket_select_interrupter.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -71,7 +71,8 @@ void socket_select_interrupter::open_descriptors()
   // Some broken firewalls on Windows will intermittently cause getsockname to
   // return 0.0.0.0 when the socket is actually bound to 127.0.0.1. We
   // explicitly specify the target address here to work around this problem.
-  addr.sin_addr.s_addr = socket_ops::host_to_network_long(INADDR_LOOPBACK);
+  if (addr.sin_addr.s_addr == socket_ops::host_to_network_long(INADDR_ANY))
+    addr.sin_addr.s_addr = socket_ops::host_to_network_long(INADDR_LOOPBACK);
 
   if (socket_ops::listen(acceptor.get(),
         SOMAXCONN, ec) == socket_error_retval)
@@ -154,11 +155,20 @@ bool socket_select_interrupter::reset()
   socket_ops::buf b;
   socket_ops::init_buf(b, data, sizeof(data));
   asio::error_code ec;
-  int bytes_read = socket_ops::recv(read_descriptor_, &b, 1, 0, ec);
-  bool was_interrupted = (bytes_read > 0);
-  while (bytes_read == sizeof(data))
-    bytes_read = socket_ops::recv(read_descriptor_, &b, 1, 0, ec);
-  return was_interrupted;
+  for (;;)
+  {
+    int bytes_read = socket_ops::recv(read_descriptor_, &b, 1, 0, ec);
+    if (bytes_read == sizeof(data))
+      continue;
+    if (bytes_read > 0)
+      return true;
+    if (bytes_read == 0)
+      return false;
+    if (ec == asio::error::would_block
+        || ec == asio::error::try_again)
+      return true;
+    return false;
+  }
 }
 
 } // namespace detail

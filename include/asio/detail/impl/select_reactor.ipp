@@ -2,7 +2,7 @@
 // detail/impl/select_reactor.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -71,22 +71,23 @@ select_reactor::select_reactor(asio::execution_context& ctx)
 
 select_reactor::~select_reactor()
 {
-  shutdown_service();
+  shutdown();
 }
 
-void select_reactor::shutdown_service()
+void select_reactor::shutdown()
 {
   asio::detail::mutex::scoped_lock lock(mutex_);
   shutdown_ = true;
 #if defined(ASIO_HAS_IOCP)
   stop_thread_ = true;
+  if (thread_)
+    interrupter_.interrupt();
 #endif // defined(ASIO_HAS_IOCP)
   lock.unlock();
 
 #if defined(ASIO_HAS_IOCP)
   if (thread_)
   {
-    interrupter_.interrupt();
     thread_->join();
     delete thread_;
     thread_ = 0;
@@ -103,7 +104,7 @@ void select_reactor::shutdown_service()
   scheduler_.abandon_operations(ops);
 }
 
-void select_reactor::fork_service(
+void select_reactor::notify_fork(
     asio::execution_context::fork_event fork_ev)
 {
   if (fork_ev == asio::execution_context::fork_child)
@@ -180,7 +181,12 @@ void select_reactor::deregister_internal_descriptor(
     op_queue_[i].cancel_operations(descriptor, ops);
 }
 
-void select_reactor::run(bool block, op_queue<operation>& ops)
+void select_reactor::cleanup_descriptor_data(
+    select_reactor::per_descriptor_data&)
+{
+}
+
+void select_reactor::run(long usec, op_queue<operation>& ops)
 {
   asio::detail::mutex::scoped_lock lock(mutex_);
 
@@ -217,12 +223,12 @@ void select_reactor::run(bool block, op_queue<operation>& ops)
 
   // We can return immediately if there's no work to do and the reactor is
   // not supposed to block.
-  if (!block && !have_work_to_do)
+  if (!usec && !have_work_to_do)
     return;
 
   // Determine how long to block while waiting for events.
   timeval tv_buf = { 0, 0 };
-  timeval* tv = block ? get_timeout(tv_buf) : &tv_buf;
+  timeval* tv = usec ? get_timeout(usec, tv_buf) : &tv_buf;
 
   lock.unlock();
 
@@ -234,7 +240,11 @@ void select_reactor::run(bool block, op_queue<operation>& ops)
   // Reset the interrupter.
   if (retval > 0 && fd_sets_[read_op].is_set(interrupter_.read_descriptor()))
   {
-    interrupter_.reset();
+    if (!interrupter_.reset())
+    {
+      lock.lock();
+      interrupter_.recreate();
+    }
     --retval;
   }
 
@@ -289,11 +299,13 @@ void select_reactor::do_remove_timer_queue(timer_queue_base& queue)
   timer_queues_.erase(&queue);
 }
 
-timeval* select_reactor::get_timeout(timeval& tv)
+timeval* select_reactor::get_timeout(long usec, timeval& tv)
 {
   // By default we will wait no longer than 5 minutes. This will ensure that
   // any changes to the system clock are detected after no longer than this.
-  long usec = timer_queues_.wait_duration_usec(5 * 60 * 1000 * 1000);
+  const long max_usec = 5 * 60 * 1000 * 1000;
+  usec = timer_queues_.wait_duration_usec(
+      (usec < 0 || max_usec < usec) ? max_usec : usec);
   tv.tv_sec = usec / 1000000;
   tv.tv_usec = usec % 1000000;
   return &tv;

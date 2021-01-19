@@ -2,7 +2,7 @@
 // detail/reactive_socket_service_base.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -28,13 +28,13 @@ namespace asio {
 namespace detail {
 
 reactive_socket_service_base::reactive_socket_service_base(
-    asio::io_service& io_service)
-  : reactor_(use_service<reactor>(io_service))
+    execution_context& context)
+  : reactor_(use_service<reactor>(context))
 {
   reactor_.init_task();
 }
 
-void reactive_socket_service_base::shutdown_service()
+void reactive_socket_service_base::base_shutdown()
 {
 }
 
@@ -48,6 +48,7 @@ void reactive_socket_service_base::construct(
 void reactive_socket_service_base::base_move_construct(
     reactive_socket_service_base::base_implementation_type& impl,
     reactive_socket_service_base::base_implementation_type& other_impl)
+  ASIO_NOEXCEPT
 {
   impl.socket_ = other_impl.socket_;
   other_impl.socket_ = invalid_socket;
@@ -81,13 +82,16 @@ void reactive_socket_service_base::destroy(
 {
   if (impl.socket_ != invalid_socket)
   {
-    ASIO_HANDLER_OPERATION(("socket", &impl, "close"));
+    ASIO_HANDLER_OPERATION((reactor_.context(),
+          "socket", &impl, impl.socket_, "close"));
 
     reactor_.deregister_descriptor(impl.socket_, impl.reactor_data_,
         (impl.state_ & socket_ops::possible_dup) == 0);
 
     asio::error_code ignored_ec;
     socket_ops::close(impl.socket_, impl.state_, true, ignored_ec);
+
+    reactor_.cleanup_descriptor_data(impl.reactor_data_);
   }
 }
 
@@ -97,13 +101,20 @@ asio::error_code reactive_socket_service_base::close(
 {
   if (is_open(impl))
   {
-    ASIO_HANDLER_OPERATION(("socket", &impl, "close"));
+    ASIO_HANDLER_OPERATION((reactor_.context(),
+          "socket", &impl, impl.socket_, "close"));
 
     reactor_.deregister_descriptor(impl.socket_, impl.reactor_data_,
         (impl.state_ & socket_ops::possible_dup) == 0);
-  }
 
-  socket_ops::close(impl.socket_, impl.state_, false, ec);
+    socket_ops::close(impl.socket_, impl.state_, false, ec);
+
+    reactor_.cleanup_descriptor_data(impl.reactor_data_);
+  }
+  else
+  {
+    ec = asio::error_code();
+  }
 
   // The descriptor is closed by the OS even if close() returns an error.
   //
@@ -118,6 +129,27 @@ asio::error_code reactive_socket_service_base::close(
   return ec;
 }
 
+socket_type reactive_socket_service_base::release(
+    reactive_socket_service_base::base_implementation_type& impl,
+    asio::error_code& ec)
+{
+  if (!is_open(impl))
+  {
+    ec = asio::error::bad_descriptor;
+    return invalid_socket;
+  }
+
+  ASIO_HANDLER_OPERATION((reactor_.context(),
+        "socket", &impl, impl.socket_, "release"));
+
+  reactor_.deregister_descriptor(impl.socket_, impl.reactor_data_, false);
+  reactor_.cleanup_descriptor_data(impl.reactor_data_);
+  socket_type sock = impl.socket_;
+  construct(impl);
+  ec = asio::error_code();
+  return sock;
+}
+
 asio::error_code reactive_socket_service_base::cancel(
     reactive_socket_service_base::base_implementation_type& impl,
     asio::error_code& ec)
@@ -128,7 +160,8 @@ asio::error_code reactive_socket_service_base::cancel(
     return ec;
   }
 
-  ASIO_HANDLER_OPERATION(("socket", &impl, "cancel"));
+  ASIO_HANDLER_OPERATION((reactor_.context(),
+        "socket", &impl, impl.socket_, "cancel"));
 
   reactor_.cancel_ops(impl.socket_, impl.reactor_data_);
   ec = asio::error_code();
@@ -223,7 +256,7 @@ void reactive_socket_service_base::start_accept_op(
     reactor_op* op, bool is_continuation, bool peer_is_open)
 {
   if (!peer_is_open)
-    start_op(impl, reactor::read_op, op, true, is_continuation, false);
+    start_op(impl, reactor::read_op, op, is_continuation, true, false);
   else
   {
     op->ec_ = asio::error::already_open;

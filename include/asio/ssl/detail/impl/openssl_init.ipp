@@ -3,7 +3,7 @@
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2005 Voipster / Indrek dot Juhani at voipster dot com
-// Copyright (c) 2005-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2005-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -35,6 +35,7 @@ class openssl_init_base::do_init
 public:
   do_init()
   {
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L)
     ::SSL_library_init();
     ::SSL_load_error_strings();        
     ::OpenSSL_add_all_algorithms();
@@ -43,7 +44,10 @@ public:
     for (size_t i = 0; i < mutexes_.size(); ++i)
       mutexes_[i].reset(new asio::detail::mutex);
     ::CRYPTO_set_locking_callback(&do_init::openssl_locking_func);
+#endif // (OPENSSL_VERSION_NUMBER < 0x10100000L)
+#if (OPENSSL_VERSION_NUMBER < 0x10000000L)
     ::CRYPTO_set_id_callback(&do_init::openssl_id_func);
+#endif // (OPENSSL_VERSION_NUMBER < 0x10000000L)
 
 #if !defined(SSL_OP_NO_COMPRESSION) \
   && (OPENSSL_VERSION_NUMBER >= 0x00908000L)
@@ -60,16 +64,35 @@ public:
 #endif // !defined(SSL_OP_NO_COMPRESSION)
        // && (OPENSSL_VERSION_NUMBER >= 0x00908000L)
 
+#if (OPENSSL_VERSION_NUMBER < 0x10000000L)
     ::CRYPTO_set_id_callback(0);
+#endif // (OPENSSL_VERSION_NUMBER < 0x10000000L)
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L)
     ::CRYPTO_set_locking_callback(0);
     ::ERR_free_strings();
-    ::ERR_remove_state(0);
     ::EVP_cleanup();
     ::CRYPTO_cleanup_all_ex_data();
+#endif // (OPENSSL_VERSION_NUMBER < 0x10100000L)
+#if (OPENSSL_VERSION_NUMBER < 0x10000000L)
+    ::ERR_remove_state(0);
+#elif (OPENSSL_VERSION_NUMBER < 0x10100000L)
+    ::ERR_remove_thread_state(NULL);
+#endif // (OPENSSL_VERSION_NUMBER < 0x10000000L)
+#if (OPENSSL_VERSION_NUMBER >= 0x10002000L) \
+    && (OPENSSL_VERSION_NUMBER < 0x10100000L) \
+    && !defined(SSL_OP_NO_COMPRESSION)
+    ::SSL_COMP_free_compression_methods();
+#endif // (OPENSSL_VERSION_NUMBER >= 0x10002000L)
+       // && (OPENSSL_VERSION_NUMBER < 0x10100000L)
+       // && !defined(SSL_OP_NO_COMPRESSION)
+#if !defined(OPENSSL_IS_BORINGSSL) && !defined(ASIO_USE_WOLFSSL)
     ::CONF_modules_unload(1);
-#if !defined(OPENSSL_NO_ENGINE)
+#endif // !defined(OPENSSL_IS_BORINGSSL) && !defined(ASIO_USE_WOLFSSL)
+#if !defined(OPENSSL_NO_ENGINE) \
+  && (OPENSSL_VERSION_NUMBER < 0x10100000L)
     ::ENGINE_cleanup();
 #endif // !defined(OPENSSL_NO_ENGINE)
+       // && (OPENSSL_VERSION_NUMBER < 0x10100000L)
   }
 
 #if !defined(SSL_OP_NO_COMPRESSION) \
@@ -82,19 +105,20 @@ public:
        // && (OPENSSL_VERSION_NUMBER >= 0x00908000L)
 
 private:
+#if (OPENSSL_VERSION_NUMBER < 0x10000000L)
   static unsigned long openssl_id_func()
   {
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
     return ::GetCurrentThreadId();
 #else // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-    void* id = instance()->thread_id_;
-    if (id == 0)
-      instance()->thread_id_ = id = &id; // Ugh.
+    void* id = &errno;
     ASIO_ASSERT(sizeof(unsigned long) >= sizeof(void*));
     return reinterpret_cast<unsigned long>(id);
 #endif // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
   }
+#endif // (OPENSSL_VERSION_NUMBER < 0x10000000L)
 
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L)
   static void openssl_locking_func(int mode, int n, 
     const char* /*file*/, int /*line*/)
   {
@@ -107,11 +131,7 @@ private:
   // Mutexes to be used in locking callbacks.
   std::vector<asio::detail::shared_ptr<
         asio::detail::mutex> > mutexes_;
-
-#if !defined(ASIO_WINDOWS) && !defined(__CYGWIN__)
-  // The thread identifiers to be used by openssl.
-  asio::detail::tss_ptr<void> thread_id_;
-#endif // !defined(ASIO_WINDOWS) && !defined(__CYGWIN__)
+#endif // (OPENSSL_VERSION_NUMBER < 0x10100000L)
 
 #if !defined(SSL_OP_NO_COMPRESSION) \
   && (OPENSSL_VERSION_NUMBER >= 0x00908000L)

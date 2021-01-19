@@ -951,13 +951,13 @@ void SenderBase::send( const Bundle &bundle, OnErrorFn onErrorFn, OnCompleteFn o
 ////////////////////////////////////////////////////////////////////////////////////////
 //// SenderUdp
 
-SenderUdp::SenderUdp( uint16_t localPort, const std::string &destinationHost, uint16_t destinationPort, const protocol &protocol, asio::io_service &service )
+SenderUdp::SenderUdp( uint16_t localPort, const std::string &destinationHost, uint16_t destinationPort, const protocol &protocol, asio::io_context &service )
 : mSocket( new udp::socket( service ) ), mLocalEndpoint( protocol, localPort ),
 	mRemoteEndpoint( udp::endpoint( address::from_string( destinationHost ), destinationPort ) )
 {
 }
 	
-SenderUdp::SenderUdp( uint16_t localPort, const protocol::endpoint &destination, const protocol &protocol, asio::io_service &service )
+SenderUdp::SenderUdp( uint16_t localPort, const protocol::endpoint &destination, const protocol &protocol, asio::io_context &service )
 : mSocket( new udp::socket( service ) ), mLocalEndpoint( protocol, localPort ),
 	mRemoteEndpoint( destination )
 {
@@ -1013,13 +1013,13 @@ void SenderUdp::closeImpl()
 ////////////////////////////////////////////////////////////////////////////////////////
 //// SenderTcp
 
-SenderTcp::SenderTcp( uint16_t localPort, const string &destinationHost, uint16_t destinationPort, const protocol &protocol, io_service &service, PacketFramingRef packetFraming )
+SenderTcp::SenderTcp( uint16_t localPort, const string &destinationHost, uint16_t destinationPort, const protocol &protocol, io_context &service, PacketFramingRef packetFraming )
 : mSocket( new tcp::socket( service ) ), mPacketFraming( packetFraming ), mLocalEndpoint( protocol, localPort ),
 	mRemoteEndpoint( tcp::endpoint( address::from_string( destinationHost ), destinationPort ) )
 {
 }
 	
-SenderTcp::SenderTcp( uint16_t localPort, const protocol::endpoint &destination, const protocol &protocol, io_service &service, PacketFramingRef packetFraming )
+SenderTcp::SenderTcp( uint16_t localPort, const protocol::endpoint &destination, const protocol &protocol, io_context &service, PacketFramingRef packetFraming )
 : mSocket( new tcp::socket( service ) ), mPacketFraming( packetFraming ), mLocalEndpoint( protocol, localPort ), mRemoteEndpoint( destination )
 {
 }
@@ -1311,12 +1311,12 @@ bool ReceiverBase::patternMatch( const std::string& lhs, const std::string& rhs 
 /////////////////////////////////////////////////////////////////////////////////////////
 //// ReceiverUdp
 	
-ReceiverUdp::ReceiverUdp( uint16_t port, const asio::ip::udp &protocol, asio::io_service &service )
+ReceiverUdp::ReceiverUdp( uint16_t port, const asio::ip::udp &protocol, asio::io_context &service )
 : mSocket( new udp::socket( service ) ), mLocalEndpoint( protocol, port ), mAmountToReceive( 4096 )
 {
 }
 
-ReceiverUdp::ReceiverUdp( const asio::ip::udp::endpoint &localEndpoint, asio::io_service &io )
+ReceiverUdp::ReceiverUdp( const asio::ip::udp::endpoint &localEndpoint, asio::io_context &io )
 : mSocket( new udp::socket( io ) ), mLocalEndpoint( localEndpoint ), mAmountToReceive( 4096 )
 {
 }
@@ -1487,13 +1487,13 @@ void ReceiverTcp::Connection::read()
 	});
 }
 
-ReceiverTcp::ReceiverTcp( uint16_t port, const protocol &protocol, asio::io_service &service, PacketFramingRef packetFraming )
+ReceiverTcp::ReceiverTcp( uint16_t port, const protocol &protocol, asio::io_context &service, PacketFramingRef packetFraming )
 : mAcceptor( new tcp::acceptor( service ) ), mPacketFraming( packetFraming ), mLocalEndpoint( protocol, port ),
 	mConnectionIdentifiers( 0 ), mIsShuttingDown( false )
 {
 }
 
-ReceiverTcp::ReceiverTcp( const protocol::endpoint &localEndpoint, asio::io_service &service, PacketFramingRef packetFraming )
+ReceiverTcp::ReceiverTcp( const protocol::endpoint &localEndpoint, asio::io_context &service, PacketFramingRef packetFraming )
 : mAcceptor( new tcp::acceptor( service ) ), mPacketFraming( packetFraming ), mLocalEndpoint( localEndpoint ),
 	mConnectionIdentifiers( 0 ), mIsShuttingDown( false )
 {
@@ -1542,7 +1542,7 @@ void ReceiverTcp::accept( OnAcceptErrorFn onAcceptErrorFn, OnAcceptFn onAcceptFn
 	if( ! mAcceptor || ! mAcceptor->is_open() )
 		return;
 	
-	auto socket = std::make_shared<tcp::socket>( mAcceptor->get_io_service() );
+	auto socket = std::make_shared<tcp::socket>( mAcceptor->get_executor() );
 	
 	mAcceptor->async_accept( *socket, std::bind(
 	[&, onAcceptErrorFn, onAcceptFn]( TcpSocketRef socket, const asio::error_code &error ) {

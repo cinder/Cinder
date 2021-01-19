@@ -2,7 +2,7 @@
 // basic_socket_streambuf.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -20,18 +20,22 @@
 #if !defined(ASIO_NO_IOSTREAM)
 
 #include <streambuf>
+#include <vector>
 #include "asio/basic_socket.hpp"
-#include "asio/deadline_timer_service.hpp"
-#include "asio/detail/array.hpp"
+#include "asio/basic_stream_socket.hpp"
+#include "asio/detail/buffer_sequence_adapter.hpp"
+#include "asio/detail/memory.hpp"
 #include "asio/detail/throw_error.hpp"
-#include "asio/io_service.hpp"
-#include "asio/stream_socket_service.hpp"
+#include "asio/io_context.hpp"
 
-#if defined(ASIO_HAS_BOOST_DATE_TIME)
-# include "asio/deadline_timer.hpp"
-#else
+#if defined(ASIO_HAS_BOOST_DATE_TIME) \
+  && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
+# include "asio/detail/deadline_timer_service.hpp"
+#else // defined(ASIO_HAS_BOOST_DATE_TIME)
+      // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
 # include "asio/steady_timer.hpp"
-#endif
+#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
+       // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
 
 #if !defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
@@ -39,32 +43,26 @@
 
 // A macro that should expand to:
 //   template <typename T1, ..., typename Tn>
-//   basic_socket_streambuf<Protocol, StreamSocketService,
-//     Time, TimeTraits, TimerService>* connect(
-//       T1 x1, ..., Tn xn)
+//   basic_socket_streambuf* connect(T1 x1, ..., Tn xn)
 //   {
 //     init_buffers();
-//     this->basic_socket<Protocol, StreamSocketService>::close(ec_);
 //     typedef typename Protocol::resolver resolver_type;
-//     typedef typename resolver_type::query resolver_query;
-//     resolver_query query(x1, ..., xn);
-//     resolve_and_connect(query);
+//     resolver_type resolver(socket().get_executor());
+//     connect_to_endpoints(
+//         resolver.resolve(x1, ..., xn, ec_));
 //     return !ec_ ? this : 0;
 //   }
 // This macro should only persist within this file.
 
 # define ASIO_PRIVATE_CONNECT_DEF(n) \
   template <ASIO_VARIADIC_TPARAMS(n)> \
-  basic_socket_streambuf<Protocol, StreamSocketService, \
-    Time, TimeTraits, TimerService>* connect( \
-      ASIO_VARIADIC_BYVAL_PARAMS(n)) \
+  basic_socket_streambuf* connect(ASIO_VARIADIC_BYVAL_PARAMS(n)) \
   { \
     init_buffers(); \
-    this->basic_socket<Protocol, StreamSocketService>::close(ec_); \
     typedef typename Protocol::resolver resolver_type; \
-    typedef typename resolver_type::query resolver_query; \
-    resolver_query query(ASIO_VARIADIC_BYVAL_ARGS(n)); \
-    resolve_and_connect(query); \
+    resolver_type resolver(socket().get_executor()); \
+    connect_to_endpoints( \
+        resolver.resolve(ASIO_VARIADIC_BYVAL_ARGS(n), ec_)); \
     return !ec_ ? this : 0; \
   } \
   /**/
@@ -76,59 +74,111 @@
 namespace asio {
 namespace detail {
 
-// A separate base class is used to ensure that the io_service is initialised
-// prior to the basic_socket_streambuf's basic_socket base class.
-class socket_streambuf_base
+// A separate base class is used to ensure that the io_context member is
+// initialised prior to the basic_socket_streambuf's basic_socket base class.
+class socket_streambuf_io_context
 {
 protected:
-  io_service io_service_;
+  socket_streambuf_io_context(io_context* ctx)
+    : default_io_context_(ctx)
+  {
+  }
+
+  shared_ptr<io_context> default_io_context_;
+};
+
+// A separate base class is used to ensure that the dynamically allocated
+// buffers are constructed prior to the basic_socket_streambuf's basic_socket
+// base class. This makes moving the socket is the last potentially throwing
+// step in the streambuf's move constructor, giving the constructor a strong
+// exception safety guarantee.
+class socket_streambuf_buffers
+{
+protected:
+  socket_streambuf_buffers()
+    : get_buffer_(buffer_size),
+      put_buffer_(buffer_size)
+  {
+  }
+
+  enum { buffer_size = 512 };
+  std::vector<char> get_buffer_;
+  std::vector<char> put_buffer_;
 };
 
 } // namespace detail
 
-/// Iostream streambuf for a socket.
+#if !defined(ASIO_BASIC_SOCKET_STREAMBUF_FWD_DECL)
+#define ASIO_BASIC_SOCKET_STREAMBUF_FWD_DECL
+
+// Forward declaration with defaulted arguments.
 template <typename Protocol,
-    typename StreamSocketService = stream_socket_service<Protocol>,
 #if defined(ASIO_HAS_BOOST_DATE_TIME) \
-  || defined(GENERATING_DOCUMENTATION)
-    typename Time = boost::posix_time::ptime,
-    typename TimeTraits = asio::time_traits<Time>,
-    typename TimerService = deadline_timer_service<Time, TimeTraits> >
-#else
-    typename Time = steady_timer::clock_type,
-    typename TimeTraits = steady_timer::traits_type,
-    typename TimerService = steady_timer::service_type>
-#endif
+  && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
+    typename Clock = boost::posix_time::ptime,
+    typename WaitTraits = time_traits<Clock> >
+#else // defined(ASIO_HAS_BOOST_DATE_TIME)
+      // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
+    typename Clock = chrono::steady_clock,
+    typename WaitTraits = wait_traits<Clock> >
+#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
+       // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
+class basic_socket_streambuf;
+
+#endif // !defined(ASIO_BASIC_SOCKET_STREAMBUF_FWD_DECL)
+
+/// Iostream streambuf for a socket.
+#if defined(GENERATING_DOCUMENTATION)
+template <typename Protocol,
+    typename Clock = chrono::steady_clock,
+    typename WaitTraits = wait_traits<Clock> >
+#else // defined(GENERATING_DOCUMENTATION)
+template <typename Protocol, typename Clock, typename WaitTraits>
+#endif // defined(GENERATING_DOCUMENTATION)
 class basic_socket_streambuf
   : public std::streambuf,
-    private detail::socket_streambuf_base,
-    public basic_socket<Protocol, StreamSocketService>
+    private detail::socket_streambuf_io_context,
+    private detail::socket_streambuf_buffers,
+#if defined(ASIO_NO_DEPRECATED) || defined(GENERATING_DOCUMENTATION)
+    private basic_socket<Protocol>
+#else // defined(ASIO_NO_DEPRECATED) || defined(GENERATING_DOCUMENTATION)
+    public basic_socket<Protocol>
+#endif // defined(ASIO_NO_DEPRECATED) || defined(GENERATING_DOCUMENTATION)
 {
 private:
   // These typedefs are intended keep this class's implementation independent
-  // of whether it's using Boost.DateTime, Boost.Chrono or std::chrono.
-#if defined(ASIO_HAS_BOOST_DATE_TIME)
-  typedef TimeTraits traits_helper;
-#else
-  typedef detail::chrono_time_traits<Time, TimeTraits> traits_helper;
-#endif
+  // of whether it's using Boost.DateClock, Boost.Chrono or std::chrono.
+#if defined(ASIO_HAS_BOOST_DATE_TIME) \
+  && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
+  typedef WaitTraits traits_helper;
+#else // defined(ASIO_HAS_BOOST_DATE_TIME)
+      // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
+  typedef detail::chrono_time_traits<Clock, WaitTraits> traits_helper;
+#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
+       // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
 
 public:
+  /// The protocol type.
+  typedef Protocol protocol_type;
+
   /// The endpoint type.
   typedef typename Protocol::endpoint endpoint_type;
 
+  /// The clock type.
+  typedef Clock clock_type;
+
 #if defined(GENERATING_DOCUMENTATION)
   /// (Deprecated: Use time_point.) The time type.
-  typedef typename TimeTraits::time_type time_type;
+  typedef typename WaitTraits::time_type time_type;
 
   /// The time type.
-  typedef typename TimeTraits::time_point time_point;
+  typedef typename WaitTraits::time_point time_point;
 
   /// (Deprecated: Use duration.) The duration type.
-  typedef typename TimeTraits::duration_type duration_type;
+  typedef typename WaitTraits::duration_type duration_type;
 
   /// The duration type.
-  typedef typename TimeTraits::duration duration;
+  typedef typename WaitTraits::duration duration;
 #else
 # if !defined(ASIO_NO_DEPRECATED)
   typedef typename traits_helper::time_type time_type;
@@ -140,22 +190,64 @@ public:
 
   /// Construct a basic_socket_streambuf without establishing a connection.
   basic_socket_streambuf()
-    : basic_socket<Protocol, StreamSocketService>(
-        this->detail::socket_streambuf_base::io_service_),
-      unbuffered_(false),
-      timer_service_(0),
-      timer_state_(no_timer)
+    : detail::socket_streambuf_io_context(new io_context),
+      basic_socket<Protocol>(*default_io_context_),
+      expiry_time_(max_expiry_time())
   {
     init_buffers();
   }
+
+#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
+  /// Construct a basic_socket_streambuf from the supplied socket.
+  explicit basic_socket_streambuf(basic_stream_socket<protocol_type> s)
+    : detail::socket_streambuf_io_context(0),
+      basic_socket<Protocol>(std::move(s)),
+      expiry_time_(max_expiry_time())
+  {
+    init_buffers();
+  }
+
+  /// Move-construct a basic_socket_streambuf from another.
+  basic_socket_streambuf(basic_socket_streambuf&& other)
+    : detail::socket_streambuf_io_context(other),
+      basic_socket<Protocol>(std::move(other.socket())),
+      ec_(other.ec_),
+      expiry_time_(other.expiry_time_)
+  {
+    get_buffer_.swap(other.get_buffer_);
+    put_buffer_.swap(other.put_buffer_);
+    setg(other.eback(), other.gptr(), other.egptr());
+    setp(other.pptr(), other.epptr());
+    other.ec_ = asio::error_code();
+    other.expiry_time_ = max_expiry_time();
+    other.init_buffers();
+  }
+
+  /// Move-assign a basic_socket_streambuf from another.
+  basic_socket_streambuf& operator=(basic_socket_streambuf&& other)
+  {
+    this->close();
+    socket() = std::move(other.socket());
+    detail::socket_streambuf_io_context::operator=(other);
+    ec_ = other.ec_;
+    expiry_time_ = other.expiry_time_;
+    get_buffer_.swap(other.get_buffer_);
+    put_buffer_.swap(other.put_buffer_);
+    setg(other.eback(), other.gptr(), other.egptr());
+    setp(other.pptr(), other.epptr());
+    other.ec_ = asio::error_code();
+    other.expiry_time_ = max_expiry_time();
+    other.put_buffer_.resize(buffer_size);
+    other.init_buffers();
+    return *this;
+  }
+#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Destructor flushes buffered data.
   virtual ~basic_socket_streambuf()
   {
     if (pptr() != pbase())
       overflow(traits_type::eof());
-
-    destroy_timer();
   }
 
   /// Establish a connection.
@@ -165,29 +257,11 @@ public:
    * @return \c this if a connection was successfully established, a null
    * pointer otherwise.
    */
-  basic_socket_streambuf<Protocol, StreamSocketService,
-    Time, TimeTraits, TimerService>* connect(
-      const endpoint_type& endpoint)
+  basic_socket_streambuf* connect(const endpoint_type& endpoint)
   {
     init_buffers();
-
-    this->basic_socket<Protocol, StreamSocketService>::close(ec_);
-
-    if (timer_state_ == timer_has_expired)
-    {
-      ec_ = asio::error::operation_aborted;
-      return 0;
-    }
-
-    io_handler handler = { this };
-    this->basic_socket<Protocol, StreamSocketService>::async_connect(
-        endpoint, handler);
-
-    ec_ = asio::error::would_block;
-    this->get_service().get_io_service().restart();
-    do this->get_service().get_io_service().run_one();
-    while (ec_ == asio::error::would_block);
-
+    ec_ = asio::error_code();
+    this->connect_to_endpoints(&endpoint, &endpoint + 1);
     return !ec_ ? this : 0;
   }
 
@@ -202,19 +276,15 @@ public:
    * pointer otherwise.
    */
   template <typename T1, ..., typename TN>
-  basic_socket_streambuf<Protocol, StreamSocketService>* connect(
-      T1 t1, ..., TN tn);
+  basic_socket_streambuf* connect(T1 t1, ..., TN tn);
 #elif defined(ASIO_HAS_VARIADIC_TEMPLATES)
   template <typename... T>
-  basic_socket_streambuf<Protocol, StreamSocketService,
-    Time, TimeTraits, TimerService>* connect(T... x)
+  basic_socket_streambuf* connect(T... x)
   {
     init_buffers();
-    this->basic_socket<Protocol, StreamSocketService>::close(ec_);
     typedef typename Protocol::resolver resolver_type;
-    typedef typename resolver_type::query resolver_query;
-    resolver_query query(x...);
-    resolve_and_connect(query);
+    resolver_type resolver(socket().get_executor());
+    connect_to_endpoints(resolver.resolve(x..., ec_));
     return !ec_ ? this : 0;
   }
 #else
@@ -226,17 +296,34 @@ public:
    * @return \c this if a connection was successfully established, a null
    * pointer otherwise.
    */
-  basic_socket_streambuf<Protocol, StreamSocketService,
-    Time, TimeTraits, TimerService>* close()
+  basic_socket_streambuf* close()
   {
     sync();
-    this->basic_socket<Protocol, StreamSocketService>::close(ec_);
+    socket().close(ec_);
     if (!ec_)
       init_buffers();
     return !ec_ ? this : 0;
   }
 
+  /// Get a reference to the underlying socket.
+  basic_socket<Protocol>& socket()
+  {
+    return *this;
+  }
+
   /// Get the last error associated with the stream buffer.
+  /**
+   * @return An \c error_code corresponding to the last error from the stream
+   * buffer.
+   */
+  const asio::error_code& error() const
+  {
+    return ec_;
+  }
+
+#if !defined(ASIO_NO_DEPRECATED)
+  /// (Deprecated: Use error().) Get the last error associated with the stream
+  /// buffer.
   /**
    * @return An \c error_code corresponding to the last error from the stream
    * buffer.
@@ -246,7 +333,6 @@ public:
     return error();
   }
 
-#if !defined(ASIO_NO_DEPRECATED)
   /// (Deprecated: Use expiry().) Get the stream buffer's expiry time as an
   /// absolute time.
   /**
@@ -255,9 +341,7 @@ public:
    */
   time_point expires_at() const
   {
-    return timer_service_
-      ? timer_service_->expires_at(timer_implementation_)
-      : time_point();
+    return expiry_time_;
   }
 #endif // !defined(ASIO_NO_DEPRECATED)
 
@@ -268,13 +352,7 @@ public:
    */
   time_point expiry() const
   {
-    return timer_service_
-#if defined(ASIO_HAS_BOOST_DATE_TIME)
-      ? timer_service_->expires_at(timer_implementation_)
-#else // defined(ASIO_HAS_BOOST_DATE_TIME)
-      ? timer_service_->expiry(timer_implementation_)
-#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
-      : time_point();
+    return expiry_time_;
   }
 
   /// Set the stream buffer's expiry time as an absolute time.
@@ -288,33 +366,7 @@ public:
    */
   void expires_at(const time_point& expiry_time)
   {
-    construct_timer();
-
-    asio::error_code ec;
-    timer_service_->expires_at(timer_implementation_, expiry_time, ec);
-    asio::detail::throw_error(ec, "expires_at");
-
-    start_timer();
-  }
-
-  /// Set the stream buffer's expiry time relative to now.
-  /**
-   * This function sets the expiry time associated with the stream. Stream
-   * operations performed after this time (where the operations cannot be
-   * completed using the internal buffers) will fail with the error
-   * asio::error::operation_aborted.
-   *
-   * @param expiry_time The expiry time to be used for the timer.
-   */
-  void expires_at(const duration& expiry_time)
-  {
-    construct_timer();
-
-    asio::error_code ec;
-    timer_service_->expires_from_now(timer_implementation_, expiry_time, ec);
-    asio::detail::throw_error(ec, "expires_from_now");
-
-    start_timer();
+    expiry_time_ = expiry_time;
   }
 
   /// Set the stream buffer's expiry time relative to now.
@@ -328,17 +380,7 @@ public:
    */
   void expires_after(const duration& expiry_time)
   {
-    construct_timer();
-
-    asio::error_code ec;
-#if defined(ASIO_HAS_BOOST_DATE_TIME)
-    timer_service_->expires_from_now(timer_implementation_, expiry_time, ec);
-#else // defined(ASIO_HAS_BOOST_DATE_TIME)
-    timer_service_->expires_after(timer_implementation_, expiry_time, ec);
-#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
-    asio::detail::throw_error(ec, "after");
-
-    start_timer();
+    expiry_time_ = traits_helper::add(traits_helper::now(), expiry_time);
   }
 
 #if !defined(ASIO_NO_DEPRECATED)
@@ -364,108 +406,124 @@ public:
    */
   void expires_from_now(const duration& expiry_time)
   {
-    construct_timer();
-
-    asio::error_code ec;
-    timer_service_->expires_from_now(timer_implementation_, expiry_time, ec);
-    asio::detail::throw_error(ec, "expires_from_now");
-
-    start_timer();
+    expiry_time_ = traits_helper::add(traits_helper::now(), expiry_time);
   }
 #endif // !defined(ASIO_NO_DEPRECATED)
 
 protected:
   int_type underflow()
   {
-    if (gptr() == egptr())
+#if defined(ASIO_WINDOWS_RUNTIME)
+    ec_ = asio::error::operation_not_supported;
+    return traits_type::eof();
+#else // defined(ASIO_WINDOWS_RUNTIME)
+    if (gptr() != egptr())
+      return traits_type::eof();
+
+    for (;;)
     {
-      if (timer_state_ == timer_has_expired)
+      // Check if we are past the expiry time.
+      if (traits_helper::less_than(expiry_time_, traits_helper::now()))
       {
-        ec_ = asio::error::operation_aborted;
+        ec_ = asio::error::timed_out;
         return traits_type::eof();
       }
 
-      io_handler handler = { this };
-      this->get_service().async_receive(this->get_implementation(),
-          asio::buffer(asio::buffer(get_buffer_) + putback_max),
-          0, handler);
+      // Try to complete the operation without blocking.
+      if (!socket().native_non_blocking())
+        socket().native_non_blocking(true, ec_);
+      detail::buffer_sequence_adapter<mutable_buffer, mutable_buffer>
+        bufs(asio::buffer(get_buffer_) + putback_max);
+      detail::signed_size_type bytes = detail::socket_ops::recv(
+          socket().native_handle(), bufs.buffers(), bufs.count(), 0, ec_);
 
-      ec_ = asio::error::would_block;
-      this->get_service().get_io_service().restart();
-      do this->get_service().get_io_service().run_one();
-      while (ec_ == asio::error::would_block);
-      if (ec_)
+      // Check if operation succeeded.
+      if (bytes > 0)
+      {
+        setg(&get_buffer_[0], &get_buffer_[0] + putback_max,
+            &get_buffer_[0] + putback_max + bytes);
+        return traits_type::to_int_type(*gptr());
+      }
+
+      // Check for EOF.
+      if (bytes == 0)
+      {
+        ec_ = asio::error::eof;
+        return traits_type::eof();
+      }
+
+      // Operation failed.
+      if (ec_ != asio::error::would_block
+          && ec_ != asio::error::try_again)
         return traits_type::eof();
 
-      setg(&get_buffer_[0], &get_buffer_[0] + putback_max,
-          &get_buffer_[0] + putback_max + bytes_transferred_);
-      return traits_type::to_int_type(*gptr());
+      // Wait for socket to become ready.
+      if (detail::socket_ops::poll_read(
+            socket().native_handle(), 0, timeout(), ec_) < 0)
+        return traits_type::eof();
     }
-    else
-    {
-      return traits_type::eof();
-    }
+#endif // defined(ASIO_WINDOWS_RUNTIME)
   }
 
   int_type overflow(int_type c)
   {
-    if (unbuffered_)
+#if defined(ASIO_WINDOWS_RUNTIME)
+    ec_ = asio::error::operation_not_supported;
+    return traits_type::eof();
+#else // defined(ASIO_WINDOWS_RUNTIME)
+    char_type ch = traits_type::to_char_type(c);
+
+    // Determine what needs to be sent.
+    const_buffer output_buffer;
+    if (put_buffer_.empty())
     {
       if (traits_type::eq_int_type(c, traits_type::eof()))
-      {
-        // Nothing to do.
-        return traits_type::not_eof(c);
-      }
-      else
-      {
-        if (timer_state_ == timer_has_expired)
-        {
-          ec_ = asio::error::operation_aborted;
-          return traits_type::eof();
-        }
-
-        // Send the single character immediately.
-        char_type ch = traits_type::to_char_type(c);
-        io_handler handler = { this };
-        this->get_service().async_send(this->get_implementation(),
-            asio::buffer(&ch, sizeof(char_type)), 0, handler);
-
-        ec_ = asio::error::would_block;
-        this->get_service().get_io_service().restart();
-        do this->get_service().get_io_service().run_one();
-        while (ec_ == asio::error::would_block);
-        if (ec_)
-          return traits_type::eof();
-
-        return c;
-      }
+        return traits_type::not_eof(c); // Nothing to do.
+      output_buffer = asio::buffer(&ch, sizeof(char_type));
     }
     else
     {
-      // Send all data in the output buffer.
-      asio::const_buffer buffer =
-        asio::buffer(pbase(), pptr() - pbase());
-      while (asio::buffer_size(buffer) > 0)
+      output_buffer = asio::buffer(pbase(),
+          (pptr() - pbase()) * sizeof(char_type));
+    }
+
+    while (output_buffer.size() > 0)
+    {
+      // Check if we are past the expiry time.
+      if (traits_helper::less_than(expiry_time_, traits_helper::now()))
       {
-        if (timer_state_ == timer_has_expired)
-        {
-          ec_ = asio::error::operation_aborted;
-          return traits_type::eof();
-        }
-
-        io_handler handler = { this };
-        this->get_service().async_send(this->get_implementation(),
-            asio::buffer(buffer), 0, handler);
-
-        ec_ = asio::error::would_block;
-        this->get_service().get_io_service().restart();
-        do this->get_service().get_io_service().run_one();
-        while (ec_ == asio::error::would_block);
-        if (ec_)
-          return traits_type::eof();
-
-        buffer = buffer + bytes_transferred_;
+        ec_ = asio::error::timed_out;
+        return traits_type::eof();
       }
+
+      // Try to complete the operation without blocking.
+      if (!socket().native_non_blocking())
+        socket().native_non_blocking(true, ec_);
+      detail::buffer_sequence_adapter<
+        const_buffer, const_buffer> bufs(output_buffer);
+      detail::signed_size_type bytes = detail::socket_ops::send(
+          socket().native_handle(), bufs.buffers(), bufs.count(), 0, ec_);
+
+      // Check if operation succeeded.
+      if (bytes > 0)
+      {
+        output_buffer += static_cast<std::size_t>(bytes);
+        continue;
+      }
+
+      // Operation failed.
+      if (ec_ != asio::error::would_block
+          && ec_ != asio::error::try_again)
+        return traits_type::eof();
+
+      // Wait for socket to become ready.
+      if (detail::socket_ops::poll_write(
+            socket().native_handle(), 0, timeout(), ec_) < 0)
+        return traits_type::eof();
+    }
+
+    if (!put_buffer_.empty())
+    {
       setp(&put_buffer_[0], &put_buffer_[0] + put_buffer_.size());
 
       // If the new character is eof then our work here is done.
@@ -473,10 +531,12 @@ protected:
         return traits_type::not_eof(c);
 
       // Add the new character to the output buffer.
-      *pptr() = traits_type::to_char_type(c);
+      *pptr() = ch;
       pbump(1);
-      return c;
     }
+
+    return c;
+#endif // defined(ASIO_WINDOWS_RUNTIME)
   }
 
   int sync()
@@ -488,153 +548,130 @@ protected:
   {
     if (pptr() == pbase() && s == 0 && n == 0)
     {
-      unbuffered_ = true;
+      put_buffer_.clear();
       setp(0, 0);
+      sync();
       return this;
     }
 
     return 0;
   }
 
-  /// Get the last error associated with the stream buffer.
-  /**
-   * @return An \c error_code corresponding to the last error from the stream
-   * buffer.
-   */
-  virtual const asio::error_code& error() const
-  {
-    return ec_;
-  }
-
 private:
+  // Disallow copying and assignment.
+  basic_socket_streambuf(const basic_socket_streambuf&) ASIO_DELETED;
+  basic_socket_streambuf& operator=(
+      const basic_socket_streambuf&) ASIO_DELETED;
+
   void init_buffers()
   {
     setg(&get_buffer_[0],
         &get_buffer_[0] + putback_max,
         &get_buffer_[0] + putback_max);
-    if (unbuffered_)
+
+    if (put_buffer_.empty())
       setp(0, 0);
     else
       setp(&put_buffer_[0], &put_buffer_[0] + put_buffer_.size());
   }
 
-  template <typename ResolverQuery>
-  void resolve_and_connect(const ResolverQuery& query)
+  int timeout() const
   {
-    typedef typename Protocol::resolver resolver_type;
-    typedef typename resolver_type::iterator iterator_type;
-    resolver_type resolver(detail::socket_streambuf_base::io_service_);
-    iterator_type i = resolver.resolve(query, ec_);
-    if (!ec_)
-    {
-      iterator_type end;
-      ec_ = asio::error::host_not_found;
-      while (ec_ && i != end)
-      {
-        this->basic_socket<Protocol, StreamSocketService>::close(ec_);
-
-        if (timer_state_ == timer_has_expired)
-        {
-          ec_ = asio::error::operation_aborted;
-          return;
-        }
-
-        io_handler handler = { this };
-        this->basic_socket<Protocol, StreamSocketService>::async_connect(
-            *i, handler);
-
-        ec_ = asio::error::would_block;
-        this->get_service().get_io_service().restart();
-        do this->get_service().get_io_service().run_one();
-        while (ec_ == asio::error::would_block);
-
-        ++i;
-      }
-    }
+    int64_t msec = traits_helper::to_posix_duration(
+        traits_helper::subtract(expiry_time_,
+          traits_helper::now())).total_milliseconds();
+    if (msec > (std::numeric_limits<int>::max)())
+      msec = (std::numeric_limits<int>::max)();
+    else if (msec < 0)
+      msec = 0;
+    return static_cast<int>(msec);
   }
 
-  struct io_handler;
-  friend struct io_handler;
-  struct io_handler
+  template <typename EndpointSequence>
+  void connect_to_endpoints(const EndpointSequence& endpoints)
   {
-    basic_socket_streambuf* this_;
+    this->connect_to_endpoints(endpoints.begin(), endpoints.end());
+  }
 
-    void operator()(const asio::error_code& ec,
-        std::size_t bytes_transferred = 0)
+  template <typename EndpointIterator>
+  void connect_to_endpoints(EndpointIterator begin, EndpointIterator end)
+  {
+#if defined(ASIO_WINDOWS_RUNTIME)
+    ec_ = asio::error::operation_not_supported;
+#else // defined(ASIO_WINDOWS_RUNTIME)
+    if (ec_)
+      return;
+
+    ec_ = asio::error::not_found;
+    for (EndpointIterator i = begin; i != end; ++i)
     {
-      this_->ec_ = ec;
-      this_->bytes_transferred_ = bytes_transferred;
+      // Check if we are past the expiry time.
+      if (traits_helper::less_than(expiry_time_, traits_helper::now()))
+      {
+        ec_ = asio::error::timed_out;
+        return;
+      }
+
+      // Close and reopen the socket.
+      typename Protocol::endpoint ep(*i);
+      socket().close(ec_);
+      socket().open(ep.protocol(), ec_);
+      if (ec_)
+        continue;
+
+      // Try to complete the operation without blocking.
+      if (!socket().native_non_blocking())
+        socket().native_non_blocking(true, ec_);
+      detail::socket_ops::connect(socket().native_handle(),
+          ep.data(), ep.size(), ec_);
+
+      // Check if operation succeeded.
+      if (!ec_)
+        return;
+
+      // Operation failed.
+      if (ec_ != asio::error::in_progress
+          && ec_ != asio::error::would_block)
+        continue;
+
+      // Wait for socket to become ready.
+      if (detail::socket_ops::poll_connect(
+            socket().native_handle(), timeout(), ec_) < 0)
+        continue;
+
+      // Get the error code from the connect operation.
+      int connect_error = 0;
+      size_t connect_error_len = sizeof(connect_error);
+      if (detail::socket_ops::getsockopt(socket().native_handle(), 0,
+            SOL_SOCKET, SO_ERROR, &connect_error, &connect_error_len, ec_)
+          == detail::socket_error_retval)
+        return;
+
+      // Check the result of the connect operation.
+      ec_ = asio::error_code(connect_error,
+          asio::error::get_system_category());
+      if (!ec_)
+        return;
     }
-  };
+#endif // defined(ASIO_WINDOWS_RUNTIME)
+  }
 
-  struct timer_handler;
-  friend struct timer_handler;
-  struct timer_handler
+  // Helper function to get the maximum expiry time.
+  static time_point max_expiry_time()
   {
-    basic_socket_streambuf* this_;
-
-    void operator()(const asio::error_code&)
-    {
-      time_point now = traits_helper::now();
-
-#if defined(ASIO_HAS_BOOST_DATE_TIME)
-      time_point expiry_time = this_->timer_service_->expires_at(
-            this_->timer_implementation_);
+#if defined(ASIO_HAS_BOOST_DATE_TIME) \
+  && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
+    return boost::posix_time::pos_infin;
 #else // defined(ASIO_HAS_BOOST_DATE_TIME)
-      time_point expiry_time = this_->timer_service_->expiry(
-            this_->timer_implementation_);
+      // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
+    return (time_point::max)();
 #endif // defined(ASIO_HAS_BOOST_DATE_TIME)
-
-      if (traits_helper::less_than(now, expiry_time))
-      {
-        this_->timer_state_ = timer_is_pending;
-        this_->timer_service_->async_wait(this_->timer_implementation_, *this);
-      }
-      else
-      {
-        this_->timer_state_ = timer_has_expired;
-        asio::error_code ec;
-        this_->basic_socket<Protocol, StreamSocketService>::close(ec);
-      }
-    }
-  };
-
-  void construct_timer()
-  {
-    if (timer_service_ == 0)
-    {
-      TimerService& timer_service = use_service<TimerService>(
-          detail::socket_streambuf_base::io_service_);
-      timer_service.construct(timer_implementation_);
-      timer_service_ = &timer_service;
-    }
-  }
-
-  void destroy_timer()
-  {
-    if (timer_service_)
-      timer_service_->destroy(timer_implementation_);
-  }
-
-  void start_timer()
-  {
-    if (timer_state_ != timer_is_pending)
-    {
-      timer_handler handler = { this };
-      handler(asio::error_code());
-    }
+       // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
   }
 
   enum { putback_max = 8 };
-  enum { buffer_size = 512 };
-  asio::detail::array<char, buffer_size> get_buffer_;
-  asio::detail::array<char, buffer_size> put_buffer_;
-  bool unbuffered_;
   asio::error_code ec_;
-  std::size_t bytes_transferred_;
-  TimerService* timer_service_;
-  typename TimerService::implementation_type timer_implementation_;
-  enum state { no_timer, timer_is_pending, timer_has_expired } timer_state_;
+  time_point expiry_time_;
 };
 
 } // namespace asio

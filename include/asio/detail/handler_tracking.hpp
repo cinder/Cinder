@@ -2,7 +2,7 @@
 // detail/handler_tracking.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,7 +17,15 @@
 
 #include "asio/detail/config.hpp"
 
-#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+namespace asio {
+
+class execution_context;
+
+} // namespace asio
+
+#if defined(ASIO_CUSTOM_HANDLER_TRACKING)
+# include ASIO_CUSTOM_HANDLER_TRACKING
+#elif defined(ASIO_ENABLE_HANDLER_TRACKING)
 # include "asio/error_code.hpp"
 # include "asio/detail/cstdint.hpp"
 # include "asio/detail/static_mutex.hpp"
@@ -29,7 +37,30 @@
 namespace asio {
 namespace detail {
 
-#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+#if defined(ASIO_CUSTOM_HANDLER_TRACKING)
+
+// The user-specified header must define the following macros:
+// - ASIO_INHERIT_TRACKED_HANDLER
+// - ASIO_ALSO_INHERIT_TRACKED_HANDLER
+// - ASIO_HANDLER_TRACKING_INIT
+// - ASIO_HANDLER_CREATION(args)
+// - ASIO_HANDLER_COMPLETION(args)
+// - ASIO_HANDLER_INVOCATION_BEGIN(args)
+// - ASIO_HANDLER_INVOCATION_END
+// - ASIO_HANDLER_OPERATION(args)
+// - ASIO_HANDLER_REACTOR_REGISTRATION(args)
+// - ASIO_HANDLER_REACTOR_DEREGISTRATION(args)
+// - ASIO_HANDLER_REACTOR_READ_EVENT
+// - ASIO_HANDLER_REACTOR_WRITE_EVENT
+// - ASIO_HANDLER_REACTOR_ERROR_EVENT
+// - ASIO_HANDLER_REACTOR_EVENTS(args)
+// - ASIO_HANDLER_REACTOR_OPERATION(args)
+
+# if !defined(ASIO_ENABLE_HANDLER_TRACKING)
+#  define ASIO_ENABLE_HANDLER_TRACKING 1
+# endif /// !defined(ASIO_ENABLE_HANDLER_TRACKING)
+
+#elif defined(ASIO_ENABLE_HANDLER_TRACKING)
 
 class handler_tracking
 {
@@ -56,15 +87,39 @@ public:
   // Initialise the tracking system.
   ASIO_DECL static void init();
 
+  class location
+  {
+  public:
+    // Constructor adds a location to the stack.
+    ASIO_DECL explicit location(const char* file,
+        int line, const char* func);
+
+    // Destructor removes a location from the stack.
+    ASIO_DECL ~location();
+
+  private:
+    // Disallow copying and assignment.
+    location(const location&) ASIO_DELETED;
+    location& operator=(const location&) ASIO_DELETED;
+
+    friend class handler_tracking;
+    const char* file_;
+    int line_;
+    const char* func_;
+    location* next_;
+  };
+
   // Record the creation of a tracked handler.
-  ASIO_DECL static void creation(tracked_handler* h,
-      const char* object_type, void* object, const char* op_name);
+  ASIO_DECL static void creation(
+      execution_context& context, tracked_handler& h,
+      const char* object_type, void* object,
+      uintmax_t native_handle, const char* op_name);
 
   class completion
   {
   public:
     // Constructor records that handler is to be invoked with no arguments.
-    ASIO_DECL explicit completion(tracked_handler* h);
+    ASIO_DECL explicit completion(const tracked_handler& h);
 
     // Destructor records only when an exception is thrown from the handler, or
     // if the memory is being freed without the handler having been invoked.
@@ -98,9 +153,32 @@ public:
     completion* next_;
   };
 
-  // Record an operation that affects pending handlers.
-  ASIO_DECL static void operation(const char* object_type,
-      void* object, const char* op_name);
+  // Record an operation that is not directly associated with a handler.
+  ASIO_DECL static void operation(execution_context& context,
+      const char* object_type, void* object,
+      uintmax_t native_handle, const char* op_name);
+
+  // Record that a descriptor has been registered with the reactor.
+  ASIO_DECL static void reactor_registration(execution_context& context,
+      uintmax_t native_handle, uintmax_t registration);
+
+  // Record that a descriptor has been deregistered from the reactor.
+  ASIO_DECL static void reactor_deregistration(execution_context& context,
+      uintmax_t native_handle, uintmax_t registration);
+
+  // Record a reactor-based operation that is associated with a handler.
+  ASIO_DECL static void reactor_events(execution_context& context,
+      uintmax_t registration, unsigned events);
+
+  // Record a reactor-based operation that is associated with a handler.
+  ASIO_DECL static void reactor_operation(
+      const tracked_handler& h, const char* op_name,
+      const asio::error_code& ec);
+
+  // Record a reactor-based operation that is associated with a handler.
+  ASIO_DECL static void reactor_operation(
+      const tracked_handler& h, const char* op_name,
+      const asio::error_code& ec, std::size_t bytes_transferred);
 
   // Write a line of output.
   ASIO_DECL static void write_line(const char* format, ...);
@@ -119,6 +197,9 @@ private:
 # define ASIO_HANDLER_TRACKING_INIT \
   asio::detail::handler_tracking::init()
 
+# define ASIO_HANDLER_LOCATION(args) \
+  asio::detail::handler_tracking::location tracked_location args
+
 # define ASIO_HANDLER_CREATION(args) \
   asio::detail::handler_tracking::creation args
 
@@ -134,16 +215,40 @@ private:
 # define ASIO_HANDLER_OPERATION(args) \
   asio::detail::handler_tracking::operation args
 
+# define ASIO_HANDLER_REACTOR_REGISTRATION(args) \
+  asio::detail::handler_tracking::reactor_registration args
+
+# define ASIO_HANDLER_REACTOR_DEREGISTRATION(args) \
+  asio::detail::handler_tracking::reactor_deregistration args
+
+# define ASIO_HANDLER_REACTOR_READ_EVENT 1
+# define ASIO_HANDLER_REACTOR_WRITE_EVENT 2
+# define ASIO_HANDLER_REACTOR_ERROR_EVENT 4
+
+# define ASIO_HANDLER_REACTOR_EVENTS(args) \
+  asio::detail::handler_tracking::reactor_events args
+
+# define ASIO_HANDLER_REACTOR_OPERATION(args) \
+  asio::detail::handler_tracking::reactor_operation args
+
 #else // defined(ASIO_ENABLE_HANDLER_TRACKING)
 
 # define ASIO_INHERIT_TRACKED_HANDLER
 # define ASIO_ALSO_INHERIT_TRACKED_HANDLER
 # define ASIO_HANDLER_TRACKING_INIT (void)0
+# define ASIO_HANDLER_LOCATION(loc) (void)0
 # define ASIO_HANDLER_CREATION(args) (void)0
 # define ASIO_HANDLER_COMPLETION(args) (void)0
 # define ASIO_HANDLER_INVOCATION_BEGIN(args) (void)0
 # define ASIO_HANDLER_INVOCATION_END (void)0
 # define ASIO_HANDLER_OPERATION(args) (void)0
+# define ASIO_HANDLER_REACTOR_REGISTRATION(args) (void)0
+# define ASIO_HANDLER_REACTOR_DEREGISTRATION(args) (void)0
+# define ASIO_HANDLER_REACTOR_READ_EVENT 0
+# define ASIO_HANDLER_REACTOR_WRITE_EVENT 0
+# define ASIO_HANDLER_REACTOR_ERROR_EVENT 0
+# define ASIO_HANDLER_REACTOR_EVENTS(args) (void)0
+# define ASIO_HANDLER_REACTOR_OPERATION(args) (void)0
 
 #endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
 

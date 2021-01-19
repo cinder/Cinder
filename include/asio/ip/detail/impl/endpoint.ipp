@@ -2,7 +2,7 @@
 // ip/detail/impl/endpoint.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -31,7 +31,7 @@ namespace asio {
 namespace ip {
 namespace detail {
 
-endpoint::endpoint()
+endpoint::endpoint() ASIO_NOEXCEPT
   : data_()
 {
   data_.v4.sin_family = ASIO_OS_DEF(AF_INET);
@@ -39,7 +39,7 @@ endpoint::endpoint()
   data_.v4.sin_addr.s_addr = ASIO_OS_DEF(INADDR_ANY);
 }
 
-endpoint::endpoint(int family, unsigned short port_num)
+endpoint::endpoint(int family, unsigned short port_num) ASIO_NOEXCEPT
   : data_()
 {
   using namespace std; // For memcpy.
@@ -50,33 +50,26 @@ endpoint::endpoint(int family, unsigned short port_num)
       asio::detail::socket_ops::host_to_network_short(port_num);
     data_.v4.sin_addr.s_addr = ASIO_OS_DEF(INADDR_ANY);
   }
-  else if (family == ASIO_OS_DEF(AF_INET6))
+  else
   {
     data_.v6.sin6_family = ASIO_OS_DEF(AF_INET6);
     data_.v6.sin6_port =
       asio::detail::socket_ops::host_to_network_short(port_num);
     data_.v6.sin6_flowinfo = 0;
     data_.v6.sin6_addr.s6_addr[0] = 0; data_.v6.sin6_addr.s6_addr[1] = 0;
-    data_.v6.sin6_addr.s6_addr[2] = 0, data_.v6.sin6_addr.s6_addr[3] = 0;
-    data_.v6.sin6_addr.s6_addr[4] = 0, data_.v6.sin6_addr.s6_addr[5] = 0;
-    data_.v6.sin6_addr.s6_addr[6] = 0, data_.v6.sin6_addr.s6_addr[7] = 0;
-    data_.v6.sin6_addr.s6_addr[8] = 0, data_.v6.sin6_addr.s6_addr[9] = 0;
-    data_.v6.sin6_addr.s6_addr[10] = 0, data_.v6.sin6_addr.s6_addr[11] = 0;
-    data_.v6.sin6_addr.s6_addr[12] = 0, data_.v6.sin6_addr.s6_addr[13] = 0;
-    data_.v6.sin6_addr.s6_addr[14] = 0, data_.v6.sin6_addr.s6_addr[15] = 0;
+    data_.v6.sin6_addr.s6_addr[2] = 0; data_.v6.sin6_addr.s6_addr[3] = 0;
+    data_.v6.sin6_addr.s6_addr[4] = 0; data_.v6.sin6_addr.s6_addr[5] = 0;
+    data_.v6.sin6_addr.s6_addr[6] = 0; data_.v6.sin6_addr.s6_addr[7] = 0;
+    data_.v6.sin6_addr.s6_addr[8] = 0; data_.v6.sin6_addr.s6_addr[9] = 0;
+    data_.v6.sin6_addr.s6_addr[10] = 0; data_.v6.sin6_addr.s6_addr[11] = 0;
+    data_.v6.sin6_addr.s6_addr[12] = 0; data_.v6.sin6_addr.s6_addr[13] = 0;
+    data_.v6.sin6_addr.s6_addr[14] = 0; data_.v6.sin6_addr.s6_addr[15] = 0;
     data_.v6.sin6_scope_id = 0;
-  }
-  else
-  {
-    data_.v4.sin_family = ASIO_OS_DEF(AF_UNSPEC);
-    data_.v4.sin_port =
-      asio::detail::socket_ops::host_to_network_short(port_num);
-    data_.v4.sin_addr.s_addr = ASIO_OS_DEF(INADDR_ANY);
   }
 }
 
 endpoint::endpoint(const asio::ip::address& addr,
-    unsigned short port_num)
+    unsigned short port_num) ASIO_NOEXCEPT
   : data_()
 {
   using namespace std; // For memcpy.
@@ -87,69 +80,61 @@ endpoint::endpoint(const asio::ip::address& addr,
       asio::detail::socket_ops::host_to_network_short(port_num);
     data_.v4.sin_addr.s_addr =
       asio::detail::socket_ops::host_to_network_long(
-          static_cast<asio::detail::u_long_type>(
-            address_cast<address_v4>(addr).to_ulong()));
+        addr.to_v4().to_uint());
   }
-  else if (addr.is_v6())
+  else
   {
     data_.v6.sin6_family = ASIO_OS_DEF(AF_INET6);
     data_.v6.sin6_port =
       asio::detail::socket_ops::host_to_network_short(port_num);
     data_.v6.sin6_flowinfo = 0;
-    asio::ip::address_v6 v6_addr = address_cast<address_v6>(addr);
+    asio::ip::address_v6 v6_addr = addr.to_v6();
     asio::ip::address_v6::bytes_type bytes = v6_addr.to_bytes();
     memcpy(data_.v6.sin6_addr.s6_addr, bytes.data(), 16);
     data_.v6.sin6_scope_id =
       static_cast<asio::detail::u_long_type>(
         v6_addr.scope_id());
   }
-  else
-  {
-    data_.v4.sin_family = ASIO_OS_DEF(AF_UNSPEC);
-    data_.v4.sin_port =
-      asio::detail::socket_ops::host_to_network_short(port_num);
-    data_.v4.sin_addr.s_addr = ASIO_OS_DEF(INADDR_ANY);
-  }
 }
 
 void endpoint::resize(std::size_t new_size)
 {
-  if (new_size > sizeof(data_))
+  if (new_size > sizeof(asio::detail::sockaddr_storage_type))
   {
     asio::error_code ec(asio::error::invalid_argument);
     asio::detail::throw_error(ec);
   }
 }
 
-unsigned short endpoint::port() const
+unsigned short endpoint::port() const ASIO_NOEXCEPT
 {
-  if (is_v6())
-  {
-    return asio::detail::socket_ops::network_to_host_short(
-        data_.v6.sin6_port);
-  }
-  else
+  if (is_v4())
   {
     return asio::detail::socket_ops::network_to_host_short(
         data_.v4.sin_port);
   }
+  else
+  {
+    return asio::detail::socket_ops::network_to_host_short(
+        data_.v6.sin6_port);
+  }
 }
 
-void endpoint::port(unsigned short port_num)
+void endpoint::port(unsigned short port_num) ASIO_NOEXCEPT
 {
-  if (is_v6())
-  {
-    data_.v6.sin6_port
-      = asio::detail::socket_ops::host_to_network_short(port_num);
-  }
-  else
+  if (is_v4())
   {
     data_.v4.sin_port
       = asio::detail::socket_ops::host_to_network_short(port_num);
   }
+  else
+  {
+    data_.v6.sin6_port
+      = asio::detail::socket_ops::host_to_network_short(port_num);
+  }
 }
 
-asio::ip::address endpoint::address() const
+asio::ip::address endpoint::address() const ASIO_NOEXCEPT
 {
   using namespace std; // For memcpy.
   if (is_v4())
@@ -158,7 +143,7 @@ asio::ip::address endpoint::address() const
         asio::detail::socket_ops::network_to_host_long(
           data_.v4.sin_addr.s_addr));
   }
-  else if (is_v6())
+  else
   {
     asio::ip::address_v6::bytes_type bytes;
 #if defined(ASIO_HAS_STD_ARRAY)
@@ -168,24 +153,20 @@ asio::ip::address endpoint::address() const
 #endif // defined(ASIO_HAS_STD_ARRAY)
     return asio::ip::address_v6(bytes, data_.v6.sin6_scope_id);
   }
-  else
-  {
-    return asio::ip::address();
-  }
 }
 
-void endpoint::address(const asio::ip::address& addr)
+void endpoint::address(const asio::ip::address& addr) ASIO_NOEXCEPT
 {
   endpoint tmp_endpoint(addr, port());
   data_ = tmp_endpoint.data_;
 }
 
-bool operator==(const endpoint& e1, const endpoint& e2)
+bool operator==(const endpoint& e1, const endpoint& e2) ASIO_NOEXCEPT
 {
   return e1.address() == e2.address() && e1.port() == e2.port();
 }
 
-bool operator<(const endpoint& e1, const endpoint& e2)
+bool operator<(const endpoint& e1, const endpoint& e2) ASIO_NOEXCEPT
 {
   if (e1.address() < e2.address())
     return true;
@@ -195,18 +176,14 @@ bool operator<(const endpoint& e1, const endpoint& e2)
 }
 
 #if !defined(ASIO_NO_IOSTREAM)
-std::string endpoint::to_string(asio::error_code& ec) const
+std::string endpoint::to_string() const
 {
-  std::string a = address().to_string(ec);
-  if (ec)
-    return std::string();
-
   std::ostringstream tmp_os;
   tmp_os.imbue(std::locale::classic());
   if (is_v4())
-    tmp_os << a;
+    tmp_os << address();
   else
-    tmp_os << '[' << a << ']';
+    tmp_os << '[' << address() << ']';
   tmp_os << ':' << port();
 
   return tmp_os.str();

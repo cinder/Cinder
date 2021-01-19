@@ -2,7 +2,7 @@
 // detail/null_reactor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -43,12 +43,12 @@ public:
   }
 
   // Destroy all user-defined handler objects owned by the service.
-  void shutdown_service()
+  void shutdown()
   {
   }
 
   // No-op because should never be called.
-  void run(bool /*block*/, op_queue<scheduler_operation>& /*ops*/)
+  void run(long /*usec*/, op_queue<scheduler_operation>& /*ops*/)
   {
   }
 

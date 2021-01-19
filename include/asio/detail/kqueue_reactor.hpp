@@ -2,7 +2,7 @@
 // detail/kqueue_reactor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2005 Stefan Arentz (stefan at soze dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -52,6 +52,10 @@ class scheduler;
 class kqueue_reactor
   : public execution_context_service_base<kqueue_reactor>
 {
+private:
+  // The mutex type used by this reactor.
+  typedef conditionally_enabled_mutex mutex;
+
 public:
   enum op_types { read_op = 0, write_op = 1,
     connect_op = 1, except_op = 2, max_ops = 3 };
@@ -59,6 +63,8 @@ public:
   // Per-descriptor queues.
   struct descriptor_state
   {
+    descriptor_state(bool locking) : mutex_(locking) {}
+
     friend class kqueue_reactor;
     friend class object_pool_access;
 
@@ -67,6 +73,7 @@ public:
 
     mutex mutex_;
     int descriptor_;
+    int num_kevents_; // 1 == read only, 2 == read and write
     op_queue<reactor_op> op_queue_[max_ops];
     bool shutdown_;
   };
@@ -81,10 +88,10 @@ public:
   ASIO_DECL ~kqueue_reactor();
 
   // Destroy all user-defined handler objects owned by the service.
-  ASIO_DECL void shutdown_service();
+  ASIO_DECL void shutdown();
 
   // Recreate internal descriptors following a fork.
-  ASIO_DECL void fork_service(
+  ASIO_DECL void notify_fork(
       asio::execution_context::fork_event fork_ev);
 
   // Initialise the task.
@@ -125,13 +132,21 @@ public:
       per_descriptor_data& descriptor_data);
 
   // Cancel any operations that are running against the descriptor and remove
-  // its registration from the reactor.
+  // its registration from the reactor. The reactor resources associated with
+  // the descriptor must be released by calling cleanup_descriptor_data.
   ASIO_DECL void deregister_descriptor(socket_type descriptor,
       per_descriptor_data& descriptor_data, bool closing);
 
-  // Remote the descriptor's registration from the reactor.
+  // Remove the descriptor's registration from the reactor. The reactor
+  // resources associated with the descriptor must be released by calling
+  // cleanup_descriptor_data.
   ASIO_DECL void deregister_internal_descriptor(
       socket_type descriptor, per_descriptor_data& descriptor_data);
+
+  // Perform any post-deregistration cleanup tasks associated with the
+  // descriptor data.
+  ASIO_DECL void cleanup_descriptor_data(
+      per_descriptor_data& descriptor_data);
 
   // Add a new timer queue to the reactor.
   template <typename Time_Traits>
@@ -162,7 +177,7 @@ public:
       typename timer_queue<Time_Traits>::per_timer_data& source);
 
   // Run the kqueue loop.
-  ASIO_DECL void run(bool block, op_queue<operation>& ops);
+  ASIO_DECL void run(long usec, op_queue<operation>& ops);
 
   // Interrupt the kqueue loop.
   ASIO_DECL void interrupt();
@@ -185,7 +200,7 @@ private:
   ASIO_DECL void do_remove_timer_queue(timer_queue_base& queue);
 
   // Get the timeout value for the kevent call.
-  ASIO_DECL timespec* get_timeout(timespec& ts);
+  ASIO_DECL timespec* get_timeout(long usec, timespec& ts);
 
   // The scheduler used to post completions.
   scheduler& scheduler_;
