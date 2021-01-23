@@ -126,10 +126,7 @@ function( ci_make_app )
 			# Force multiprocess compilation
 			add_compile_options( /MP )
 			# Add lib dirs
-			cmake_policy( PUSH )
-			cmake_policy( SET CMP0015 OLD )
-			link_directories( "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
-			cmake_policy( POP )
+			link_directories( "${ARG_CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
 		endif()
 	endif()
 
