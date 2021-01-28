@@ -241,8 +241,8 @@ class circular_buffer
         typedef Alloc                             allocator_type;
 
         typedef typename Alloc::value_type        value_type;
-        typedef typename value_type&         reference;
-        typedef typename const value_type&   const_reference;
+        typedef value_type&         reference;
+        typedef const value_type&   const_reference;
 
         typedef typename Alloc::size_type         size_type;
         typedef typename Alloc::difference_type   difference_type;
