@@ -69,8 +69,6 @@ class circular_buffer_iterator
         typedef std::random_access_iterator_tag     iterator_category;
         typedef typename cbuf_type::value_type      value_type;
         typedef typename cbuf_type::size_type       size_type;
-        typedef typename cbuf_type::pointer         pointer;
-        typedef typename cbuf_type::const_pointer   const_pointer;
         typedef typename cbuf_type::reference       reference;
         typedef typename cbuf_type::const_reference const_reference;
         typedef typename cbuf_type::difference_type difference_type;
@@ -243,10 +241,8 @@ class circular_buffer
         typedef Alloc                             allocator_type;
 
         typedef typename Alloc::value_type        value_type;
-        typedef typename Alloc::pointer           pointer;
-        typedef typename Alloc::const_pointer     const_pointer;
-        typedef typename Alloc::reference         reference;
-        typedef typename Alloc::const_reference   const_reference;
+        typedef value_type&         reference;
+        typedef const value_type&   const_reference;
 
         typedef typename Alloc::size_type         size_type;
         typedef typename Alloc::difference_type   difference_type;
@@ -470,7 +466,7 @@ class circular_buffer
         {
             for (size_type n = 0; n < contents_size_; ++n)
             {
-                alloc_.destroy(array_ + index_to_subscript(n));
+                std::allocator_traits<Alloc>::destroy(alloc_, array_ + index_to_subscript(n));
             }
         }
 
