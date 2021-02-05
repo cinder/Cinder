@@ -284,6 +284,7 @@ void ImageTargetFileTinyExr::finalize()
 {
 	// turn interleaved data into a series of planar channels
 	vector<Channel32f> channels;
+	channels.reserve( mNumComponents );
 	unsigned char *    imagePtr[4];
 	for( int c = 0; c < mNumComponents; ++c ) {
 		channels.emplace_back( getWidth(), getHeight() );
