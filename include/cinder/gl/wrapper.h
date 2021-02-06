@@ -88,7 +88,7 @@ CI_API GlslProgRef& getStockShader( const class ShaderDef &shader );
 CI_API void bindStockShader( const class ShaderDef &shader );
 CI_API void setDefaultShaderVars();
 
-CI_API void clear( const ColorA &color = ColorA::black(), bool clearDepthBuffer = true );
+CI_API void clear( const ColorA &color = ColorA::zero(), bool clearDepthBuffer = true );
 	
 CI_API void clear( GLbitfield mask );
 CI_API void clearColor( const ColorA &color );
