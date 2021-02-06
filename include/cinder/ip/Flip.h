@@ -31,6 +31,10 @@ namespace cinder { namespace ip {
 template<typename T>
 CI_API void flipVertical( SurfaceT<T> *surface );
 
+//! Flips the contents of \a channel vertically (bottom becomes top)
+template<typename T>
+CI_API void flipVertical( ChannelT<T> *channel );
+
 //! Copies the contents of \a srcSurface into \a destSurface, flipping them vertically
 template<typename T>
 CI_API void flipVertical( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface );
@@ -42,5 +46,17 @@ CI_API void flipVertical( const ChannelT<T> &srcChannel, ChannelT<T> *destChanne
 //! Flips the contents of \a surface horizontally (left becomes right)
 template<typename T>
 CI_API void flipHorizontal( SurfaceT<T> *surface );
+
+//! Flips the contents of \a channel horizontally (left becomes right)
+template<typename T>
+CI_API void flipHorizontal( ChannelT<T> *channel );
+
+//! Flips the contents of \a surface both vertically and horizontally (left becomes right, bottom becomes top)
+template<typename T>
+CI_API void flipDiagonal( SurfaceT<T> *surface );
+    
+//! Flips the contents of \a channel both vertically and horizontally (left becomes right, bottom becomes top)
+template<typename T>
+CI_API void flipDiagonal( ChannelT<T> *channel );
 
 } } // namespace cinder::ip
