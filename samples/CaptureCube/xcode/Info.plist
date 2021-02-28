@@ -22,6 +22,8 @@
 	<string>1.0</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app uses your webcam.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>
