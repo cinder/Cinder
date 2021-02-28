@@ -24,7 +24,7 @@
 
 #pragma once
 
-#if (defined(__cplusplus) && __cplusplus >= 201703L && defined(__has_include) && __has_include(<filesystem>)) || defined( _MSC_VER )
+#if ( (! defined(__APPLE__)) && defined(__cplusplus) && __cplusplus >= 201703L && defined(__has_include) && __has_include(<filesystem>)) || defined( _MSC_VER )
 		#define GHC_USE_STD_FS
 		#include <filesystem>
 		namespace cinder {
