@@ -5588,7 +5588,6 @@
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LINK_WITH_STANDARD_LIBRARIES = NO;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				PRELINK_LIBS = "";
@@ -5627,7 +5626,6 @@
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LINK_WITH_STANDARD_LIBRARIES = NO;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
@@ -5682,6 +5680,7 @@
 					../../include/jsoncpp,
 					../../include/oggvorbis,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OBJROOT = build/;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -5733,6 +5732,7 @@
 					../../include/jsoncpp,
 					../../include/oggvorbis,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OBJROOT = build/;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				USER_HEADER_SEARCH_PATHS = "../../include ../../src/oggvorbis/vorbis ../../src/r8brain";
