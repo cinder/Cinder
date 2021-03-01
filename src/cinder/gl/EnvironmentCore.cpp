@@ -28,6 +28,9 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/Texture.h"
+#if defined( CINDER_HEADLESS_GL_OSMESA )
+	#include <GL/osmesa.h>
+#endif
 
 #if ! defined( CINDER_GL_ES )
 
@@ -70,7 +73,11 @@ void EnvironmentCore::initializeFunctionPointers()
 {
 	static bool sInitialized = false;
 	if( ! sInitialized ) {
+#if ! defined( CINDER_HEADLESS_GL_OSMESA )
 		sInitialized = ( gladLoadGL() != 0 );
+#else
+		sInitialized = ( gladLoadGLLoader( (GLADloadproc)&OSMesaGetProcAddress ) != 0 );
+#endif
 	}
 }
 
