@@ -36,7 +36,7 @@ BufferObjRef BufferObj::create( GLenum target, GLsizeiptr allocationSize, const 
 BufferObj::BufferObj( GLenum target )
 	: mId( 0 ), mSize( 0 ), mTarget( target ),
 #if defined( CINDER_GL_ES )
-  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	mUsage( GL_DYNAMIC_DRAW )
   #else	
 	mUsage( 0 ) /* GL ES default buffer usage is undefined(?) */
@@ -47,10 +47,12 @@ BufferObj::BufferObj( GLenum target )
 {
 	bool initialized = false;
 #if defined( GL_VERSION_4_5 )
-	if( GLAD_GL_VERSION_4_5 ) {
-		glCreateBuffers( 1, &mId );
-		initialized = true;
-	}
+	#if ! defined( CINDER_EMSCRIPTEN )
+		if( GLAD_GL_VERSION_4_5 ) {
+			glCreateBuffers( 1, &mId );
+			initialized = true;
+		}
+	 #endif 
 #endif
 	if( ! initialized ) {
 		glGenBuffers( 1, &mId );
@@ -63,11 +65,13 @@ BufferObj::BufferObj( GLenum target, GLsizeiptr allocationSize, const void *data
 {
 	bool initialized = false;
 #if defined( GL_VERSION_4_5 )
-	if( GLAD_GL_VERSION_4_5 ) {
-		glCreateBuffers( 1, &mId );
-		glNamedBufferData( mId, mSize, data, mUsage );
-		initialized = true;
-	}
+	#if ! defined( CINDER_EMSCRIPTEN )	
+		if( GLAD_GL_VERSION_4_5 ) {
+			glCreateBuffers( 1, &mId );
+			glNamedBufferData( mId, mSize, data, mUsage );
+			initialized = true;
+		}
+	#endif 
 #endif
 	if( ! initialized ) {
 		glGenBuffers( 1, &mId );
@@ -150,6 +154,7 @@ void* BufferObj::map( GLenum access ) const
 #endif
 
 #if defined( CINDER_GL_HAS_MAP_BUFFER ) || defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
+#if ! defined( CINDER_EMSCRIPTEN )
 void* BufferObj::mapWriteOnly()
 {
 	void* result = nullptr;
@@ -163,6 +168,7 @@ void* BufferObj::mapWriteOnly()
 	return result;
 }
 
+#endif 
 void* BufferObj::mapReplace()
 {
 	ScopedBuffer bufferBind( mTarget, mId );
@@ -265,8 +271,11 @@ void BufferObj::setLabel( const std::string &label )
 void BufferObj::bufferStorage( GLsizeiptr size, const void* data, GLbitfield flags ) const
 {
 #if defined( GL_VERSION_4_4 )
-	CI_ASSERT( GLAD_GL_VERSION_4_4 );
-	glBufferStorage( mTarget, size, data, flags );
+	#if ! defined(CINDER_EMSCRIPTEN )
+		CI_ASSERT( GLAD_GL_VERSION_4_4 );
+		glBufferStorage( mTarget, size, data, flags );
+
+	#endif 
 #else
 	throw gl::Exception( "bufferStorage unimplemented if GL_VERSION_4_4 is not accessible." );
 #endif
@@ -275,8 +284,10 @@ void BufferObj::bufferStorage( GLsizeiptr size, const void* data, GLbitfield fla
 void BufferObj::namedBufferStorage( GLsizeiptr size, const void* data, GLbitfield flags ) const
 {
 #if defined( GL_VERSION_4_5 )
-	CI_ASSERT( GLAD_GL_VERSION_4_5 );
-	glNamedBufferStorage( mId, size, data, flags );
+	#if ! defined(CINDER_EMSCRIPTEN )
+		CI_ASSERT( GLAD_GL_VERSION_4_5 );
+		glNamedBufferStorage( mId, size, data, flags );
+	#endif 
 #else
 	throw gl::Exception( "namedBufferStorage unimplemented if GL_VERSION_4_5 is not accessible." );
 #endif

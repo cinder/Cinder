@@ -40,11 +40,11 @@
 	#include <OpenGLES/ES2/glext.h>
 #endif
 
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
  	#include "EGL/egl.h"
 #endif
 
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 /* 
   #if ! defined( CINDER_GL_HAS_INSTANCED_ARRAYS )
  	using PFNGLVERTEXATTRIBDIVISOREXTPROC = void*;
@@ -254,7 +254,7 @@ void EnvironmentEs::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum 
 #if defined( CINDER_GL_ES_2 )
 	// Test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
 	// both ANGLE and iOS support EXT_texture_storage
-  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	static auto texStorage2DFn = (void (*)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height))nullptr;
   #else	
 	static auto texStorage2DFn = glTexStorage2DEXT;
@@ -307,7 +307,7 @@ void EnvironmentEs::allocateTexStorageCubeMap( GLsizei levels, GLenum internalFo
 #if defined( CINDER_GL_ES_2 )
 	// test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
 	// both ANGLE and iOS support EXT_texture_storage
-  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	static auto texStorage2DFn = (void (*)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height))nullptr;
   #else	
 	static auto texStorage2DFn = glTexStorage2DEXT;

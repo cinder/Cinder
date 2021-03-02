@@ -145,7 +145,7 @@ class CI_API TextureFont {
 	bool	isPremultiplied() const { return mFormat.getPremultiply(); }
 
 	//! Returns the default set of characters for a TextureFont, suitable for most English text, including some common ligatures and accented vowels.
-	//! \c "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphridséáèà"
+	//! \c "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphridsÔøΩÔøΩÔøΩÔøΩ"
 	static std::string		defaultChars() { return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphrids\303\251\303\241\303\250\303\240"; }
 	
 	struct CI_API GlyphInfo {
@@ -167,7 +167,7 @@ class CI_API TextureFont {
 	Font											mFont;
 	Format											mFormat;
 
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	std::map<Font::Glyph, Font::GlyphMetrics>  mCachedGlyphMetrics;
 	const std::map<Font::Glyph, Font::GlyphMetrics>* getCachedGlyphMetrics() const
 	{ return mCachedGlyphMetrics.empty() ? nullptr : &mCachedGlyphMetrics; }

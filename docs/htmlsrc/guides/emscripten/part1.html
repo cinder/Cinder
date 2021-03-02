@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- Update title -->
+		<title>Cinder with Emscripten</title>
+
+		<!-- keywords used for searching -->
+		<meta name="keywords" content="guide, emscripten, cinder">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- reference to Cinder classes -->
+   		<!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+   		<!-- master stylesheet - these links will be replaced when compiled -->
+		<link rel="stylesheet" href="../../_assets/css/foundation.css">
+		<link rel="stylesheet" href="../../_assets/css/prism.css">
+		<link rel="stylesheet" href="../../_assets/css/style.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+		<!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+
+	</head>
+
+	<body id="guide-contents" class="language-c++">
+
+		<!-- CONTENT STARTS HERE -->
+
+        <section id="install">
+            <h1><a id="Getting_things_set_up_0"></a>Getting things set up</h1>
+            <p>There are number of things you'll need to do in order to get things set up to build with Emscripten. If you're already familiar with CMake projects and how those work, then this will likely not be new for you as the process for running an Emscripten project is nearly identical.</p>
+            <h1><a id="System_requirements_3"></a>System requirements</h1>
+            <p>In terms of hardware requirements, this should work on any system that supports Cinder and Emscripten.</p>
+
+            <h1><a id="Browser_support_43"></a>Browser support</h1>
+            <p>Browser support can be a little tricker. You technically just need a browser that can support WebGL 2 but even if there is support, sometimes different browser developers enable/disable different things. That being said the recommended browsers are Firefox or Chrome.</p>
+            <p>
+                <strong>When running your application</strong><br>
+                To run your Cinder applications, while not strictly necessary, it's recommended to host on a server that can serve files with the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types">mime type</a> <code>application/wasm</code>
+            </p>
+            <p>If your server does not support that mime type, you will still be able to run your app, but your bundle won't be able to compile things as efficiently.</p>
+
+            
+            <h1><a id="Downloading_the_essentials_6"></a>Downloading the essentials</h1>
+            <ul>
+                <li>Install <a target="_blank" href="https://cmake.org/">Cmake</a> (at least version 3.10 but may work on older versions as well)</li>
+                <li>
+                    You'll also need a *nix style terminal window as well as <code>make</code> or something similar if you happen to be on Windows
+                    <ul>
+                        <li>This has been tested on WSL, specifically using Ubuntu as the backend</li>
+                        <li>Emscripten has been known to work with Git bash; though as of version 1.39.16 of Emscripten, support seems suspect. Some things work fine, some things seem to fail. That said, assuming you can get things built, you will also need 
+                            a make program and things have been known to work with MinGW64. </li>
+                    </ul>
+                </li>
+                <li>Of course, you'll need to install Emscripten. <a target="_blank" href="http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html">Make sure to follow the directions found on the official site</a> as the method of installation has changed since Emscripten was originally conceived.</li>
+            </ul>
+
+            <p>Once you have all that...</p>
+            
+            <h1><a id="Building_Cinder_16"></a>Building Cinder</h1>
+            <ul>
+                <li>First, run <code>emsdk activate latest</code>, then run <code>source emsdk_env.sh</code></li>
+                <li>
+                    
+                    Just like you would on the desktop if you were building Cinder for Linux, make a build folder at the root of your Cinder 
+                    installation and run <br/>
+                    <code>emcmake cmake ..</code> (plus any other CMake flags you'd like to set)
+                </li>
+            </ul>
+          
+            <h1><a id="Updating_your_systems_PATH_variable_28"></a>Updating your systems <code>PATH</code> variable</h1>
+            <p>This isn't entirely necessary it will be useful to add the path to your <code>emsdk</code> folder to your system's <code>PATH</code> variable to make it easier to run commands.</p>
+            <p><a href="/part2.html">Now we can start on to building an actual projecct.</a></p>
+            
+           
+            <h1>Known working configurations</h1>
+            <p>This has been tested with the following configuration</p>
+            <ul>
+                <li>
+                    Windows 10
+                </li>
+                <li>
+                    WSL 
+                </li>
+                <li>Emscripten version 1.39.16</li>
+            </ul>
+
+            <p>In the initial explorations of the Emscripten codebase, an older version was used; as of roughly 10/2019, a newer compilation engine was developed and integrated.</p>
+            <p>If you would like to try the older version, remember to add <code>-fastcomp</code> to your <code>emsdk</code> commands</p>
+            <p>The <code>emsdk</code> help command will mention <code>fastcomp</code> as well. </p>
+        </section>
+
+		<!-- END CONTENT -->
+
+		<!-- Scripts -->
+		<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+		<!-- Place additional scripts here (optional) -->
+		<!-- <script type="text/javascript"></script> -->
+
+
+        <!--
+            Legacy stuff, keeping around in case it might be helpful.
+
+
+            
+              <h1><a id="If_you_gotta_build_Boost_this_is_optional_21"></a>If you gotta build Boost (this is optional)</h1>
+            <p>Emscripten support relies on Boost system and filesystem libraries which should be included. If for some reason you need to rebuild. Note that you will definitely need a Unix-y terminal for this, Git Bash won't work.</p>
+            <ul>
+                <li>Download Boost. Note that it appears that the set of headers used needs to match the version of the library built. The current version of Boost being used is 1.60. When it's downloaded cd into the Boost directory.</li>
+                <li>run <a target="_blank" href="http://bootstrap.sh">bootstrap.sh</a>. It should produce 2 executables but we're only interested in one called b2.</li>
+                <li>Next you can run b2 --with-system --with-filesystem toolset=emscripten link=static. If for some reason you get an error, you can try replacing emscripten with clang-emscripten</li>
+                <li>In your Cinder folder, drop the output in lib/emscripten</li>
+            </ul>
+        -->
+	</body>
+</html>

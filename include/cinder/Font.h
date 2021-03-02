@@ -43,7 +43,7 @@
 	namespace Gdiplus {
 		class Font;
 	}
-#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	typedef struct FT_FaceRec_* FT_Face;
 #endif
 
@@ -54,7 +54,7 @@ class FontObj;
 //! Represents an instance of a font at a point size. \ImplShared
 class CI_API Font {
  public:
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )	
 	typedef uint32_t		Glyph;
 	struct GlyphMetrics {
 		ivec2				advance;
@@ -77,7 +77,7 @@ class CI_API Font {
 	std::string				getFullName() const;
 	float					getSize() const;
 
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	float 					getLinespace() const;
 #endif
 	float					getLeading() const;
@@ -93,7 +93,7 @@ class CI_API Font {
 	//! Returns the bounding box of a Glyph, relative to the baseline as the origin
 	Rectf					getGlyphBoundingBox( Glyph glyph ) const;
 
-#if defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	FT_Face					getFreetypeFace() const;
 #endif
 	

@@ -132,7 +132,7 @@ class CI_API TextBox {
 	vec2				measure() const;
 	/** Returns a vector of pairs of glyph indices and the position of their left baselines
 		\warning Does not support word wrapping on Windows. **/
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )	
 	std::vector<std::pair<Font::Glyph,vec2>>	measureGlyphs( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics = nullptr ) const;
 #else
 	std::vector<std::pair<Font::Glyph,vec2>>	measureGlyphs() const;
@@ -160,7 +160,7 @@ class CI_API TextBox {
 	void						calculate() const;
 
 	mutable std::u16string	mWideText;
-#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	std::vector<std::string>	calculateLineBreaks( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics = nullptr ) const;
 	void 						calculate() const;
 #endif

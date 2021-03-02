@@ -1,0 +1,83 @@
+{
+	"data":{
+		"metadata":
+		{
+			"keywords": ["guide, emscripten"]
+		},
+		"nav":[
+			{
+				"label": "Introduction",
+				"link": "index.html",
+				"pagenav":[
+
+				]
+			},
+			{
+				"label": "Installation",
+				"link": "part1.html",
+				"pagenav":[
+
+				]
+			},
+			{
+				"label": "Getting started",
+				"link": "part2.html",
+				"pagenav":[
+
+				]
+			},
+			{
+				"label": "Possible issues",
+				"link": "part3.html",
+				"pagenav":[
+
+				]
+			},
+			{
+				"label": "Deployment",
+				"link": "part4.html",
+				"pagenav":[
+
+				]
+			},
+			{
+				"label": "Working with the Web",
+				"link": "part5.html",
+				"pagenav":[
+
+				]
+			},
+			{
+				"label": "Interesting Web technologies",
+				"link": "part6.html",
+				"pagenav":[
+				
+				]
+			},
+			{
+				"label": "Tips",
+				"link": "part7.html",
+				"pagenav":[
+
+				]
+			},
+			{
+				"label":"FAQs",
+				"link":"part8.html"
+			},
+			{
+				"label":"ci_emscripten_app",
+				"link":"part9.html"
+			},
+			{
+				"label":"emscripten::val",
+				"link":"part9.5.html"
+			}
+		],
+		"seealso":
+		{
+
+		}
+	}
+
+}

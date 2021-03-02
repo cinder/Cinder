@@ -60,7 +60,9 @@
 	#else
 		typedef struct GLFWwindow 	GLFWwindow;
 	#endif
-#endif
+#elif defined (CINDER_EMSCRIPTEN )
+	typedef struct GLFWwindow 	GLFWwindow;
+#endif 
 
 namespace cinder { namespace gl {
 
@@ -193,6 +195,15 @@ struct PlatformDataAndroid : public Context::PlatformData {
 		GLFWwindow 		*mContext = nullptr;
 	};
   #endif
-#endif
+#elif defined( CINDER_EMSCRIPTEN )
+
+struct PlatformDataEmscripten : public Context::PlatformData {
+	PlatformDataEmscripten( GLFWwindow *context )
+		: mContext( context )
+	{};
+
+	GLFWwindow 		*mContext = nullptr;
+};
+#endif 
 
 } } // namespace cinder::gl

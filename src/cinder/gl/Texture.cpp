@@ -416,7 +416,7 @@ void TextureBase::getInternalFormatInfo( GLint internalFormat, GLenum *outDataFo
 		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:				dataFormat = GL_RGBA;	dataType = 0;					break;
 #endif
 
-#if defined( CINDER_GL_ES ) && ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_GL_ES ) && ! defined( CINDER_GL_ANGLE ) && ! defined( CINDER_EMSCRIPTEN )
 		case GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG:			dataFormat = GL_RGB;	dataType = 0;					break;
 		case GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG:			dataFormat = GL_RGB;	dataType = 0;					break;
 		case GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG:			dataFormat = GL_RGBA;	dataType = 0;					break;

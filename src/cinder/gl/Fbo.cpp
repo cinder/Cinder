@@ -42,6 +42,11 @@
 #include "cinder/gl/ConstantConversions.h"
 #include "cinder/ip/Flip.h"
 
+#ifdef CINDER_EMSCRIPTEN
+	#include <GL/gl.h>
+	#include "glfw/glfw3.h"
+#endif
+
 using namespace std;
 
 #if ! defined( CINDER_GL_ES_2 )

@@ -34,7 +34,9 @@
 	#include "cinder/app/android/PlatformAndroid.h"
 #elif defined( CINDER_LINUX )
 	#include "cinder/app/linux/PlatformLinux.h"
-#endif
+#elif defined( CINDER_EMSCRIPTEN )
+	#include "cinder/app/emscripten/PlatformEmscripten.h"
+#endif 
 
 #include <algorithm>
 
@@ -64,6 +66,10 @@ Platform* Platform::get()
 		sInstance = new PlatformAndroid;
 #elif defined( CINDER_LINUX )
 		sInstance = new PlatformLinux;
+#elif defined( CINDER_EMSCRIPTEN )
+		sInstance = new PlatformEmscripten;
+#else
+		#error "No cinder::Platform implementation on this build platform"
 #endif
 
 		sInstance->initialize();
@@ -139,6 +145,9 @@ const vector<fs::path>& Platform::getAssetDirectories() const
 
 void Platform::findAndAddDefaultAssetPath()
 {
+	#if defined( CINDER_EMSCRIPTEN )
+		addAssetDirectory("/");
+	#else 
 	// first search the local directory, then its parent, up to ASSET_SEARCH_DEPTH levels up
 	// check at least the app path, even if it has no parent directory
 	auto execPath = getExecutablePath();
@@ -153,6 +162,7 @@ void Platform::findAndAddDefaultAssetPath()
 			break;
 		}
 	}
+	#endif 
 }
 
 std::ostream& Platform::console()

@@ -484,7 +484,7 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 		return sKeyTable[nativeKeyCode];
 }
 
-#elif defined( CINDER_LINUX )
+#elif defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 
 #if defined( CINDER_LINUX_EGL_ONLY )
 
@@ -656,7 +656,10 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 
 #else
 
-#include "glad/glad.h"
+#ifndef CINDER_EMSCRIPTEN
+	#include "glad/glad.h"
+#endif 
+
 #include "glfw/glfw3.h"
 static bool sTableInited = false;
 static const int MAX_KEYCODE = GLFW_KEY_LAST + 1;

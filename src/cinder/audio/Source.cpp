@@ -33,7 +33,9 @@
 	#include "cinder/audio/msw/FileMediaFoundation.h"
 #elif defined( CINDER_LINUX )
  	#include "cinder/audio/linux/FileAudioLoader.h"
-#endif
+#elif defined( CINDER_EMSCRIPTEN )
+	#include "cinder/audio/emscripten/FileWebAudio.h"
+#endif 
 
 #include <cmath>
 
@@ -47,6 +49,8 @@ namespace cinder { namespace audio {
 unique_ptr<SourceFile> SourceFile::create( const DataSourceRef &dataSource, size_t sampleRate )
 {
 	unique_ptr<SourceFile> result;
+
+#if ! defined( CINDER_EMSCRIPTEN )
 
 #if ! defined( CINDER_UWP ) || ( _MSC_VER > 1800 )
 	if( dataSource->getFilePathHint().extension().string() == ".ogg" )
@@ -63,6 +67,9 @@ unique_ptr<SourceFile> SourceFile::create( const DataSourceRef &dataSource, size
 		result.reset( new linux::SourceFileAudioLoader( dataSource, sampleRate ) );		
 #endif
 	}
+#else 
+	result.reset( new em::SourceFileWebAudio( dataSource ) );
+#endif 
 
 	if( result )
 		result->setupSampleRateConversion();

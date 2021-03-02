@@ -48,7 +48,11 @@
 #elif defined( CINDER_LINUX ) 
 	#include "cinder/UrlImplCurl.h"
 	typedef cinder::IStreamUrlImplCurl		IStreamUrlPlatformImpl;
-#else
+#elif defined( CINDER_EMSCRIPTEN )
+	#include "cinder/emscripten/UrlImplEmscripten.h"
+	typedef cinder:: IStreamUrlImplEmscripten   IStreamUrlPlatformImpl;
+
+#else 
 	#include "cinder/UrlImpl.h"
 	typedef cinder::IStreamUrlImplCurl		IStreamUrlPlatformImpl;
 #endif
@@ -124,7 +128,7 @@ std::string Url::encode( const std::string &unescaped )
 #elif defined( CINDER_ANDROID )
 	std::string result = urlencode( unescaped );
 	return result;
-#elif defined( CINDER_LINUX )
+#elif defined( CINDER_LINUX ) || defined( CINDER_EMSCRIPTEN )
 	// Curl does not seem to agree with encoded URIs.
 	return unescaped;
 #endif	

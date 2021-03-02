@@ -115,7 +115,9 @@ class CI_API Renderer {
 #else
 	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) = 0;
 #endif
-#endif
+#elif defined( CINDER_EMSCRIPTEN )
+	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) = 0;
+#endif 
 
 	virtual Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) = 0;
 

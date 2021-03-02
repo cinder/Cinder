@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Emscripten-Generated Code</title>
+    <style>
+      body {
+        font-family: arial;
+        margin: 0;
+        padding: none;
+      }
+      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+      div.emscripten { text-align: center; }      
+      div.emscripten_border { border: 1px solid black; }
+      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+      canvas.emscripten { border: 0px none; background-color: black; }
+      #emscripten_logo {
+        display: inline-block;
+        margin: 0;
+      }
+
+
+      .spinner {
+        height: 30px;
+        width: 30px;
+        margin: 0;
+        margin-left: 20px;
+        vertical-align: top;
+        -webkit-animation: rotation .8s linear infinite;
+        -moz-animation: rotation .8s linear infinite;
+        -o-animation: rotation .8s linear infinite;
+        animation: rotation 0.8s linear infinite;
+        border-left: 5px solid rgb(235, 235, 235);
+        border-right: 5px solid rgb(235, 235, 235);
+        border-bottom: 5px solid rgb(235, 235, 235);
+        border-top: 5px solid rgb(120, 120, 120);
+        border-radius: 100%;
+        background-color: rgb(189, 215, 46);
+      }
+      @-webkit-keyframes rotation {
+        from {-webkit-transform: rotate(0deg);}
+        to {-webkit-transform: rotate(360deg);}
+      }
+      @-moz-keyframes rotation {
+        from {-moz-transform: rotate(0deg);}
+        to {-moz-transform: rotate(360deg);}
+      }
+      @-o-keyframes rotation {
+        from {-o-transform: rotate(0deg);}
+        to {-o-transform: rotate(360deg);}
+      }
+      @keyframes rotation {
+        from {transform: rotate(0deg);}
+        to {transform: rotate(360deg);}
+      }
+     
+      #progress {
+        height: 20px;
+        width: 300px;
+      }
+
+    
+    
+      #output {
+        width: 100%;
+        height: 200px;
+        margin: 0 auto;
+        margin-top: 10px;
+        border-left: 0px;
+        border-right: 0px;
+        padding-left: 0px;
+        padding-right: 0px;
+        display: block;
+        background-color: black;
+        color: white;
+        font-family: 'Lucida Console', Monaco, monospace;
+        outline: none;
+      }
+
+      #status {
+        position:relative;
+        left:30px;
+        align-self: center;
+      }
+
+      #spinner-status {
+        display: flex;
+        align-items: center;
+        position: relative;
+        top:50%;
+      }
+
+      #box {
+        display:flex;
+        width:100%;
+        max-height:150px;
+        
+        justify-content: space-evenly;
+        flex-wrap: nowrap;
+        flex-shrink: 0;
+      }
+
+      .flex-item {
+        flex-grow: 1;
+        flex-basis: 0;
+        flex-shrink: 0;
+        padding:10px;
+      }
+
+
+      svg {
+        width:300px;
+      }
+
+
+
+      #emcontrols {
+        position:relative;
+      }
+
+      #controls {
+        position: absolute;
+        top: 50%;
+        display: block;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+      }
+    </style>
+  </head>
+  <body>
+      <div id="box">
+          <div id="logo" class="flex-item">
+             
+                <svg class="flex-item" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="30.3 28.4 538.3 163.3" enable-background="new 30.3 28.4 538.3 163.3" xml:space="preserve"><script xmlns=""/>
+                  <path fill="#58585A" d="M191.6,181v-53.8l10.8-10.7h33.3l10.3,10.3v13.5h-12.7v-9.3l-4.7-4.7h-19.1l-5.1,5.1v45.2l5.1,5.1h19.1  l4.7-4.7v-9.8H246v13.9l-10.3,10.3h-33.3L191.6,181z"/>
+                  <path fill="#58585A" d="M294.6,182.3h8.3v-56.4h-8.3v-9.4h20.8l31,54.2v-44.9h-9.3v-9.4h28.2v9.4h-7.6v65.8h-12.4l-31.1-54.8v45.4  h9.3v9.4h-28.9L294.6,182.3L294.6,182.3z"/>
+                  <path fill="#58585A" d="M370.4,182.3h8.3v-56.4h-8.3v-9.4h51.5l10.8,10.8v53.6l-10.8,10.8h-51.5V182.3z M414.7,181.9l5.1-5.1v-45.3  l-5.1-5.1h-23.2v55.5H414.7z"/>
+                  <path fill="#58585A" d="M437.2,182.3h8.3v-56.4h-8.3v-9.4h57.4v20h-10.9v-10.7h-25.4v22.9h29.1v10h-29.1v23.5h25.5v-10.7h11v20  h-57.6L437.2,182.3L437.2,182.3z"/>
+                  <path fill="#58585A" d="M500.5,182.3h8.3v-56.4h-8.3v-9.4h52.1l9.9,9.9v20.7l-7.6,7.6l7.6,7.6v19.2l0.8,0.8h5.4v9.4h-13.2l-5.9-5.9  v-20.9l-5.1-5.1h-22.9v22.6h9v9.4h-30.2L500.5,182.3L500.5,182.3z M544.7,150.2l4.9-4.9v-14.8l-4.5-4.6h-23.5v24.3H544.7z"/>
+                  <rect x="276" y="167.7" fill="#F05129" width="13.7" height="12"/>
+                  <rect x="253.8" y="167.7" fill="#F05129" width="13.5" height="12"/>
+                  <rect x="265.8" y="155.7" fill="#F15A22" width="12" height="13.8"/>
+                  <rect x="265.8" y="178.2" fill="#BE1E2D" width="12" height="13.5"/>
+                  <rect x="265.8" y="116.7" fill="#FFD529" width="12" height="13.2"/>
+                  <rect x="265.8" y="138.8" fill="#F36C21" width="12" height="13.7"/>
+                  <rect x="253.8" y="128.6" fill="#FBB040" width="14.2" height="12"/>
+                  <rect x="276" y="128.6" fill="#FBB040" width="13.7" height="12"/>
+                  <rect x="85.7" y="82.4" fill="#EF4123" width="8.5" height="7.4"/>
+                  <rect x="98.8" y="82.4" fill="#EF4123" width="9" height="7.4"/>
+                  <rect x="93.1" y="75" fill="#F15A22" width="7.4" height="9"/>
+                  <rect x="93.1" y="88.2" fill="#C9252C" width="7.4" height="8.9"/>
+                  <rect x="113.5" y="61.6" fill="#F7941E" width="5.4" height="6.6"/>
+                  <rect x="113.5" y="71.1" fill="#ED1C24" width="5.4" height="6.6"/>
+                  <rect x="117.7" y="67" fill="#F58220" width="6.5" height="5.4"/>
+                  <rect x="108.1" y="67" fill="#F58220" width="6.1" height="5.4"/>
+                  <rect x="99.5" y="101.8" fill="#DA2128" width="3.2" height="4.1"/>
+                  <rect x="99.5" y="107.9" fill="#962F34" width="3.2" height="3.7"/>
+                  <rect x="102.1" y="105.1" fill="#C9252C" width="3.9" height="3.2"/>
+                  <rect x="96.3" y="105.1" fill="#C9252C" width="3.9" height="3.2"/>
+                  <rect x="83.2" y="56.3" fill="#F7941E" width="6.8" height="5.6"/>
+                  <rect x="93.2" y="56.3" fill="#F7941E" width="6.6" height="5.6"/>
+                  <rect x="88.7" y="50.8" fill="#FAA61A" width="5.6" height="6.6"/>
+                  <rect x="88.7" y="60.9" fill="#F15A22" width="5.6" height="6.6"/>
+                  <rect x="107.9" y="28.4" fill="#FFF200" width="8.1" height="10.7"/>
+                  <rect x="107.9" y="43.3" fill="#F7941E" width="8.1" height="9.4"/>
+                  <rect x="114.5" y="36.5" fill="#FFDD00" width="9.7" height="8.1"/>
+                  <rect x="99.8" y="36.5" fill="#FFDD00" width="10.2" height="8.1"/>
+                  <g>
+                    <polygon fill="#58585A" points="30.3,191.7 85.7,108.6 141.1,191.7  "/>
+                    <polygon fill="#58585A" points="67,191.7 123.7,96.6 177.7,191.7  "/>
+                  </g>
+                  <rect x="265.8" y="128.6" fill="#F7941E" width="12" height="12"/>
+                  <rect x="265.8" y="167.7" fill="#D51920" width="12" height="12"/>
+                  <rect x="93.1" y="82.4" fill="#ED1C24" width="7.4" height="7.4"/>
+                  <rect x="113.5" y="67" fill="#F15A22" width="5.4" height="5.4"/>
+                  <rect x="99.5" y="105.1" fill="#B8292F" width="3.2" height="3.2"/>
+                  <rect x="88.7" y="56.3" fill="#F37021" width="5.6" height="5.6"/>
+                  <rect x="107.9" y="36.5" fill="#FDB913" width="8.1" height="8.1"/>
+                  </svg>
+                  
+          </div>
+           <div id="status" class="flex-item">
+              <div id="spinner-status">
+
+                  <div class="spinner" id='spinner'></div>
+                  <div id="status">Downloading...</div>
+              </div>
+          </div>
+
+
+
+           <div id="emcontrols" class="flex-item">
+              <span id='controls' class="flex-item">
+                  <span><input type="checkbox" id="resize">Resize canvas</span>
+                  <span><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</span>
+                  <span><input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked, 
+                                                                                            document.getElementById('resize').checked)">
+                  </span>
+                </span>
+                
+                    <div class="emscripten">
+                      <progress value="0" max="100" id="progress" hidden=1></progress>
+                    </div>
+          </div>
+        </div>
+    <div class="emscripten_border">
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    </div>
+    <textarea id="output" rows="8"></textarea>
+    <script type='text/javascript'>
+      var statusElement = document.getElementById('status');
+      var progressElement = document.getElementById('progress');
+      var spinnerElement = document.getElementById('spinner');
+      var Module = {
+        preRun: [],
+        postRun: [],
+        print: (function() {
+          var element = document.getElementById('output');
+          if (element) element.value = ''; // clear browser cache
+          return function(text) {
+            if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+            // These replacements are necessary if you render to raw HTML
+            //text = text.replace(/&/g, "&amp;");
+            //text = text.replace(/</g, "&lt;");
+            //text = text.replace(/>/g, "&gt;");
+            //text = text.replace('\n', '<br>', 'g');
+            console.log(text);
+            if (element) {
+              element.value += text + "\n";
+              element.scrollTop = element.scrollHeight; // focus on bottom
+            }
+          };
+        })(),
+        printErr: function(text) {
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          if (0) { // XXX disabled for safety typeof dump == 'function') {
+            dump(text + '\n'); // fast, straight to the real console
+          } else {
+            console.error(text);
+          }
+        },
+        canvas: (function() {
+          var canvas = document.getElementById('canvas');
+          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+          // application robust, you may want to override this behavior before shipping!
+          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+          canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+          return canvas;
+        })(),
+        setStatus: function(text) {
+          if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+          if (text === Module.setStatus.last.text) return;
+          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+          var now = Date.now();
+          if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+          Module.setStatus.last.time = now;
+          Module.setStatus.last.text = text;
+          if (m) {
+            text = m[1];
+            progressElement.value = parseInt(m[2])*100;
+            progressElement.max = parseInt(m[4])*100;
+            progressElement.hidden = false;
+            spinnerElement.hidden = false;
+          } else {
+            progressElement.value = null;
+            progressElement.max = null;
+            progressElement.hidden = true;
+            if (!text) spinnerElement.style.opacity = '';
+          }
+          statusElement.innerHTML = text;
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        }
+      };
+      Module.setStatus('Downloading...');
+      window.onerror = function(event) {
+        // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+        Module.setStatus('Exception thrown, see JavaScript console');
+        spinnerElement.style.display = 'none';
+        Module.setStatus = function(text) {
+          if (text) Module.printErr('[post-exception status] ' + text);
+        };
+      };
+    </script>
+  
+    {{{ SCRIPT }}}
+  </body>
+</html>

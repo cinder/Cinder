@@ -1,0 +1,16 @@
+{
+  "name": "ci_emscripten_watch_server",
+  "version": "0.0.1",
+  "description": "Filewatcher server for live-reload of non-compiled assets",
+  "main": "index.js",
+  "scripts": {
+    "start": "node bin/cli.js"
+  },
+  "author": "RareVolume",
+  "license": "ISC",
+  "devDependencies": {
+    "chokidar": "^2.0.4",
+    "minimist": "^1.2.0",
+    "ws": "^6.1.2"
+  }
+}

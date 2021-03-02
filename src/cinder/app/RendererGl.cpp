@@ -47,7 +47,9 @@
 	#include "cinder/app/android/RendererGlAndroid.h"
 #elif defined( CINDER_LINUX )
 	#include "cinder/app/linux/RendererGlLinux.h"
-#endif
+#elif defined( CINDER_EMSCRIPTEN )
+	#include "cinder/app/emscripten/RendererImplGlEmscripten.h"
+#endif 
 
 namespace cinder { namespace app {
 
@@ -491,6 +493,68 @@ Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPix
 	ip::flipVertical( &s );
 	return s;
 }
-#endif
+#elif defined (CINDER_EMSCRIPTEN )
+RendererGl::~RendererGl()
+{
+	delete mImpl;
+}
+
+void RendererGl::setup( void* nativeWindow, RendererRef sharedRenderer )
+{
+	if( ! mImpl ) {
+		mImpl = new RendererImplGlEmscripten( this );
+    }
+
+	if( ! mImpl->initialize( nativeWindow, sharedRenderer ) ) {
+		throw ExcRendererAllocation( "RendererGlLinux initialization failed." );
+    }
+}
+
+void RendererGl::startDraw()
+{
+	if( mStartDrawFn )
+		mStartDrawFn( this );
+	else
+		mImpl->makeCurrentContext( false );
+}
+
+void RendererGl::makeCurrentContext( bool force )
+{
+	mImpl->makeCurrentContext( force );
+}
+
+void RendererGl::swapBuffers()
+{
+	mImpl->swapBuffers();
+}
+
+void RendererGl::finishDraw()
+{
+	if( mFinishDrawFn )
+		mFinishDrawFn( this );
+	else
+		mImpl->swapBuffers();
+}
+
+void RendererGl::defaultResize()
+{
+	mImpl->defaultResize();
+}
+
+Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
+{
+	Surface s( area.getWidth(), area.getHeight(), false );
+	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
+	GLint oldPackAlignment;
+	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment );
+	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
+	glReadPixels( area.x1, windowHeightPixels - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
+	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );
+	ip::flipVertical( &s );
+	return s;
+}
+
+
+#endif 
 
 } } // namespace cinder::app

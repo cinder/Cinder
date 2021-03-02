@@ -562,7 +562,13 @@ void VboMesh::bufferAttrib( geom::Attrib attrib, size_t dataSizeBytes, const voi
 	}
 	else { // interleaved data
 #if ! defined( CINDER_GL_ANGLE ) || defined( CINDER_GL_ES_3 )
-		uint8_t *ptr = reinterpret_cast<uint8_t*>( layoutVbo->second->mapWriteOnly() );
+		
+		#if ! defined( CINDER_EMSCRIPTEN )
+			uint8_t *ptr = reinterpret_cast<uint8_t*>( layoutVbo->second->mapWriteOnly() );
+		#else 
+			uint8_t * ptr = nullptr;
+		#endif 
+		
 		if( ! ptr ) {
 			CI_LOG_E( "Failed to map VBO" );
 			return;
@@ -615,8 +621,14 @@ VboMesh::MappedAttrib<T> VboMesh::mapAttribImpl( geom::Attrib attr, int dims, bo
 		mappedVboInfo.mRefCount = 1;
 		if( orphanExisting )
 			mappedVboInfo.mPtr = layoutVbo->second->mapReplace();
-		else
+		else{
+			#if ! defined( CINDER_EMSCRIPTEN )
 			mappedVboInfo.mPtr = layoutVbo->second->mapWriteOnly();
+			#else
+			CI_LOG_E("Failed to map VBO - Emscripten does not support mapWriteOnly");
+			#endif 
+		}
+			
 		mMappedVbos[layoutVbo->second] = mappedVboInfo;
 		dataPtr = mappedVboInfo.mPtr;
 	}

@@ -1,0 +1,175 @@
+#!/usr/bin/python
+
+import os
+import time
+import datetime
+import stat
+
+print( "Samples Emscripten Build File Generate v0.001\n" )
+
+Build = """#!/bin/sh
+$<CINDER_REL_PATH>/tools/emscripten/cibuilder -app "$@"
+"""
+
+CMakeListsTxt= """# $<APPNAME>
+cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
+set( CMAKE_VERBOSE_MAKEFILE on )
+
+get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/$<CINDER_REL_PATH>" ABSOLUTE )
+include( ${CINDER_DIR}/emscripten/cmake/Cinder.cmake )
+
+project( $<APPNAME> )
+
+# For Emscripten we need to do this again since project() resets some vars .
+include( ${CINDER_DIR}/emscripten/cmake/Cinder.cmake )
+
+get_filename_component( SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src" ABSOLUTE )
+get_filename_component( INC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../include" ABSOLUTE )
+set( ASSETS_DIR "../../../assets@/" )
+
+#if( NOT TARGET cinder${CINDER_LIB_SUFFIX} )
+#    find_package( cinder REQUIRED
+#        PATHS ${PROJECT_SOURCE_DIR}/$<CINDER_REL_PATH>/emscripten/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX}
+#        $ENV{Cinder_DIR}/emscripten/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX}
+#    )
+#endif()
+
+# Use PROJECT_NAME since CMAKE_PROJET_NAME returns the top-level project name.
+set( EXE_NAME ${PROJECT_NAME} )
+
+set( SRC_FILES
+	$<SOURCE_FILES>
+)
+
+set( CMAKE_EXECUTABLE_SUFFIX ".html" )
+if( EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../assets" )
+	set( CMAKE_EXE_LINKER_FLAGS  "--preload-file ${ASSETS_DIR}" )
+endif()
+
+add_executable( "${EXE_NAME}" ${SRC_FILES} )
+
+target_include_directories(
+	"${EXE_NAME}"
+	PUBLIC ${INC_DIR} 
+	${CINDER_INC_DIR}
+)
+
+target_link_libraries( 
+	"${EXE_NAME}" 
+	${CINDER_LIB_DIR}/emscripten/${CINDER_GL_ES_PLATFORM}/libcinder${CINDER_LIB_SUFFIX}.bc
+	${CINDER_LIB_DIR}/emscripten/libboost_filesystem.bc
+	${CINDER_LIB_DIR}/emscripten/libboost_system.bc
+)
+"""
+
+gCinderDir = os.path.abspath( "../../.." )
+print( "Cinder Dir is at %s\n" % gCinderDir )
+
+def get_sub_dirs( path ):
+	return [name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name))]
+	pass
+
+def make_emscripten_dir( path ):
+	if not os.path.exists( path ):
+		absPath = os.path.abspath( path )
+		os.makedirs( absPath )
+		print( "\t\tCreated %s" % path )
+	pass
+
+def write_build_file( path, cinderRelPath, dateTime ):
+	text = Build.replace( "$<CINDER_REL_PATH>", cinderRelPath )
+	text = text.replace( "$<DATETIME>", dateTime )
+
+	outFile = open( path, "w" )
+	outFile.write( text )
+	outFile.close()
+
+	st = os.stat( path )
+	os.chmod( path, st.st_mode | stat.S_IEXEC )
+	pass
+
+def get_c_files( path ):
+	result = []
+	if os.path.exists(path):
+		files = [name for name in os.listdir(path) if os.path.isfile(os.path.join(path, name))]
+		for file in files:
+			lc = file.lower()
+			if lc.endswith( ".cpp" ) or lc.endswith( ".cc" ) or lc.endswith( ".cxx" ):
+				result.append( "${SRC_DIR}/%s" % file )
+			pass
+	return result
+	pass
+
+def get_cpp_files( path ):
+	result = []
+	if os.path.exists(path):
+		files = [name for name in os.listdir(path) if os.path.isfile(os.path.join(path, name))]
+		for file in files:
+			lc = file.lower()
+			if lc.endswith( ".cpp" ) or lc.endswith( ".cc" ) or lc.endswith( ".cxx" ):
+				result.append( "${SRC_DIR}/%s" % file )
+			pass
+	return result
+	pass
+
+def write_cmake_file( path, emscriptenDir, cinderRelPath, appName, dateTime ):
+	text = CMakeListsTxt.replace( "$<DATETIME>", dateTime )
+	text = text.replace( "$<CINDER_REL_PATH>", cinderRelPath )
+	text = text.replace( "$<APPNAME>", appName )
+
+	srcPath = os.path.join( emscriptenDir, "../src" )
+	cFiles = get_c_files( srcPath )
+	cppFiles = get_cpp_files( srcPath )
+
+	allFiles = []
+	for f in cppFiles:
+		allFiles.append( f )
+	
+	sourceFiles = "\n\t".join( allFiles )
+
+	text = text.replace( "$<SOURCE_FILES>", sourceFiles )
+
+	outFile = open( path, "w" )
+	outFile.write( text )
+	outFile.close()
+	pass
+
+
+def generate_build( path, excludes ):
+	print( "Generating builds for projects in %s" % (path) )
+		
+	subDirs = get_sub_dirs( path )
+	subDirs.sort()
+	for subDir in subDirs:
+		if subDir in excludes:
+			continue
+			pass
+
+		appDir = subDir	
+		appName = subDir
+		#if not appName.endswith( "App" ):
+			#appName = appName[:-3]
+			#appName = ("%sApp" % appName)
+
+		emscriptenPath = os.path.join( path, appDir, "emscripten" )
+		buildPath = os.path.join( emscriptenPath, "cibuild" )
+		cmakePath = os.path.join( emscriptenPath, "CMakeLists.txt" )
+
+		cinderRelPath = os.path.relpath( gCinderDir, os.path.abspath( emscriptenPath ) )
+
+		dateTime = datetime.datetime.fromtimestamp( time.time() ).strftime('%Y-%m-%d %H:%M:%S')
+
+		print( "\t%s" % appName )
+		make_emscripten_dir( emscriptenPath )
+		write_build_file( buildPath, cinderRelPath, dateTime )
+		write_cmake_file( cmakePath, emscriptenPath, cinderRelPath, appName, dateTime )
+
+	print( "" )
+	pass
+
+generate_build( "../../../samples", [ "data", "_AllSamples", "_audio", "_opengl", "_svg", "_timeline" ] )
+generate_build( "../../../samples/_audio", [ "common" ] )
+generate_build( "../../../samples/_opengl", [] )
+generate_build( "../../../samples/_svg", [] )
+generate_build( "../../../samples/_timeline", [] )
+

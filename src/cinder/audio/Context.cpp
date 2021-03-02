@@ -48,7 +48,10 @@
 #elif defined( CINDER_LINUX )
 	#include "cinder/audio/linux/ContextPulseAudio.h"
  	#include "cinder/audio/linux/DeviceManagerPulseAudio.h"
-#else
+#elif defined( CINDER_EMSCRIPTEN )
+	#include "cinder/audio/emscripten/ContextWebAudio.h"
+	#include "cinder/audio/emscripten/DeviceManagerWebAudio.h"
+#else 
 	#define CINDER_AUDIO_DISABLED
 #endif
 
@@ -96,7 +99,9 @@ Context* Context::master()
 		sMasterContext.reset( new android::ContextOpenSl() );
 #elif defined( CINDER_LINUX )
 		sMasterContext.reset( new linux::ContextPulseAudio() );
-#endif
+#elif defined( CINDER_EMSCRIPTEN )
+	sMasterContext.reset( new em::ContextWebAudio() );
+#endif 
 	}
 
 	return sMasterContext.get();
@@ -118,7 +123,9 @@ DeviceManager* Context::deviceManager()
 		sDeviceManager.reset( new android::DeviceManagerOpenSl() );
 #elif defined( CINDER_LINUX )
 		sDeviceManager.reset( new linux::DeviceManagerPulseAudio() );
-#endif
+#elif defined( CINDER_EMSCRIPTEN )
+	sDeviceManager.reset(new em::DeviceManagerWebAudio());
+#endif 
 	}
 
 	return sDeviceManager.get();
