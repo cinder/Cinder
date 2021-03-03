@@ -1676,8 +1676,8 @@ class ImageSourceTexture : public ImageSource {
 			dataSize = 4;
 		}
 
-		mRowBytes = mWidth * ImageIo::channelOrderNumChannels( mChannelOrder ) * dataSize;
-		mData = unique_ptr<uint8_t[]>( new uint8_t[mRowBytes * mHeight] );
+		mRowBytes = texture.getActualWidth() * ImageIo::channelOrderNumChannels( mChannelOrder ) * dataSize;
+		mData = unique_ptr<uint8_t[]>( new uint8_t[mRowBytes * texture.getActualHeight()] );
 
 #if defined( CINDER_GL_ES )
 		// This line is not too awesome, however we need a TextureRef, not a Texture, for an FBO attachment. So this creates a shared_ptr with a no-op deleter
