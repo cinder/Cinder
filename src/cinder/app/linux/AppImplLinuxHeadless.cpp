@@ -127,6 +127,8 @@ void AppImplLinux::run()
 			sleepUntilNextFrame();
 		}
 	}
+
+	mApp->emitCleanup();
 }
 
 WindowImplLinux* AppImplLinux::findSharedRendererWindow( const RendererRef &searchRenderer )
