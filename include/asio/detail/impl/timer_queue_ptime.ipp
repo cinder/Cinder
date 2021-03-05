@@ -2,7 +2,7 @@
 // detail/impl/timer_queue_ptime.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,11 +16,12 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+
+#if defined(ASIO_HAS_BOOST_DATE_TIME)
+
 #include "asio/detail/timer_queue_ptime.hpp"
 
 #include "asio/detail/push_options.hpp"
-
-#if defined(ASIO_HAS_BOOST_DATE_TIME)
 
 namespace asio {
 namespace detail {
@@ -74,11 +75,17 @@ std::size_t timer_queue<time_traits<boost::posix_time::ptime> >::cancel_timer(
   return impl_.cancel_timer(timer, ops, max_cancelled);
 }
 
+void timer_queue<time_traits<boost::posix_time::ptime> >::move_timer(
+    per_timer_data& target, per_timer_data& source)
+{
+  impl_.move_timer(target, source);
+}
+
 } // namespace detail
 } // namespace asio
 
-#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
-
 #include "asio/detail/pop_options.hpp"
+
+#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
 
 #endif // ASIO_DETAIL_IMPL_TIMER_QUEUE_PTIME_IPP

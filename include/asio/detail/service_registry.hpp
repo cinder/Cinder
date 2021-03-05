@@ -2,7 +2,7 @@
 // detail/service_registry.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,30 +19,19 @@
 #include <typeinfo>
 #include "asio/detail/mutex.hpp"
 #include "asio/detail/noncopyable.hpp"
+#include "asio/detail/type_traits.hpp"
 #include "asio/execution_context.hpp"
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 
-class io_service;
+class io_context;
 
 namespace detail {
 
-#if defined(__GNUC__)
-# if (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
-#  pragma GCC visibility push (default)
-# endif // (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
-#endif // defined(__GNUC__)
-
 template <typename T>
 class typeid_wrapper {};
-
-#if defined(__GNUC__)
-# if (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
-#  pragma GCC visibility pop
-# endif // (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
-#endif // defined(__GNUC__)
 
 class service_registry
   : private noncopyable
@@ -73,9 +62,9 @@ public:
   // create a new service object automatically if no such object already
   // exists. Ownership of the service object is not transferred to the caller.
   // This overload is used for backwards compatibility with services that
-  // inherit from io_service::service.
+  // inherit from io_context::service.
   template <typename Service>
-  Service& use_service(io_service& owner);
+  Service& use_service(io_context& owner);
 
   // Add a service object. Throws on error, in which case ownership of the
   // object is retained by the caller.
@@ -87,15 +76,27 @@ public:
   bool has_service() const;
 
 private:
+  // Initalise a service's key when the key_type typedef is not available.
+  template <typename Service>
+  static void init_key(execution_context::service::key& key, ...);
+
+#if !defined(ASIO_NO_TYPEID)
+  // Initalise a service's key when the key_type typedef is available.
+  template <typename Service>
+  static void init_key(execution_context::service::key& key,
+      typename enable_if<
+        is_base_of<typename Service::key_type, Service>::value>::type*);
+#endif // !defined(ASIO_NO_TYPEID)
+
   // Initialise a service's key based on its id.
-  ASIO_DECL static void init_key(
+  ASIO_DECL static void init_key_from_id(
       execution_context::service::key& key,
       const execution_context::id& id);
 
 #if !defined(ASIO_NO_TYPEID)
   // Initialise a service's key based on its id.
   template <typename Service>
-  static void init_key(execution_context::service::key& key,
+  static void init_key_from_id(execution_context::service::key& key,
       const service_id<Service>& /*id*/);
 #endif // !defined(ASIO_NO_TYPEID)
 

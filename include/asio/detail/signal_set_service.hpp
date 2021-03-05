@@ -2,7 +2,7 @@
 // detail/signal_set_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -20,13 +20,19 @@
 #include <cstddef>
 #include <signal.h>
 #include "asio/error.hpp"
-#include "asio/io_service.hpp"
+#include "asio/execution_context.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/op_queue.hpp"
 #include "asio/detail/signal_handler.hpp"
 #include "asio/detail/signal_op.hpp"
 #include "asio/detail/socket_types.hpp"
+
+#if defined(ASIO_HAS_IOCP)
+# include "asio/detail/win_iocp_io_context.hpp"
+#else // defined(ASIO_HAS_IOCP)
+# include "asio/detail/scheduler.hpp"
+#endif // defined(ASIO_HAS_IOCP)
 
 #if !defined(ASIO_WINDOWS) && !defined(__CYGWIN__)
 # include "asio/detail/reactor.hpp"
@@ -47,7 +53,8 @@ extern ASIO_DECL struct signal_state* get_signal_state();
 
 extern "C" ASIO_DECL void asio_signal_handler(int signal_number);
 
-class signal_set_service
+class signal_set_service :
+  public execution_context_service_base<signal_set_service>
 {
 public:
   // Type used for tracking an individual signal registration.
@@ -108,17 +115,17 @@ public:
   };
 
   // Constructor.
-  ASIO_DECL signal_set_service(asio::io_service& io_service);
+  ASIO_DECL signal_set_service(execution_context& context);
 
   // Destructor.
   ASIO_DECL ~signal_set_service();
 
   // Destroy all user-defined handler objects owned by the service.
-  ASIO_DECL void shutdown_service();
+  ASIO_DECL void shutdown();
 
   // Perform fork-related housekeeping.
-  ASIO_DECL void fork_service(
-      asio::io_service::fork_event fork_ev);
+  ASIO_DECL void notify_fork(
+      asio::execution_context::fork_event fork_ev);
 
   // Construct a new signal_set implementation.
   ASIO_DECL void construct(implementation_type& impl);
@@ -143,16 +150,18 @@ public:
       asio::error_code& ec);
 
   // Start an asynchronous operation to wait for a signal to be delivered.
-  template <typename Handler>
-  void async_wait(implementation_type& impl, Handler& handler)
+  template <typename Handler, typename IoExecutor>
+  void async_wait(implementation_type& impl,
+      Handler& handler, const IoExecutor& io_ex)
   {
     // Allocate and construct an operation to wrap the handler.
-    typedef signal_handler<Handler> op;
+    typedef signal_handler<Handler, IoExecutor> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(handler);
+    p.p = new (p.v) op(handler, io_ex);
 
-    ASIO_HANDLER_CREATION((p.p, "signal_set", &impl, "async_wait"));
+    ASIO_HANDLER_CREATION((scheduler_.context(),
+          *p.p, "signal_set", &impl, 0, "async_wait"));
 
     start_wait_op(impl, p.p);
     p.v = p.p = 0;
@@ -177,8 +186,13 @@ private:
   // Helper function to start a wait operation.
   ASIO_DECL void start_wait_op(implementation_type& impl, signal_op* op);
 
-  // The io_service instance used for dispatching handlers.
-  io_service_impl& io_service_;
+  // The scheduler used for dispatching handlers.
+#if defined(ASIO_HAS_IOCP)
+  typedef class win_iocp_io_context scheduler_impl;
+#else
+  typedef class scheduler scheduler_impl;
+#endif
+  scheduler_impl& scheduler_;
 
 #if !defined(ASIO_WINDOWS) \
   && !defined(ASIO_WINDOWS_RUNTIME) \

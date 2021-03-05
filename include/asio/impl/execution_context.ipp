@@ -2,7 +2,7 @@
 // impl/execution_context.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -30,17 +30,17 @@ execution_context::execution_context()
 
 execution_context::~execution_context()
 {
-  shutdown_context();
-  destroy_context();
+  shutdown();
+  destroy();
   delete service_registry_;
 }
 
-void execution_context::shutdown_context()
+void execution_context::shutdown()
 {
   service_registry_->shutdown_services();
 }
 
-void execution_context::destroy_context()
+void execution_context::destroy()
 {
   service_registry_->destroy_services();
 }
@@ -61,7 +61,7 @@ execution_context::service::~service()
 {
 }
 
-void execution_context::service::fork_service(execution_context::fork_event)
+void execution_context::service::notify_fork(execution_context::fork_event)
 {
 }
 

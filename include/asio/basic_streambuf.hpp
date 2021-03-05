@@ -2,7 +2,7 @@
 // basic_streambuf.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -119,8 +119,8 @@ public:
   /// The type used to represent the output sequence as a list of buffers.
   typedef implementation_defined mutable_buffers_type;
 #else
-  typedef asio::const_buffers_1 const_buffers_type;
-  typedef asio::mutable_buffers_1 mutable_buffers_type;
+  typedef ASIO_CONST_BUFFER const_buffers_type;
+  typedef ASIO_MUTABLE_BUFFER mutable_buffers_type;
 #endif
 
   /// Construct a basic_streambuf object.
@@ -151,7 +151,7 @@ public:
    * while (i != bufs.end())
    * {
    *   const_buffer buf(*i++);
-   *   s += buffer_size(buf);
+   *   s += buf.size();
    * }
    * @endcode
    */
@@ -232,8 +232,7 @@ public:
    */
   void commit(std::size_t n)
   {
-    if (pptr() + n > epptr())
-      n = epptr() - pptr();
+    n = std::min<std::size_t>(n, epptr() - pptr());
     pbump(static_cast<int>(n));
     setg(eback(), gptr(), pptr());
   }

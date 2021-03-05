@@ -30,7 +30,7 @@ public:
 };
 
 BroadcastSenderApp::BroadcastSenderApp()
-: mSocket( new udp::socket( App::get()->io_service(), udp::endpoint( udp::v4(), localPort ) ) ),
+: mSocket( new udp::socket( App::get()->io_context(), udp::endpoint( udp::v4(), localPort ) ) ),
 	// The endpoint that we want to "send" to is the v4 broadcast address.
 	mSender( mSocket, udp::endpoint( address_v4::broadcast(), destinationPort ) )
 {

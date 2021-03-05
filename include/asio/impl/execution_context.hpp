@@ -2,7 +2,7 @@
 // impl/execution_context.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,18 +23,18 @@
 
 namespace asio {
 
+#if !defined(GENERATING_DOCUMENTATION)
+
 template <typename Service>
 inline Service& use_service(execution_context& e)
 {
   // Check that Service meets the necessary type requirements.
   (void)static_cast<execution_context::service*>(static_cast<Service*>(0));
-  (void)static_cast<const execution_context::id*>(&Service::id);
 
   return e.service_registry_->template use_service<Service>();
 }
 
-#if !defined(GENERATING_DOCUMENTATION)
-# if defined(ASIO_HAS_VARIADIC_TEMPLATES)
+#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 template <typename Service, typename... Args>
 Service& make_service(execution_context& e, ASIO_MOVE_ARG(Args)... args)
@@ -47,7 +47,7 @@ Service& make_service(execution_context& e, ASIO_MOVE_ARG(Args)... args)
   return result;
 }
 
-# else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
+#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 template <typename Service>
 Service& make_service(execution_context& e)
@@ -75,15 +75,13 @@ Service& make_service(execution_context& e)
   ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_MAKE_SERVICE_DEF)
 #undef ASIO_PRIVATE_MAKE_SERVICE_DEF
 
-# endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-#endif // !defined(GENERATING_DOCUMENTATION)
+#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 template <typename Service>
 inline void add_service(execution_context& e, Service* svc)
 {
   // Check that Service meets the necessary type requirements.
   (void)static_cast<execution_context::service*>(static_cast<Service*>(0));
-  (void)static_cast<const execution_context::id*>(&Service::id);
 
   e.service_registry_->template add_service<Service>(svc);
 }
@@ -93,10 +91,11 @@ inline bool has_service(execution_context& e)
 {
   // Check that Service meets the necessary type requirements.
   (void)static_cast<execution_context::service*>(static_cast<Service*>(0));
-  (void)static_cast<const execution_context::id*>(&Service::id);
 
   return e.service_registry_->template has_service<Service>();
 }
+
+#endif // !defined(GENERATING_DOCUMENTATION)
 
 inline execution_context& execution_context::service::context()
 {

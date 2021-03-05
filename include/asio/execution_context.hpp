@@ -2,7 +2,7 @@
 // execution_context.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -27,21 +27,21 @@
 namespace asio {
 
 class execution_context;
-class io_service;
+class io_context;
 
 #if !defined(GENERATING_DOCUMENTATION)
 template <typename Service> Service& use_service(execution_context&);
-template <typename Service> Service& use_service(io_service&);
+template <typename Service> Service& use_service(io_context&);
 template <typename Service> void add_service(execution_context&, Service*);
 template <typename Service> bool has_service(execution_context&);
-#endif // !defined(ASIO_NO_DEPRECATED)
+#endif // !defined(GENERATING_DOCUMENTATION)
 
 namespace detail { class service_registry; }
 
 /// A context for function object execution.
 /**
  * An execution context represents a place where function objects will be
- * executed. An @c io_service is an example of an execution context.
+ * executed. An @c io_context is an example of an execution context.
  *
  * @par The execution_context class and services
  *
@@ -79,12 +79,12 @@ namespace detail { class service_registry; }
  * @par The execution_context as a base class
  *
  * Class execution_context may be used only as a base class for concrete
- * execution context types. The @c io_service is an example of such a derived
+ * execution context types. The @c io_context is an example of such a derived
  * type.
  *
  * On destruction, a class that is derived from execution_context must perform
- * <tt>execution_context::shutdown_context()</tt> followed by
- * <tt>execution_context::destroy_context()</tt>.
+ * <tt>execution_context::shutdown()</tt> followed by
+ * <tt>execution_context::destroy()</tt>.
  *
  * This destruction sequence permits programs to simplify their resource
  * management by using @c shared_ptr<>. Where an object's lifetime is tied to
@@ -96,11 +96,11 @@ namespace detail { class service_registry; }
  * complete. The corresponding handler objects are destroyed, and all @c
  * shared_ptr references to the objects are destroyed.
  *
- * @li To shut down the whole program, the io_service function stop() is called
- * to terminate any run() calls as soon as possible. The io_service destructor
- * calls @c shutdown_context() and @c destroy_context() to destroy all pending
- * handlers, causing all @c shared_ptr references to all connection objects to
- * be destroyed.
+ * @li To shut down the whole program, the io_context function stop() is called
+ * to terminate any run() calls as soon as possible. The io_context destructor
+ * calls @c shutdown() and @c destroy() to destroy all pending handlers,
+ * causing all @c shared_ptr references to all connection objects to be
+ * destroyed.
  */
 class execution_context
   : private noncopyable
@@ -109,22 +109,23 @@ public:
   class id;
   class service;
 
-protected:
+public:
   /// Constructor.
   ASIO_DECL execution_context();
 
   /// Destructor.
   ASIO_DECL ~execution_context();
 
+protected:
   /// Shuts down all services in the context.
   /**
    * This function is implemented as follows:
    *
    * @li For each service object @c svc in the execution_context set, in
    * reverse order of the beginning of service object lifetime, performs @c
-   * svc->shutdown_service().
+   * svc->shutdown().
    */
-  ASIO_DECL void shutdown_context();
+  ASIO_DECL void shutdown();
 
   /// Destroys all services in the context.
   /**
@@ -134,7 +135,7 @@ protected:
    * reverse order * of the beginning of service object lifetime, performs
    * <tt>delete static_cast<execution_context::service*>(svc)</tt>.
    */
-  ASIO_DECL void destroy_context();
+  ASIO_DECL void destroy();
 
 public:
   /// Fork-related event notifications.
@@ -185,7 +186,7 @@ public:
    * } @endcode
    *
    * @note For each service object @c svc in the execution_context set,
-   * performs <tt>svc->fork_service();</tt>. When processing the fork_prepare
+   * performs <tt>svc->notify_fork();</tt>. When processing the fork_prepare
    * event, services are visited in reverse order of the beginning of service
    * object lifetime. Otherwise, services are visited in order of the beginning
    * of service object lifetime.
@@ -210,18 +211,18 @@ public:
   /**
    * This function is used to locate a service object that corresponds to the
    * given service type. If there is no existing implementation of the service,
-   * then the io_service will create a new instance of the service.
+   * then the io_context will create a new instance of the service.
    *
-   * @param ios The io_service object that owns the service.
+   * @param ioc The io_context object that owns the service.
    *
    * @return The service interface implementing the specified service type.
    * Ownership of the service interface is not transferred to the caller.
    *
    * @note This overload is preserved for backwards compatibility with services
-   * that inherit from io_service::service.
+   * that inherit from io_context::service.
    */
   template <typename Service>
-  friend Service& use_service(io_service& ios);
+  friend Service& use_service(io_context& ioc);
 
 #if defined(GENERATING_DOCUMENTATION)
 
@@ -310,7 +311,7 @@ public:
   id() {}
 };
 
-/// Base class for all io_service services.
+/// Base class for all io_context services.
 class execution_context::service
   : private noncopyable
 {
@@ -330,7 +331,7 @@ protected:
 
 private:
   /// Destroy all user-defined handler objects owned by the service.
-  virtual void shutdown_service() = 0;
+  virtual void shutdown() = 0;
 
   /// Handle notification of a fork-related event to perform any necessary
   /// housekeeping.
@@ -338,7 +339,7 @@ private:
    * This function is not a pure virtual so that services only have to
    * implement it if necessary. The default implementation does nothing.
    */
-  ASIO_DECL virtual void fork_service(
+  ASIO_DECL virtual void notify_fork(
       execution_context::fork_event event);
 
   friend class asio::detail::service_registry;

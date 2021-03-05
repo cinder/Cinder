@@ -2,7 +2,7 @@
 // detail/impl/dev_poll_reactor.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -30,7 +30,7 @@ namespace asio {
 namespace detail {
 
 dev_poll_reactor::dev_poll_reactor(asio::execution_context& ctx)
-  : asio::detail::service_base<dev_poll_reactor>(ctx),
+  : asio::detail::execution_context_service_base<dev_poll_reactor>(ctx),
     scheduler_(use_service<scheduler>(ctx)),
     mutex_(),
     dev_poll_fd_(do_dev_poll_create()),
@@ -47,11 +47,11 @@ dev_poll_reactor::dev_poll_reactor(asio::execution_context& ctx)
 
 dev_poll_reactor::~dev_poll_reactor()
 {
-  shutdown_service();
+  shutdown();
   ::close(dev_poll_fd_);
 }
 
-void dev_poll_reactor::shutdown_service()
+void dev_poll_reactor::shutdown()
 {
   asio::detail::mutex::scoped_lock lock(mutex_);
   shutdown_ = true;
@@ -67,28 +67,7 @@ void dev_poll_reactor::shutdown_service()
   scheduler_.abandon_operations(ops);
 } 
 
-// Helper class to re-register all descriptors with /dev/poll.
-class dev_poll_reactor::fork_helper
-{
-public:
-  fork_helper(dev_poll_reactor* reactor, short events)
-    : reactor_(reactor), events_(events)
-  {
-  }
-
-  bool set(int descriptor)
-  {
-    ::pollfd& ev = reactor_->add_pending_event_change(descriptor);
-    ev.events = events_;
-    return true;
-  }
-
-private:
-  dev_poll_reactor* reactor_;
-  short events_;
-};
-
-void dev_poll_reactor::fork_service(
+void dev_poll_reactor::notify_fork(
     asio::execution_context::fork_event fork_ev)
 {
   if (fork_ev == asio::execution_context::fork_child)
@@ -111,18 +90,24 @@ void dev_poll_reactor::fork_service(
 
     // Re-register all descriptors with /dev/poll. The changes will be written
     // to the /dev/poll descriptor the next time the reactor is run.
-    op_queue<operation> ops;
-    fork_helper read_op_helper(this, POLLERR | POLLHUP | POLLIN);
-    op_queue_[read_op].get_descriptors(read_op_helper, ops);
-    fork_helper write_op_helper(this, POLLERR | POLLHUP | POLLOUT);
-    op_queue_[write_op].get_descriptors(write_op_helper, ops);
-    fork_helper except_op_helper(this, POLLERR | POLLHUP | POLLPRI);
-    op_queue_[except_op].get_descriptors(except_op_helper, ops);
+    for (int i = 0; i < max_ops; ++i)
+    {
+      reactor_op_queue<socket_type>::iterator iter = op_queue_[i].begin();
+      reactor_op_queue<socket_type>::iterator end = op_queue_[i].end();
+      for (; iter != end; ++iter)
+      {
+        ::pollfd& pending_ev = add_pending_event_change(iter->first);
+        pending_ev.events |= POLLERR | POLLHUP;
+        switch (i)
+        {
+        case read_op: pending_ev.events |= POLLIN; break;
+        case write_op: pending_ev.events |= POLLOUT; break;
+        case except_op: pending_ev.events |= POLLPRI; break;
+        default: break;
+        }
+      }
+    }
     interrupter_.interrupt();
-
-    // The ops op_queue will always be empty because the fork_helper's set()
-    // member function never returns false.
-    ASIO_ASSERT(ops.empty());
   }
 }
 
@@ -250,13 +235,18 @@ void dev_poll_reactor::deregister_internal_descriptor(
     op_queue_[i].cancel_operations(descriptor, ops, ec);
 }
 
-void dev_poll_reactor::run(bool block, op_queue<operation>& ops)
+void dev_poll_reactor::cleanup_descriptor_data(
+    dev_poll_reactor::per_descriptor_data&)
+{
+}
+
+void dev_poll_reactor::run(long usec, op_queue<operation>& ops)
 {
   asio::detail::mutex::scoped_lock lock(mutex_);
 
   // We can return immediately if there's no work to do and the reactor is
   // not supposed to block.
-  if (!block && op_queue_[read_op].empty() && op_queue_[write_op].empty()
+  if (usec == 0 && op_queue_[read_op].empty() && op_queue_[write_op].empty()
       && op_queue_[except_op].empty() && timer_queues_.all_empty())
     return;
 
@@ -282,7 +272,15 @@ void dev_poll_reactor::run(bool block, op_queue<operation>& ops)
     pending_event_change_index_.clear();
   }
 
-  int timeout = block ? get_timeout() : 0;
+  // Calculate timeout.
+  int timeout;
+  if (usec == 0)
+    timeout = 0;
+  else
+  {
+    timeout = (usec < 0) ? -1 : ((usec - 1) / 1000 + 1);
+    timeout = get_timeout(timeout);
+  }
   lock.unlock();
 
   // Block on the /dev/poll descriptor.
@@ -396,11 +394,13 @@ void dev_poll_reactor::do_remove_timer_queue(timer_queue_base& queue)
   timer_queues_.erase(&queue);
 }
 
-int dev_poll_reactor::get_timeout()
+int dev_poll_reactor::get_timeout(int msec)
 {
   // By default we will wait no longer than 5 minutes. This will ensure that
   // any changes to the system clock are detected after no longer than this.
-  return timer_queues_.wait_duration_msec(5 * 60 * 1000);
+  const int max_msec = 5 * 60 * 1000;
+  return timer_queues_.wait_duration_msec(
+      (msec < 0 || max_msec < msec) ? max_msec : msec);
 }
 
 void dev_poll_reactor::cancel_ops_unlocked(socket_type descriptor,

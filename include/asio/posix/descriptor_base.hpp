@@ -2,7 +2,7 @@
 // posix/descriptor_base.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -28,15 +28,14 @@
 namespace asio {
 namespace posix {
 
-/// The descriptor_base class is used as a base for the basic_stream_descriptor
-/// class template so that we have a common place to define the associated
-/// IO control commands.
+/// The descriptor_base class is used as a base for the descriptor class as a
+/// place to define the associated IO control commands.
 class descriptor_base
 {
 public:
   /// Wait types.
   /**
-   * For use with basic_descriptor::wait() and basic_descriptor::async_wait().
+   * For use with descriptor::wait() and descriptor::async_wait().
    */
   enum wait_type
   {
@@ -57,7 +56,7 @@ public:
    *
    * @par Example
    * @code
-   * asio::posix::stream_descriptor descriptor(io_service); 
+   * asio::posix::stream_descriptor descriptor(my_context);
    * ...
    * asio::descriptor_base::bytes_readable command(true);
    * descriptor.io_control(command);
