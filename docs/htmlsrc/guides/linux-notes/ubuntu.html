@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<!-- Update title -->
-		<title>Cinder on Ubuntu</title>
+		<title>Cinder on Ubuntu 18.04+</title>
 
 		<!-- keywords used for searching -->
 		<meta name="keywords" content="guide, linux, ubuntu">
@@ -28,47 +28,30 @@
 		<h1>Ubuntu Notes</h1>
 		<h3 id="cmake">Requirements</h3>
 		<ul>
-			<li>Ubuntu 14.04 or later</li>
+			<li>Ubuntu 18.04 or later</li>
 			<li>CMake 3.0+</li>
 		</ul>
 		<h4 id="cmake">CMake</h4>
 		<p>To install CMake:</p>
-		<pre><code>sudo apt-get install cmake</code></pre>
+		<pre><code>sudo apt install cmake</code></pre>
 
 		<h4 id="clang">Clang</h4>
-		<p>Cinder on Linux supports building both libcinder and Cinder applications with either GCC or Clang, though Clang is recommended, and can be installed using:</p>
-		<pre><code>sudo apt-get install clang</code></pre>
+		<p>Cinder on Linux supports building both libcinder and Cinder applications with either GCC or Clang, which can be installed using:</p>
+		<pre><code>sudo apt install clang</code></pre>
 		<p>To set Clang as the default compiler, select <code>/usr/bin/clang++</code> when prompted by this command:
 		<pre><code>sudo update-alternatives --config c++</code></pre>
 		</p>
-		<h3 id="library-dependencies">Cinder Dependencies</h3>
-<pre><code>sudo apt-get install libxcursor-dev \
-libxrandr-dev \
-libxinerama-dev \
-libxi-dev \
-libgl1-mesa-dev \
-libglu1-mesa-dev \
-zlib1g-dev \
-libfontconfig1-dev \
-libmpg123-dev \
-libsndfile1 \
-libsndfile1-dev \
-libpulse-dev \
-libasound2-dev \
-libcurl4-gnutls-dev \
-libgstreamer1.0-dev \
-libgstreamer-plugins-bad1.0-dev \
-libgstreamer-plugins-base1.0-dev \
-gstreamer1.0-libav \
-gstreamer1.0-alsa \
-gstreamer1.0-pulseaudio \
-gstreamer1.0-plugins-bad \
-libboost-filesystem-dev
+		<h3 id="library-dependencies">Full Cinder Dependencies</h3>
+<pre><code>sudo apt install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev \
+zlib1g-dev libfontconfig1-dev libcurl4-gnutls-dev \
+libmpg123-dev libsndfile1 libsndfile1-dev libpulse-dev libasound2-dev \
+libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-libav \
+gstreamer1.0-alsa gstreamer1.0-pulseaudio gstreamer1.0-plugins-bad
 </code></pre>
 
 		<h1 id="building-cinder">Building Cinder</h1>
 		<h3 id="fetching-and-building-cinder">Fetching and Building Cinder</h3>
-<pre><code>git clone --recursive https://github.com/cinder/Cinder.git
+<pre><code>git clone https://github.com/cinder/Cinder.git
 cd Cinder
 mkdir build &amp;&amp; cd build
 cmake ..
@@ -88,6 +71,35 @@ make</code></pre>
 
 		<p>For building in Release mode you just have to add <code>-DCMAKE_BUILD_TYPE=Release</code> in the above cmake commands.<p>
 <pre><code>cmake .. -DCMAKE_BUILD_TYPE=Release</code></pre>
+
+		<h1 id="additional-cmake-flags">Additional Build Options</h1>
+		<h3 id="minimal">Minimal build</h3>
+		<p>The following creates a minimal Cinder build suitable for many command line application scenarios. It disables audio, video, and AntTweakBar.
+		<pre><code>cmake .. -DCINDER_DISABLE_AUDIO=true -DCINDER_DISABLE_VIDEO=true -DCINDER_DISABLE_ANTTWEAKBAR=true</code></pre>
+		<p>The required apt packages for such a build can be installed with:</p>
+		<pre><code>sudo apt install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev \
+zlib1g-dev libfontconfig1-dev libcurl4-gnutls-dev</code></pre>
+		<h3 id="audio-packages">Audio packages</h3>
+		<p>The apt packages required for Cinder audio support can be installed with:</p>
+		<pre><code>sudo apt install libmpg123-dev libsndfile1 libsndfile1-dev libpulse-dev libasound2-dev</code></pre>
+		
+		<h3 id="video-packages">Video packages</h3>
+		<p>The apt packages required for Cinder video support can be installed with:</p>
+		<pre><code>sudo apt install libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-libav \
+gstreamer1.0-alsa gstreamer1.0-pulseaudio gstreamer1.0-plugins-bad</code></pre>			
+
+		<h3 id="video-packages">Headless OpenGL</h3>
+		<p>Cinder supports headless OpenGL via two implementations, OSMesa and EGL.</p>
+		<h4>Headless OpenGL via OSMesa</h4>
+		<pre><code>cmake .. -DCINDER_HEADLESS_GL=osmesa</code></pre>
+		<p>Note that the above can also take a <code>-DOSMESA_ROOT=&lt;path to custom Mesa build&gt;</code></p>
+		<p>To install the necessary apt packages:</p>
+		<pre><code>sudo apt install libosmesa6-dev</code></pre>			
+
+		<h4>Headless OpenGL via EGL</h4>
+		<pre><code>cmake .. -DCINDER_HEADLESS_GL=EGL</code></pre>
+		<p>Note that this configuration is suitable for hardware accelerated OpenGL.</p>
+		
 		<!-- END CONTENT -->
 
 		<!-- Scripts -->
