@@ -32,6 +32,7 @@
 
 #include "glfw/glfw3.h"
 
+#include <array>
 #include <sys/types.h>
 #include <unistd.h>
 #include <limits.h>
