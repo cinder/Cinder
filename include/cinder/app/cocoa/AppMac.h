@@ -62,7 +62,7 @@ class CI_API AppMac : public AppBase {
 	ivec2		getMousePos() const override;
 
 	//! \cond
-	// Called during application instanciation via CINDER_APP_MAC macro
+	// Called during application instantiation via CINDER_APP_MAC macro
 	template<typename AppT>
 	static void main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
 	//! \endcond

@@ -89,7 +89,7 @@ class AppAndroid : public AppBase {
 	static bool 	isKeepScreenOn() { return mKeepScreenOn; }
 
 	//! \cond
-	// Called during application instanciation via CINDER_APP_ANDROID macro
+	// Called during application instantiation via CINDER_APP_ANDROID macro
 	template<typename AppT>
 	static void main( const RendererRef &defaultRenderer, const char *title, android_app *nativeApp, const SettingsFn &settingsFn = SettingsFn() );
 	// Called from EventManagerAndroid::NativeHandleCmd

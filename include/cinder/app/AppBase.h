@@ -73,7 +73,7 @@ typedef	signals::Signal<bool (), signals::CollectorBooleanAnd>						EventSignalS
 //! Base class that all apps derive from.
 class CI_API AppBase {
  public:
-	//! Startup settings, used during App construction. They are modified before the app is created by passing a SettingsFn to the app instanciation macros.
+	//! Startup settings, used during App construction. They are modified before the app is created by passing a SettingsFn to the app instantiation macros.
 	class CI_API Settings {
 	  public:
 		Settings();
@@ -129,7 +129,7 @@ class CI_API AppBase {
 		//! Sets the Window::Format which will be used if no calls are made to Settings::prepareWindow()
 		void				setDefaultWindowFormat( const Window::Format &format )	{ mDefaultWindowFormat = format; }
 
-		//! Sets the default Renderer, overridding what was passed in during app instanciation.
+		//! Sets the default Renderer, overridding what was passed in during app instantiation.
 		void		setDefaultRenderer( const RendererRef &renderer )	{ mDefaultRenderer = renderer; }
 		//! Returns the default Renderer.
 		RendererRef	getDefaultRenderer() const							{ return mDefaultRenderer; }
