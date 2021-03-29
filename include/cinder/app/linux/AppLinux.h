@@ -55,7 +55,7 @@ class AppLinux : public AppBase {
 	ivec2		getMousePos() const override;
 
 	//! \cond
-	// Called during application instanciation via CINDER_APP_LINUX macro
+	// Called during application instantiation via CINDER_APP_LINUX macro
 	template<typename AppT>
 	static void main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
 	//! \endcond

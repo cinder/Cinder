@@ -202,7 +202,7 @@ class AppCocoaTouch : public AppBase {
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
 	AppImplCocoaTouch* privateGetImpl()	{ return mImpl; }
 
-	// Called during application instanciation via CINDER_APP_COCOA_TOUCH macro
+	// Called during application instantiation via CINDER_APP_COCOA_TOUCH macro
 	template<typename AppT>
 	static void main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
 	//! \endcond
