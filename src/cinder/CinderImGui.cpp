@@ -457,7 +457,7 @@ static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window ) {
 	IM_ASSERT( io.Fonts->IsBuilt() ); // Font atlas needs to be built, call renderer _NewFrame() function e.g. ImGui_ImplOpenGL3_NewFrame() 
 
 	// Setup display size
-	io.DisplaySize = ci::app::toPixels( window->getSize() );
+	io.DisplaySize = window->toPixels( window->getSize() );
 
 	// Setup time step
 	static double g_Time = 0.0f;
@@ -559,7 +559,7 @@ bool ImGui::Initialize( const ImGui::Options& options )
 	if( options.isKeyboardEnabled() ) io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 	if( options.isGamepadEnabled() ) io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls	
 	ci::app::WindowRef window = options.getWindow();
-	io.DisplaySize = ci::vec2( ci::app::toPixels( window->getSize() ) );
+	io.DisplaySize = ci::vec2( window->toPixels( window->getSize() ) );
 	io.DeltaTime = 1.0f / 60.0f;
 	io.WantCaptureMouse = true;
 
