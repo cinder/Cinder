@@ -67,7 +67,7 @@ ScreenSaverTestApp::ScreenSaverTestApp()
 #if LOAD_LOGO_IN_CONSTRUCTOR
 	//log::manager()->enableSystemLogging();
 	std::shared_ptr<log::LoggerSystem> sysLogger = log::makeLogger<log::LoggerSystem>();
-	sysLogger->setLoggingLevel(log::LEVEL_WARNING);
+	sysLogger->setLevel(log::LEVEL_WARNING);
 	loadLogo();
 #endif
 }
@@ -76,7 +76,7 @@ void ScreenSaverTestApp::setup()
 {
 	//log::manager()->enableSystemLogging();
 	std::shared_ptr<log::LoggerSystem> sysLogger = log::makeLogger<log::LoggerSystem>();
-	sysLogger->setLoggingLevel(log::LEVEL_WARNING);
+	sysLogger->setLevel(log::LEVEL_WARNING);
 
 	CI_LOG_I( "called in " << getAppPath() );
 

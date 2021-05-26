@@ -86,7 +86,7 @@ void DebugTestApp::testSystemLogging()
 	CI_LOG_I( "\n--- TESTING SYSTEM START----");
 	
 	auto sysLog = log::makeLogger<log::LoggerSystem>();
-    sysLog->setLoggingLevel( log::LEVEL_ERROR );
+    sysLog->setLevel( log::LEVEL_ERROR );
     CI_LOG_E( "Error log shows in system logs" );
     CI_LOG_D( "Debug log doesn't show in system logs.");
 	
@@ -299,7 +299,7 @@ void DebugTestApp::testBreakOnLog()
 	CI_LOG_I( "\n--- TESTING BREAKPOINTS START----");
 	
 	auto bLog = log::makeLogger<log::LoggerBreakpoint>();
-    bLog->setTriggerLevel( log::LEVEL_DEBUG );
+    bLog->setLevel( log::LEVEL_DEBUG );
 
 	CI_LOG_V( "bang" );
 	CI_LOG_D( "bang" );

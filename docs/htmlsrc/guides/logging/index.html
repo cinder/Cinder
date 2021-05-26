@@ -77,14 +77,14 @@
             <li><ci dox="ci::log::LoggerFileRotating">LoggerFileRotating</ci> directs log messages to a specified file.  The name of that file is evaluated at the first logging call after application startup, and re-evaluated at the first logging call after midnight.</li>
             <li>
                 <ci dox="ci::log::LoggerBreakpoint">LoggerBreakpoint</ci> doesn't actually log messages, but triggers a breakpoint on log events above a specified threshold.  <code>triggerLevel</code> defines the minimum logging level that will break execution.
-                <br>The trigger level can be controlled by calling <ci dox="ci::log::LoggerBreakpoint::setTriggerLevel">LoggerBreakpoint::setTriggerLevel()</ci>.
+                <br>The trigger level can be controlled by calling <ci dox="ci::log::LoggerBreakpoint::setLevel">LoggerBreakpoint::setLevel()</ci>.
             </li>
             <li><ci dox="ci::log::LoggerSystem">LoggerSystem</ci> will write log messages to the platform specific system log.  This currently means the system log on OS X <code>/var/log/system.log</code> and the Event Log on Windows with MSW applications.  WinRT system logging is still being developed.</li>
         </ul>
         <h3>LoggerSystem Notes</h3>
         <h4>Minimum System Logging Level</h4>
         <p>
-            The minimum system logging level can be controlled by calling <ci dox="ci::log::LoggerSystem::setLoggingLevel">LoggerSystem::setLoggingLevel()</ci>.  This level can be controlled independently of the Cinder minimum logging level, but the system logging level can never be lower than the Cinder minimum logging level.  For more information on this, see the section on <a href="#optimization">Compile Time Settings & Optimization.</a>
+            The minimum system logging level can be controlled by calling <ci dox="ci::log::LoggerSystem::setLevel">LoggerSystem::setLevel()</ci>.  This level can be controlled independently of the preprocessor Cinder minimum logging level, but the system logging level can never be lower than the Cinder minimum logging level.  For more information on this, see the section on <a href="#optimization">Compile Time Settings & Optimization.</a>
         </p>
         <h4>OS X Specific Notes</h4>
         <p>
@@ -143,7 +143,7 @@ log::manager()->removeLogger( logger );
         <p>
             <b>Example 3: Getting an active logger:</b><br>
             <pre><code class="language-cpp">// gets the active LoggerSystem and sets the minimum level to LEVEL_ERROR
-log::manager()->getLoggers&lt;log::LoggerSystem&gt;()[0]->setLoggingLevel( log::LEVEL_ERROR );</code></pre>
+log::manager()->getLoggers&lt;log::LoggerSystem&gt;()[0]->setLevel( log::LEVEL_ERROR );</code></pre>
         </p>
         </section>
 

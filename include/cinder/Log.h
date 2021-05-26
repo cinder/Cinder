@@ -35,6 +35,17 @@
 #include <vector>
 #include <memory>
 #include <mutex>
+#include <functional>
+
+// CI_MIN_LOG_LEVEL is designed so that if you set it to 7 : nothing logs, 6 : only fatal, 5 : fatal + error, ..., 1 : everything
+
+#if ! defined( CI_MIN_LOG_LEVEL )
+#if ! defined( NDEBUG )
+#define CI_MIN_LOG_LEVEL 0	// debug mode default is LEVEL_VERBOSE
+#else
+#define CI_MIN_LOG_LEVEL 2	// release mode default is LEVEL_INFO
+#endif
+#endif
 
 namespace cinder { namespace log {
 
@@ -86,13 +97,17 @@ class CI_API Logger : private Noncopyable {
 	void setTimestampEnabled( bool enable = true )	{ mTimeStampEnabled = enable; }
 	bool isTimestampEnabled() const					{ return mTimeStampEnabled; }
 	
-  protected:
-	Logger() : mTimeStampEnabled( false ) {}
+	void	setLevel( Level level ) { mLevel = level; }
+	Level	getLevel() const { return mLevel; }
 
+  protected:
+	Logger( Level level = static_cast<Level>( CI_MIN_LOG_LEVEL ) ) : mLevel( level ), mTimeStampEnabled( false ) {}
+	
 	void writeDefault( std::ostream &stream, const Metadata &meta, const std::string &text );
 
+	Level	mLevel;
   private:
-	bool mTimeStampEnabled;
+	bool	mTimeStampEnabled;
 };
 	
 typedef std::shared_ptr<Logger>	LoggerRef;
@@ -134,13 +149,17 @@ public:
 	
 	//! Creates a rotating log file that will rotate when the first logging event occurs after midnight.
 	//! \p formatStr will be passed to strftime to determine the file name.
-	LoggerFileRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
+	LoggerFileRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true, std::function<void( const fs::path& )> fileChangeFn = nullptr );
 	
 	virtual ~LoggerFileRotating() { }
 	
 	void write( const Metadata &meta, const std::string &text ) override;
-	
+
 protected:
+	void setFilePath( const fs::path& filepath );
+
+	std::function<void( const fs::path& )> mFileChangeFn;
+
 	fs::path		mFolderPath;
 	std::string		mDailyFormatStr;
 	int				mYearDay;
@@ -150,16 +169,10 @@ protected:
 class CI_API LoggerBreakpoint : public Logger {
   public:
 	LoggerBreakpoint( Level triggerLevel = LEVEL_ERROR )
-		: mTriggerLevel( triggerLevel )
+		: Logger{ triggerLevel }
 	{}
 
 	void write( const Metadata &meta, const std::string &text ) override;
-
-	void	setTriggerLevel( Level triggerLevel )	{ mTriggerLevel = triggerLevel; }
-	Level	getTriggerLevel() const					{ return mTriggerLevel; }
-	
-  private:
-	Level	mTriggerLevel;
 };
 
 //! LoggerSystem rovides 'system' logging support. Uses syslog on platforms that have it, on MSW uses Windows Event Logging.
@@ -170,12 +183,8 @@ public:
 	virtual ~LoggerSystem();
 	
 	void write( const Metadata &meta, const std::string &text ) override;
-	//! Sets the minimum logging level that will trigger a system log.
-	//! \note Setting \p minLevel below CI_MIN_LOG_LEVEL is pointless; minLevel will act like CI_MIN_LOG_LEVEL.
-	void setLoggingLevel( Level minLevel ) { mMinLevel = minLevel; }
-	
+
 protected:
-	Level mMinLevel;
 #if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	class ImplSysLog;
 	std::unique_ptr<ImplSysLog> mImpl;
@@ -215,6 +224,8 @@ public:
 	std::vector<LoggerRef> getAllLoggers();
 	//! Returns the mutex used for thread safe logging.
 	std::mutex& getMutex() const			{ return mMutex; }
+	//! Set the logging level for all active loggers.
+	void	setLevel( Level level );
 	
 	void write( const Metadata &meta, const std::string &text );
 	
@@ -329,15 +340,6 @@ std::vector<std::shared_ptr<LoggerT>> LogManager::getLoggers()
 
 #define CINDER_LOG_STREAM( level, stream ) ::cinder::log::Entry( level, ::cinder::log::Location( CINDER_CURRENT_FUNCTION, __FILE__, __LINE__ ) ) << stream
 
-// CI_MIN_LOG_LEVEL is designed so that if you set it to 7 : nothing logs, 6 : only fatal, 5 : fatal + error, ..., 1 : everything
-
-#if ! defined( CI_MIN_LOG_LEVEL )
-	#if ! defined( NDEBUG )
-		#define CI_MIN_LOG_LEVEL 0	// debug mode default is LEVEL_VERBOSE
-	#else
-		#define CI_MIN_LOG_LEVEL 2	// release mode default is LEVEL_INFO
-	#endif
-#endif
 
 #if( CI_MIN_LOG_LEVEL <= 0 )
 	#define CI_LOG_V( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_VERBOSE, stream )

@@ -42,6 +42,8 @@ CI_API fs::path expandPath( const fs::path &path );
 CI_API fs::path getHomeDirectory();
 //! Returns a path to the user's documents directory.
 CI_API fs::path getDocumentsDirectory();
+//! Removes all files beyond maxFileCount, keeping only the most recently modified ones.
+CI_API void limitDirectoryFileCount( const fs::path& directoryPath, size_t maxFileCount );
 
 //! Launches a path in a web browser
 CI_API void launchWebBrowser( const Url &url );

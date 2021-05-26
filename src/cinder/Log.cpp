@@ -154,6 +154,13 @@ void LogManager::restoreToDefault()
 #endif
 }
 	
+void LogManager::setLevel( Level level )
+{
+	for( const LoggerRef& logger : log::manager()->getAllLoggers() ) {
+		logger->setLevel( level );
+	}
+}
+
 void LogManager::write( const Metadata &meta, const std::string &text )
 {
 	// TODO move this to a shared_lock_timed with c++14 support
@@ -206,6 +213,9 @@ void Logger::writeDefault( std::ostream &stream, const Metadata &meta, const std
 
 void LoggerConsole::write( const Metadata &meta, const string &text )
 {
+	if( meta.mLevel < mLevel )
+		return;
+
 	writeDefault( app::Platform::get()->console(), meta, text );
 }
 
@@ -214,7 +224,7 @@ void LoggerConsole::write( const Metadata &meta, const string &text )
 // ----------------------------------------------------------------------------------------------------
 
 LoggerFile::LoggerFile( const fs::path &filePath, bool appendToExisting )
-: mFilePath( filePath ), mAppend( appendToExisting )
+: Logger{}, mFilePath( filePath ), mAppend( appendToExisting )
 {
 	if( mFilePath.empty() )
 		mFilePath = getDefaultLogFilePath();
@@ -230,6 +240,9 @@ LoggerFile::~LoggerFile()
 
 void LoggerFile::write( const Metadata &meta, const string &text )
 {
+	if( meta.mLevel < mLevel )
+		return;
+
 	if( ! mStream.is_open() ) {
 		ensureDirectoryExists();
 		mAppend ? mStream.open( mFilePath.string(), std::ofstream::app ) : mStream.open( mFilePath.string() );
@@ -263,8 +276,8 @@ void LoggerFile::ensureDirectoryExists()
 // LoggerFileRotating
 // ----------------------------------------------------------------------------------------------------
 
-LoggerFileRotating::LoggerFileRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
-: mFolderPath( folder ), mDailyFormatStr( formatStr )
+LoggerFileRotating::LoggerFileRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting, std::function<void( const fs::path& )> fileChangeFn )
+: LoggerFile{}, mFolderPath( folder ), mDailyFormatStr( formatStr ), mFileChangeFn( fileChangeFn )
 {
 	CI_ASSERT_MSG( ! formatStr.empty(), "cannot provide empty formatStr" );
 	if( formatStr.empty() ) {
@@ -277,15 +290,18 @@ LoggerFileRotating::LoggerFileRotating( const fs::path &folder, const std::strin
 	
 	mAppend = appendToExisting;
 	mYearDay = getCurrentYearDay();
-	mFilePath = mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) );
+	setFilePath( mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) ) );
 	
 	setTimestampEnabled();
 }
 
 void LoggerFileRotating::write( const Metadata &meta, const string &text )
 {
+	if( meta.mLevel < mLevel )
+		return;
+
 	if( mYearDay != getCurrentYearDay() ) {
-		mFilePath = mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) );
+		setFilePath( mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) ) );
 		mYearDay = getCurrentYearDay();
 		
 		if( mStream.is_open() )
@@ -295,15 +311,26 @@ void LoggerFileRotating::write( const Metadata &meta, const string &text )
 	LoggerFile::write( meta, text );
 }
 
+void LoggerFileRotating::setFilePath( const fs::path& filepath )
+{
+	if( mFilePath != filepath ) {
+		mFilePath = filepath;
+
+		if( mFileChangeFn )
+			mFileChangeFn( mFilePath );
+	}
+}
+
 // ----------------------------------------------------------------------------------------------------
 // LoggerBreakpoint
 // ----------------------------------------------------------------------------------------------------
 
 void LoggerBreakpoint::write( const Metadata &meta, const string & /*text*/ )
 {
-	if( meta.mLevel >= mTriggerLevel ) {
-		CI_BREAKPOINT();
-	}
+	if( meta.mLevel < mLevel )
+		return;
+	
+	CI_BREAKPOINT();
 }
 
 #if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
@@ -485,8 +512,8 @@ public:
 // ----------------------------------------------------------------------------------------------------
 
 LoggerSystem::LoggerSystem()
+: Logger{}
 {
-	mMinLevel = static_cast<Level>(CI_MIN_LOG_LEVEL);
 #if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	LoggerSystem::mImpl = std::unique_ptr<ImplSysLog>( new ImplSysLog() );
 #elif defined( CINDER_MSW_DESKTOP )
@@ -502,10 +529,11 @@ LoggerSystem::~LoggerSystem()
 
 void LoggerSystem::write( const Metadata &meta, const std::string &text )
 {
+	if( meta.mLevel < mLevel )
+		return;
+
 #if ! defined( CINDER_UWP ) // Currently no system logging support on WinRT
-	if( meta.mLevel >= mMinLevel ) {
-		mImpl->write( meta, text );
-	}
+	mImpl->write( meta, text );
 #endif
 }
 
