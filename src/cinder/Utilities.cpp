@@ -34,7 +34,7 @@
 #include <vector>
 #include <fstream>
 #include <cctype>
-#include <map>
+#include <algorithm>
 
 using std::vector;
 using std::string;
@@ -57,21 +57,23 @@ fs::path getDocumentsDirectory()
 	return app::Platform::get()->getDocumentsDirectory();
 }
 
-void limitDirectoryFileCount( const fs::path& directoryPath, size_t maxFileCount )
+void limitDirectoryFileCount( const fs::path& directoryPath, size_t maxFileCount, std::function<bool( const fs::path&, const fs::path& )> sortFn )
 {
-	std::multimap<fs::file_time_type, fs::path> accessTimes;
-	if( fs::is_directory( directoryPath ) ) {
-		for( auto& p : fs::directory_iterator( directoryPath ) ) {
-			if( fs::is_regular_file( p ) ) {
-				accessTimes.emplace( fs::last_write_time( p ), p );
-			}
-		}
+	if( ! fs::is_directory( directoryPath ) )
+		return;
 
-		if( accessTimes.size() > maxFileCount ) {
-			auto rit = accessTimes.rbegin();
-			for( std::advance( rit, maxFileCount ); rit != accessTimes.rend(); rit++ ) {
-				fs::remove( rit->second );
-			}
+	std::vector<fs::path> directoryFiles;
+	for( const auto& filepath : fs::directory_iterator( directoryPath ) ) {
+		if( fs::is_regular_file( filepath ) ) {
+			directoryFiles.push_back( filepath );
+		}
+	}
+
+	if( directoryFiles.size() > maxFileCount ) {
+		std::sort( directoryFiles.begin(), directoryFiles.end(), sortFn );
+
+		for( size_t i=maxFileCount; i < directoryFiles.size(); i++ ) {
+			fs::remove( directoryFiles.at( i ) );
 		}
 	}
 }
