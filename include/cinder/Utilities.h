@@ -26,6 +26,7 @@
 
 #include <string>
 #include <vector>
+#include <functional>
 #include <map>
 
 #include "cinder/Cinder.h"
@@ -42,6 +43,9 @@ CI_API fs::path expandPath( const fs::path &path );
 CI_API fs::path getHomeDirectory();
 //! Returns a path to the user's documents directory.
 CI_API fs::path getDocumentsDirectory();
+
+//! Removes all files beyond maxFileCount.
+CI_API void limitDirectoryFileCount( const fs::path& directoryPath, size_t maxFileCount, std::function<bool(const fs::path&, const fs::path&)> sortFn = []( const fs::path& p1, const fs::path& p2 ) -> bool { return fs::last_write_time( p1 ) > fs::last_write_time( p2 ); } );
 
 //! Launches a path in a web browser
 CI_API void launchWebBrowser( const Url &url );
