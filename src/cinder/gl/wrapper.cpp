@@ -382,6 +382,22 @@ void enableDepthWrite( bool enable )
 	ctx->depthMask( enable ? GL_TRUE : GL_FALSE );
 }
 
+
+#if ! defined( CINDER_GL_ES )
+bool isDepthReversedEnabled()
+{
+	const auto ctx = gl::context();
+	return ctx->isDepthReversedEnabled();
+}
+
+void enableDepthReversed(bool enable)
+{
+	auto ctx = gl::context();
+	return ctx->depthReversed(enable);
+}
+#endif // ! defined( CINDER_GL_ES )
+
+
 void disableDepthWrite()
 {
 	auto ctx = gl::context();
@@ -398,9 +414,35 @@ void disableStencilTest()
     gl::disable( GL_STENCIL_TEST );
 }
 
+
+#if ! defined( CINDER_GL_ES )
+void clipControl(GLenum origin, GLenum depth)
+{
+	auto ctx = gl::context();
+	ctx->clipControl(origin, depth);
+}
+
+GLenum getClipControlOrigin()
+{
+	const auto ctx = gl::context();
+	return ctx->getClipControlOrigin();
+}
+
+GLenum getClipControlDepthMode()
+{
+	const auto ctx = gl::context();
+	return ctx->getClipControlDepthMode();
+}
+#endif // ! defined( CINDER_GL_ES )
+
+
 void setMatrices( const ci::Camera& cam )
 {
 	auto ctx = context();
+#if ! defined( CINDER_GL_ES )
+	cam.enableDepthReversed(ctx->isDepthReversedEnabled());
+	cam.setClipZeroToOne(ctx->getClipControlDepthMode() == GL_ZERO_TO_ONE);
+#endif // ! defined( CINDER_GL_ES )
 	ctx->getViewMatrixStack().back() = cam.getViewMatrix();
 	ctx->getProjectionMatrixStack().back() = cam.getProjectionMatrix();
 	ctx->getModelMatrixStack().back() = mat4();

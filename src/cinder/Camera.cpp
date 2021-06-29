@@ -276,6 +276,16 @@ void CameraPersp::setPerspective( float verticalFovDegrees, float aspectRatio, f
 	mProjectionCached = false;
 }
 
+void CameraPersp::setInfinitePerspective(float verticalFovDegrees, float aspectRatio, float nearPlane)
+{
+	mFov = verticalFovDegrees;
+	mAspectRatio = aspectRatio;
+	mNearClip = nearPlane;
+	mInfiniteFarClip = true;
+
+	mProjectionCached = false;
+}
+
 Ray CameraPersp::calcRay( float uPos, float vPos, float imagePlaneAspectRatio ) const
 {
 	calcMatrices();
@@ -288,63 +298,166 @@ Ray CameraPersp::calcRay( float uPos, float vPos, float imagePlaneAspectRatio ) 
 
 void CameraPersp::calcProjection() const
 {
-	mFrustumTop		=  mNearClip * math<float>::tan( (float)M_PI / 180.0f * mFov * 0.5f );
-	mFrustumBottom	= -mFrustumTop;
-	mFrustumRight	=  mFrustumTop * mAspectRatio;
-	mFrustumLeft	= -mFrustumRight;
+	mFrustumTop = mNearClip * math<float>::tan((float)M_PI / 180.0f * mFov * 0.5f);
+	mFrustumBottom = -mFrustumTop;
+	mFrustumRight = mFrustumTop * mAspectRatio;
+	mFrustumLeft = -mFrustumRight;
 
 	// perform lens shift
-	if( mLensShift.y != 0.0f ) {
+	if (mLensShift.y != 0.0f) {
 		mFrustumTop = ci::lerp<float, float>(0.0f, 2.0f * mFrustumTop, 0.5f + 0.5f * mLensShift.y);
 		mFrustumBottom = ci::lerp<float, float>(2.0f * mFrustumBottom, 0.0f, 0.5f + 0.5f * mLensShift.y);
 	}
 
-	if( mLensShift.x != 0.0f ) {
+	if (mLensShift.x != 0.0f) {
 		mFrustumRight = ci::lerp<float, float>(2.0f * mFrustumRight, 0.0f, 0.5f - 0.5f * mLensShift.x);
 		mFrustumLeft = ci::lerp<float, float>(0.0f, 2.0f * mFrustumLeft, 0.5f - 0.5f * mLensShift.x);
 	}
 
 	mat4 &p = mProjectionMatrix;
-	p[0][0] =  2.0f * mNearClip / ( mFrustumRight - mFrustumLeft );
-	p[1][0] =  0.0f;
-	p[2][0] =  ( mFrustumRight + mFrustumLeft ) / ( mFrustumRight - mFrustumLeft );
-	p[3][0] =  0.0f;
+	p[0][0] = 2.0f * mNearClip / (mFrustumRight - mFrustumLeft);
+	p[1][0] = 0.0f;
+	p[2][0] = (mFrustumRight + mFrustumLeft) / (mFrustumRight - mFrustumLeft);
+	p[3][0] = 0.0f;
 
-	p[0][1] =  0.0f;
-	p[1][1] =  2.0f * mNearClip / ( mFrustumTop - mFrustumBottom );
-	p[2][1] =  ( mFrustumTop + mFrustumBottom ) / ( mFrustumTop - mFrustumBottom );
-	p[3][1] =  0.0f;
+	p[0][1] = 0.0f;
+	p[1][1] = 2.0f * mNearClip / (mFrustumTop - mFrustumBottom);
+	p[2][1] = (mFrustumTop + mFrustumBottom) / (mFrustumTop - mFrustumBottom);
+	p[3][1] = 0.0f;
 
-	p[0][2] =  0.0f;
-	p[1][2] =  0.0f;
-	p[2][2] = -( mFarClip + mNearClip ) / ( mFarClip - mNearClip );
-	p[3][2] = -2.0f * mFarClip * mNearClip / ( mFarClip - mNearClip );
+	p[0][2] = 0.0f;
+	p[1][2] = 0.0f;
+	if (mClipZeroToOne) {
+		if (mInfiniteFarClip) {
+			if (mDepthReversed) {
+				// Reversed infinite right-handed perspective projection, one to zero.
+				p[2][2] = 0.0f;
+				p[3][2] = mNearClip;
+			}
+			else {
+				// Infinite right-handed perspective projection, zero to one.
+				p[2][2] = -1.0f;
+				p[3][2] = -mNearClip;
+			}
+		}
+		else {
+			if (mDepthReversed) {
+				// Reversed right-handed perspective projection, one to zero.
+				p[2][2] = mNearClip / (mFarClip - mNearClip);
+				p[3][2] = (mFarClip * mNearClip) / (mFarClip - mNearClip);
+			}
+			else {
+				// Right-handed perspective projection, zero to one.
+				p[2][2] = mFarClip / (mNearClip - mFarClip);
+				p[3][2] = -(mFarClip * mNearClip) / (mFarClip - mNearClip);
+			}
+		}
+	}
+	else {
+		if (mInfiniteFarClip) {
+			if (mDepthReversed) {
+				// Reversed infinite right-handed perspective projection, negative one to one.
+				p[2][2] = 1.0f;
+				p[3][2] = 2.0f * mNearClip;
+			}
+			else {
+				// Infinite right-handed perspective projection, negative one to one.
+				p[2][2] = -1.0f;
+				p[3][2] = -2.0f * mNearClip;
+			}
+		}
+		else {
+			if (mDepthReversed) {
+				// Reversed right-handed perspective projection, negative one to one.
+				p[2][2] = (mFarClip + mNearClip) / (mFarClip - mNearClip);
+				p[3][2] = 2.0f * mFarClip * mNearClip / (mFarClip - mNearClip);
+			}
+			else {
+				// Default right-handed perspective projection, negative one to one.
+				p[2][2] = -(mFarClip + mNearClip) / (mFarClip - mNearClip);
+				p[3][2] = -2.0f * mFarClip * mNearClip / (mFarClip - mNearClip);
+			}
+		}
+	}
 
-	p[0][3] =  0.0f;
-	p[1][3] =  0.0f;
+	p[0][3] = 0.0f;
+	p[1][3] = 0.0f;
 	p[2][3] = -1.0f;
-	p[3][3] =  0.0f;
+	p[3][3] = 0.0f;
+
+	// A huge thank you is due to https://www.wolframalpha.com for inverting the matrices while preserving the formulas.
+	// Example: inverse {{2n/(r-l),0,(r+l)/(r-l),0},{0,2n/(t-b),(t+b)/(t-b),0},{0,0,-(f+n)/(f-n),-2fn/(f-n)},{0,0,-1,0}}
 
 	mat4 &m = mInverseProjectionMatrix;
-	m[0][0] =  ( mFrustumRight - mFrustumLeft ) / ( 2.0f * mNearClip );
-	m[1][0] =  0.0f;
-	m[2][0] =  0.0f;
-	m[3][0] =  ( mFrustumRight + mFrustumLeft ) / ( 2.0f * mNearClip );
+	m[0][0] = (mFrustumRight - mFrustumLeft) / (2.0f * mNearClip);
+	m[1][0] = 0.0f;
+	m[2][0] = 0.0f;
+	m[3][0] = (mFrustumRight + mFrustumLeft) / (2.0f * mNearClip);
 
-	m[0][1] =  0.0f;
-	m[1][1] =  ( mFrustumTop - mFrustumBottom ) / ( 2.0f * mNearClip );
-	m[2][1] =  0.0f;
-	m[3][1] =  ( mFrustumTop + mFrustumBottom ) / ( 2.0f * mNearClip );
+	m[0][1] = 0.0f;
+	m[1][1] = (mFrustumTop - mFrustumBottom) / (2.0f * mNearClip);
+	m[2][1] = 0.0f;
+	m[3][1] = (mFrustumTop + mFrustumBottom) / (2.0f * mNearClip);
 
-	m[0][2] =  0.0f;
-	m[1][2] =  0.0f;
-	m[2][2] =  0.0f;
+	m[0][2] = 0.0f;
+	m[1][2] = 0.0f;
+	m[2][2] = 0.0f;
 	m[3][2] = -1.0f;
 
-	m[0][3] =  0.0f;
-	m[1][3] =  0.0f;
-	m[2][3] = -( mFarClip - mNearClip ) / ( 2.0f * mFarClip*mNearClip );
-	m[3][3] =  ( mFarClip + mNearClip ) / ( 2.0f * mFarClip*mNearClip );
+	m[0][3] = 0.0f;
+	m[1][3] = 0.0f;
+	if (mClipZeroToOne) {
+		if (mInfiniteFarClip) {
+			if (mDepthReversed) {
+				// Reversed infinite right-handed perspective projection, one to zero.
+				m[2][3] = 1.0f / mNearClip;
+				m[3][3] = 0.0f;
+			}
+			else {
+				// Infinite right-handed perspective projection, zero to one.
+				m[2][3] = -1.0f / mNearClip;
+				m[3][3] = 1.0f / mNearClip;
+			}
+		}
+		else {
+			if (mDepthReversed) {
+				// Reversed right-handed perspective projection, one to zero.
+				m[2][3] = (mFarClip - mNearClip) / (mFarClip * mNearClip);
+				m[3][3] = 1.0f / mFarClip;
+			}
+			else {
+				// Right-handed perspective projection, zero to one.
+				m[2][3] = (mNearClip - mFarClip) / (mFarClip * mNearClip);
+				m[3][3] = 1.0f / mNearClip;
+			}
+		}
+	}
+	else {
+		if (mInfiniteFarClip) {
+			if (mDepthReversed) {
+				// Reversed infinite right-handed perspective projection, negative one to one.
+				m[2][3] = 1.0f / (2.0f * mNearClip);
+				m[3][3] = 1.0f / (2.0f * mNearClip);
+			}
+			else {
+				// Infinite right-handed perspective projection, negative one to one.
+				m[2][3] = -1.0f / (2.0f * mNearClip);
+				m[3][3] = 1.0f / (2.0f * mNearClip);
+			}
+		}
+		else {
+			if (mDepthReversed) {
+				// Reversed right-handed perspective projection, negative one to one.
+				m[2][3] = (mFarClip - mNearClip) / (2.0f * mFarClip * mNearClip);
+				m[3][3] = (mFarClip + mNearClip) / (2.0f * mFarClip * mNearClip);
+			}
+			else {
+				// Default right-handed perspective projection, negative one to one.
+				m[2][3] = (mNearClip - mFarClip) / (2.0f * mFarClip * mNearClip);
+				m[3][3] = (mFarClip + mNearClip) / (2.0f * mFarClip * mNearClip);
+			}
+		}
+	}
 
 	mProjectionCached = true;
 }

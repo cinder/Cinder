@@ -1599,7 +1599,57 @@ GLenum Context::getPolygonMode( GLenum face )
 	return mPolygonModeStack.back();
 }
 
+
+
 #endif // ! defined( CINDER_GL_ES )
+
+
+bool Context::isClipControlSupported() const
+{
+#if ! defined( CINDER_GL_ES )
+	return (glClipControl != 0);
+#else
+	return false;
+#endif // ! defined( CINDER_GL_ES )
+}
+
+#if ! defined( CINDER_GL_ES )
+void Context::clipControl(GLenum origin, GLenum depth)
+{
+	if (isClipControlSupported() && (mClipControlOrigin != origin || mClipControlDepthMode != depth)) {
+		mClipControlOrigin = origin;
+		mClipControlDepthMode = depth;
+		glClipControl(origin, depth);
+	}
+}
+
+GLenum Context::getClipControlOrigin() const
+{
+	return mClipControlOrigin;
+}
+
+GLenum Context::getClipControlDepthMode() const
+{
+	return mClipControlDepthMode;
+}
+
+bool Context::isDepthReversedEnabled() const
+{
+	return mReversedDepthEnabled && getClipControlDepthMode() == GL_ZERO_TO_ONE;
+}
+
+void Context::depthReversed(bool enable)
+{
+	mReversedDepthEnabled = enable;
+
+	clipControl(GL_LOWER_LEFT, enable ? GL_ZERO_TO_ONE : GL_NEGATIVE_ONE_TO_ONE);
+	depthFunc(isDepthReversedEnabled() ? GL_GREATER : GL_LESS);
+	clearDepth(isDepthReversedEnabled() ? 0.0 : 1.0);
+}
+
+#endif // ! defined( CINDER_GL_ES )
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Templated stack management routines
