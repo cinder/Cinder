@@ -354,7 +354,7 @@ namespace ImGui {
 static void ImGui_ImplCinder_MouseDown( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.MousePos = ci::app::toPixels( event.getPos() );
+	io.MousePos = event.getWindow()->toPixels( event.getPos() );
 	io.MouseDown[0] = event.isLeftDown();
 	io.MouseDown[1] = event.isRightDown();
 	io.MouseDown[2] = event.isMiddleDown();
@@ -377,14 +377,14 @@ static void ImGui_ImplCinder_MouseWheel( ci::app::MouseEvent& event )
 static void ImGui_ImplCinder_MouseMove( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.MousePos = ci::app::toPixels( event.getPos() );
+	io.MousePos = event.getWindow()->toPixels( event.getPos() );
 	event.setHandled( io.WantCaptureMouse );
 }
 //! sets the right mouseDrag IO values in imgui
 static void ImGui_ImplCinder_MouseDrag( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.MousePos = ci::app::toPixels( event.getPos() );
+	io.MousePos = event.getWindow()->toPixels( event.getPos() );
 	event.setHandled( io.WantCaptureMouse );
 }
 
@@ -439,12 +439,12 @@ static void ImGui_ImplCinder_KeyUp( ci::app::KeyEvent& event )
 
 static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window );
 
-static void ImGui_ImplCinder_Resize()
+static void ImGui_ImplCinder_Resize( const ci::app::WindowRef& window )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.DisplaySize = ci::vec2( ci::app::toPixels( ci::app::getWindow()->getSize() ) );
+	io.DisplaySize = ci::vec2( window->toPixels( window->getSize() ) );
 
-	ImGui_ImplCinder_NewFrameGuard( ci::app::getWindow() );
+	ImGui_ImplCinder_NewFrameGuard( window );
 }
 
 static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window ) {
@@ -528,7 +528,7 @@ static bool ImGui_ImplCinder_Init( const ci::app::WindowRef& window, const ImGui
 	sWindowConnections[window] += window->getSignalMouseWheel().connect( signalPriority, ImGui_ImplCinder_MouseWheel );
 	sWindowConnections[window] += window->getSignalKeyDown().connect( signalPriority, ImGui_ImplCinder_KeyDown );
 	sWindowConnections[window] += window->getSignalKeyUp().connect( signalPriority, ImGui_ImplCinder_KeyUp );
-	sWindowConnections[window] += window->getSignalResize().connect( signalPriority, ImGui_ImplCinder_Resize );
+	sWindowConnections[window] += window->getSignalResize().connect( signalPriority, std::bind( ImGui_ImplCinder_Resize, window ) );
 	if( options.isAutoRenderEnabled() ) {
 		sWindowConnections[window] += ci::app::App::get()->getSignalUpdate().connect( std::bind( ImGui_ImplCinder_NewFrameGuard, window ) );
 		sWindowConnections[window] += window->getSignalPostDraw().connect( ImGui_ImplCinder_PostDraw );
