@@ -43,21 +43,21 @@ namespace cinder {
 void Camera::setEyePoint( const vec3 &eyePoint )
 {
 	mEyePoint = eyePoint;
-	mModelViewCached = false;
+	dirtyViewCaches();
 }
 
 void Camera::setViewDirection( const vec3 &viewDirection )
 {
 	mViewDirection = normalize( viewDirection );
 	mOrientation = glm::rotation( mViewDirection, glm::vec3( 0, 0, -1 ) );
-	mModelViewCached = false;
+	dirtyViewCaches();
 }
 
 void Camera::setOrientation( const quat &orientation )
 {
 	mOrientation = glm::normalize( orientation );
 	mViewDirection = glm::rotate( mOrientation, glm::vec3( 0, 0, -1 ) );
-	mModelViewCached = false;
+	dirtyViewCaches();
 }
 
 // Derived from math presented in http://paulbourke.net/miscellaneous/lens/
@@ -70,7 +70,7 @@ void Camera::setWorldUp( const vec3 &worldUp )
 {
 	mWorldUp = normalize( worldUp );
 	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, worldUp ) );
-	mModelViewCached = false;
+	dirtyViewCaches();
 }
 
 void Camera::lookAt( const vec3 &target )
@@ -78,7 +78,7 @@ void Camera::lookAt( const vec3 &target )
 	mViewDirection = normalize( target - mEyePoint );
 	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) );
 	mPivotDistance = distance( target, mEyePoint );
-	mModelViewCached = false;
+	dirtyViewCaches();
 }
 
 void Camera::lookAt( const vec3 &eyePoint, const vec3 &target )
@@ -87,7 +87,7 @@ void Camera::lookAt( const vec3 &eyePoint, const vec3 &target )
 	mViewDirection = normalize( target - mEyePoint );
 	mOrientation = quat( glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) ) );
 	mPivotDistance = distance( target, mEyePoint );
-	mModelViewCached = false;
+	dirtyViewCaches();
 }
 
 void Camera::lookAt( const vec3 &eyePoint, const vec3 &target, const vec3 &aWorldUp )
@@ -97,7 +97,7 @@ void Camera::lookAt( const vec3 &eyePoint, const vec3 &target, const vec3 &aWorl
 	mViewDirection = normalize( target - mEyePoint );
 	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) );
 	mPivotDistance = distance( target, mEyePoint );
-	mModelViewCached = false;
+	dirtyViewCaches();
 }
 
 void Camera::getFrustum( float *left, float *top, float *right, float *bottom, float *near, float *far ) const

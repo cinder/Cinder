@@ -153,6 +153,7 @@ class CI_API Camera {
 	virtual Ray		calcRay( float u, float v, float imagePlaneAspectRatio ) const = 0;
 
 	void			getClipCoordinates( float clipDist, float ratio, vec3* topLeft, vec3* topRight, vec3* bottomLeft, vec3* bottomRight ) const;
+	void			dirtyViewCaches() { mModelViewCached = mInverseModelViewCached = false; }
 
 	vec3	mEyePoint;
 	vec3	mViewDirection;
