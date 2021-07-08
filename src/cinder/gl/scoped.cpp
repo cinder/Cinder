@@ -40,7 +40,7 @@ ScopedVao::ScopedVao( Vao *vao )
 	mCtx->pushVao( vao );
 }
 
-ScopedVao::ScopedVao( VaoRef &vao )
+ScopedVao::ScopedVao( const VaoRef &vao )
 	: mCtx( gl::context() )
 {
 	mCtx->pushVao( vao );
@@ -142,7 +142,7 @@ ScopedBlend::~ScopedBlend()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedGlslProg
-ScopedGlslProg::ScopedGlslProg( GlslProgRef& prog )
+ScopedGlslProg::ScopedGlslProg( const GlslProgRef& prog )
 	: mCtx( gl::context() )
 {
 	mCtx->pushGlslProg( prog.get() );

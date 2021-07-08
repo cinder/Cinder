@@ -42,7 +42,7 @@ typedef std::shared_ptr<Sampler>			SamplerRef;
 
 struct CI_API ScopedVao : private Noncopyable {
 	ScopedVao( Vao *vao );
-	ScopedVao( VaoRef &vao );
+	ScopedVao( const VaoRef &vao );
 	~ScopedVao();
 
   private:
@@ -117,7 +117,7 @@ struct CI_API ScopedBlendAdditive : public ScopedBlend
 };
 
 struct CI_API ScopedGlslProg : private Noncopyable {
-	ScopedGlslProg( GlslProgRef &prog );
+	ScopedGlslProg( const GlslProgRef &prog );
 	ScopedGlslProg( const std::shared_ptr<const GlslProg> &prog );
 	ScopedGlslProg( const GlslProg *prog );
 	~ScopedGlslProg();
