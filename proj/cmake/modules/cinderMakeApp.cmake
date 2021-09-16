@@ -133,7 +133,7 @@ function( ci_make_app )
 	add_executable( ${ARG_APP_NAME} MACOSX_BUNDLE WIN32 ${ARG_SOURCES} ${ICON_PATH} ${ARG_RESOURCES} )
 
 	target_include_directories( ${ARG_APP_NAME} PUBLIC ${ARG_INCLUDES} )
-	target_link_libraries( ${ARG_APP_NAME} cinder ${ARG_LIBRARIES} )
+	target_link_libraries( ${ARG_APP_NAME} PUBLIC cinder ${ARG_LIBRARIES} )
 
 	if( MSVC )
 		# Ignore Specific Default Libraries for Debug build
