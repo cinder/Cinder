@@ -104,6 +104,9 @@ static bool sFirstView = true; // records whether a call is the first to initVie
 		[super drawRect:rect]; // draws black by default
 		return;
 	}
+    
+    
+    [mCinderView draw];
 }
 
 - (void)animateOneFrame

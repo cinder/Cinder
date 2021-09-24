@@ -26,6 +26,7 @@
 #include "cinder/CinderAssert.h"
 
 #if defined( CINDER_MAC )
+#include <list>
 	#import "cinder/app/cocoa/AppImplMacScreenSaver.h"
 	#include "cinder/app/cocoa/PlatformCocoa.h"
 	#include "cinder/ImageSourceFileQuartz.h"
