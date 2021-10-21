@@ -162,7 +162,7 @@ function( ci_make_app )
 			# First check if a target was defined. If so then includes and extra libraries will automatically be added to the app target.
 			if( TARGET "${blockName}" )
 				add_dependencies( ${ARG_APP_NAME} "${blockName}" )
-				target_link_libraries( ${ARG_APP_NAME} "${blockName}" )
+				target_link_libraries( ${ARG_APP_NAME} PUBLIC "${blockName}" )
 			else()
 				# Otherwise, check for either includes for a header-only block or libraries that need to be linked.
 				# - sanity check to warn if someone passed in a block with unexpected cmake configuration
@@ -174,7 +174,7 @@ function( ci_make_app )
 					target_include_directories( ${ARG_APP_NAME} PUBLIC ${${blockName}_INCLUDES} )
 				endif()
 				if( ${blockName}_LIBRARIES )
-					target_link_libraries( ${ARG_APP_NAME} ${${blockName}_LIBRARIES} )
+					target_link_libraries( ${ARG_APP_NAME} PUBLIC ${${blockName}_LIBRARIES} )
 				endif()
 			endif()
 
