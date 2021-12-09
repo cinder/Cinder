@@ -106,10 +106,10 @@ class ImageTargetTexture;
 template<typename T>
 class ImageTargetGlTexture : public ImageTarget {
   public:
-	static shared_ptr<ImageTargetGlTexture> create( const Texture *texture, ImageIo::ChannelOrder &channelOrder, bool isGray, bool hasAlpha );
+	static shared_ptr<ImageTargetGlTexture> create( const Texture *texture, ImageIo::ChannelOrder channelOrder, bool isGray, bool hasAlpha );
 #if ! defined( CINDER_GL_ES )
 	// receives a pointer to an intermediate data store, presumably a mapped PBO
-	static shared_ptr<ImageTargetGlTexture> create( const Texture *texture, ImageIo::ChannelOrder &channelOrder, bool isGray, bool hasAlpha, void *data );
+	static shared_ptr<ImageTargetGlTexture> create( const Texture *texture, ImageIo::ChannelOrder channelOrder, bool isGray, bool hasAlpha, void *data );
 #endif
 
 	virtual bool	hasAlpha() const { return mHasAlpha; }
@@ -118,7 +118,7 @@ class ImageTargetGlTexture : public ImageTarget {
 	void*			getData() const { return mDataBaseAddress; }
 
   private:
-	ImageTargetGlTexture( const Texture *texture, ImageIo::ChannelOrder &channelOrder, bool isGray, bool hasAlpha, void *intermediateData );
+	ImageTargetGlTexture( const Texture *texture, ImageIo::ChannelOrder channelOrder, bool isGray, bool hasAlpha, void *intermediateData );
 
 	const Texture		*mTexture;
 	bool				mHasAlpha;
@@ -2138,7 +2138,7 @@ void TextureCubeMap::printDims( std::ostream &os ) const
 /////////////////////////////////////////////////////////////////////////////////
 // ImageTargetGlTexture
 template<typename T>
-shared_ptr<ImageTargetGlTexture<T>> ImageTargetGlTexture<T>::create( const Texture *texture, ImageIo::ChannelOrder &channelOrder, bool isGray, bool hasAlpha )
+shared_ptr<ImageTargetGlTexture<T>> ImageTargetGlTexture<T>::create( const Texture *texture, ImageIo::ChannelOrder channelOrder, bool isGray, bool hasAlpha )
 {
 	return shared_ptr<ImageTargetGlTexture<T>>( new ImageTargetGlTexture<T>( texture, channelOrder, isGray, hasAlpha, nullptr ) );
 }
@@ -2146,14 +2146,14 @@ shared_ptr<ImageTargetGlTexture<T>> ImageTargetGlTexture<T>::create( const Textu
 #if ! defined( CINDER_GL_ES )
 // create method receives an existing pointer which presumably is a mapped PBO
 template<typename T>
-shared_ptr<ImageTargetGlTexture<T>> ImageTargetGlTexture<T>::create( const Texture *texture, ImageIo::ChannelOrder &channelOrder, bool isGray, bool hasAlpha, void *intermediateDataStore )
+shared_ptr<ImageTargetGlTexture<T>> ImageTargetGlTexture<T>::create( const Texture *texture, ImageIo::ChannelOrder channelOrder, bool isGray, bool hasAlpha, void *intermediateDataStore )
 {
 	return shared_ptr<ImageTargetGlTexture<T>>( new ImageTargetGlTexture<T>( texture, channelOrder, isGray, hasAlpha, intermediateDataStore ) );
 }
 #endif
 
 template<typename T>
-ImageTargetGlTexture<T>::ImageTargetGlTexture( const Texture *texture, ImageIo::ChannelOrder &channelOrder, bool isGray, bool hasAlpha, void *intermediateDataStore )
+ImageTargetGlTexture<T>::ImageTargetGlTexture( const Texture *texture, ImageIo::ChannelOrder channelOrder, bool isGray, bool hasAlpha, void *intermediateDataStore )
 	: ImageTarget(), mTexture( texture ), mHasAlpha( hasAlpha )
 {
 	if( isGray ) {
