@@ -85,7 +85,7 @@ class WindowImplMswBasic : public WindowImplMsw {
 	WindowImplMswBasic( const Window::Format &format, RendererRef sharedRenderer, AppImplMswBasic *appImpl )
 		: WindowImplMsw( format, sharedRenderer, appImpl ), mAppImplBasic( appImpl ) {}
 
-	virtual void WindowImplMswBasic::toggleFullScreen( const app::FullScreenOptions &options );
+	void toggleFullScreen( const app::FullScreenOptions &options ) override;
 
   protected:
 	AppImplMswBasic		*mAppImplBasic;
