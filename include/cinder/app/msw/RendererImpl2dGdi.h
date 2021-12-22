@@ -35,7 +35,7 @@ namespace cinder { namespace app {
 class AppBase;
 class WindowImplMsw;
 
-class RendererImpl2dGdi : public RendererImplMsw {
+class CI_API RendererImpl2dGdi : public RendererImplMsw {
  public:
 	 RendererImpl2dGdi( bool doubleBuffer, bool paintEvents );
 
