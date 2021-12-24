@@ -171,7 +171,7 @@ struct MediaTime {
 		return MediaTime( -value, base, epoch );
 	}
 
-	friend std::ostream& operator<<( std::ostream &os, const MediaTime &mt );
+	friend CI_API std::ostream& operator<<( std::ostream &os, const MediaTime &mt );
 
 	//! Divides the value and base by the greatest common common divisor of both. Does not affect epoch
 	void simplify();
