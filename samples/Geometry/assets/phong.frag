@@ -50,7 +50,7 @@ void main()
 	float blinn = pow( max( dot( N, H ), 0.0 ), kMaterialShininess ) * kNormalization;
 
 	// diffuse coefficient
-	vec3 diffuse = vec3( phong );
+	vec3 diffuse = vec3( phong ) * 0.75 + 0.25;
 
 	if( uTexturingMode == 1 ) {
 		diffuse *= vec3( 0.7, 0.5, 0.3 );
@@ -58,6 +58,8 @@ void main()
 	}
 	else if ( uTexturingMode == 2 )
 		diffuse *= texture( uTex0, vVertexIn.texCoord.st ).rgb;
+	
+	diffuse *= vVertexIn.color.rgb;
 
 	// specular coefficient 
 	vec3 specular = blinn * cSpecular;

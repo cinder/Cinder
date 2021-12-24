@@ -23,7 +23,7 @@ class GeometryApp : public App {
 public:
 	GeometryApp();
 
-	enum Primitive { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, TORUSKNOT, PLANE, RECT, ROUNDEDRECT, CIRCLE, RING, PRIMITIVE_COUNT };
+	enum Primitive { CAPSULE, CONE, CUBE, CUBESPHERE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, TORUSKNOT, PLANE, RECT, ROUNDEDRECT, CIRCLE, RING, PRIMITIVE_COUNT };
 	enum Quality { LOW, DEFAULT, HIGH };
 	enum ViewMode { SHADED, WIREFRAME };
 	enum TexturingMode { NONE, PROCEDURAL, SAMPLER };
@@ -86,6 +86,8 @@ private:
 
 	float				mConeRatio;
 
+	bool				mCubeSphereEqualSpacing;
+
 	float				mHelixRatio;
 	unsigned			mHelixTwist;
 	float				mHelixOffset;
@@ -116,6 +118,7 @@ void prepareSettings( App::Settings* settings )
 GeometryApp::GeometryApp()
 	: mCapsuleRadius( 0.5f ), mCapsuleLength( 1 )
 	, mConeRatio( 0.5f )
+	, mCubeSphereEqualSpacing( true )
 	, mHelixRatio( 0.25f ), mHelixTwist( 0 ), mHelixOffset( 0 ), mHelixCoils( 3 )
 	, mRingWidth( 0.25f )
 	, mRoundedRectRadius( 0.2f )
@@ -348,7 +351,7 @@ void GeometryApp::fileDrop( FileDropEvent event )
 void GeometryApp::updateGui()
 {
 #if ! defined( CINDER_GL_ES )
-	static vector<string> primitives = { "Capsule", "Cone", "Cube", "Cylinder", "Helix", "Icosahedron", "Icosphere", "Sphere", "Teapot", "Torus", "Torus Knot", "Plane", "Rectangle", "Rounded Rectangle", "Circle", "Ring" };
+	static vector<string> primitives = { "Capsule", "Cone", "Cube", "Cube Sphere", "Cylinder", "Helix", "Icosahedron", "Icosphere", "Sphere", "Teapot", "Torus", "Torus Knot", "Plane", "Rectangle", "Rounded Rectangle", "Circle", "Ring" };
 	static vector<string> qualities = { "Low", "Default", "High" };
 	static vector<string> viewModes = { "Shaded", "Wireframe" };
 	static vector<string> texturingModes = { "None", "Procedural", "Sampler" };
@@ -384,6 +387,9 @@ void GeometryApp::updateGui()
 		break;
 	case GeometryApp::CONE:
 		changed |= ImGui::DragFloat( "Cone: Ratio", &mConeRatio, 0.01f );
+		break;
+	case GeometryApp::CUBESPHERE:
+		changed |= ImGui::Checkbox( "Cube Sphere: Equal Spacing", &mCubeSphereEqualSpacing );
 		break;
 	case GeometryApp::HELIX:
 		changed |= ImGui::DragFloat( "Helix: Ratio", &mHelixRatio, 0.01f );
@@ -460,7 +466,14 @@ void GeometryApp::createGeometry()
 			switch( mQualityCurrent ) {
 				case DEFAULT:	loadGeomSource( geom::Cube(), geom::WireCube() ); break;
 				case LOW:		loadGeomSource( geom::Cube().subdivisions( 1 ), geom::WireCube() ); break;
-				case HIGH:		loadGeomSource( geom::Cube().subdivisions( 10 ), geom::WireCube() ); break;
+				case HIGH:		loadGeomSource( geom::Cube().subdivisions( 64 ), geom::WireCube() ); break;
+			}
+			break;
+		case CUBESPHERE:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::CubeSphere().equalSpacing( mCubeSphereEqualSpacing ), geom::WireSphere() ); break;
+				case LOW:		loadGeomSource( geom::CubeSphere().equalSpacing( mCubeSphereEqualSpacing ).subdivisions( 4 ), geom::WireSphere() ); break;
+				case HIGH:		loadGeomSource( geom::CubeSphere().equalSpacing( mCubeSphereEqualSpacing ).subdivisions( 64 ), geom::WireSphere() ); break;
 			}
 			break;
 		case CYLINDER:
