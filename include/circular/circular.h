@@ -366,7 +366,7 @@ class circular_buffer
             }
             else
             {
-                alloc_.construct(array_ + next, item);
+                std::allocator_traits<Alloc>::construct(alloc_, array_ + next, item);
             }
             increment_tail();
         }
@@ -374,13 +374,13 @@ class circular_buffer
         {
             size_type destroy_pos = head_;
             increment_head();
-            alloc_.destroy(array_ + destroy_pos);
+            std::allocator_traits<Alloc>::destroy(alloc_, array_ + destroy_pos);
         }
         void clear()
         {
             for (size_type n = 0; n < contents_size_; ++n)
             {
-                alloc_.destroy(array_ + index_to_subscript(n));
+                std::allocator_traits<Alloc>::destroy(alloc_, array_ + index_to_subscript(n));
             }
             head_ = 1;
             tail_ = contents_size_ = 0;
