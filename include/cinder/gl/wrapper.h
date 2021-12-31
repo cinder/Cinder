@@ -65,6 +65,9 @@ enum UniformSemantic {
 CI_API class Context* context();
 CI_API class Environment* env();
 
+//! Ovewrites the local static environment variable, only useful from external (dll) plugins.
+CI_API void setEnvironment( Environment* environment );
+
 CI_API void enableVerticalSync( bool enable = true );
 CI_API bool isVerticalSyncEnabled();
 
@@ -357,6 +360,44 @@ CI_API ivec3	getMaxComputeWorkGroupCount();
 //! Returns ivec3( GL_MAX_COMPUTE_WORK_GROUP_SIZE )
 CI_API ivec3	getMaxComputeWorkGroupSize();
 #endif
+
+// texture and framebuffer direct-manipulation
+CI_API inline void texParameteri( GLenum target, GLenum pname, GLint param ) { glTexParameteri( target, pname, param ); }
+CI_API inline void generateMipmap( GLenum target ) { glGenerateMipmap( target ); }
+CI_API inline void framebufferTexture2D( GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level )
+				{ glFramebufferTexture2D( target, attachment, textarget, texture, level ); }
+
+#if defined( CINDER_GL_HAS_NV_PATH )
+CI_API inline void textureBarrierNV() { glTextureBarrierNV(); }
+
+// fixed-function compatability context glColor*() wrappers
+CI_API inline void compatColor( const Color &color ) { glColor3fv( &color.r ); }
+CI_API inline void compatColor( const ColorA &color ) { glColor4fv( &color.r ); }
+CI_API inline void compatColor( const Color8u &color ) { glColor3ubv( &color.r ); }
+CI_API inline void compatColor( const ColorA8u &color ) { glColor4ubv( &color.r ); }
+
+// NV_path_rendering extension
+CI_API inline GLuint genPathsNV( GLsizei range ) { return glGenPathsNV( range ); }
+CI_API inline void deletePathsNV( GLuint path, GLsizei range ) { glDeletePathsNV( path, range ); }
+CI_API inline void pathStringNV( GLuint path, GLenum format, GLsizei length, const void *pathString ) { glPathStringNV( path, format, length, pathString ); }
+CI_API inline void pathCommandsNV( GLuint path, GLsizei numCommands, const GLubyte *commands, GLsizei numCoords, GLenum coordType, const void *coords )
+						{ glPathCommandsNV( path, numCommands, commands, numCoords, coordType, coords); }
+CI_API inline void pathParameteriNV( GLuint path, GLenum pname, GLint value ) { glPathParameteriNV( path, pname, value ); }
+CI_API inline void pathParameterfNV( GLuint path, GLenum pname, GLfloat value ) { glPathParameterfNV( path, pname, value ); }
+CI_API inline void pathTexGenNV( GLenum texCoordSet, GLenum genMode, int components, const float *coeffs ) { glPathTexGenNV( texCoordSet, genMode, components, coeffs ); }
+CI_API inline void pathColorGenNV( GLenum color, GLenum genMode, GLenum colorMode, const float *coeffs ) { glPathColorGenNV( color, genMode, colorMode, coeffs ); }
+CI_API inline void getPathParameterfvNV( GLuint path, GLenum pname, GLfloat *value ) { glGetPathParameterfvNV( path, pname, value ); }
+CI_API inline void pathCoverDepthFuncNV( GLenum zfunc ) { glPathCoverDepthFuncNV( zfunc ); }
+CI_API inline void stencilFillPathNV( GLuint path, GLenum fillMode, GLuint mask ) { glStencilFillPathNV( path, fillMode, mask ); }
+CI_API inline void stencilStrokePathNV( GLuint path, int reference, GLuint mask ) { glStencilStrokePathNV( path, reference, mask ); }
+CI_API inline void coverFillPathNV( GLuint path, GLenum coverMode ) { glCoverFillPathNV( path, coverMode ); }
+CI_API inline void coverStrokePathNV( GLuint path, GLenum coverMode ) { glCoverStrokePathNV( path, coverMode ); }
+CI_API inline void stencilFillPathInstancedNV( GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum fillMode, GLuint mask, GLenum transformType, const float *transformValues )
+						{ glStencilFillPathInstancedNV( numPaths, pathNameType, paths, pathBase, fillMode, mask, transformType, transformValues ); }
+CI_API inline void coverFillPathInstancedNV( GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum coverMode, GLenum transformType, const float *transformValues )
+						{ glCoverFillPathInstancedNV( numPaths, pathNameType, paths, pathBase, coverMode, transformType, transformValues ); }
+CI_API inline void matrixLoadfEXT( GLenum matrixMode, const float *m ) { glMatrixLoadfEXT( matrixMode, m ); }
+#endif // defined( CINDER_GL_HAS_NV_PATH )
 
 // Debug
 #if defined( CINDER_GL_HAS_KHR_DEBUG )

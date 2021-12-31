@@ -1087,6 +1087,150 @@ void Cube::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
+// CubeSphere
+CubeSphere::CubeSphere()
+	: mSubdivisions( 16 ), mSize( 1 ), mHasColors( false ), mEqualSpacing( false )
+{
+	mColors[0] = Color(1,0,0);
+	mColors[1] = Color(0,1,1);
+	mColors[2] = Color(0,1,0);
+	mColors[3] = Color(1,0,1);
+	mColors[4] = Color(0,0,1);
+	mColors[5] = Color(1,1,0);
+}
+
+CubeSphere& CubeSphere::colors( const ColorAf &posX, const ColorAf &negX, const ColorAf &posY, const ColorAf &negY, const ColorAf &posZ, const ColorAf &negZ )
+{
+	mHasColors = true;
+	mColors[0] = posX;
+	mColors[1] = negX;
+	mColors[2] = posY;
+	mColors[3] = negY;
+	mColors[4] = posZ;
+	mColors[5] = negZ;
+	return *this;
+}
+
+size_t CubeSphere::getNumVertices() const
+{
+	return 2 * ( (mSubdivisions.x+1) * (mSubdivisions.y+1) ) // +-Z
+			+ 2 * ( (mSubdivisions.y+1) * (mSubdivisions.z+1) ) // +-X
+			+ 2 * ( (mSubdivisions.x+1) * (mSubdivisions.z+1) ); // +-Y
+}
+
+size_t CubeSphere::getNumIndices() const
+{
+	return 2 * 6 * ( mSubdivisions.x * mSubdivisions.y ) // +-Z
+			+ 2 * 6 * ( mSubdivisions.y * mSubdivisions.z ) // +-X
+			+ 2 * 6 * ( mSubdivisions.x * mSubdivisions.z ); // +-Y
+}
+
+uint8_t	CubeSphere::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return 3;
+		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::COLOR: return mHasColors ? 4 : 0;
+		case Attrib::TANGENT: return 3;
+		default:
+			return 0;
+	}	
+}
+
+AttribSet CubeSphere::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR, Attrib::TANGENT };
+}
+
+void CubeSphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	vector<vec3> positions;
+	vector<uint32_t> indices;
+	vector<vec3> normals;
+	vector<ColorA> colors;
+	vector<vec2> texCoords;
+	vector<vec3> *normalsPtr = nullptr;
+	vector<ColorA> *colorsPtr = nullptr;
+	vector<vec2> *texCoordsPtr = nullptr;
+	
+	const size_t numVertices = getNumVertices();
+	
+	// reserve room in vectors and set pointers to non-null for normals, texcoords and colors as appropriate
+	positions.reserve( numVertices );
+	indices.reserve( getNumIndices() );
+	if( requestedAttribs.count( Attrib::NORMAL ) || requestedAttribs.count( Attrib::TANGENT ) ) {
+		normals.reserve( numVertices );
+		normalsPtr = &normals;
+	}
+	if( requestedAttribs.count( Attrib::COLOR ) > 0 ) {
+		colors.reserve( numVertices );
+		colorsPtr = &colors;
+	}
+	if( requestedAttribs.count( Attrib::TEX_COORD_0 ) || requestedAttribs.count( Attrib::TANGENT ) ) {
+		texCoords.reserve( numVertices );
+		texCoordsPtr = &texCoords;
+	}
+	
+	// +X
+	generateFace( vec3(1,0,0), vec3(0,0,1), vec3(0,1,0), mSubdivisions.z, mSubdivisions.y, &positions,
+		normalsPtr, mColors[0], colorsPtr, texCoordsPtr, &indices );
+	// +Y
+	generateFace( vec3(0,1,0), vec3(1,0,0), vec3(0,0,1), mSubdivisions.x, mSubdivisions.z, &positions,
+		normalsPtr, mColors[2], colorsPtr, texCoordsPtr, &indices );
+	// +Z
+	generateFace( vec3(0,0,1), vec3(0,1,0), vec3(1,0,0), mSubdivisions.y, mSubdivisions.x, &positions,
+		normalsPtr, mColors[4], colorsPtr, texCoordsPtr, &indices );
+	// -X
+	generateFace( vec3(-1,0,0), vec3(0,1,0), vec3(0,0,1), mSubdivisions.y, mSubdivisions.z, &positions,
+		normalsPtr, mColors[1], colorsPtr, texCoordsPtr, &indices );
+	// -Y
+	generateFace( vec3(0,-1,0), vec3(0,0,1), vec3(1,0,0), mSubdivisions.z, mSubdivisions.x, &positions,
+		normalsPtr, mColors[3], colorsPtr, texCoordsPtr, &indices );
+	// -Z
+	generateFace( vec3(0,0,-1), vec3(1,0,0), vec3(0,1,0), mSubdivisions.x, mSubdivisions.y, &positions,
+		normalsPtr, mColors[5], colorsPtr, texCoordsPtr, &indices );
+
+	for( auto &position : positions ) {
+		if( mEqualSpacing ) {
+			auto x2 = position.x * position.x;
+			auto y2 = position.y * position.y;
+			auto z2 = position.z * position.z;
+			position.x *= glm::sqrt( 1 - ( y2 + z2 ) / 2 + ( y2 * z2 ) / 3 );
+			position.y *= glm::sqrt( 1 - ( z2 + x2 ) / 2 + ( z2 * x2 ) / 3 );
+			position.z *= glm::sqrt( 1 - ( x2 + y2 ) / 2 + ( x2 * y2 ) / 3 );
+			position *= mSize;
+		}
+		else {
+			position = mSize * glm::normalize( position );
+		}
+	}
+
+	for( size_t i = 0; i < positions.size() && i < normals.size(); ++i ) {
+		normals.at( i ) = glm::normalize( positions.at( i ) );
+	}
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions.data(), numVertices );
+	if( normalsPtr )
+		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals.data(), numVertices );
+	if( texCoordsPtr )
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)texCoords.data(), numVertices );
+	if( colorsPtr )
+		target->copyAttrib( Attrib::COLOR, 4, 0, (const float*)colors.data(), numVertices );
+
+	// generate tangents
+	if( requestedAttribs.count( geom::TANGENT ) ) {
+		vector<vec3> tangents;
+		calculateTangents( getNumIndices(), indices.data(), numVertices, positions.data(), normals.data(), texCoords.data(), &tangents, nullptr );
+		
+		if( requestedAttribs.count( geom::TANGENT ) )
+			target->copyAttrib( Attrib::TANGENT, 3, 0, (const float*)tangents.data(), numVertices );
+	}
+
+	target->copyIndices( Primitive::TRIANGLES, indices.data(), getNumIndices(), calcIndicesRequiredBytes( getNumIndices() ) );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
 // Icosahedron
 
 #undef PHI	// take the reciprocal of phi, to obtain an icosahedron that fits a unit cube

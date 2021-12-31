@@ -7071,7 +7071,7 @@ typedef struct {
   int y_sampling;
 } ChannelInfo;
 
-typedef struct {
+struct HeaderInfo {
   std::vector<tinyexr::ChannelInfo> channels;
   std::vector<EXRAttribute> attributes;
 
@@ -7123,7 +7123,7 @@ typedef struct {
     header_len = 0;
     compression_type = 0;
   }
-} HeaderInfo;
+};
 
 static void ReadChannelInfo(std::vector<ChannelInfo> &channels,
                             const std::vector<unsigned char> &data) {

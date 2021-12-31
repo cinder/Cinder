@@ -912,7 +912,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_MOUSEWHEEL: {
 			POINT pt = { ((int)(short)LOWORD(lParam)), ((int)(short)HIWORD(lParam)) };
 			::MapWindowPoints( NULL, mWnd, &pt, 1 );
-			MouseEvent event( impl->getWindow(), 0, impl->toPoints(pt.x), impl->toPoints(pt.y), prepMouseEventModifiers( wParam ),
+			MouseEvent event( impl->getWindow(), 0, impl->toPoints((int)pt.x), impl->toPoints((int)pt.y), prepMouseEventModifiers( wParam ),
 								GET_WHEEL_DELTA_WPARAM( wParam ) / 120.0f, static_cast<unsigned int>( wParam ) );
 			impl->getWindow()->emitMouseWheel( &event );
 		}
@@ -974,7 +974,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			::DragQueryPoint( dropH, &dropPoint );
 			::DragFinish( dropH );
 
-			FileDropEvent dropEvent( impl->getWindow(), impl->toPoints( dropPoint.x ), impl->toPoints( dropPoint.y ), files );
+			FileDropEvent dropEvent( impl->getWindow(), impl->toPoints( (int)dropPoint.x ), impl->toPoints( (int)dropPoint.y ), files );
 			impl->getWindow()->emitFileDrop( &dropEvent );
 			return 0;
 		}

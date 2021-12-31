@@ -232,7 +232,7 @@ void clearDepth( const double depth )
 #if ! defined( CINDER_GL_ES )
     glClearDepth( depth );
 #else
-	glClearDepthf( depth );
+	glClearDepthf( (float)depth );
 #endif
 }
 
