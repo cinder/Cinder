@@ -18,4 +18,5 @@ ci_make_app(
 	SOURCES     ${SRC_FILES}
 	CINDER_PATH ${CINDER_PATH}
 	INCLUDES    ${APP_PATH}/include
+    FOLDER      "cinder/samples/_opengl"
 )

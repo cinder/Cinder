@@ -17,4 +17,5 @@ set( SRC_FILES
 ci_make_app(
 	SOURCES     ${SRC_FILES}
 	CINDER_PATH ${CINDER_PATH}
+    FOLDER      "cinder/samples/_audio"
 )

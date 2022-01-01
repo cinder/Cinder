@@ -18,4 +18,5 @@ ci_make_app(
 	INCLUDES    ${APP_PATH}/include
 	CINDER_PATH ${CINDER_PATH}
 	RESOURCES   ${APP_PATH}/resources/Alfphabet-IV.ttf
+    FOLDER      "cinder/samples/_timeline"
 )
