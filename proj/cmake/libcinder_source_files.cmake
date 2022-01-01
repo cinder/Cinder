@@ -370,7 +370,7 @@ list( APPEND SRC_SET_CINDER_SVG
 list( APPEND CINDER_SRC_FILES       ${HDR_SET_CINDER_SVG} )
 list( APPEND CINDER_SRC_FILES       ${SRC_SET_CINDER_SVG} )
 source_group( "Header Files\\cinder\\svg" FILES   ${HDR_SET_CINDER_SVG} )
-source_group( "Source Files\\ccinder\\svg" FILES   ${SRC_SET_CINDER_SVG} )
+source_group( "Source Files\\cinder\\svg" FILES   ${SRC_SET_CINDER_SVG} )
 
 # ----------------------------------------------------------------------------------------------------------------------
 # tinyexr
