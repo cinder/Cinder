@@ -410,10 +410,17 @@ static void ImGui_ImplCinder_KeyDown( ci::app::KeyEvent& event )
 		sAccelKeys.push_back( event.getCode() );
 	}
 
+#if defined CINDER_LINUX
+	io.KeyCtrl = event.isControlDown() || ( event.getCode() == ci::app::KeyEvent::KEY_LCTRL ) || ( event.getCode() == ci::app::KeyEvent::KEY_RCTRL );
+	io.KeyShift = event.isShiftDown() || ( event.getCode() == ci::app::KeyEvent::KEY_LSHIFT ) || ( event.getCode() == ci::app::KeyEvent::KEY_RSHIFT );
+	io.KeyAlt = event.isAltDown() || ( event.getCode() == ci::app::KeyEvent::KEY_LALT ) || ( event.getCode() == ci::app::KeyEvent::KEY_RALT );
+	io.KeySuper = event.isMetaDown() || ( event.getCode() == ci::app::KeyEvent::KEY_LMETA ) || ( event.getCode() == ci::app::KeyEvent::KEY_RMETA );
+#else
 	io.KeyCtrl = event.isControlDown();
 	io.KeyShift = event.isShiftDown();
 	io.KeyAlt = event.isAltDown();
 	io.KeySuper = event.isMetaDown();
+#endif
 
 	event.setHandled( io.WantCaptureKeyboard );
 }
@@ -429,10 +436,17 @@ static void ImGui_ImplCinder_KeyUp( ci::app::KeyEvent& event )
 	}
 	sAccelKeys.clear();
 
+#if defined CINDER_LINUX
+	io.KeyCtrl = event.isControlDown() && ( event.getCode() != ci::app::KeyEvent::KEY_LCTRL ) && ( event.getCode() != ci::app::KeyEvent::KEY_RCTRL );
+	io.KeyShift = event.isShiftDown() && ( event.getCode() != ci::app::KeyEvent::KEY_LSHIFT ) && ( event.getCode() != ci::app::KeyEvent::KEY_RSHIFT );
+	io.KeyAlt = event.isAltDown() && ( event.getCode() != ci::app::KeyEvent::KEY_LALT ) && ( event.getCode() != ci::app::KeyEvent::KEY_RALT );
+	io.KeySuper = event.isMetaDown() && ( event.getCode() != ci::app::KeyEvent::KEY_LMETA ) && ( event.getCode() != ci::app::KeyEvent::KEY_RMETA );
+#else
 	io.KeyCtrl = event.isControlDown();
 	io.KeyShift = event.isShiftDown();
 	io.KeyAlt = event.isAltDown();
 	io.KeySuper = event.isMetaDown();
+#endif
 
 	event.setHandled( io.WantCaptureKeyboard );
 }
