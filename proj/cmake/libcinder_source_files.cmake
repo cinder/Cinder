@@ -258,6 +258,7 @@ list( APPEND HDR_SET_CINDER_GL
 	${CINDER_INC_DIR}/cinder/gl/draw.h
 	${CINDER_INC_DIR}/cinder/gl/Environment.h
 	${CINDER_INC_DIR}/cinder/gl/Fbo.h
+	${CINDER_INC_DIR}/cinder/gl/gl.h
 	${CINDER_INC_DIR}/cinder/gl/GlslProg.h
 	${CINDER_INC_DIR}/cinder/gl/Pbo.h
 	${CINDER_INC_DIR}/cinder/gl/Query.h
