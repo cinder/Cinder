@@ -133,6 +133,8 @@ class MovieBase {
 	signals::Signal<void()>&	getJumpedSignal() { return mSignalJumped; }
 	signals::Signal<void()>&	getOutputWasFlushedSignal() { return mSignalOutputWasFlushed; }
 	
+	signals::Signal<void()>&	getSeekFinishedSignal();
+	
  protected:
 	MovieBase();
 	void init();
