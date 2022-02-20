@@ -26,8 +26,11 @@
 #if ! defined( IMGUI_USER_CONFIG )
 #define IMGUI_USER_CONFIG "cinder/CinderImGuiConfig.h"
 #endif
+#if ! defined( CINDER_IMGUI_EXTERNAL )
 #include "imgui/imgui.h"
-#include "imgui/imgui_stdlib.h"
+#else
+#include "imgui.h"
+#endif
 
 #include "cinder/Filesystem.h"
 #include "cinder/CinderGlm.h"

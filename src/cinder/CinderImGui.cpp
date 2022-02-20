@@ -1,5 +1,5 @@
 #include "cinder/CinderImGui.h"
-#include "imgui/imgui_impl_opengl3.h"
+#include "imgui_impl_opengl3.h"
 
 #include "cinder/app/App.h"
 #include "cinder/Log.h"

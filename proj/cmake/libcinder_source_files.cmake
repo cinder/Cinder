@@ -326,15 +326,30 @@ endif()
 
 if( CINDER_IMGUI_ENABLED )
 	list( APPEND SRC_SET_CINDER_IMGUI ${CINDER_SRC_DIR}/cinder/CinderImGui.cpp )
-	list( APPEND SRC_SET_IMGUI
-		${CINDER_SRC_DIR}/imgui/imgui.cpp
-		${CINDER_SRC_DIR}/imgui/imgui_demo.cpp
-		${CINDER_SRC_DIR}/imgui/imgui_draw.cpp
-		${CINDER_SRC_DIR}/imgui/imgui_freetype.cpp
-		${CINDER_SRC_DIR}/imgui/imgui_impl_opengl3.cpp
-		${CINDER_SRC_DIR}/imgui/imgui_stdlib.cpp
-		${CINDER_SRC_DIR}/imgui/imgui_widgets.cpp
-	)
+	if( CINDER_IMGUI_DIR )
+		list( APPEND SRC_SET_IMGUI
+			${CINDER_IMGUI_DIR}/imgui.cpp
+			${CINDER_IMGUI_DIR}/imgui_demo.cpp
+			${CINDER_IMGUI_DIR}/imgui_draw.cpp
+			${CINDER_IMGUI_DIR}/imgui_widgets.cpp
+			${CINDER_IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+			${CINDER_IMGUI_DIR}/misc/freetype/imgui_freetype.cpp
+			${CINDER_IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
+		)
+		if( EXISTS ${CINDER_IMGUI_DIR}/imgui_tables.cpp )
+			list( APPEND SRC_SET_IMGUI ${CINDER_IMGUI_DIR}/imgui_tables.cpp )
+		endif()
+	else()
+		list( APPEND SRC_SET_IMGUI
+			${CINDER_SRC_DIR}/imgui/imgui.cpp
+			${CINDER_SRC_DIR}/imgui/imgui_demo.cpp
+			${CINDER_SRC_DIR}/imgui/imgui_draw.cpp
+			${CINDER_SRC_DIR}/imgui/imgui_freetype.cpp
+			${CINDER_SRC_DIR}/imgui/imgui_impl_opengl3.cpp
+			${CINDER_SRC_DIR}/imgui/imgui_stdlib.cpp
+			${CINDER_SRC_DIR}/imgui/imgui_widgets.cpp
+		)
+	endif()
 
 	list( APPEND CINDER_SRC_FILES
 		${SRC_SET_CINDER_IMGUI}
