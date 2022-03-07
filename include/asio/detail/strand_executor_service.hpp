@@ -2,7 +2,7 @@
 // detail/strand_executor_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,6 +23,8 @@
 #include "asio/detail/op_queue.hpp"
 #include "asio/detail/scheduler_operation.hpp"
 #include "asio/detail/scoped_ptr.hpp"
+#include "asio/detail/type_traits.hpp"
+#include "asio/execution.hpp"
 #include "asio/execution_context.hpp"
 
 #include "asio/detail/push_options.hpp"
@@ -52,6 +54,10 @@ public:
     // itself has been scheduled in order to invoke some pending handlers.
     bool locked_;
 
+    // Indicates that the strand has been shut down and will accept no further
+    // handlers.
+    bool shutdown_;
+
     // The handlers that are waiting on the strand but should not be run until
     // after the next time the strand is scheduled. This queue must only be
     // modified while the mutex is locked.
@@ -76,10 +82,26 @@ public:
   ASIO_DECL explicit strand_executor_service(execution_context& context);
 
   // Destroy all user-defined handler objects owned by the service.
-  ASIO_DECL void shutdown_service();
+  ASIO_DECL void shutdown();
 
   // Create a new strand_executor implementation.
   ASIO_DECL implementation_type create_implementation();
+
+  // Request invocation of the given function.
+  template <typename Executor, typename Function>
+  static void execute(const implementation_type& impl, Executor& ex,
+      ASIO_MOVE_ARG(Function) function,
+      typename enable_if<
+        can_query<Executor, execution::allocator_t<void> >::value
+      >::type* = 0);
+
+  // Request invocation of the given function.
+  template <typename Executor, typename Function>
+  static void execute(const implementation_type& impl, Executor& ex,
+      ASIO_MOVE_ARG(Function) function,
+      typename enable_if<
+        !can_query<Executor, execution::allocator_t<void> >::value
+      >::type* = 0);
 
   // Request invocation of the given function.
   template <typename Executor, typename Function, typename Allocator>
@@ -102,11 +124,17 @@ public:
 
 private:
   friend class strand_impl;
-  template <typename Executor> class invoker;
+  template <typename F, typename Allocator> class allocator_binder;
+  template <typename Executor, typename = void> class invoker;
 
   // Adds a function to the strand. Returns true if it acquires the lock.
   ASIO_DECL static bool enqueue(const implementation_type& impl,
       scheduler_operation* op);
+
+  // Helper function to request invocation of the given function.
+  template <typename Executor, typename Function, typename Allocator>
+  static void do_execute(const implementation_type& impl, Executor& ex,
+      ASIO_MOVE_ARG(Function) function, const Allocator& a);
 
   // Mutex to protect access to the service-wide state.
   mutex mutex_;

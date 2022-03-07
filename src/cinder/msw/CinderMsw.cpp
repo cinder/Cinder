@@ -144,10 +144,7 @@ HRESULT STDMETHODCALLTYPE ComOStream::Seek( LARGE_INTEGER liDistanceToMove, DWOR
 std::wstring toWideString( const std::string &utf8String )
 {
 	int wideSize = ::MultiByteToWideChar( CP_UTF8, 0, utf8String.c_str(), -1, NULL, 0 );
-	if( wideSize == ERROR_NO_UNICODE_TRANSLATION ) {
-		throw Exception( "Invalid UTF-8 sequence." );
-	}
-	else if( wideSize == 0 ) {
+	if( wideSize == 0 ) {
 		throw Exception( "Error in UTF-8 to UTF-16 conversion." );
 	}
 

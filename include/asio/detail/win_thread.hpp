@@ -2,7 +2,7 @@
 // detail/win_thread.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,7 +17,9 @@
 
 #include "asio/detail/config.hpp"
 
-#if defined(ASIO_WINDOWS) && !defined(UNDER_CE)
+#if defined(ASIO_WINDOWS) \
+  && !defined(ASIO_WINDOWS_APP) \
+  && !defined(UNDER_CE)
 
 #include <cstddef>
 #include "asio/detail/noncopyable.hpp"
@@ -138,6 +140,8 @@ private:
 # include "asio/detail/impl/win_thread.ipp"
 #endif // defined(ASIO_HEADER_ONLY)
 
-#endif // defined(ASIO_WINDOWS) && !defined(UNDER_CE)
+#endif // defined(ASIO_WINDOWS)
+       // && !defined(ASIO_WINDOWS_APP)
+       // && !defined(UNDER_CE)
 
 #endif // ASIO_DETAIL_WIN_THREAD_HPP

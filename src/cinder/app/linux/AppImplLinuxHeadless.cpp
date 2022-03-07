@@ -25,6 +25,8 @@
 #include "cinder/app/linux/AppLinux.h"
 #include "cinder/app/linux/WindowImplLinux.h"
 
+#include <unistd.h>
+
 namespace cinder { namespace app {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -125,6 +127,8 @@ void AppImplLinux::run()
 			sleepUntilNextFrame();
 		}
 	}
+
+	mApp->emitCleanup();
 }
 
 WindowImplLinux* AppImplLinux::findSharedRendererWindow( const RendererRef &searchRenderer )

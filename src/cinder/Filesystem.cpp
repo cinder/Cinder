@@ -22,7 +22,7 @@
 */
 
 #if defined(__cplusplus) && __cplusplus >= 201703L && defined(__has_include)
-	#if __has_include(<filesystem>)
+	#if (! defined(__APPLE__)) && __has_include(<filesystem>)
 		#define GHC_USE_STD_FS
 	#endif
 #endif

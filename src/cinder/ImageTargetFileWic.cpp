@@ -174,7 +174,7 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 
 	// setup the propertyBag to express quality
 	PROPBAG2 option = { 0 };
-    option.pstrName = L"ImageQuality";
+    option.pstrName = const_cast<wchar_t*>( L"ImageQuality" );
     VARIANT varValue;    
     VariantInit(&varValue);
     varValue.vt = VT_R4;

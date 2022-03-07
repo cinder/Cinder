@@ -2,7 +2,7 @@
 // executor.hpp
 // ~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,11 +16,15 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+
+#if !defined(ASIO_NO_TS_EXECUTORS)
+
 #include <typeinfo>
 #include "asio/detail/cstddef.hpp"
+#include "asio/detail/executor_function.hpp"
 #include "asio/detail/memory.hpp"
+#include "asio/detail/throw_exception.hpp"
 #include "asio/execution_context.hpp"
-#include "asio/is_executor.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -125,19 +129,19 @@ public:
   }
 
   /// Obtain the underlying execution context.
-  execution_context& context() ASIO_NOEXCEPT
+  execution_context& context() const ASIO_NOEXCEPT
   {
     return get_impl()->context();
   }
 
   /// Inform the executor that it has some outstanding work to do.
-  void on_work_started() ASIO_NOEXCEPT
+  void on_work_started() const ASIO_NOEXCEPT
   {
     get_impl()->on_work_started();
   }
 
   /// Inform the executor that some work is no longer outstanding.
-  void on_work_finished() ASIO_NOEXCEPT
+  void on_work_finished() const ASIO_NOEXCEPT
   {
     get_impl()->on_work_finished();
   }
@@ -156,7 +160,7 @@ public:
    * internal storage needed for function invocation.
    */
   template <typename Function, typename Allocator>
-  void dispatch(ASIO_MOVE_ARG(Function) f, const Allocator& a);
+  void dispatch(ASIO_MOVE_ARG(Function) f, const Allocator& a) const;
 
   /// Request the executor to invoke the given function object.
   /**
@@ -172,7 +176,7 @@ public:
    * internal storage needed for function invocation.
    */
   template <typename Function, typename Allocator>
-  void post(ASIO_MOVE_ARG(Function) f, const Allocator& a);
+  void post(ASIO_MOVE_ARG(Function) f, const Allocator& a) const;
 
   /// Request the executor to invoke the given function object.
   /**
@@ -188,7 +192,7 @@ public:
    * internal storage needed for function invocation.
    */
   template <typename Function, typename Allocator>
-  void defer(ASIO_MOVE_ARG(Function) f, const Allocator& a);
+  void defer(ASIO_MOVE_ARG(Function) f, const Allocator& a) const;
 
   struct unspecified_bool_type_t {};
   typedef void (*unspecified_bool_type)(unspecified_bool_type_t);
@@ -205,10 +209,17 @@ public:
    * @returns If @c *this has a target type of type @c T, <tt>typeid(T)</tt>;
    * otherwise, <tt>typeid(void)</tt>.
    */
+#if !defined(ASIO_NO_TYPEID) || defined(GENERATING_DOCUMENTATION)
   const std::type_info& target_type() const ASIO_NOEXCEPT
   {
     return impl_ ? impl_->target_type() : typeid(void);
   }
+#else // !defined(ASIO_NO_TYPEID) || defined(GENERATING_DOCUMENTATION)
+  const void* target_type() const ASIO_NOEXCEPT
+  {
+    return impl_ ? impl_->target_type() : 0;
+  }
+#endif // !defined(ASIO_NO_TYPEID) || defined(GENERATING_DOCUMENTATION)
 
   /// Obtain a pointer to the target executor object.
   /**
@@ -246,8 +257,25 @@ public:
 
 private:
 #if !defined(GENERATING_DOCUMENTATION)
-  class function;
+  typedef detail::executor_function function;
   template <typename, typename> class impl;
+
+#if !defined(ASIO_NO_TYPEID)
+  typedef const std::type_info& type_id_result_type;
+#else // !defined(ASIO_NO_TYPEID)
+  typedef const void* type_id_result_type;
+#endif // !defined(ASIO_NO_TYPEID)
+
+  template <typename T>
+  static type_id_result_type type_id()
+  {
+#if !defined(ASIO_NO_TYPEID)
+    return typeid(T);
+#else // !defined(ASIO_NO_TYPEID)
+    static int unique_id;
+    return &unique_id;
+#endif // !defined(ASIO_NO_TYPEID)
+  }
 
   // Base class for all polymorphic executor implementations.
   class impl_base
@@ -261,7 +289,7 @@ private:
     virtual void dispatch(ASIO_MOVE_ARG(function)) = 0;
     virtual void post(ASIO_MOVE_ARG(function)) = 0;
     virtual void defer(ASIO_MOVE_ARG(function)) = 0;
-    virtual const std::type_info& target_type() const ASIO_NOEXCEPT = 0;
+    virtual type_id_result_type target_type() const ASIO_NOEXCEPT = 0;
     virtual void* target() ASIO_NOEXCEPT = 0;
     virtual const void* target() const ASIO_NOEXCEPT = 0;
     virtual bool equals(const impl_base* e) const ASIO_NOEXCEPT = 0;
@@ -276,9 +304,14 @@ private:
   };
 
   // Helper function to check and return the implementation pointer.
-  impl_base* get_impl()
+  impl_base* get_impl() const
   {
-    return impl_ ? impl_ : throw bad_executor();
+    if (!impl_)
+    {
+      bad_executor ex;
+      asio::detail::throw_exception(ex);
+    }
+    return impl_;
   }
 
   // Helper function to clone another implementation.
@@ -295,12 +328,8 @@ private:
   }
 
   impl_base* impl_;
-#endif // !defined(ASIO_NO_DEPRECATED)
-};
-
-#if !defined(GENERATING_DOCUMENTATION)
-template <> struct is_executor<executor> : true_type {};
 #endif // !defined(GENERATING_DOCUMENTATION)
+};
 
 } // namespace asio
 
@@ -312,5 +341,7 @@ ASIO_USES_ALLOCATOR(asio::executor)
 #if defined(ASIO_HEADER_ONLY)
 # include "asio/impl/executor.ipp"
 #endif // defined(ASIO_HEADER_ONLY)
+
+#endif // !defined(ASIO_NO_TS_EXECUTORS)
 
 #endif // ASIO_EXECUTOR_HPP

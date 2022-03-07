@@ -305,6 +305,39 @@ class CI_API Cube : public Source {
 	std::array<ColorAf, 6>	mColors;
 };
 
+class CI_API CubeSphere : public Source {
+  public:
+	CubeSphere();
+
+	//! Enables default colors. Disabled by default.
+	CubeSphere&		colors( bool enable = true ) { mHasColors = enable; return *this; }
+	//! Enables per-face colors ordered { +X, -X, +Y, -Y, +Z, -Z }. Colors are disabled by default.
+	CubeSphere&		colors( const ColorAf &posX, const ColorAf &negX, const ColorAf &posY, const ColorAf &negY, const ColorAf &posZ, const ColorAf &negZ );
+
+	CubeSphere&		subdivisions( int sub ) { mSubdivisions = ivec3( std::max<int>( 1, sub ) ); return *this; }
+	CubeSphere&		subdivisionsX( int sub ) { mSubdivisions.x = std::max<int>( 1, sub ); return *this; }
+	CubeSphere&		subdivisionsY( int sub ) { mSubdivisions.y = std::max<int>( 1, sub ); return *this; }
+	CubeSphere&		subdivisionsZ( int sub ) { mSubdivisions.z = std::max<int>( 1, sub ); return *this; }
+	CubeSphere&		size( const vec3 &sz ) { mSize = sz; return *this; }
+	CubeSphere&		size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
+	CubeSphere&		equalSpacing( bool enabled = true ) { mEqualSpacing = enabled; return *this; }
+
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	CubeSphere*	clone() const override { return new CubeSphere( *this ); }
+
+  protected:
+	ivec3					mSubdivisions;
+	vec3					mSize;
+	bool					mHasColors;
+	bool					mEqualSpacing;
+	std::array<ColorAf, 6>	mColors;
+};
+
 class CI_API Icosahedron : public Source {
   public:
 	Icosahedron();

@@ -34,6 +34,7 @@
 #include <vector>
 #include <fstream>
 #include <cctype>
+#include <algorithm>
 
 using std::vector;
 using std::string;
@@ -54,6 +55,27 @@ fs::path getHomeDirectory()
 fs::path getDocumentsDirectory()
 {
 	return app::Platform::get()->getDocumentsDirectory();
+}
+
+void limitDirectoryFileCount( const fs::path& directoryPath, size_t maxFileCount, std::function<bool( const fs::path&, const fs::path& )> sortFn )
+{
+	if( ! fs::is_directory( directoryPath ) )
+		return;
+
+	std::vector<fs::path> directoryFiles;
+	for( const auto& filepath : fs::directory_iterator( directoryPath ) ) {
+		if( fs::is_regular_file( filepath ) ) {
+			directoryFiles.push_back( filepath );
+		}
+	}
+
+	if( directoryFiles.size() > maxFileCount ) {
+		std::sort( directoryFiles.begin(), directoryFiles.end(), sortFn );
+
+		for( size_t i=maxFileCount; i < directoryFiles.size(); i++ ) {
+			fs::remove( directoryFiles.at( i ) );
+		}
+	}
 }
 
 void launchWebBrowser( const Url &url )

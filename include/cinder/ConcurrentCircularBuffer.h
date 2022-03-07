@@ -102,6 +102,17 @@ class ConcurrentCircularBuffer : private Noncopyable {
 		mNotFullCond.notify_all();
 		mNotEmptyCond.notify_all();
 	}
+
+	void uncancel() {
+		std::lock_guard<std::mutex> lock( mMutex );
+		mCanceled = false;
+	}
+
+	void clear() {
+		std::lock_guard<std::mutex> lock( mMutex );
+		mContainer.clear();
+		mNotFullCond.notify_all();
+	}
 	
 	//! Returns the number of items the buffer can hold
 	size_t getCapacity() const { return (size_t)mContainer.capacity(); }

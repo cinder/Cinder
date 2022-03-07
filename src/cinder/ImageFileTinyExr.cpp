@@ -109,6 +109,14 @@ ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageS
 	setSize( mExrImage->width, mExrImage->height );
 
 	switch( mExrImage->num_channels ) {
+		case 1:
+			setColorModel( ImageIo::CM_GRAY );
+			setChannelOrder( ImageIo::ChannelOrder::Y );
+			break;
+		case 2:
+			setColorModel( ImageIo::CM_GRAY );
+			setChannelOrder( ImageIo::ChannelOrder::YA );
+			break;
 		case 3:
 			setColorModel( ImageIo::CM_RGB );
 			setChannelOrder( ImageIo::ChannelOrder::RGB );
@@ -128,6 +136,7 @@ void ImageSourceFileTinyExr::load( ImageTargetRef target )
 
 	const size_t numChannels = mExrHeader->num_channels;
 	const void * red = nullptr, *green = nullptr, *blue = nullptr, *alpha = nullptr;
+	const void * gray = nullptr;
 
 	for( size_t c = 0; c < numChannels; ++c ) {
 		if( strcmp( mExrHeader->channels[c].name, "R" ) == 0 )
@@ -138,38 +147,68 @@ void ImageSourceFileTinyExr::load( ImageTargetRef target )
 			blue = mExrImage->images[c];
 		else if( strcmp( mExrHeader->channels[c].name, "A" ) == 0 )
 			alpha = mExrImage->images[c];
+		else if( strcmp( mExrHeader->channels[c].name, "Y" ) == 0 )
+			gray = mExrImage->images[c];
 	}
 
-	if( ( !red ) || ( !green ) || ( !blue ) )
-		throw ImageIoExceptionFailedLoadTinyExr( "Unable to locate channels for RGB" );
+	if( ( !gray ) && ( ( !red ) || ( !green ) || ( !blue ) ) )
+		throw ImageIoExceptionFailedLoadTinyExr( "Unable to locate channels for Y or RGB" );
 
-	// load one interleaved row at a time
-	if( getDataType() == ImageIo::FLOAT32 ) {
-		vector<float> rowData( mWidth * mExrImage->num_channels, 0 );
-		for( int32_t row = 0; row < mHeight; row++ ) {
-			for( int32_t col = 0; col < mWidth; col++ ) {
-				rowData.at( col * numChannels + 0 ) = static_cast<const float *>( red )[row * mWidth + col];
-				rowData.at( col * numChannels + 1 ) = static_cast<const float *>( green )[row * mWidth + col];
-				rowData.at( col * numChannels + 2 ) = static_cast<const float *>( blue )[row * mWidth + col];
-				if( alpha )
-					rowData.at( col * numChannels + 3 ) = static_cast<const float *>( alpha )[row * mWidth + col];
+	if( gray ) {
+		if( getDataType() == ImageIo::FLOAT32 ) {
+			vector<float> rowData( mWidth * mExrImage->num_channels, 0 );
+			for( int32_t row = 0; row < mHeight; row++ ) {
+				for( int32_t col = 0; col < mWidth; col++ ) {
+					rowData.at( col * numChannels + 0 ) = static_cast<const float *>( gray )[row * mWidth + col];
+					if( alpha )
+						rowData.at( col * numChannels + 1 ) = static_cast<const float *>( alpha )[row * mWidth + col];
+				}
+
+				( ( *this ).*rowFunc )( target, row, rowData.data() );
 			}
+		}
+		else { // float16
+			vector<uint16_t> rowData( mWidth * mExrImage->num_channels, 0 );
+			for( int32_t row = 0; row < mHeight; row++ ) {
+				for( int32_t col = 0; col < mWidth; col++ ) {
+					rowData.at( col * numChannels + 0 ) = static_cast<const uint16_t *>( gray )[row * mWidth + col];
+					if( alpha )
+						rowData.at( col * numChannels + 1 ) = static_cast<const float *>( alpha )[row * mWidth + col];
+				}
 
-			( ( *this ).*rowFunc )( target, row, rowData.data() );
+				( ( *this ).*rowFunc )( target, row, rowData.data() );
+			}
 		}
 	}
-	else { // float16
-		vector<uint16_t> rowData( mWidth * mExrImage->num_channels, 0 );
-		for( int32_t row = 0; row < mHeight; row++ ) {
-			for( int32_t col = 0; col < mWidth; col++ ) {
-				rowData.at( col * numChannels + 0 ) = static_cast<const uint16_t *>( red )[row * mWidth + col];
-				rowData.at( col * numChannels + 1 ) = static_cast<const uint16_t *>( green )[row * mWidth + col];
-				rowData.at( col * numChannels + 2 ) = static_cast<const uint16_t *>( blue )[row * mWidth + col];
-				if( alpha )
-					rowData.at( col * numChannels + 3 ) = static_cast<const uint16_t *>( alpha )[row * mWidth + col];
-			}
+	else {
+		// load one interleaved row at a time
+		if( getDataType() == ImageIo::FLOAT32 ) {
+			vector<float> rowData( mWidth * mExrImage->num_channels, 0 );
+			for( int32_t row = 0; row < mHeight; row++ ) {
+				for( int32_t col = 0; col < mWidth; col++ ) {
+					rowData.at( col * numChannels + 0 ) = static_cast<const float *>( red )[row * mWidth + col];
+					rowData.at( col * numChannels + 1 ) = static_cast<const float *>( green )[row * mWidth + col];
+					rowData.at( col * numChannels + 2 ) = static_cast<const float *>( blue )[row * mWidth + col];
+					if( alpha )
+						rowData.at( col * numChannels + 3 ) = static_cast<const float *>( alpha )[row * mWidth + col];
+				}
 
-			( ( *this ).*rowFunc )( target, row, rowData.data() );
+				( ( *this ).*rowFunc )( target, row, rowData.data() );
+			}
+		}
+		else { // float16
+			vector<uint16_t> rowData( mWidth * mExrImage->num_channels, 0 );
+			for( int32_t row = 0; row < mHeight; row++ ) {
+				for( int32_t col = 0; col < mWidth; col++ ) {
+					rowData.at( col * numChannels + 0 ) = static_cast<const uint16_t *>( red )[row * mWidth + col];
+					rowData.at( col * numChannels + 1 ) = static_cast<const uint16_t *>( green )[row * mWidth + col];
+					rowData.at( col * numChannels + 2 ) = static_cast<const uint16_t *>( blue )[row * mWidth + col];
+					if( alpha )
+						rowData.at( col * numChannels + 3 ) = static_cast<const uint16_t *>( alpha )[row * mWidth + col];
+				}
+
+				( ( *this ).*rowFunc )( target, row, rowData.data() );
+			}
 		}
 	}
 }
@@ -245,6 +284,7 @@ void ImageTargetFileTinyExr::finalize()
 {
 	// turn interleaved data into a series of planar channels
 	vector<Channel32f> channels;
+	channels.reserve( mNumComponents );
 	unsigned char *    imagePtr[4];
 	for( int c = 0; c < mNumComponents; ++c ) {
 		channels.emplace_back( getWidth(), getHeight() );

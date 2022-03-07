@@ -883,7 +883,7 @@ using namespace cinder::app;
 															highDensityDisplay:appImpl->mApp->isHighDensityDisplayEnabled()
 															enableMultiTouch:appImpl->mApp->isMultiTouchEnabled()];
 
-	[winImpl->mWin setDelegate:self];
+	[winImpl->mWin setDelegate:winImpl];
 	// add CinderView as subview of window's content view to avoid NSWindow warning: https://github.com/cinder/Cinder/issues/584
 	[winImpl->mWin.contentView addSubview:winImpl->mCinderView];
 	winImpl->mCinderView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;

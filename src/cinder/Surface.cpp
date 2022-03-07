@@ -477,7 +477,7 @@ void SurfaceT<T>::copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area
 	int32_t width = srcArea.getWidth();
 
 	for( int32_t y = 0; y < srcArea.getHeight(); ++y ) {
-		const T *src = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( srcSurface.getData() + srcArea.x1 * 4 ) + ( srcArea.y1 + y ) * srcRowBytes );
+		const T *src = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( srcSurface.getData() + srcArea.x1 * 3 ) + ( srcArea.y1 + y ) * srcRowBytes );
 		T *dst = reinterpret_cast<T*>( reinterpret_cast<uint8_t*>( getData() + absoluteOffset.x * 4 ) + ( y + absoluteOffset.y ) * getRowBytes() );
 		for( int x = 0; x < width; ++x ) {
 			dst[dstRed] = src[srcRed];

@@ -2,7 +2,7 @@
 // detail/epoll_reactor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -20,8 +20,8 @@
 #if defined(ASIO_HAS_EPOLL)
 
 #include "asio/detail/atomic_count.hpp"
+#include "asio/detail/conditionally_enabled_mutex.hpp"
 #include "asio/detail/limits.hpp"
-#include "asio/detail/mutex.hpp"
 #include "asio/detail/object_pool.hpp"
 #include "asio/detail/op_queue.hpp"
 #include "asio/detail/reactor_op.hpp"
@@ -32,6 +32,10 @@
 #include "asio/detail/wait_op.hpp"
 #include "asio/execution_context.hpp"
 
+#if defined(ASIO_HAS_TIMERFD)
+# include <sys/timerfd.h>
+#endif // defined(ASIO_HAS_TIMERFD)
+
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
@@ -40,6 +44,10 @@ namespace detail {
 class epoll_reactor
   : public execution_context_service_base<epoll_reactor>
 {
+private:
+  // The mutex type used by this reactor.
+  typedef conditionally_enabled_mutex mutex;
+
 public:
   enum op_types { read_op = 0, write_op = 1,
     connect_op = 1, except_op = 2, max_ops = 3 };
@@ -58,10 +66,12 @@ public:
     int descriptor_;
     uint32_t registered_events_;
     op_queue<reactor_op> op_queue_[max_ops];
+    bool try_speculative_[max_ops];
     bool shutdown_;
 
-    ASIO_DECL descriptor_state();
+    ASIO_DECL descriptor_state(bool locking);
     void set_ready_events(uint32_t events) { task_result_ = events; }
+    void add_ready_events(uint32_t events) { task_result_ |= events; }
     ASIO_DECL operation* perform_io(uint32_t events);
     ASIO_DECL static void do_complete(
         void* owner, operation* base,
@@ -78,10 +88,10 @@ public:
   ASIO_DECL ~epoll_reactor();
 
   // Destroy all user-defined handler objects owned by the service.
-  ASIO_DECL void shutdown_service();
+  ASIO_DECL void shutdown();
 
   // Recreate internal descriptors following a fork.
-  ASIO_DECL void fork_service(
+  ASIO_DECL void notify_fork(
       asio::execution_context::fork_event fork_ev);
 
   // Initialise the task.
@@ -122,13 +132,21 @@ public:
       per_descriptor_data& descriptor_data);
 
   // Cancel any operations that are running against the descriptor and remove
-  // its registration from the reactor.
+  // its registration from the reactor. The reactor resources associated with
+  // the descriptor must be released by calling cleanup_descriptor_data.
   ASIO_DECL void deregister_descriptor(socket_type descriptor,
       per_descriptor_data& descriptor_data, bool closing);
 
-  // Remote the descriptor's registration from the reactor.
+  // Remove the descriptor's registration from the reactor. The reactor
+  // resources associated with the descriptor must be released by calling
+  // cleanup_descriptor_data.
   ASIO_DECL void deregister_internal_descriptor(
       socket_type descriptor, per_descriptor_data& descriptor_data);
+
+  // Perform any post-deregistration cleanup tasks associated with the
+  // descriptor data.
+  ASIO_DECL void cleanup_descriptor_data(
+      per_descriptor_data& descriptor_data);
 
   // Add a new timer queue to the reactor.
   template <typename Time_Traits>
@@ -159,7 +177,7 @@ public:
       typename timer_queue<Time_Traits>::per_timer_data& source);
 
   // Run epoll once until interrupted or events are ready to be dispatched.
-  ASIO_DECL void run(bool block, op_queue<operation>& ops);
+  ASIO_DECL void run(long usec, op_queue<operation>& ops);
 
   // Interrupt the select loop.
   ASIO_DECL void interrupt();
@@ -193,7 +211,7 @@ private:
   // Get the timeout value for the epoll_wait call. The timeout value is
   // returned as a number of milliseconds. A return value of -1 indicates
   // that epoll_wait should block indefinitely.
-  ASIO_DECL int get_timeout();
+  ASIO_DECL int get_timeout(int msec);
 
 #if defined(ASIO_HAS_TIMERFD)
   // Get the timeout value for the timer descriptor. The return value is the

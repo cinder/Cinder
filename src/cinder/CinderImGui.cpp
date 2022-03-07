@@ -166,6 +166,10 @@ namespace ImGui {
 	{
 		ImGui::PushID( label );
 	}
+	ScopedId::ScopedId( const void *ptrId )
+	{
+		ImGui::PushID( ptrId );
+	}
 	ScopedId::~ScopedId()
 	{
 		ImGui::PopID();
@@ -350,7 +354,7 @@ namespace ImGui {
 static void ImGui_ImplCinder_MouseDown( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.MousePos = ci::app::toPixels( event.getPos() );
+	io.MousePos = event.getWindow()->toPixels( event.getPos() );
 	io.MouseDown[0] = event.isLeftDown();
 	io.MouseDown[1] = event.isRightDown();
 	io.MouseDown[2] = event.isMiddleDown();
@@ -373,14 +377,14 @@ static void ImGui_ImplCinder_MouseWheel( ci::app::MouseEvent& event )
 static void ImGui_ImplCinder_MouseMove( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.MousePos = ci::app::toPixels( event.getPos() );
+	io.MousePos = event.getWindow()->toPixels( event.getPos() );
 	event.setHandled( io.WantCaptureMouse );
 }
 //! sets the right mouseDrag IO values in imgui
 static void ImGui_ImplCinder_MouseDrag( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.MousePos = ci::app::toPixels( event.getPos() );
+	io.MousePos = event.getWindow()->toPixels( event.getPos() );
 	event.setHandled( io.WantCaptureMouse );
 }
 
@@ -435,12 +439,12 @@ static void ImGui_ImplCinder_KeyUp( ci::app::KeyEvent& event )
 
 static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window );
 
-static void ImGui_ImplCinder_Resize()
+static void ImGui_ImplCinder_Resize( const ci::app::WindowRef& window )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.DisplaySize = ci::vec2( ci::app::toPixels( ci::app::getWindow()->getSize() ) );
+	io.DisplaySize = ci::vec2( window->toPixels( window->getSize() ) );
 
-	ImGui_ImplCinder_NewFrameGuard( ci::app::getWindow() );
+	ImGui_ImplCinder_NewFrameGuard( window );
 }
 
 static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window ) {
@@ -453,7 +457,7 @@ static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window ) {
 	IM_ASSERT( io.Fonts->IsBuilt() ); // Font atlas needs to be built, call renderer _NewFrame() function e.g. ImGui_ImplOpenGL3_NewFrame() 
 
 	// Setup display size
-	io.DisplaySize = ci::app::toPixels( window->getSize() );
+	io.DisplaySize = window->toPixels( window->getSize() );
 
 	// Setup time step
 	static double g_Time = 0.0f;
@@ -524,7 +528,7 @@ static bool ImGui_ImplCinder_Init( const ci::app::WindowRef& window, const ImGui
 	sWindowConnections[window] += window->getSignalMouseWheel().connect( signalPriority, ImGui_ImplCinder_MouseWheel );
 	sWindowConnections[window] += window->getSignalKeyDown().connect( signalPriority, ImGui_ImplCinder_KeyDown );
 	sWindowConnections[window] += window->getSignalKeyUp().connect( signalPriority, ImGui_ImplCinder_KeyUp );
-	sWindowConnections[window] += window->getSignalResize().connect( signalPriority, ImGui_ImplCinder_Resize );
+	sWindowConnections[window] += window->getSignalResize().connect( signalPriority, std::bind( ImGui_ImplCinder_Resize, window ) );
 	if( options.isAutoRenderEnabled() ) {
 		sWindowConnections[window] += ci::app::App::get()->getSignalUpdate().connect( std::bind( ImGui_ImplCinder_NewFrameGuard, window ) );
 		sWindowConnections[window] += window->getSignalPostDraw().connect( ImGui_ImplCinder_PostDraw );
@@ -555,7 +559,7 @@ bool ImGui::Initialize( const ImGui::Options& options )
 	if( options.isKeyboardEnabled() ) io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 	if( options.isGamepadEnabled() ) io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls	
 	ci::app::WindowRef window = options.getWindow();
-	io.DisplaySize = ci::vec2( ci::app::toPixels( window->getSize() ) );
+	io.DisplaySize = ci::vec2( window->toPixels( window->getSize() ) );
 	io.DeltaTime = 1.0f / 60.0f;
 	io.WantCaptureMouse = true;
 

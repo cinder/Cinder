@@ -47,7 +47,7 @@ class Timeline;
 } // namespace cinder
 
 namespace asio {
-class io_service;
+class io_context;
 } // namespace asio
 
 namespace cinder { namespace app {
@@ -73,7 +73,7 @@ typedef	signals::Signal<bool (), signals::CollectorBooleanAnd>						EventSignalS
 //! Base class that all apps derive from.
 class CI_API AppBase {
  public:
-	//! Startup settings, used during App construction. They are modified before the app is created by passing a SettingsFn to the app instanciation macros.
+	//! Startup settings, used during App construction. They are modified before the app is created by passing a SettingsFn to the app instantiation macros.
 	class CI_API Settings {
 	  public:
 		Settings();
@@ -129,7 +129,7 @@ class CI_API AppBase {
 		//! Sets the Window::Format which will be used if no calls are made to Settings::prepareWindow()
 		void				setDefaultWindowFormat( const Window::Format &format )	{ mDefaultWindowFormat = format; }
 
-		//! Sets the default Renderer, overridding what was passed in during app instanciation.
+		//! Sets the default Renderer, overridding what was passed in during app instantiation.
 		void		setDefaultRenderer( const RendererRef &renderer )	{ mDefaultRenderer = renderer; }
 		//! Returns the default Renderer.
 		RendererRef	getDefaultRenderer() const							{ return mDefaultRenderer; }
@@ -402,13 +402,13 @@ class CI_API AppBase {
 	static bool		isMainThread();
 
 	//! Returns a reference to the App's boost::asio::io_service()
-	asio::io_service&	io_service() { return *mIo; }
+	asio::io_context&	io_context() { return *mIo; }
 
 	//! Executes a std::function on the App's primary thread ahead of the next update()
 	void	dispatchAsync( const std::function<void()> &fn );
 	
 	template<typename T>
-	typename std::result_of<T()>::type dispatchSync( T fn );
+	decltype(std::declval<T>()()) dispatchSync( T fn );
 
 	//! Returns the default Renderer which will be used when creating a new Window. Set by the app instantiation macro automatically.
 	RendererRef	getDefaultRenderer() const { return mDefaultRenderer; }
@@ -470,8 +470,8 @@ class CI_API AppBase {
 	
 	signals::Signal<void(const DisplayRef &display)>	mSignalDisplayConnected, mSignalDisplayDisconnected, mSignalDisplayChanged;
 
-	std::shared_ptr<asio::io_service>	mIo;
-	std::shared_ptr<void>				mIoWork; // asio::io_service::work, but can't fwd declare member class
+	std::shared_ptr<asio::io_context>	mIo;
+	std::shared_ptr<void>				mIoWork; // asio::io_context::work, but can't fwd declare member class
 
   protected:
 	static AppBase*			sInstance;
@@ -614,12 +614,12 @@ inline ::CGContextRef	createWindowCgContext() { return (std::dynamic_pointer_cas
 //@}
 
 template<typename T>
-typename std::result_of<T()>::type AppBase::dispatchSync( T fn )
+decltype(std::declval<T>()()) AppBase::dispatchSync( T fn )
 {
 	if( isMainThread() )
 		return fn();
 	else {
-		typedef typename std::result_of<T()>::type result_type;
+		typedef decltype(std::declval<T>()()) result_type;
 		std::packaged_task<result_type()> task( std::move( fn ) );
 
 		auto fute = task.get_future();

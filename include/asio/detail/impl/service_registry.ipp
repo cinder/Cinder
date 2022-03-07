@@ -2,7 +2,7 @@
 // detail/impl/service_registry.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -40,7 +40,7 @@ void service_registry::shutdown_services()
   execution_context::service* service = first_service_;
   while (service)
   {
-    service->shutdown_service();
+    service->shutdown();
     service = service->next_;
   }
 }
@@ -78,13 +78,13 @@ void service_registry::notify_fork(execution_context::fork_event fork_ev)
   std::size_t num_services = services.size();
   if (fork_ev == execution_context::fork_prepare)
     for (std::size_t i = 0; i < num_services; ++i)
-      services[i]->fork_service(fork_ev);
+      services[i]->notify_fork(fork_ev);
   else
     for (std::size_t i = num_services; i > 0; --i)
-      services[i - 1]->fork_service(fork_ev);
+      services[i - 1]->notify_fork(fork_ev);
 }
 
-void service_registry::init_key(execution_context::service::key& key,
+void service_registry::init_key_from_id(execution_context::service::key& key,
     const execution_context::id& id)
 {
   key.type_info_ = 0;

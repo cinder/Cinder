@@ -2,7 +2,7 @@
 // ssl/detail/impl/engine.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -40,7 +40,9 @@ engine::engine(SSL_CTX* context)
     asio::detail::throw_error(ec, "engine");
   }
 
+#if (OPENSSL_VERSION_NUMBER < 0x10000000L)
   accept_mutex().init();
+#endif // (OPENSSL_VERSION_NUMBER < 0x10000000L)
 
   ::SSL_set_mode(ssl_, SSL_MODE_ENABLE_PARTIAL_WRITE);
   ::SSL_set_mode(ssl_, SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
@@ -53,16 +55,29 @@ engine::engine(SSL_CTX* context)
   ::SSL_set_bio(ssl_, int_bio, int_bio);
 }
 
+#if defined(ASIO_HAS_MOVE)
+engine::engine(engine&& other) ASIO_NOEXCEPT
+  : ssl_(other.ssl_),
+    ext_bio_(other.ext_bio_)
+{
+  other.ssl_ = 0;
+  other.ext_bio_ = 0;
+}
+#endif // defined(ASIO_HAS_MOVE)
+
 engine::~engine()
 {
-  if (SSL_get_app_data(ssl_))
+  if (ssl_ && SSL_get_app_data(ssl_))
   {
     delete static_cast<verify_callback_base*>(SSL_get_app_data(ssl_));
     SSL_set_app_data(ssl_, 0);
   }
 
-  ::BIO_free(ext_bio_);
-  ::SSL_free(ssl_);
+  if (ext_bio_)
+    ::BIO_free(ext_bio_);
+
+  if (ssl_)
+    ::SSL_free(ssl_);
 }
 
 SSL* engine::native_handle()
@@ -141,37 +156,35 @@ engine::want engine::shutdown(asio::error_code& ec)
 engine::want engine::write(const asio::const_buffer& data,
     asio::error_code& ec, std::size_t& bytes_transferred)
 {
-  if (asio::buffer_size(data) == 0)
+  if (data.size() == 0)
   {
     ec = asio::error_code();
     return engine::want_nothing;
   }
 
   return perform(&engine::do_write,
-      const_cast<void*>(asio::buffer_cast<const void*>(data)),
-      asio::buffer_size(data), ec, &bytes_transferred);
+      const_cast<void*>(data.data()),
+      data.size(), ec, &bytes_transferred);
 }
 
 engine::want engine::read(const asio::mutable_buffer& data,
     asio::error_code& ec, std::size_t& bytes_transferred)
 {
-  if (asio::buffer_size(data) == 0)
+  if (data.size() == 0)
   {
     ec = asio::error_code();
     return engine::want_nothing;
   }
 
-  return perform(&engine::do_read,
-      asio::buffer_cast<void*>(data),
-      asio::buffer_size(data), ec, &bytes_transferred);
+  return perform(&engine::do_read, data.data(),
+      data.size(), ec, &bytes_transferred);
 }
 
-asio::mutable_buffers_1 engine::get_output(
+asio::mutable_buffer engine::get_output(
     const asio::mutable_buffer& data)
 {
   int length = ::BIO_read(ext_bio_,
-      asio::buffer_cast<void*>(data),
-      static_cast<int>(asio::buffer_size(data)));
+      data.data(), static_cast<int>(data.size()));
 
   return asio::buffer(data,
       length > 0 ? static_cast<std::size_t>(length) : 0);
@@ -181,8 +194,7 @@ asio::const_buffer engine::put_input(
     const asio::const_buffer& data)
 {
   int length = ::BIO_write(ext_bio_,
-      asio::buffer_cast<const void*>(data),
-      static_cast<int>(asio::buffer_size(data)));
+      data.data(), static_cast<int>(data.size()));
 
   return asio::buffer(data +
       (length > 0 ? static_cast<std::size_t>(length) : 0));
@@ -198,33 +210,33 @@ const asio::error_code& engine::map_error_code(
   // If there's data yet to be read, it's an error.
   if (BIO_wpending(ext_bio_))
   {
-    ec = asio::error_code(
-        ERR_PACK(ERR_LIB_SSL, 0, SSL_R_SHORT_READ),
-        asio::error::get_ssl_category());
+    ec = asio::ssl::error::stream_truncated;
     return ec;
   }
 
   // SSL v2 doesn't provide a protocol-level shutdown, so an eof on the
   // underlying transport is passed through.
-  if (ssl_ && ssl_->version == SSL2_VERSION)
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L)
+  if (SSL_version(ssl_) == SSL2_VERSION)
     return ec;
+#endif // (OPENSSL_VERSION_NUMBER < 0x10100000L)
 
   // Otherwise, the peer should have negotiated a proper shutdown.
   if ((::SSL_get_shutdown(ssl_) & SSL_RECEIVED_SHUTDOWN) == 0)
   {
-    ec = asio::error_code(
-        ERR_PACK(ERR_LIB_SSL, 0, SSL_R_SHORT_READ),
-        asio::error::get_ssl_category());
+    ec = asio::ssl::error::stream_truncated;
   }
 
   return ec;
 }
 
+#if (OPENSSL_VERSION_NUMBER < 0x10000000L)
 asio::detail::static_mutex& engine::accept_mutex()
 {
   static asio::detail::static_mutex mutex = ASIO_STATIC_MUTEX_INIT;
   return mutex;
 }
+#endif // (OPENSSL_VERSION_NUMBER < 0x10000000L)
 
 engine::want engine::perform(int (engine::* op)(void*, std::size_t),
     void* data, std::size_t length, asio::error_code& ec,
@@ -241,14 +253,23 @@ engine::want engine::perform(int (engine::* op)(void*, std::size_t),
   {
     ec = asio::error_code(sys_error,
         asio::error::get_ssl_category());
-    return want_nothing;
+    return pending_output_after > pending_output_before
+      ? want_output : want_nothing;
   }
 
   if (ssl_error == SSL_ERROR_SYSCALL)
   {
-    ec = asio::error_code(sys_error,
-        asio::error::get_system_category());
-    return want_nothing;
+    if (sys_error == 0)
+    {
+      ec = asio::ssl::error::unspecified_system_error;
+    }
+    else
+    {
+      ec = asio::error_code(sys_error,
+          asio::error::get_ssl_category());
+    }
+    return pending_output_after > pending_output_before
+      ? want_output : want_nothing;
   }
 
   if (result > 0 && bytes_transferred)
@@ -269,21 +290,28 @@ engine::want engine::perform(int (engine::* op)(void*, std::size_t),
     ec = asio::error_code();
     return want_input_and_retry;
   }
-  else if (::SSL_get_shutdown(ssl_) & SSL_RECEIVED_SHUTDOWN)
+  else if (ssl_error == SSL_ERROR_ZERO_RETURN)
   {
     ec = asio::error::eof;
     return want_nothing;
   }
-  else
+  else if (ssl_error == SSL_ERROR_NONE)
   {
     ec = asio::error_code();
+    return want_nothing;
+  }
+  else
+  {
+    ec = asio::ssl::error::unexpected_result;
     return want_nothing;
   }
 }
 
 int engine::do_accept(void*, std::size_t)
 {
+#if (OPENSSL_VERSION_NUMBER < 0x10000000L)
   asio::detail::static_mutex::scoped_lock lock(accept_mutex());
+#endif // (OPENSSL_VERSION_NUMBER < 0x10000000L)
   return ::SSL_accept(ssl_);
 }
 
