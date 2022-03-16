@@ -1,8 +1,8 @@
 [submodule "tools/TinderBox-Mac"]
 	path = tools/TinderBox-Mac
-	url = git://github.com/cinder/TinderBox-Mac.git
+	url = https://github.com/cinder/TinderBox-Mac.git
 	branch = 0.9.3
 [submodule "tools/TinderBox-Win"]
 	path = tools/TinderBox-Win
-	url = git://github.com/cinder/TinderBox-Win.git
+	url = https://github.com/cinder/TinderBox-Win.git
 	branch = 0.9.3
