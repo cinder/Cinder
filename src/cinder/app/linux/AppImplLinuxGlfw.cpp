@@ -43,6 +43,7 @@ public:
 		sWindowMapping[glfwWindow] = std::make_pair( cinderAppImpl, cinderWindow );
 
 		::glfwSetWindowSizeCallback( glfwWindow, GlfwCallbacks::onWindowSize );
+		::glfwSetWindowPosCallback( glfwWindow, GlfwCallbacks::onWindowMove );
 		::glfwSetKeyCallback( glfwWindow, GlfwCallbacks::onKeyboard );
 		::glfwSetCharCallback( glfwWindow, GlfwCallbacks::onCharInput );
 		::glfwSetCursorPosCallback( glfwWindow, GlfwCallbacks::onMousePos );
@@ -67,6 +68,17 @@ public:
 			cinderAppImpl->setWindow( cinderWindow );
 
 			cinderWindow->emitResize();
+		}
+	}
+
+	static void onWindowMove( GLFWwindow* glfwWindow, int xpos, int ypos ) {
+		auto iter = sWindowMapping.find( glfwWindow );
+		if( sWindowMapping.end() != iter ) {
+			auto& cinderAppImpl = iter->second.first;
+			auto& cinderWindow = iter->second.second;
+			cinderAppImpl->setWindow( cinderWindow );
+
+			cinderWindow->emitMove();
 		}
 	}
 
