@@ -1886,13 +1886,18 @@ void Circle::loadInto( Target *target, const AttribSet &/*requestedAttribs*/ ) c
 	// iterate the segments
 	const float tDelta = 1 / (float)mNumSubdivisions * 2.0f * 3.14159f;
 	float t = 0;
-	for( int s = 0; s <= mNumSubdivisions; s++ ) {
+	for( int s = 0; s <= mNumSubdivisions-1; s++ ) {
 		vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
 		positions.emplace_back( mCenter + unit * mRadius );
 		texCoords.emplace_back( unit * 0.5f + vec2( 0.5f ) );
 		normals.emplace_back( 0, 0, 1 );
 		t += tDelta;
 	}
+
+	vec2 unit(math<float>::cos(0), math<float>::sin(0));
+	positions.emplace_back(mCenter + unit * mRadius);
+	texCoords.emplace_back(unit * 0.5f + vec2(0.5f));
+	normals.emplace_back(0, 0, 1);
 
 	target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)positions.data(), mNumVertices );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals.data(), mNumVertices );
