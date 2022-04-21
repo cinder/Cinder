@@ -13,7 +13,7 @@ class cmdLineArgsApp : public App {
 	void setup();
 	void draw();
 
-	static void prepareSettings( App::Settings *settings ) { getArgs() = settings->getCommandLineArgs(); }
+	static void prepareSettings( App::Settings *settings ) { getArgs() = Platform::get()->getCommandLineArgs(); }
 	static vector<string>& getArgs() { static vector<string> args; return args; }
 };
 
