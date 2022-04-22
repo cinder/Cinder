@@ -78,6 +78,11 @@ class CI_API Platform {
 	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. Returns an empty fs::path on windows. Throws ResourceLoadExc on failure. \sa CinderResources
 	virtual fs::path	getResourcePath( const fs::path &rsrcRelativePath ) const = 0;
 
+	//! Returns a vector of the command line arguments passed to the app when intantiated.
+	const std::vector<std::string>& getCommandLineArgs() const { return mCommandLineArgs; }
+	//! Override default command line args received from the system
+	void setCommandLineArgs( const std::vector<std::string>& commandLineArgs ) { mCommandLineArgs = commandLineArgs; }
+
 	//! Returns the path to the associated executable
 	fs::path			getExecutablePath() const;
 	//! Sets the path to the associated executable, overriding the default
@@ -148,6 +153,7 @@ class CI_API Platform {
 	void			initAssetDirectories();
 
 	std::vector<fs::path>		mAssetDirectories;
+	std::vector<std::string>	mCommandLineArgs;
 	mutable fs::path			mExecutablePath; // lazily defaulted if none exists
 };
 

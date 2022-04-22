@@ -167,24 +167,18 @@ class CI_API AppBase {
 		//! Maximum frameRate of the application specified in frames per second
 		float	getFrameRate() const								{ return mFrameRate; }
 
-		//! Returns the command line args passed to the application from its entry point (ex. a main's argc / argv).
-		const std::vector<std::string>&	getCommandLineArgs() const	{ return mCommandLineArgs; }
-		//! Primarily for internal use. Replaces the command line args.
-		void							setCommandLineArgs( const std::vector<std::string> &commandLineArgs ) { mCommandLineArgs = commandLineArgs; }
-
 		//!	Set this to true if the app should terminate prior to launching.
 		void	setShouldQuit( bool shouldQuit = true );
 		//! Whether or not the app should terminate prior to launching
 		bool	getShouldQuit() const								{ return mShouldQuit; }
 
 	  protected:
-		void init( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] );
+		void init( const RendererRef &defaultRenderer, const char* title );
 
 		std::vector<Window::Format>		mWindowFormats;			// windows formats which have been requested using prepareWindow.
 		Window::Format					mDefaultWindowFormat;	// used if no format was requested by user.
 		RendererRef						mDefaultRenderer;
 		std::string						mTitle;
-		std::vector<std::string>		mCommandLineArgs;
 
 		bool			mFrameRateEnabled;
 		float			mFrameRate;
@@ -393,7 +387,7 @@ class CI_API AppBase {
 	std::ostream&	console();
 
 	//! Returns a vector of the command line arguments passed to the app when intantiated.
-	const std::vector<std::string>&		getCommandLineArgs() const	{ return mCommandLineArgs; }
+	const std::vector<std::string>&		getCommandLineArgs() const	{ return Platform::get()->getCommandLineArgs(); }
 
 	//! Returns a reference to the App's Timeline
 	Timeline&		timeline() { return *mTimeline; }
@@ -441,7 +435,7 @@ class CI_API AppBase {
 	//! \cond
 	// These are called by the main application instantation functions and are only used in the launch process
 	static void		prepareLaunch();
-	static void		initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] );
+	static void		initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title );
 	void			executeLaunch();
 	static void		cleanupLaunch();
 
@@ -462,7 +456,6 @@ class CI_API AppBase {
 	bool					mLaunchCalled, mQuitRequested;
 	RendererRef				mDefaultRenderer;
 
-	std::vector<std::string>	mCommandLineArgs;
 	std::shared_ptr<Timeline>	mTimeline;
 
 	signals::Signal<void()>		mSignalUpdate, mSignalCleanup, mSignalWillResignActive, mSignalDidBecomeActive;
