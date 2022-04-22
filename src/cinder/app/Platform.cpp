@@ -97,7 +97,7 @@ fs::path Platform::getExecutablePath() const
 void Platform::setCommandLineArgs( int argc, char* argv[] )
 {
 	for( int i = 0; i < argc; ++i )
-		mCommandLineArgs.push_back( argv[argc] );
+		mCommandLineArgs.push_back( argv[i] );
 }
 
 void Platform::initAssetDirectories()
