@@ -1,3 +1,5 @@
+// Derives window background color from three floating point args, e.g. orange: cmdLineArgs 1.0 0.5 0.25 
+
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
@@ -7,7 +9,6 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-// We'll create a new Cinder Application by deriving from the App class
 class cmdLineArgsApp : public App {
  public:
 	void setup();
