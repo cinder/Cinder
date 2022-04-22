@@ -236,7 +236,7 @@ void AppCocoaTouch::main( const RendererRef &defaultRenderer, const char *title,
 	AppBase::prepareLaunch();
 
 	Settings settings;
-	AppBase::initialize( &settings, defaultRenderer, title, argc, argv );
+	AppBase::initialize( &settings, defaultRenderer, title );
 
 	if( settingsFn )
 		settingsFn( &settings );
@@ -253,6 +253,7 @@ void AppCocoaTouch::main( const RendererRef &defaultRenderer, const char *title,
 #define CINDER_APP_COCOA_TOUCH( APP, RENDERER, ... )									\
 int main( int argc, char * const argv[] )												\
 {																						\
+	cinder::app::Platform::get()->setCommandLineArgs( argc, argv );						\
 	cinder::app::RendererRef renderer( new RENDERER );									\
 	cinder::app::AppCocoaTouch::main<APP>( renderer, #APP, argc, argv, ##__VA_ARGS__ );	\
 	return 0;																			\

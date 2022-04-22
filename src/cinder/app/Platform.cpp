@@ -94,7 +94,7 @@ fs::path Platform::getExecutablePath() const
 	return mExecutablePath;
 }
 
-void Platform::setCommandLineArgs( int argc, char* argv[] )
+void Platform::setCommandLineArgs( int argc, char * const argv[] )
 {
 	for( int i = 0; i < argc; ++i )
 		mCommandLineArgs.push_back( argv[i] );

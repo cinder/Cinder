@@ -120,7 +120,7 @@ DataSourceRef PlatformCocoa::loadResource( const fs::path &resourcePath )
 		return DataSourcePath::create( fullPath );
 }
 
-void PlatformCocoa::setCommandLineArgs( int argc, char* argv[] )
+void PlatformCocoa::setCommandLineArgs( int argc, char * const argv[] )
 {
 	// Xcode automatically adds a pair of command line args, `NSDocumentRevisionsDebugMode YES` if "Allow debugging when using document Versions Browser" is not explicitly unchecked.
 	// We strip this known flag here

@@ -83,7 +83,7 @@ class CI_API Platform {
 	//! Override default command line args received from the system. Generally only called by app instantiation setup code.
 	virtual void setCommandLineArgs( const std::vector<std::string>& commandLineArgs ) { mCommandLineArgs = commandLineArgs; }
 	//! Override default command line args received from the system. Generally only called by app instantiation setup code.
-	virtual void setCommandLineArgs( int argc, char* argv[] );
+	virtual void setCommandLineArgs( int argc, char * const argv[] );
 
 	//! Returns the path to the associated executable
 	fs::path			getExecutablePath() const;
