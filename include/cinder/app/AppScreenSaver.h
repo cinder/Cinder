@@ -173,7 +173,7 @@ class AppScreenSaver : public AppBase {
 			settingsFn( &settings );
 
 		// AppBase::prepareLaunch(); We don't call this because we rely on the ScreenSaverEngine's autorelease pool
-		AppBase::initialize( &settings, std::make_shared<RendererT>(), title, 0, nullptr );
+		AppBase::initialize( &settings, std::make_shared<RendererT>(), title );
 
 		AppScreenSaver::sMainHwnd = mainHwnd;
 		AppScreenSaver *app = new AppT;
