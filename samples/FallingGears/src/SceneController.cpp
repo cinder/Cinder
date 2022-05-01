@@ -69,7 +69,7 @@ void SceneController::reload()
 	setupWalls();
 	setupFallingGears();
 
-	mParams.mDecentSpeed = Config::instance()->getDecentSpeed();
+	mParams.mDecentSpeed = Config::instance()->getDescentSpeed();
 }
 
 void SceneController::update()
