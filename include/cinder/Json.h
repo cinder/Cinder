@@ -34,6 +34,7 @@
 #include <nlohmann/json.hpp>
 
 namespace cinder {
+	//! A wrapper around JSON for Modern C++: https://github.com/nlohmann/json
 	using Json = nlohmann::json;
 }
 
@@ -113,5 +114,7 @@ namespace cinder {
 
 Json loadJson( const cinder::fs::path &path, bool stripComments = false );
 Json loadJson( const DataSourceRef &dataSource, bool stripComments = false );
+//! Convenience method to write a Json instance \a json to a text file at \a path
+void writeJson( const cinder::fs::path &path, const Json &json, int indent = 4 );
 
 } // namespace cinder

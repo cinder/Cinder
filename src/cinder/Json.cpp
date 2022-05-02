@@ -24,6 +24,7 @@
 
 #include "cinder/Json.h"
 #include "cinder/Utilities.h"
+#include <fstream>
 
 namespace cinder {
 
@@ -35,6 +36,14 @@ Json loadJson( const cinder::fs::path &path, bool stripComments )
 Json loadJson( const DataSourceRef &dataSource, bool stripComments )
 {
 	return Json::parse( ci::loadString( dataSource ), nullptr, true, stripComments );
+}
+
+void writeJson( const cinder::fs::path &path, const Json &json, int indent )
+{
+	std::ofstream ofs;
+	ofs.open( path.string().c_str(), std::ofstream::out );
+	ofs << json.dump( indent );
+	ofs.close();
 }
 
 } // namespace cinder
