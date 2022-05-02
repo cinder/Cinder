@@ -1399,6 +1399,9 @@
     <ClInclude Include="..\..\src\zlib\zlib.h" />
     <ClInclude Include="..\..\src\zlib\zutil.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="nlohmann_json.natvis" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
