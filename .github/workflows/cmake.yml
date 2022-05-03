@@ -45,6 +45,5 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.build_type}} --parallel
 
     - name: Run Tests
-      fail-on-error: true
       working-directory: ${{github.workspace}}/build
       run: ${{github.workspace}}/{{$env.build_type}}/UnitTests/UnitTests
