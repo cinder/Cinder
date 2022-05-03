@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         include:
@@ -29,9 +30,6 @@ jobs:
             build_type: Release
             cc: gcc
             cxx: g++    
-
-    runs-on: ubuntu-20.04
-
     steps:
     - uses: actions/checkout@v3
 
@@ -39,11 +37,11 @@ jobs:
       run: sh ${{github.workspace}}/tools/linux/scripts/trusty-install-deps.sh
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.build_type}} -DCMAKE_CXX_COMPILER=${{env.cxx}} -DCMAKE_C_COMPILER=${{env.cc}} -DCINDER_BUILD_TESTS=1
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=${{matrix.cxx}} -DCMAKE_C_COMPILER=${{matrix.cc}} -DCINDER_BUILD_TESTS=1
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.build_type}} --parallel
+      run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel
 
     - name: Run Tests
       working-directory: ${{github.workspace}}/build
-      run: ${{github.workspace}}/{{$env.build_type}}/UnitTests/UnitTests
+      run: ${{github.workspace}}/{{$matrix.build_type}}/UnitTests/UnitTests
