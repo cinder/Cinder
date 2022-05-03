@@ -44,4 +44,4 @@ jobs:
 
     - name: Run Tests
       working-directory: ${{github.workspace}}/build
-      run: ${{github.workspace}}/{{$matrix.build_type}}/UnitTests/UnitTests
+      run: ${{github.workspace}}/${{matrix.build_type}}/UnitTests/UnitTests
