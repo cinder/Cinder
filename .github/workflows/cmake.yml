@@ -17,19 +17,23 @@ jobs:
             build_type: Debug
             cc: clang
             cxx: clang++
+            parralel: --parallel
           - name: Release clang
             build_type: Release
             cc: clang
             cxx: clang++
-          # gcc build on Debug & Release
+            parralel: --parallel
+          # gcc build on Debug & Release - no parallel builds due to RAM usage
           - name: Debug GCC
             build_type: Debug
             cc: gcc
             cxx: g++
+            parralel: ~
           - name: Release GCC
             build_type: Release
             cc: gcc
-            cxx: g++    
+            cxx: g++
+            parralel: ~
     steps:
     - uses: actions/checkout@v3
 
@@ -40,7 +44,7 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=${{matrix.cxx}} -DCMAKE_C_COMPILER=${{matrix.cc}} -DCINDER_BUILD_TESTS=1
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel
+      run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} ${{matrix.parallel}}
 
     - name: Run Unit Tests
       working-directory: ${{github.workspace}}/build
