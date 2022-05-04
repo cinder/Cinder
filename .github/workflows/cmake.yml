@@ -42,6 +42,6 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel
 
-    - name: Run Tests
+    - name: Run Unit Tests
       working-directory: ${{github.workspace}}/build
-      run: ${{github.workspace}}/${{matrix.build_type}}/UnitTests/UnitTests
+      run: ${{github.workspace}}/test/unit/proj/cmake/build/${{matrix.build_type}}/UnitTests/UnitTests
