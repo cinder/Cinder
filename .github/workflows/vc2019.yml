@@ -31,5 +31,5 @@ jobs:
         run: msbuild vc2019\unit.sln /m /t:rebuild /p:Configuration=${{matrix.config}}
 
       - name: Run Unit Tests
-        working-directory: ${{github.workspace}}/build
+        working-directory: ${{github.workspace}}\test\unit
         run: vc2019\build\v142\${{matrix.config}}\x64\CinderUnitTests.exe
