@@ -128,13 +128,8 @@ DeviceManagerWasapi::~DeviceManagerWasapi()
 
 DeviceRef DeviceManagerWasapi::getDefaultOutput()
 {
-	::IMMDeviceEnumerator *enumerator;
-	HRESULT hr = ::CoCreateInstance( __uuidof(::MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(::IMMDeviceEnumerator), (void**)&enumerator );
-	CI_ASSERT( hr == S_OK );
-	auto enumeratorPtr = ci::msw::makeComUnique( enumerator );
-
 	::IMMDevice *device;
-	hr = enumerator->GetDefaultAudioEndpoint( eRender, eConsole, &device );
+	HRESULT hr = mImpl->mIMMDeviceEnumerator->GetDefaultAudioEndpoint( eRender, eConsole, &device );
 	if( hr == E_NOTFOUND ) {
 		return nullptr; // no device available
 	}
@@ -153,13 +148,8 @@ DeviceRef DeviceManagerWasapi::getDefaultOutput()
 
 DeviceRef DeviceManagerWasapi::getDefaultInput()
 {
-	::IMMDeviceEnumerator *enumerator;
-	HRESULT hr = ::CoCreateInstance( __uuidof(::MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(::IMMDeviceEnumerator), (void**)&enumerator );
-	CI_ASSERT( hr == S_OK );
-	auto enumeratorPtr = ci::msw::makeComUnique( enumerator );
-
 	::IMMDevice *device;
-	hr = enumerator->GetDefaultAudioEndpoint( eCapture, eConsole, &device );
+	HRESULT hr = mImpl->mIMMDeviceEnumerator->GetDefaultAudioEndpoint( eCapture, eConsole, &device );
 	if( hr == E_NOTFOUND ) {
 		return nullptr; // no device available
 	}
@@ -242,14 +232,9 @@ void DeviceManagerWasapi::setFramesPerBlock( const DeviceRef &device, size_t fra
 
 shared_ptr<::IMMDevice> DeviceManagerWasapi::getIMMDevice( const DeviceRef &device )
 {
-	::IMMDeviceEnumerator *enumerator;
-	HRESULT hr = ::CoCreateInstance( __uuidof(::MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(::IMMDeviceEnumerator), (void**)&enumerator );
-	CI_ASSERT( hr == S_OK );
-	auto enumeratorPtr = ci::msw::makeComUnique( enumerator );
-
 	::IMMDevice *deviceImm;
 	const wstring &endpointId = getDeviceInfo( device ).mEndpointId;
-	hr = enumerator->GetDevice( endpointId.c_str(), &deviceImm );
+	HRESULT hr = mImpl->mIMMDeviceEnumerator->GetDevice( endpointId.c_str(), &deviceImm );
 	CI_ASSERT( hr == S_OK );
 
 	return 	ci::msw::makeComShared( deviceImm );
@@ -266,6 +251,7 @@ DeviceManagerWasapi::DeviceInfo& DeviceManagerWasapi::getDeviceInfo( const Devic
 
 void DeviceManagerWasapi::rebuildDeviceInfoSet()
 {
+	mDevices.clear();
 	mDeviceInfoSet.clear();
 	parseDevices( DeviceInfo::Usage::INPUT );
 	parseDevices( DeviceInfo::Usage::OUTPUT );
@@ -277,23 +263,14 @@ void DeviceManagerWasapi::rebuildDeviceInfoSet()
 // TODO: this isn't true any more, at the moment there are no Device subclasses, just DeviceManager subclasses
 void DeviceManagerWasapi::parseDevices( DeviceInfo::Usage usage )
 {
-	const size_t kMaxPropertyStringLength = 2048;
-
-	::IMMDeviceEnumerator *enumerator;
-	const ::CLSID CLSID_MMDeviceEnumerator = __uuidof( ::MMDeviceEnumerator );
-	const ::IID IID_IMMDeviceEnumerator = __uuidof( ::IMMDeviceEnumerator );
-	HRESULT hr = CoCreateInstance( CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, IID_IMMDeviceEnumerator, (void**)&enumerator );
-	CI_ASSERT( hr == S_OK );
-	auto enumeratorPtr =  ci::msw::makeComUnique( enumerator );
-
 	::EDataFlow dataFlow = ( usage == DeviceInfo::Usage::INPUT ? eCapture : eRender );
 	::IMMDeviceCollection *devices;
-	hr = enumerator->EnumAudioEndpoints( dataFlow, DEVICE_STATE_ACTIVE, &devices );
+	HRESULT hr = mImpl->mIMMDeviceEnumerator->EnumAudioEndpoints( dataFlow, DEVICE_STATE_ACTIVE, &devices );
 
 	// TODO: consider parsing all devices
 	// - so users can at least see a headphone jack if it is unplugged (only some sound cards act this way)
 	// - note that PKEY_AudioEngine_DeviceFormat returns null below when parsing an unplugged device
-	//hr = enumerator->EnumAudioEndpoints( dataFlow, DEVICE_STATEMASK_ALL, &devices );
+	//HRESULT hr = mImpl->mIMMDeviceEnumerator->EnumAudioEndpoints( dataFlow, DEVICE_STATEMASK_ALL, &devices );
 
 	CI_ASSERT( hr == S_OK );
 	auto devicesPtr = ci::msw::makeComUnique( devices );
