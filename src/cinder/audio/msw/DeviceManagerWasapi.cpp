@@ -405,12 +405,16 @@ STDMETHODIMP DeviceManagerWasapi::Impl::OnDeviceStateChanged( LPCWSTR device_id,
 		CI_LOG_I( "device with id not present, rebuilding device set.." );
 		mParent->rebuildDeviceInfoSet();
 	}
+	else
+	{
+		device = getDevice(device_id);
+		string devName = ((bool)device ? device->getName() : "(???)");
+		CI_LOG_I("State changed to " << stateStr << " for device: " << devName);
 
-	device = getDevice( device_id );
-	string devName = ( (bool)device ? device->getName() : "(???)" );
-	CI_LOG_I( "State changed to " << stateStr << " for device: " << devName );
-
+		mParent->rebuildDeviceInfoSet();
+	}
 	return S_OK;
+
 }
 
 HRESULT DeviceManagerWasapi::Impl::OnDefaultDeviceChanged( EDataFlow flow, ERole role, LPCWSTR new_default_device_id )
