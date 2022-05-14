@@ -1,3 +1,0 @@
-#!/bin/bash
-ARCH=armeabi
-bash cbuilder "$@" -a ${ARCH} -es2

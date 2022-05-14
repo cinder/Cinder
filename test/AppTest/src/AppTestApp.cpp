@@ -10,8 +10,6 @@
 
 #include "Resources.h"
 
-#include <boost/format.hpp>
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -284,8 +282,7 @@ void AppTestApp::drawInfo()
 	layout.setFont( Font( "Arial", 16 ) );
 	layout.setColor( ColorA::gray( 0.9f, 0.75f ) );
 
-	auto fps = boost::format( "%0.2f" ) % getAverageFps();
-	layout.addLine( "fps: " + fps.str() );
+	layout.addLine( "fps: " +  to_string( int( getAverageFps() ) ) );
 	layout.addLine( "v-sync enabled: " + string( gl::isVerticalSyncEnabled() ? "true" : "false" ) );
 
 	auto tex = gl::Texture::create( layout.render( true ) );

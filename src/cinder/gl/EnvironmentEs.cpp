@@ -489,7 +489,7 @@ std::string	EnvironmentEs::generateFragmentShader( const ShaderDef &shader )
 
   #if defined( CINDER_ANDROID )
 	if( shader.mTextureMappingExternalOes) {
-		ss << "#extension GL_OES_EGL_image_external : require";
+		ss << "#extension GL_OES_EGL_image_external_essl3 : require";
 	}
   #endif
 
@@ -556,7 +556,7 @@ std::string	EnvironmentEs::generateFragmentShader( const ShaderDef &shader )
 
   #if defined( CINDER_ANDROID )
 	if( shader.mTextureMappingExternalOes) {
-		ss << "#extension GL_OES_EGL_image_external : require";
+		ss << "#extension GL_OES_EGL_image_external_essl3 : require";
 	}
   #endif
 
