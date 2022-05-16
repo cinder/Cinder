@@ -5,6 +5,7 @@
 #include "cinder/ImageIo.h"
 #include "cinder/Json.h"
 #include "cinder/Url.h"
+#include "cinder/Utilities.h"
 
 #include "Earth.h"
 #include "POV.h"
@@ -180,13 +181,13 @@ void EarthquakeApp::draw()
 void EarthquakeApp::parseEarthquakes( const string &url )
 {
 	try {
-		const JsonTree json( loadUrl( url ) );
-		for( auto &feature : json["features"].getChildren() ) {
+		const Json json = loadJson( loadUrl( url ) );
+		for( auto &feature : json["features"] ) {
 			auto &coords = feature["geometry"]["coordinates"];
-			float mag = feature["properties"]["mag"].getValue<float>();
-			const string &title = feature["properties"]["title"].getValue();
+			float mag = feature["properties"]["mag"];
+			const string &title = feature["properties"]["title"];
 
-			mEarth.addQuake( coords[0].getValue<float>(), coords[1].getValue<float>(), mag, title );
+			mEarth.addQuake( coords[0], coords[1], mag, title );
 		}
 	}
 	catch( ci::Exception &exc ) {

@@ -11,6 +11,7 @@
         "musician": "John Coltrane",
         "year": "1989",
         "title": "Ole Coltrane",
+        "cover_color": [ 255, 128, 64 ],
         "tracks": [
           {
           "id": 0,
@@ -34,6 +35,7 @@
         "musician": "Burial + Four Tet",
         "year": "2009",
         "title": "Moth / Wolf Club",
+        "cover_color": [ 64, 128, 255 ],
         "tracks": [
           {
             "id": 0,
