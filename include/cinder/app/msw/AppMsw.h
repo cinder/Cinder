@@ -43,7 +43,6 @@ class CI_API AppMsw : public AppBase {
 		bool	isConsoleWindowEnabled() const					{ return mMswConsoleEnabled; }
 
 	  private:
-		void	pushBackCommandLineArg( const std::string &arg );
 
 		bool	mMswConsoleEnabled;
 
@@ -112,7 +111,7 @@ void AppMsw::main( const RendererRef &defaultRenderer, const char *title, const 
 #define CINDER_APP_MSW( APP, RENDERER, ... )                                                                        \
 int __stdcall WinMain( HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/ )\
 {                                                                                                                   \
-    cinder::app::RendererRef renderer( new RENDERER );                                                              \
+	cinder::app::RendererRef renderer( new RENDERER );                                                              \
     cinder::app::AppMsw::main<APP>( renderer, #APP, ##__VA_ARGS__ );                                                \
     return 0;                                                                                                       \
 }

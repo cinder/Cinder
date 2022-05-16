@@ -52,6 +52,22 @@ namespace cinder { namespace app {
 PlatformMsw::PlatformMsw()
 	: mDirectConsoleToCout( false ), mDisplaysInitialized( false )
 {
+	// MSW sends it arguments as wide strings, so convert them to utf8 and store those in settings
+	LPWSTR* szArglist;
+	int nArgs;
+
+	std::vector<std::string> cmdLineArgs;
+	szArglist = ::CommandLineToArgvW(::GetCommandLineW(), &nArgs);
+	if (szArglist && nArgs) {
+		for (int i = 0; i < nArgs; ++i)
+			cmdLineArgs.push_back(toUtf8((char16_t*)szArglist[i]));
+	}
+
+	// Free memory allocated for CommandLineToArgvW arguments.
+	::LocalFree( szArglist );
+
+	setCommandLineArgs( cmdLineArgs );
+
 	ImageSourceFileWic::registerSelf();
 	ImageTargetFileWic::registerSelf();
 	ImageSourceFileRadiance::registerSelf();

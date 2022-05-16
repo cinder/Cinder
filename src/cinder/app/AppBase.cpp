@@ -105,14 +105,11 @@ AppBase::Settings::Settings()
 {
 }
 
-void AppBase::Settings::init( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] )
+void AppBase::Settings::init( const RendererRef &defaultRenderer, const char *title )
 {
 	mDefaultRenderer = defaultRenderer;
 	if( title )
 		mTitle = title;
-
-	for( int arg = 0; arg < argc; ++arg )
-		mCommandLineArgs.push_back( argv[arg] );
 }
 
 void AppBase::Settings::disableFrameRate()
@@ -147,7 +144,6 @@ AppBase::AppBase()
 	mDefaultRenderer = sSettingsFromMain->getDefaultRenderer();
 	mMultiTouchEnabled = sSettingsFromMain->isMultiTouchEnabled();
 	mHighDensityDisplayEnabled = sSettingsFromMain->isHighDensityDisplayEnabled();
-	mCommandLineArgs = sSettingsFromMain->getCommandLineArgs();
 
 	mIo = shared_ptr<asio::io_context>( new asio::io_context() );
 	mIoWork = shared_ptr<asio::io_context::work>( new asio::io_context::work( *mIo ) );
@@ -177,9 +173,9 @@ void AppBase::prepareLaunch()
 }
 
 // static
-void AppBase::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] )
+void AppBase::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title )
 {
-	settings->init( defaultRenderer, title, argc, argv );
+	settings->init( defaultRenderer, title );
 
 	sSettingsFromMain = settings;
 }

@@ -31,11 +31,6 @@ using namespace std;
 
 namespace cinder { namespace app {
 
-void AppMsw::Settings::pushBackCommandLineArg( const std::string &arg )
-{
-	mCommandLineArgs.push_back( arg );
-}
-
 AppMsw::AppMsw()
 {
 	sInstance = this;
@@ -57,20 +52,7 @@ AppMsw::~AppMsw()
 // static
 void AppMsw::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title )
 {
-	AppBase::initialize( settings, defaultRenderer, title, 0, nullptr );
-
-	// MSW sends it arguments as wide strings, so convert them to utf8 and store those in settings
-	LPWSTR *szArglist;
-	int nArgs;
-
-	szArglist = ::CommandLineToArgvW( ::GetCommandLineW(), &nArgs );
-	if( szArglist && nArgs ) {
-		for( int i = 0; i < nArgs; ++i )
-			settings->pushBackCommandLineArg( toUtf8( (char16_t*) szArglist[i] ) );
-	}
-
-	// Free memory allocated for CommandLineToArgvW arguments.
-	::LocalFree( szArglist );
+	AppBase::initialize( settings, defaultRenderer, title );
 }
 
 void AppMsw::launch()

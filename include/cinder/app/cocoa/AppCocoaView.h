@@ -41,7 +41,7 @@ class AppCocoaView : public AppBase {
 	AppCocoaView();
 	~AppCocoaView();
 		
-	static void		initialize( Settings *settings, const RendererRef &defaultRenderer )	{ AppBase::initialize( settings, defaultRenderer, nullptr, 0, nullptr ); }
+	static void		initialize( Settings *settings, const RendererRef &defaultRenderer )	{ AppBase::initialize( settings, defaultRenderer, nullptr ); }
 
 	virtual void	setupCinderView( CinderViewMac *cinderView );
 
