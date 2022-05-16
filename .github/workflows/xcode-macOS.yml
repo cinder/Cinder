@@ -19,7 +19,7 @@ jobs:
 
       - name: Build
         working-directory: ${{github.workspace}}
-        run: xcodebuild -project xcode/cinder.xcodeproj -target cinder -configuration ${{matrix.config}}
+        run: xcodebuild -project proj/xcode/cinder.xcodeproj -target cinder -configuration ${{matrix.config}}
 
       # - name: Build Unit Tests
       #   working-directory: ${{github.workspace}}\test\unit
