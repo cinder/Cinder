@@ -23,7 +23,7 @@ jobs:
 
       - name: Build Unit Tests
         working-directory: ${{github.workspace}}/test/unit
-        run: xcodebuild -project xcode/UnitTests.xcodeproj -configuration=${{matrix.config}}
+        run: xcodebuild -project xcode/UnitTests.xcodeproj -configuration ${{matrix.config}}
 
       - name: Run Unit Tests
         working-directory: ${{github.workspace}}/test/unit
