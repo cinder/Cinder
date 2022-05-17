@@ -1,4 +1,4 @@
-name: macOS Xcode
+name: Xcode macOS
 
 on:
   push:
@@ -21,10 +21,10 @@ jobs:
         working-directory: ${{github.workspace}}
         run: xcodebuild -project proj/xcode/cinder.xcodeproj -target cinder -configuration ${{matrix.config}}
 
-      # - name: Build Unit Tests
-      #   working-directory: ${{github.workspace}}\test\unit
-      #   run: msbuild vc2019\unit.sln /m /t:rebuild /p:Configuration=${{matrix.config}}
+      - name: Build Unit Tests
+        working-directory: ${{github.workspace}}/test/unit
+        run: xcodebuild -project xcode/UnitTests.xcodeproj -configuration=${{matrix.config}}
 
-      # - name: Run Unit Tests
-      #   working-directory: ${{github.workspace}}\test\unit
-      #   run: vc2019\build\v142\${{matrix.config}}\x64\CinderUnitTests.exe
+      - name: Run Unit Tests
+        working-directory: ${{github.workspace}}/test/unit
+        run: ./xcode/build/${{matrix.config}}/CinderUnitTests
