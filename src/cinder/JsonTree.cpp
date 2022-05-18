@@ -27,7 +27,7 @@
 
 #include "jsoncpp/json.h"
 
-#include "cinder/Json.h"
+#include "cinder/JsonTree.h"
 #include "cinder/Stream.h"
 #include "cinder/Utilities.h"
 
