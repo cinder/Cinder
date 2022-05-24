@@ -226,6 +226,7 @@ class CI_API Rect : public Source {
 	//! Enables TEX_COORD_0 attrib and specifies corner values in clockwise order starting with the upper-left
 	Rect&		texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2 &lowerRight, const vec2 &lowerLeft );
 
+	Rectf       getRect() const { return Rectf(mPositions[0], mPositions[3]); };
 	size_t		getNumVertices() const override { return 4; }
 	size_t		getNumIndices() const override { return 0; }
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_STRIP; }
@@ -254,6 +255,9 @@ class CI_API RoundedRect : public Source {
 	RoundedRect&	texCoords( const vec2 &upperLeft, const vec2 &lowerRight );
 	RoundedRect&	colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft );
 	
+	Rectf           getRect() const { return mRectPositions; }
+    int             getCornerSubdivisions() const { return mSubdivisions; }
+    float           getCornerRadius() const { return mCornerRadius; }
 	size_t			getNumVertices() const override { return mNumVertices; }
 	size_t			getNumIndices() const override { return 0; }
 	Primitive		getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
@@ -290,7 +294,9 @@ class CI_API Cube : public Source {
 	Cube&			size( const vec3 &sz ) { mSize = sz; return *this; }
 	Cube&			size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
 
-	size_t		getNumVertices() const override;
+	vec3        getSize() const { return mSize; }
+    vec3        getSubdivisions() const { return mSubdivisions; }
+    size_t      getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	uint8_t		getAttribDims( Attrib attr ) const override;
@@ -322,7 +328,9 @@ class CI_API CubeSphere : public Source {
 	CubeSphere&		size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
 	CubeSphere&		equalSpacing( bool enabled = true ) { mEqualSpacing = enabled; return *this; }
 
-	size_t		getNumVertices() const override;
+	vec3        getSize() const { return mSize; }
+    vec3        getSubdivisions() const { return mSubdivisions; }
+    size_t      getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	uint8_t		getAttribDims( Attrib attr ) const override;
@@ -374,6 +382,7 @@ class CI_API Icosphere : public Source {
 
 	Icosphere&	subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; mCalculationsCached = false; return *this; }
 
+	int         getSubdivisions() const { return mSubdivision; }
 	size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
 	size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -401,6 +410,7 @@ class CI_API Teapot : public Source {
 
 	Teapot&		subdivisions( int sub );
 
+	int         getSubdivisions() const { return mSubdivision;  }
 	size_t		getNumVertices() const override { return mNumVertices; }
 	size_t		getNumIndices() const override { return mNumIndices; }
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -438,6 +448,9 @@ class CI_API Circle : public Source {
 	Circle&		radius( float radius );
 	Circle&		subdivisions( int subdivs );
 
+	vec2        getCenter() const { return mCenter; }
+    float       getRadius() const { return mRadius; }
+    int         getSubdivisions() const { return mNumSubdivisions; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override { return 0; }
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
@@ -464,6 +477,10 @@ class CI_API Ring : public Source {
 	Ring&		width( float width );
 	Ring&		subdivisions( int subdivs );
 
+	vec2        getCenter() const { return mCenter; }
+    float       getRadius() const { return mRadius; }
+    float       getWidth() const { return mWidth; }
+    int         getSubdivisions() const { return mNumSubdivisions; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override { return 0; }
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_STRIP; }
@@ -493,6 +510,9 @@ class CI_API Sphere : public Source {
 	//! Specifies the number of segments, which determines the roundness of the sphere.
 	Sphere&		subdivisions( int subdiv ) { mSubdivisions = subdiv; return *this; }
 
+	vec3        getCenter() const { return mCenter; }
+    float       getRadius() const { return mRadius; }
+    int         getSubdivisions() const { return mSubdivisions; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -527,6 +547,12 @@ class CI_API Capsule : public Source {
 	//! Conveniently sets center, length and direction
 	Capsule&		set( const vec3 &from, const vec3 &to );
 
+	vec3        getCenter() const { return mCenter; }
+    int         getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int         getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    float       getRadius() const { return mRadius; }
+    float       getLength() const { return mLength; }
+    vec3        getDirection() const { return mDirection; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -565,6 +591,14 @@ class CI_API Torus : public Source {
 	//! Specifies the major and minor radius separately.
 	Torus&	radius( float major, float minor ) { mRadiusMajor = math<float>::max(0, major); mRadiusMinor = math<float>::max(0, minor); return *this; }
 
+	vec3        getCenter() const { return mCenter; }
+    int         getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int         getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    float       getMajorRadius() const { return mRadiusMajor; }
+    float       getMinorRadius() const { return mRadiusMinor; }
+    float       getHeight() const { return mHeight; }
+    unsigned    getTwist() const { return mTwist; }
+    float       getTwistOffset() const { return mTwistOffset; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -607,6 +641,12 @@ public:
 	//! Allows you to scale the generated curve.
 	TorusKnot&	scale( float x, float y, float z ) { mScale = vec3( x, y, z ); return *this; }
 	
+	int         getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int         getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    int         getParameterP() const { return mP; }
+    int         getParameterQ() const { return mQ; }
+	float       getRadius() const { return mRadius; }
+    vec3        getScale() const { return mScale; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -666,6 +706,16 @@ class CI_API Helix : public Torus {
 	Helix&			ratio( float ratio ) { Torus::ratio( ratio ); return *this; }
 	//! Specifies the major and minor radius separately.
 	Helix&			radius( float major, float minor ) { Torus::radius( major, minor ); return *this; }
+
+	vec3          getCenter() const { return mCenter; }
+    int           getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int           getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    float         getMajorRadius() const { return mRadiusMajor; }
+    float         getMinorRadius() const { return mRadiusMinor; }
+    float         getHeight() const { return mHeight; }
+    unsigned      getTwist() const { return mTwist; }
+    float         getTwistOffset() const { return mTwistOffset; }
+    float         getNumberOfCoils() const { return mCoils; }
 };
 
 class CI_API Cylinder : public Source {
@@ -692,6 +742,13 @@ class CI_API Cylinder : public Source {
 	//! Conveniently sets origin, height and direction so that the center of the base is \a from and the center of the apex is \a to.
 	Cylinder&	set( const vec3 &from, const vec3 &to );
 
+	vec3        getOrigin() const { return mOrigin; }
+    int         getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int         getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    int         getSubdivisionsCap() const { return mSubdivisionsCap; }
+    float       getRadius() const { return mRadiusBase; }
+    float       getHeight() const { return mHeight; }
+    vec3        getDirection() const { return mDirection; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -744,6 +801,14 @@ class CI_API Cone : public Cylinder {
 	Cone&	direction( const vec3 &direction ) { Cylinder::direction( direction ); return *this; }
 	//! Conveniently sets origin, height and direction.
 	Cone&	set( const vec3 &from, const vec3 &to ) { Cylinder::set( from, to ); return *this; }
+
+	vec3 getOrigin() const { return mOrigin; }
+    int getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    float getBaseRadius() const { return mRadiusBase; }
+    float getApexRadius() const { return mRadiusApex; }
+    float getHeight() const { return mHeight; }
+    vec3 getDirection() const { return mDirection; }
 };
 
 //! Defaults to a plane on the z axis, origin = [0, 0, 0], normal = [0, 1, 0]
@@ -760,6 +825,10 @@ class CI_API Plane : public Source {
 	Plane& origin( const vec3 &origin )	{ mOrigin = origin; return *this; }
 	Plane& normal( const vec3 &normal );
 
+	vec2        getSubdivisions() const { return mSubdivisions; }
+	vec3        getOrigin() const { return mOrigin; }
+    vec3        getNormal() const { return glm::cross(mAxisU, mAxisV); }
+    vec2        getSize() const { return mSize; }
 	size_t		getNumVertices() const override		{ return ( mSubdivisions.x + 1 ) * ( mSubdivisions.y + 1 ); }
 	size_t		getNumIndices() const override		{ return mSubdivisions.x * mSubdivisions.y * 6; }
 	Primitive	getPrimitive() const override		{ return Primitive::TRIANGLES; }
@@ -789,6 +858,8 @@ class CI_API Extrude : public Source {
 	//! Sets the number of subdivisions along the axis of extrusion
 	Extrude&	subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); updatePathSubdivision(); return *this; }
 
+	float       getDistance() const { return mDistance; }
+    int         getSubdivisions() const { return mSubdivisions; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -827,6 +898,7 @@ class CI_API ExtrudeSpline : public Source {
 	//! Sets the function used to calculate the width of the Shape2d at each subdivision
 	ExtrudeSpline&		thickness( const std::function<float(float)> &fn ) { mThicknessFn = fn; return *this; }
 
+	int             getSubdivisions() const { return mSubdivisions; }
 	size_t			getNumVertices() const override;
 	size_t			getNumIndices() const override;
 	Primitive		getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -913,6 +985,12 @@ class CI_API WireCapsule : public WireSource {
 	//! Conveniently sets center, length and direction
 	WireCapsule&		set( const vec3 &from, const vec3 &to );
 
+	vec3            getCenter() const { return mCenter; }
+    int             getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int             getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    float           getRadius() const { return mRadius; }
+    float           getLength() const { return mLength; }
+    vec3            getDirection() const { return mDirection; }
 	size_t			getNumVertices() const override;
 	void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	WireCapsule*	clone() const override { return new WireCapsule( *this ); }

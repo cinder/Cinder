@@ -761,7 +761,7 @@ RoundedRect& RoundedRect::colors( const ColorAf &upperLeft, const ColorAf &upper
 	mColors[3] = upperLeft;
 	return *this;
 }
-	
+
 void RoundedRect::updateVertexCount()
 {
 	if( mSubdivisions <= 0 ) {
@@ -940,8 +940,7 @@ Cube& Cube::colors( const ColorAf &posX, const ColorAf &negX, const ColorAf &pos
 	return *this;
 }
 
-size_t Cube::getNumVertices() const
-{
+size_t Cube::getNumVertices() const {
 	return 2 * ( (mSubdivisions.x+1) * (mSubdivisions.y+1) ) // +-Z
 			+ 2 * ( (mSubdivisions.y+1) * (mSubdivisions.z+1) ) // +-X
 			+ 2 * ( (mSubdivisions.x+1) * (mSubdivisions.z+1) ); // +-Y
@@ -1111,8 +1110,7 @@ CubeSphere& CubeSphere::colors( const ColorAf &posX, const ColorAf &negX, const 
 	return *this;
 }
 
-size_t CubeSphere::getNumVertices() const
-{
+size_t CubeSphere::getNumVertices() const {
 	return 2 * ( (mSubdivisions.x+1) * (mSubdivisions.y+1) ) // +-Z
 			+ 2 * ( (mSubdivisions.y+1) * (mSubdivisions.z+1) ) // +-X
 			+ 2 * ( (mSubdivisions.x+1) * (mSubdivisions.z+1) ); // +-Y
