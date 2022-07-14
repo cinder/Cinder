@@ -66,6 +66,8 @@ class PlatformCocoa : public Platform {
 
 	DataSourceRef	loadResource( const fs::path &resourcePath ) override;
 
+	void setCommandLineArgs( int argc, char * const argv[] ) override;
+
 	fs::path getResourceDirectory() const override;
 	fs::path getResourcePath( const fs::path &rsrcRelativePath ) const override;
 

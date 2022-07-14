@@ -57,7 +57,7 @@ class AppLinux : public AppBase {
 	//! \cond
 	// Called during application instantiation via CINDER_APP_LINUX macro
 	template<typename AppT>
-	static void main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
+	static void main( const RendererRef &defaultRenderer, const char *title, const SettingsFn &settingsFn = SettingsFn() );
 	//! \endcond
 
   protected:
@@ -68,12 +68,12 @@ class AppLinux : public AppBase {
 };
 
 template<typename AppT>
-void AppLinux::main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn )
+void AppLinux::main( const RendererRef &defaultRenderer, const char *title, const SettingsFn &settingsFn )
 {
 	AppBase::prepareLaunch();
 
 	Settings settings;
-	AppBase::initialize( &settings, defaultRenderer, title, argc, argv );
+	AppBase::initialize( &settings, defaultRenderer, title );
 
 	if( settingsFn )
 		settingsFn( &settings );
@@ -90,9 +90,10 @@ void AppLinux::main( const RendererRef &defaultRenderer, const char *title, int 
 
 #define CINDER_APP_LINUX( APP, RENDERER, ... )									    \
 int main( int argc, char* argv[] )											        \
-{																					\
+{	\
+	cinder::app::Platform::get()->setCommandLineArgs( argc, argv );	\
 	cinder::app::RendererRef renderer( new RENDERER );								\
-	cinder::app::AppLinux::main<APP>( renderer, #APP, argc, argv, ##__VA_ARGS__ );	\
+	cinder::app::AppLinux::main<APP>( renderer, #APP, ##__VA_ARGS__ );	\
 	return 0;																		\
 }
 

@@ -18,13 +18,13 @@ class Config {
 	const std::vector<GearData>&	getGearData() const	{ return mGears; }
 
 	ci::ImageSourceRef	getBackgroundImage() const;
-	float getDecentSpeed() const;
+	float getDescentSpeed() const;
 
   private:
 	Config();
 
 	void loadGearData();
 
-	ci::JsonTree				mData;
+	ci::Json				mData;
 	std::vector<GearData>	mGears;
 };

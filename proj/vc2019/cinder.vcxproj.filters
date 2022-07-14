@@ -2277,4 +2277,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="nlohmann_json.natvis" />
+  </ItemGroup>
 </Project>

@@ -19,7 +19,7 @@ Config::Config()
 void Config::reload()
 {
 	try {
-		mData = JsonTree( app::loadAsset( "config.json" ) );
+		mData = loadJson( app::loadAsset( "config.json" ) );
 
 		loadGearData();
 
@@ -30,13 +30,9 @@ void Config::reload()
 	}
 }
 
-float Config::getDecentSpeed() const
+float Config::getDescentSpeed() const
 {
-	float result = 100;
-	if( mData.hasChild( "decent-speed" ) )
-		result = mData.getValueForKey<float>( "decent-speed" );
-
-	return result;
+	return mData.value( "descent-speed", 100.0f );
 }
 
 ImageSourceRef Config::getBackgroundImage() const
@@ -44,7 +40,7 @@ ImageSourceRef Config::getBackgroundImage() const
 	ImageSourceRef result;
 
 	try {
-		string imageName = mData.getValueForKey( "background" );
+		string imageName = mData["background"];
 		result = loadImage( app::loadAsset( imageName ) );
 	}
 	catch( Exception &exc ) {
@@ -59,7 +55,7 @@ void Config::loadGearData()
 	mGears.clear();
 
 	for( const auto &gear : mData["gears"] ) {
-		string imageFilename = gear.getValue();
+		string imageFilename = gear;
 
 		auto tex = gl::Texture::create( loadImage( app::loadAsset( imageFilename ) ) );
 

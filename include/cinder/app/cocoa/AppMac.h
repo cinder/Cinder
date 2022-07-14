@@ -100,6 +100,7 @@ void AppMac::main( const RendererRef &defaultRenderer, const char *title, int ar
 #define CINDER_APP_MAC( APP, RENDERER, ... )										\
 int main( int argc, char* argv[] )											\
 {																					\
+	cinder::app::Platform::get()->setCommandLineArgs( argc, argv );					\
 	cinder::app::RendererRef renderer( new RENDERER );								\
 	cinder::app::AppMac::main<APP>( renderer, #APP, argc, argv, ##__VA_ARGS__ );	\
 	return 0;																		\

@@ -31,17 +31,17 @@
 namespace cinder {
 
 //! Converts \a input into a Base64-encoded string. If \a charsPerLine > 0, carriage returns (\n) are inserted every \a charsPerLine characters, rounded down to the nearest multiple of 4.
-std::string toBase64( const std::string &input, int charsPerLine = 0 );
+CI_API std::string toBase64( const std::string &input, int charsPerLine = 0 );
 //! Converts \a input into a Base64-encoded string. If \a charsPerLine > 0, carriage returns (\n) are inserted every \a charsPerLine characters, rounded down to the nearest multiple of 4.
-std::string toBase64( const Buffer &input, int charsPerLine = 0 );
+CI_API std::string toBase64( const Buffer &input, int charsPerLine = 0 );
 //! Converts \a input of length \a inputSize into a Base64-encoded string. If \a charsPerLine > 0, carriage returns (\n) are inserted every \a charsPerLine characters, rounded down to the nearest multiple of 4.
-std::string toBase64( const void *input, size_t inputSize, int charsPerLine = 0 );
+CI_API std::string toBase64( const void *input, size_t inputSize, int charsPerLine = 0 );
 
 //! Converts Base64-encoded data \a input into unencoded data.
-Buffer fromBase64( const std::string &input );
+CI_API Buffer fromBase64( const std::string &input );
 //! Converts Base64-encoded data \a input into unencoded data.
-Buffer fromBase64( const Buffer &input );
+CI_API Buffer fromBase64( const Buffer &input );
 //! Converts Base64-encoded data \a input into unencoded data.
-Buffer fromBase64( const void *input, size_t inputSize );
+CI_API Buffer fromBase64( const void *input, size_t inputSize );
 
 } // namespace cinder
