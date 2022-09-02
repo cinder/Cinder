@@ -33,6 +33,12 @@
 
 #include <cstdint>
 
+// Fix a compile error where "linux" is defined
+#if defined(linux)
+#define CINDERBOX_REDEFINE_LINUX
+#undef linux
+#endif
+
 //  CINDER_VERSION % 100 is the patch level
 //  CINDER_VERSION / 100 % 1000 is the minor version
 //  CINDER_VERSION / 100000 is the major version

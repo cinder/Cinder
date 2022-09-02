@@ -35,17 +35,7 @@
 
 #include "cinder/app/App.h"
 
-// Fix a compile error where "linux" is defined
-#if defined(linux)
-#define CINDERBOX_REDEFINE_LINUX
-#undef linux
-#endif
-
 namespace cinder { namespace linux { namespace ftutil {
-
-#if defined(CINDERBOX_REDEFINE_LINUX)
-#define linux 1
-#endif
 
 class Measure {
 public:
