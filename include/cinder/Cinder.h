@@ -22,6 +22,11 @@
 
 #pragma once
 
+// Fix a bug causing this not to compile
+#if defined(linux)
+#undef linux
+#endif
+
 #if __clang__ 
 	#if ! __has_include( <cstdint> )
 		#error "<cstdint> is missing - Cinder requires libc++ on Mac OS X and iOS"
