@@ -139,7 +139,4 @@ if( MSVC )
 	set( CINDER_STATIC_LIBS_DEPENDS_DEBUG	"${MSW_PLATFORM_LIBS}" )
 	# Static library release depends
 	set( CINDER_STATIC_LIBS_DEPENDS_RELEASE "${MSW_PLATFORM_LIBS}" )
-
-	# Fix a bug that often occurs
-	target_link_options(cinder PUBLIC /SUBSYSTEM:WINDOWS)
 endif()

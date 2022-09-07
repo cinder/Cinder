@@ -37,6 +37,11 @@ else()
 	message( FATAL_ERROR "no target defined for system: '${CMAKE_SYSTEM_NAME}.'" )
 endif()
 
+if ( MSVC )
+	# Fix a bug that often occurs
+	target_link_options(cinder PUBLIC /SUBSYSTEM:WINDOWS)
+endif()
+
 include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )
 
 if( CINDER_BUILD_ALL_SAMPLES )
