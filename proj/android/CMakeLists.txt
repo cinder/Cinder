@@ -566,6 +566,7 @@ set( CINDER_CXX_SRC_FILES
 
     ${CINDER_SRC_DIR}/cinder/audio/Node.cpp
     ${CINDER_SRC_DIR}/cinder/audio/ChannelRouterNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/EqualizerNode.cpp
     ${CINDER_SRC_DIR}/cinder/audio/FilterNode.cpp
     ${CINDER_SRC_DIR}/cinder/audio/NodeMath.cpp
     ${CINDER_SRC_DIR}/cinder/audio/SampleRecorderNode.cpp

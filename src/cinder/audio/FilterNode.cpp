@@ -82,11 +82,11 @@ void FilterBiquadNode::updateBiquadParams()
 			break;
 		case Mode::LOWSHELF:
 			for( size_t ch = 0; ch < getNumChannels(); ch++ )
-				mBiquads[ch].setLowShelfParams( mFreq, mGain );;
+				mBiquads[ch].setLowShelfParams( mFreq, mGain, mQ );
 			break;
 		case Mode::HIGHSHELF:
 			for( size_t ch = 0; ch < getNumChannels(); ch++ )
-				mBiquads[ch].setHighShelfParams( mFreq, mGain );;
+				mBiquads[ch].setHighShelfParams( mFreq, mGain, mQ );
 			break;
 		case Mode::PEAKING:
 			for( size_t ch = 0; ch < getNumChannels(); ch++ )

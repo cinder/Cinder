@@ -104,6 +104,7 @@ if( NOT CINDER_DISABLE_AUDIO )
 		${CINDER_SRC_DIR}/cinder/audio/Context.cpp
 		${CINDER_SRC_DIR}/cinder/audio/DelayNode.cpp
 		${CINDER_SRC_DIR}/cinder/audio/Device.cpp
+		${CINDER_SRC_DIR}/cinder/audio/EqualizerNode.cpp
 		${CINDER_SRC_DIR}/cinder/audio/FileOggVorbis.cpp
 		${CINDER_SRC_DIR}/cinder/audio/FilterNode.cpp
 		${CINDER_SRC_DIR}/cinder/audio/GenNode.cpp
