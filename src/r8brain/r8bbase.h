@@ -9,9 +9,6 @@
  * converter. This inclusion file contains implementations of several small
  * utility classes and functions used by the library.
  *
- * r8brain-free-src Copyright (c) 2013 Aleksey Vaneev
- * See the "License.txt" file for license.
- *
  * @mainpage
  *
  * @section intro_sec Introduction
@@ -23,136 +20,14 @@
  * go beyond that. SRC routines were implemented in multi-platform C++ code,
  * and have a high level of optimality.
  *
- * The structure of this library's objects is such that they can be frequently
- * created and destroyed in large applications with a minimal performance
- * impact due to a high level of reusability of its most
- * "initialization-expensive" objects: the fast Fourier transform and FIR
- * filter objects.
- *
- * The SRC algorithm at first produces 2X oversampled (relative to the source
- * sample rate, or the destination sample rate if the downsampling is
- * performed) signal and then performs interpolation using a bank of short
- * (14 to 28 taps, depending on the required precision)
- * polynomial-interpolated sinc-based fractional delay filters. This puts the
- * algorithm into the league of the fastest among the most precise SRC
- * algorithms. The more precise alternative being only the whole
- * number-factored SRC, which can be slower.
- *
- * @section requirements Requirements
- *
- * C++ compiler and system with the "double" floating point type (53-bit
- * mantissa) support. No explicit code for the "float" type is present in this
- * library, because as practice has shown the "float"-based code performs
- * considerably slower on a modern processor, at least in this library.
- * However, if the "double" type really represents the "float" type (24-bit
- * mantissa) in a given compiler, on a given system, the library won't become
- * broken, only the conversion quality may become degraded. This library
- * always uses the "sizeof( double )" operator to obtain "double" floating
- * point type's size in bytes. This library does not have dependencies beside
- * the standard C library, the "windows.h" on Windows and the "pthread.h" on
- * Mac OS X and Linux.
- *
- * @section usage Usage Information
- *
- * The sample rate converter (resampler) is represented by the
- * r8b::CDSPResampler class, which is a single front-end class for the whole
- * library. You do not basically need to use nor understand any other classes
- * beside this class. Several derived classes that have varying levels of
- * precision are also available.
- *
- * The code of the library resides in the "r8b" C++ namespace, effectively
- * isolating it from all other code. The code is thread-safe. A separate
- * resampler object should be created for each audio channel or stream being
- * processed.
- *
- * Note that you will need to compile the "r8bbase.cpp" source file and
- * include the resulting object file into your application build. This source
- * file includes definitions of several global static objects used by the
- * library. You may also need to include to your project: the "Kernel32"
- * library (on Windows) and the "pthread" library on Mac OS X and Linux.
- *
- * The code of this library was commented in the Doxygen style. To generate
- * the documentation locally you may run the "doxygen ./other/r8bdoxy.txt"
- * command from the library's directory.
- *
- * Preliminary tests show that the r8b::CDSPResampler24 resampler class
- * achieves 15.6*n_cores Mflops when converting 1 channel of audio from 44100
- * to 96000 sample rate, on a typical Intel Core i7-4770K processor-based
- * system without overclocking. This approximately translates to a real-time
- * resampling of 160*n_cores audio streams, at 100% CPU load.
- *
- * @section dll Dynamic Link Library
- *
- * The functions of this SRC library are also accessible in simplified form
- * via the DLL file on Windows, requiring a processor with SSE2 support.
- * Delphi Pascal interface unit file for the DLL file is available. DLL and
- * C LIB files are distributed in a separate ZIP file on the project's home
- * page. On non-Windows systems it is preferrable to use the C++ library
- * directly.
- *
- * @section realtime Real-time Applications
- *
- * The resampler class of this library was designed as asynchronous processor:
- * it may produce any number of output samples, depending on the input sample
- * data length and the resampling parameters. The resampler must be fed with
- * the input sample data until enough output sample data was produced, with
- * any excess output samples used before feeding the resampler with more input
- * data. A "relief" factor here is that the resampler removes the initial
- * processing latency automatically, and that after initial moments of
- * processing the output becomes steady, with only minor output sample data
- * length fluctuations.
- *
- * Note that the r8b::CDSPResampler::getInLenBeforeOutStart() function can be
- * used to estimate the number of input samples that should be provided to the
- * resampler before the actual output starts.
- *
- * @section notes Notes
- *
- * When using the r8b::CDSPResampler<> class directly, you may select the
- * transition band/steepness of the low-pass (reconstruction) filter,
- * expressed as a percentage of the full spectral bandwidth of the input
- * signal (or the output signal if the downsampling is performed), and the
- * desired stop-band attenuation in decibel.
- *
- * The transition band is specified as the normalized spectral space of the
- * input signal (or the output signal if the downsampling is performed)
- * between the low-pass filter's -3 dB point and the Nyquist frequency, and
- * ranges from 0.5% to 45%. Stop-band attenuation can be specified in the
- * range 49 to 218 decibel.
- *
- * This SRC library also implements a faster "power of 2" resampling (e.g. 2X,
- * 4X, 8X, 16X, etc. upsampling and downsampling).
- *
- * This library was tested for compatibility with GNU C++, Microsoft Visual
- * C++ and Intel C++ compilers, on 32- and 64-bit Windows, Mac OS X and CentOS
- * Linux.
- *
- * All code is fully "inline", without the need to compile many source files.
- * The memory footprint is quite modest (8-byte "double" type data):
- *
- *  * 1.2 MB of static memory for the fractional delay filters
- *  * filter memory, per filter (N*8*2 bytes, where N is the block length,
- *    usually in the range 256 to 2048)
- *  * Ooura's FFT algorithm tables, per channel (N*8 bytes), plus 1 to 7
- *    smaller tables (128*8 bytes) for the "power of 2" resampling
- *  * convolver memory, per channel (N*8*5 bytes), plus Z=1 to 7 smaller
- *    convolvers for the "power of 2" resampling (Z*128*8*5 bytes)
- *  * interpolator memory (8 KB per channel)
- *  * I/O buffers, per channel (proportional to the maximal input buffer
- *    length and the source to destination sample rate ratio)
- *
- * @section users Users
- *
- * This library is used by:
- *
- *  * http://www.martinic.com/combov/ Combo Model V VSTi instrument
- *  * http://midithru.net/Home/AsioLink WDM Asio Link Driver
+ * For more information, please visit
+ * https://github.com/avaneev/r8brain-free-src
  *
  * @section license License
  *
  * The MIT License (MIT)
  * 
- * r8brain-free-src Copyright (c) 2013 Aleksey Vaneev
+ * r8brain-free-src Copyright (c) 2013-2022 Aleksey Vaneev
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -176,30 +51,45 @@
  * following way: "Sample rate converter designed by Aleksey Vaneev of
  * Voxengo"
  *
- * @version 1.5
+ * @version 5.7
  */
 
 #ifndef R8BBASE_INCLUDED
 #define R8BBASE_INCLUDED
 
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <math.h>
 #include "r8bconf.h"
 
-#if defined( R8B_WIN )
+#if defined( _WIN32 )
 	#include <windows.h>
-#else // R8B_WIN
+#else // defined( _WIN32 )
 	#include <pthread.h>
-#endif // R8B_WIN
+#endif // defined( _WIN32 )
 
-#if defined( __clang__ ) || defined( __GCC__ )
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter -Wparentheses"
-#elif defined( _MSC_VER )
-	#pragma warning( push )
-	#pragma warning( disable : 4100 4706)
-#endif
+#if defined( __SSE4_2__ ) || defined( __SSE4_1__ ) || \
+	defined( __SSSE3__ ) || defined( __SSE3__ ) || defined( __SSE2__ ) || \
+	defined( __x86_64__ ) || defined( _M_AMD64 ) || defined( _M_X64 ) || \
+	defined( __amd64 )
+
+	#include <immintrin.h>
+
+	#define R8B_SSE2
+	#define R8B_SIMD_ISH
+
+#elif defined( __aarch64__ ) || defined( __arm64__ )
+
+	#include <arm_neon.h>
+
+	#define R8B_NEON
+
+	#if !defined( __APPLE__ )
+		#define R8B_SIMD_ISH // Shuffled interpolation is inefficient on M1.
+	#endif // !defined( __APPLE__ )
+
+#endif // ARM64
 
 /**
  * @brief The "r8brain-free-src" library namespace.
@@ -209,31 +99,38 @@
 
 namespace r8b {
 
-#if !defined( M_PI )
-	/**
-	 * The macro equals to "pi" constant, fits 53-bit floating point mantissa.
-	 */
+/**
+ * Macro defines r8brain-free-src version string.
+ */
 
-	#define M_PI 3.14159265358979324
-#endif // M_PI
+#define R8B_VERSION "5.7"
 
-#if !defined( M_2PI )
-	/**
-	 * The M_2PI macro equals to "2 * pi" constant, fits 53-bit floating point
-	 * mantissa.
-	 */
+/**
+ * The macro equals to "pi" constant, fits 53-bit floating point mantissa.
+ */
 
-	#define M_2PI 6.28318530717958648
-#endif // M_2PI
+#define R8B_PI 3.14159265358979324
 
-#if !defined( M_3PI )
-	/**
-	 * The M_3PI macro equals to "3 * pi" constant, fits 53-bit floating point
-	 * mantissa.
-	 */
+/**
+ * The R8B_2PI macro equals to "2 * pi" constant, fits 53-bit floating point
+ * mantissa.
+ */
 
-	#define M_3PI 9.42477796076937972
-#endif // M_3PI
+#define R8B_2PI 6.28318530717958648
+
+/**
+ * The R8B_3PI macro equals to "3 * pi" constant, fits 53-bit floating point
+ * mantissa.
+ */
+
+#define R8B_3PI 9.42477796076937972
+
+/**
+ * The R8B_PId2 macro equals to "pi divided by 2" constant, fits 53-bit
+ * floating point mantissa.
+ */
+
+#define R8B_PId2 1.57079632679489662
 
 /**
  * A special macro that defines empty copy-constructor and copy operator with
@@ -267,7 +164,7 @@ public:
 	 * @return Pointer to object.
 	 */
 
-	void* operator new( size_t n, void* p )
+	void* operator new( size_t, void* p )
 	{
 		return( p );
 	}
@@ -362,6 +259,21 @@ public:
 };
 
 /**
+ * This function forces the provided "ptr" pointer to be aligned to
+ * "align" bytes. Works with power-of-2 alignments only.
+ *
+ * @param ptr Pointer to align.
+ * @param align Alignment, in bytes, power-of-2.
+ * @tparam T Pointer's element type.
+ */
+
+template< typename T >
+inline T* alignptr( T* const ptr, const uintptr_t align )
+{
+	return( (T*) (( (uintptr_t) ptr + align - 1 ) & ~( align - 1 )));
+}
+
+/**
  * @brief Templated memory buffer class for element buffers of fixed capacity.
  *
  * Fixed memory buffer object. Supports allocation of a fixed amount of
@@ -373,17 +285,21 @@ public:
  * This class manages memory space only - it does not perform element class
  * construction nor destruction operations.
  *
- * @param T The class of the stored elements (e.g. "double").
+ * This class applies 64-byte memory address alignment to the allocated data
+ * block.
+ *
+ * @tparam T The type of the stored elements (e.g. "double").
  */
 
-template< class T >
+template< typename T >
 class CFixedBuffer : public R8B_MEMALLOCCLASS
 {
 	R8BNOCTOR( CFixedBuffer );
 
 public:
 	CFixedBuffer()
-		: Data( NULL )
+		: Data0( NULL )
+		, Data( NULL )
 	{
 	}
 
@@ -398,14 +314,15 @@ public:
 	{
 		R8BASSERT( Capacity > 0 || Capacity == 0 );
 
-		Data = (T*) allocmem( Capacity * sizeof( T ));
+		Data0 = allocmem( Capacity * sizeof( T ) + Alignment );
+		Data = (T*) alignptr( Data0, Alignment );
 
-		R8BASSERT( Data != NULL || Capacity == 0 );
+		R8BASSERT( Data0 != NULL || Capacity == 0 );
 	}
 
 	~CFixedBuffer()
 	{
-		freemem( Data );
+		freemem( Data0 );
 	}
 
 	/**
@@ -419,10 +336,44 @@ public:
 	{
 		R8BASSERT( Capacity > 0 || Capacity == 0 );
 
-		freemem( Data );
-		Data = (T*) allocmem( Capacity * sizeof( T ));
+		freemem( Data0 );
+		Data0 = allocmem( Capacity * sizeof( T ) + Alignment );
+		Data = (T*) alignptr( Data0, Alignment );
 
-		R8BASSERT( Data != NULL || Capacity == 0 );
+		R8BASSERT( Data0 != NULL || Capacity == 0 );
+	}
+
+	/**
+	 * Function reallocates memory so that the specified number of elements of
+	 * type T can be stored in *this buffer object. Previously allocated data
+	 * is copied to the new memory buffer.
+	 *
+	 * @param PrevCapacity Previous capacity of *this buffer.
+	 * @param NewCapacity Storage for this number of elements to allocate.
+	 */
+
+	void realloc( const int PrevCapacity, const int NewCapacity )
+	{
+		R8BASSERT( PrevCapacity >= 0 );
+		R8BASSERT( NewCapacity >= 0 );
+
+		void* const NewData0 = allocmem( NewCapacity * sizeof( T ) +
+			Alignment );
+
+		T* const NewData = (T*) alignptr( NewData0, Alignment );
+		const size_t CopySize = ( PrevCapacity > NewCapacity ?
+			NewCapacity : PrevCapacity ) * sizeof( T );
+
+		if( CopySize > 0 )
+		{
+			memcpy( NewData, Data, CopySize );
+		}
+
+		freemem( Data0 );
+		Data0 = NewData0;
+		Data = NewData;
+
+		R8BASSERT( Data0 != NULL || NewCapacity == 0 );
 	}
 
 	/**
@@ -431,7 +382,8 @@ public:
 
 	void free()
 	{
-		freemem( Data );
+		freemem( Data0 );
+		Data0 = NULL;
 		Data = NULL;
 	}
 
@@ -456,7 +408,12 @@ public:
 	}
 
 private:
-	T* Data; ///< Element buffer pointer.
+	static const size_t Alignment = 64; ///< Buffer address alignment, in
+		///< bytes.
+		///<
+	void* Data0; ///< Buffer pointer, original unaligned.
+		///<
+	T* Data; ///< Element buffer pointer, aligned.
 		///<
 };
 
@@ -467,7 +424,7 @@ private:
  * should be deleted together with the "keeper" by calling object's "delete"
  * operator.
  *
- * @param T Pointer type to operate with, must include the asterisk (e.g.
+ * @tparam T Pointer type to operate with, must include the asterisk (e.g.
  * "CDSPFIRFilter*").
  */
 
@@ -486,6 +443,7 @@ public:
 	 * Constructor assigns a pointer to object to *this keeper.
 	 *
 	 * @param aObject Pointer to object to keep, can be NULL.
+	 * @tparam T2 Object's pointer type.
 	 */
 
 	template< class T2 >
@@ -504,6 +462,7 @@ public:
 	 * keeped pointer will be reset and object deleted.
 	 *
 	 * @param aObject Pointer to object to keep, can be NULL.
+	 * @tparam T2 Object's pointer type.
 	 */
 
 	template< class T2 >
@@ -576,28 +535,24 @@ class CSyncObject
 public:
 	CSyncObject()
 	{
-		#if defined( R8B_WIN )
-			#if ! WINAPI_FAMILY_PARTITION( WINAPI_PARTITION_DESKTOP )
-				InitializeCriticalSectionEx( &CritSec, 4000, 0 );
-			#else
-				InitializeCriticalSectionAndSpinCount( &CritSec, 4000 );
-			#endif
-		#else // R8B_WIN
+		#if defined( _WIN32 )
+			InitializeCriticalSectionAndSpinCount( &CritSec, 4000 );
+		#else // defined( _WIN32 )
 			pthread_mutexattr_t MutexAttrs;
 			pthread_mutexattr_init( &MutexAttrs );
 			pthread_mutexattr_settype( &MutexAttrs, PTHREAD_MUTEX_RECURSIVE );
 			pthread_mutex_init( &Mutex, &MutexAttrs );
 			pthread_mutexattr_destroy( &MutexAttrs );
-		#endif // R8B_WIN
+		#endif // defined( _WIN32 )
 	}
 
 	~CSyncObject()
 	{
-		#if defined( R8B_WIN )
+		#if defined( _WIN32 )
 			DeleteCriticalSection( &CritSec );
-		#else // R8B_WIN
+		#else // defined( _WIN32 )
 			pthread_mutex_destroy( &Mutex );
-		#endif // R8B_WIN
+		#endif // defined( _WIN32 )
 	}
 
 	/**
@@ -607,11 +562,11 @@ public:
 
 	void acquire()
 	{
-		#if defined( R8B_WIN )
+		#if defined( _WIN32 )
 			EnterCriticalSection( &CritSec );
-		#else // R8B_WIN
+		#else // defined( _WIN32 )
 			pthread_mutex_lock( &Mutex );
-		#endif // R8B_WIN
+		#endif // defined( _WIN32 )
 	}
 
 	/**
@@ -621,22 +576,22 @@ public:
 
 	void release()
 	{
-		#if defined( R8B_WIN )
+		#if defined( _WIN32 )
 			LeaveCriticalSection( &CritSec );
-		#else // R8B_WIN
+		#else // defined( _WIN32 )
 			pthread_mutex_unlock( &Mutex );
-		#endif // R8B_WIN
+		#endif // defined( _WIN32 )
 	}
 
 private:
-	#if defined( R8B_WIN )
+	#if defined( _WIN32 )
 		CRITICAL_SECTION CritSec; ///< Standard Windows critical section
 			///< structure.
 			///<
-	#else // R8B_WIN
+	#else // defined( _WIN32 )
 		pthread_mutex_t Mutex; ///< pthread.h mutex object.
 			///<
-	#endif // R8B_WIN
+	#endif // defined( _WIN32 )
 };
 
 /**
@@ -718,64 +673,93 @@ protected:
 /**
  * @brief Sine signal generator class.
  *
- * Class implements sine signal generator with optional biasing.
+ * Class implements sine signal generator without biasing.
  */
 
 class CSineGen
 {
 public:
+	CSineGen()
+	{
+	}
+
 	/**
-	 * Function initializes *this sine signal generator.
+	 * Constructor initializes *this sine signal generator, with unity gain
+	 * output.
 	 *
 	 * @param si Sine function increment, in radians.
-	 * @param g Overall gain. If biasing is not planned to be used, this value
-	 * should be twice as high.
-	 * @param ph Starting phase, in radians. Add 0.5 * M_PI for cosine
-	 * function.
+	 * @param ph Starting phase, in radians. Add R8B_PId2 for cosine function.
 	 */
 
-	void init( const double si, const double g,
-		const double ph = -0.5 * M_PI )
+	CSineGen( const double si, const double ph )
+		: svalue1( sin( ph ))
+		, svalue2( sin( ph - si ))
+		, sincr( 2.0 * cos( si ))
 	{
-		bias = 0.5 * g;
-		svalue1 = sin( ph ) * bias;
-		svalue2 = sin( ph - si ) * bias;
+	}
+
+	/**
+	 * Constructor initializes *this sine signal generator.
+	 *
+	 * @param si Sine function increment, in radians.
+	 * @param ph Starting phase, in radians. Add R8B_PId2 for cosine function.
+	 * @param g The overall gain factor, 1.0 for unity gain (-1.0 to 1.0
+	 * amplitude).
+	 */
+
+	CSineGen( const double si, const double ph, const double g )
+		: svalue1( sin( ph ) * g )
+		, svalue2( sin( ph - si ) * g )
+		, sincr( 2.0 * cos( si ))
+	{
+	}
+
+	/**
+	 * Function initializes *this sine signal generator, with unity gain
+	 * output.
+	 *
+	 * @param si Sine function increment, in radians.
+	 * @param ph Starting phase, in radians. Add R8B_PId2 for cosine function.
+	 */
+
+	void init( const double si, const double ph )
+	{
+		svalue1 = sin( ph );
+		svalue2 = sin( ph - si );
 		sincr = 2.0 * cos( si );
 	}
 
 	/**
-	 * @return Next value of the sine function, with biasing.
+	 * Function initializes *this sine signal generator.
+	 *
+	 * @param si Sine function increment, in radians.
+	 * @param ph Starting phase, in radians. Add R8B_PId2 for cosine function.
+	 * @param g The overall gain factor, 1.0 for unity gain (-1.0 to 1.0
+	 * amplitude).
 	 */
 
-	double genBias()
+	void init( const double si, const double ph, const double g )
 	{
-		const double r = svalue1 + bias;
-
-		const double tmp = svalue1;
-		svalue1 = sincr * svalue1 - svalue2;
-		svalue2 = tmp;
-
-		return( r );
+		svalue1 = sin( ph ) * g;
+		svalue2 = sin( ph - si ) * g;
+		sincr = 2.0 * cos( si );
 	}
 
 	/**
 	 * @return Next value of the sine function, without biasing.
 	 */
 
-	double gen()
+	double generate()
 	{
-		const double r = svalue1;
+		const double res = svalue1;
 
-		const double tmp = svalue1;
-		svalue1 = sincr * svalue1 - svalue2;
-		svalue2 = tmp;
+		svalue1 = sincr * res - svalue2;
+		svalue2 = res;
 
-		return( r );
+		return( res );
 	}
 
 private:
-	double bias; ///< Value bias.
-		///<
 	double svalue1; ///< Current sine value.
 		///<
 	double svalue2; ///< Previous sine value.
@@ -793,7 +777,7 @@ private:
 
 inline int getBitOccupancy( const int v )
 {
-	static const char OccupancyTable[] =
+	static const uint8_t OccupancyTable[] =
 	{
 		1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
 		5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -813,57 +797,73 @@ inline int getBitOccupancy( const int v )
 		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8
 	};
 
-	int t, tt;
-	tt = v >> 16;
+	const int tt = v >> 16;
 
 	if( tt != 0 )
 	{
-		return(( t = v >> 24 ) ? 24 + OccupancyTable[ t ] :
-			16 + OccupancyTable[ tt & 0xFF ]);
+		const int t = v >> 24;
+
+		return( t != 0 ? 24 + OccupancyTable[ t & 0xFF ] :
+			16 + OccupancyTable[ tt ]);
 	}
 	else
 	{
-		return(( t = v >> 8 ) ? 8 + OccupancyTable[ t ] :
-			OccupancyTable[ v ]);
+		const int t = v >> 8;
+
+		return( t != 0 ? 8 + OccupancyTable[ t ] : OccupancyTable[ v ]);
 	}
 }
 
 /**
  * Function calculates frequency response of the specified FIR filter at the
- * specified circular frequency.
+ * specified circular frequency. Phase can be calculated as atan2( im, re ).
  *
  * @param flt FIR filter's coefficients.
  * @param fltlen Number of coefficients (taps) in the filter.
- * @param th Circular frequency (0..pi).
+ * @param th Circular frequency [0; pi].
  * @param[out] re0 Resulting real part of the complex frequency response.
  * @param[out] im0 Resulting imaginary part of the complex frequency response.
+ * @param fltlat Filter's latency, in samples.
  */
 
 inline void calcFIRFilterResponse( const double* flt, int fltlen,
-	const double th, double& re0, double& im0 )
+	const double th, double& re0, double& im0, const int fltlat = 0 )
 {
-	double svalue1 = 0.0;
-	double svalue2 = sin( -th );
 	const double sincr = 2.0 * cos( th );
-	double cvalue1 = 1.0;
-	double cvalue2 = sin( M_PI * 0.5 - th );
+	double cvalue1;
+	double svalue1;
+
+	if( fltlat == 0 )
+	{
+		cvalue1 = 1.0;
+		svalue1 = 0.0;
+	}
+	else
+	{
+		cvalue1 = cos( -fltlat * th );
+		svalue1 = sin( -fltlat * th );
+	}
+
+	double cvalue2 = cos( -( fltlat + 1 ) * th );
+	double svalue2 = sin( -( fltlat + 1 ) * th );
+
 	double re = 0.0;
 	double im = 0.0;
 
 	while( fltlen > 0 )
 	{
-		re += svalue1 * flt[ 0 ];
-		im += cvalue1 * flt[ 0 ];
+		re += cvalue1 * flt[ 0 ];
+		im += svalue1 * flt[ 0 ];
 		flt++;
 		fltlen--;
 
-		double tmp = svalue1;
-		svalue1 = sincr * svalue1 - svalue2;
-		svalue2 = tmp;
-
-		tmp = cvalue1;
+		double tmp = cvalue1;
 		cvalue1 = sincr * cvalue1 - cvalue2;
 		cvalue2 = tmp;
+
+		tmp = svalue1;
+		svalue1 = sincr * svalue1 - svalue2;
+		svalue2 = tmp;
 	}
 
 	re0 = re;
@@ -877,7 +877,7 @@ inline void calcFIRFilterResponse( const double* flt, int fltlen,
  *
  * @param flt FIR filter's coefficients.
  * @param fltlen Number of coefficients (taps) in the filter.
- * @param th Circular frequency (0..pi).
+ * @param th Circular frequency [0; pi].
  * @param[out] re Resulting real part of the complex frequency response.
  * @param[out] im Resulting imaginary part of the complex frequency response.
  * @param[out] gd Resulting group delay at the specified frequency, in
@@ -902,9 +902,9 @@ inline void calcFIRFilterResponseAndGroupDelay( const double* const flt,
 		ths[ 0 ] = 0.0;
 	}
 
-	if( ths[ 1 ] > M_PI )
+	if( ths[ 1 ] > R8B_PI )
 	{
-		ths[ 1 ] = M_PI;
+		ths[ 1 ] = R8B_PI;
 	}
 
 	double ph1[ Count ];
@@ -919,20 +919,20 @@ inline void calcFIRFilterResponseAndGroupDelay( const double* const flt,
 		ph1[ i ] = atan2( im1, re1 );
 	}
 
-	if( fabs( ph1[ 1 ] - ph1[ 0 ]) > M_PI )
+	if( fabs( ph1[ 1 ] - ph1[ 0 ]) > R8B_PI )
 	{
 		if( ph1[ 1 ] > ph1[ 0 ])
 		{
-			ph1[ 1 ] -= M_2PI;
+			ph1[ 1 ] -= R8B_2PI;
 		}
 		else
 		{
-			ph1[ 1 ] += M_2PI;
+			ph1[ 1 ] += R8B_2PI;
 		}
 	}
 
 	const double thd = ths[ 1 ] - ths[ 0 ];
-	gd = ( ph1[ 1 ] - ph1[ 0 ]) / -thd;
+	gd = ( ph1[ 1 ] - ph1[ 0 ]) / thd;
 }
 
 /**
@@ -989,7 +989,7 @@ inline void normalizeFIRFilter( double* const p, const int l,
  * @param x4 Point at x+4 position.
  */
 
-inline void calcSpline3p8Coeffs( double* c, const double xm3,
+inline void calcSpline3p8Coeffs( double* const c, const double xm3,
 	const double xm2, const double xm1, const double x0, const double x1,
 	const double x2, const double x3, const double x4 )
 {
@@ -1007,7 +1007,7 @@ inline void calcSpline3p8Coeffs( double* c, const double xm3,
 /**
  * Function calculates coefficients used to calculate 2rd order spline
  * (polynomial) on the equidistant lattice, using 8 points. This function is
- * based on the calcSpline3Coeffs8() function, but without the 3rd order
+ * based on the calcSpline3p8Coeffs() function, but without the 3rd order
  * coefficient.
  *
  * @param[out] c Output coefficients buffer, length = 3.
@@ -1021,7 +1021,7 @@ inline void calcSpline3p8Coeffs( double* c, const double xm3,
  * @param x4 Point at x+4 position.
  */
 
-inline void calcSpline2p8Coeffs( double* c, const double xm3,
+inline void calcSpline2p8Coeffs( double* const c, const double xm3,
 	const double xm2, const double xm1, const double x0, const double x1,
 	const double x2, const double x3, const double x4 )
 {
@@ -1033,15 +1033,53 @@ inline void calcSpline2p8Coeffs( double* c, const double xm3,
 		29.0 * ( xm2 + x2 ) - 167.0 * x0 ) / 76.0;
 }
 
+/**
+ * Function calculates coefficients used to calculate 3rd order segment
+ * interpolation polynomial on the equidistant lattice, using 4 points.
+ *
+ * @param[out] c Output coefficients buffer, length = 4.
+ * @param[in] y Equidistant point values. Value at offset 1 corresponds to
+ * x=0 point.
+ */
+
+inline void calcSpline3p4Coeffs( double* const c, const double* const y )
+{
+	c[ 0 ] = y[ 1 ];
+	c[ 1 ] = 0.5 * ( y[ 2 ] - y[ 0 ]);
+	c[ 2 ] = y[ 0 ] - 2.5 * y[ 1 ] + y[ 2 ] + y[ 2 ] - 0.5 * y[ 3 ];
+	c[ 3 ] = 0.5 * ( y[ 3 ] - y[ 0 ] ) + 1.5 * ( y[ 1 ] - y[ 2 ]);
+}
+
+/**
+ * Function calculates coefficients used to calculate 3rd order segment
+ * interpolation polynomial on the equidistant lattice, using 6 points.
+ *
+ * @param[out] c Output coefficients buffer, length = 4.
+ * @param[in] y Equidistant point values. Value at offset 2 corresponds to
+ * x=0 point.
+ */
+
+inline void calcSpline3p6Coeffs( double* const c, const double* const y )
+{
+	c[ 0 ] = y[ 2 ];
+	c[ 1 ] = ( 11.0 * ( y[ 3 ] - y[ 1 ]) + 2.0 * ( y[ 0 ] - y[ 4 ])) / 14.0;
+	c[ 2 ] = ( 20.0 * ( y[ 1 ] + y[ 3 ]) + 2.0 * y[ 5 ] - 4.0 * y[ 0 ] -
+		7.0 * y[ 4 ] - 31.0 * y[ 2 ]) / 14.0;
+
+	c[ 3 ] = ( 17.0 * ( y[ 2 ] - y[ 3 ]) + 9.0 * ( y[ 4 ] - y[ 1 ]) +
+		2.0 * ( y[ 0 ] - y[ 5 ])) / 14.0;
+}
+
 #if !defined( min )
 
 /**
  * @param v1 Value 1.
  * @param v2 Value 2.
+ * @tparam T Values' type.
  * @return The minimum of 2 values.
  */
 
-template< class T >
+template< typename T >
 inline T min( const T& v1, const T& v2 )
 {
 	return( v1 < v2 ? v1 : v2 );
@@ -1054,10 +1092,11 @@ inline T min( const T& v1, const T& v2 )
 /**
  * @param v1 Value 1.
  * @param v2 Value 2.
+ * @tparam T Values' type.
  * @return The maximum of 2 values.
  */
 
-template< class T >
+template< typename T >
 inline T max( const T& v1, const T& v2 )
 {
 	return( v1 > v2 ? v1 : v2 );
@@ -1137,7 +1176,8 @@ inline double asinh( const double v )
 /**
  * @param x Input value.
  * @return Calculated zero-th order modified Bessel function of the first kind
- * of the input value. Approximate value.
+ * of the input value. Approximate value. Coefficients by Abramowitz and
+ * Stegun.
  */
 
 inline double besselI0( const double x )
@@ -1163,11 +1203,5 @@ inline double besselI0( const double x )
 }
 
 } // namespace r8b
-
-#if defined( __clang__ ) || defined( __GCC__ )
-	#pragma GCC diagnostic pop
-#elif defined(_MSC_VER)
-	#pragma warning(pop)
-#endif
 
 #endif // R8BBASE_INCLUDED
