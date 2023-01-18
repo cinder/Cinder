@@ -118,7 +118,7 @@ ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceR
 	if( sourceRef ) {
 		imageRef = std::shared_ptr<CGImage>( ::CGImageSourceCreateImageAtIndex( sourceRef.get(), options.getIndex(), optionsDict.get() ), CGImageRelease );
 		if( ! imageRef )
-			throw ImageIoExceptionFailedLoad( "Core Graphics coult not create image data." );
+			throw ImageIoExceptionFailedLoad( "Core Graphics could not create image data." );
 	}
 	else
 		throw ImageIoExceptionFailedLoad( "Failed to load CGImageSource." );
