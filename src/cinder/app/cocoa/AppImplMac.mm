@@ -106,7 +106,7 @@ using namespace cinder::app;
 	return self;
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)notification
+- (void)applicationWillFinishLaunching:(NSNotification *)notification
 {
 	mApp->getRenderer()->makeCurrentContext();
 
@@ -127,6 +127,20 @@ using namespace cinder::app;
 	// when available, make the first window the active window
 	[self setActiveWindow:[mWindows firstObject]];
 	[self startAnimationTimer];
+}
+
+- (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename
+{
+    if (!mActiveWindow) {
+        return NO;
+    }
+		
+    std::vector<fs::path> files = {std::string([filename UTF8String])};
+    FileDropEvent event([self getWindow], 0, 0, files);
+    
+	[self getWindow]->emitFileDrop(&event);
+
+    return YES;
 }
 
 - (void)startAnimationTimer
