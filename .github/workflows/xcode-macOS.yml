@@ -1,0 +1,30 @@
+name: Xcode macOS
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: macos-11
+    strategy:
+      matrix:
+        config: [Debug, Release]
+    
+    steps:
+      - name: Clone
+        uses: actions/checkout@v3
+
+      - name: Build
+        working-directory: ${{github.workspace}}
+        run: xcodebuild -project proj/xcode/cinder.xcodeproj -target cinder -configuration ${{matrix.config}}
+
+      - name: Build Unit Tests
+        working-directory: ${{github.workspace}}/test/unit
+        run: xcodebuild -project xcode/UnitTests.xcodeproj -configuration ${{matrix.config}}
+
+      - name: Run Unit Tests
+        working-directory: ${{github.workspace}}/test/unit
+        run: ./xcode/build/${{matrix.config}}/CinderUnitTests

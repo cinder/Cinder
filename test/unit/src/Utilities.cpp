@@ -13,7 +13,7 @@ using namespace ci;
 struct CustomType {
 	CustomType() {}
 	CustomType( int v ) : var( v ) {}
-	bool operator==( const CustomType &rhs ) { return rhs.var == var; }
+	bool operator==( const CustomType &rhs ) const { return rhs.var == var; }
 
 	int var;
 };

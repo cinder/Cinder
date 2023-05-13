@@ -6,6 +6,8 @@
 #include "cinder/app/App.h"
 #include "catch.hpp"
 
+#include <string>
+
 using namespace ci;
 using namespace std;
 using namespace ci::app;
@@ -30,9 +32,9 @@ TEST_CASE("Unicode")
 		// these files should be identical except for their encoding
 		// includes codes > U+0xFFFF
 		// To see the parsed text in terminal is to run the tests with the `-s` flag to show successful results.
-		auto u8 = loadStringFromFile<string>( loadAsset( "test_text_utf8.txt" ) );
-		auto u16 = loadStringFromFile<u16string>( loadAsset( "test_text_utf16.txt" ) );
-		auto u32 = loadStringFromFile<u32string>( loadAsset( "test_text_utf32.txt" ) );
+		string u8 = loadStringFromFile<string>( loadAsset( "test_text_utf8.txt" ) );
+		u16string u16 = loadStringFromFile<u16string>( loadAsset( "test_text_utf16.txt" ) );
+		u32string u32 = loadStringFromFile<u32string>( loadAsset( "test_text_utf32.txt" ) );
 		// ->utf8
 		REQUIRE( u8 == toUtf8( u16 ) );
 		REQUIRE( u8 == toUtf8( u32 ) );
