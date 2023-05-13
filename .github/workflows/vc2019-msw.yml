@@ -1,4 +1,4 @@
-name: CMake
+name: VC2019
 
 on:
   push:
