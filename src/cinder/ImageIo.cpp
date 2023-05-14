@@ -175,7 +175,7 @@ void ImageSource::rowFuncSourceRgb( ImageTargetRef target, int32_t row, const vo
 	
 	if( TCM == CM_RGB ) {
 		if( ALPHA ) {
-			for( int32_t c = 0; c < width; c++ ) {
+			for( int32_t c = 0; c < width; c++ ) { // both source and target have alpha
 				targetData[mRowFuncTargetRed]	= CHANTRAIT<TD>::convert( sourceData[mRowFuncSourceRed] );
 				targetData[mRowFuncTargetGreen]	= CHANTRAIT<TD>::convert( sourceData[mRowFuncSourceGreen] );
 				targetData[mRowFuncTargetBlue]	= CHANTRAIT<TD>::convert( sourceData[mRowFuncSourceBlue] );
@@ -185,13 +185,25 @@ void ImageSource::rowFuncSourceRgb( ImageTargetRef target, int32_t row, const vo
 			}
 		}
 		else {
-			for( int32_t c = 0; c < width; c++ ) {
-				targetData[mRowFuncTargetRed]	= CHANTRAIT<TD>::convert( sourceData[mRowFuncSourceRed] );
-				targetData[mRowFuncTargetGreen]	= CHANTRAIT<TD>::convert( sourceData[mRowFuncSourceGreen] );
-				targetData[mRowFuncTargetBlue]	= CHANTRAIT<TD>::convert( sourceData[mRowFuncSourceBlue] );
-				targetData += mRowFuncTargetInc;
-				sourceData += mRowFuncSourceInc;
-			}			
+			if( mRowFuncTargetAlpha >= 0 ) { // target has alpha but source does not; force 'max' value for target alpha
+				for( int32_t c = 0; c < width; c++ ) {
+					targetData[mRowFuncTargetRed]	= CHANTRAIT<TD>::convert( sourceData[mRowFuncSourceRed] );
+					targetData[mRowFuncTargetGreen]	= CHANTRAIT<TD>::convert( sourceData[mRowFuncSourceGreen] );
+					targetData[mRowFuncTargetBlue]	= CHANTRAIT<TD>::convert( sourceData[mRowFuncSourceBlue] );
+					targetData[mRowFuncTargetAlpha] = CHANTRAIT<TD>::max();
+					targetData += mRowFuncTargetInc;
+					sourceData += mRowFuncSourceInc;
+				}
+			}
+			else {
+				for( int32_t c = 0; c < width; c++ ) { // neither source nor target have alpha
+					targetData[mRowFuncTargetRed]	= CHANTRAIT<TD>::convert( sourceData[mRowFuncSourceRed] );
+					targetData[mRowFuncTargetGreen]	= CHANTRAIT<TD>::convert( sourceData[mRowFuncSourceGreen] );
+					targetData[mRowFuncTargetBlue]	= CHANTRAIT<TD>::convert( sourceData[mRowFuncSourceBlue] );
+					targetData += mRowFuncTargetInc;
+					sourceData += mRowFuncSourceInc;
+				}
+			}
 		}		
 	}
 	else if( TCM == CM_GRAY ) {
