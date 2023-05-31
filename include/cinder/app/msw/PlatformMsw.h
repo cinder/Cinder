@@ -68,12 +68,16 @@ class CI_API PlatformMsw : public Platform {
 	//! Returns the Display which corresponds to \a hMonitor. Returns main display on failure.
 	DisplayRef						findDisplayFromHmonitor( HMONITOR hMonitor );
 
+	//! Set the windows specific HWND, needed for some things like file dialogs.
+	void setHwnd( HWND hwnd )	{ mHwnd = hwnd; }
+
   private:
 	std::unique_ptr<std::ostream>	mOutputStream;
 	bool							mDirectConsoleToCout;
 
 	bool							mDisplaysInitialized;
 	std::vector<DisplayRef>			mDisplays;
+	HWND							mHwnd = nullptr;
 };
 
 //! MSW-specific Exception for failed resource loading, reports windows resource id and type

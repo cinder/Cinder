@@ -43,6 +43,12 @@ AppMsw::AppMsw()
 	enablePowerManagement( settings->isPowerManagementEnabled() ); // TODO: consider moving to common method
 
 	mImpl.reset( new AppImplMswBasic( this, *settings ) );
+
+	auto platform = PlatformMsw::get();
+	if( platform && getRenderer() ) {
+		auto hwnd = getRenderer()->getHwnd();
+		platform->setHwnd( hwnd );
+	}
 }
 
 AppMsw::~AppMsw()
