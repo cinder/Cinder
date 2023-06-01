@@ -26,7 +26,6 @@
 #include "cinder/Unicode.h"
 #include "cinder/msw/StackWalker.h"
 #include "cinder/msw/CinderMsw.h"
-#include "cinder/app/AppBase.h"
 #include "cinder/ImageSourceFileWic.h"
 #include "cinder/ImageTargetFileWic.h"
 #include "cinder/ImageSourceFileRadiance.h"
@@ -601,16 +600,12 @@ const std::vector<DisplayRef>& app::PlatformMsw::getDisplays()
 	return mDisplays;
 }
 
-void app::PlatformMsw::refreshDisplays()
+void app::PlatformMsw::refreshDisplays( vector<DisplayRef> *connectedDisplays, vector<DisplayRef> *changedDisplays, vector<DisplayRef> *disconnectedDisplays )
 {
-	// We need to do this with all this indirection so that getDisplays() is valid once we're emitting signals
+	// We need to do this with all this indirection so that getDisplays() is valid once we're emitting signals (from AppImplMswBasic::refreshDisplays())
 	vector<DisplayRef> newDisplays;
 
 	::EnumDisplayMonitors( NULL, NULL, DisplayMsw::enumMonitorProc, (LPARAM)&newDisplays );
-
-	vector<DisplayRef> connectedDisplays; // displays we need to issue a connected signal to
-	vector<DisplayRef> changedDisplays; // displays we need to issue a changed signal to
-	vector<DisplayRef> disconnectedDisplays; // displays we need to issue a disconnected signal to
 
 	for( auto &display : mDisplays )
 		reinterpret_cast<DisplayMsw*>( display.get() )->mVisitedFlag = false;
@@ -625,7 +620,7 @@ void app::PlatformMsw::refreshDisplays()
 			if( oldDisplay->mMonitor == newDisplay->mMonitor ) {
 				// found this display; see if anything changed
 				if( ( oldDisplay->mArea != newDisplay->mArea ) || ( oldDisplay->mBitsPerPixel != newDisplay->mBitsPerPixel ) || ( oldDisplay->mContentScale != newDisplay->mContentScale ) )
-					changedDisplays.push_back( *displayIt );
+					changedDisplays->push_back( *displayIt );
 				*oldDisplay = *newDisplay;
 				oldDisplay->mVisitedFlag = true;
 				found = true;
@@ -634,7 +629,7 @@ void app::PlatformMsw::refreshDisplays()
 		}
 		if( ! found ) {
 			newDisplay->mVisitedFlag = true; // don't want to later consider this display disconnected
-			connectedDisplays.push_back( *newDisplayIt );
+			connectedDisplays->push_back( *newDisplayIt );
 			mDisplays.push_back( *newDisplayIt );
 		}
 	}
@@ -642,21 +637,11 @@ void app::PlatformMsw::refreshDisplays()
 	// deal with any displays which have been disconnected
 	for( auto displayIt = mDisplays.begin(); displayIt != mDisplays.end(); ) {	
 		if( ! reinterpret_cast<DisplayMsw*>( displayIt->get() )->mVisitedFlag ) {
-			disconnectedDisplays.push_back( *displayIt );
+			disconnectedDisplays->push_back( *displayIt );
 			displayIt = mDisplays.erase( displayIt );
 		}
 		else
 			++displayIt;
-	}
-
-	// emit signals
-	if( app::AppBase::get() ) {
-		for( auto &display : connectedDisplays )
-			app::AppBase::get()->emitDisplayConnected( display );
-		for( auto &display : changedDisplays )
-			app::AppBase::get()->emitDisplayChanged( display );
-		for( auto &display : disconnectedDisplays )
-			app::AppBase::get()->emitDisplayDisconnected( display );
 	}
 }
 

@@ -73,8 +73,7 @@ void AppImplMswBasic::run()
 	while( ! mShouldQuit ) {
 		// all of our Windows will have marked this as true if the user has unplugged, plugged or modified a Monitor
 		if( mNeedsToRefreshDisplays ) {
-			mNeedsToRefreshDisplays = false;
-			PlatformMsw::get()->refreshDisplays();
+			refreshDisplays();
 			// if this app is high-DPI aware, we need to issue resizes with possible contentScale changes
 			if( getHighDensityDisplayEnabled() )
 				for( auto &window : mWindows )
@@ -237,6 +236,26 @@ void AppImplMswBasic::destroyBlankingWindows()
 		win->destroy();
 
 	mBlankingWindows.clear();
+}
+
+void AppImplMswBasic::refreshDisplays()
+{
+	mNeedsToRefreshDisplays = false;
+
+	vector<DisplayRef> connectedDisplays; // displays we need to issue a connected signal to
+	vector<DisplayRef> changedDisplays; // displays we need to issue a changed signal to
+	vector<DisplayRef> disconnectedDisplays; // displays we need to issue a disconnected signal to
+	PlatformMsw::get()->refreshDisplays( &connectedDisplays, &changedDisplays, &disconnectedDisplays );
+
+	// emit signals
+	if( app::AppBase::get() ) {
+		for( auto &display : connectedDisplays )
+			app::AppBase::get()->emitDisplayConnected( display );
+		for( auto &display : changedDisplays )
+			app::AppBase::get()->emitDisplayChanged( display );
+		for( auto &display : disconnectedDisplays )
+			app::AppBase::get()->emitDisplayDisconnected( display );
+	}
 }
 
 void AppImplMswBasic::quit()

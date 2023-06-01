@@ -64,7 +64,7 @@ class CI_API PlatformMsw : public Platform {
 	void setThreadName( const std::string &name ) override;
 
 	const std::vector<DisplayRef>&	getDisplays() override;
-	void							refreshDisplays();
+	void refreshDisplays( std::vector<DisplayRef> *connectedDisplays, std::vector<DisplayRef> *changedDisplays, std::vector<DisplayRef> *disconnectedDisplays );
 	//! Returns the Display which corresponds to \a hMonitor. Returns main display on failure.
 	DisplayRef						findDisplayFromHmonitor( HMONITOR hMonitor );
 
