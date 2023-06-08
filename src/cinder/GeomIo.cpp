@@ -2022,7 +2022,7 @@ size_t Sphere::getNumIndices() const
 {
 	int numRings, numSegments;
 	numRingsAndSegments( &numRings, &numSegments );
-	return numSegments * numRings * 6;
+	return (numSegments - 1) * (numRings - 1) * 6;
 }
 
 uint8_t Sphere::getAttribDims( Attrib attr ) const
