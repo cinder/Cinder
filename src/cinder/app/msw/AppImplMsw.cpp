@@ -185,7 +185,7 @@ INT CALLBACK getFolderPathBrowseCallbackProc( HWND hwnd, UINT uMsg, LPARAM /* lp
 
 fs::path AppImplMsw::getFolderPath( const fs::path &initialPath )
 {
-	string result;
+	fs::path result;
 
 	::BROWSEINFO bi = { 0 };
 	bi.lParam = reinterpret_cast<LPARAM>( initialPath.c_str() );
@@ -196,7 +196,7 @@ fs::path AppImplMsw::getFolderPath( const fs::path &initialPath )
 		// get the name of the folder
 		TCHAR path[MAX_PATH];
 		if( ::SHGetPathFromIDList( pidl, path ) ) {
-			result = msw::toUtf8String( path );
+			result = path;
 		}
 
 		// free memory used
