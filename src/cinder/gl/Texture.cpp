@@ -1061,7 +1061,7 @@ Texture2d::Texture2d( const Surface16u &surface, Format format )
 #if defined( CINDER_GL_ES )
 	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB, GL_UNSIGNED_SHORT );
 #else
-	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB, GL_UNSIGNED_SHORT );
+	initParams( format, surface.hasAlpha() ? GL_RGBA16 : GL_RGB16, GL_UNSIGNED_SHORT );
 #endif
 
 	setData<uint16_t>( surface, true, 0, ivec2( 0, 0 ) );
@@ -1082,7 +1082,7 @@ Texture2d::Texture2d( const Channel16u &channel, Format format )
 		std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_ONE };
 		format.setSwizzleMask( swizzleMask );
 	}
-	initParams( format, GL_RED, GL_UNSIGNED_SHORT );
+	initParams( format, GL_R16, GL_UNSIGNED_SHORT );
 #endif
 
 	setData<uint16_t>( channel, true, 0, ivec2( 0, 0 ) );
@@ -1120,7 +1120,7 @@ Texture2d::Texture2d( const Channel32f &channel, Format format )
 		std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_ONE };
 		format.setSwizzleMask( swizzleMask );
 	}
-	initParams( format, GL_RED, GL_FLOAT );
+	initParams( format, GL_R32F, GL_FLOAT );
 #endif
 
 	setData<float>( channel, true, 0, ivec2( 0, 0 ) );
