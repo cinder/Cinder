@@ -128,6 +128,9 @@ struct IStreamSndFile {
 struct IStreamMpg123 {
 	static ssize_t read( void* userData, void* ptr, size_t count ) {
 		ci::IStreamCinder* stream = static_cast<ci::IStreamCinder*>( userData );
+		if (stream->isEof()) {
+			return 0;
+		}
 		size_t pos0 = stream->tell();
 		stream->readData( ptr, count );
 		size_t pos1 = stream->tell();
@@ -609,8 +612,7 @@ void SourceFileAudioLoader::performSeek( size_t readPositionFrames )
 
 std::vector<std::string> SourceFileAudioLoader::getSupportedExtensions()
 {
-	std::vector<std::string> result;
-	return result;
+	return { "mp3" };
 }
 
 } } } // namespace cinder::audio::linux
