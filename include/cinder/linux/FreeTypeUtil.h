@@ -35,6 +35,10 @@
 
 #include "cinder/app/App.h"
 
+#ifdef linux
+#	undef linux
+#endif
+
 namespace cinder { namespace linux { namespace ftutil {
 
 class Measure {

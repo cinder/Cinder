@@ -22,6 +22,11 @@
 
 #pragma once
 
+// Fix a bug causing this not to compile
+#if defined(linux)
+#undef linux
+#endif
+
 #if __clang__ 
 	#if ! __has_include( <cstdint> )
 		#error "<cstdint> is missing - Cinder requires libc++ on Mac OS X and iOS"
@@ -32,6 +37,12 @@
 #include "glm/fwd.hpp"
 
 #include <cstdint>
+
+// Fix a compile error where "linux" is defined
+#if defined(linux)
+#define CINDERBOX_REDEFINE_LINUX
+#undef linux
+#endif
 
 //  CINDER_VERSION % 100 is the patch level
 //  CINDER_VERSION / 100 % 1000 is the minor version

@@ -25,6 +25,11 @@
 
 #include "cinder/Cinder.h"
 
+// Fix a bug causing this not to compile
+#if defined(linux)
+#undef linux
+#endif
+
 #if defined( CINDER_MAC )
 	#include "cinder/app/cocoa/AppMac.h"
 	namespace cinder { namespace app {

@@ -23,6 +23,11 @@
 
 #pragma once
 
+// Fix a compile error where "linux" is defined
+#if defined(linux)
+#undef linux
+#endif
+
 // general
 #include "cinder/audio/Buffer.h"
 #include "cinder/audio/Context.h"

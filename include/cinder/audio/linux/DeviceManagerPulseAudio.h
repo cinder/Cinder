@@ -25,6 +25,11 @@
 
 #include "cinder/audio/Device.h"
 
+// Fix a compile error where "linux" is defined
+#if defined(linux)
+#undef linux
+#endif
+
 namespace cinder { namespace audio { namespace linux {
 
 class DeviceManagerPulseAudio : public DeviceManager {
