@@ -9,43 +9,12 @@
  * This is the "configuration" inclusion file for the "r8brain-free-src"
  * sample rate converter. You may redefine the macros here as you see fit.
  *
- * r8brain-free-src Copyright (c) 2013 Aleksey Vaneev
- * See the "License.txt" file for license.
+ * r8brain-free-src Copyright (c) 2013-2021 Aleksey Vaneev
+ * See the "LICENSE" file for license.
  */
 
 #ifndef R8BCONF_INCLUDED
 #define R8BCONF_INCLUDED
-
-#include "cinder/CinderAssert.h"
-
-#if defined( _WIN32 ) || defined( _WIN64 )
-	#define R8B_WIN 1
-#elif defined( __APPLE__ )
-	#define R8B_MAC 1
-#else // defined( __APPLE__ )
-	#define R8B_LNX 1 // Assume Linux (Unix) platform by default.
-#endif // defined( __APPLE__ )
-
-#if !defined( R8B_FLTLEN )
-	/**
-	 * This macro defines the default fractional delay filter length. Macro is
-	 * used by the r8b::CDSPResampler class.
-	 */
-
-	#define R8B_FLTLEN 28
-#endif // !defined( R8B_FLTLEN )
-
-#if !defined( R8B_FLTFRACS )
-	/**
-	 * This macro defines the default number of fractional delay filters that
-	 * are sampled by the filter bank. Macro is used by the r8b::CDSPResampler
-	 * class. In order to get consistent results when resampling to/from
-	 * different sample rates, it is suggested to set this macro to a suitable
-	 * prime number.
-	 */
-
-	#define R8B_FLTFRACS 1733
-#endif // !defined( R8B_FLTFRACS )
 
 #if !defined( R8B_IPP )
 	/**
@@ -71,8 +40,21 @@
 	 * @param e Expression to check.
 	 */
 
-	#define R8BASSERT( e ) CI_ASSERT( e )
+	#define R8BASSERT( e )
 #endif // !defined( R8BASSERT )
+
+#if !defined( R8BCONSOLE )
+	/**
+	 * Console output macro, used to output various resampler status strings,
+	 * including filter design parameters, convolver parameters.
+	 *
+	 * @param e Expression to send to the console, usually consists of a
+	 * standard "printf" format string followed by several parameters
+	 * (__VA_ARGS__).
+	 */
+
+	#define R8BCONSOLE( ... )
+#endif // !defined( R8BCONSOLE )
 
 #if !defined( R8B_BASECLASS )
 	/**
@@ -107,14 +89,88 @@
 	#define R8B_FILTER_CACHE_MAX 96
 #endif // !defined( R8B_FILTER_CACHE_MAX )
 
+#if !defined( R8B_FRACBANK_CACHE_MAX )
+	/**
+	 * This macro specifies the number of whole-number stepping fractional
+	 * delay filter banks kept in the cache at most. The actual number can be
+	 * higher if many different filter banks are in use at the same time. As
+	 * filter banks are usually big objects, it is advisable to keep this
+	 * cache size small.
+	 */
+
+	#define R8B_FRACBANK_CACHE_MAX 12
+#endif // !defined( R8B_FRACBANK_CACHE_MAX )
+
 #if !defined( R8B_FLTTEST )
 	/**
 	 * This macro, when equal to 1, enables fractional delay filter bank
-	 * testing: in this mode the filter bank becomes dynamic member of the
+	 * testing: in this mode the filter bank becomes a dynamic member of the
 	 * CDSPFracInterpolator object instead of being a global static object.
 	 */
 
 	#define R8B_FLTTEST 0
 #endif // !defined( R8B_FLTTEST )
+
+#if !defined( R8B_FASTTIMING )
+	/**
+	 * This macro, when equal to 1, enables a fast interpolation sample
+	 * timing technique. This technique improves interpolation performance
+	 * (by around 10%) at the expense of a minor sample timing drift which is
+	 * on the order of 1e-6 samples per 10 billion output samples. This
+	 * setting does not apply to whole-number stepping, if it is in use, as
+	 * this stepping provides zero timing error without performance impact.
+	 * Also does not apply to the cases when a whole-numbered (2X, 3X, etc.)
+	 * resampling is in the actual use.
+	 */
+
+	#define R8B_FASTTIMING 0
+#endif // !defined( R8B_FASTTIMING )
+
+#if !defined( R8B_EXTFFT )
+	/**
+	 * This macro, when equal to 1, extends length of low-pass filters' FFT
+	 * block by a factor of 2, by zero-padding it. This usually improves the
+	 * overall time performance of the resampler at the expense of a higher
+	 * overall latency (initial processing delay). If such delay is not an
+	 * issue, setting this macro to 1 is preferrable. This macro can only have
+	 * a value of 0 or 1.
+	 */
+
+	#define R8B_EXTFFT 0
+#endif // !defined( R8B_EXTFFT )
+
+#if !defined( R8B_PFFFT )
+	/**
+	 * When defined as 1, enables PFFFT routines which are fast, but which
+	 * are limited to 24-bit precision. May be a good choice for time-series
+	 * interpolation, when stop-band attenuation higher than 120 dB is not
+	 * required.
+	 */
+
+	#define R8B_PFFFT 0
+#endif // !defined( R8B_PFFFT )
+
+#if R8B_PFFFT
+	#define R8B_FLOATFFT 1
+#endif // R8B_PFFFT
+
+#if !defined( R8B_PFFFT_DOUBLE )
+	/**
+	 * When defined as 1, enables PFFFT "double" routines which are fast, and
+	 * which provide the highest precision.
+	 */
+
+	#define R8B_PFFFT_DOUBLE 0
+#endif // !defined( R8B_PFFFT_DOUBLE )
+
+#if !defined( R8B_FLOATFFT )
+	/**
+	 * The R8B_FLOATFFT definition enables double-to-float buffer conversions
+	 * for FFT operations, for algorithms that work with "float" values. This
+	 * macro should not be changed from the default "0" here.
+	 */
+
+	#define R8B_FLOATFFT 0
+#endif // !defined( R8B_FLOATFFT )
 
 #endif // R8BCONF_INCLUDED

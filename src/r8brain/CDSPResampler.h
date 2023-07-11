@@ -1,3 +1,4 @@
+//$ nobt
 //$ nocpp
 
 /**
@@ -8,13 +9,15 @@
  * This file includes the master sample rate converter (resampler) class that
  * combines all elements of this library into a single front-end class.
  *
- * r8brain-free-src Copyright (c) 2013 Aleksey Vaneev
- * See the "License.txt" file for license.
+ * r8brain-free-src Copyright (c) 2013-2022 Aleksey Vaneev
+ * See the "LICENSE" file for license.
  */
 
 #ifndef R8B_CDSPRESAMPLER_INCLUDED
 #define R8B_CDSPRESAMPLER_INCLUDED
 
+#include "CDSPHBDownsampler.h"
+#include "CDSPHBUpsampler.h"
 #include "CDSPBlockConvolver.h"
 #include "CDSPFracInterpolator.h"
 
@@ -34,24 +37,14 @@ namespace r8b {
  *
  * Use the CDSPResampler16 class for 16-bit resampling.
  *
- * Use the CDSPResampler24 class for 24-bit resampling (including 32-bit
- * floating point resampling).
- *
  * Use the CDSPResampler16IR class for 16-bit impulse response resampling.
  *
- * @param CInterpClass Interpolator class that should be used by the
- * resampler. The desired interpolation quality can be defined via the
- * template parameters of the interpolator class. See
- * r8b::CDSPFracInterpolator and r8b::CDSPFracDelayFilterBank for description
- * of the template parameters.
+ * Use the CDSPResampler24 class for 24-bit resampling (including 32-bit
+ * floating point resampling).
  */
 
-template< class CInterpClass =
-	CDSPFracInterpolator< R8B_FLTLEN, R8B_FLTFRACS, 9 > >
-class CDSPResampler : public R8B_BASECLASS
+class CDSPResampler : public CDSPProcessor
 {
-	R8BNOCTOR( CDSPResampler );
-
 public:
 	/**
 	 * Constructor initalizes the resampler object.
@@ -71,7 +64,7 @@ public:
 	 * have to specify a higher ReqAtten value if you need a totally clean
 	 * high-frequency content. On the other hand, it may not be reasonable to
 	 * have a high-frequency content cleaner than the input signal itself: if
-	 * the input signal is 16-bit, setting ReqAtten to 150 will make its
+	 * the input signal is 16-bit, setting ReqAtten to 180 will make its
 	 * high-frequency content 24-bit, but the original part of the signal will
 	 * remain 16-bit.
 	 *
@@ -80,18 +73,15 @@ public:
 	 * @param DstSampleRate Destination signal sample rate. The "power of 2"
 	 * ratios between the source and destination sample rates force resampler
 	 * to use several fast "power of 2" resampling steps, without using
-	 * fractional interpolation at all. Note that the "power of 2" upsampling
-	 * (but not downsampling) requires a lot of buffer memory: e.g. upsampling
-	 * by a factor of 16 requires an intermediate buffer MaxInLen*(16+8)
-	 * samples long. So, when doing the "power of 2" upsampling it is highly
-	 * recommended to do it in small steps, e.g. no more than 256 samples at
-	 * once (also set the MaxInLen to 256).
-	 * @param MaxInLen The maximal planned length of the input buffer (in
+	 * fractional interpolation at all.
+	 * @param aMaxInLen The maximal planned length of the input buffer (in
 	 * samples) that will be passed to the resampler. The resampler relies on
 	 * this value as it allocates intermediate buffers. Input buffers longer
 	 * than this value should never be supplied to the resampler. Note that
-	 * the resampler may use the input buffer itself for intermediate sample
-	 * data storage.
+	 * upsampling produces more samples than was provided on input, so at
+	 * higher upsampling ratios it is advisable to use smaller MaxInLen
+	 * values to reduce memory footprint. When downsampling, a larger MaxInLen
+	 * is suggested in order to increase downsampling performance.
 	 * @param ReqTransBand Required transition band, in percent of the
 	 * spectral space of the input signal (or the output signal if
 	 * downsampling is performed) between filter's -3 dB point and the Nyquist
@@ -104,218 +94,332 @@ public:
 	 * cases, values 2 to 3 can be used in most cases. Values 3 to 4 are
 	 * relaxed settings, but they still offer a flat frequency response up to
 	 * 21kHz with 44.1k source or destination sample rate.
-	 * @param ReqAtten Required stop-band attenuation in decibel, in the range
-	 * CDSPFIRFilter::getLPMinAtten() to CDSPFIRFilter::getLPMaxAtten(),
+	 * @param ReqAtten Required stop-band attenuation in decibel, in the
+	 * range CDSPFIRFilter::getLPMinAtten() to CDSPFIRFilter::getLPMaxAtten(),
 	 * inclusive. The actual attenuation may be 0.40-4.46 dB higher. The
 	 * general formula for selecting the ReqAtten is 6.02 * Bits + 40, where
 	 * "Bits" is the bit resolution (e.g. 16, 24), "40" is an added resolution
-	 * for stationary signals, this value can be decreased to 20 to 10 if the
-	 * signal being resampled is mostly non-stationary (e.g. impulse
-	 * response).
+	 * for dynamic signals; this value can be decreased to 20 to 10 if the
+	 * signal being resampled is non-dynamic (e.g., an impulse response or
+	 * filter, with a non-steep frequency response).
 	 * @param ReqPhase Required filter's phase response. Note that this
 	 * setting does not affect interpolator's phase response which is always
 	 * linear-phase. Also note that if the "power of 2" resampling was engaged
 	 * by the resampler together with the minimum-phase response, the audio
-	 * stream may become fractionally delayed by up to 1 sample, depending on
-	 * the minimum-phase filter's actual fractional delay. If the output
-	 * stream should always start at "time zero" offset with minimum-phase
-	 * filters the UsePower2 should be set to "false". Linear-phase filters
-	 * do not have fractional delay.
-	 * @param UsePower2 "True" if the "power of 2" resampling optimization
-	 * should be used when possible. This value should be set to "false" if
-	 * the access to interpolator is needed in any case (also the source and
-	 * destination sample rates should not be equal).
+	 * stream may become fractionally delayed, depending on the minimum-phase
+	 * filter's actual fractional delay. Linear-phase filters do not have
+	 * fractional delay.
 	 * @see CDSPFIRFilterCache::getLPFilter()
 	 */
 
 	CDSPResampler( const double SrcSampleRate, const double DstSampleRate,
-		const int MaxInLen, const double ReqTransBand = 2.0,
+		const int aMaxInLen, const double ReqTransBand = 2.0,
 		const double ReqAtten = 206.91,
-		const EDSPFilterPhaseResponse ReqPhase = fprLinearPhase,
-		const bool UsePower2 = true )
+		const EDSPFilterPhaseResponse ReqPhase = fprLinearPhase )
+		: StepCapacity( 0 )
+		, StepCount( 0 )
+		, MaxInLen( aMaxInLen )
+		, CurMaxOutLen( aMaxInLen )
+		, LatencyFrac( 0.0 )
 	{
 		R8BASSERT( SrcSampleRate > 0.0 );
 		R8BASSERT( DstSampleRate > 0.0 );
 		R8BASSERT( MaxInLen > 0 );
 
+		R8BCONSOLE( "* CDSPResampler: src=%.1f dst=%.1f len=%i tb=%.1f "
+			"att=%.2f ph=%i\n", SrcSampleRate, DstSampleRate, aMaxInLen,
+			ReqTransBand, ReqAtten, (int) ReqPhase );
+
 		if( SrcSampleRate == DstSampleRate )
 		{
-			ConvCount = 0;
 			return;
 		}
 
-		int SrcSRMult;
-		int SrcSRDiv = 1;
-		int MaxOutLen = MaxInLen;
-		int ConvBufCapacities[ 2 ];
-		double PrevLatencyFrac = 0.0;
+		TmpBufCapacities[ 0 ] = 0;
+		TmpBufCapacities[ 1 ] = 0;
+		CurTmpBuf = 0;
 
-		if( DstSampleRate * 2 > SrcSampleRate )
+		// Try some common efficient ratios requiring only a single step.
+
+		const int CommonRatioCount = 5;
+		const int CommonRatios[ CommonRatioCount ][ 2 ] = {
+			{ 1, 2 },
+			{ 1, 3 },
+			{ 2, 3 },
+			{ 3, 2 },
+			{ 3, 4 }
+		};
+
+		int i;
+
+		for( i = 0; i < CommonRatioCount; i++ )
 		{
-			// Only a single convolver with 2X upsampling is required.
+			const int num = CommonRatios[ i ][ 0 ];
+			const int den = CommonRatios[ i ][ 1 ];
 
-			SrcSRMult = 2;
-			const double NormFreq = ( DstSampleRate > SrcSampleRate ? 0.5 :
-				0.5 * DstSampleRate / SrcSampleRate );
+			if( SrcSampleRate * num == DstSampleRate * den )
+			{
+				addProcessor( new CDSPBlockConvolver(
+					CDSPFIRFilterCache :: getLPFilter(
+					1.0 / ( num > den ? num : den ), ReqTransBand,
+					ReqAtten, ReqPhase, num ), num, den, LatencyFrac ));
 
-			Convs[ 0 ] = new CDSPBlockConvolver(
-				CDSPFIRFilterCache :: getLPFilter( NormFreq, ReqTransBand,
-				ReqAtten, ReqPhase ), rsmUpsample2X, 0.0 );
+				createTmpBuffers();
+				return;
+			}
+		}
 
-			ConvCount = 1;
-			MaxOutLen = Convs[ 0 ] -> getMaxOutLen( MaxOutLen );
-			ConvBufCapacities[ 0 ] = MaxOutLen;
-			PrevLatencyFrac = Convs[ 0 ] -> getLatencyFrac();
+		// Try whole-number power-of-2 or 3*power-of-2 upsampling.
 
-			// Find if the destination to source sample rate ratio is
-			// a "power of 2" value.
-
-			int UseConvCount = 1;
+		for( i = 2; i <= 3; i++ )
+		{
+			bool WasFound = false;
+			int c = 0;
 
 			while( true )
 			{
-				const double TestSR = SrcSampleRate * ( 1 << UseConvCount );
+				const double NewSR = SrcSampleRate * ( i << c );
 
-				if( TestSR > DstSampleRate )
+				if( NewSR == DstSampleRate )
 				{
-					UseConvCount = 0; // Power of 2 not found.
+					WasFound = true;
 					break;
 				}
 
-				if( TestSR == DstSampleRate )
+				if( NewSR > DstSampleRate )
 				{
-					break; // Power of 2 found.
+					break;
 				}
 
-				UseConvCount++;
+				c++;
 			}
 
-			if( UsePower2 && UseConvCount > 0 )
+			if( WasFound )
 			{
-				R8BASSERT( UseConvCount <= ConvCountMax );
+				addProcessor( new CDSPBlockConvolver(
+					CDSPFIRFilterCache :: getLPFilter( 1.0 / i, ReqTransBand,
+					ReqAtten, ReqPhase, i ), i, 1, LatencyFrac ));
 
-				ConvBufCapacities[ 1 ] = 0;
-				ConvCount = UseConvCount;
-				int i;
+				const bool IsThird = ( i == 3 );
 
-				for( i = 1; i < UseConvCount; i++ )
+				for( i = 0; i < c; i++ )
 				{
-					const double tb = ( i >= 2 ? 45.0 : 34.0 );
-
-					Convs[ i ] = new CDSPBlockConvolver(
-						CDSPFIRFilterCache :: getLPFilter( 0.5, tb, ReqAtten,
-						ReqPhase ), rsmUpsample2X, PrevLatencyFrac );
-
-					MaxOutLen = Convs[ i ] -> getMaxOutLen( MaxOutLen );
-					ConvBufCapacities[ i & 1 ] = MaxOutLen;
-					PrevLatencyFrac = Convs[ i ] -> getLatencyFrac();
+					addProcessor( new CDSPHBUpsampler( ReqAtten, i, IsThird,
+						LatencyFrac ));
 				}
 
-				ConvBufs[ 0 ].alloc( ConvBufCapacities[ 0 ]);
-
-				if( ConvBufCapacities[ 1 ] > 0 )
-				{
-					ConvBufs[ 1 ].alloc( ConvBufCapacities[ 1 ]);
-				}
-
-				return; // No interpolator is needed.
+				createTmpBuffers();
+				return;
 			}
-
-			ConvBufs[ 0 ].alloc( ConvBufCapacities[ 0 ]);
 		}
-		else
+
+		if( DstSampleRate * 2.0 > SrcSampleRate )
 		{
-			SrcSRMult = 1;
-			ConvBufCapacities[ 0 ] = 0;
-			ConvCount = 0;
-			const double CheckSR = DstSampleRate * 4;
+			// Upsampling or fractional downsampling down to 2X.
 
-			while( CheckSR * SrcSRDiv <= SrcSampleRate )
-			{
-				SrcSRDiv *= 2;
+			const double NormFreq = ( DstSampleRate > SrcSampleRate ? 0.5 :
+				0.5 * DstSampleRate / SrcSampleRate );
 
-				// If downsampling is even deeper, use a less steep filter at
-				// this step.
-
-				const double tb =
-					( CheckSR * SrcSRDiv <= SrcSampleRate ? 45.0 : 34.0 );
-
-				Convs[ ConvCount ] = new CDSPBlockConvolver(
-					CDSPFIRFilterCache :: getLPFilter( 0.5, tb, ReqAtten,
-					ReqPhase ), rsmDownsample2X, PrevLatencyFrac );
-
-				MaxOutLen = Convs[ ConvCount ] -> getMaxOutLen( MaxOutLen );
-				PrevLatencyFrac = Convs[ ConvCount ] -> getLatencyFrac();
-				ConvCount++;
-
-				R8BASSERT( ConvCount < ConvCountMax );
-			}
-
-			const double NormFreq = DstSampleRate * SrcSRDiv / SrcSampleRate;
-			const EDSPResamplingMode rsm =
-				( UsePower2 && NormFreq == 0.5 ? rsmDownsample2X : rsmNone );
-
-			Convs[ ConvCount ] = new CDSPBlockConvolver(
+			addProcessor( new CDSPBlockConvolver(
 				CDSPFIRFilterCache :: getLPFilter( NormFreq, ReqTransBand,
-				ReqAtten, ReqPhase ), rsm, PrevLatencyFrac );
+				ReqAtten, ReqPhase, 2.0 ), 2, 1, LatencyFrac ));
 
-			MaxOutLen = Convs[ ConvCount ] -> getMaxOutLen( MaxOutLen );
-			PrevLatencyFrac = Convs[ ConvCount ] -> getLatencyFrac();
-			ConvCount++;
+			// Try intermediate interpolated resampling with subsequent 2X
+			// or 3X upsampling.
 
-			if( rsm == rsmDownsample2X )
+			const double tbw = 0.0175; // Intermediate filter's transition
+				// band extension coefficient.
+			const double ThreshSampleRate = SrcSampleRate /
+				( 1.0 - tbw * ReqTransBand ); // Make sure intermediate
+				// filter's transition band is not steeper than ReqTransBand
+				// (this keeps the latency under control).
+
+			int c = 0;
+			int div = 1;
+
+			while( true )
 			{
-				return; // No interpolator is needed.
+				const int ndiv = div * 2;
+
+				if( DstSampleRate < ThreshSampleRate * ndiv )
+				{
+					break;
+				}
+
+				div = ndiv;
+				c++;
+			}
+
+			int c2 = 0;
+			int div2 = 1;
+
+			while( true )
+			{
+				const int ndiv = div * ( c2 == 0 ? 3 : 2 );
+
+				if( DstSampleRate < ThreshSampleRate * ndiv )
+				{
+					break;
+				}
+
+				div2 = ndiv;
+				c2++;
+			}
+
+			const double SrcSampleRate2 = SrcSampleRate * 2.0;
+			int tmp1;
+			int tmp2;
+
+			if( c == 1 && getWholeStepping( SrcSampleRate2, DstSampleRate,
+				tmp1, tmp2 ))
+			{
+				// Do not use intermediate interpolation if whole stepping is
+				// available as it performs very fast.
+
+				c = 0;
+			}
+
+			if( c > 0 )
+			{
+				// Add steps using intermediate interpolation.
+
+				int num;
+
+				if( c2 > 0 && div2 > div )
+				{
+					div = div2;
+					c = c2;
+					num = 3;
+				}
+				else
+				{
+					num = 2;
+				}
+
+				addProcessor( new CDSPFracInterpolator( SrcSampleRate2 * div,
+					DstSampleRate, ReqAtten, false, LatencyFrac ));
+
+				double tb = ( 1.0 - SrcSampleRate * div / DstSampleRate ) /
+					tbw; // Divide TransBand by a constant that assures a
+					// linear response in the pass-band.
+
+				if( tb > CDSPFIRFilter :: getLPMaxTransBand() )
+				{
+					tb = CDSPFIRFilter :: getLPMaxTransBand();
+				}
+
+				addProcessor( new CDSPBlockConvolver(
+					CDSPFIRFilterCache :: getLPFilter( 1.0 / num, tb,
+					ReqAtten, ReqPhase, num ), num, 1, LatencyFrac ));
+
+				const bool IsThird = ( num == 3 );
+
+				for( i = 1; i < c; i++ )
+				{
+					addProcessor( new CDSPHBUpsampler( ReqAtten, i - 1,
+						IsThird, LatencyFrac ));
+				}
+			}
+			else
+			{
+				addProcessor( new CDSPFracInterpolator( SrcSampleRate2,
+					DstSampleRate, ReqAtten, false, LatencyFrac ));
+			}
+
+			createTmpBuffers();
+			return;
+		}
+
+		// Use downsampling steps, including power-of-2 downsampling.
+
+		double CheckSR = DstSampleRate * 4.0;
+		int c = 0;
+		double FinGain = 1.0;
+
+		while( CheckSR <= SrcSampleRate )
+		{
+			c++;
+			CheckSR *= 2.0;
+			FinGain *= 0.5;
+		}
+
+		const int SrcSRDiv = ( 1 << c );
+		int downf;
+		double NormFreq = 0.5;
+		bool UseInterp = true;
+		bool IsThird = false;
+
+		for( downf = 2; downf <= 3; downf++ )
+		{
+			if( DstSampleRate * SrcSRDiv * downf == SrcSampleRate )
+			{
+				NormFreq = 1.0 / downf;
+				UseInterp = false;
+				IsThird = ( downf == 3 );
+				break;
 			}
 		}
 
-		Interp = new CInterpClass( SrcSampleRate * SrcSRMult / SrcSRDiv,
-			DstSampleRate, PrevLatencyFrac );
+		if( UseInterp )
+		{
+			downf = 1;
+			NormFreq = DstSampleRate * SrcSRDiv / SrcSampleRate;
+			IsThird = ( NormFreq * 3.0 <= 1.0 );
+		}
 
-		MaxOutLen = Interp -> getMaxOutLen( MaxOutLen );
+		for( i = 0; i < c; i++ )
+		{
+			// Use a fixed very relaxed 2X downsampling filters, that at
+			// the final stage only guarantees stop-band between 0.75 and
+			// pi. 0.5-0.75 range will be aliased to 0.25-0.5 range which
+			// will then be filtered out by the final filter.
 
-		if( MaxOutLen <= ConvBufCapacities[ 0 ])
-		{
-			InterpBuf = ConvBufs[ 0 ];
+			addProcessor( new CDSPHBDownsampler( ReqAtten, c - 1 - i, IsThird,
+				LatencyFrac ));
 		}
-		else
-		if( MaxOutLen <= MaxInLen )
+
+		addProcessor( new CDSPBlockConvolver(
+			CDSPFIRFilterCache :: getLPFilter( NormFreq, ReqTransBand,
+			ReqAtten, ReqPhase, FinGain ), 1, downf, LatencyFrac ));
+
+		if( UseInterp )
 		{
-			InterpBuf = NULL;
+			addProcessor( new CDSPFracInterpolator( SrcSampleRate,
+				DstSampleRate * SrcSRDiv, ReqAtten, IsThird, LatencyFrac ));
 		}
-		else
-		{
-			TmpBuf.alloc( MaxOutLen );
-			InterpBuf = TmpBuf;
-		}
+
+		createTmpBuffers();
 	}
 
-	/**
-	 * @return The number of samples that should be passed to *this object
-	 * before the actual output starts.
-	 */
-
-	int getInLenBeforeOutStart() const
+	virtual ~CDSPResampler()
 	{
-		int l = ( Interp == NULL ? 0 : Interp -> getInLenBeforeOutStart() );
 		int i;
 
-		for( i = ConvCount - 1; i >= 0; i-- )
+		for( i = 0; i < StepCount; i++ )
 		{
-			l = Convs[ i ] -> getInLenBeforeOutStart( l );
+			delete Steps[ i ];
 		}
+	}
 
-		return( l );
+	virtual int getLatency() const
+	{
+		return( 0 );
+	}
+
+	virtual double getLatencyFrac() const
+	{
+		return( LatencyFrac );
 	}
 
 	/**
-	 * @return Interpolator object used by *this resampler. This function
-	 * returns NULL if no interpolator is in use.
+	 * This function ignores the supplied parameter and returns the maximal
+	 * output buffer length that depends on the MaxInLen supplied to the
+	 * constructor.
 	 */
 
-	CInterpClass* getInterpolator() const
+	virtual int getMaxOutLen( const int/* MaxInLen */ ) const
 	{
-		return( Interp );
+		return( CurMaxOutLen );
 	}
 
 	/**
@@ -330,18 +434,13 @@ public:
 	 * and create a new object.
 	 */
 
-	void clear()
+	virtual void clear()
 	{
 		int i;
 
-		for( i = 0; i < ConvCount; i++ )
+		for( i = 0; i < StepCount; i++ )
 		{
-			Convs[ i ] -> clear();
-		}
-
-		if( Interp != NULL )
-		{
-			Interp -> clear();
+			Steps[ i ] -> clear();
 		}
 	}
 
@@ -355,86 +454,222 @@ public:
 	 * this function. If required, the resampler will allocate a suitable
 	 * intermediate output buffer itself.
 	 *
-	 * @param ip0 Input buffer. This buffer may be used as output buffer by
-	 * this function.
-	 * @param l The number of samples available in the input buffer.
+	 * @param ip0 Input buffer. This buffer is never used as output buffer by
+	 * this function. This pointer may be returned in "op0" if no resampling
+	 * is happening (source sample rate equals destination sample rate).
+	 * @param l The number of samples available in the input buffer. Should
+	 * not exceed the MaxInLen supplied in the constructor.
 	 * @param[out] op0 This variable receives the pointer to the resampled
-	 * data. This pointer may point to the address within the "ip0" input
-	 * buffer, or to *this object's internal buffer. In real-time applications
-	 * it is suggested to pass this pointer to the next output audio block and
-	 * consume any data left from the previous output audio block first before
-	 * calling the process() function again. The buffer pointed to by the
-	 * "op0" on return may be owned by the resampler, so it should not be
-	 * freed by the caller.
+	 * data. On function's return, this pointer points to *this object's
+	 * internal buffer. In real-time applications it is suggested to pass this
+	 * pointer to the next output audio block and consume any data left from
+	 * the previous output audio block first before calling the process()
+	 * function again. The buffer pointed to by the "op0" on return is owned
+	 * by the resampler, so it should not be freed by the caller.
 	 * @return The number of samples available in the "op0" output buffer. If
 	 * the data from the output buffer "op0" is going to be written to a
 	 * bigger output buffer, it is suggested to check the returned number of
 	 * samples so that no overflow of the bigger output buffer happens.
 	 */
 
-	int process( double* const ip0, int l, double*& op0 )
+	virtual int process( double* ip0, int l, double*& op0 )
 	{
 		R8BASSERT( l >= 0 );
 
-		if( ConvCount == 0 )
-		{
-			op0 = ip0;
-			return( l );
-		}
-
 		double* ip = ip0;
-		double* op = nullptr;
 		int i;
 
-		for( i = 0; i < ConvCount; i++ )
+		for( i = 0; i < StepCount; i++ )
 		{
-			op = ( ConvBufs[ i & 1 ] == NULL ? ip0 : ConvBufs[ i & 1 ]);
-			l = Convs[ i ] -> process( ip, op, l );
+			double* op = TmpBufs[ i & 1 ];
+			l = Steps[ i ] -> process( ip, l, op );
 			ip = op;
 		}
 
-		if( Interp == NULL )
+		op0 = ip;
+		return( l );
+	}
+
+	/**
+	 * Function performs resampling of an input sample buffer of the specified
+	 * length in the "one-shot" mode. This function can be useful when impulse
+	 * response resampling is required.
+	 *
+	 * @param ip Input buffer pointer.
+	 * @param iplen Length of the input buffer in samples.
+	 * @param[out] op Output buffer pointer.
+	 * @param oplen Length of the output buffer in samples.
+	 * @tparam Tin Input buffer's element type.
+	 * @tparam Tout Output buffer's element type.
+	 */
+
+	template< typename Tin, typename Tout >
+	void oneshot( const Tin* ip, int iplen, Tout* op, int oplen )
+	{
+		CFixedBuffer< double > Buf( MaxInLen );
+		bool IsZero = false;
+
+		while( oplen > 0 )
 		{
-			op0 = op;
-			return( l );
+			int rc;
+			double* p;
+			int i;
+
+			if( iplen == 0 )
+			{
+				rc = MaxInLen;
+				p = &Buf[ 0 ];
+
+				if( !IsZero )
+				{
+					IsZero = true;
+					memset( p, 0, MaxInLen * sizeof( p[ 0 ]));
+				}
+			}
+			else
+			{
+				rc = min( iplen, MaxInLen );
+
+				if( sizeof( Tin ) == sizeof( double ))
+				{
+					p = (double*) ip;
+				}
+				else
+				{
+					p = &Buf[ 0 ];
+
+					for( i = 0; i < rc; i++ )
+					{
+						p[ i ] = ip[ i ];
+					}
+				}
+
+				ip += rc;
+				iplen -= rc;
+			}
+
+			double* op0;
+			int wc = process( p, rc, op0 );
+			wc = min( oplen, wc );
+
+			for( i = 0; i < wc; i++ )
+			{
+				op[ i ] = (Tout) op0[ i ];
+			}
+
+			op += wc;
+			oplen -= wc;
 		}
 
-		op = ( InterpBuf == NULL ? ip0 : InterpBuf );
-		op0 = op;
+		clear();
+	}
 
-		return( Interp -> process( ip, op, l ));
+	/**
+	 * Function obtains overall input sample count required to produce first
+	 * output sample. Function works by iteratively passing 1 sample at a time
+	 * until output begins. This is a relatively CPU-consuming operation. This
+	 * function should be called after the clear() function call or after
+	 * object's construction. The function itself calls the clear() function
+	 * before return.
+	 *
+	 * Note that it is advisable to cache the value returned by this function,
+	 * for each SrcSampleRate/DstSampleRate pair, if it is called frequently.
+	 */
+
+	int getInLenBeforeOutStart()
+	{
+		int inc = 0;
+
+		while( true )
+		{
+			double ins = 0.0;
+			double* op;
+
+			if( process( &ins, 1, op ) > 0 )
+			{
+				clear();
+				return( inc );
+			}
+
+			inc++;
+		}
 	}
 
 private:
-	static const int ConvCountMax = 8; ///< 8 convolvers with the
-		///< built-in 2x up- or downsampling is enough for 256x up- or
-		///< downsampling.
+	CFixedBuffer< CDSPProcessor* > Steps; ///< Array of processing steps.
 		///<
-	CPtrKeeper< CDSPBlockConvolver* > Convs[ ConvCountMax ]; ///< Convolvers.
+	int StepCapacity; ///< The capacity of the Steps array.
 		///<
-	int ConvCount; ///< The number of objects defined in the Convs[] array.
-		///< Equals to 0 if sample rate conversion is not needed.
+	int StepCount; ///< The number of created processing steps.
 		///<
-	CPtrKeeper< CInterpClass* > Interp; ///< Fractional interpolator object.
-		///< Equals NULL if no fractional interpolation is required meaning
-		///< the "power of 2" resampling is performed or no resampling is
-		///< performed at all.
+	int MaxInLen; ///< Maximal input length.
 		///<
-	CFixedBuffer< double > ConvBufs[ 2 ]; ///< Intermediate convolution
-		///< buffers to use, used only when at least 2x upsampling is
-		///< performed. These buffers are used in flip-flop manner. If NULL
-		///< then the input buffer will be used instead.
+	CFixedBuffer< double > TmpBufAll; ///< Buffer containing both temporary
+		///< buffers.
 		///<
-	CFixedBuffer< double > TmpBuf; ///< Additional output buffer, can be
-		///< addressed by the InterpBuf pointer.
+	double* TmpBufs[ 2 ]; ///< Temporary output buffers.
 		///<
-	double* InterpBuf; ///< Final output interpolation buffer to use. If NULL
-		///< then the input buffer will be used instead. Otherwise this
-		///< pointer points to either ConvBufs or TmpBuf.
+	int TmpBufCapacities[ 2 ]; ///< Capacities of temporary buffers, updated
+		///< during processing steps building.
+		///<
+	int CurTmpBuf; ///< Current temporary buffer.
+		///<
+	int CurMaxOutLen; ///< Current maximal output length.
+		///<
+	double LatencyFrac; ///< Current fractional latency. After object's
+		///< construction, equals to the remaining fractional latency in the
+		///< output.
 		///<
 
-	CDSPResampler()
+	/**
+	 * Function adds processor, updates MaxOutLen variable and adjusts length
+	 * of temporary internal buffers.
+	 *
+	 * @param Proc Processor to add. This pointer is inherited and will be
+	 * destroyed on *this object's destruction.
+	 */
+
+	void addProcessor( CDSPProcessor* const Proc )
 	{
+		if( StepCount == StepCapacity )
+		{
+			// Reallocate and increase Steps array's capacity.
+
+			const int NewCapacity = StepCapacity + 8;
+			Steps.realloc( StepCapacity, NewCapacity );
+			StepCapacity = NewCapacity;
+		}
+
+		LatencyFrac = Proc -> getLatencyFrac();
+		CurMaxOutLen = Proc -> getMaxOutLen( CurMaxOutLen );
+
+		if( CurMaxOutLen > TmpBufCapacities[ CurTmpBuf ])
+		{
+			TmpBufCapacities[ CurTmpBuf ] = CurMaxOutLen;
+		}
+
+		CurTmpBuf ^= 1;
+
+		Steps[ StepCount ] = Proc;
+		StepCount++;
+	}
+
+	/**
+	 * Function creates temporary buffers.
+	 */
+
+	void createTmpBuffers()
+	{
+		const int ol = TmpBufCapacities[ 0 ] + TmpBufCapacities[ 1 ];
+
+		if( ol > 0 )
+		{
+			TmpBufAll.alloc( ol );
+			TmpBufs[ 0 ] = &TmpBufAll[ 0 ];
+			TmpBufs[ 1 ] = &TmpBufAll[ TmpBufCapacities[ 0 ]];
+		}
+
+		R8BCONSOLE( "* CDSPResampler: init done\n" );
 	}
 };
 
@@ -446,8 +681,7 @@ private:
  * details.
  */
 
-class CDSPResampler16 :
-	public CDSPResampler< CDSPFracInterpolator< 18, 137, 9 > >
+class CDSPResampler16 : public CDSPResampler
 {
 public:
 	/**
@@ -456,16 +690,15 @@ public:
 	 *
 	 * @param SrcSampleRate Source signal sample rate.
 	 * @param DstSampleRate Destination signal sample rate.
-	 * @param MaxInLen The maximal planned length of the input buffer (in
+	 * @param aMaxInLen The maximal planned length of the input buffer (in
 	 * samples) that will be passed to the resampler.
 	 * @param ReqTransBand Required transition band, in percent.
 	 */
 
 	CDSPResampler16( const double SrcSampleRate, const double DstSampleRate,
-		const int MaxInLen, const double ReqTransBand = 2.0 )
-		: CDSPResampler< CDSPFracInterpolator< 18, 137, 9 > >( SrcSampleRate,
-			DstSampleRate, MaxInLen, ReqTransBand, 136.45, fprLinearPhase,
-			true )
+		const int aMaxInLen, const double ReqTransBand = 2.0 )
+		: CDSPResampler( SrcSampleRate, DstSampleRate, aMaxInLen, ReqTransBand,
+			136.45, fprLinearPhase )
 	{
 	}
 };
@@ -475,12 +708,11 @@ public:
  *
  * This class defines resampling parameters suitable for 16-bit impulse
  * response resampling, using linear-phase low-pass filter. Impulse responses
- * usually do not feature stationary signal components and thus need resampler
- * with a less SNR. See the r8b::CDSPResampler class for details.
+ * are non-dynamic signals, and thus need resampler with a lesser SNR. See the
+ * r8b::CDSPResampler class for details.
  */
 
-class CDSPResampler16IR :
-	public CDSPResampler< CDSPFracInterpolator< 14, 67, 9 > >
+class CDSPResampler16IR : public CDSPResampler
 {
 public:
 	/**
@@ -489,16 +721,15 @@ public:
 	 *
 	 * @param SrcSampleRate Source signal sample rate.
 	 * @param DstSampleRate Destination signal sample rate.
-	 * @param MaxInLen The maximal planned length of the input buffer (in
+	 * @param aMaxInLen The maximal planned length of the input buffer (in
 	 * samples) that will be passed to the resampler.
 	 * @param ReqTransBand Required transition band, in percent.
 	 */
 
 	CDSPResampler16IR( const double SrcSampleRate, const double DstSampleRate,
-		const int MaxInLen, const double ReqTransBand = 2.0 )
-		: CDSPResampler< CDSPFracInterpolator< 14, 67, 9 > >( SrcSampleRate,
-			DstSampleRate, MaxInLen, ReqTransBand, 109.56, fprLinearPhase,
-			true )
+		const int aMaxInLen, const double ReqTransBand = 2.0 )
+		: CDSPResampler( SrcSampleRate, DstSampleRate, aMaxInLen, ReqTransBand,
+			109.56, fprLinearPhase )
 	{
 	}
 };
@@ -511,8 +742,7 @@ public:
  * filter. See the r8b::CDSPResampler class for details.
  */
 
-class CDSPResampler24 :
-	public CDSPResampler< CDSPFracInterpolator< 24, 673, 9 > >
+class CDSPResampler24 : public CDSPResampler
 {
 public:
 	/**
@@ -521,16 +751,15 @@ public:
 	 *
 	 * @param SrcSampleRate Source signal sample rate.
 	 * @param DstSampleRate Destination signal sample rate.
-	 * @param MaxInLen The maximal planned length of the input buffer (in
+	 * @param aMaxInLen The maximal planned length of the input buffer (in
 	 * samples) that will be passed to the resampler.
 	 * @param ReqTransBand Required transition band, in percent.
 	 */
 
 	CDSPResampler24( const double SrcSampleRate, const double DstSampleRate,
-		const int MaxInLen, const double ReqTransBand = 2.0 )
-		: CDSPResampler< CDSPFracInterpolator< 24, 673, 9 > >( SrcSampleRate,
-			DstSampleRate, MaxInLen, ReqTransBand, 180.15, fprLinearPhase,
-			true )
+		const int aMaxInLen, const double ReqTransBand = 2.0 )
+		: CDSPResampler( SrcSampleRate, DstSampleRate, aMaxInLen, ReqTransBand,
+			180.15, fprLinearPhase )
 	{
 	}
 };
