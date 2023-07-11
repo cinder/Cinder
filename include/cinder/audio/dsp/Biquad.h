@@ -69,11 +69,11 @@ class CI_API Biquad {
 	Biquad();
     virtual ~Biquad();
 
-    void setLowpassParams( double cutoffFreq, double resonance );
-    void setHighpassParams( double frequency, double resonance );
+    void setLowpassParams( double cutoffFreq, double Q );
+    void setHighpassParams( double frequency, double Q );
     void setBandpassParams( double frequency, double Q );
-    void setLowShelfParams( double frequency, double dbGain );
-    void setHighShelfParams( double frequency, double dbGain );
+    void setLowShelfParams( double frequency, double dbGain, double Q );
+    void setHighShelfParams( double frequency, double dbGain, double Q );
     void setPeakingParams( double frequency, double Q, double dbGain );
     void setAllpassParams( double frequency, double Q );
     void setNotchParams( double frequency, double Q );

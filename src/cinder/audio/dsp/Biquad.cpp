@@ -172,7 +172,7 @@ void Biquad::getFrequencyResponse( int nFrequencies, const float *frequency, flo
     }
 }
 
-void Biquad::setLowpassParams( double cutoffFreq, double resonance )
+void Biquad::setLowpassParams( double cutoffFreq, double Q )
 {
 	// Limit cutoff to 0 to 1.
 	double cutoff = std::max( 0.0, std::min( cutoffFreq, 1.0 ) );
@@ -182,21 +182,16 @@ void Biquad::setLowpassParams( double cutoffFreq, double resonance )
 		setNormalizedCoefficients(1, 0, 0, 1, 0, 0);
 	} else if (cutoff > 0) {
 		// Compute biquad coefficients for lowpass filter
-		resonance = std::max(0.0, resonance); // can't go negative
-		double g = pow(10.0, 0.05 * resonance);
-		double d = sqrt((4 - sqrt(16 - 16 / (g * g))) / 2);
+		Q = std::max(0.0, Q); // can't go negative
+		double w0 = M_PI * cutoffFreq;
+		double alpha = sin(w0) * 0.5 / Q;
+		double a0    = 1.0 + alpha;
 
-		double theta = M_PI * cutoff;
-		double sn = 0.5 * d * sin(theta);
-		double beta = 0.5 * (1 - sn) / (1 + sn);
-		double gamma = (0.5 + beta) * cos(theta);
-		double alpha = 0.25 * (0.5 + beta - gamma);
-
-		double b0 = 2 * alpha;
-		double b1 = 2 * 2 * alpha;
-		double b2 = 2 * alpha;
-		double a1 = 2 * -gamma;
-		double a2 = 2 * beta;
+		double b1 = ( 1.0 - cos(w0) ) / a0;
+		double b0 = b1 * 0.5;
+		double b2 = b0;
+		double a1 = (-2.0 * cos(w0)) / a0;
+		double a2 = ( 1.0 - alpha  ) / a0;
 
 		setNormalizedCoefficients(b0, b1, b2, 1, a1, a2);
 	} else {
@@ -206,7 +201,7 @@ void Biquad::setLowpassParams( double cutoffFreq, double resonance )
 	}
 }
 
-void Biquad::setHighpassParams( double cutoff, double resonance )
+void Biquad::setHighpassParams( double cutoff, double Q )
 {
 	// Limit cutoff to 0 to 1.
 	cutoff = std::max(0.0, std::min(cutoff, 1.0));
@@ -216,21 +211,16 @@ void Biquad::setHighpassParams( double cutoff, double resonance )
 		setNormalizedCoefficients(0, 0, 0, 1, 0, 0);
 	} else if (cutoff > 0) {
 		// Compute biquad coefficients for highpass filter
-		resonance = std::max(0.0, resonance); // can't go negative
-		double g = pow(10.0, 0.05 * resonance);
-		double d = sqrt((4 - sqrt(16 - 16 / (g * g))) / 2);
+		Q = std::max(0.0, Q); // can't go negative
+		double w0 = M_PI * cutoff;
+		double alpha = sin(w0) * 0.5 / Q;
+		double a0    = 1.0 + alpha;
 
-		double theta = M_PI * cutoff;
-		double sn = 0.5 * d * sin(theta);
-		double beta = 0.5 * (1 - sn) / (1 + sn);
-		double gamma = (0.5 + beta) * cos(theta);
-		double alpha = 0.25 * (0.5 + beta + gamma);
-
-		double b0 = 2 * alpha;
-		double b1 = 2 * -2 * alpha;
-		double b2 = 2 * alpha;
-		double a1 = 2 * -gamma;
-		double a2 = 2 * beta;
+		double b1 = -( 1.0 + cos(w0) ) / a0;
+		double b0 = b1 * -0.5;
+		double b2 = b0;
+		double a1 = (-2.0 * cos(w0)) / a0;
+		double a2 = ( 1.0 - alpha  ) / a0;
 
 		setNormalizedCoefficients(b0, b1, b2, 1, a1, a2);
 	} else {
@@ -280,7 +270,7 @@ void Biquad::setBandpassParams( double frequency, double Q )
 	}
 }
 
-void Biquad::setLowShelfParams(double frequency, double dbGain)
+void Biquad::setLowShelfParams(double frequency, double dbGain, double Q)
 {
 	// Clip frequencies to between 0 and 1, inclusive.
 	frequency = std::max(0.0, std::min(frequency, 1.0));
@@ -292,19 +282,18 @@ void Biquad::setLowShelfParams(double frequency, double dbGain)
 		setNormalizedCoefficients(A * A, 0, 0, 1, 0, 0);
 	} else if (frequency > 0) {
 		double w0 = M_PI * frequency;
-		double S = 1; // filter slope (1 is max value)
-		double alpha = 0.5 * sin(w0) * sqrt((A + 1 / A) * (1 / S - 1) + 2);
-		double k = cos(w0);
+		double alpha = 0.5 * sin(w0) / Q;
+		double cos_w0 = cos(w0);
 		double k2 = 2 * sqrt(A) * alpha;
 		double aPlusOne = A + 1;
 		double aMinusOne = A - 1;
 
-		double b0 = A * (aPlusOne - aMinusOne * k + k2);
-		double b1 = 2 * A * (aMinusOne - aPlusOne * k);
-		double b2 = A * (aPlusOne - aMinusOne * k - k2);
-		double a0 = aPlusOne + aMinusOne * k + k2;
-		double a1 = -2 * (aMinusOne + aPlusOne * k);
-		double a2 = aPlusOne + aMinusOne * k - k2;
+		double b0 = A * (aPlusOne - aMinusOne * cos_w0 + k2);
+		double b1 = 2 * A * (aMinusOne - aPlusOne * cos_w0);
+		double b2 = A * (aPlusOne - aMinusOne * cos_w0 - k2);
+		double a0 = aPlusOne + aMinusOne * cos_w0 + k2;
+		double a1 = -2 * (aMinusOne + aPlusOne * cos_w0);
+		double a2 = aPlusOne + aMinusOne * cos_w0 - k2;
 
 		setNormalizedCoefficients(b0, b1, b2, a0, a1, a2);
 	} else {
@@ -313,7 +302,7 @@ void Biquad::setLowShelfParams(double frequency, double dbGain)
 	}
 }
 
-void Biquad::setHighShelfParams(double frequency, double dbGain)
+void Biquad::setHighShelfParams(double frequency, double dbGain, double Q)
 {
 	// Clip frequencies to between 0 and 1, inclusive.
 	frequency = std::max(0.0, std::min(frequency, 1.0));
@@ -325,19 +314,18 @@ void Biquad::setHighShelfParams(double frequency, double dbGain)
 		setNormalizedCoefficients(1, 0, 0, 1, 0, 0);
 	} else if (frequency > 0) {
 		double w0 = M_PI * frequency;
-		double S = 1; // filter slope (1 is max value)
-		double alpha = 0.5 * sin(w0) * sqrt((A + 1 / A) * (1 / S - 1) + 2);
-		double k = cos(w0);
+		double alpha = 0.5 * sin(w0) / Q;
+		double cos_w0 = cos(w0);
 		double k2 = 2 * sqrt(A) * alpha;
 		double aPlusOne = A + 1;
 		double aMinusOne = A - 1;
 
-		double b0 = A * (aPlusOne + aMinusOne * k + k2);
-		double b1 = -2 * A * (aMinusOne + aPlusOne * k);
-		double b2 = A * (aPlusOne + aMinusOne * k - k2);
-		double a0 = aPlusOne - aMinusOne * k + k2;
-		double a1 = 2 * (aMinusOne - aPlusOne * k);
-		double a2 = aPlusOne - aMinusOne * k - k2;
+		double b0 = A * (aPlusOne + aMinusOne * cos_w0 + k2);
+		double b1 = -2 * A * (aMinusOne + aPlusOne * cos_w0);
+		double b2 = A * (aPlusOne + aMinusOne * cos_w0 - k2);
+		double a0 = aPlusOne - aMinusOne * cos_w0 + k2;
+		double a1 = 2 * (aMinusOne - aPlusOne * cos_w0);
+		double a2 = aPlusOne - aMinusOne * cos_w0 - k2;
 
 		setNormalizedCoefficients(b0, b1, b2, a0, a1, a2);
 	} else {
