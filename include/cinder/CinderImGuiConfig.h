@@ -43,7 +43,11 @@
 // Using dear imgui via a shared library is not recommended, because of function call overhead and because we don't guarantee backward nor forward ABI compatibility.
 #define IMGUI_API CI_API
 
-// Custom implicit cast operators	
+// See release notes at https://github.com/ocornut/imgui/releases/tag/v1.89.4
+#if ! defined( IMGUI_DEFINE_MATH_OPERATORS )
+	#define IMGUI_DEFINE_MATH_OPERATORS
+#endif
+
 // Custom implicit cast operators
 #ifndef CINDER_IMGUI_NO_IMPLICIT_CASTS
 #define IM_VEC2_CLASS_EXTRA                                            \

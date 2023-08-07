@@ -23,9 +23,13 @@
 
 #pragma once
 
+// Users can set IMGUI_USER_CONFIG if they want to use their own, but it should be the same file used for both Cinder and their app.
 #if ! defined( IMGUI_USER_CONFIG )
 #define IMGUI_USER_CONFIG "cinder/CinderImGuiConfig.h"
 #endif
+
+#include IMGUI_USER_CONFIG
+
 #if ! defined( CINDER_IMGUI_EXTERNAL )
 #include "imgui/imgui.h"
 #else

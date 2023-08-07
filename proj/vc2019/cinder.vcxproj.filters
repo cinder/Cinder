@@ -2279,6 +2279,9 @@
     <ClInclude Include="..\..\include\cinder\MediaTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\cinder\CinderImGuiConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="nlohmann_json.natvis" />
