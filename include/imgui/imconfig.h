@@ -14,6 +14,11 @@
 
 #pragma once
 
+// if we hit this file, it's likely imgui.cpp or similar that didn't yet include CinderImGui.h,
+// which defines IMGUI_USER_CONFIG as default (or you can override)
+#include "cinder/CinderImGuiConfig.h"
+
+
 //---- Define assertion handler. Defaults to calling assert().
 // If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.
 //#define IM_ASSERT(_EXPR)  MyAssert(_EXPR)
