@@ -107,7 +107,7 @@ uint8_t	VboMeshGeomTarget::getAttribDims( geom::Attrib attr ) const
 	return mVboMesh->getAttribDims( attr );
 }
 
-void VboMeshGeomTarget::copyAttrib( geom::Attrib attr, uint8_t dims, size_t /*strideBytes*/, const float *srcData, size_t count )
+void VboMeshGeomTarget::copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
 {
 	// if we don't have it we don't want it
 	if( getAttribDims( attr ) == 0 )
@@ -143,7 +143,7 @@ void VboMeshGeomTarget::copyAttrib( geom::Attrib attr, uint8_t dims, size_t /*st
 	}
 	
 	if( dstData )
-		geom::copyData( dims, srcData, count, dstDims, dstStride, reinterpret_cast<float*>( dstData ) );
+		geom::copyData( dims, strideBytes, srcData, count, dstDims, dstStride, reinterpret_cast<float*>( dstData ) );
 }
 
 void VboMeshGeomTarget::copyIndices( geom::Primitive /*primitive*/, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
