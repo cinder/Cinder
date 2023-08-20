@@ -50,6 +50,10 @@ class CI_API ColorT
 	ColorT( const ColorT<T> &src ) 
 		: r( src.r ), g( src.g ), b( src.b )
 	{}
+	ColorT( const vec3 &src )
+		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) )
+	{}
+
 	ColorT( const char *svgColorName );
 
 	ColorT( ColorModel cm, const vec3 &v );
