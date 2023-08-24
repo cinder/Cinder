@@ -258,7 +258,7 @@ class CI_API TriMesh : public geom::Source {
 	//! Returns a reference to the std::vector<vec4> for the TriMesh's bone weights.
 	std::vector<vec4>&				getBoneWeights() { return mBoneWeights; }
 	//! Returns a reference to the std::vector<vec4> for the TriMesh's bone weights.
-	const std::vector<vec4>&		getBoneWeight() const { return mBoneWeights; }
+	const std::vector<vec4>&		getBoneWeights() const { return mBoneWeights; }
 	//! Returns a pointer to the colors of the TriMesh vec<DIM>*. For example, to get RGB colors, call getColors<3>().
 	template<uint8_t DIM>
 	typename COLORDIM<DIM,float>::TYPE*			getColors() { assert(mColorsDims==DIM); return (typename COLORDIM<DIM,float>::TYPE*)mColors.data(); }
