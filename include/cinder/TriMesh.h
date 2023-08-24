@@ -49,6 +49,8 @@ class CI_API TriMesh : public geom::Source {
 		Format&		normals() { mNormalsDims = 3; return *this; }
 		Format&		tangents() { mTangentsDims = 3; return *this; }
 		Format&		bitangents() { mBitangentsDims = 3; return *this; }
+		Format&		boneIndices() { mBoneIndicesDims = 4; return *this; }
+		Format&		boneWeights() { mBoneWeightsDims = 4; return *this; }
 
 		Format&		colors( uint8_t dims = 3 ) { mColorsDims = dims; return *this; }
 		//! Enables and establishes the dimensions of texture coords for unit 0
@@ -62,7 +64,7 @@ class CI_API TriMesh : public geom::Source {
 		//! Enables and establishes the dimensions of texture coords for unit 3
 		Format&		texCoords3( uint8_t dims = 2 ) { mTexCoords3Dims = dims; return *this; }
 		
-		uint8_t		mPositionsDims, mNormalsDims, mTangentsDims, mBitangentsDims, mColorsDims;
+		uint8_t		mPositionsDims, mNormalsDims, mTangentsDims, mBitangentsDims, mBoneIndicesDims, mBoneWeightsDims, mColorsDims;
 		uint8_t		mTexCoords0Dims, mTexCoords1Dims, mTexCoords2Dims, mTexCoords3Dims;
 	};
 
@@ -86,6 +88,8 @@ class CI_API TriMesh : public geom::Source {
 	bool		hasNormals() const { return ! mNormals.empty(); }
 	bool		hasTangents() const { return ! mTangents.empty(); }
 	bool		hasBitangents() const { return ! mBitangents.empty(); }
+	bool		hasBoneIndices() const { return ! mBoneIndices.empty(); }
+	bool		hasBoneWeights() const { return ! mBoneWeights.empty(); }
 	bool		hasColors() const { return ! mColors.empty(); }
 	bool		hasColorsRgb() const { return mColorsDims == 3 && ! mColors.empty(); }
 	bool		hasColorsRgba() const { return mColorsDims == 4 && ! mColors.empty(); }
@@ -124,6 +128,16 @@ class CI_API TriMesh : public geom::Source {
 	void		appendBitangent( const vec3 &bitangent ) { mBitangents.push_back( bitangent ); }
 	//! Functions similarly to appendPositions(), appending multiple bitangents at once.
 	void		appendBitangents( const vec3 *bitangents, size_t num );
+
+	//! Appends a single bone index
+	void		appendBoneIndex( const vec4 &boneIndex ) { mBoneIndices.push_back( boneIndex ); }
+	//! Functions similarly to appendPositions(), appending multiple boneIndices at once.
+	void		appendBoneIndices( const vec4 *boneIndices, size_t num );
+	//! Appends a single bone weight
+	void		appendBoneWeight( const vec4 &boneWeight ) { mBoneWeights.push_back( boneWeight ); }
+	//! Functions similarly to appendPositions(), appending multiple bone weights at once.
+	void		appendBoneWeights( const vec4 *boneWeights, size_t num );
+
 	//! Appends a single RGB color
 	void		appendColorRgb( const Color &color ) { appendColors( &color, 1 ); }
 	//! Appends a single RGBA color
@@ -213,6 +227,10 @@ class CI_API TriMesh : public geom::Source {
 	void		getTriangleTangents( size_t idx, vec3 *a, vec3 *b, vec3 *c ) const;
 	//! Copies the 3 bitangents of triangle number \a idx into \a a, \a b and \a c.
 	void		getTriangleBitangents( size_t idx, vec3 *a, vec3 *b, vec3 *c ) const;
+	//! Copies the 3 bone indices of triangle number \a idx into \a a, \a b and \a c.
+	void		getTriangleBoneIndices( size_t idx, vec4 *a, vec4 *b, vec4 *c ) const;
+	//! Copies the 3 bone weights of triangle number \a idx into \a a, \a b and \a c.
+	void		getTriangleBoneWeights( size_t idx, vec4 *a, vec4 *b, vec4 *c ) const;
 
 
 	//! Returns a pointer to the positions of the mesh as vec<DIM>*. For example, for a TriMesh with 3D vertices, call getPositions<3>().
@@ -233,6 +251,14 @@ class CI_API TriMesh : public geom::Source {
 	std::vector<vec3>&				getBitangents() { return mBitangents; }
 	//! Returns a reference to the std::vector<vec3> for the TriMesh's bitangents.
 	const std::vector<vec3>&		getBitangents() const { return mBitangents; }
+	//! Returns a reference to the std::vector<vec4> for the TriMesh's bone indices.
+	std::vector<vec4>&				getBoneIndices() { return mBoneIndices; }
+	//! Returns a reference to the std::vector<vec4> for the TriMesh's bone indices.
+	const std::vector<vec4>&		getBoneIndices() const { return mBoneIndices; }
+	//! Returns a reference to the std::vector<vec4> for the TriMesh's bone weights.
+	std::vector<vec4>&				getBoneWeights() { return mBoneWeights; }
+	//! Returns a reference to the std::vector<vec4> for the TriMesh's bone weights.
+	const std::vector<vec4>&		getBoneWeights() const { return mBoneWeights; }
 	//! Returns a pointer to the colors of the TriMesh vec<DIM>*. For example, to get RGB colors, call getColors<3>().
 	template<uint8_t DIM>
 	typename COLORDIM<DIM,float>::TYPE*			getColors() { assert(mColorsDims==DIM); return (typename COLORDIM<DIM,float>::TYPE*)mColors.data(); }
@@ -354,7 +380,7 @@ class CI_API TriMesh : public geom::Source {
 	//! Converts an attribute bitmask to a geom::Attrib.
 	static geom::Attrib	fromMask( uint32_t attrib );
 
-	uint8_t		mPositionsDims, mNormalsDims, mTangentsDims, mBitangentsDims, mColorsDims;
+	uint8_t		mPositionsDims, mNormalsDims, mTangentsDims, mBitangentsDims, mBoneIndicesDims, mBoneWeightsDims, mColorsDims;
 	uint8_t		mTexCoords0Dims, mTexCoords1Dims, mTexCoords2Dims, mTexCoords3Dims;
   
 	std::vector<float>		mPositions;
@@ -362,6 +388,8 @@ class CI_API TriMesh : public geom::Source {
 	std::vector<vec3>		mNormals; // always dim=3
 	std::vector<vec3>		mTangents; // always dim=3
 	std::vector<vec3>		mBitangents; // always dim=3
+	std::vector<vec4>		mBoneIndices; // always dim=4
+	std::vector<vec4>		mBoneWeights; // always dim=4
 	std::vector<float>		mTexCoords0, mTexCoords1, mTexCoords2, mTexCoords3;
 	std::vector<uint32_t>	mIndices;
 	

@@ -25,6 +25,7 @@
 
 #include "cinder/TriMesh.h"
 #include "cinder/Exception.h"
+#include "cinder/Log.h"
 #if defined( CINDER_ANDROID )
 	#include "cinder/android/CinderAndroid.h"
 #endif 
@@ -80,7 +81,7 @@ void TriMeshGeomTarget::copyIndices( geom::Primitive primitive, const uint32_t *
 // TriMesh::Format
 TriMesh::Format::Format()
 {
-	mPositionsDims = mNormalsDims = mTangentsDims = mBitangentsDims = mColorsDims = 0;
+	mPositionsDims = mNormalsDims = mTangentsDims = mBitangentsDims = mBoneIndicesDims = mBoneWeightsDims = mColorsDims = 0;
 	mTexCoords0Dims = mTexCoords1Dims = mTexCoords2Dims = mTexCoords3Dims = 0;
 }
 
@@ -110,6 +111,8 @@ void TriMesh::loadFromSource( const geom::Source &source )
 	if( mNormalsDims ) attribs.insert( geom::Attrib::NORMAL );
 	if( mTangentsDims ) attribs.insert( geom::Attrib::TANGENT );
 	if( mBitangentsDims ) attribs.insert( geom::Attrib::BITANGENT );
+	if( mBoneIndicesDims ) attribs.insert( geom::Attrib::BONE_INDEX );
+	if( mBoneWeightsDims ) attribs.insert( geom::Attrib::BONE_WEIGHT );
 	if( mColorsDims ) attribs.insert( geom::Attrib::COLOR );
 	if( mTexCoords0Dims ) attribs.insert( geom::Attrib::TEX_COORD_0 );
 	if( mTexCoords1Dims ) attribs.insert( geom::Attrib::TEX_COORD_1 );
@@ -130,6 +133,8 @@ void TriMesh::initFromFormat( const TriMesh::Format &format )
 	mNormalsDims = format.mNormalsDims;
 	mTangentsDims = format.mTangentsDims;
 	mBitangentsDims = format.mBitangentsDims;
+	mBoneIndicesDims = format.mBoneIndicesDims;
+	mBoneWeightsDims = format.mBoneWeightsDims;
 	mColorsDims = format.mColorsDims;
 	mTexCoords0Dims = format.mTexCoords0Dims;
 	mTexCoords1Dims = format.mTexCoords1Dims;
@@ -156,6 +161,14 @@ TriMesh::Format TriMesh::formatFromSource( const geom::Source &source )
 	// bitangents
 	if( source.getAttribDims( geom::Attrib::BITANGENT ) > 0 )
 		result.mBitangentsDims = 3;
+
+	// bone indices
+	if( source.getAttribDims( geom::Attrib::BONE_INDEX ) > 0 )
+		result.mBoneIndicesDims = 4;
+
+	// bone weights
+	if( source.getAttribDims( geom::Attrib::BONE_WEIGHT ) > 0 )
+		result.mBoneWeightsDims = 4;
 
 	// colors
 	if( source.getAttribDims( geom::Attrib::COLOR ) > 0 )
@@ -208,6 +221,8 @@ void TriMesh::clear()
 	mNormals.clear();
 	mTangents.clear();
 	mBitangents.clear();
+	mBoneIndices.clear();
+	mBoneWeights.clear();
 	mColors.clear();
 	mTexCoords0.clear();
 	mTexCoords1.clear();
@@ -255,6 +270,18 @@ void TriMesh::appendBitangents( const vec3 *bitangents, size_t num )
 {
 	assert( mBitangentsDims == 3 );
 	mBitangents.insert( mBitangents.end(), bitangents, bitangents + num );
+}
+
+void TriMesh::appendBoneIndices( const vec4 *boneIndices, size_t num )
+{
+	assert( mBoneIndicesDims == 4 );
+	mBoneIndices.insert( mBoneIndices.end(), boneIndices, boneIndices + num );
+}
+
+void TriMesh::appendBoneWeights( const vec4 *boneWeights, size_t num )
+{
+	assert( mBoneWeightsDims == 4 );
+	mBoneWeights.insert( mBoneWeights.end(), boneWeights, boneWeights + num );
 }
 
 void TriMesh::appendColors( const Color *rgbs, size_t num )
@@ -390,6 +417,22 @@ void TriMesh::getTriangleBitangents( size_t idx, vec3 *a, vec3 *b, vec3 *c ) con
 	*c = mBitangents[mIndices[idx * 3 + 2]];
 }
 
+void TriMesh::getTriangleBoneIndices( size_t idx, vec4* a, vec4* b, vec4* c ) const
+{
+	assert( mBoneIndicesDims == 4 );
+	*a = mBoneIndices[mIndices[idx * 3 + 0]];
+	*b = mBoneIndices[mIndices[idx * 3 + 1]];
+	*c = mBoneIndices[mIndices[idx * 3 + 2]];
+}
+
+void TriMesh::getTriangleBoneWeights( size_t idx, vec4* a, vec4* b, vec4* c ) const
+{
+	assert( mBoneIndicesDims == 4 );
+	*a = mBoneWeights[mIndices[idx * 3 + 0]];
+	*b = mBoneWeights[mIndices[idx * 3 + 1]];
+	*c = mBoneWeights[mIndices[idx * 3 + 2]];
+}
+
 AxisAlignedBox TriMesh::calcBoundingBox() const
 {
 	assert( mPositionsDims == 3 );
@@ -513,6 +556,8 @@ void TriMesh::write( const DataTargetRef &dataTarget, uint32_t writeMask ) const
 	writeAttrib( toMask( geom::TEX_COORD_3 ), mTexCoords3Dims, mTexCoords3.size(), mTexCoords3.data() );
 	writeAttrib( toMask( geom::TANGENT ), mTangentsDims, mTangents.size() * 3, mTangents.data() );
 	writeAttrib( toMask( geom::BITANGENT ), mBitangentsDims, mBitangents.size() * 3, mBitangents.data() );
+	writeAttrib( toMask( geom::BONE_INDEX ), mBoneIndicesDims, mBoneIndices.size() * 4, mBoneIndices.data() );
+	writeAttrib( toMask( geom::BONE_WEIGHT ), mBoneWeightsDims, mBoneWeights.size() * 4, mBoneWeights.data() );
 }
 
 // used in 0.9.0
@@ -539,6 +584,18 @@ void TriMesh::readImplV2( const IStreamRef &in )
 		in->readLittle( &sizeInFloats );
 
 		data->resize( sizeInFloats * sizeof( float ) / sizeof( vec3 ) );
+		in->readData( data->data(), sizeInFloats * sizeof( float ) );
+	};
+
+	auto readAttribVec4f = [in]( uint8_t *dims, std::vector<vec4> *data ) {
+		if( in->isEof() ) return;
+
+		in->readLittle( dims );
+
+		uint32_t sizeInFloats;
+		in->readLittle( &sizeInFloats );
+
+		data->resize( sizeInFloats * sizeof( float ) / sizeof( vec4 ) );
 		in->readData( data->data(), sizeInFloats * sizeof( float ) );
 	};
 
@@ -582,6 +639,12 @@ void TriMesh::readImplV2( const IStreamRef &in )
 			break;
 			case geom::BITANGENT:
 				readAttribVec3f( &mBitangentsDims, &mBitangents );
+			break;
+			case geom::BONE_INDEX:
+				readAttribVec4f( &mBoneIndicesDims, &mBoneIndices );
+			break;
+			case geom::BONE_WEIGHT:
+				readAttribVec4f( &mBoneWeightsDims, &mBoneWeights );
 			break;
 			default:
 				throw Exception( "TriMesh::read() error: Invalid file contents." );
@@ -757,6 +820,8 @@ bool TriMesh::recalculateBitangents()
 //! TODO: optimize memory allocations
 void TriMesh::subdivide( int division, bool normalize )
 {
+	if( hasBoneIndices() || hasBoneWeights() )
+		CI_LOG_W( "TriMesh::subdivide does not currently support bone indices or bone weights" );
 	if( division < 2 )
 		return;
 
@@ -1011,6 +1076,8 @@ uint8_t TriMesh::getAttribDims( geom::Attrib attr ) const
 		case geom::Attrib::NORMAL: return mNormalsDims;
 		case geom::Attrib::TANGENT: return mTangentsDims;
 		case geom::Attrib::BITANGENT: return mBitangentsDims;
+		case geom::Attrib::BONE_INDEX: return mBoneIndicesDims;
+		case geom::Attrib::BONE_WEIGHT: return mBoneWeightsDims;
 		default:
 			return 0;
 	}
@@ -1029,6 +1096,8 @@ geom::AttribSet	TriMesh::getAvailableAttribs() const
 	if( mNormalsDims ) result.insert( geom::Attrib::NORMAL );
 	if( mTangentsDims ) result.insert( geom::Attrib::TANGENT );
 	if( mBitangentsDims ) result.insert( geom::Attrib::BITANGENT );
+	if( mBoneIndicesDims ) result.insert( geom::Attrib::BONE_INDEX );
+	if( mBoneWeightsDims ) result.insert( geom::Attrib::BONE_WEIGHT );
 
 	return result;
 }
@@ -1045,12 +1114,14 @@ void TriMesh::getAttribPointer( geom::Attrib attr, const float **resultPtr, size
 		case geom::Attrib::NORMAL: *resultPtr = (const float*)mNormals.data(); *resultStrideBytes = 0; *resultDims = mNormalsDims; break;
 		case geom::Attrib::TANGENT: *resultPtr = (const float*)mTangents.data(); *resultStrideBytes = 0; *resultDims = mTangentsDims; break;
 		case geom::Attrib::BITANGENT: *resultPtr = (const float*)mBitangents.data(); *resultStrideBytes = 0; *resultDims = mBitangentsDims; break;
+		case geom::Attrib::BONE_INDEX: *resultPtr = (const float*)mBoneIndices.data(); *resultStrideBytes = 0; *resultDims = mBoneIndicesDims; break;
+		case geom::Attrib::BONE_WEIGHT: *resultPtr = (const float*)mBoneWeights.data(); *resultStrideBytes = 0; *resultDims = mBoneWeightsDims; break;
 		default:
 			*resultPtr = nullptr; *resultStrideBytes = 0; *resultDims = 0;
 	}
 }
 
-void TriMesh::copyAttrib( geom::Attrib attr, uint8_t dims, size_t /*stride*/, const float *srcData, size_t numVertices )
+void TriMesh::copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t numVertices )
 {
 	if( getAttribDims( attr ) == 0 )
 		return;
@@ -1058,39 +1129,47 @@ void TriMesh::copyAttrib( geom::Attrib attr, uint8_t dims, size_t /*stride*/, co
 	switch( attr ) {
 		case geom::Attrib::POSITION:
 			mPositions.resize( mPositionsDims * numVertices );
-			geom::copyData( dims, srcData, numVertices, mPositionsDims, 0, mPositions.data() );
+			geom::copyData( dims, strideBytes, srcData, numVertices, mPositionsDims, 0, mPositions.data() );
 		break;
 		case geom::Attrib::COLOR:
 			mColors.resize( mColorsDims * numVertices );
-			geom::copyData( dims, srcData, numVertices, mColorsDims, 0, mColors.data() );
+			geom::copyData( dims, strideBytes, srcData, numVertices, mColorsDims, 0, mColors.data() );
 		break;
 		case geom::Attrib::TEX_COORD_0:
 			mTexCoords0.resize( mTexCoords0Dims * numVertices );
-			geom::copyData( dims, srcData, numVertices, mTexCoords0Dims, 0, mTexCoords0.data() );
+			geom::copyData( dims, strideBytes, srcData, numVertices, mTexCoords0Dims, 0, mTexCoords0.data() );
 		break;
 		case geom::Attrib::TEX_COORD_1:
 			mTexCoords1.resize( mTexCoords1Dims * numVertices );
-			geom::copyData( dims, srcData, numVertices, mTexCoords1Dims, 0, mTexCoords1.data() );
+			geom::copyData( dims, strideBytes, srcData, numVertices, mTexCoords1Dims, 0, mTexCoords1.data() );
 		break;
 		case geom::Attrib::TEX_COORD_2:
 			mTexCoords2.resize( mTexCoords2Dims * numVertices );
-			geom::copyData( dims, srcData, numVertices, mTexCoords2Dims, 0, mTexCoords2.data() );
+			geom::copyData( dims, strideBytes, srcData, numVertices, mTexCoords2Dims, 0, mTexCoords2.data() );
 		break;
 		case geom::Attrib::TEX_COORD_3:
 			mTexCoords3.resize( mTexCoords3Dims * numVertices );
-			geom::copyData( dims, srcData, numVertices, mTexCoords3Dims, 0, mTexCoords3.data() );
+			geom::copyData( dims, strideBytes, srcData, numVertices, mTexCoords3Dims, 0, mTexCoords3.data() );
 		break;
 		case geom::Attrib::NORMAL:
 			mNormals.resize( numVertices );
-			geom::copyData( dims, srcData, numVertices, 3, 0, (float*)mNormals.data() );
+			geom::copyData( dims, strideBytes, srcData, numVertices, 3, 0, (float*)mNormals.data() );
 		break;
 		case geom::Attrib::TANGENT:
 			mTangents.resize( numVertices );
-			geom::copyData( dims, srcData, numVertices, 3, 0, (float*)mTangents.data() );
+			geom::copyData( dims, strideBytes, srcData, numVertices, 3, 0, (float*)mTangents.data() );
 		break;
 		case geom::Attrib::BITANGENT:
 			mBitangents.resize( numVertices );
-			geom::copyData( dims, srcData, numVertices, 3, 0, (float*)mBitangents.data() );
+			geom::copyData( dims, strideBytes, srcData, numVertices, 3, 0, (float*)mBitangents.data() );
+		break;
+		case geom::Attrib::BONE_INDEX:
+			mBoneIndices.resize( numVertices );
+			geom::copyData( dims, strideBytes, srcData, numVertices, 4, 0, (float*)mBoneIndices.data() );
+		break;
+		case geom::Attrib::BONE_WEIGHT:
+			mBoneWeights.resize( numVertices );
+			geom::copyData( dims, strideBytes, srcData, numVertices, 4, 0, (float*)mBoneWeights.data() );
 		break;
 		default:
 			throw geom::ExcMissingAttrib();
@@ -1233,7 +1312,19 @@ bool TriMesh::verticesEqual( uint32_t indexA, uint32_t indexB ) const
 		return false;
 	}
 
-	// TODO: bone index and weight
+	if( mBoneIndicesDims > 0 ) {
+		const vec4 &a = *reinterpret_cast<const vec4*>(&mBoneIndices[indexA*mBoneIndicesDims]);
+		const vec4 &b = *reinterpret_cast<const vec4*>(&mBoneIndices[indexB*mBoneIndicesDims]);
+		if( distance2( a, b ) > FLT_EPSILON )
+		return false;
+	}
+
+	if( mBoneWeightsDims > 0 ) {
+		const vec4 &a = *reinterpret_cast<const vec4*>(&mBoneWeights[indexA*mBoneWeightsDims]);
+		const vec4 &b = *reinterpret_cast<const vec4*>(&mBoneWeights[indexB*mBoneWeightsDims]);
+		if( distance2( a, b ) > FLT_EPSILON )
+		return false;
+	}
 
 	return true;
 }
