@@ -653,7 +653,7 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 	static const MAT2 matrix = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, -1 } };
 	GLYPHMETRICS metrics;
 	DWORD bytesGlyph = ::GetGlyphOutlineW( FontManager::instance()->getFontDc(), glyphIndex,
-							GGO_NATIVE | GGO_GLYPH_INDEX, &metrics, 0, NULL, &matrix);
+							GGO_NATIVE | GGO_GLYPH_INDEX | GGO_UNHINTED, &metrics, 0, NULL, &matrix);
 
     if( bytesGlyph == GDI_ERROR )
 		throw FontGlyphFailureExc();
@@ -665,7 +665,7 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
     }
 
     if( ::GetGlyphOutlineW( FontManager::instance()->getFontDc(), glyphIndex,
-			  GGO_NATIVE | GGO_GLYPH_INDEX, &metrics, bytesGlyph, buffer.get(), &matrix) == GDI_ERROR ) {
+			  GGO_NATIVE | GGO_GLYPH_INDEX | GGO_UNHINTED, &metrics, bytesGlyph, buffer.get(), &matrix) == GDI_ERROR ) {
 		throw FontGlyphFailureExc();
     }
 
@@ -689,8 +689,8 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 				break;
 				case TT_PRIM_QSPLINE:
 					for( int i = 0; i < curve->cpfx - 1; i++ ) {
-						vec2 p1 = resultShape.getCurrentPoint(), p2;
-						vec2 c = msw::toVec2( points[i] ), c1, c2;
+						vec2 c = msw::toVec2( points[i] );
+						vec2 p2;
 						if( i + 1 == curve->cpfx - 1 ) {
 							p2 = msw::toVec2( points[i + 1] );
 						}
@@ -698,10 +698,13 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 							// records with more than one curve use interpolation for control points, per http://support.microsoft.com/kb/q87115/
 							p2 = ( c + msw::toVec2( points[i + 1] ) ) / 2.0f;
 						}
-	
-						c1 = 2.0f * c / 3.0f + p1 / 3.0f;
-						c2 = 2.0f * c / 3.0f + p2 / 3.0f;
-						resultShape.curveTo( c1, c2, p2 );
+
+						//vec2 p1 = resultShape.getCurrentPoint();
+						//vec2 c1 = 2.0f * c / 3.0f + p1 / 3.0f;
+						//vec2 c2 = 2.0f * c / 3.0f + p2 / 3.0f;
+						//resultShape.curveTo( c1, c2, p2 );
+
+						resultShape.quadTo( c, p2 );
 					}
 				break;
 				case TT_PRIM_CSPLINE:
