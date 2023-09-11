@@ -52,7 +52,11 @@ gstreamer1.0-libav \
 gstreamer1.0-alsa \
 gstreamer1.0-pulseaudio \
 gstreamer1.0-plugins-bad \
-libboost-filesystem-dev
+libboost-filesystem-dev \
+libxrandr-dev \
+libxinerama-dev \
+libx11-xcb-dev \
+libxi-dev
 </code></pre>
 
 		<h1 id="building-cinder">Building Cinder</h1>
@@ -60,7 +64,7 @@ libboost-filesystem-dev
 <pre><code>git clone --recursive https://github.com/cinder/Cinder.git
 cd Cinder
 mkdir build &amp;&amp; cd build
-cmake .. -DCINDER_TARGET_GL=es2-rpi
+cmake .. -DCINDER_TARGET_GL=es3-rpi
 make -j 3
 </code></pre>
 
@@ -77,7 +81,7 @@ make -j 3
 		<h3 id="building">Building</h3>
 <pre><code>cd samples/BasicApp/proj/cmake
 mkdir build &amp;&amp; cd build
-cmake .. -DCINDER_TARGET_GL=es2-rpi
+cmake .. -DCINDER_TARGET_GL=es3-rpi
 make</code></pre>
 
 		<h3 id="running">Running</h3>
