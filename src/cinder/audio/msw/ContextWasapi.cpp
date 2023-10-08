@@ -572,7 +572,9 @@ size_t WasapiRenderClientImpl::getWriteFramesAvailable() const
 	else {
 		UINT32 numFramesPadding;
 		HRESULT hr = mAudioClient->GetCurrentPadding( &numFramesPadding );
-		ASSERT_HR_OK( hr );
+		if (FAILED(hr)) {
+			return 0;
+		}
 
 		return mAudioClientNumFrames - numFramesPadding;
 	}

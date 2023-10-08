@@ -22,6 +22,7 @@
 */
 
 #include "cinder/Cinder.h"
+#include "cinder/audio/Exception.h"
 
 #if( _WIN32_WINNT >= 0x0600 ) // Requires Windows Vista+
 
@@ -246,6 +247,11 @@ shared_ptr<::IMMDevice> DeviceManagerWasapi::getIMMDevice( const DeviceRef &devi
 
 DeviceManagerWasapi::DeviceInfo& DeviceManagerWasapi::getDeviceInfo( const DeviceRef &device )
 {
+	if (mDeviceInfoSet.find(device) == mDeviceInfoSet.end())
+	{
+		throw AudioDeviceExc("DeviceManagerWasapi::getDeviceInfo() - device not found");
+	}
+
 	return mDeviceInfoSet.at( device );
 }
 
@@ -398,6 +404,8 @@ HRESULT DeviceManagerWasapi::Impl::QueryInterface( REFIID iid, void** object )
 STDMETHODIMP DeviceManagerWasapi::Impl::OnDeviceStateChanged( LPCWSTR device_id, DWORD new_state )
 {
 	std::string stateStr = deviceStateToStr( new_state );
+
+	ci::msw::initializeCom(); // TODO is this helpful or not?
 
 	auto device = getDevice( device_id );
 	if( ! device ) {
