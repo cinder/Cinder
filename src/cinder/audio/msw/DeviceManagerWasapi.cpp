@@ -322,6 +322,11 @@ void DeviceManagerWasapi::parseDevices( DeviceInfo::Usage usage )
 		CI_ASSERT( hr == S_OK );
 		::WAVEFORMATEX *format = (::WAVEFORMATEX *)formatVar.blob.pBlobData;
 
+		if (!format)
+		{
+			continue;
+		}
+
 		devInfo.mNumChannels = format->nChannels;
 		devInfo.mSampleRate = format->nSamplesPerSec;
 
