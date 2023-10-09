@@ -50,6 +50,7 @@ struct DeviceManagerWasapi::Impl : public ::IMMNotificationClient {
 	{}
 
 	const DeviceRef& getDevice( const std::wstring &enpointId );
+	const string& getDeviceName(LPCWSTR device_id);
 
 	// IMMNotificationClient methods
 	STDMETHOD_(ULONG, AddRef)();
@@ -375,6 +376,16 @@ const DeviceRef& DeviceManagerWasapi::Impl::getDevice( const std::wstring &enpoi
 	return sNullDevice;
 }
 
+const string& DeviceManagerWasapi::Impl::getDeviceName( LPCWSTR device_id )
+{
+	const auto dev = getDevice(device_id);
+	static string sUnknownDeviceName = "(???)"s;
+	if (dev) {
+		return dev->getName();
+	}
+	return sUnknownDeviceName;
+}
+
 // ----------------------------------------------------------------------------------------------------
 // DeviceManagerWasapi::Impl IMMNotificationClient implementation
 // ----------------------------------------------------------------------------------------------------
@@ -461,22 +472,19 @@ HRESULT DeviceManagerWasapi::Impl::OnDefaultDeviceChanged( EDataFlow flow, ERole
 
 HRESULT DeviceManagerWasapi::Impl::OnDeviceAdded( LPCWSTR device_id )
 {
-	auto devName = getDevice( device_id )->getName();
-	CI_LOG_I( "device name: " << devName );
+	CI_LOG_I( "device name: " << getDeviceName(device_id) );
 	return S_OK;
 }
 
 HRESULT DeviceManagerWasapi::Impl::OnDeviceRemoved( LPCWSTR device_id )
 {
-	auto devName = getDevice( device_id )->getName();
-	CI_LOG_I( "device name: " << devName );
+	CI_LOG_I( "device name: " << getDeviceName(device_id) );
 	return S_OK;
 }
 
 HRESULT DeviceManagerWasapi::Impl::OnPropertyValueChanged( LPCWSTR device_id, const PROPERTYKEY key )
 {
-	//auto devName = getDevice( device_id )->getName();
-	//CI_LOG_I( "device name: " << devName );
+	CI_LOG_I( "device name: " << getDeviceName(device_id) );
 	return S_OK;
 }
 
