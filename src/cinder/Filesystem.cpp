@@ -21,13 +21,16 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#if defined(__cplusplus) && __cplusplus >= 201703L && defined(__has_include)
-	#if (! defined(__APPLE__)) && __has_include(<filesystem>)
+#ifndef __APPLE__
+	#if defined(__cplusplus) && __cplusplus >= 201703L && defined(__has_include) && __has_include(<filesystem>)
+		#define GHC_USE_STD_FS
+	#elif defined(_MSVC_LANG) && _MSVC_LANG >= 201703L && defined(__has_include) && __has_include(<filesystem>)
 		#define GHC_USE_STD_FS
 	#endif
 #endif
 
-#if ! defined( GHC_USE_STD_FS )
+#ifndef GHC_USE_STD_FS
 	#undef GHC_FILESYSTEM_H
+	#define GHC_WIN_WSTRING_STRING_TYPE
 	#include <ghc/fs_impl.hpp>
 #endif
