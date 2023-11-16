@@ -24,15 +24,30 @@
 
 #pragma once
 
-#if (! defined(__APPLE__)) && defined(__cplusplus) && __cplusplus >= 201703L && defined(__has_include) && __has_include(<filesystem>)
-	#define GHC_USE_STD_FS
+/*
+	Seems like MSVC does not define `__cplusplus` according to the picked `std=c++XX` prior to 2017.
+	Moreover, due to legacy code expecting it to still be `199711L` this is disabled by default and requires `/Zc:__cplusplus`.
+	> ref : https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
+
+	Instead, we can additionally check `_MSVC_LANG` which always reports the c++ std version 
+	Basically, when `/Zc:__cplusplus` is enabled: `__cplusplus == _MSVC_LANG`
+	> ref: https://learn.microsoft.com/en-us/cpp/preprocessor/predefined-macros?view=msvc-170
+*/
+
+#ifndef __APPLE__
+	#if defined(__cplusplus) && __cplusplus >= 201703L && defined(__has_include) && __has_include(<filesystem>)
+		#define GHC_USE_STD_FS
+	#elif defined(_MSVC_LANG) && _MSVC_LANG >= 201703L && defined(__has_include) && __has_include(<filesystem>)
+		#define GHC_USE_STD_FS
+	#endif
+#endif
+
+#ifdef GHC_USE_STD_FS
 	#include <filesystem>
 	namespace cinder {
 		namespace fs = std::filesystem;
 	}
-#endif
-
-#ifndef GHC_USE_STD_FS
+#else
 	#include <ghc/fs_fwd.hpp>
 	namespace cinder {
 		namespace fs = ghc::filesystem;
