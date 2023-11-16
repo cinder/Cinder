@@ -48,6 +48,7 @@
 		namespace fs = std::filesystem;
 	}
 #else
+	#define GHC_WIN_WSTRING_STRING_TYPE
 	#include <ghc/fs_fwd.hpp>
 	namespace cinder {
 		namespace fs = ghc::filesystem;
