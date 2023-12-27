@@ -123,41 +123,74 @@ struct CI_API math<float>
 #define M_PI           3.14159265358979323846
 #endif
 
-const double EPSILON_VALUE = 4.37114e-05;
-#define EPSILON EPSILON_VALUE
-
-CI_API inline bool approxZero( float n, float epsilon = float(EPSILON) )
+CI_API inline bool approxZero( float n, float epsilon = FLT_EPSILON )
 {
 	return std::abs( n ) < epsilon;
 }
 
-CI_API inline bool approxZero( double n, double epsilon = EPSILON )
+CI_API inline bool approxZero( double n, double epsilon = DBL_EPSILON )
 {
 	return std::abs( n ) < epsilon;
 }
 
-CI_API inline float roundToZero( float n, float epsilon = float(EPSILON) )
+CI_API inline float roundToZero( float n, float epsilon = FLT_EPSILON )
 {
 	if( std::abs( n ) < epsilon )
 		return 0.0f;
 	return n;
 }
 
-CI_API inline double roundToZero( double n, double epsilon = EPSILON )
+CI_API inline double roundToZero( double n, double epsilon = DBL_EPSILON )
 {
 	if( std::abs( n ) < epsilon )
 		return 0.0;
 	return n;
 }
 
-CI_API inline bool approxEqual( float a, float b, float epsilon = float(EPSILON) )
+CI_API inline bool approxEqual( float a, float b, float epsilon = FLT_EPSILON )
 {
 	return std::abs( b - a ) < epsilon;
 }
 
-CI_API inline bool approxEqual( double a, double b, double epsilon = EPSILON )
+CI_API inline bool approxEqual( double a, double b, double epsilon = DBL_EPSILON )
 {
 	return std::abs( b - a ) < epsilon;
+}
+
+CI_API inline bool approxEqualRelative( float a, float b, float maxRelDiff = FLT_EPSILON )
+{
+	// See: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+
+	// Calculate the difference.
+	float diff = std::abs( a - b );
+	a = std::abs( a );
+	b = std::abs( b );
+
+	// Find the largest.
+	float largest = ( b > a ) ? b : a;
+
+	if( diff <= largest * maxRelDiff )
+		return true;
+
+	return false;
+}
+
+CI_API inline bool approxEqualRelative( double a, double b, double maxRelDiff = DBL_EPSILON )
+{
+	// See: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+
+	// Calculate the difference.
+	double diff = std::abs( a - b );
+	a = std::abs( a );
+	b = std::abs( b );
+
+	// Find the largest.
+	double largest = ( b > a ) ? b : a;
+
+	if( diff <= largest * maxRelDiff )
+		return true;
+
+	return false;
 }
 
 inline float toRadians( float x )
