@@ -143,10 +143,10 @@ CI_API inline float roundToZero( float n, float epsilon = float(EPSILON) )
 	return n;
 }
 
-CI_API inline float roundToZero( double n, double epsilon = EPSILON )
+CI_API inline double roundToZero( double n, double epsilon = EPSILON )
 {
 	if( std::abs( n ) < epsilon )
-		return 0.0f;
+		return 0.0;
 	return n;
 }
 
