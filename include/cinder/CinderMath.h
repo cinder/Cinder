@@ -126,6 +126,40 @@ struct CI_API math<float>
 const double EPSILON_VALUE = 4.37114e-05;
 #define EPSILON EPSILON_VALUE
 
+CI_API inline bool approxZero( float n, float epsilon = float(EPSILON) )
+{
+	return std::abs( n ) < epsilon;
+}
+
+CI_API inline bool approxZero( double n, double epsilon = EPSILON )
+{
+	return std::abs( n ) < epsilon;
+}
+
+CI_API inline float roundToZero( float n, float epsilon = float(EPSILON) )
+{
+	if( std::abs( n ) < epsilon )
+		return 0.0f;
+	return n;
+}
+
+CI_API inline float roundToZero( double n, double epsilon = EPSILON )
+{
+	if( std::abs( n ) < epsilon )
+		return 0.0f;
+	return n;
+}
+
+CI_API inline bool approxEqual( float a, float b, float epsilon = float(EPSILON) )
+{
+	return std::abs( b - a ) < epsilon;
+}
+
+CI_API inline bool approxEqual( double a, double b, double epsilon = EPSILON )
+{
+	return std::abs( b - a ) < epsilon;
+}
+
 inline float toRadians( float x )
 {
 	return x * 0.017453292519943295769f; // ( x * PI / 180 )
