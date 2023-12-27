@@ -34,9 +34,45 @@ void Shape2d::moveTo( const vec2 &p )
 	mContours.back().moveTo( p );
 }
 
+void Shape2d::relativeMoveTo( const vec2 &p )
+{
+	const auto &pt = getCurrentPoint();
+	moveTo( pt + p );
+}
+
 void Shape2d::lineTo( const vec2 &p )
 {
 	mContours.back().lineTo( p );
+}
+
+void Shape2d::relativeLineTo( const vec2 &p )
+{
+	const auto &pt = getCurrentPoint();
+	lineTo( pt + p );
+}
+
+void Shape2d::horizontalLineTo( float x )
+{
+	const auto &pt = getCurrentPoint();
+	lineTo( x, pt.y );
+}
+
+void Shape2d::relativeHorizontalLineTo( float dx )
+{
+	const auto &pt = getCurrentPoint();
+	lineTo( pt.x + dx, pt.y );
+}
+
+void Shape2d::verticalLineTo( float y )
+{
+	const auto &pt = getCurrentPoint();
+	lineTo( pt.x, y );
+}
+
+void Shape2d::relativeVerticalLineTo( float dy )
+{
+	const auto &pt = getCurrentPoint();
+	lineTo( pt.x, pt.y + dy );
 }
 
 void Shape2d::quadTo( const vec2 &p1, const vec2 &p2 )
@@ -44,9 +80,43 @@ void Shape2d::quadTo( const vec2 &p1, const vec2 &p2 )
 	mContours.back().quadTo( p1, p2 );
 }
 
+void Shape2d::relativeQuadTo( const vec2 &p1, const vec2 &p2 )
+{
+	const auto &pt = getCurrentPoint();
+	quadTo( pt + p1, pt + p2 );
+}
+
+void Shape2d::smoothQuadTo( const vec2 &p2 )
+{
+	mContours.back().smoothQuadTo( p2 );
+}
+
+void Shape2d::relativeSmoothQuadTo( const vec2 &p2 )
+{
+	const auto &pt = getCurrentPoint();
+	smoothQuadTo( pt + p2 );
+}
+
 void Shape2d::curveTo( const vec2 &p1, const vec2 &p2, const vec2 &p3 )
 {
 	mContours.back().curveTo( p1, p2, p3 );
+}
+
+void Shape2d::relativeCurveTo( const vec2 &p1, const vec2 &p2, const vec2 &p3 )
+{
+	const auto &pt = getCurrentPoint();
+	curveTo( pt + p1, pt + p2, pt + p3 );
+}
+
+void Shape2d::smoothCurveTo( const vec2 &p2, const vec2 &p3 )
+{
+	mContours.back().smoothCurveTo( p2, p3 );
+}
+
+void Shape2d::relativeSmoothCurveTo( const vec2 &p2, const vec2 &p3 )
+{
+	const auto &pt = getCurrentPoint();
+	smoothCurveTo( pt + p2, pt + p3 );
 }
 
 void Shape2d::arc( const vec2 &center, float radius, float startRadians, float endRadians, bool forward )
@@ -61,10 +131,27 @@ void Shape2d::arcTo( const vec2 &p, const vec2 &t, float radius )
 	mContours.back().arcTo( p, t, radius );
 }
 
+void Shape2d::arcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &p2 )
+{
+	mContours.back().arcTo( rx, ry, phi, largeArcFlag, sweepFlag, p2 );
+}
+
+void Shape2d::relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &p2 )
+{
+	const auto &pt = getCurrentPoint();
+	arcTo( rx, ry, phi, largeArcFlag, sweepFlag, pt + p2 );
+}
+
 void Shape2d::close()
 {
 	if( ! mContours.empty() )
 		mContours.back().close();
+}
+
+void Shape2d::reverse()
+{
+	for( auto &contour : mContours )
+		contour.reverse();
 }
 
 void Shape2d::append( const Shape2d &shape )
