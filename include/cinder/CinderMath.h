@@ -138,16 +138,12 @@ CI_API inline bool approxZero( double n, double epsilon = EPSILON_VALUE )
 
 CI_API inline float roundToZero( float n, float epsilon = float(EPSILON_VALUE) )
 {
-	if( approxZero( n, epsilon ) )
-		return 0.0f;
-	return n;
+	return approxZero( n, epsilon ) ? 0.0f : n;
 }
 
 CI_API inline double roundToZero( double n, double epsilon = EPSILON_VALUE )
 {
-	if( approxZero( n, epsilon ) )
-		return 0.0;
-	return n;
+	return approxZero( n, epsilon ) ? 0.0 : n;
 }
 
 CI_API inline bool approxEqual( float a, float b, float epsilon = float(EPSILON_VALUE) )
@@ -165,12 +161,12 @@ CI_API inline bool approxEqualRelative( float a, float b, float maxRelDiff = flo
 	// See: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
 
 	// Calculate the difference.
-	float diff = std::abs( a - b );
-	a = std::abs( a );
-	b = std::abs( b );
+	const float diff = std::abs( a - b );
 
 	// Find the largest.
-	float largest = ( b > a ) ? b : a;
+	a = std::abs( a );
+	b = std::abs( b );
+	const float largest = ( b > a ) ? b : a;
 
 	if( diff <= largest * maxRelDiff )
 		return true;
@@ -183,12 +179,12 @@ CI_API inline bool approxEqualRelative( double a, double b, double maxRelDiff = 
 	// See: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
 
 	// Calculate the difference.
-	double diff = std::abs( a - b );
-	a = std::abs( a );
-	b = std::abs( b );
+	const double diff = std::abs( a - b );
 
 	// Find the largest.
-	double largest = ( b > a ) ? b : a;
+	a = std::abs( a );
+	b = std::abs( b );
+	const double largest = ( b > a ) ? b : a;
 
 	if( diff <= largest * maxRelDiff )
 		return true;
