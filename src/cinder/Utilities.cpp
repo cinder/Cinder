@@ -252,15 +252,25 @@ char charToUpper( const char c )
 	return c;
 }
 
-std::string toLower( std::string str )
+void toLowerInPlace( std::string &str )
 {
 	std::transform( str.begin(), str.end(), str.begin(), []( unsigned char c ) { return std::tolower( c ); } );
+}
+
+std::string toLower( std::string str )
+{
+	toLowerInPlace( str );
 	return str;
+}
+
+void toUpperInPlace( std::string &str )
+{
+	std::transform( str.begin(), str.end(), str.begin(), []( unsigned char c ) { return std::toupper( c ); } );
 }
 
 std::string toUpper( std::string str )
 {
-	std::transform( str.begin(), str.end(), str.begin(), []( unsigned char c ) { return std::toupper( c ); } );
+	toUpperInPlace( str );
 	return str;
 }
 
