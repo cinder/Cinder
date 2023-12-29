@@ -254,8 +254,8 @@ char charToUpper( const char c )
 
 std::string toLower( std::string str )
 {
-	thread_local static std::locale loc( "" );
-	return toLower( std::move( str ), loc );
+	std::transform( str.begin(), str.end(), str.begin(), []( unsigned char c ) { return std::tolower( c ); } );
+	return str;
 }
 
 std::string toLower( std::string str, const std::locale &loc )
@@ -266,8 +266,8 @@ std::string toLower( std::string str, const std::locale &loc )
 
 std::string toUpper( std::string str )
 {
-	thread_local static std::locale loc( "" );
-	return toUpper( std::move( str ), loc );
+	std::transform( str.begin(), str.end(), str.begin(), []( unsigned char c ) { return std::toupper( c ); } );
+	return str;
 }
 
 std::string toUpper( std::string str, const std::locale &loc )
