@@ -65,7 +65,7 @@ enum UniformSemantic {
 CI_API class Context* context();
 CI_API class Environment* env();
 
-//! Ovewrites the local static environment variable, only useful from external (dll) plugins.
+//! Overwrites the local static environment variable, only useful from external (dll) plugins.
 CI_API void setEnvironment( Environment* environment );
 
 CI_API void enableVerticalSync( bool enable = true );
@@ -377,25 +377,121 @@ CI_API inline void compatColor( const Color8u &color ) { glColor3ubv( &color.r )
 CI_API inline void compatColor( const ColorA8u &color ) { glColor4ubv( &color.r ); }
 
 // NV_path_rendering extension
-CI_API inline GLuint genPathsNV( GLsizei range ) { return glGenPathsNV( range ); }
-CI_API inline void deletePathsNV( GLuint path, GLsizei range ) { glDeletePathsNV( path, range ); }
+CI_API inline GLuint    genPathsNV( GLsizei range ) { return glGenPathsNV( range ); }
+CI_API inline void      deletePathsNV( GLuint path, GLsizei range ) { glDeletePathsNV( path, range ); }
+CI_API inline GLboolean isPathNV( GLuint path ) { return glIsPathNV( path ); }
+CI_API inline void      pathCommandsNV( GLuint path, GLsizei numCommands, const GLubyte *commands, GLsizei numCoords, GLenum coordType, const void *coords ) { glPathCommandsNV( path, numCommands, commands, numCoords, coordType, coords ); }
+CI_API inline void      pathCoordsNV( GLuint path, GLsizei numCoords, GLenum coordType, const void *coords ) { glPathCoordsNV( path, numCoords, coordType, coords ); }
+CI_API inline void      pathSubCommandsNV( GLuint path, GLsizei commandStart, GLsizei commandsToDelete, GLsizei numCommands, const GLubyte *commands, GLsizei numCoords, GLenum coordType, const void *coords )
+{
+	glPathSubCommandsNV( path, commandStart, commandsToDelete, numCommands, commands, numCoords, coordType, coords );
+}
+CI_API inline void pathSubCoordsNV( GLuint path, GLsizei coordStart, GLsizei numCoords, GLenum coordType, const void *coords ) { glPathSubCoordsNV( path, coordStart, numCoords, coordType, coords ); }
 CI_API inline void pathStringNV( GLuint path, GLenum format, GLsizei length, const void *pathString ) { glPathStringNV( path, format, length, pathString ); }
-CI_API inline void pathCommandsNV( GLuint path, GLsizei numCommands, const GLubyte *commands, GLsizei numCoords, GLenum coordType, const void *coords )
-						{ glPathCommandsNV( path, numCommands, commands, numCoords, coordType, coords); }
+CI_API inline void pathGlyphsNV( GLuint firstPathName, GLenum fontTarget, const void *fontName, GLbitfield fontStyle, GLsizei numGlyphs, GLenum type, const void *charcodes, //
+	GLenum handleMissingGlyphs, GLuint pathParameterTemplate, GLfloat emScale )
+{
+	glPathGlyphsNV( firstPathName, fontTarget, fontName, fontStyle, numGlyphs, type, charcodes, handleMissingGlyphs, pathParameterTemplate, emScale );
+}
+CI_API inline void pathGlyphRangeNV( GLuint firstPathName, GLenum fontTarget, const void *fontName, GLbitfield fontStyle, GLuint firstGlyph, GLsizei numGlyphs, //
+	GLenum handleMissingGlyphs, GLuint pathParameterTemplate, GLfloat emScale )
+{
+	glPathGlyphRangeNV( firstPathName, fontTarget, fontName, fontStyle, firstGlyph, numGlyphs, handleMissingGlyphs, pathParameterTemplate, emScale );
+}
+CI_API inline void weightPathsNV( GLuint resultPath, GLsizei numPaths, const GLuint *paths, const GLfloat *weights ) { glWeightPathsNV( resultPath, numPaths, paths, weights ); }
+CI_API inline void copyPathNV( GLuint resultPath, GLuint srcPath ) { glCopyPathNV( resultPath, srcPath ); }
+CI_API inline void interpolatePathsNV( GLuint resultPath, GLuint pathA, GLuint pathB, GLfloat weight ) { glInterpolatePathsNV( resultPath, pathA, pathB, weight ); }
+CI_API inline void transformPathNV( GLuint resultPath, GLuint srcPath, GLenum transformType, const GLfloat *transformValues ) { glTransformPathNV( resultPath, srcPath, transformType, transformValues ); }
+CI_API inline void pathParameterivNV( GLuint path, GLenum pname, const GLint *value ) { glPathParameterivNV( path, pname, value ); }
 CI_API inline void pathParameteriNV( GLuint path, GLenum pname, GLint value ) { glPathParameteriNV( path, pname, value ); }
+CI_API inline void pathParameterfvNV( GLuint path, GLenum pname, const GLfloat *value ) { glPathParameterfvNV( path, pname, value ); }
 CI_API inline void pathParameterfNV( GLuint path, GLenum pname, GLfloat value ) { glPathParameterfNV( path, pname, value ); }
-CI_API inline void pathTexGenNV( GLenum texCoordSet, GLenum genMode, int components, const float *coeffs ) { glPathTexGenNV( texCoordSet, genMode, components, coeffs ); }
-CI_API inline void pathColorGenNV( GLenum color, GLenum genMode, GLenum colorMode, const float *coeffs ) { glPathColorGenNV( color, genMode, colorMode, coeffs ); }
-CI_API inline void getPathParameterfvNV( GLuint path, GLenum pname, GLfloat *value ) { glGetPathParameterfvNV( path, pname, value ); }
-CI_API inline void pathCoverDepthFuncNV( GLenum zfunc ) { glPathCoverDepthFuncNV( zfunc ); }
+CI_API inline void pathDashArrayNV( GLuint path, GLsizei dashCount, const GLfloat *dashArray ) { glPathDashArrayNV( path, dashCount, dashArray ); }
+CI_API inline void pathStencilFuncNV( GLenum func, GLint ref, GLuint mask ) { glPathStencilFuncNV( func, ref, mask ); }
+CI_API inline void pathStencilDepthOffsetNV( GLfloat factor, GLfloat units ) { glPathStencilDepthOffsetNV( factor, units ); }
 CI_API inline void stencilFillPathNV( GLuint path, GLenum fillMode, GLuint mask ) { glStencilFillPathNV( path, fillMode, mask ); }
-CI_API inline void stencilStrokePathNV( GLuint path, int reference, GLuint mask ) { glStencilStrokePathNV( path, reference, mask ); }
+CI_API inline void stencilStrokePathNV( GLuint path, GLint reference, GLuint mask ) { glStencilStrokePathNV( path, reference, mask ); }
+CI_API inline void stencilFillPathInstancedNV( GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum fillMode, GLuint mask, GLenum transformType, const GLfloat *transformValues )
+{
+	glStencilFillPathInstancedNV( numPaths, pathNameType, paths, pathBase, fillMode, mask, transformType, transformValues );
+}
+CI_API inline void stencilStrokePathInstancedNV( GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLint reference, GLuint mask, GLenum transformType, const GLfloat *transformValues )
+{
+	glStencilStrokePathInstancedNV( numPaths, pathNameType, paths, pathBase, reference, mask, transformType, transformValues );
+}
+CI_API inline void pathCoverDepthFuncNV( GLenum func ) { glPathCoverDepthFuncNV( func ); }
 CI_API inline void coverFillPathNV( GLuint path, GLenum coverMode ) { glCoverFillPathNV( path, coverMode ); }
 CI_API inline void coverStrokePathNV( GLuint path, GLenum coverMode ) { glCoverStrokePathNV( path, coverMode ); }
-CI_API inline void stencilFillPathInstancedNV( GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum fillMode, GLuint mask, GLenum transformType, const float *transformValues )
-						{ glStencilFillPathInstancedNV( numPaths, pathNameType, paths, pathBase, fillMode, mask, transformType, transformValues ); }
-CI_API inline void coverFillPathInstancedNV( GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum coverMode, GLenum transformType, const float *transformValues )
-						{ glCoverFillPathInstancedNV( numPaths, pathNameType, paths, pathBase, coverMode, transformType, transformValues ); }
+CI_API inline void coverFillPathInstancedNV( GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum coverMode, GLenum transformType, const GLfloat *transformValues )
+{
+	glCoverFillPathInstancedNV( numPaths, pathNameType, paths, pathBase, coverMode, transformType, transformValues );
+}
+CI_API inline void coverStrokePathInstancedNV( GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum coverMode, GLenum transformType, const GLfloat *transformValues )
+{
+	glCoverStrokePathInstancedNV( numPaths, pathNameType, paths, pathBase, coverMode, transformType, transformValues );
+}
+CI_API inline void getPathParameterivNV( GLuint path, GLenum pname, GLint *value ) { glGetPathParameterivNV( path, pname, value ); }
+CI_API inline void getPathParameterfvNV( GLuint path, GLenum pname, GLfloat *value ) { glGetPathParameterfvNV( path, pname, value ); }
+CI_API inline void getPathCommandsNV( GLuint path, GLubyte *commands ) { glGetPathCommandsNV( path, commands ); }
+CI_API inline void getPathCoordsNV( GLuint path, GLfloat *coords ) { glGetPathCoordsNV( path, coords ); }
+CI_API inline void getPathDashArrayNV( GLuint path, GLfloat *dashArray ) { glGetPathDashArrayNV( path, dashArray ); }
+CI_API inline void getPathMetricsNV( GLbitfield metricQueryMask, GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLsizei stride, GLfloat *metrics )
+{
+	glGetPathMetricsNV( metricQueryMask, numPaths, pathNameType, paths, pathBase, stride, metrics );
+}
+CI_API inline void getPathMetricRangeNV( GLbitfield metricQueryMask, GLuint firstPathName, GLsizei numPaths, GLsizei stride, GLfloat *metrics ) { glGetPathMetricRangeNV( metricQueryMask, firstPathName, numPaths, stride, metrics ); }
+CI_API inline void getPathSpacingNV( GLenum pathListMode, GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLfloat advanceScale, GLfloat kerningScale, GLenum transformType, GLfloat *returnedSpacing )
+{
+	glGetPathSpacingNV( pathListMode, numPaths, pathNameType, paths, pathBase, advanceScale, kerningScale, transformType, returnedSpacing );
+}
+CI_API inline GLboolean isPointInFillPathNV( GLuint path, GLuint mask, GLfloat x, GLfloat y ) { return glIsPointInFillPathNV( path, mask, x, y ); }
+CI_API inline GLboolean isPointInStrokePathNV( GLuint path, GLfloat x, GLfloat y ) { return glIsPointInStrokePathNV( path, x, y ); }
+CI_API inline GLfloat   getPathLengthNV( GLuint path, GLsizei startSegment, GLsizei numSegments ) { return glGetPathLengthNV( path, startSegment, numSegments ); }
+CI_API inline GLboolean pointAlongPathNV( GLuint path, GLsizei startSegment, GLsizei numSegments, GLfloat distance, GLfloat *x, GLfloat *y, GLfloat *tangentX, GLfloat *tangentY )
+{
+	return glPointAlongPathNV( path, startSegment, numSegments, distance, x, y, tangentX, tangentY );
+}
+CI_API inline void matrixLoad3x2fNV( GLenum matrixMode, const GLfloat *m ) { glMatrixLoad3x2fNV( matrixMode, m ); }
+CI_API inline void matrixLoad3x3fNV( GLenum matrixMode, const GLfloat *m ) { glMatrixLoad3x3fNV( matrixMode, m ); }
+CI_API inline void matrixLoadTranspose3x3fNV( GLenum matrixMode, const GLfloat *m ) { glMatrixLoadTranspose3x3fNV( matrixMode, m ); }
+CI_API inline void matrixMult3x2fNV( GLenum matrixMode, const GLfloat *m ) { glMatrixMult3x2fNV( matrixMode, m ); }
+CI_API inline void matrixMult3x3fNV( GLenum matrixMode, const GLfloat *m ) { glMatrixMult3x3fNV( matrixMode, m ); }
+CI_API inline void matrixMultTranspose3x3fNV( GLenum matrixMode, const GLfloat *m ) { glMatrixMultTranspose3x3fNV( matrixMode, m ); }
+CI_API inline void stencilThenCoverFillPathNV( GLuint path, GLenum fillMode, GLuint mask, GLenum coverMode ) { glStencilThenCoverFillPathNV( path, fillMode, mask, coverMode ); }
+CI_API inline void stencilThenCoverStrokePathNV( GLuint path, GLint reference, GLuint mask, GLenum coverMode ) { glStencilThenCoverStrokePathNV( path, reference, mask, coverMode ); }
+CI_API inline void stencilThenCoverFillPathInstancedNV( GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum fillMode, GLuint mask, GLenum coverMode, GLenum transformType, const GLfloat *transformValues )
+{
+	glStencilThenCoverFillPathInstancedNV( numPaths, pathNameType, paths, pathBase, fillMode, mask, coverMode, transformType, transformValues );
+}
+CI_API inline void stencilThenCoverStrokePathInstancedNV( GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLint reference, GLuint mask, GLenum coverMode, GLenum transformType, const GLfloat *transformValues )
+{
+	glStencilThenCoverStrokePathInstancedNV( numPaths, pathNameType, paths, pathBase, reference, mask, coverMode, transformType, transformValues );
+}
+CI_API inline GLenum pathGlyphIndexRangeNV( GLenum fontTarget, const void *fontName, GLbitfield fontStyle, GLuint pathParameterTemplate, GLfloat emScale, GLuint baseAndCount[2] )
+{
+	return glPathGlyphIndexRangeNV( fontTarget, fontName, fontStyle, pathParameterTemplate, emScale, baseAndCount );
+}
+CI_API inline GLenum pathGlyphIndexArrayNV( GLuint firstPathName, GLenum fontTarget, const void *fontName, GLbitfield fontStyle, GLuint firstGlyphIndex, GLsizei numGlyphs, GLuint pathParameterTemplate, GLfloat emScale )
+{
+	return glPathGlyphIndexArrayNV( firstPathName, fontTarget, fontName, fontStyle, firstGlyphIndex, numGlyphs, pathParameterTemplate, emScale );
+}
+CI_API inline GLenum pathMemoryGlyphIndexArrayNV(
+	GLuint firstPathName, GLenum fontTarget, GLsizeiptr fontSize, const void *fontData, GLsizei faceIndex, GLuint firstGlyphIndex, GLsizei numGlyphs, GLuint pathParameterTemplate, GLfloat emScale )
+{
+	return glPathMemoryGlyphIndexArrayNV( firstPathName, fontTarget, fontSize, fontData, faceIndex, firstGlyphIndex, numGlyphs, pathParameterTemplate, emScale );
+}
+CI_API inline void programPathFragmentInputGenNV( GLuint program, GLint location, GLenum genMode, GLint components, const GLfloat *coeffs ) { glProgramPathFragmentInputGenNV( program, location, genMode, components, coeffs ); }
+CI_API inline void getProgramResourcefvNV( GLuint program, GLenum programInterface, GLuint index, GLsizei propCount, const GLenum *props, GLsizei count, GLsizei *length, GLfloat *params )
+{
+	glGetProgramResourcefvNV( program, programInterface, index, propCount, props, count, length, params );
+}
+CI_API inline void pathColorGenNV( GLenum color, GLenum genMode, GLenum colorFormat, const GLfloat *coeffs ) { glPathColorGenNV( color, genMode, colorFormat, coeffs ); }
+CI_API inline void pathTexGenNV( GLenum texCoordSet, GLenum genMode, GLint components, const GLfloat *coeffs ) { glPathTexGenNV( texCoordSet, genMode, components, coeffs ); }
+CI_API inline void pathFogGenNV( GLenum genMode ) { glPathFogGenNV( genMode ); }
+CI_API inline void getPathColorGenivNV( GLenum color, GLenum pname, GLint *value ) { glGetPathColorGenivNV( color, pname, value ); }
+CI_API inline void getPathColorGenfvNV( GLenum color, GLenum pname, GLfloat *value ) { glGetPathColorGenfvNV( color, pname, value ); }
+CI_API inline void getPathTexGenivNV( GLenum texCoordSet, GLenum pname, GLint *value ) { glGetPathTexGenivNV( texCoordSet, pname, value ); }
+CI_API inline void getPathTexGenfvNV( GLenum texCoordSet, GLenum pname, GLfloat *value ) { glGetPathTexGenfvNV( texCoordSet, pname, value ); }
 CI_API inline void matrixLoadfEXT( GLenum matrixMode, const float *m ) { glMatrixLoadfEXT( matrixMode, m ); }
 #endif // defined( CINDER_GL_HAS_NV_PATH )
 
