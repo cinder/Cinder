@@ -141,7 +141,7 @@ DeviceRef DeviceManagerCoreAudio::getDefaultOutput()
 	::AudioObjectPropertyAddress propertyAddress = getAudioObjectPropertyAddress( kAudioHardwarePropertyDefaultOutputDevice );
 	auto defaultOutputId = getAudioObjectProperty<::AudioDeviceID>( kAudioObjectSystemObject, propertyAddress );
 
-	return findDeviceByKey( DeviceManagerCoreAudio::keyForDeviceId( defaultOutputId ) );
+	return findOutputDeviceByKey( DeviceManagerCoreAudio::keyForDeviceId( defaultOutputId ) );
 }
 
 DeviceRef DeviceManagerCoreAudio::getDefaultInput()
@@ -345,12 +345,30 @@ void DeviceManagerCoreAudio::unregisterPropertyListeners( const DeviceRef &devic
 	Block_release( listenerBlock );
 }
 
+void printDeviceInfo(AudioObjectID deviceId, string name) {
+    // Get the sample rate of the device
+    auto sampleRates = getAudioObjectPropertyVector<Float64>(deviceId, kAudioDevicePropertyAvailableNominalSampleRates);
+    // Assuming the first available sample rate is used
+    Float64 sampleRate = sampleRates.empty() ? 0.0 : sampleRates[0];
+    // Get the number of channels of the device
+    auto channels = getAudioObjectPropertyVector<UInt32>(deviceId, kAudioDevicePropertyStreams, kAudioObjectPropertyScopeGlobal);
+    UInt32 numChannels = channels.size();
+
+    // Print or use the retrieved information
+    std::cerr << "Device ID: " << ((unsigned)deviceId) << std::endl;
+    std::cout << "Device Name: " << name << std::endl;
+    std::cout << "Sample rate: " << sampleRate << std::endl;
+    std::cout << "Channels: " << numChannels << std::endl;
+}
+
+
 const vector<DeviceRef>& DeviceManagerCoreAudio::getDevices()
 {
 	if( mDevices.empty() ) {
 		auto deviceIds = getAudioObjectPropertyVector<::AudioObjectID>( kAudioObjectSystemObject, kAudioHardwarePropertyDevices );
 		for ( ::AudioDeviceID &deviceId : deviceIds ) {
 			string key = keyForDeviceId( deviceId );
+            printDeviceInfo( deviceId, key );
 			auto device = addDevice( key );
 			mDeviceIds.insert( { device, deviceId } );
 		}

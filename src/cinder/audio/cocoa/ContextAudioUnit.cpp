@@ -77,9 +77,16 @@ void OutputDeviceNodeAudioUnit::initialize()
 {
 	mRenderData.node = this;
 	mRenderData.context = dynamic_cast<ContextAudioUnit *>( getContext().get() );
+    
+    CI_LOG_E("getOutputSampleRate() = " << getOutputSampleRate());
+    CI_LOG_E("getNumChannels() = " << getNumChannels());
 
-	::AudioStreamBasicDescription asbd = createFloatAsbd( getOutputSampleRate(), getNumChannels() );
-	setAudioUnitProperty( mAudioUnit, kAudioUnitProperty_StreamFormat, asbd, kAudioUnitScope_Input, DeviceBus::OUTPUT );
+    auto channels = getNumChannels();
+    auto sampleRate = getOutputSampleRate();
+    CI_LOG_I("sampleRate = " << sampleRate);
+    CI_LOG_I("channels = " << channels);
+    ::AudioStreamBasicDescription asbd = createFloatAsbd( sampleRate, channels );
+    setAudioUnitProperty( mAudioUnit, kAudioUnitProperty_StreamFormat, asbd, kAudioUnitScope_Input, DeviceBus::OUTPUT );
 
 	UInt32 enableOutput = 1;
 	setAudioUnitProperty( mAudioUnit, kAudioOutputUnitProperty_EnableIO, enableOutput, kAudioUnitScope_Output, DeviceBus::OUTPUT );

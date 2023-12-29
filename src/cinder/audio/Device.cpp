@@ -211,6 +211,16 @@ DeviceRef DeviceManager::findDeviceByKey( const string &key )
 	return DeviceRef();
 }
 
+DeviceRef DeviceManager::findOutputDeviceByKey( const string &key )
+{
+    for( const auto &device : getDevices() ) {
+        if( device->getNumOutputChannels() > 0 && device->getKey() == key )
+            return device;
+    }
+
+    return DeviceRef();
+}
+
 DeviceRef DeviceManager::addDevice( const string &key )
 {
 	// warn about duplicate Device keys since it will be impossible to select one or the other.

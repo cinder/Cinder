@@ -116,6 +116,7 @@ class CI_API DeviceManager : private Noncopyable {
 
 	virtual DeviceRef findDeviceByName( const std::string &name, bool supportsOutput, bool supportsInput );
 	virtual DeviceRef findDeviceByKey( const std::string &key );
+    virtual DeviceRef findOutputDeviceByKey( const std::string &key );
 
 	virtual const std::vector<DeviceRef>& getDevices()									= 0;
 	virtual DeviceRef getDefaultOutput()												= 0;
