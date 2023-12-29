@@ -171,11 +171,209 @@ int asciiCaseCmp( const char *a, const char *b )
 	return ((int)std::toupper(*a)) - ((int)std::toupper(*b));
 }
 
-std::string trim( const std::string &str )
+void trimLeftInPlace( std::string &str )
 {
-	size_t wsFront = str.find_first_not_of( " \f\n\r\t\v" );
-	size_t wsBack = str.find_last_not_of( " \f\n\r\t\v" );
-	return wsBack <= wsFront ? std::string() : str.substr( wsFront, wsBack - wsFront + 1 );
+	str.erase( str.begin(), std::find_if( str.begin(), str.end(), []( std::string::value_type ch ) { return !std::isspace( ch ); } ) );
+}
+
+std::string trimLeft( std::string str )
+{
+	trimLeftInPlace( str );
+	return str;
+}
+
+void trimRightInPlace( std::string &str )
+{
+	str.erase( std::find_if( str.rbegin(), str.rend(), []( std::string::value_type ch ) { return !std::isspace( ch ); } ).base(), str.end() );
+}
+
+std::string trimRight( std::string str )
+{
+	trimRightInPlace( str );
+	return str;
+}
+
+void trimInPlace( std::string &str )
+{
+	trimLeftInPlace( str );
+	trimRightInPlace( str );
+}
+
+std::string trim( std::string str )
+{
+	trimInPlace( str );
+	return str;
+}
+
+void trimLeftInPlace( std::string &str, const std::string &characters )
+{
+	str.erase( str.begin(), std::find_if( str.begin(), str.end(), [characters]( std::string::value_type ch ) { return characters.find( ch ) == std::string::npos; } ) );
+}
+
+std::string trimLeft( std::string str, const std::string &characters )
+{
+	trimLeftInPlace( str, characters );
+	return str;
+}
+
+void trimRightInPlace( std::string &str, const std::string &characters )
+{
+	str.erase( std::find_if( str.rbegin(), str.rend(), [characters]( std::string::value_type ch ) { return characters.find( ch ) == std::string::npos; } ).base(), str.end() );
+}
+
+std::string trimRight( std::string str, const std::string &characters )
+{
+	trimRightInPlace( str, characters );
+	return str;
+}
+
+void filterInPlace( std::string &str, const std::string &chars )
+{
+	str.erase( std::remove_if( str.begin(), str.end(), [chars]( char c ) { return chars.find( c ) != std::string::npos; } ), str.end() );
+}
+
+std::string filter( std::string str, const std::string &chars )
+{
+	filterInPlace( str, chars );
+	return str;
+}
+
+char charToLower( const char c )
+{
+	if( c >= 'A' && c <= 'Z' )
+		return char( c + 32 );
+	return c;
+}
+
+char charToUpper( const char c )
+{
+	if( c >= 'a' && c <= 'z' )
+		return char( c - 32 );
+	return c;
+}
+
+std::string toLower( std::string str )
+{
+	thread_local static std::locale loc( "" );
+	return toLower( std::move( str ), loc );
+}
+
+std::string toLower( std::string str, const std::locale &loc )
+{
+	std::transform( str.begin(), str.end(), str.begin(), [loc]( unsigned char c ) { return std::tolower( c, loc ); } );
+	return str;
+}
+
+std::string toUpper( std::string str )
+{
+	thread_local static std::locale loc( "" );
+	return toUpper( std::move( str ), loc );
+}
+
+std::string toUpper( std::string str, const std::locale &loc )
+{
+	std::transform( str.begin(), str.end(), str.begin(), [loc]( unsigned char c ) { return std::toupper( c, loc ); } );
+	return str;
+}
+
+void findReplaceInPlace( const std::string &find, const std::string &replace, std::string &str )
+{
+	auto pos = str.find( find );
+	while( pos != std::string::npos ) {
+		str.replace( pos, find.length(), replace );
+		pos = str.find( find, pos + replace.length() );
+	}
+}
+
+std::string findReplace( const std::string &find, const std::string &replace, std::string str )
+{
+	findReplaceInPlace( find, replace, str );
+	return str;
+}
+
+bool isWhiteSpace( char c )
+{
+	return c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\v' || c == '\f';
+}
+
+bool isDigit( char c )
+{
+	return !( c < '0' || c > '9' );
+}
+
+bool isHexDigit( char c )
+{
+	c = charToLower( c );
+	return isDigit( c ) || c == 'a' || c == 'b' || c == 'c' || c == 'd' || c == 'e' || c == 'f';
+}
+
+bool isAlpha( char c )
+{
+	c = charToLower( c );
+	return !( c < 'a' || c > 'z' );
+}
+
+bool isNumeric( char c )
+{
+	return isDigit( c ) || c == '.' || c == '-' || c == 'e' || c == 'E' || c == '+';
+}
+
+std::string valueToString( int value )
+{
+	return std::to_string( value );
+}
+
+std::string valueToString( unsigned value )
+{
+	return std::to_string( value );
+}
+
+std::string valueToString( long value )
+{
+	return std::to_string( value );
+}
+
+std::string valueToString( unsigned long value )
+{
+	return std::to_string( value );
+}
+
+std::string valueToString( long long value )
+{
+	return std::to_string( value );
+}
+
+std::string valueToString( unsigned long long value )
+{
+	return std::to_string( value );
+}
+
+std::string valueToString( float value )
+{
+	std::string str = std::to_string( value );
+	trimRightInPlace( str, "0.," );
+	return str;
+}
+
+std::string valueToString( float value, int precision )
+{
+	std::ostringstream str;
+	str << std::fixed << std::setprecision( precision ) << value;
+	return str.str();
+}
+
+std::string valueToString( double value )
+{
+	std::string str = std::to_string( value );
+	trimRightInPlace( str, "0.," );
+	return str;
+}
+
+std::string valueToString( double value, int precision )
+{
+	std::ostringstream str;
+	str << std::fixed << std::setprecision( precision ) << value;
+	return str.str();
 }
 
 void sleep( float milliseconds )
