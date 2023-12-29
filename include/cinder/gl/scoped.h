@@ -360,6 +360,57 @@ struct CI_API ScopedFrontFace : private Noncopyable {
 	Context		*mCtx;
 };
 
+//!
+class ScopedColorMask {
+  public:
+	ScopedColorMask( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha )
+	{
+		glGetBooleanv( GL_COLOR_WRITEMASK, mMask );
+		glColorMask( red, green, blue, alpha );
+	}
+	~ScopedColorMask() { glColorMask( mMask[0], mMask[1], mMask[2], mMask[3] ); }
+
+	ScopedColorMask( const ScopedColorMask & ) = delete;
+	ScopedColorMask( ScopedColorMask && ) = delete;
+	ScopedColorMask &operator=( const ScopedColorMask & ) = delete;
+	ScopedColorMask &operator=( ScopedColorMask && ) = delete;
+
+  private:
+	GLboolean mMask[4] = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+};
+
+//!
+class ScopedStencilMask {
+  public:
+	ScopedStencilMask( GLuint mask )
+	{
+		glGetIntegerv( GL_STENCIL_WRITEMASK , &mFrontMask);
+		glGetIntegerv( GL_STENCIL_BACK_WRITEMASK, &mBackMask );
+		glStencilMask( mask );
+	}
+	ScopedStencilMask( GLuint front, GLuint back )
+	{
+		glGetIntegerv( GL_STENCIL_WRITEMASK , &mFrontMask);
+		glGetIntegerv( GL_STENCIL_BACK_WRITEMASK, &mBackMask );
+		glStencilMaskSeparate( GL_FRONT, front );
+		glStencilMaskSeparate( GL_BACK, back );
+	}
+	~ScopedStencilMask()
+	{
+		glStencilMaskSeparate( GL_FRONT, mFrontMask );
+		glStencilMaskSeparate( GL_BACK, mBackMask );
+	}
+
+	ScopedStencilMask( const ScopedStencilMask & ) = delete;
+	ScopedStencilMask( ScopedStencilMask && ) = delete;
+	ScopedStencilMask &operator=( const ScopedStencilMask & ) = delete;
+	ScopedStencilMask &operator=( ScopedStencilMask && ) = delete;
+
+  private:
+	GLint mFrontMask = 0xFF;
+	GLint mBackMask = 0xFF;
+};
+
 #if defined( CINDER_GL_HAS_KHR_DEBUG )
 
 //! Scopes debug group message
