@@ -258,21 +258,9 @@ std::string toLower( std::string str )
 	return str;
 }
 
-std::string toLower( std::string str, const std::locale &loc )
-{
-	std::transform( str.begin(), str.end(), str.begin(), [loc]( unsigned char c ) { return std::tolower( c, loc ); } );
-	return str;
-}
-
 std::string toUpper( std::string str )
 {
 	std::transform( str.begin(), str.end(), str.begin(), []( unsigned char c ) { return std::toupper( c ); } );
-	return str;
-}
-
-std::string toUpper( std::string str, const std::locale &loc )
-{
-	std::transform( str.begin(), str.end(), str.begin(), [loc]( unsigned char c ) { return std::toupper( c, loc ); } );
 	return str;
 }
 

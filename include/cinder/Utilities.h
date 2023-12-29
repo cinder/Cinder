@@ -130,14 +130,10 @@ CI_API char charToLower( const char c );
 //! Converts the character \a c to uppercase. Not Unicode-aware.
 CI_API char charToUpper( const char c );
 
-//! returns a copy of \a str with all characters converted to lowercase (using std::tolower()). Not Unicode-aware.
+//! returns a copy of \a str with all characters converted to lowercase (using std::tolower()).
 CI_API std::string toLower( std::string str );
-//! returns a copy of \a str with all characters converted to lowercase (using std::tolower()). Not Unicode-aware.
-CI_API std::string toLower( std::string str, const std::locale &loc );
-//! returns a copy of \a str with all characters converted to uppercase (using std::toupper()). Not Unicode-aware.
+//! returns a copy of \a str with all characters converted to uppercase (using std::toupper()).
 CI_API std::string toUpper( std::string str );
-//! returns a copy of \a str with all characters converted to uppercase (using std::toupper()). Not Unicode-aware.
-CI_API std::string toUpper( std::string str, const std::locale &loc );
 
 //! replaces all instances of \a find with \a replace in \a str. Not Unicode-aware.
 CI_API void findReplaceInPlace( const std::string &find, const std::string &replace, std::string &str );
