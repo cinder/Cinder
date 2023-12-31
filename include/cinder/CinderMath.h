@@ -123,8 +123,74 @@ struct CI_API math<float>
 #define M_PI           3.14159265358979323846
 #endif
 
-const double EPSILON_VALUE = 4.37114e-05;
+constexpr double EPSILON_VALUE = 4.37114e-05;
 #define EPSILON EPSILON_VALUE
+
+CI_API inline bool approxZero( float n, float epsilon = float(EPSILON_VALUE) )
+{
+	return std::abs( n ) < epsilon;
+}
+
+CI_API inline bool approxZero( double n, double epsilon = EPSILON_VALUE )
+{
+	return std::abs( n ) < epsilon;
+}
+
+CI_API inline float roundToZero( float n, float epsilon = float(EPSILON_VALUE) )
+{
+	return approxZero( n, epsilon ) ? 0.0f : n;
+}
+
+CI_API inline double roundToZero( double n, double epsilon = EPSILON_VALUE )
+{
+	return approxZero( n, epsilon ) ? 0.0 : n;
+}
+
+CI_API inline bool approxEqual( float a, float b, float epsilon = float(EPSILON_VALUE) )
+{
+	return std::abs( b - a ) < epsilon;
+}
+
+CI_API inline bool approxEqual( double a, double b, double epsilon = EPSILON_VALUE )
+{
+	return std::abs( b - a ) < epsilon;
+}
+
+CI_API inline bool approxEqualRelative( float a, float b, float maxRelDiff = float(EPSILON_VALUE) )
+{
+	// See: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+
+	// Calculate the difference.
+	const float diff = std::abs( a - b );
+
+	// Find the largest.
+	a = std::abs( a );
+	b = std::abs( b );
+	const float largest = ( b > a ) ? b : a;
+
+	if( diff <= largest * maxRelDiff )
+		return true;
+
+	return false;
+}
+
+CI_API inline bool approxEqualRelative( double a, double b, double maxRelDiff = EPSILON_VALUE )
+{
+	// See: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+
+	// Calculate the difference.
+	const double diff = std::abs( a - b );
+
+	// Find the largest.
+	a = std::abs( a );
+	b = std::abs( b );
+	const double largest = ( b > a ) ? b : a;
+
+	if( diff <= largest * maxRelDiff )
+		return true;
+
+	return false;
+}
 
 inline float toRadians( float x )
 {
