@@ -360,55 +360,28 @@ struct CI_API ScopedFrontFace : private Noncopyable {
 	Context		*mCtx;
 };
 
-//!
-class ScopedColorMask {
+//! Scopes writing of frame buffer color components
+class ScopedColorMask : private Noncopyable {
   public:
-	ScopedColorMask( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha )
-	{
-		glGetBooleanv( GL_COLOR_WRITEMASK, mMask );
-		glColorMask( red, green, blue, alpha );
-	}
-	~ScopedColorMask() { glColorMask( mMask[0], mMask[1], mMask[2], mMask[3] ); }
-
-	ScopedColorMask( const ScopedColorMask & ) = delete;
-	ScopedColorMask( ScopedColorMask && ) = delete;
-	ScopedColorMask &operator=( const ScopedColorMask & ) = delete;
-	ScopedColorMask &operator=( ScopedColorMask && ) = delete;
+	//! Values for \a red, \a green, \a blue and \a alpha may be \c GL_TRUE or \c GL_FALSE
+	ScopedColorMask( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha );
+	~ScopedColorMask();
 
   private:
-	GLboolean mMask[4] = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+	Context *mCtx;
 };
 
-//!
-class ScopedStencilMask {
+//! Scopes the front and back writing of individual bits in the stencil planes (front and back)
+class ScopedStencilMask : private Noncopyable {
   public:
-	ScopedStencilMask( GLuint mask )
-	{
-		glGetIntegerv( GL_STENCIL_WRITEMASK , &mFrontMask);
-		glGetIntegerv( GL_STENCIL_BACK_WRITEMASK, &mBackMask );
-		glStencilMask( mask );
-	}
-	ScopedStencilMask( GLuint front, GLuint back )
-	{
-		glGetIntegerv( GL_STENCIL_WRITEMASK , &mFrontMask);
-		glGetIntegerv( GL_STENCIL_BACK_WRITEMASK, &mBackMask );
-		glStencilMaskSeparate( GL_FRONT, front );
-		glStencilMaskSeparate( GL_BACK, back );
-	}
-	~ScopedStencilMask()
-	{
-		glStencilMaskSeparate( GL_FRONT, mFrontMask );
-		glStencilMaskSeparate( GL_BACK, mBackMask );
-	}
-
-	ScopedStencilMask( const ScopedStencilMask & ) = delete;
-	ScopedStencilMask( ScopedStencilMask && ) = delete;
-	ScopedStencilMask &operator=( const ScopedStencilMask & ) = delete;
-	ScopedStencilMask &operator=( ScopedStencilMask && ) = delete;
+	//! Values for \a mask may be between \c 0x00 and \c 0xFF
+	ScopedStencilMask( GLuint mask );
+	//! Values for \a front and \a back may be between \c 0x00 and \c 0xFF
+	ScopedStencilMask( GLuint front, GLuint back );
+	~ScopedStencilMask();
 
   private:
-	GLint mFrontMask = 0xFF;
-	GLint mBackMask = 0xFF;
+	Context *mCtx;
 };
 
 #if defined( CINDER_GL_HAS_KHR_DEBUG )

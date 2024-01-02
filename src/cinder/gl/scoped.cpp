@@ -514,6 +514,38 @@ ScopedFrontFace::~ScopedFrontFace()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedColorMask
+ScopedColorMask::ScopedColorMask( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha )
+	: mCtx( gl::context() )
+{
+	mCtx->pushColorMask( red, green, blue, alpha );
+}
+
+ScopedColorMask::~ScopedColorMask()
+{
+	mCtx->popColorMask();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedStencilMask
+ScopedStencilMask::ScopedStencilMask( GLuint mask )
+	: mCtx( gl::context() )
+{
+	mCtx->pushStencilMask( mask );
+}
+
+ScopedStencilMask::ScopedStencilMask( GLuint front, GLuint back )
+	: mCtx( gl::context() )
+{
+	mCtx->pushStencilMask( front, back );
+}
+
+ScopedStencilMask::~ScopedStencilMask()
+{
+	mCtx->popStencilMask();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedDebugGroup
 #if defined( CINDER_GL_HAS_KHR_DEBUG )
 ScopedDebugGroup::ScopedDebugGroup( const std::string &message )
