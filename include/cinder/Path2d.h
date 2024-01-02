@@ -43,6 +43,8 @@ class CI_API Path2d {
 	void	moveTo( float x, float y ) { moveTo( vec2( x, y ) ); }
 	void	lineTo( const vec2 &p );
 	void	lineTo( float x, float y ) { lineTo( vec2( x, y ) ); }
+	void	horizontalLineTo( float x );
+	void	verticalLineTo( float y );
 	void	quadTo( const vec2 &p1, const vec2 &p2 );
 	void	quadTo( float x1, float y1, float x2, float y2 ) { quadTo( vec2( x1, y1 ), vec2( x2, y2 ) ); }
 	void	smoothQuadTo( const vec2 &p2 );
@@ -56,7 +58,24 @@ class CI_API Path2d {
 	void	arcTo( const vec2 &p, const vec2 &t, float radius );
 	void	arcTo( float x, float y, float tanX, float tanY, float radius) { arcTo( vec2( x, y ), vec2( tanX, tanY ), radius ); }
 	void	arcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &p2 );
-	void	relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &p2 );
+	
+	//!
+	void    relativeMoveTo( float dx, float dy ) { relativeMoveTo( vec2( dx, dy ) ); }
+	void    relativeMoveTo( const vec2 &delta );
+	void    relativeLineTo( float dx, float dy ) { relativeLineTo( vec2( dx, dy ) ); }
+	void    relativeLineTo( const vec2 &delta );
+	void    relativeHorizontalLineTo( float dx );
+	void	relativeVerticalLineTo( float dy );
+	void    relativeQuadTo( float dx1, float dy1, float dx2, float dy2 ) { relativeQuadTo( vec2( dx1, dy1 ), vec2( dx2, dy2 ) ); }
+	void    relativeQuadTo( const vec2 &delta1, const vec2 &delta2 );
+	void    relativeSmoothQuadTo( float dx, float dy ) { relativeSmoothQuadTo( vec2( dx, dy ) ); }
+	void    relativeSmoothQuadTo( const vec2 &delta );
+	void    relativeCurveTo( float dx1, float dy1, float dx2, float dy2, float dx3, float dy3 ) { relativeCurveTo( vec2( dx1, dy1 ), vec2( dx2, dy2 ), vec2( dx3, dy3 ) ); }
+	void    relativeCurveTo( const vec2 &delta1, const vec2 &delta2, const vec2 &delta3 );
+	void    relativeSmoothCurveTo( float dx2, float dy2, float dx3, float dy3 ) { relativeSmoothCurveTo( vec2( dx2, dy2 ), vec2( dx3, dy3 ) ); }
+	void    relativeSmoothCurveTo( const vec2 &delta2, const vec2 &delta3 );
+	void    relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, float dx, float dy ) { relativeArcTo( rx, ry, phi, largeArcFlag, sweepFlag, vec2( dx, dy ) ); }
+	void	relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &delta );
 	
 	//! Closes the path, by drawing a straight line from the first to the last point. This is only legal as the last command.
 	void	close() { mSegments.push_back( CLOSE ); }

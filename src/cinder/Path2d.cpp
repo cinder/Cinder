@@ -168,6 +168,18 @@ void Path2d::lineTo( const vec2 &p )
 	mSegments.push_back( LINETO );
 }
 
+void Path2d::horizontalLineTo( float x )
+{
+	const vec2 &pt = getCurrentPoint();
+	lineTo( x, pt.y );
+}
+
+void Path2d::verticalLineTo( float y )
+{
+	const vec2 &pt = getCurrentPoint();
+	lineTo( pt.x, y );
+}
+
 void Path2d::quadTo( const vec2 &p1, const vec2 &p2 )
 {
 	if( mPoints.empty() )
@@ -472,10 +484,58 @@ void Path2d::arcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweep
 	}
 }
 
-void Path2d::relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &p2 )
-{	
+void Path2d::relativeMoveTo( const vec2 &delta )
+{
 	const auto &pt = getCurrentPoint();
-	arcTo( rx, ry, phi, largeArcFlag, sweepFlag, pt + p2 );
+	moveTo( pt + delta );
+}
+
+void Path2d::relativeLineTo( const vec2 &delta )
+{
+	const auto &pt = getCurrentPoint();
+	lineTo( pt + delta );
+}
+
+void Path2d::relativeHorizontalLineTo( float dx )
+{
+	const auto &pt = getCurrentPoint();
+	horizontalLineTo( pt.x + dx );
+}
+
+void Path2d::relativeVerticalLineTo( float dy )
+{
+	const auto &pt = getCurrentPoint();
+	verticalLineTo( pt.y + dy );
+}
+
+void Path2d::relativeQuadTo( const vec2 &delta1, const vec2 &delta2 )
+{
+	const auto &pt = getCurrentPoint();
+	quadTo( pt + delta1, pt + delta2 );
+}
+
+void Path2d::relativeSmoothQuadTo( const vec2 &delta )
+{
+	const auto &pt = getCurrentPoint();
+	smoothQuadTo( pt + delta );
+}
+
+void Path2d::relativeCurveTo( const vec2 &delta1, const vec2 &delta2, const vec2 &delta3 )
+{
+	const auto &pt = getCurrentPoint();
+	curveTo( pt + delta1, pt + delta2, pt + delta3 );
+}
+
+void Path2d::relativeSmoothCurveTo( const vec2 &delta2, const vec2 &delta3 )
+{
+	const auto &pt = getCurrentPoint();
+	smoothCurveTo( pt + delta2, pt + delta3 );
+}
+
+void Path2d::relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &delta )
+{
+	const auto &pt = getCurrentPoint();
+	arcTo( rx, ry, phi, largeArcFlag, sweepFlag, pt + delta );
 }
 
 Path2d Path2d::circle( const vec2 &center, float radius )
