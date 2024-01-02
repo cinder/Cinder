@@ -608,6 +608,7 @@ Path2d Path2d::roundedRectangle( float x, float y, float width, float height, fl
 	shape.arcTo( rx, ry, 0, false, true, vec2( x, y + height - ry ) );
 	shape.lineTo( x, y + ry );
 	shape.arcTo( rx, ry, 0, false, true, vec2( x + rx, y ) );
+	shape.close();
 	return shape;
 }
 
