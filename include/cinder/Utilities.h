@@ -155,26 +155,6 @@ CI_API bool isAlpha( char c );
 //! returns whether character \a c is numeric (0-9)+(.+-eE). Not Unicode-aware.
 CI_API bool isNumeric( char c );
 
-//! converts the value to a string without leading and trailing zeroes.
-CI_API std::string valueToString( int value );
-//! converts the value to a string without leading and trailing zeroes.
-CI_API std::string valueToString( unsigned value );
-//! converts the value to a string without leading and trailing zeroes.
-CI_API std::string valueToString( long value );
-//! converts the value to a string without leading and trailing zeroes.
-CI_API std::string valueToString( unsigned long value );
-//! converts the value to a string without leading and trailing zeroes.
-CI_API std::string valueToString( long long value );
-//! converts the value to a string without leading and trailing zeroes.
-CI_API std::string valueToString( unsigned long long value );
-//! converts the value to a string without leading and trailing zeroes.
-CI_API std::string valueToString( float value );
-//! converts the value to a string without leading and trailing zeroes.
-CI_API std::string valueToString( float value, int precision );
-//! converts the value to a string without leading and trailing zeroes.
-CI_API std::string valueToString( double value );
-//! converts the value to a string without leading and trailing zeroes.
-CI_API std::string valueToString( double value, int precision );
 
 //! Returns a stack trace (aka backtrace) where \c stackTrace()[0] == caller, \c stackTrace()[1] == caller's parent, etc
 CI_API std::vector<std::string> stackTrace();
