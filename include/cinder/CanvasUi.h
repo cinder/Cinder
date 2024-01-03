@@ -39,13 +39,12 @@ class CanvasUi {
 	{
 		if( this != &rhs ) {
 			mScale = rhs.mScale;
-			mMouse = rhs.mMouse;
-			mClick = rhs.mClick;
+			mMouseDownPos = rhs.mMouseDownPos;
 			mAnchor = rhs.mAnchor;
 			mPosition = rhs.mPosition;
 			mOriginal = rhs.mOriginal;
 			mModelMatrix = rhs.mModelMatrix;
-			mIsDirty = rhs.mIsDirty;
+			mModelCached = rhs.mModelCached;
 			mMouseWheelMultiplier = rhs.mMouseWheelMultiplier;
 			mWindow = rhs.mWindow;
 			mSignalPriority = rhs.mSignalPriority;
@@ -93,13 +92,13 @@ class CanvasUi {
 	//! Returns the current position and scale as a transform matrix.
 	const mat4 &getModelMatrix() const
 	{
-		if( mIsDirty ) {
+		if( !mModelCached ) {
 			// Update model matrix.
 			mModelMatrix = translate( vec3( mPosition, 0 ) );
 			mModelMatrix *= scale( vec3( mScale ) );
 			mModelMatrix *= translate( vec3( -mAnchor, 0 ) );
-			mIsInvDirty = true;
-			mIsDirty = false;
+			mModelCached = true;
+			mInvModelCached = false;
 		}
 
 		return mModelMatrix;
@@ -107,9 +106,9 @@ class CanvasUi {
 	//! Returns the inverse of the current transform matrix. Can be used to convert coordinates. See also `CanvasUi::toLocal`.
 	const mat4 &getInverseModelMatrix() const
 	{
-		if( mIsInvDirty ) {
-			mInvModelMatrix = inverse( mModelMatrix );
-			mIsInvDirty = false;
+		if( !mModelCached || !mInvModelCached ) {
+			mInvModelMatrix = inverse( getModelMatrix() );
+			mInvModelCached = true;
 		}
 
 		return mInvModelMatrix;
@@ -117,7 +116,7 @@ class CanvasUi {
 	//! Converts a given point \a pt from world to object space, effectively undoing the canvas transformations.
 	vec2 toLocal( const vec2 &pt ) const
 	{
-		auto &m = getInverseModelMatrix();
+		const auto &m = getInverseModelMatrix();
 		return { m * vec4( pt, 0, 1 ) };
 	}
 
@@ -125,14 +124,14 @@ class CanvasUi {
 	{
 		mPosition = mAnchor = vec2( 0 );
 		mScale = mScaleTarget = 1.0f;
-		mIsDirty = mIsInvDirty = true;
+		mModelCached = mInvModelCached = false;
 	}
 
 	void resize( const ivec2 &size )
 	{
 		mPosition += 0.5f * vec2( size - mWindowSize ) / mScaleTarget;
 		mAnchor += 0.5f * vec2( size - mWindowSize ) / mScaleTarget;
-		mIsDirty = mIsInvDirty = true;
+		mModelCached = mInvModelCached = false;
 		mWindowSize = size;
 	}
 
@@ -154,7 +153,7 @@ class CanvasUi {
 
 		reposition( mousePos );
 
-		mClick = mousePos;
+		mMouseDownPos = mousePos;
 		mOriginal = mPosition;
 	}
 
@@ -163,9 +162,8 @@ class CanvasUi {
 		if( !mEnabled )
 			return;
 
-		mMouse = mousePos;
-		mPosition = mOriginal + mMouse - mClick;
-		mIsDirty = true;
+		mPosition = mOriginal + mousePos - mMouseDownPos;
+		mModelCached = mInvModelCached = false;
 	}
 
 	void mouseWheel( const vec2 &mousePos, float increment )
@@ -175,10 +173,8 @@ class CanvasUi {
 
 		reposition( mousePos );
 
-		mMouse = mousePos;
 		mScaleTarget *= 1.0f + mMouseWheelMultiplier * increment;
 		mScaleTarget = clamp( mScaleTarget, 0.1f, 100.0f ); // Limit scale to the range [10%...10,000%].
-		mIsDirty = true;
 	}
 
 	//! Sets the multiplier on mouse wheel zooming. Larger values zoom faster. Negative values invert the direction. Default is \c 0.1.
@@ -189,9 +185,12 @@ class CanvasUi {
   private:
 	void update()
 	{
-		mScale += mMouseWheelMultiplier * ( mScaleTarget - mScale );
-		mIsDirty = mIsInvDirty = true;
+		if( !approxEqual( mScaleTarget, mScale ) ) {
+			mScale += 0.1f * ( mScaleTarget - mScale );
+			mModelCached = mInvModelCached = false;
+		}
 	}
+
 	void reposition( const vec2 &mouse )
 	{
 		// Convert mouse to object space.
@@ -205,8 +204,7 @@ class CanvasUi {
 	std::vector<signals::Connection> mConnections;
 	app::WindowRef                   mWindow;
 	ivec2                            mWindowSize;
-	vec2                             mMouse{ 0 };
-	vec2                             mClick{ 0 };
+	vec2                             mMouseDownPos{ 0 };
 	vec2                             mAnchor{ 0 };
 	vec2                             mPosition{ 0 };
 	vec2                             mOriginal{ 0 };
@@ -216,8 +214,8 @@ class CanvasUi {
 	int                              mSignalPriority{ 0 };
 	mutable mat4                     mModelMatrix;
 	mutable mat4                     mInvModelMatrix;
-	mutable bool                     mIsDirty{ false };
-	mutable bool                     mIsInvDirty{ false };
+	mutable bool                     mModelCached{ true };
+	mutable bool                     mInvModelCached{ true };
 	bool                             mEnabled{ true };
 };
 
