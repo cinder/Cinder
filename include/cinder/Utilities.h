@@ -120,10 +120,15 @@ CI_API void trimRightInPlace( std::string &str, const std::string &characters );
 //! removes all specified \a characters from the end of \a str. Not Unicode-aware.
 CI_API std::string trimRight( std::string str, const std::string &characters );
 
-//! filters all occurrences of any of \a chars in \a str. Not Unicode-aware.
-CI_API void filterInPlace( std::string &str, const std::string &chars );
-//! returns a copy of \a str with all occurrences of any of \a chars filtered out. Not Unicode-aware.
-CI_API std::string filter( std::string str, const std::string &chars );
+//! removes all specified \a characters from \a str. Not Unicode-aware.
+CI_API void trimInPlace( std::string &str, const std::string &characters );
+//! removes all specified \a characters from \a str. Not Unicode-aware.
+CI_API std::string trim( std::string str, const std::string &characters );
+
+//! removes all occurrences of any of \a characters in \a str. Not Unicode-aware.
+CI_API void filterInPlace( std::string &str, const std::string &characters );
+//! returns a copy of \a str with all occurrences of any of \a characters removed. Not Unicode-aware.
+CI_API std::string filter( std::string str, const std::string &characters );
 
 //! Converts the character \a c to lowercase. Not Unicode-aware.
 CI_API char charToLower( const char c );
@@ -139,10 +144,10 @@ CI_API void toUpperInPlace( std::string &str );
 //! returns a copy of \a str with all characters converted to uppercase (using std::toupper()). Not Unicode-aware.
 CI_API std::string toUpper( std::string str );
 
-//! replaces all instances of \a find with \a replace in \a str. Not Unicode-aware.
-CI_API void findReplaceInPlace( const std::string &find, const std::string &replace, std::string &str );
-//! replaces all instances of \a find with \a replace in \a str and returns a copy. Not Unicode-aware.
-CI_API std::string findReplace( const std::string &find, const std::string &replace, std::string str );
+//! replaces all instances of \a find with \a replace in \a str. Unicode-aware.
+CI_API void findReplaceInPlace( std::string &str, const std::string &find, const std::string &replace );
+//! replaces all instances of \a find with \a replace in \a str and returns a copy. Unicode-aware.
+CI_API std::string findReplace( std::string str, const std::string &find, const std::string &replace );
 
 //! returns whether character \a c is considered white space. Not Unicode-aware.
 CI_API bool isWhiteSpace( char c );
@@ -154,7 +159,6 @@ CI_API bool isHexDigit( char c );
 CI_API bool isAlpha( char c );
 //! returns whether character \a c is numeric (0-9)+(.+-eE). Not Unicode-aware.
 CI_API bool isNumeric( char c );
-
 
 //! Returns a stack trace (aka backtrace) where \c stackTrace()[0] == caller, \c stackTrace()[1] == caller's parent, etc
 CI_API std::vector<std::string> stackTrace();

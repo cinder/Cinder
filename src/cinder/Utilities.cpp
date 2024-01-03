@@ -227,14 +227,26 @@ std::string trimRight( std::string str, const std::string &characters )
 	return str;
 }
 
-void filterInPlace( std::string &str, const std::string &chars )
+void trimInPlace( std::string &str, const std::string &characters )
 {
-	str.erase( std::remove_if( str.begin(), str.end(), [chars]( char c ) { return chars.find( c ) != std::string::npos; } ), str.end() );
+	trimLeftInPlace( str, characters );
+	trimRightInPlace( str, characters );
 }
 
-std::string filter( std::string str, const std::string &chars )
+std::string trim( std::string str, const std::string &characters )
 {
-	filterInPlace( str, chars );
+	trimInPlace( str, characters );
+	return str;
+}
+
+void filterInPlace( std::string &str, const std::string &characters )
+{
+	str.erase( std::remove_if( str.begin(), str.end(), [characters]( char c ) { return characters.find( c ) != std::string::npos; } ), str.end() );
+}
+
+std::string filter( std::string str, const std::string &characters )
+{
+	filterInPlace( str, characters );
 	return str;
 }
 
@@ -274,7 +286,7 @@ std::string toUpper( std::string str )
 	return str;
 }
 
-void findReplaceInPlace( const std::string &find, const std::string &replace, std::string &str )
+void findReplaceInPlace( std::string &str, const std::string &find, const std::string &replace )
 {
 	auto pos = str.find( find );
 	while( pos != std::string::npos ) {
@@ -283,9 +295,9 @@ void findReplaceInPlace( const std::string &find, const std::string &replace, st
 	}
 }
 
-std::string findReplace( const std::string &find, const std::string &replace, std::string str )
+std::string findReplace( std::string str, const std::string &find, const std::string &replace )
 {
-	findReplaceInPlace( find, replace, str );
+	findReplaceInPlace( str, find, replace );
 	return str;
 }
 
