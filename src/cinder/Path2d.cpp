@@ -689,7 +689,7 @@ Path2d Path2d::spiral( const vec2 &center, float innerRadius, float outerRadius,
 	Path2d shape;
 	shape.moveTo( center.x + p0.x * step, center.y + p0.y * step );
 
-	float radians = radiansStart + glm::radians( clamp( radiansStart * step, 3.0f, 90.0f ) ); // Adaptive step size.
+	float radians = radiansStart + glm::radians( clamp( radiansStart * step, 3.0f, 60.0f ) ); // Adaptive step size.
 	while( radians < radiansEnd ) {
 		const auto p3 = Point( radians, offset - radiansStart );
 		const auto controls = p3.generate( p0 );
@@ -697,7 +697,7 @@ Path2d Path2d::spiral( const vec2 &center, float innerRadius, float outerRadius,
 
 		p0 = p3;
 
-		radians += glm::radians( glm::clamp( radians * step, 3.0f, 90.0f ) ); // Adaptive step size.
+		radians += glm::radians( glm::clamp( radians * step, 3.0f, 60.0f ) ); // Adaptive step size.
 	}
 
 	const auto p3 = Point( radiansEnd, offset - radiansStart );
