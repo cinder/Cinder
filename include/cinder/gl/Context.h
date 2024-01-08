@@ -170,6 +170,28 @@ class CI_API Context {
 	void					popFrontFace( bool forceRestore = false );
 	//! Returns the winding order defining front-facing polygons, either \c GL_CW or \c GL_CCW (the default).
 	GLenum					getFrontFace();
+
+	//! Set the current color mask, which enables and disables writing of frame buffer color components.
+	void					colorMask( bool red, bool green, bool blue, bool alpha );
+	//! Push the current color mask, which enables and disables writing of frame buffer color components.
+	void					pushColorMask( bool red, bool green, bool blue, bool alpha );
+	//! Pops the current color mask, which enables and disables writing of frame buffer color components.
+	void					popColorMask( bool forceRestore = false );
+	//! Returns the current color mask, which enables and disables writing of frame buffer color components. Default is \c GL_TRUE for all 4 components (red, green, blue, alpha).
+	glm::bvec4				getColorMask();
+
+	//! Set the current stencil mask, which controls the front and back writing of individual bits in the stencil planes (front and back).
+	void					stencilMask( GLuint mask );
+	//! Set the current stencil mask, which controls the front and back writing of individual bits in the stencil planes (front and back).
+	void					stencilMask( GLuint front, GLuint back );
+	//! Push the current stencil mask, which controls the front and back writing of individual bits in the stencil planes (front and back).
+	void					pushStencilMask( GLuint mask );
+	//! Push the current stencil mask, which controls the front and back writing of individual bits in the stencil planes (front and back).
+	void					pushStencilMask( GLuint front, GLuint back );
+	//! Pops the current stencil mask, which controls the front and back writing of individual bits in the stencil planes (front and back).
+	void					popStencilMask( bool forceRestore = false );
+	//! Returns the current stencil mask, which controls the front and back writing of individual bits in the stencil planes (front and back). 
+	glm::u8vec2				getStencilMask();
 	
 #if ! defined( CINDER_GL_ES )
 	//! Analogous to glLogicOp( \a mode ). Valid arguments are \c GL_CLEAR, \c GL_SET, \c GL_COPY, \c GL_COPY_INVERTED, \c GL_NOOP, \c GL_INVERT, \c GL_AND, \c GL_NAND, \c GL_OR, \c GL_NOR, \c GL_XOR, \c GL_EQUIV, \c GL_AND_REVERSE, \c GL_AND_INVERTED, \c GL_OR_REVERSE, or \c GL_OR_INVERTED.
@@ -534,6 +556,9 @@ class CI_API Context {
 
 	std::vector<GLenum>			mCullFaceStack;
 	std::vector<GLenum>			mFrontFaceStack;
+
+	std::vector<glm::bvec4>		mColorMaskStack;
+	std::vector<glm::u8vec2>	mStencilMaskStack;
 
 #if ! defined( CINDER_GL_ES )
 	std::vector<GLenum>			mLogicOpStack;

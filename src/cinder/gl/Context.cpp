@@ -87,6 +87,12 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 #endif
 	mDefaultArrayVboIdx = 0;
 
+	// initial state for color mask is enabled
+	mColorMaskStack.emplace_back( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+	
+	// initial state for stencil mask is all bits enabled
+	mStencilMaskStack.emplace_back( 0xFF, 0xFF );
+
 	// initial state for depth mask is enabled
 	mBoolStateStack[GL_DEPTH_WRITEMASK] = vector<GLboolean>();
 	mBoolStateStack[GL_DEPTH_WRITEMASK].push_back( GL_TRUE );
@@ -468,6 +474,101 @@ GLenum Context::getFrontFace()
 	}
 
 	return mFrontFaceStack.back();
+}
+
+//////////////////////////////////////////////////////////////////
+// ColorMask
+void Context::colorMask( bool red, bool green, bool blue, bool alpha )
+{
+	if( setStackState( mColorMaskStack, glm::bvec4( red, green, blue, alpha ) ) ) {
+		glColorMask( red, green, blue, alpha );
+	}
+}
+
+void Context::pushColorMask( bool red, bool green, bool blue, bool alpha )
+{
+	if( pushStackState( mColorMaskStack, glm::bvec4( red, green, blue, alpha ) ) ) {
+		glColorMask( red, green, blue, alpha );
+	}
+}
+
+void Context::popColorMask( bool forceRestore )
+{
+	if( mColorMaskStack.empty() )
+		CI_LOG_E( "Color mask stack underflow" );
+	else if( popStackState( mColorMaskStack ) || forceRestore ) {
+		const auto mask = getColorMask();
+		glColorMask( mask.r, mask.g, mask.b, mask.a );
+	}
+}
+
+glm::bvec4 Context::getColorMask()
+{
+	if( mColorMaskStack.empty() ) {
+		GLboolean queriedBool[4];
+		glGetBooleanv( GL_COLOR_WRITEMASK, queriedBool );
+		mColorMaskStack.emplace_back( queriedBool[0], queriedBool[1], queriedBool[2], queriedBool[3] ); // push twice
+		mColorMaskStack.emplace_back( queriedBool[0], queriedBool[1], queriedBool[2], queriedBool[3] );
+	}
+
+	return mColorMaskStack.back();
+}
+
+//////////////////////////////////////////////////////////////////
+// StencilMask
+void Context::stencilMask( GLuint mask )
+{
+	if( setStackState( mStencilMaskStack, glm::u8vec2( mask, mask ) ) ) {
+		glStencilMask( mask );
+	}
+}
+
+void Context::stencilMask( GLuint front, GLuint back )
+{
+	if( setStackState( mStencilMaskStack, glm::u8vec2( front, back ) ) ) {
+		glStencilMaskSeparate( GL_FRONT, front );
+		glStencilMaskSeparate( GL_BACK, back );
+	}
+}
+
+void Context::pushStencilMask( GLuint mask )
+{
+	if( pushStackState( mStencilMaskStack, glm::u8vec2( mask, mask ) ) ) {
+		glStencilMask( mask );
+	}
+}
+
+void Context::pushStencilMask( GLuint front, GLuint back )
+{
+	if( pushStackState( mStencilMaskStack, glm::u8vec2( front, back ) ) ) {
+		glStencilMaskSeparate( GL_FRONT, front );
+		glStencilMaskSeparate( GL_BACK, back );
+	}
+}
+
+void Context::popStencilMask( bool forceRestore )
+{
+	if( mStencilMaskStack.empty() )
+		CI_LOG_E( "Stencil mask stack underflow" );
+	else if( popStackState( mStencilMaskStack ) || forceRestore ) {
+		const auto mask = getStencilMask();
+		glStencilMaskSeparate( GL_FRONT, mask[0] );
+		glStencilMaskSeparate( GL_BACK, mask[1] );
+	}
+}
+
+glm::u8vec2 Context::getStencilMask()
+{
+	if( mStencilMaskStack.empty() ) {
+		GLint queriedIntFront;
+		GLint queriedIntBack;
+		glGetIntegerv( GL_STENCIL_WRITEMASK, &queriedIntFront );
+		glGetIntegerv( GL_STENCIL_BACK_WRITEMASK, &queriedIntBack );
+		mStencilMaskStack.emplace_back( queriedIntFront, queriedIntBack ); // push twice
+		mStencilMaskStack.emplace_back( queriedIntFront, queriedIntBack );
+	}
+
+	return mStencilMaskStack.back();
 }
 
 //////////////////////////////////////////////////////////////////

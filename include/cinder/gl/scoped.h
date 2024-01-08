@@ -360,6 +360,30 @@ struct CI_API ScopedFrontFace : private Noncopyable {
 	Context		*mCtx;
 };
 
+//! Scopes writing of frame buffer color components
+class ScopedColorMask : private Noncopyable {
+  public:
+	//! Values for \a red, \a green, \a blue and \a alpha may be \c GL_TRUE or \c GL_FALSE
+	ScopedColorMask( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha );
+	~ScopedColorMask();
+
+  private:
+	Context *mCtx;
+};
+
+//! Scopes the front and back writing of individual bits in the stencil planes (front and back)
+class ScopedStencilMask : private Noncopyable {
+  public:
+	//! Values for \a mask may be between \c 0x00 and \c 0xFF
+	ScopedStencilMask( GLuint mask );
+	//! Values for \a front and \a back may be between \c 0x00 and \c 0xFF
+	ScopedStencilMask( GLuint front, GLuint back );
+	~ScopedStencilMask();
+
+  private:
+	Context *mCtx;
+};
+
 #if defined( CINDER_GL_HAS_KHR_DEBUG )
 
 //! Scopes debug group message
