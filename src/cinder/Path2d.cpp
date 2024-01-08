@@ -313,14 +313,6 @@ void Path2d::arcSegmentAsCubicBezier( const vec2 &center, float radius, float st
 				center.y + r_sin_B - h * r_cos_B, center.x + r_cos_B, center.y + r_sin_B );
 }
 
-float Path2d::angleHelper( const vec2 &u, const vec2 &v ) const
-{
-	// See: equation 5.4 of https://www.w3.org/TR/SVG/implnote.html
-	const float c = u.x * v.y - u.y * v.x;
-	const float d = glm::dot( glm::normalize( u ), glm::normalize( v ) );
-	return c < 0 ? -math<float>::acos( d ) : math<float>::acos( d );
-}
-
 // Implementation courtesy of Lennart Kudling
 void Path2d::arcTo( const vec2 &p1, const vec2 &t, float radius )
 {
@@ -394,6 +386,18 @@ void Path2d::arcTo( const vec2 &p1, const vec2 &t, float radius )
 		curveTo( b1, b2, b3 );
 	}
 }
+
+namespace {
+
+float angleHelper( const vec2 &u, const vec2 &v )
+{
+	// See: equation 5.4 of https://www.w3.org/TR/SVG/implnote.html
+	const float c = u.x * v.y - u.y * v.x;
+	const float d = glm::dot( glm::normalize( u ), glm::normalize( v ) );
+	return c < 0 ? -math<float>::acos( d ) : math<float>::acos( d );
+}
+
+} // namespace
 
 void Path2d::arcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &p2 )
 {

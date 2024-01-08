@@ -222,9 +222,7 @@ class CI_API Path2d {
   private:
 	void	arcHelper( const vec2 &center, float radius, float startRadians, float endRadians, bool forward );
 	void	arcSegmentAsCubicBezier( const vec2 &center, float radius, float startRadians, float endRadians );
-
-	float	angleHelper( const vec2 &u, const vec2 &v ) const;
-
+	
 	//! Returns the minimum distance from point \a pt to segment \a segment. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
 	float	calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) const;
 
