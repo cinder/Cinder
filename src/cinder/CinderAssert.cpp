@@ -30,6 +30,7 @@ namespace cinder { namespace detail {
 
 void assertionFailedAbort( char const *expr, char const *function, char const *file, long line )
 {
+    CI_LOG_I("Accessing invalid output device");
 	{
 		log::Entry entry( log::LEVEL_FATAL, log::Location( function, file, line ) );
 		entry << "*** Assertion Failed *** | expression: ( " << expr << " )";

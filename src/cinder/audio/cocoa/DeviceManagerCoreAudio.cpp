@@ -21,10 +21,13 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
 #include "cinder/audio/cocoa/DeviceManagerCoreAudio.h"
 #include "cinder/cocoa/CinderCocoa.h"
+#include "cinder/audio/Context.h"
 #include "cinder/audio/Exception.h"
 #include "cinder/CinderAssert.h"
+#include "cinder/Log.h"
 
 using namespace std;
 using namespace ci;
@@ -50,6 +53,10 @@ UInt32 getAudioObjectPropertyDataSize( ::AudioObjectID objectId, ::AudioObjectPr
 {
 	UInt32 result = 0;
 	OSStatus status = ::AudioObjectGetPropertyDataSize( objectId, &propertyAddress, qualifierDataSize, qualifierData, &result );
+    if ( status != noErr ) {
+        CI_LOG_W("Issue detected");
+        throw AudioDeviceExc("OOPS");
+    }
 	CI_VERIFY( status == noErr );
 
 	return result;
@@ -83,9 +90,9 @@ size_t getAudioObjectNumChannels( ::AudioObjectID objectId, bool isInput )
 	::AudioObjectPropertyAddress streamConfigProperty = getAudioObjectPropertyAddress( kAudioDevicePropertyStreamConfiguration, isInput ? kAudioDevicePropertyScopeInput : kAudioDevicePropertyScopeOutput );
 	UInt32 streamConfigPropertySize = getAudioObjectPropertyDataSize( objectId, streamConfigProperty );
 	shared_ptr<::AudioBufferList> bufferList( (::AudioBufferList *)calloc( 1, streamConfigPropertySize ), free );
-
+	
 	getAudioObjectPropertyData( objectId, streamConfigProperty, streamConfigPropertySize, bufferList.get() );
-
+	
 	size_t numChannels = 0;
 	for( int i = 0; i < bufferList->mNumberBuffers; i++ ) {
 		numChannels += bufferList->mBuffers[i].mNumberChannels;
@@ -131,17 +138,62 @@ vector<PropT> getAudioObjectPropertyVector( ::AudioObjectID objectId, ::AudioObj
 // MARK: - DeviceManagerCoreAudio
 // ----------------------------------------------------------------------------------------------------
 
+// Callback function for device changes
+OSStatus deviceChangeListener(
+    AudioObjectID inObjectID,
+    UInt32 inNumberAddresses,
+    const AudioObjectPropertyAddress inAddresses[],
+    void* inClientData
+) {
+    CI_LOG_W("deviceChangeListener called!");
+    ((DeviceManagerCoreAudio*)Context::deviceManager())->refreshDevices();
+    return noErr;
+}
+
 DeviceManagerCoreAudio::DeviceManagerCoreAudio()
 	: mUserHasModifiedFormat( false )
 {
+	// Specify the property address for the list of available audio devices
+    AudioObjectPropertyAddress propertyAddress = {
+        kAudioHardwarePropertyDevices,
+        kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMaster
+    };
+    
+    // Register the callback function for device changes
+    ::AudioObjectAddPropertyListener(
+        kAudioObjectSystemObject,
+        &propertyAddress,
+        &deviceChangeListener,
+        NULL
+    );
+    
+    refreshDevices();
+}
+
+DeviceManagerCoreAudio::~DeviceManagerCoreAudio()
+{
+	AudioObjectPropertyAddress propertyAddress = {
+        kAudioHardwarePropertyDevices,
+        kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMaster
+    };
+
+    // Unregister the callback function when done
+    AudioObjectRemovePropertyListener(
+        kAudioObjectSystemObject,
+        &propertyAddress,
+        &deviceChangeListener,
+        NULL
+    );
 }
 
 DeviceRef DeviceManagerCoreAudio::getDefaultOutput()
 {
 	::AudioObjectPropertyAddress propertyAddress = getAudioObjectPropertyAddress( kAudioHardwarePropertyDefaultOutputDevice );
 	auto defaultOutputId = getAudioObjectProperty<::AudioDeviceID>( kAudioObjectSystemObject, propertyAddress );
-
-	return findOutputDeviceByKey( DeviceManagerCoreAudio::keyForDeviceId( defaultOutputId ) );
+    string name = getAudioObjectPropertyString( defaultOutputId, kAudioObjectPropertyName );
+    return findDeviceByName( name, true, false );
 }
 
 DeviceRef DeviceManagerCoreAudio::getDefaultInput()
@@ -149,30 +201,43 @@ DeviceRef DeviceManagerCoreAudio::getDefaultInput()
 	::AudioObjectPropertyAddress propertyAddress = getAudioObjectPropertyAddress( kAudioHardwarePropertyDefaultInputDevice );
 	auto defaultInputId = getAudioObjectProperty<::AudioDeviceID>( kAudioObjectSystemObject, propertyAddress );
 
-	return findDeviceByKey( DeviceManagerCoreAudio::keyForDeviceId( defaultInputId ) );
+    string name = getAudioObjectPropertyString( defaultInputId, kAudioObjectPropertyName );
+    return Device::findInputByName( name );
+    return findDeviceByName( name, false, true );
 }
 
 string DeviceManagerCoreAudio::getName( const DeviceRef &device )
 {
-	::AudioDeviceID deviceId = mDeviceIds.at( device );
+//	::AudioDeviceID deviceId = mDeviceIds.at( device );
+    ::AudioDeviceID deviceId = atoi(device->getKey().c_str());
 	return getAudioObjectPropertyString( deviceId, kAudioObjectPropertyName );
 }
 
 size_t DeviceManagerCoreAudio::getNumInputChannels( const DeviceRef &device )
 {
-	::AudioDeviceID deviceId = mDeviceIds.at( device );
+//	::AudioDeviceID deviceId = mDeviceIds.at( device );
+    ::AudioDeviceID deviceId = atoi(device->getKey().c_str());
 	return getAudioObjectNumChannels( deviceId, true );
 }
 
 size_t DeviceManagerCoreAudio::getNumOutputChannels( const DeviceRef &device )
 {
-	::AudioDeviceID deviceId = mDeviceIds.at( device );
-	return getAudioObjectNumChannels( deviceId, false );
+//	::AudioDeviceID deviceId = mDeviceIds.at( device );
+    ::AudioDeviceID deviceId = atoi(device->getKey().c_str());
+//    CI_LOG_I(mDeviceIds.count(device->getKey());
+//    try {
+        return getAudioObjectNumChannels( deviceId, false );
+//    } catch (const DeviceNotRespondingException & e) {
+//		auto it = std::find( mDevices.begin(), mDevices.end(), device );
+//        mDevices.erase( it );
+//        return 0;
+//    }
 }
 
 size_t DeviceManagerCoreAudio::getSampleRate( const DeviceRef &device )
 {
-	::AudioDeviceID deviceId = mDeviceIds.at( device );
+//	::AudioDeviceID deviceId = mDeviceIds.at( device );
+    ::AudioDeviceID deviceId = atoi(device->getKey().c_str());
 	::AudioObjectPropertyAddress propertyAddress = getAudioObjectPropertyAddress( kAudioDevicePropertyNominalSampleRate );
 	auto result = getAudioObjectProperty<Float64>( deviceId, propertyAddress );
 
@@ -181,7 +246,8 @@ size_t DeviceManagerCoreAudio::getSampleRate( const DeviceRef &device )
 
 void DeviceManagerCoreAudio::setSampleRate( const DeviceRef &device, size_t sampleRate )
 {
-	::AudioDeviceID deviceId = mDeviceIds.at( device );
+//	::AudioDeviceID deviceId = mDeviceIds.at( device );
+    ::AudioDeviceID deviceId = atoi(device->getKey().c_str());
 
 	// If the device can't be set to this sampleRate, we leave it alone,
 	// users should check if sampleRate was actually updated if necessary
@@ -197,7 +263,8 @@ void DeviceManagerCoreAudio::setSampleRate( const DeviceRef &device, size_t samp
 
 size_t DeviceManagerCoreAudio::getFramesPerBlock( const DeviceRef &device )
 {
-	::AudioDeviceID deviceId = mDeviceIds.at( device );
+//	::AudioDeviceID deviceId = mDeviceIds.at( device );
+    ::AudioDeviceID deviceId = atoi(device->getKey().c_str());
 	::AudioObjectPropertyAddress propertyAddress = getAudioObjectPropertyAddress( kAudioDevicePropertyBufferFrameSize );
 	auto result = getAudioObjectProperty<UInt32>( deviceId, propertyAddress );
 
@@ -206,7 +273,8 @@ size_t DeviceManagerCoreAudio::getFramesPerBlock( const DeviceRef &device )
 
 void DeviceManagerCoreAudio::setFramesPerBlock( const DeviceRef &device, size_t framesPerBlock )
 {
-	::AudioDeviceID deviceId = mDeviceIds.at( device );
+//	::AudioDeviceID deviceId = mDeviceIds.at( device );
+    ::AudioDeviceID deviceId = atoi(device->getKey().c_str());
 
 	auto range = getAcceptableFramesPerBlockRange( deviceId );
 	if( framesPerBlock < range.first || framesPerBlock > range.second )
@@ -237,17 +305,45 @@ void DeviceManagerCoreAudio::setCurrentInputDevice( const DeviceRef &device, ::A
 
 void DeviceManagerCoreAudio::setCurrentDeviceImpl( const DeviceRef &device, const DeviceRef &current, ::AudioComponentInstance componentInstance, bool isOutput )
 {
-	::AudioDeviceID deviceId = mDeviceIds.at( device );
+//	::AudioDeviceID deviceId = mDeviceIds.at( device );
+    ::AudioDeviceID deviceId = atoi(device->getKey().c_str());
 
 	if( device != current ) {
 		if( current )
-			unregisterPropertyListeners( current, mDeviceIds.at( current ), isOutput );
+			unregisterPropertyListeners( current, deviceIdForDevice( current ), isOutput );
 
 		registerPropertyListeners( device, deviceId, true );
 	}
 
 	OSStatus status = ::AudioUnitSetProperty( componentInstance, kAudioOutputUnitProperty_CurrentDevice, kAudioUnitScope_Global, 0, &deviceId, sizeof( deviceId ) );
 	CI_VERIFY( status == noErr );
+}
+
+void printDeviceInfo(AudioObjectID deviceID) {
+    char deviceName[256];
+    UInt32 propertySize = sizeof(deviceName);
+
+    AudioObjectPropertyAddress propertyAddress = {
+        kAudioDevicePropertyDeviceName,
+        kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMaster,
+    };
+
+    // Get the device name
+    AudioObjectGetPropertyData(
+        deviceID,
+        &propertyAddress,
+        0,
+        NULL,
+        &propertySize,
+        &deviceName
+    );
+    
+    auto sampleRates = getAudioObjectPropertyVector<Float64>(deviceID, kAudioDevicePropertyAvailableNominalSampleRates);
+    // Assuming the first available sample rate is used
+    double sampleRate = sampleRates.empty() ? 0.0 : sampleRates[0];
+
+    printf("Device ID: %u, Device Name: %s, Sample rate: %f\n", deviceID, deviceName, sampleRate);
 }
 
 // TODO: if device is considered 'default', register for kAudioHardwarePropertyDefaultOutputDevice and update when required
@@ -320,59 +416,116 @@ void DeviceManagerCoreAudio::registerPropertyListeners( DeviceRef device, ::Audi
 		mOutputDeviceListenerBlock = Block_copy( listenerBlock );
 	else
 		mInputDeviceListenerBlock = Block_copy( listenerBlock );
+    
+    // Specify the property address for the list of available audio devices
+    AudioObjectPropertyAddress propertyAddress = {
+        kAudioHardwarePropertyDevices,
+        kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMaster
+    };
+    
+    // Register the callback function for device changes
+    ::AudioObjectAddPropertyListener(
+        kAudioObjectSystemObject,
+        &propertyAddress,
+        &deviceChangeListener,
+        NULL
+    );
 }
 
 void DeviceManagerCoreAudio::unregisterPropertyListeners( const DeviceRef &device, ::AudioDeviceID deviceId, bool isOutput )
 {
+    AudioObjectPropertyAddress propertyAddress = {
+        kAudioHardwarePropertyDevices,
+        kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMaster
+    };
+
+    // Unregister the callback function when done
+    AudioObjectRemovePropertyListener(
+        kAudioObjectSystemObject,
+        &propertyAddress,
+        &deviceChangeListener,
+        NULL
+    );
+    
 	AudioObjectPropertyListenerBlock listenerBlock = ( isOutput ? mOutputDeviceListenerBlock : mInputDeviceListenerBlock );
 	dispatch_queue_t currentQueue = dispatch_get_current_queue();
 
 	// data source (ex. internal speakers, headphones)
 	::AudioObjectPropertyAddress dataSourceAddress = getAudioObjectPropertyAddress( kAudioDevicePropertyDataSource, kAudioDevicePropertyScopeOutput );
 	OSStatus status = ::AudioObjectRemovePropertyListenerBlock( deviceId, &dataSourceAddress, currentQueue, listenerBlock );
-	CI_VERIFY( status == noErr );
+//	CI_VERIFY( status == noErr );
 
 	// device samplerate
 	::AudioObjectPropertyAddress samplerateAddress = getAudioObjectPropertyAddress( kAudioDevicePropertyNominalSampleRate );
 	status = ::AudioObjectRemovePropertyListenerBlock( deviceId, &samplerateAddress, currentQueue, listenerBlock );
-	CI_VERIFY( status == noErr );
+//	CI_VERIFY( status == noErr );
 
 	// frames per block
 	::AudioObjectPropertyAddress frameSizeAddress = getAudioObjectPropertyAddress( kAudioDevicePropertyBufferFrameSize );
 	status = ::AudioObjectRemovePropertyListenerBlock( deviceId, &frameSizeAddress, currentQueue, listenerBlock );
-	CI_VERIFY( status == noErr );
+//	CI_VERIFY( status == noErr );
 
 	Block_release( listenerBlock );
 }
 
 void printDeviceInfo(AudioObjectID deviceId, string name) {
-    // Get the sample rate of the device
-    auto sampleRates = getAudioObjectPropertyVector<Float64>(deviceId, kAudioDevicePropertyAvailableNominalSampleRates);
-    // Assuming the first available sample rate is used
-    Float64 sampleRate = sampleRates.empty() ? 0.0 : sampleRates[0];
-    // Get the number of channels of the device
-    auto channels = getAudioObjectPropertyVector<UInt32>(deviceId, kAudioDevicePropertyStreams, kAudioObjectPropertyScopeGlobal);
-    UInt32 numChannels = channels.size();
-
     // Print or use the retrieved information
-    std::cerr << "Device ID: " << ((unsigned)deviceId) << std::endl;
-    std::cout << "Device Name: " << name << std::endl;
-    std::cout << "Sample rate: " << sampleRate << std::endl;
-    std::cout << "Channels: " << numChannels << std::endl;
+    std::cout << "Device ID: " << ((unsigned)deviceId) << ", Device Name: " << name << std::endl;
 }
 
+void DeviceManagerCoreAudio::refreshDevices()
+{
+    CI_LOG_W("Refreshing devices");
+//    mDeviceIds.clear();
+    auto deviceIds = getAudioObjectPropertyVector<::AudioObjectID>( kAudioObjectSystemObject, kAudioHardwarePropertyDevices );
+    vector<::AudioObjectID> addedDevices, removedDevices;
+    for ( ::AudioDeviceID &deviceId : deviceIds ) {
+        auto key = keyForDeviceId( deviceId );
+        auto device = findDeviceByKey( key );
+        if ( !device )
+            addedDevices.push_back( deviceId );
+    }
+    for (const auto & device : mDevices) {
+        if ( find_if( deviceIds.begin(), deviceIds.end(), [&device] ( auto deviceId ) {
+            return std::to_string( deviceId ) == device->getKey();
+        }) == deviceIds.end()) {
+            removedDevices.push_back( std::stoi( device->getKey() ) );
+        }
+    }
+
+    // mDevices.clear();
+    for ( ::AudioDeviceID &deviceId : addedDevices ) {
+        CI_LOG_W("Adding device " + std::to_string(deviceId));
+        string key = keyForDeviceId( deviceId );
+        auto device = addDevice( key );
+    }
+    // removing active device
+    /*if ( mCurrentOutputDevice ) {
+        if (auto it = find( removedDevices.begin(), removedDevices.end(), deviceIdForDevice( mCurrentOutputDevice ) ); it != removedDevices.end()) {
+            auto newActiveDevice = mCurrentOutputDevice;
+            for ( ::AudioDeviceID &deviceId : deviceIds ) {
+                if (auto it = find( removedDevices.begin(), removedDevices.end(), deviceId ); it == removedDevices.end()) {
+                    newActiveDevice = findDeviceByKey( std::to_string( deviceId ) );
+                }
+            }
+        }
+    }*/
+    for ( ::AudioDeviceID &deviceId : removedDevices ) {
+        CI_LOG_W("Removing device " + std::to_string(deviceId));
+        string key = keyForDeviceId( deviceId );
+        if ( auto it = find_if( mDevices.begin(), mDevices.end(), [&key] ( auto device ) {
+            return key == device->getKey();
+        }); it != mDevices.end()) {
+            mDevices.erase( it );
+        }
+    }
+    std::cout << "DeviceManagerCoreAudio::refreshDevices called with " << to_string(mDevices.size()) << " devices" << std::endl;
+}
 
 const vector<DeviceRef>& DeviceManagerCoreAudio::getDevices()
 {
-	if( mDevices.empty() ) {
-		auto deviceIds = getAudioObjectPropertyVector<::AudioObjectID>( kAudioObjectSystemObject, kAudioHardwarePropertyDevices );
-		for ( ::AudioDeviceID &deviceId : deviceIds ) {
-			string key = keyForDeviceId( deviceId );
-            printDeviceInfo( deviceId, key );
-			auto device = addDevice( key );
-			mDeviceIds.insert( { device, deviceId } );
-		}
-	}
 	return mDevices;
 }
 
@@ -401,6 +554,7 @@ pair<size_t, size_t> DeviceManagerCoreAudio::getAcceptableFramesPerBlockRange( :
 // - current solution: key = 'NAME-[UID | MANUFACTURER]'
 string DeviceManagerCoreAudio::keyForDeviceId( ::AudioDeviceID deviceId )
 {
+    return std::to_string( deviceId );
 	string name = getAudioObjectPropertyString( deviceId, kAudioObjectPropertyName );
 	string key = getAudioObjectPropertyString( deviceId, kAudioDevicePropertyModelUID );
 	if( key.empty() )

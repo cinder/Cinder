@@ -34,7 +34,9 @@ namespace cinder { namespace audio { namespace cocoa {
 class DeviceManagerCoreAudio : public DeviceManager {
   public:
 	DeviceManagerCoreAudio();
+	~DeviceManagerCoreAudio();
 
+    void refreshDevices();  
 	const std::vector<DeviceRef>& getDevices()									override;
 	DeviceRef getDefaultOutput()												override;
 	DeviceRef getDefaultInput()													override;
@@ -64,8 +66,15 @@ class DeviceManagerCoreAudio : public DeviceManager {
 	std::pair<size_t, size_t>	getAcceptableFramesPerBlockRange( ::AudioDeviceID deviceId );
 
 	static std::string keyForDeviceId( ::AudioDeviceID deviceId );
+    
+    ::AudioDeviceID deviceIdForKey( const std::string &key ) const {
+        return atoi(key.c_str());
+    }
+    ::AudioDeviceID deviceIdForDevice( const DeviceRef &device ) const {
+        return deviceIdForKey( device->getKey() );
+    }
 
-	std::map<DeviceRef, ::AudioDeviceID>	mDeviceIds;
+//	std::map<DeviceRef, ::AudioDeviceID>	mDeviceIds;
 	DeviceRef								mCurrentOutputDevice, mCurrentInputDevice;
 	::AudioObjectPropertyListenerBlock		mOutputDeviceListenerBlock, mInputDeviceListenerBlock;
 
