@@ -176,6 +176,8 @@ class GstPlayer {
 
 		ci::gl::Texture2dRef getVideoTexture();
 
+		ci::signals::Signal<void()>& getSeekFinishedSignal() { return mSignalSeekFinished; }
+
 	private:
 		bool initializeGStreamer();
 
@@ -234,6 +236,8 @@ class GstPlayer {
 		GLint getTextureID( GstBuffer* newBuffer );
 
 		std::atomic<bool> mNewFrame;
+
+		ci::signals::Signal<void()>	mSignalSeekFinished;
 };
 
 }} // namespace gst::video
