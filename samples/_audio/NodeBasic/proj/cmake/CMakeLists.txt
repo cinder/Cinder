@@ -12,4 +12,5 @@ ci_make_app(
 	APP_NAME    "NodeBasic"
 	SOURCES     ${APP_PATH}/src/NodeBasicApp.cpp
 	CINDER_PATH ${CINDER_PATH}
+    FOLDER      "cinder/samples/_audio"
 )
