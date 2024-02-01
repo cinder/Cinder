@@ -168,6 +168,18 @@ void Path2d::lineTo( const vec2 &p )
 	mSegments.push_back( LINETO );
 }
 
+void Path2d::horizontalLineTo( float x )
+{
+	const vec2 &pt = getCurrentPoint();
+	lineTo( x, pt.y );
+}
+
+void Path2d::verticalLineTo( float y )
+{
+	const vec2 &pt = getCurrentPoint();
+	lineTo( pt.x, y );
+}
+
 void Path2d::quadTo( const vec2 &p1, const vec2 &p2 )
 {
 	if( mPoints.empty() )
@@ -176,6 +188,24 @@ void Path2d::quadTo( const vec2 &p1, const vec2 &p2 )
 	mPoints.push_back( p1 );
 	mPoints.push_back( p2 );
 	mSegments.push_back( QUADTO );
+}
+
+void Path2d::smoothQuadTo( const vec2 &p2 )
+{
+	if( mPoints.empty() )
+		throw Path2dExc(); // can only smoothQuadTo as non-first point
+
+	vec2 p1 = getCurrentPoint();
+
+	if( ! mSegments.empty() && mSegments.back() == QUADTO ) {
+		const vec2 &c = getPointBefore( mPoints.size() - 1 );
+		p1.x = 2 * p1.x - c.x;
+		p1.y = 2 * p1.y - c.y;
+	}
+
+	mSegments.emplace_back( QUADTO );
+	mPoints.emplace_back( p1.x, p1.y );
+	mPoints.emplace_back( p2.x, p2.y );
 }
 
 void Path2d::curveTo( const vec2 &p1, const vec2 &p2, const vec2 &p3 )
@@ -187,6 +217,25 @@ void Path2d::curveTo( const vec2 &p1, const vec2 &p2, const vec2 &p3 )
 	mPoints.push_back( p2 );
 	mPoints.push_back( p3 );
 	mSegments.push_back( CUBICTO );
+}
+
+void Path2d::smoothCurveTo( const vec2 &p2, const vec2 &p3 )
+{
+	if( mPoints.empty() )
+		throw Path2dExc(); // can only smoothCurveTo as non-first point
+
+	vec2 p1 = getCurrentPoint();
+
+	if( ! mSegments.empty() && mSegments.back() == CUBICTO ) {
+		const vec2 &c = getPointBefore( mPoints.size() - 1 );
+		p1.x = 2 * p1.x - c.x;
+		p1.y = 2 * p1.y - c.y;
+	}
+
+	mSegments.emplace_back( CUBICTO );
+	mPoints.emplace_back( p1.x, p1.y );
+	mPoints.emplace_back( p2.x, p2.y );
+	mPoints.emplace_back( p3.x, p3.y );
 }
 
 void Path2d::arc( const vec2 &center, float radius, float startRadians, float endRadians, bool forward )
@@ -338,26 +387,346 @@ void Path2d::arcTo( const vec2 &p1, const vec2 &t, float radius )
 	}
 }
 
+namespace {
+
+float angleHelper( const vec2 &u, const vec2 &v )
+{
+	// See: equation 5.4 of https://www.w3.org/TR/SVG/implnote.html
+	const float c = u.x * v.y - u.y * v.x;
+	const float d = glm::dot( glm::normalize( u ), glm::normalize( v ) );
+	return c < 0 ? -math<float>::acos( d ) : math<float>::acos( d );
+}
+
+} // namespace
+
+void Path2d::arcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &p2 )
+{
+	// See: https://www.w3.org/TR/SVG/implnote.html
+
+	if( approxZero( rx ) || approxZero( ry ) ) {
+		return lineTo( p2 );
+	}
+
+	const vec2 p1 = mPoints.back();
+
+	const float sinPhi = math<float>::sin( phi );
+	const float cosPhi = math<float>::cos( phi );
+
+	// Step 1: move ellipse so origin will be the midpoint between p1 and p2.
+	vec2 mid = ( p1 - p2 ) * 0.5f; // midpoint
+
+	const float x1p = mid.x * cosPhi + mid.y * sinPhi; // equation 5.1
+	const float y1p = mid.y * cosPhi - mid.x * sinPhi;
+	if( approxZero( x1p ) && approxZero( y1p ) )
+		return lineTo( p2 );
+
+	const float x1pSquared = x1p * x1p;
+	const float y1pSquared = y1p * y1p;
+
+	float rxSquared = rx * rx;
+	float rySquared = ry * ry;
+
+	float lambda = x1pSquared / rxSquared + y1pSquared / rySquared; // equation 6.2
+	if( lambda > 1.0f ) {                                           // equation 6.3
+		lambda = math<float>::sqrt( lambda );
+		rx *= lambda;
+		ry *= lambda;
+		rxSquared = rx * rx;
+		rySquared = ry * ry;
+	}
+
+	// Step 2: compute coordinates of the center of the ellipse.
+	const float x = rySquared * x1pSquared;
+	const float y = rxSquared * y1pSquared;
+
+	float r = roundToZero( ( rxSquared * rySquared - y - x ) / ( y + x ) );
+	r = largeArcFlag == sweepFlag ? -sqrtf( r ) : sqrtf( r );
+
+	float cxp = r * ( rx * y1p ) / ry; // equation 5.2
+	float cyp = r * -( ry * x1p ) / rx;
+
+	// Step 3: transform back to original coordinate system.
+	mid = ( p1 + p2 ) * 0.5f;
+	vec2 c{ cxp * cosPhi - cyp * sinPhi + mid.x, cyp * cosPhi + cxp * sinPhi + mid.y }; // equation 5.3
+
+	// Step 4: compute angles and number of segments.
+	vec2 v1{ ( x1p - cxp ) / rx, ( y1p - cyp ) / ry };
+	vec2 v2{ ( -x1p - cxp ) / rx, ( -y1p - cyp ) / ry };
+
+	float theta = angleHelper( { 1, 0 }, v1 );
+	float deltaTheta = angleHelper( v1, v2 );
+
+	if( !sweepFlag && deltaTheta > 0 )
+		deltaTheta -= float( 2 * M_PI );
+	else if( sweepFlag && deltaTheta < 0 )
+		deltaTheta += float( 2 * M_PI );
+
+	float segments = glm::max( 1.0f, math<float>::ceil( math<float>::abs( deltaTheta ) / float( M_PI / 2 ) ) );
+	deltaTheta /= segments;
+
+	float h = 4.0f / 3.0f * math<float>::tan( deltaTheta / 4 );
+
+	// Step 5: generate cubic bezier curve segments.
+	for( int i = 0; i < int( segments ); ++i ) {
+		float x1 = roundToZero( math<float>::cos( theta ) );
+		float y1 = roundToZero( math<float>::sin( theta ) );
+
+		theta += deltaTheta;
+
+		float x2 = roundToZero( math<float>::cos( theta ) );
+		float y2 = roundToZero( math<float>::sin( theta ) );
+
+		vec2 c1{ rx * ( x1 - y1 * h ), ry * ( y1 + x1 * h ) };
+		vec2 c2{ rx * ( x2 + y2 * h ), ry * ( y2 - x2 * h ) };
+		vec2 c3{ rx * x2, ry * y2 };
+
+		c1 = glm::rotate( c1, phi ) + c;
+		c2 = glm::rotate( c2, phi ) + c;
+		c3 = glm::rotate( c3, phi ) + c;
+
+		curveTo( c1, c2, c3 );
+	}
+}
+
+void Path2d::relativeMoveTo( const vec2 &delta )
+{
+	const auto &pt = getCurrentPoint();
+	moveTo( pt + delta );
+}
+
+void Path2d::relativeLineTo( const vec2 &delta )
+{
+	const auto &pt = getCurrentPoint();
+	lineTo( pt + delta );
+}
+
+void Path2d::relativeHorizontalLineTo( float dx )
+{
+	const auto &pt = getCurrentPoint();
+	horizontalLineTo( pt.x + dx );
+}
+
+void Path2d::relativeVerticalLineTo( float dy )
+{
+	const auto &pt = getCurrentPoint();
+	verticalLineTo( pt.y + dy );
+}
+
+void Path2d::relativeQuadTo( const vec2 &delta1, const vec2 &delta2 )
+{
+	const auto &pt = getCurrentPoint();
+	quadTo( pt + delta1, pt + delta2 );
+}
+
+void Path2d::relativeSmoothQuadTo( const vec2 &delta )
+{
+	const auto &pt = getCurrentPoint();
+	smoothQuadTo( pt + delta );
+}
+
+void Path2d::relativeCurveTo( const vec2 &delta1, const vec2 &delta2, const vec2 &delta3 )
+{
+	const auto &pt = getCurrentPoint();
+	curveTo( pt + delta1, pt + delta2, pt + delta3 );
+}
+
+void Path2d::relativeSmoothCurveTo( const vec2 &delta2, const vec2 &delta3 )
+{
+	const auto &pt = getCurrentPoint();
+	smoothCurveTo( pt + delta2, pt + delta3 );
+}
+
+void Path2d::relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &delta )
+{
+	const auto &pt = getCurrentPoint();
+	arcTo( rx, ry, phi, largeArcFlag, sweepFlag, pt + delta );
+}
+
+Path2d Path2d::circle( const vec2 &center, float radius )
+{
+	Path2d shape;
+	shape.moveTo( center.x + radius, center.y );
+	shape.relativeArcTo( radius, radius, 0, false, true, vec2( -( radius + radius ), 0 ) );
+	shape.relativeArcTo( radius, radius, 0, false, true, vec2( +( radius + radius ), 0 ) );
+	return shape;
+}
+
+Path2d Path2d::ellipse( const vec2 &center, float radiusX, float radiusY )
+{
+	Path2d shape;
+	shape.moveTo( center.x + radiusX, center.y );
+	shape.relativeArcTo( radiusX, radiusY, 0, false, true, vec2( -( radiusX + radiusX ), 0 ) );
+	shape.relativeArcTo( radiusX, radiusY, 0, false, true, vec2( +( radiusX + radiusX ), 0 ) );
+	return shape;
+}
+
+Path2d Path2d::line( const vec2 &p0, const vec2 &p1 )
+{
+	Path2d shape;
+	shape.moveTo( p0 );
+	shape.lineTo( p1 );
+	return shape;
+}
+
+Path2d Path2d::polygon( const std::vector<vec2> &points, bool closed )
+{
+	if( points.size() < 2 )
+		throw Path2dExc(); //
+
+	Path2d shape;
+
+	auto itr = points.begin();
+	shape.moveTo( *itr++ );
+	while( itr != points.end() )
+		shape.lineTo( *itr++ );
+
+	if( closed )
+		shape.close();
+
+	return shape;
+}
+
+Path2d Path2d::rectangle( float x, float y, float width, float height )
+{
+	Path2d shape;
+	shape.moveTo( x, y );
+	shape.lineTo( x + width, y );
+	shape.lineTo( x + width, y + height );
+	shape.lineTo( x, y + height );
+	shape.close();
+	return shape;
+}
+
+Path2d Path2d::roundedRectangle( float x, float y, float width, float height, float rx, float ry )
+{
+	if( approxZero( rx ) || approxZero( ry ) )
+		return rectangle( x, y, width, height );
+	
+	Path2d shape;
+	shape.moveTo( x + rx, y );
+	shape.lineTo( x + width - rx, y );
+	shape.arcTo( rx, ry, 0, false, true, vec2( x + width, y + ry ) );
+	shape.lineTo( x + width, y + height - ry );
+	shape.arcTo( rx, ry, 0, false, true, vec2( x + width - rx, y + height ) );
+	shape.lineTo( x + rx, y + height );
+	shape.arcTo( rx, ry, 0, false, true, vec2( x, y + height - ry ) );
+	shape.lineTo( x, y + ry );
+	shape.arcTo( rx, ry, 0, false, true, vec2( x + rx, y ) );
+	shape.close();
+	return shape;
+}
+
+Path2d Path2d::star( const vec2 &center, int points, float largeRadius, float smallRadius, float rotation )
+{
+	const float step = glm::radians( 180.0f / float( points ) );
+
+	Path2d shape;
+	for( int i = 0; i < 2 * points; i += 2 ) {
+		float x = center.x + largeRadius * glm::sin( rotation + float( i + 0 ) * step );
+		float y = center.y - largeRadius * glm::cos( rotation + float( i + 0 ) * step );
+		if( i == 0 )
+			shape.moveTo( x, y );
+		else
+			shape.lineTo( x, y );
+		x = center.x + smallRadius * glm::sin( rotation + float( i + 1 ) * step );
+		y = center.y - smallRadius * glm::cos( rotation + float( i + 1 ) * step );
+		shape.lineTo( x, y );
+	}
+	shape.close();
+	return shape;
+}
+
+Path2d Path2d::arrow( const vec2 &p0, const vec2 &p1, float thickness, float width, float length, float concavity )
+{
+	const float distance = glm::distance( p1, p0 );
+	const vec2  direction = ( p1 - p0 ) / distance;
+	const vec2  normal{ 0.5f * thickness * direction.y, -0.5f * thickness * direction.x };
+
+	vec2 base = p0 + direction * glm::max( 0.0f, distance - thickness * length );
+
+	Path2d shape;
+	shape.moveTo( p0 - normal );
+	shape.lineTo( base - normal + direction * thickness * length * concavity );
+	shape.lineTo( base - normal * width );
+	shape.lineTo( p1 );
+	shape.lineTo( base + normal * width );
+	shape.lineTo( base + normal + direction * thickness * length * concavity );
+	shape.lineTo( p0 + normal );
+	shape.close();
+	return shape;
+}
+
+Path2d Path2d::spiral( const vec2 &center, float innerRadius, float outerRadius, float spacing, float offset )
+{
+	// Helper struct
+	struct Point {
+		float x;
+		float y;
+		float theta;
+		float tangent;
+
+		explicit Point( float theta, float offset = 0 )
+			: theta( theta )
+		{
+			float c = math<float>::cos( theta + offset );
+			float s = math<float>::sin( theta + offset );
+			x = theta * c;
+			y = theta * s;
+			tangent = math<float>::atan2( s + x, c - y );
+		}
+
+		std::pair<vec2, vec2> generate( const Point &previous ) const
+		{
+			const auto offset = 4 * math<float>::tan( ( theta - previous.theta ) / 4 ) / 3;
+			const auto p1 = vec2( math<float>::cos( previous.tangent ) * offset * previous.theta + previous.x, math<float>::sin( previous.tangent ) * offset * previous.theta + previous.y );
+			const auto p2 = vec2( math<float>::cos( tangent - float( M_PI ) ) * offset * theta + x, math<float>::sin( tangent - float( M_PI ) ) * offset * theta + y );
+			return std::make_pair( p1, p2 );
+		}
+	};
+
+	const auto step = spacing / ( 2.0f * float( M_PI ) );
+	const auto radiansStart = glm::radians( 360 * innerRadius / spacing );
+	const auto radiansEnd = glm::radians( 360 * outerRadius / spacing );
+
+	Point p0( radiansStart, offset - radiansStart );
+
+	Path2d shape;
+	shape.moveTo( center.x + p0.x * step, center.y + p0.y * step );
+
+	float radians = radiansStart + glm::radians( clamp( radiansStart * step, 3.0f, 60.0f ) ); // Adaptive step size.
+	while( radians < radiansEnd ) {
+		const auto p3 = Point( radians, offset - radiansStart );
+		const auto controls = p3.generate( p0 );
+		shape.curveTo( center.x + controls.first.x * step, center.y + controls.first.y * step, center.x + controls.second.x * step, center.y + controls.second.y * step, center.x + p3.x * step, center.y + p3.y * step );
+
+		p0 = p3;
+
+		radians += glm::radians( glm::clamp( radians * step, 3.0f, 60.0f ) ); // Adaptive step size.
+	}
+
+	const auto p3 = Point( radiansEnd, offset - radiansStart );
+	const auto controls = p3.generate( p0 );
+
+	shape.curveTo( center.x + controls.first.x * step, center.y + controls.first.y * step, center.x + controls.second.x * step, center.y + controls.second.y * step, center.x + p3.x * step, center.y + p3.y * step );
+
+	return shape;
+}
+
 void Path2d::reverse()
 {
-    // The path is empty: nothing to do.
-    if( empty() )
-        return;
+	// The path is empty: nothing to do.
+	if( empty() )
+		return;
 
-    // Reverse all points.
-    std::reverse( mPoints.begin(), mPoints.end() );
-
-    // Reverse the segments, but skip the "moveto" and "close":
-	if( isClosed() ) {
-        // There should be at least 4 segments: "moveto", "close" and two other segments.
-        if( mSegments.size() > 3 )
-            std::reverse( mSegments.begin() + 1, mSegments.end() - 1 );
-    }
-    else {
-        // There should be at least 3 segments: "moveto" and two other segments.
-        if( mSegments.size() > 2 )
-            std::reverse( mSegments.begin() + 1, mSegments.end() );
-    }
+	// Reverse all points.
+	std::reverse( mPoints.begin(), mPoints.end() );
+	
+	if( isClosed() && mSegments.size() > 2 ) {
+		std::reverse( mSegments.begin(), mSegments.end() - 1 );
+	}
+	else if( ! isClosed() && mSegments.size() > 1 ) {
+		std::reverse( mSegments.begin(), mSegments.end() );
+	}
 }
 
 void Path2d::appendSegment( SegmentType segmentType, const vec2 *points )
@@ -1002,6 +1371,23 @@ Rectf Path2d::calcPreciseBoundingBox() const
 	}
 
 	return result;
+}
+
+bool Path2d::calcClockwise() const
+{
+	// See: https://en.wikipedia.org/wiki/Curve_orientation
+	size_t index = 0;
+	for( size_t i = 1; i < mPoints.size(); ++i ) {
+		if( mPoints.at( i ).x < mPoints.at( index ).x || ( approxEqual( mPoints.at( i ).x, mPoints.at( index ).x ) && mPoints.at( i ).y < mPoints.at( index ).y ) )
+			index = i;
+	}
+
+	const auto &a = getPoint(index);
+	const auto &b = getPointBefore(index);
+	const auto &c = getPointAfter(index);
+	const auto sign = glm::sign( (b.x-a.x)*(c.y-a.y)-(c.x-a.x)*(b.y-a.y) );
+
+	return sign < 0;
 }
 
 namespace {

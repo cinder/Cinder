@@ -43,20 +43,75 @@ class CI_API Path2d {
 	void	moveTo( float x, float y ) { moveTo( vec2( x, y ) ); }
 	void	lineTo( const vec2 &p );
 	void	lineTo( float x, float y ) { lineTo( vec2( x, y ) ); }
+	void	horizontalLineTo( float x );
+	void	verticalLineTo( float y );
 	void	quadTo( const vec2 &p1, const vec2 &p2 );
 	void	quadTo( float x1, float y1, float x2, float y2 ) { quadTo( vec2( x1, y1 ), vec2( x2, y2 ) ); }
+	void	smoothQuadTo( const vec2 &p2 );
+	void	smoothQuadTo( float x2, float y2 ) { smoothQuadTo( vec2( x2, y2 ) ); }
 	void	curveTo( const vec2 &p1, const vec2 &p2, const vec2 &p3 );
 	void	curveTo( float x1, float y1, float x2, float y2, float x3, float y3 ) { curveTo( vec2( x1, y1 ), vec2( x2, y2 ), vec2( x3, y3 ) ); }
+	void	smoothCurveTo( const vec2 &p2, const vec2 &p3 );
+	void	smoothCurveTo( float x2, float y2, float x3, float y3 ) { smoothCurveTo( vec2( x2, y2 ), vec2( x3, y3 ) ); }
 	void	arc( const vec2 &center, float radius, float startRadians, float endRadians, bool forward = true );
 	void	arc( float centerX, float centerY, float radius, float startRadians, float endRadians, bool forward = true ) { arc( vec2( centerX, centerY ), radius, startRadians, endRadians, forward ); }
 	void	arcTo( const vec2 &p, const vec2 &t, float radius );
 	void	arcTo( float x, float y, float tanX, float tanY, float radius) { arcTo( vec2( x, y ), vec2( tanX, tanY ), radius ); }
+	void	arcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &p2 );
+	
+	//!
+	void    relativeMoveTo( float dx, float dy ) { relativeMoveTo( vec2( dx, dy ) ); }
+	void    relativeMoveTo( const vec2 &delta );
+	void    relativeLineTo( float dx, float dy ) { relativeLineTo( vec2( dx, dy ) ); }
+	void    relativeLineTo( const vec2 &delta );
+	void    relativeHorizontalLineTo( float dx );
+	void	relativeVerticalLineTo( float dy );
+	void    relativeQuadTo( float dx1, float dy1, float dx2, float dy2 ) { relativeQuadTo( vec2( dx1, dy1 ), vec2( dx2, dy2 ) ); }
+	void    relativeQuadTo( const vec2 &delta1, const vec2 &delta2 );
+	void    relativeSmoothQuadTo( float dx, float dy ) { relativeSmoothQuadTo( vec2( dx, dy ) ); }
+	void    relativeSmoothQuadTo( const vec2 &delta );
+	void    relativeCurveTo( float dx1, float dy1, float dx2, float dy2, float dx3, float dy3 ) { relativeCurveTo( vec2( dx1, dy1 ), vec2( dx2, dy2 ), vec2( dx3, dy3 ) ); }
+	void    relativeCurveTo( const vec2 &delta1, const vec2 &delta2, const vec2 &delta3 );
+	void    relativeSmoothCurveTo( float dx2, float dy2, float dx3, float dy3 ) { relativeSmoothCurveTo( vec2( dx2, dy2 ), vec2( dx3, dy3 ) ); }
+	void    relativeSmoothCurveTo( const vec2 &delta2, const vec2 &delta3 );
+	void    relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, float dx, float dy ) { relativeArcTo( rx, ry, phi, largeArcFlag, sweepFlag, vec2( dx, dy ) ); }
+	void	relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &delta );
 	
 	//! Closes the path, by drawing a straight line from the first to the last point. This is only legal as the last command.
 	void	close() { mSegments.push_back( CLOSE ); }
-	bool	isClosed() const { return ( mSegments.size() > 1 ) && mSegments.back() == CLOSE; }
+	bool	isClosed() const { return ! mSegments.empty() && mSegments.back() == CLOSE; }
+
+	//! Creates a circle with given \a center and \a radius and returns it as a Path2d.
+	static Path2d circle( const vec2 &center, float radius );
+	//! Creates an ellipse with given \a center and \a radiusX and \a radiusY and returns it as a Path2d.
+	static Path2d ellipse( const vec2 &center, float radiusX, float radiusY );
+	//! Creates a line with given start point \a p0 and end point \a p1 and returns it as a Path2d.
+	static Path2d line( const vec2 &p0, const vec2 &p1 );
+	//! Creates a polygon from the given \a points and returns it as a Path2d.
+	static Path2d polygon( const std::vector<vec2> &points, bool closed = true );
+	//! Creates a rectangle with given \a bounds and returns it as a Path2d.
+	static Path2d rectangle( const Rectf &bounds ) { return rectangle( bounds.x1, bounds.y1, bounds.getWidth(), bounds.getHeight() ); }
+	//! Creates a rectangle with given origin \a x, \a y and size \a width, \a height and returns it as a Path2d.
+	static Path2d rectangle( float x, float y, float width, float height );
+	//! Creates a rounded rectangle with given \a bounds and corner radius \a r and returns it as a Path2d.
+	static Path2d roundedRectangle( const Rectf &bounds, float r ) { return roundedRectangle( bounds, r, r ); }
+	//! Creates a rounded rectangle with given \a bounds and corner radii \a rx and \a ry and returns it as a Path2d.
+	static Path2d roundedRectangle( const Rectf &bounds, float rx, float ry ) { return roundedRectangle( bounds.x1, bounds.y1, bounds.getWidth(), bounds.getHeight(), rx, ry ); }
+	//! Creates a rounded rectangle with given origin \a x, \a y and size \a width, \a height and corner radius \a r returns it as a Path2d.
+	static Path2d roundedRectangle( float x, float y, float width, float height, float r ) { return roundedRectangle( x, y, width, height, r, r ); }
+	//! Creates a rounded rectangle with given origin \a x, \a y and size \a width, \a height and corner radii \a rx and \a ry and returns it as a Path2d.
+	static Path2d roundedRectangle( float x, float y, float width, float height, float rx, float ry );
+	//! Creates a star with the given \a center and number of \a points and returns it as a Path2d.
+	static Path2d star( const vec2 &center, int points, float largeRadius, float smallRadius, float rotation = 0 );
+	//! Creates an arrow from start point \a p0 to end point \a p1 and returns it as a Path2d. The arrow head can be shaped with parameters \a thickness, \a width, \a length and \a concavity.
+	static Path2d arrow( const vec2 &p0, const vec2 &p1, float thickness, float width = 4, float length = 4, float concavity = 0 );
+	//! Creates an arrow from start point \a x0, \a y0 to end point \a x1, \a y1 and returns it as a Path2d. The arrow head can be shaped with parameters \a thickness, \a width, \a length and \a concavity.
+	static Path2d arrow( float x0, float y0, float x1, float y1, float thickness, float width = 4, float length = 4, float concavity = 0 ) { return arrow( vec2( x0, y0 ), vec2( x1, y1 ), thickness, width, length, concavity ); }
+	//! Creates an Archimedean spiral at \a center and returns it as a Path2d. The spiral runs from \a innerRadius to \a outerRadius and the radius will increase by \a spacing every full revolution.
+	//! You can provide an optional radial \a offset.
+	static Path2d spiral( const vec2 &center, float innerRadius, float outerRadius, float spacing, float offset = 0 );
     
-	//! Reverses the order of the path's points, inverting its winding order
+	//! Reverses the orientation of the path, changing CW to CCW and vice versa.
     void	reverse();
 	
 	bool	empty() const { return mPoints.empty(); }
@@ -94,8 +149,12 @@ class CI_API Path2d {
 
 	const std::vector<vec2>&	getPoints() const { return mPoints; }
 	std::vector<vec2>&			getPoints() { return mPoints; }
-	const vec2&				getPoint( size_t point ) const { return mPoints[point]; }
-	vec2&						getPoint( size_t point ) { return mPoints[point]; }
+	const vec2&				getPoint( size_t point ) const { return mPoints[ point % mPoints.size() ]; }
+	vec2&						getPoint( size_t point ) { return mPoints[ point % mPoints.size() ]; }
+	const vec2&				getPointBefore( size_t point ) const { return getPoint( point + mPoints.size() - 1 ); }
+	vec2&						getPointBefore( size_t point ) { return getPoint( point + mPoints.size() - 1 ); }
+	const vec2&				getPointAfter( size_t point ) const { return getPoint( point + 1 ); }
+	vec2&						getPointAfter( size_t point ) { return getPoint( point + 1 ); }
 	const vec2&				getCurrentPoint() const { return mPoints.back(); }
 	void						setPoint( size_t index, const vec2 &p ) { mPoints[index] = p; }
 
@@ -114,6 +173,11 @@ class CI_API Path2d {
 	Rectf	calcBoundingBox() const;
 	//! Returns the precise bounding box around the curve itself. Slower to calculate than calcBoundingBox().
 	Rectf	calcPreciseBoundingBox() const;	
+
+	//! Returns whether the path is defined in clockwise order.
+	bool calcClockwise() const;
+	//! Returns whether the path is defined in counter-clockwise order.
+	bool calcCounterClockwise() const { return !calcClockwise(); }
 
 	//! Returns whether the point \a pt is contained within the boundaries of the Path2d. If \a evenOddFill is \c true (the default) then Even-Odd fill rule is used, otherwise, the Winding fill rule is applied.
 	bool	contains( const vec2 &pt, bool evenOddFill = true ) const;

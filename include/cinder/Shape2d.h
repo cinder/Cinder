@@ -37,15 +37,43 @@ class CI_API Shape2d {
 	void	moveTo( float x, float y ) { moveTo( vec2( x, y ) ); }
 	void	lineTo( const vec2 &p );
 	void	lineTo( float x, float y ) { lineTo( vec2( x, y ) ); }
+	void	horizontalLineTo( float x );
+	void	verticalLineTo( float y );
 	void	quadTo( const vec2 &p1, const vec2 &p2 );
 	void	quadTo( float x1, float y1, float x2, float y2 ) { quadTo( vec2( x1, y1 ), vec2( x2, y2 ) ); }
+	void	smoothQuadTo( const vec2 &p2 );
+	void	smoothQuadTo( float x2, float y2 ) { smoothQuadTo( vec2( x2, y2 ) ); }
 	void	curveTo( const vec2 &p1, const vec2 &p2, const vec2 &p3 );
 	void	curveTo( float x1, float y1, float x2, float y2, float x3, float y3 ) { curveTo( vec2( x1, y1 ), vec2( x2, y2 ), vec2( x3, y3 ) ); }
+	void	smoothCurveTo( const vec2 &p2, const vec2 &p3 );
+	void	smoothCurveTo( float x2, float y2, float x3, float y3 ) { smoothCurveTo( vec2( x2, y2 ), vec2( x3, y3 ) ); }
 	void	arc( const vec2 &center, float radius, float startRadians, float endRadians, bool forward = true );
 	void	arc( float centerX, float centerY, float radius, float startRadians, float endRadians, bool forward = true ) { arc( vec2( centerX, centerY ), radius, startRadians, endRadians, forward ); }
 	void	arcTo( const vec2 &p, const vec2 &t, float radius );
 	void	arcTo( float x, float y, float tanX, float tanY, float radius) { arcTo( vec2( x, y ), vec2( tanX, tanY ), radius ); }
+	void	arcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, float px, float py ) { arcTo( rx, ry, phi, largeArcFlag, sweepFlag, vec2( px, py ) ); }
+	void	arcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &p2 );
 	void	close();
+
+	void	relativeMoveTo( const vec2 &p );
+	void	relativeMoveTo( float dx, float dy ) { relativeMoveTo( vec2( dx, dy ) ); }
+	void	relativeLineTo( const vec2 &delta );
+	void	relativeLineTo( float dx, float dy ) { relativeLineTo( vec2( dx, dy ) ); }
+	void	relativeHorizontalLineTo( float dx );
+	void	relativeVerticalLineTo( float dy );
+	void	relativeQuadTo( const vec2 &delta1, const vec2 &delta2 );
+	void	relativeQuadTo( float x1, float y1, float x2, float y2 ) { relativeQuadTo( vec2( x1, y1 ), vec2( x2, y2 ) ); }
+	void	relativeSmoothQuadTo( const vec2 &delta );
+	void	relativeSmoothQuadTo( float x2, float y2 ) { relativeSmoothQuadTo( vec2( x2, y2 ) ); }
+	void	relativeCurveTo( const vec2 &delta1, const vec2 &delta2, const vec2 &delta3 );
+	void	relativeCurveTo( float x1, float y1, float x2, float y2, float x3, float y3 ) { relativeCurveTo( vec2( x1, y1 ), vec2( x2, y2 ), vec2( x3, y3 ) ); }
+	void	relativeSmoothCurveTo( const vec2 &delta2, const vec2 &delta3 );
+	void	relativeSmoothCurveTo( float x2, float y2, float x3, float y3 ) { relativeSmoothCurveTo( vec2( x2, y2 ), vec2( x3, y3 ) ); }
+	void	relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, float px, float py ) { relativeArcTo( rx, ry, phi, largeArcFlag, sweepFlag, vec2( px, py ) ); }
+	void	relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &delta );
+
+	//! Reverses the orientation of the shape's contours, changing CW to CCW and vice versa.
+	void	reverse();
 	
 	bool	empty() const { return mContours.empty(); }
 	void	clear() { mContours.clear(); }
