@@ -1071,6 +1071,7 @@
     <ClInclude Include="..\..\include\cinder\Base64.h" />
     <ClInclude Include="..\..\include\cinder\Breakpoint.h" />
     <ClInclude Include="..\..\include\cinder\CameraUi.h" />
+    <ClInclude Include="..\..\include\cinder\CanvasUi.h" />
     <ClInclude Include="..\..\include\cinder\CaptureImplDirectShow.h" />
     <ClInclude Include="..\..\include\cinder\CinderAssert.h" />
     <ClInclude Include="..\..\include\cinder\CinderImGui.h" />
