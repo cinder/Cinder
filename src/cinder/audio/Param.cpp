@@ -352,7 +352,6 @@ void Param::removeEventsAt( double time )
 		if( event.getTimeBegin() >= time ) {
 			if( contextDisabled ) {
 				eventIt = mEvents.erase( eventIt );
-				++eventIt;
 			}
 			else {
 				event.cancel();
