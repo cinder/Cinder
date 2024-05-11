@@ -23,9 +23,13 @@
 
 #pragma once
 
+// Users can set IMGUI_USER_CONFIG if they want to use their own, but it should be the same file used for both Cinder and their app.
 #if ! defined( IMGUI_USER_CONFIG )
 #define IMGUI_USER_CONFIG "cinder/CinderImGuiConfig.h"
 #endif
+
+#include IMGUI_USER_CONFIG
+
 #if ! defined( CINDER_IMGUI_EXTERNAL )
 #include "imgui/imgui.h"
 #else
@@ -132,7 +136,7 @@ namespace ImGui {
 	CI_API bool ColorPicker4( const char* label, ci::ColorAf* color, ImGuiColorEditFlags flags = 0 );
 
 	CI_API bool Combo( const char* label, int* currIndex, const std::vector<std::string>& values, ImGuiComboFlags flags = 0 );
-	CI_API bool ListBox( const char* label, int* currIndex, const std::vector<std::string>& values, int height_in_items = -1 );
+	CI_API bool ListBox( const char* label, int* currIndex, const std::vector<std::string>& values, const ImVec2& size = ImVec2(0, 0) );
 
 	CI_API void	Image( const ci::gl::Texture2dRef& texture, const ci::vec2& size, const ci::vec2& uv0 = ci::vec2( 0, 0 ), const ci::vec2& uv1 = ci::vec2( 1, 1 ), const ci::vec4& tint_col = ci::vec4( 1, 1, 1, 1 ), const ci::vec4& border_col = ci::vec4( 0, 0, 0, 0 ) );
 
