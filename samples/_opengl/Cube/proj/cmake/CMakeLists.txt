@@ -12,4 +12,5 @@ ci_make_app(
 	APP_NAME    "Cube"
 	SOURCES     ${APP_PATH}/src/CubeApp.cpp
 	CINDER_PATH ${CINDER_PATH}
+    FOLDER      "cinder/samples/_opengl"
 )
