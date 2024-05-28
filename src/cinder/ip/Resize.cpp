@@ -344,6 +344,12 @@ void resize( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface, const Filte
 {
 	resize( srcSurface, srcSurface.getBounds(), dstSurface, dstSurface->getBounds(), filter );
 }
+	
+template<typename T>
+void resize( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel, const FilterBase &filter )
+{
+	resize( srcChannel, srcChannel.getBounds(), dstChannel, dstChannel->getBounds(), filter );
+}
 
 template<typename T>
 SurfaceT<T> resizeCopy( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &dstSize, const FilterBase &filter )
@@ -354,17 +360,20 @@ SurfaceT<T> resizeCopy( const SurfaceT<T> &srcSurface, const Area &srcArea, cons
 }
 
 template<typename T>
-void resize( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel, const FilterBase &filter )
+ChannelT<T> resizeCopy( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &dstSize, const FilterBase &filter )
 {
-	resize( srcChannel, srcChannel.getBounds(), dstChannel, dstChannel->getBounds(), filter );
+	ChannelT<T> result( dstSize.x, dstSize.y );
+	resize( srcChannel, srcArea, &result, result.getBounds(), filter );
+	return result;
 }
 
 #define resize_PROTOTYPES(T)\
 	template CI_API void resize( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface, const FilterBase &filter ); \
 	template CI_API void resize( const SurfaceT<T> &srcSurface, const Area &srcArea, SurfaceT<T> *dstSurface, const Area &dstArea, const FilterBase &filter ); \
 	template CI_API void resize( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel, const FilterBase &filter ); \
+	template CI_API void resize( const ChannelT<T> &srcChannel, const Area &srcArea, ChannelT<T> *dstChannel, const Area &dstArea, const FilterBase &filter );\
 	template CI_API SurfaceT<T> resizeCopy( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &dstSize, const FilterBase &filter ); \
-	template CI_API void resize( const ChannelT<T> &srcChannel, const Area &srcArea, ChannelT<T> *dstChannel, const Area &dstArea, const FilterBase &filter );
+	template CI_API ChannelT<T> resizeCopy( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &dstSize, const FilterBase &filter );
 
 // These should match CHANNEL_TYPES
 resize_PROTOTYPES(uint8_t)
