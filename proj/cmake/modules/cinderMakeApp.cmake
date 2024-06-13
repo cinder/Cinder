@@ -110,17 +110,6 @@ function( ci_make_app )
 		endif()
 	elseif( CINDER_MSW )
 		if( MSVC )
-			# Override the default /MD with /MT
-			foreach(
-				flag_var
-				CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO
-				CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
-			)
-				if( ${flag_var} MATCHES "/MD" )
-					string( REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}" )
-					set( "${flag_var}" "${${flag_var}}" PARENT_SCOPE )
-				endif()
-			endforeach()
 			# Force synchronous PDB writes
 			add_compile_options( /FS )
 			# Force multiprocess compilation
