@@ -55,7 +55,7 @@ typedef std::shared_ptr<class Source>	SourceRef;
 
 // keep this incrementing by 1 only; some code relies on that for iterating; add corresponding entry to sAttribNames
 enum Attrib { POSITION, COLOR, TEX_COORD_0, TEX_COORD_1, TEX_COORD_2, TEX_COORD_3,
-	NORMAL, TANGENT, BITANGENT, BONE_INDEX, BONE_WEIGHT, 
+	NORMAL, TANGENT, BITANGENT, BONE_INDEX, BONE_WEIGHT,
 	CUSTOM_0, CUSTOM_1, CUSTOM_2, CUSTOM_3, CUSTOM_4, CUSTOM_5, CUSTOM_6, CUSTOM_7, CUSTOM_8, CUSTOM_9,
 	NUM_ATTRIBS, USER_DEFINED = NUM_ATTRIBS };
 typedef	std::set<Attrib>	AttribSet;
@@ -144,7 +144,7 @@ class CI_API Source {
 	virtual Primitive	getPrimitive() const = 0;
 	virtual uint8_t		getAttribDims( Attrib attr ) const = 0;
 	virtual AttribSet	getAvailableAttribs() const = 0;
-	
+
 	virtual void		loadInto( Target *target, const AttribSet &requestedAttribs ) const = 0;
 	virtual Source*		clone() const = 0;
 
@@ -159,7 +159,7 @@ class CI_API Source {
 
 class CI_API Target {
   public:
-	virtual uint8_t		getAttribDims( Attrib attr ) const = 0;	
+	virtual uint8_t		getAttribDims( Attrib attr ) const = 0;
 
 	virtual void	copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) = 0;
 	virtual void	copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) = 0;
@@ -170,7 +170,7 @@ class CI_API Target {
 	static void copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint32_t indexOffset, uint32_t *target );
 	static void copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint16_t indexOffset, uint16_t *target );
 	static void copyIndexDataForceLines( Primitive primitive, const uint32_t *source, size_t numIndices, uint32_t indexOffset, uint32_t *target );
-	
+
 	static void generateIndicesForceTriangles( Primitive primitive, size_t numInputIndices, uint32_t indexOffset, uint32_t *target );
 	static void generateIndicesForceLines( Primitive primitive, size_t numInputIndices, uint32_t indexOffset, uint32_t *target );
 
@@ -191,24 +191,24 @@ class CI_API Modifier {
 		size_t		getNumIndices() const { return mNumIndices; }
 		Primitive	getPrimitive() const { return mPrimitive; }
 		AttribSet	getAvailableAttribs() const { return mAvaliableAttribs; }
-		
+
 		size_t		mNumVertices, mNumIndices;
 		Primitive	mPrimitive;
 		AttribSet	mAvaliableAttribs;
-		
+
 		friend class SourceMods;
 	};
-	
+
 	virtual ~Modifier() {}
-	
+
 	virtual Modifier*	clone() const = 0;
-	
+
 	virtual size_t		getNumVertices( const Modifier::Params &upstreamParams ) const;
 	virtual size_t		getNumIndices( const Modifier::Params &upstreamParams ) const;
 	virtual Primitive	getPrimitive( const Modifier::Params &upstreamParams ) const;
 	virtual uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const;
 	virtual AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const;
-	
+
 	virtual void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const = 0;
 };
 
@@ -226,6 +226,7 @@ class CI_API Rect : public Source {
 	//! Enables TEX_COORD_0 attrib and specifies corner values in clockwise order starting with the upper-left
 	Rect&		texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2 &lowerRight, const vec2 &lowerLeft );
 
+	Rectf       getRect() const { return Rectf(mPositions[0], mPositions[3]); };
 	size_t		getNumVertices() const override { return 4; }
 	size_t		getNumIndices() const override { return 0; }
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_STRIP; }
@@ -241,19 +242,22 @@ class CI_API Rect : public Source {
 	std::array<ColorAf,4>	mColors;
 	bool					mHasColors;
 };
-	
+
 class CI_API RoundedRect : public Source {
   public:
 	RoundedRect();
 	RoundedRect( const Rectf &r, float cornerRadius = 1.0f );
-	
+
 	RoundedRect&	rect( const Rectf &r ) { mRectPositions = r; return *this; }
 	RoundedRect&	colors( bool enable = true ) { mHasColors = enable; return *this; }
 	RoundedRect&	cornerSubdivisions( int cornerSubdivisions );
 	RoundedRect&	cornerRadius( float cornerRadius );
 	RoundedRect&	texCoords( const vec2 &upperLeft, const vec2 &lowerRight );
 	RoundedRect&	colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft );
-	
+
+	Rectf           getRect() const { return mRectPositions; }
+    int             getCornerSubdivisions() const { return mSubdivisions; }
+    float           getCornerRadius() const { return mCornerRadius; }
 	size_t			getNumVertices() const override { return mNumVertices; }
 	size_t			getNumIndices() const override { return 0; }
 	Primitive		getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
@@ -261,12 +265,12 @@ class CI_API RoundedRect : public Source {
 	AttribSet		getAvailableAttribs() const override;
 	void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	RoundedRect*	clone() const override { return new RoundedRect( *this ); }
-	
+
   protected:
 	void updateVertexCount();
 	void setDefaultColors();
 	void setDefaultTexCoords();
-	
+
 	Rectf						mRectPositions, mRectTexCoords;
 	std::array<vec4, 4>			mColors;
 	bool						mHasColors;
@@ -290,7 +294,9 @@ class CI_API Cube : public Source {
 	Cube&			size( const vec3 &sz ) { mSize = sz; return *this; }
 	Cube&			size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
 
-	size_t		getNumVertices() const override;
+	vec3        getSize() const { return mSize; }
+    vec3        getSubdivisions() const { return mSubdivisions; }
+    size_t      getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	uint8_t		getAttribDims( Attrib attr ) const override;
@@ -322,7 +328,9 @@ class CI_API CubeSphere : public Source {
 	CubeSphere&		size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
 	CubeSphere&		equalSpacing( bool enabled = true ) { mEqualSpacing = enabled; return *this; }
 
-	size_t		getNumVertices() const override;
+	vec3        getSize() const { return mSize; }
+    vec3        getSubdivisions() const { return mSubdivisions; }
+    size_t      getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	uint8_t		getAttribDims( Attrib attr ) const override;
@@ -344,7 +352,7 @@ class CI_API Icosahedron : public Source {
 
 	// Enables colors. Disabled by default.
 	Icosahedron&	colors( bool enable = true ) { mHasColors = enable; return *this; }
-	
+
 	size_t			getNumVertices() const override;
 	size_t			getNumIndices() const override;
 	Primitive		getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -360,7 +368,7 @@ class CI_API Icosahedron : public Source {
 	static float	sPositions[12*3];
 	static float	sTexCoords[60*2];
 	static uint32_t	sIndices[60];
-	
+
 	friend class Icosphere;
 	friend class WireIcosahedron;
 };
@@ -374,6 +382,7 @@ class CI_API Icosphere : public Source {
 
 	Icosphere&	subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; mCalculationsCached = false; return *this; }
 
+	int         getSubdivisions() const { return mSubdivision; }
 	size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
 	size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -401,6 +410,7 @@ class CI_API Teapot : public Source {
 
 	Teapot&		subdivisions( int sub );
 
+	int         getSubdivisions() const { return mSubdivision;  }
 	size_t		getNumVertices() const override { return mNumVertices; }
 	size_t		getNumIndices() const override { return mNumIndices; }
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -416,7 +426,7 @@ class CI_API Teapot : public Source {
 	static void		generatePatches( float *v, float *n, float *tc, uint32_t *el, int grid );
 	static void		buildPatchReflect( int patchNum, float *B, float *dB, float *v, float *n, float *tc, unsigned int *el,
 										int &index, int &elIndex, int &tcIndex, int grid, bool reflectX, bool reflectY );
-	static void		buildPatch( vec3 patch[][4], float *B, float *dB, float *v, float *n, float *tc, 
+	static void		buildPatch( vec3 patch[][4], float *B, float *dB, float *v, float *n, float *tc,
 										unsigned int *el, int &index, int &elIndex, int &tcIndex, int grid, const mat3 reflect, bool invertNormal );
 	static void		getPatch( int patchNum, vec3 patch[][4], bool reverseV );
 	static void		computeBasisFunctions( float *B, float *dB, int grid );
@@ -438,6 +448,9 @@ class CI_API Circle : public Source {
 	Circle&		radius( float radius );
 	Circle&		subdivisions( int subdivs );
 
+	vec2        getCenter() const { return mCenter; }
+    float       getRadius() const { return mRadius; }
+    int         getSubdivisions() const { return mNumSubdivisions; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override { return 0; }
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
@@ -464,6 +477,10 @@ class CI_API Ring : public Source {
 	Ring&		width( float width );
 	Ring&		subdivisions( int subdivs );
 
+	vec2        getCenter() const { return mCenter; }
+    float       getRadius() const { return mRadius; }
+    float       getWidth() const { return mWidth; }
+    int         getSubdivisions() const { return mNumSubdivisions; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override { return 0; }
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_STRIP; }
@@ -493,6 +510,9 @@ class CI_API Sphere : public Source {
 	//! Specifies the number of segments, which determines the roundness of the sphere.
 	Sphere&		subdivisions( int subdiv ) { mSubdivisions = subdiv; return *this; }
 
+	vec3        getCenter() const { return mCenter; }
+    float       getRadius() const { return mRadius; }
+    int         getSubdivisions() const { return mSubdivisions; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -527,6 +547,12 @@ class CI_API Capsule : public Source {
 	//! Conveniently sets center, length and direction
 	Capsule&		set( const vec3 &from, const vec3 &to );
 
+	vec3        getCenter() const { return mCenter; }
+    int         getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int         getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    float       getRadius() const { return mRadius; }
+    float       getLength() const { return mLength; }
+    vec3        getDirection() const { return mDirection; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -565,6 +591,14 @@ class CI_API Torus : public Source {
 	//! Specifies the major and minor radius separately.
 	Torus&	radius( float major, float minor ) { mRadiusMajor = math<float>::max(0, major); mRadiusMinor = math<float>::max(0, minor); return *this; }
 
+	vec3        getCenter() const { return mCenter; }
+    int         getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int         getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    float       getMajorRadius() const { return mRadiusMajor; }
+    float       getMinorRadius() const { return mRadiusMinor; }
+    float       getHeight() const { return mHeight; }
+    unsigned    getTwist() const { return mTwist; }
+    float       getTwistOffset() const { return mTwistOffset; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -606,7 +640,13 @@ public:
 	TorusKnot&	scale( const vec3 &scale ) { mScale = scale; return *this; }
 	//! Allows you to scale the generated curve.
 	TorusKnot&	scale( float x, float y, float z ) { mScale = vec3( x, y, z ); return *this; }
-	
+
+	int         getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int         getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    int         getParameterP() const { return mP; }
+    int         getParameterQ() const { return mQ; }
+	float       getRadius() const { return mRadius; }
+    vec3        getScale() const { return mScale; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -666,6 +706,16 @@ class CI_API Helix : public Torus {
 	Helix&			ratio( float ratio ) { Torus::ratio( ratio ); return *this; }
 	//! Specifies the major and minor radius separately.
 	Helix&			radius( float major, float minor ) { Torus::radius( major, minor ); return *this; }
+
+	vec3          getCenter() const { return mCenter; }
+    int           getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int           getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    float         getMajorRadius() const { return mRadiusMajor; }
+    float         getMinorRadius() const { return mRadiusMinor; }
+    float         getHeight() const { return mHeight; }
+    unsigned      getTwist() const { return mTwist; }
+    float         getTwistOffset() const { return mTwistOffset; }
+    float         getNumberOfCoils() const { return mCoils; }
 };
 
 class CI_API Cylinder : public Source {
@@ -692,6 +742,13 @@ class CI_API Cylinder : public Source {
 	//! Conveniently sets origin, height and direction so that the center of the base is \a from and the center of the apex is \a to.
 	Cylinder&	set( const vec3 &from, const vec3 &to );
 
+	vec3        getOrigin() const { return mOrigin; }
+    int         getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int         getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    int         getSubdivisionsCap() const { return mSubdivisionsCap; }
+    float       getRadius() const { return mRadiusBase; }
+    float       getHeight() const { return mHeight; }
+    vec3        getDirection() const { return mDirection; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -744,6 +801,14 @@ class CI_API Cone : public Cylinder {
 	Cone&	direction( const vec3 &direction ) { Cylinder::direction( direction ); return *this; }
 	//! Conveniently sets origin, height and direction.
 	Cone&	set( const vec3 &from, const vec3 &to ) { Cylinder::set( from, to ); return *this; }
+
+	vec3 getOrigin() const { return mOrigin; }
+    int getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    float getBaseRadius() const { return mRadiusBase; }
+    float getApexRadius() const { return mRadiusApex; }
+    float getHeight() const { return mHeight; }
+    vec3 getDirection() const { return mDirection; }
 };
 
 //! Defaults to a plane on the z axis, origin = [0, 0, 0], normal = [0, 1, 0]
@@ -760,6 +825,10 @@ class CI_API Plane : public Source {
 	Plane& origin( const vec3 &origin )	{ mOrigin = origin; return *this; }
 	Plane& normal( const vec3 &normal );
 
+	vec2        getSubdivisions() const { return mSubdivisions; }
+	vec3        getOrigin() const { return mOrigin; }
+    vec3        getNormal() const { return glm::cross(mAxisU, mAxisV); }
+    vec2        getSize() const { return mSize; }
 	size_t		getNumVertices() const override		{ return ( mSubdivisions.x + 1 ) * ( mSubdivisions.y + 1 ); }
 	size_t		getNumIndices() const override		{ return mSubdivisions.x * mSubdivisions.y * 6; }
 	Primitive	getPrimitive() const override		{ return Primitive::TRIANGLES; }
@@ -777,7 +846,7 @@ class CI_API Plane : public Source {
 class CI_API Extrude : public Source {
   public:
 	Extrude( const Shape2d &shape, float distance, float approximationScale = 1.0f );
-	
+
 	//! Sets the distance of extrusion along the axis.
 	Extrude&	distance( float dist ) { mDistance = dist; return *this; }
 	//! Enables or disables front and back caps. Enabled by default.
@@ -789,6 +858,8 @@ class CI_API Extrude : public Source {
 	//! Sets the number of subdivisions along the axis of extrusion
 	Extrude&	subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); updatePathSubdivision(); return *this; }
 
+	float       getDistance() const { return mDistance; }
+    int         getSubdivisions() const { return mSubdivisions; }
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -796,11 +867,11 @@ class CI_API Extrude : public Source {
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	Extrude*	clone() const override { return new Extrude( *this ); }
-	
+
   protected:
 	void		updatePathSubdivision();
 	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *texCoords, std::vector<uint32_t> *indices ) const;
-  
+
 	std::vector<Path2d>				mPaths;
 	float							mApproximationScale;
 	float							mDistance;
@@ -808,14 +879,14 @@ class CI_API Extrude : public Source {
 	int								mSubdivisions;
 	std::shared_ptr<TriMesh>		mCap;
 	Rectf							mCapBounds;
-	
+
 	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
 };
 
 class CI_API ExtrudeSpline : public Source {
   public:
 	ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &spline, int splineSubdivisions = 10, float approximationScale = 1.0f );
-	
+
 	//! Enables or disables front and back caps. Enabled by default.
 	ExtrudeSpline&		caps( bool caps ) { mFrontCap = mBackCap = caps; return *this; }
 	//! Enables or disables front cap. Enabled by default.
@@ -827,6 +898,7 @@ class CI_API ExtrudeSpline : public Source {
 	//! Sets the function used to calculate the width of the Shape2d at each subdivision
 	ExtrudeSpline&		thickness( const std::function<float(float)> &fn ) { mThicknessFn = fn; return *this; }
 
+	int             getSubdivisions() const { return mSubdivisions; }
 	size_t			getNumVertices() const override;
 	size_t			getNumIndices() const override;
 	Primitive		getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -834,11 +906,11 @@ class CI_API ExtrudeSpline : public Source {
 	AttribSet		getAvailableAttribs() const override;
 	void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	ExtrudeSpline*	clone() const override { return new ExtrudeSpline( *this ); }
-	
+
   protected:
 	void updatePathSubdivision();
 	void calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *texCoords, std::vector<uint32_t> *indices ) const;
-	
+
 	std::vector<Path2d>				mPaths;
 	std::vector<mat4>				mSplineFrames;
 	std::vector<float>				mSplineTimes;
@@ -848,7 +920,7 @@ class CI_API ExtrudeSpline : public Source {
 	std::shared_ptr<TriMesh>		mCap;
 	Rectf							mCapBounds;
 	std::function<float(float)>		mThicknessFn;
-	
+
 	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
 	std::vector<float>				mPathSubdivisionLengths;
 };
@@ -866,7 +938,7 @@ class CI_API BSpline : public Source {
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	BSpline*	clone() const override { return new BSpline( *this ); }
-	
+
   protected:
 	template<typename T>
 	void init( const ci::BSpline<2,T> &spline, int subdivisions );
@@ -892,7 +964,7 @@ class CI_API WireSource : public Source {
 
   protected:
 	WireSource() {}
-	virtual ~WireSource() {}  
+	virtual ~WireSource() {}
 };
 
 
@@ -913,6 +985,12 @@ class CI_API WireCapsule : public WireSource {
 	//! Conveniently sets center, length and direction
 	WireCapsule&		set( const vec3 &from, const vec3 &to );
 
+	vec3            getCenter() const { return mCenter; }
+    int             getSubdivisionsAxis() const { return mSubdivisionsAxis; }
+    int             getSubdivisionsHeight() const { return mSubdivisionsHeight; }
+    float           getRadius() const { return mRadius; }
+    float           getLength() const { return mLength; }
+    vec3            getDirection() const { return mDirection; }
 	size_t			getNumVertices() const override;
 	void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	WireCapsule*	clone() const override { return new WireCapsule( *this ); }
@@ -954,23 +1032,23 @@ class CI_API WireCircle : public Source {
 	int			mNumSegments;
 	size_t		mNumVertices;
 };
-	
+
 class CI_API WireRoundedRect : public WireSource {
   public:
 	WireRoundedRect();
 	WireRoundedRect( const Rectf &r, float cornerRadius = 1.0f );
-	
+
 	WireRoundedRect&	rect( const Rectf &r ) { mRectPositions = r; return *this; }
 	WireRoundedRect&	cornerSubdivisions( int cornerSubdivisions );
 	WireRoundedRect&	cornerRadius( float cornerRadius );
-	
+
 	size_t				getNumVertices() const override { return mNumVertices; }
 	void				loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	WireRoundedRect*	clone() const override { return new WireRoundedRect( *this ); }
-	
+
   protected:
 	void updateVertexCount();
-	
+
 	Rectf						mRectPositions;
 	int							mCornerSubdivisions, mNumVertices;
 	float						mCornerRadius;
@@ -1000,7 +1078,7 @@ class CI_API WireCube : public WireSource {
 	{
 		mSubdivisions = glm::max( ivec3( 1 ), subdivisions );
 	}
-	
+
 	WireCube&	subdivisions( int sub ) { mSubdivisions = ivec3( std::max<int>( 1, sub ) ); return *this; }
 	WireCube&	subdivisionsX( int sub ) { mSubdivisions.x = std::max<int>( 1, sub ); return *this; }
 	WireCube&	subdivisionsY( int sub ) { mSubdivisions.y = std::max<int>( 1, sub ); return *this; }
@@ -1011,7 +1089,7 @@ class CI_API WireCube : public WireSource {
 	size_t		getNumVertices() const override { return ( mSubdivisions.x - 1 ) * 8 + ( mSubdivisions.y - 1 ) * 8 + ( mSubdivisions.z - 1 ) * 8 + 24; }
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	WireCube*	clone() const override { return new WireCube( *this ); }
-	
+
   protected:
 	ivec3					mSubdivisions;
 	vec3					mSize;
@@ -1217,7 +1295,7 @@ class CI_API Transform : public Modifier {
 	const mat4&			getMatrix() const { return mTransform; }
 	//! Sets the mat4 used to transform positions, normals and tangents.
 	void				setMatrix( const mat4 &transform ) { mTransform = transform; }
-	
+
 	// Inherited from Modifier
 	Modifier*			clone() const override { return new Transform( mTransform ); }
 	uint8_t				getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
@@ -1268,7 +1346,7 @@ class CI_API Twist : public Modifier {
 
 	Modifier*	clone() const override { return new Twist( *this ); }
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
-	
+
   protected:
 	vec3					mAxisStart, mAxisEnd;
 	float					mStartAngle, mEndAngle;
@@ -1296,16 +1374,16 @@ class CI_API ColorFromAttrib : public Modifier {
 	ColorFromAttrib( Attrib attrib, const std::function<Colorf(vec3)> &fn )
 		: mAttrib( attrib ), mFnColor3( fn )
 	{}
-	
+
 	Attrib				getAttrib() const { return mAttrib; }
 	ColorFromAttrib&	attrib( Attrib attrib ) { mAttrib = attrib; return *this; }
 
 	Modifier*	clone() const override { return new ColorFromAttrib( mAttrib, mFnColor2, mFnColor3 ); }
 	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
 	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;
-	
+
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
-	
+
   protected:
 	ColorFromAttrib( Attrib attrib, const std::function<Colorf(vec2)> &fn2, const std::function<Colorf(vec3)> &fn3 )
 		: mAttrib( attrib ), mFnColor2( fn2 ), mFnColor3( fn3 )
@@ -1347,7 +1425,7 @@ class AttribFn : public Modifier {
 	typedef typename std::function<D(S)> FN;
 	static const int SRCDIM = sizeof(S)/ sizeof(float);
 	static const int DSTDIM = sizeof(D)/ sizeof(float);
-	
+
 	AttribFn( Attrib src, Attrib dst, const FN &fn )
 		: mSrcAttrib( src ), mDstAttrib( dst ), mFn( fn )
 	{}
@@ -1355,13 +1433,13 @@ class AttribFn : public Modifier {
 	AttribFn( Attrib attrib, const FN &fn )
 		: mSrcAttrib( attrib ), mDstAttrib( attrib ), mFn( fn )
 	{}
-	
+
 	Modifier*	clone() const override { return new AttribFn( mSrcAttrib, mDstAttrib, mFn ); }
 	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
 	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;
-	
+
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
-	
+
   protected:
 	geom::Attrib		mSrcAttrib, mDstAttrib;
 	FN					mFn;
@@ -1395,7 +1473,7 @@ class CI_API Tangents : public Modifier {
 
 	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
 	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;
-	
+
 	Modifier*	clone() const override { return new Tangents; }
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 };
@@ -1420,13 +1498,13 @@ class CI_API Remove : public Modifier {
 	Remove( Attrib attrib )
 		: mAttrib( attrib )
 	{}
-	
+
 	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
-	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;	
-	
+	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;
+
 	Modifier*	clone() const override { return new Remove( mAttrib ); }
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
-	
+
   protected:
 	Attrib		mAttrib;
 };
@@ -1437,11 +1515,11 @@ class CI_API Bounds : public Modifier {
 	Bounds( AxisAlignedBox *result, Attrib attrib = POSITION )
 		: mResult( result ), mAttrib( attrib )
 	{}
-	
-	
+
+
 	Modifier*	clone() const override { return new Bounds( mResult, mAttrib ); }
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
-	
+
   protected:
 	AxisAlignedBox	*mResult;
 	Attrib				mAttrib;
@@ -1453,10 +1531,10 @@ class CI_API Subdivide : public Modifier {
   public:
 	Subdivide()
 	{}
-	
+
 	size_t		getNumVertices( const Modifier::Params &upstreamParams ) const override;
 	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override;
-	
+
 	Modifier*	clone() const override { return new Subdivide(); }
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 };
@@ -1473,12 +1551,12 @@ class CI_API SourceModsContext : public Target {
 
 	// called by SourceMods::loadInto()
 	void			loadInto( Target *target, const AttribSet &requestedAttribs );
-	
+
 	// Target virtuals; also used by Modifiers
 	uint8_t			getAttribDims( Attrib attr ) const override;
 	void			copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
 	void			copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
-	
+
 	//! Appends vertex data to existing data for \a attr. \a dims must match existing data.
 	void			appendAttrib( Attrib attr, uint8_t dims, const float *srcData, size_t count );
 	void			clearAttrib( Attrib attr );
@@ -1490,29 +1568,29 @@ class CI_API SourceModsContext : public Target {
 	size_t			getNumIndices() const;
 	Primitive		getPrimitive() const;
 	AttribSet		getAvailableAttribs() const;
-	
+
 	void			processUpstream( const AttribSet &requestedAttribs );
 
 	float*			getAttribData( Attrib attr );
 	const float*	getAttribData( Attrib attr ) const { return const_cast<SourceModsContext*>( this )->getAttribData( attr ); }
 	uint32_t*		getIndicesData();
 	const uint32_t*	getIndicesData() const { return const_cast<SourceModsContext*>( this )->getIndicesData(); }
-	
+
 	void			preload( const AttribSet &requestedAttribs );
 	void			combine( const SourceModsContext &rhs );
 	void			complete( Target *target, const AttribSet &requestedAttribs );
-	
+
   private:
 	const Source					*mSource;
 	std::vector<Modifier*>			mModiferStack;
-	
+
 	const AttribSet					*mAttribMask;
-	
+
 	size_t										mNumVertices;
 	std::map<Attrib,AttribInfo>					mAttribInfo;
 	std::map<Attrib,std::unique_ptr<float[]>>	mAttribData;
 	std::map<Attrib,size_t>						mAttribCount;
-	
+
 	std::unique_ptr<uint32_t[]>				mIndices;
 	size_t									mNumIndices;
 	uint8_t									mIndicesRequiredBytes;
@@ -1561,15 +1639,15 @@ class CI_API SourceMods : public Source {
 		else
 			mSourcePtr = source;
 	}
-	
+
 	void	append( const Modifier &modifier );
 	void	append( const Source &source );
 	void	append( const SourceMods &sourceMods );
 
-	SourceMods& operator=( const SourceMods &rhs ) { copyImpl( rhs ); return *this; }	
+	SourceMods& operator=( const SourceMods &rhs ) { copyImpl( rhs ); return *this; }
 	SourceMods&	operator&=( const SourceMods &sourceMods ) { append( sourceMods ); return *this; }
-	SourceMods&	operator&=( const Source &source ) { append( source ); return *this; }	
-	
+	SourceMods&	operator&=( const Source &source ) { append( source ); return *this; }
+
 	const std::vector<std::unique_ptr<Modifier>>&	getModifiers() const { return mModifiers; }
 	const Source*									getSource() const { return mSourcePtr; }
 	//! Not generally useful. Use getSource() instead. Maps to nullptr when the SourceMods is not responsible for ownership.
@@ -1587,16 +1665,16 @@ class CI_API SourceMods : public Source {
   protected:
 	void		copyImpl( const SourceMods &rhs );
 	void		cacheVariables() const;
-	
+
 	const Source* 							mSourcePtr; // null if we have children
 	std::unique_ptr<Source>					mSourceStorage; // null if we don't have ownership
 	std::vector<std::unique_ptr<Modifier>>	mModifiers;
-	
+
 	mutable bool							mVariablesCached;
 	mutable std::vector<Modifier::Params>	mParamsStack;
-	
+
 	std::vector<std::unique_ptr<SourceMods>>	mChildren;
-	
+
 	friend class SourceModsContext;
 };
 
