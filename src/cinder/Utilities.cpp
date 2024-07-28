@@ -78,7 +78,7 @@ void limitDirectoryFileCount( const fs::path& directoryPath, size_t maxFileCount
 	}
 }
 
-std::filesystem::path findAncestorFile( const std::filesystem::path& start, const std::filesystem::path& relativeSearch, int maxDepth )
+fs::path findAncestorFile( const fs::path& start, const fs::path& relativeSearch, int maxDepth )
 {
 	size_t parentCt = 0;
 	for( fs::path curPath = start; curPath.has_parent_path() && parentCt <= maxDepth; curPath = curPath.parent_path(), ++parentCt ) {
@@ -87,10 +87,10 @@ std::filesystem::path findAncestorFile( const std::filesystem::path& start, cons
 			return testDir;
 	}
 
-	return std::filesystem::path();
+	return fs::path();
 }
 
-std::filesystem::path findAncestorDir( const std::filesystem::path& start, const std::filesystem::path& relativeSearch, int maxDepth )
+fs::path findAncestorDir( const fs::path& start, const fs::path& relativeSearch, int maxDepth )
 {
 	size_t parentCt = 0;
 	for( fs::path curPath = start; curPath.has_parent_path() && parentCt <= maxDepth; curPath = curPath.parent_path(), ++parentCt ) {
@@ -99,7 +99,7 @@ std::filesystem::path findAncestorDir( const std::filesystem::path& start, const
 			return testDir;
 	}
 
-	return std::filesystem::path();
+	return fs::path();
 }
 
 void launchWebBrowser( const Url &url )

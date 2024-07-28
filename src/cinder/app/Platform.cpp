@@ -146,7 +146,7 @@ const vector<fs::path>& Platform::getAssetDirectories() const
 
 void Platform::findAndAddDefaultAssetPath()
 {
-	std::filesystem::path assetDir = findAncestorDir( getExecutablePath().parent_path(), "assets", ASSET_SEARCH_DEPTH );
+	fs::path assetDir = findAncestorDir( getExecutablePath().parent_path(), "assets", ASSET_SEARCH_DEPTH );
 	if( ! assetDir.empty() )
 		addAssetDirectory( assetDir );
 }
