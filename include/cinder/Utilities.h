@@ -47,6 +47,11 @@ CI_API fs::path getDocumentsDirectory();
 //! Removes all files beyond maxFileCount.
 CI_API void limitDirectoryFileCount( const fs::path& directoryPath, size_t maxFileCount, std::function<bool(const fs::path&, const fs::path&)> sortFn = []( const fs::path& p1, const fs::path& p2 ) -> bool { return fs::last_write_time( p1 ) > fs::last_write_time( p2 ); } );
 
+//! Searches upwards from \a start (file or directory) for an ancestor directory where \a relativeSearch exists, up to \a maxDepth levels; returns absolute path if found, otherwise empty path.
+CI_API fs::path findAncestorDir( const fs::path& start, const fs::path& relativeSearch, int maxDepth = 10 );
+//! Searches upwards from \a start (file or directory) for an ancestor file where \a relativeSearch exists, up to \a maxDepth levels; returns absolute path if found, otherwise empty path.
+CI_API fs::path findAncestorFile( const fs::path& start, const fs::path& relativeSearch, int maxDepth = 10 );
+
 //! Launches a path in a web browser
 CI_API void launchWebBrowser( const Url &url );
 	

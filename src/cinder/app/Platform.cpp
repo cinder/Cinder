@@ -23,6 +23,7 @@
 
 #include "cinder/app/Platform.h"
 #include "cinder/CinderAssert.h"
+#include "cinder/Utilities.h"
 
 #if defined( CINDER_COCOA )
 	#include "cinder/app/cocoa/PlatformCocoa.h"
@@ -145,20 +146,9 @@ const vector<fs::path>& Platform::getAssetDirectories() const
 
 void Platform::findAndAddDefaultAssetPath()
 {
-	// first search the local directory, then its parent, up to ASSET_SEARCH_DEPTH levels up
-	// check at least the app path, even if it has no parent directory
-	auto execPath = getExecutablePath();
-	size_t parentCt = 0;
-	for( fs::path curPath = execPath; curPath.has_parent_path() || ( curPath == execPath ); curPath = curPath.parent_path(), ++parentCt ) {
-		if( parentCt >= ASSET_SEARCH_DEPTH )
-			break;
-
-		const fs::path curAssetDir = curPath / fs::path( "assets" );
-		if( fs::exists( curAssetDir ) && fs::is_directory( curAssetDir ) ) {
-			addAssetDirectory( curAssetDir );
-			break;
-		}
-	}
+	fs::path assetDir = findAncestorDir( getExecutablePath(), "assets", ASSET_SEARCH_DEPTH );
+	if( ! assetDir.empty() )
+		addAssetDirectory( assetDir );
 }
 
 std::ostream& Platform::console()

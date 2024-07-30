@@ -78,6 +78,30 @@ void limitDirectoryFileCount( const fs::path& directoryPath, size_t maxFileCount
 	}
 }
 
+fs::path findAncestorFile( const fs::path& start, const fs::path& relativeSearch, int maxDepth )
+{
+	size_t parentCt = 0;
+	for( fs::path curPath = start; curPath.has_parent_path() && parentCt <= maxDepth; curPath = curPath.parent_path(), ++parentCt ) {
+		const fs::path testDir = curPath / relativeSearch;
+		if( fs::exists( testDir ) && fs::is_regular_file( testDir ) )
+			return testDir;
+	}
+
+	return fs::path();
+}
+
+fs::path findAncestorDir( const fs::path& start, const fs::path& relativeSearch, int maxDepth )
+{
+	size_t parentCt = 0;
+	for( fs::path curPath = start; curPath.has_parent_path() && parentCt <= maxDepth; curPath = curPath.parent_path(), ++parentCt ) {
+		const fs::path testDir = curPath / relativeSearch;
+		if( fs::exists( testDir ) && fs::is_directory( testDir ) )
+			return testDir;
+	}
+
+	return fs::path();
+}
+
 void launchWebBrowser( const Url &url )
 {
 	app::Platform::get()->launchWebBrowser( url );
