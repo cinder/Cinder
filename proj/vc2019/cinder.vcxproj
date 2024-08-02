@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug_ANGLE|Win32">
@@ -765,6 +765,7 @@
     <ClCompile Include="..\..\src\cinder\DataTarget.cpp" />
     <ClCompile Include="..\..\src\cinder\Display.cpp" />
     <ClCompile Include="..\..\src\cinder\Exception.cpp" />
+    <ClCompile Include="..\..\src\cinder\Filesystem.cpp" />
     <ClCompile Include="..\..\src\cinder\FileWatcher.cpp" />
     <ClCompile Include="..\..\src\cinder\Font.cpp" />
     <ClCompile Include="..\..\src\cinder\Frustum.cpp" />
