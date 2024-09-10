@@ -5,7 +5,11 @@
 #include "cinder/Timeline.h"
 #include "cinder/Log.h"
 #include "cinder/Utilities.h"
+#include "cinder/audio/Context.h"
 #include "cinder/CinderImGui.h"
+
+#include "Factory.h"
+#include "NodeTest.h"
 
 using namespace ci;
 using namespace std;
@@ -26,12 +30,15 @@ class AudioTests : public app::App {
 	void draw() override;
 
 	void reload();
+	void printDefaultOutput();
+
 	void initImGui();
 	void updateImGui();
 
 	bool mImGuiEnabled = true;
 
 	//ma::TestSuite	mSuite;
+	mason::Factory<AudioTest>	mTestFactory;
 };
 
 void prepareSettings( app::App::Settings *settings )
@@ -54,9 +61,13 @@ void AudioTests::setup()
 {
 	initImGui();
 
+	mTestFactory.registerBuilder<NodeTest>( "node basic" );
+
 	//mSuite.addTest<MiscTest>( "misc" );
 	//mSuite.addTest<FluidSmokeTest>( "fluid smoke" );
 	//mSuite.addTest<TemporalRevealTest>( "temporal reveal" );
+
+	printDefaultOutput();
 
 	reload();
 }
@@ -65,6 +76,17 @@ void AudioTests::reload()
 {
 	CI_LOG_I( "reloading" );
 
+}
+
+void AudioTests::printDefaultOutput()
+{
+	audio::DeviceRef device = audio::Device::getDefaultOutput();
+
+	CI_LOG_I( "device name: " << device->getName() );
+	console() << "\t input channels: " << device->getNumInputChannels() << endl;
+	console() << "\t output channels: " << device->getNumOutputChannels() << endl;
+	console() << "\t samplerate: " << device->getSampleRate() << endl;
+	console() << "\t frames per block: " << device->getFramesPerBlock() << endl;
 }
 
 void AudioTests::keyDown( app::KeyEvent event )
