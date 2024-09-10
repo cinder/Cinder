@@ -15,7 +15,11 @@ using namespace ci;
 using namespace std;
 namespace im = ImGui;
 
-#define	LIVEPP_ENABLED 0
+// To use Live++, place necessary files in a folder called LivePP next to the cinder folder
+#define	LIVEPP_ENABLED 1
+#if LIVEPP_ENABLED
+#include "LPP_API_x64_CPP.h"
+#endif
 
 const int	SCREEN_INDEX	= 2;
 const ivec2 WINDOW_POS		= { 2000, 50 };
@@ -37,16 +41,18 @@ class AudioTests : public app::App {
 
 	bool mImGuiEnabled = true;
 
-	//ma::TestSuite	mSuite;
 	mason::Factory<AudioTest>	mTestFactory;
+	AudioTestRef				mCurrentTest;
 };
 
 void prepareSettings( app::App::Settings *settings )
 {
 #if LIVEPP_ENABLED
 	{
-		liveppEnabled = ma::initLivePP( "../../../../tools/LivePP", "AudioTests" );
-		CI_LOG_I( "Live++ " << string( liveppEnabled ? "enabled" : "disabled" ) );
+		CI_LOG_I( "executable path:" << app::Platform::get()->getExecutablePath() );
+
+		lpp::LppDefaultAgent lppAgent = lpp::LppCreateDefaultAgent( nullptr, L"../../../../../../../../../../LivePP" );
+		lppAgent.EnableModule( lpp::LppGetCurrentModulePath(), lpp::LPP_MODULES_OPTION_ALL_IMPORT_MODULES, nullptr, nullptr );
 	}
 #endif
 
@@ -69,13 +75,12 @@ void AudioTests::setup()
 
 	printDefaultOutput();
 
-	reload();
+	mCurrentTest = mTestFactory.build( "node basic" );
 }
 
 void AudioTests::reload()
 {
-	CI_LOG_I( "reloading" );
-
+	// TODO: reload current test
 }
 
 void AudioTests::printDefaultOutput()
@@ -104,6 +109,10 @@ void AudioTests::keyDown( app::KeyEvent event )
 			mImGuiEnabled = ! mImGuiEnabled;
 			CI_LOG_I( "ImGui enabled: " << mImGuiEnabled );
 		}
+		else if( event.getChar() == '/' ) {
+			audio::master()->setEnabled( ! audio::master()->isEnabled() );
+			CI_LOG_I( "ImGui enabled: " << mImGuiEnabled );
+		}
 		else if( event.getChar() == 'q' ) {
 			CI_LOG_I( "Ctrl + q: quitting app." );
 			quit();
@@ -120,12 +129,16 @@ void AudioTests::keyDown( app::KeyEvent event )
 
 void AudioTests::resize()
 {
-	//mSuite.layout();
+	if( mCurrentTest ) {
+		mCurrentTest->resize();
+	}
 }
 
 void AudioTests::update()
 {
-	//mSuite.update();
+	if( mCurrentTest ) {
+		mCurrentTest->update();
+	}
 
 	if( mImGuiEnabled ) {
 		updateImGui();	
@@ -136,8 +149,9 @@ void AudioTests::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
 
-	//mSuite.draw();
-
+	if( mCurrentTest ) {
+		mCurrentTest->draw();
+	}
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -181,10 +195,33 @@ void AudioTests::updateImGui()
 		im::Text( "user settings" );
 
 		im::Checkbox( "GUI (ctrl + g)", &mImGuiEnabled );
+
+		im::Separator();
+		im::Text( "Audio" );
+
+		bool audioEnabled = audio::master()->isEnabled();
+		if( im::Checkbox( "enabled", &audioEnabled ) ) {
+			audio::master()->setEnabled( audioEnabled );
+		}
+
+		if( im::Button( "print audio graph" ) ) {
+			app::console() << "-------------- Graph configuration: --------------" << endl;
+			app::console() << audio::master()->printGraphToString();
+			app::console() << "--------------------------------------------------" << endl;
+		}
 	}
 	im::End(); // "General"
 
 	//mSuite.updateUI();
+	if( mCurrentTest ) {
+		im::SetNextWindowPos( { 400, 100 }, ImGuiCond_FirstUseEver );
+		im::SetNextWindowSize( { 800, 600 }, ImGuiCond_FirstUseEver );
+		im::Begin( mCurrentTest->getName().c_str() );
+
+		mCurrentTest->updateUI();
+
+		im::End();
+	}
 }
 
 CINDER_APP( AudioTests, app::RendererGl( app::RendererGl::Options().msaa( 2 ) ), prepareSettings )

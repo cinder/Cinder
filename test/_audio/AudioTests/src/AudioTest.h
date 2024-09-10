@@ -1,13 +1,21 @@
 #pragma once
 
+#include "cinder/Vector.h"
+
+using AudioTestRef = std::shared_ptr<class AudioTest>;
+
 class AudioTest {
 public:
-	void setup() = default;
-	void resize() = default;
-	
-	void update() = default;
-	void draw() = default;
-	void updateUI() = default;
 
-private:
+	virtual void setup()	{}
+	virtual void resize()	{}
+	
+	virtual void update()	{}
+	virtual void draw()		{}
+	virtual void updateUI()	{}
+
+	const std::string&	getName() const	{ return mName; }
+
+protected:
+	std::string mName;
 };

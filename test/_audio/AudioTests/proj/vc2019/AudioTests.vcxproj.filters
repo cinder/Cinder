@@ -4,6 +4,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{714c556a-f6d8-4496-a9ab-22ed0aada75c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\common">
+      <UniqueIdentifier>{dda2d0b1-1a2d-48ea-8728-53ea3551cb28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\AudioTestsApp.cpp">
@@ -11,6 +14,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\NodeTest.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\samples\_audio\common\AudioDrawUtils.cpp">
+      <Filter>src\common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -25,6 +31,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\AudioTest.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\samples\_audio\common\AudioDrawUtils.h">
+      <Filter>src\common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

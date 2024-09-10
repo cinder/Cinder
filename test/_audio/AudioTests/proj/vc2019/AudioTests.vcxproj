@@ -19,10 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\samples\_audio\common\AudioDrawUtils.cpp" />
     <ClCompile Include="..\..\src\AudioTestsApp.cpp" />
     <ClCompile Include="..\..\src\NodeTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\samples\_audio\common\AudioDrawUtils.h" />
     <ClInclude Include="..\..\src\AudioTest.h" />
     <ClInclude Include="..\..\src\Factory.h" />
     <ClInclude Include="..\..\src\InterleavedPassThruNode.h" />
@@ -106,7 +108,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\src;$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-ImGui\include;$(REPO_PATH)\blocks\Cinder-ImGui\lib;$(REPO_PATH)\blocks\mason\src;$(REPO_PATH)\blocks\mason\blocks\Cinder-View\src;$(REPO_PATH)\blocks\mason\blocks\Cinder-Profiler\src;$(REPO_PATH)\tools\LivePP\API;$(REPO_PATH)\thirdparty\imGuIZMO.quat\imGuIZMO.quat;$(REPO_PATH)\thirdparty\libxtract\include;$(REPO_PATH)\thirdparty\hirt\HISSTools_IR_Toolbox_Dependencies;$(REPO_PATH)\thirdparty\hirt\HISSTools_IR_Toolbox_Dependencies\HISSTools_FFT;$(CINDER_PATH)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src;$(CINDER_PATH)\include;$(CINDER_PATH)\..\LivePP\API\x64</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_OOURA;WIN_VERSION;CINDER_IMGUI_NO_NAMESPACE_ALIAS;VGIZMO_USES_GLM;_CRT_SECURE_NO_WARNINGS;WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -143,7 +145,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\src;$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-ImGui\include;$(REPO_PATH)\blocks\Cinder-ImGui\lib;$(REPO_PATH)\blocks\mason\src;$(REPO_PATH)\blocks\mason\blocks\Cinder-View\src;$(REPO_PATH)\blocks\mason\blocks\Cinder-Profiler\src;$(REPO_PATH)\tools\LivePP\API;$(REPO_PATH)\thirdparty\imGuIZMO.quat\imGuIZMO.quat;$(REPO_PATH)\thirdparty\libxtract\include;$(REPO_PATH)\thirdparty\hirt\HISSTools_IR_Toolbox_Dependencies;$(REPO_PATH)\thirdparty\hirt\HISSTools_IR_Toolbox_Dependencies\HISSTools_FFT;$(CINDER_PATH)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src;$(CINDER_PATH)\include;$(CINDER_PATH)\..\LivePP\API\x64</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_OOURA;WIN_VERSION;CINDER_IMGUI_NO_NAMESPACE_ALIAS;VGIZMO_USES_GLM;FMT_SHARED;_CRT_SECURE_NO_WARNINGS;CINDER_SHARED;WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -185,7 +187,7 @@ xcopy /y /d "$(REPO_PATH)\blocks\mason\lib\msw\$(PlatformTarget)\$(Configuration
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src;$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-ImGui\include;$(REPO_PATH)\blocks\Cinder-ImGui\lib;$(REPO_PATH)\blocks\mason\src;$(REPO_PATH)\blocks\mason\blocks\Cinder-View\src;$(REPO_PATH)\blocks\mason\blocks\Cinder-Profiler\src;$(REPO_PATH)\tools\LivePP\API;$(REPO_PATH)\thirdparty\imGuIZMO.quat\imGuIZMO.quat;$(REPO_PATH)\thirdparty\libxtract\include;$(REPO_PATH)\thirdparty\hirt\HISSTools_IR_Toolbox_Dependencies;$(REPO_PATH)\thirdparty\hirt\HISSTools_IR_Toolbox_Dependencies\HISSTools_FFT;$(CINDER_PATH)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src;$(CINDER_PATH)\include;$(CINDER_PATH)\..\LivePP\API\x64</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_OOURA;WIN_VERSION;CINDER_IMGUI_NO_NAMESPACE_ALIAS;VGIZMO_USES_GLM;_CRT_SECURE_NO_WARNINGS;WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -223,7 +225,7 @@ xcopy /y /d "$(REPO_PATH)\blocks\mason\lib\msw\$(PlatformTarget)\$(Configuration
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src;$(REPO_PATH)\src;$(REPO_PATH)\blocks\Cinder-ImGui\include;$(REPO_PATH)\blocks\Cinder-ImGui\lib;$(REPO_PATH)\blocks\mason\src;$(REPO_PATH)\blocks\mason\blocks\Cinder-View\src;$(REPO_PATH)\blocks\mason\blocks\Cinder-Profiler\src;$(REPO_PATH)\tools\LivePP\API;$(REPO_PATH)\thirdparty\imGuIZMO.quat\imGuIZMO.quat;$(REPO_PATH)\thirdparty\libxtract\include;$(REPO_PATH)\thirdparty\hirt\HISSTools_IR_Toolbox_Dependencies;$(REPO_PATH)\thirdparty\hirt\HISSTools_IR_Toolbox_Dependencies\HISSTools_FFT;$(CINDER_PATH)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src;$(CINDER_PATH)\include;$(CINDER_PATH)\..\LivePP\API\x64</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_OOURA;WIN_VERSION;CINDER_IMGUI_NO_NAMESPACE_ALIAS;VGIZMO_USES_GLM;FMT_SHARED;_CRT_SECURE_NO_WARNINGS;CINDER_SHARED;WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>

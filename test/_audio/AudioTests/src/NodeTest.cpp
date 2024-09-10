@@ -1,5 +1,4 @@
-//#include "cinder/app/App.h"
-//#include "cinder/app/RendererGl.h"
+#include "cinder/app/App.h"
 #include "NodeTest.h"
 #include "cinder/Log.h"
 
@@ -12,16 +11,30 @@
 #include "cinder/audio/Utilities.h"
 
 #include "InterleavedPassThruNode.h"
-//#include "../../common/AudioTestGui.h"
-//#include "../../../../samples/_audio/common/AudioDrawUtils.h"
+#include "../../../../samples/_audio/common/AudioDrawUtils.h"
 #include "cinder/CinderImGui.h"
 
 using namespace ci;
-using namespace ci::app;
 using namespace std;
+namespace im = ImGui;
 
-void NodeTest::setup()
+vector<string> sSubTests = {
+	"sine",
+	"2 to 1",
+	"1 to 2",
+	"funnel case",
+	"interleave pass-through",
+	"auto-pulled",
+	"merge",
+	"merge4",
+	"split stereo",
+	"split merge"
+};
+
+NodeTest::NodeTest()
 {	
+	mName = "NodeTest";
+
 	auto ctx = audio::master();
 	mGain = ctx->makeNode( new audio::GainNode( 0.04f ) );
 	mGen = ctx->makeNode<audio::GenSineNode>( 440 );
@@ -37,7 +50,33 @@ void NodeTest::setup()
 
 	// PRINT_GRAPH( ctx ); // TODO: re-enable
 
-	setupUI();
+	//setupUI();
+}
+
+void NodeTest::setupSubTest( const string &testName )
+{
+	if( testName == "sine" )
+		setupGen();
+	else if( testName == "2 to 1" )
+		setup2to1();
+	else if( testName == "1 to 2" )
+		setup1to2();
+	else if( testName == "funnel case" )
+		setupFunnelCase();
+	else if( testName == "interleave pass-thru" )
+		setupInterleavedPassThru();
+	else if( testName == "auto-pulled" )
+		setupAutoPulled();
+	else if( testName == "merge" )
+		setupMerge();
+	else if( testName == "merge4" )
+		setupMerge4();
+	else if( testName == "split stereo" )
+		setupSplitStereo();
+	else if( testName == "split merge" )
+		setupSplitMerge();
+
+	CI_LOG_I( "Finished setup for test: " << testName );
 }
 
 void NodeTest::setupGen()
@@ -47,7 +86,8 @@ void NodeTest::setupGen()
 
 	mGain->disconnectAllInputs();
 
-	mGen >> audio::master()->getOutput();
+	//mGen >> audio::master()->getOutput();
+	mGen >> mGain >> audio::master()->getOutput();
 	mGen->enable();
 
 	//mEnableNoiseButton.setEnabled( false );
@@ -203,131 +243,50 @@ void NodeTest::setupSplitMerge()
 	mGen->enable();
 }
 
-void NodeTest::setupUI()
-{
-	mPlayButton = Button( true, "stopped", "playing" );
-	mPlayButton.mBounds = Rectf( 0, 0, 200, 60 );
-	mWidgets.push_back( &mPlayButton );
-
-	mTestSelector.mSegments.push_back( "sine" );
-	mTestSelector.mSegments.push_back( "2 to 1" );
-	mTestSelector.mSegments.push_back( "1 to 2" );
-	mTestSelector.mSegments.push_back( "funnel case" );
-	mTestSelector.mSegments.push_back( "interleave pass-thru" );
-	mTestSelector.mSegments.push_back( "auto-pulled" );
-	mTestSelector.mSegments.push_back( "merge" );
-	mTestSelector.mSegments.push_back( "merge4" );
-	mTestSelector.mSegments.push_back( "split stereo" );
-	mTestSelector.mSegments.push_back( "split-merge" );
-	mWidgets.push_back( &mTestSelector );
-
-	mGainSlider.mTitle = "GainNode";
-	mGainSlider.mMax = 1;
-	mGainSlider.set( mGain->getValue() );
-	mWidgets.push_back( &mGainSlider );
-
-	Rectf buttonRect( 0, 70, 200, 120 );
-
-	mEnableSineButton.mIsToggle = true;
-	mEnableSineButton.mTitleNormal = "sine disabled";
-	mEnableSineButton.mTitleEnabled = "sine enabled";
-	mEnableSineButton.mBounds = buttonRect;
-	mWidgets.push_back( &mEnableSineButton );
-
-	buttonRect += vec2( 0, buttonRect.getHeight() + 10 );
-	mEnableNoiseButton.mIsToggle = true;
-	mEnableNoiseButton.mTitleNormal = "noise disabled";
-	mEnableNoiseButton.mTitleEnabled = "noise enabled";
-	mEnableNoiseButton.mBounds = buttonRect;
-	mWidgets.push_back( &mEnableNoiseButton );
-
-	buttonRect += vec2( 0, buttonRect.getHeight() + 10 );
-	mDelayedEnableButton.mTitleNormal = "delayed enable";
-	mDelayedEnableButton.mBounds = buttonRect;
-	mWidgets.push_back( &mDelayedEnableButton );
-
-	getWindow()->getSignalMouseDown().connect( [this] ( MouseEvent &event ) { processTap( event.getPos() ); } );
-	getWindow()->getSignalMouseDrag().connect( [this] ( MouseEvent &event ) { processDrag( event.getPos() ); } );
-	getWindow()->getSignalTouchesBegan().connect( [this] ( TouchEvent &event ) { processTap( event.getTouches().front().getPos() ); } );
-	getWindow()->getSignalTouchesMoved().connect( [this] ( TouchEvent &event ) {
-		for( const TouchEvent::Touch &touch : getActiveTouches() )
-			processDrag( touch.getPos() );
-	} );
-
-	gl::enableAlphaBlending();
-}
-
-void NodeTest::processDrag( ivec2 pos )
-{
-	if( mGainSlider.hitTest( pos ) )
-		mGain->setValue( mGainSlider.mValueScaled );
-}
-
-void NodeTest::processTap( ivec2 pos )
-{
-	auto ctx = audio::master();
-
-	if( mPlayButton.hitTest( pos ) )
-		ctx->setEnabled( ! ctx->isEnabled() );
-	if( mGen && mEnableSineButton.hitTest( pos ) )
-		mGen->setEnabled( ! mGen->isEnabled() );
-	if( mNoise && mEnableNoiseButton.hitTest( pos ) ) // FIXME: this check doesn't work any more because there is always an mNoise / mGen
-		mNoise->setEnabled( ! mNoise->isEnabled() );
-	if( mDelayedEnableButton.hitTest( pos ) ) {
-		mGen->setEnabled( ! mGen->isEnabled(), ctx->getNumProcessedSeconds() + 1.0 );
-	}
-
-	size_t currentIndex = mTestSelector.mCurrentSectionIndex;
-	if( mTestSelector.hitTest( pos ) && currentIndex != mTestSelector.mCurrentSectionIndex ) {
-		string currentTest = mTestSelector.currentSection();
-		CI_LOG_V( "selected: " << currentTest );
-
-		if( currentTest == "sine" )
-			setupGen();
-		else if( currentTest == "2 to 1" )
-			setup2to1();
-		else if( currentTest == "1 to 2" )
-			setup1to2();
-		else if( currentTest == "interleave pass-thru" )
-			setupInterleavedPassThru();
-		else if( currentTest == "auto-pulled" )
-			setupAutoPulled();
-		else if( currentTest == "funnel case" )
-			setupFunnelCase();
-		else if( currentTest == "merge" )
-			setupMerge();
-		else if( currentTest == "merge4" )
-			setupMerge4();
-		else if( currentTest == "split stereo" )
-			setupSplitStereo();
-		else if( currentTest == "split-merge" )
-			setupSplitMerge();
-
-		PRINT_GRAPH( ctx );
-	}
-}
-
 void NodeTest::resize()
 {
-	//mTestSelector.mBounds = Rectf( (float)getWindowWidth() * 0.6f, 0, (float)getWindowWidth(), (float)getWindowHeight() * 0.6f );
-
-	//const float padding = 10;
-	//const float sliderHeght = 50;
-	//Rectf sliderRect( padding, getWindowHeight() - sliderHeght - padding, getWindowCenter().x, getWindowHeight() - padding );
-	//mGainSlider.mBounds = sliderRect;
-
 }
 
 void NodeTest::draw()
 {
-	//gl::clear();
-
 	if( mMonitor && mMonitor->getNumConnectedInputs() ) {
 		vec2 padding( 20, 20 );
 
-		Rectf scopeRect( padding.x, padding.y, getWindowWidth() - padding.x, getWindowHeight() - padding.y );
+		Rectf scopeRect( padding.x, padding.y, app::getWindowWidth() - padding.x, app::getWindowHeight() - padding.y );
 		drawAudioBuffer( mMonitor->getBuffer(), scopeRect, true );
 	}
+}
 
-	//drawWidgets( mWidgets );
+// -----------------------------------------------------------------------
+// ImGui
+// -----------------------------------------------------------------------
+
+void NodeTest::updateUI()
+{
+	float gain = mGain->getValue();
+	if( im::SliderFloat( "gain", &gain, 0, 1 ) ) {
+		mGain->setValue( gain );
+	}
+
+	bool sineEnabled = mGen->isEnabled();
+	if( im::Checkbox( "sine", &sineEnabled ) ) {
+		mGen->setEnabled( sineEnabled );
+	}
+	im::SameLine();
+	bool noiseEnabled = mNoise->isEnabled();
+	if( im::Checkbox( "noise", &noiseEnabled ) ) {
+		mNoise->setEnabled( noiseEnabled );
+	}
+
+	static float delaySeconds = 1.0f;
+	if( im::Button( "delayed enable / disable" ) ) {
+		mGen->setEnabled( ! mGen->isEnabled(), audio::master()->getNumProcessedSeconds() + (double)delaySeconds );
+	}
+	im::SameLine();
+	im::InputFloat( "seconds", &delaySeconds, 0.5f, 5.0f );
+
+	static int currentSubTest = 0;
+	if( im::ListBox( "sub-tests", &currentSubTest, sSubTests, sSubTests.size() ) ) {
+		setupSubTest( sSubTests[currentSubTest] );
+	}
 }
