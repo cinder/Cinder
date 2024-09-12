@@ -1,4 +1,4 @@
-#include "NodeTest.h"
+#include "NodeBasicTest.h"
 #include "cinder/app/App.h"
 #include "cinder/Log.h"
 #include "cinder/CinderAssert.h"
@@ -18,7 +18,7 @@ using namespace ci;
 using namespace std;
 namespace im = ImGui;
 
-NodeTest::NodeTest()
+NodeBasicTest::NodeBasicTest()
 {	
 	mName = "NodeTest";
 
@@ -45,7 +45,7 @@ NodeTest::NodeTest()
 	setupGen();
 }
 
-void NodeTest::setupSubTest( const string &testName )
+void NodeBasicTest::setupSubTest( const string &testName )
 {
 	if( testName == "sine" )
 		setupGen();
@@ -71,7 +71,7 @@ void NodeTest::setupSubTest( const string &testName )
 	CI_LOG_I( "Finished setup for test: " << testName );
 }
 
-void NodeTest::setupGen()
+void NodeBasicTest::setupGen()
 {
 	if( mMonitor )
 		mMonitor->disconnectAll();
@@ -83,7 +83,7 @@ void NodeTest::setupGen()
 	mGen->enable();
 }
 
-void NodeTest::setup2to1()
+void NodeBasicTest::setup2to1()
 {
 	if( mMonitor )
 		mMonitor->disconnectAll();
@@ -98,7 +98,7 @@ void NodeTest::setup2to1()
 }
 
 // note: this enables the scope as a secondary output of mGen, and as no one ever disconnects that, it harmlessly remains when the test is switched.
-void NodeTest::setup1to2()
+void NodeBasicTest::setup1to2()
 {
 	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
@@ -109,7 +109,7 @@ void NodeTest::setup1to2()
 	mGen->connect( mMonitor );
 }
 
-void NodeTest::setupInterleavedPassThru()
+void NodeBasicTest::setupInterleavedPassThru()
 {
 	if( mMonitor )
 		mMonitor->disconnectAll();
@@ -122,7 +122,7 @@ void NodeTest::setupInterleavedPassThru()
 	mGen->enable();
 }
 
-void NodeTest::setupAutoPulled()
+void NodeBasicTest::setupAutoPulled()
 {
 	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
@@ -131,7 +131,7 @@ void NodeTest::setupAutoPulled()
 	mGen->enable();
 }
 
-void NodeTest::setupFunnelCase()
+void NodeBasicTest::setupFunnelCase()
 {
 	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
@@ -149,7 +149,7 @@ void NodeTest::setupFunnelCase()
 	mGen->enable();
 }
 
-void NodeTest::setupMerge()
+void NodeBasicTest::setupMerge()
 {
 	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
@@ -165,7 +165,7 @@ void NodeTest::setupMerge()
 	mNoise->enable();
 }
 
-void NodeTest::setupMerge4()
+void NodeBasicTest::setupMerge4()
 {
 	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
@@ -184,7 +184,7 @@ void NodeTest::setupMerge4()
 	mNoise->enable();
 }
 
-void NodeTest::setupSplitStereo()
+void NodeBasicTest::setupSplitStereo()
 {
 	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
@@ -197,7 +197,7 @@ void NodeTest::setupSplitStereo()
 	mGen->enable();
 }
 
-void NodeTest::setupSplitMerge()
+void NodeBasicTest::setupSplitMerge()
 {
 	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
@@ -222,7 +222,7 @@ void NodeTest::setupSplitMerge()
 	mGen->enable();
 }
 
-void NodeTest::draw()
+void NodeBasicTest::draw()
 {
 	if( mMonitor && mMonitor->getNumConnectedInputs() ) {
 		vec2 padding( 20, 20 );
@@ -236,7 +236,7 @@ void NodeTest::draw()
 // ImGui
 // -----------------------------------------------------------------------
 
-void NodeTest::updateUI()
+void NodeBasicTest::updateUI()
 {
 	float gain = mGain->getValue();
 	if( im::SliderFloat( "gain", &gain, 0, 1 ) ) {

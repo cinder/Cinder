@@ -6,9 +6,9 @@
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/MonitorNode.h"
 
-class NodeTest : public AudioTest {
+class NodeBasicTest : public AudioTest {
 public:
-	NodeTest();
+	NodeBasicTest();
 
 	void draw() override;
 	void updateUI() override;

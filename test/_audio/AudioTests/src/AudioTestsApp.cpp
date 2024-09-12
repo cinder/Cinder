@@ -9,7 +9,7 @@
 #include "cinder/CinderImGui.h"
 
 #include "Factory.h"
-#include "NodeTest.h"
+#include "NodeBasicTest.h"
 #include "NodeEffectsTest.h"
 
 using namespace ci;
@@ -28,7 +28,7 @@ const int	SCREEN_INDEX	= 1;
 const ivec2 WINDOW_POS		= { 2000, 50 };
 const ivec2 WINDOW_SIZE		= { 1600, 1000 };
 
-class AudioTests : public app::App {
+class AudioTestsApp : public app::App {
   public:
 	void setup() override;
 	void keyDown( app::KeyEvent event ) override;
@@ -69,11 +69,11 @@ void prepareSettings( app::App::Settings *settings )
 	}
 }
 
-void AudioTests::setup()
+void AudioTestsApp::setup()
 {
 	initImGui();
 
-	mTestFactory.registerBuilder<NodeTest>( "node basic" );
+	mTestFactory.registerBuilder<NodeBasicTest>( "node basic" );
 	mTestFactory.registerBuilder<NodeEffectsTest>( "node effects" );
 
 #if TEST_LOW_LATENCY
@@ -89,7 +89,7 @@ void AudioTests::setup()
 	reload();
 }
 
-void AudioTests::reload()
+void AudioTestsApp::reload()
 {
 	auto testNames = mTestFactory.getAllKeys();
 	mCurrentTest = mTestFactory.build( testNames[mCurrenTestIndex] );
@@ -97,7 +97,7 @@ void AudioTests::reload()
 	CI_LOG_I( "finished building test: " << mCurrentTest->getName() );
 }
 
-void AudioTests::printDefaultOutput()
+void AudioTestsApp::printDefaultOutput()
 {
 	audio::DeviceRef device = audio::Device::getDefaultOutput();
 
@@ -108,7 +108,7 @@ void AudioTests::printDefaultOutput()
 	console() << "\t frames per block: " << device->getFramesPerBlock() << endl;
 }
 
-void AudioTests::keyDown( app::KeyEvent event )
+void AudioTestsApp::keyDown( app::KeyEvent event )
 {
 	bool handled = false;
 	if( event.isControlDown() ) {
@@ -141,14 +141,14 @@ void AudioTests::keyDown( app::KeyEvent event )
 	//}
 }
 
-void AudioTests::resize()
+void AudioTestsApp::resize()
 {
 	if( mCurrentTest ) {
 		mCurrentTest->resize();
 	}
 }
 
-void AudioTests::update()
+void AudioTestsApp::update()
 {
 	if( mCurrentTest ) {
 		mCurrentTest->update();
@@ -159,7 +159,7 @@ void AudioTests::update()
 	}
 }
 
-void AudioTests::draw()
+void AudioTestsApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
 
@@ -231,14 +231,14 @@ void printNodeFn( audio::Node *node, bool expand, audio::Node **hovered )
 } // anon namespace
 
 // called on first render loop, because we need a valid gl::context
-void AudioTests::initImGui()
+void AudioTestsApp::initImGui()
 {
 	IMGUI_CHECKVERSION();
 	im::Initialize();
 }
 
 // only called from main thread, after ImGui has been initialized on the first Window's render thread
-void AudioTests::updateImGui()
+void AudioTestsApp::updateImGui()
 {
 	//im::GetStyle().WindowRounding = 4.0f;
 	//im::GetStyle().Alpha = 0.85f;
@@ -303,7 +303,7 @@ void AudioTests::updateImGui()
 	}
 }
 
-void AudioTests::updateContextUI()
+void AudioTestsApp::updateContextUI()
 {
 	im::SetNextWindowPos( ivec2( 681, 2 ), ImGuiCond_FirstUseEver );
 	im::SetNextWindowSize( ivec2( 330, 420 ), ImGuiCond_FirstUseEver );
@@ -370,4 +370,4 @@ void AudioTests::updateContextUI()
 	im::End(); // Audio Context
 }
 
-CINDER_APP( AudioTests, app::RendererGl( app::RendererGl::Options().msaa( 2 ) ), prepareSettings )
+CINDER_APP( AudioTestsApp, app::RendererGl( app::RendererGl::Options().msaa( 2 ) ), prepareSettings )

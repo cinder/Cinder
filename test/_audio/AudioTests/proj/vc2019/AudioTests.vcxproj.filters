@@ -12,13 +12,13 @@
     <ClCompile Include="..\..\src\AudioTestsApp.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\NodeTest.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\samples\_audio\common\AudioDrawUtils.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\NodeEffectsTest.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\NodeBasicTest.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,9 +29,6 @@
     <ClInclude Include="..\..\src\InterleavedPassThruNode.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\NodeTest.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\AudioTest.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -39,6 +36,9 @@
       <Filter>src\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\NodeEffectsTest.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\NodeBasicTest.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
