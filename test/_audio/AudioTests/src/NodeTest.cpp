@@ -1,39 +1,39 @@
-#include "cinder/app/App.h"
 #include "NodeTest.h"
+#include "cinder/app/App.h"
 #include "cinder/Log.h"
+#include "cinder/CinderAssert.h"
+#include "cinder/CinderImGui.h"
 
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/GainNode.h"
 #include "cinder/audio/ChannelRouterNode.h"
 #include "cinder/audio/MonitorNode.h"
-#include "cinder/CinderAssert.h"
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/Utilities.h"
 
 #include "InterleavedPassThruNode.h"
 #include "../../../../samples/_audio/common/AudioDrawUtils.h"
-#include "cinder/CinderImGui.h"
 
 using namespace ci;
 using namespace std;
 namespace im = ImGui;
 
-vector<string> sSubTests = {
-	"sine",
-	"2 to 1",
-	"1 to 2",
-	"funnel case",
-	"interleave pass-through",
-	"auto-pulled",
-	"merge",
-	"merge4",
-	"split stereo",
-	"split merge"
-};
-
 NodeTest::NodeTest()
 {	
 	mName = "NodeTest";
+
+	mSubTests = {
+		"sine",
+		"2 to 1",
+		"1 to 2",
+		"funnel case",
+		"interleave pass-through",
+		"auto-pulled",
+		"merge",
+		"merge4",
+		"split stereo",
+		"split merge"
+	};
 
 	auto ctx = audio::master();
 	mGain = ctx->makeNode( new audio::GainNode( 0.04f ) );
@@ -43,14 +43,6 @@ NodeTest::NodeTest()
 	mMonitor = audio::master()->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 2048 ) ) );
 
 	setupGen();
-//	setupMerge();
-//	setupMerge4();
-//	setupSplitStereo();
-//	setupSplitMerge();
-
-	// PRINT_GRAPH( ctx ); // TODO: re-enable
-
-	//setupUI();
 }
 
 void NodeTest::setupSubTest( const string &testName )
@@ -243,10 +235,6 @@ void NodeTest::setupSplitMerge()
 	mGen->enable();
 }
 
-void NodeTest::resize()
-{
-}
-
 void NodeTest::draw()
 {
 	if( mMonitor && mMonitor->getNumConnectedInputs() ) {
@@ -285,8 +273,7 @@ void NodeTest::updateUI()
 	im::SameLine();
 	im::InputFloat( "seconds", &delaySeconds, 0.5f, 5.0f );
 
-	static int currentSubTest = 0;
-	if( im::ListBox( "sub-tests", &currentSubTest, sSubTests, sSubTests.size() ) ) {
-		setupSubTest( sSubTests[currentSubTest] );
+	if( im::ListBox( "sub-tests", &mCurrentSubTest, mSubTests, mSubTests.size() ) ) {
+		setupSubTest( mSubTests[mCurrentSubTest] );
 	}
 }

@@ -10,12 +10,12 @@ class NodeTest : public AudioTest {
 public:
 	NodeTest();
 
-	void resize() override;
 	void draw() override;
 	void updateUI() override;
 
 private:
 	void setupSubTest( const std::string &testName );
+
 	void setupGen();
 	void setup2to1();
 	void setup1to2();
@@ -26,6 +26,9 @@ private:
 	void setupMerge4();
 	void setupSplitStereo();
 	void setupSplitMerge();
+
+	std::vector<std::string>	mSubTests;
+	int							mCurrentSubTest = 0;
 
 	ci::audio::GainNodeRef		mGain;
 	ci::audio::MonitorNodeRef	mMonitor;

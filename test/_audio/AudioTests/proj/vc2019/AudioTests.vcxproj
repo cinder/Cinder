@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\samples\_audio\common\AudioDrawUtils.cpp" />
     <ClCompile Include="..\..\src\AudioTestsApp.cpp" />
+    <ClCompile Include="..\..\src\NodeEffectsTest.cpp" />
     <ClCompile Include="..\..\src\NodeTest.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -28,6 +29,7 @@
     <ClInclude Include="..\..\src\AudioTest.h" />
     <ClInclude Include="..\..\src\Factory.h" />
     <ClInclude Include="..\..\src\InterleavedPassThruNode.h" />
+    <ClInclude Include="..\..\src\NodeEffectsTest.h" />
     <ClInclude Include="..\..\src\NodeTest.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

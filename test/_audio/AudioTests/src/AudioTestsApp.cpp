@@ -10,10 +10,13 @@
 
 #include "Factory.h"
 #include "NodeTest.h"
+#include "NodeEffectsTest.h"
 
 using namespace ci;
 using namespace std;
 namespace im = ImGui;
+
+#define TEST_LOW_LATENCY 0
 
 // To use Live++, place necessary files in a folder called LivePP next to the cinder folder
 #define	LIVEPP_ENABLED 1
@@ -39,10 +42,11 @@ class AudioTests : public app::App {
 	void initImGui();
 	void updateImGui();
 
-	bool mImGuiEnabled = true;
+	bool	mImGuiEnabled	= true;
 
 	mason::Factory<AudioTest>	mTestFactory;
 	AudioTestRef				mCurrentTest;
+	int							mCurrenTestIndex = 0;
 };
 
 void prepareSettings( app::App::Settings *settings )
@@ -68,19 +72,27 @@ void AudioTests::setup()
 	initImGui();
 
 	mTestFactory.registerBuilder<NodeTest>( "node basic" );
+	mTestFactory.registerBuilder<NodeEffectsTest>( "node effects" );
 
-	//mSuite.addTest<MiscTest>( "misc" );
-	//mSuite.addTest<FluidSmokeTest>( "fluid smoke" );
-	//mSuite.addTest<TemporalRevealTest>( "temporal reveal" );
+#if TEST_LOW_LATENCY
+	auto lineOut = ctx->createOutputDeviceNode();
+	lineOut->getDevice()->updateFormat( audio::Device::Format().framesPerBlock( 64 ) );
+	ctx->setOutput( lineOut );
+#endif
 
+	auto ctx = audio::master();
+	CI_LOG_I( "Context samplerate: " << ctx->getSampleRate() << ", frames per block: " << ctx->getFramesPerBlock() );
 	printDefaultOutput();
 
-	mCurrentTest = mTestFactory.build( "node basic" );
+	reload();
 }
 
 void AudioTests::reload()
 {
-	// TODO: reload current test
+	auto testNames = mTestFactory.getAllKeys();
+	mCurrentTest = mTestFactory.build( testNames[mCurrenTestIndex] );
+
+	CI_LOG_I( "finished building test: " << mCurrentTest->getName() );
 }
 
 void AudioTests::printDefaultOutput()
@@ -204,10 +216,15 @@ void AudioTests::updateImGui()
 			audio::master()->setEnabled( audioEnabled );
 		}
 
+		static vector<string> sTests = mTestFactory.getAllKeys();
+		if( im::Combo( "tests", &mCurrenTestIndex, sTests, sTests.size() ) ) {
+			reload();
+		}
+
 		if( im::Button( "print audio graph" ) ) {
-			app::console() << "-------------- Graph configuration: --------------" << endl;
 			app::console() << audio::master()->printGraphToString();
 			app::console() << "--------------------------------------------------" << endl;
+			app::console() << "-------------- Graph configuration: --------------" << endl;
 		}
 	}
 	im::End(); // "General"
