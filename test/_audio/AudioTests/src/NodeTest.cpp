@@ -55,7 +55,7 @@ void NodeTest::setupSubTest( const string &testName )
 		setup1to2();
 	else if( testName == "funnel case" )
 		setupFunnelCase();
-	else if( testName == "interleave pass-thru" )
+	else if( testName == "interleave pass-through" )
 		setupInterleavedPassThru();
 	else if( testName == "auto-pulled" )
 		setupAutoPulled();
@@ -81,9 +81,6 @@ void NodeTest::setupGen()
 	//mGen >> audio::master()->getOutput();
 	mGen >> mGain >> audio::master()->getOutput();
 	mGen->enable();
-
-	//mEnableNoiseButton.setEnabled( false );
-	//mEnableSineButton.setEnabled( true );
 }
 
 void NodeTest::setup2to1()
@@ -98,9 +95,6 @@ void NodeTest::setup2to1()
 
 	mGen->enable();
 	mNoise->enable();
-
-	//mEnableSineButton.setEnabled( true );
-	//mEnableNoiseButton.setEnabled( true );
 }
 
 // note: this enables the scope as a secondary output of mGen, and as no one ever disconnects that, it harmlessly remains when the test is switched.
@@ -113,9 +107,6 @@ void NodeTest::setup1to2()
 	mGen->enable();
 
 	mGen->connect( mMonitor );
-
-	//mEnableNoiseButton.setEnabled( false );
-	//mEnableSineButton.setEnabled( true );
 }
 
 void NodeTest::setupInterleavedPassThru()
@@ -124,15 +115,11 @@ void NodeTest::setupInterleavedPassThru()
 		mMonitor->disconnectAll();
 
 	auto ctx = audio::master();
-
-	mGain->disconnectAllInputs();
+	ctx->disconnectAllNodes();
 
 	auto interleaved = ctx->makeNode( new InterleavedPassThruNode() );
 	mGen >> interleaved >> mGain >> ctx->getOutput();
 	mGen->enable();
-
-	//mEnableNoiseButton.setEnabled( false );
-	//mEnableSineButton.setEnabled( true );
 }
 
 void NodeTest::setupAutoPulled()
