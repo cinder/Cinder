@@ -24,7 +24,7 @@ namespace im = ImGui;
 #include "LPP_API_x64_CPP.h"
 #endif
 
-const int	SCREEN_INDEX	= 2;
+const int	SCREEN_INDEX	= 1;
 const ivec2 WINDOW_POS		= { 2000, 50 };
 const ivec2 WINDOW_SIZE		= { 1600, 1000 };
 
@@ -41,8 +41,10 @@ class AudioTests : public app::App {
 
 	void initImGui();
 	void updateImGui();
+	void updateContextUI();
 
-	bool	mImGuiEnabled	= true;
+	bool	mImGuiEnabled		= true;
+	bool	mContextUIEnabled	= true;
 
 	mason::Factory<AudioTest>	mTestFactory;
 	AudioTestRef				mCurrentTest;
@@ -170,8 +172,63 @@ void AudioTests::draw()
 // ImGui
 // ----------------------------------------------------------------------------------------------------
 
+namespace {
+
 static bool sThemeIsDark = true;
 static float sThemeAlpha = 0.85f;
+
+void substituteNodeLabel( std::string &label )
+{
+	static vector<pair<string,string>> nameSubstitutes = {
+		{ "class cinder::", "ci::" },
+		{ "class mason::", "ma::" }
+	};
+
+	for( const auto &sub : nameSubstitutes ) {
+		auto pos = label.find( sub.first, 0 );
+		if( pos != string::npos ) {
+			label.replace( pos, sub.first.size(), sub.second );
+		}
+	}
+}
+
+// note: recursion level currently only for debugging
+void printNodeFn( audio::Node *node, bool expand, audio::Node **hovered )
+{
+	string label = node->getName();
+	substituteNodeLabel( label );
+
+	ImGuiTreeNodeFlags treeNodeFlags = 0;
+	im::PushStyleColor( ImGuiCol_Text, node->isEnabled() ? vec4( 1 ) : im::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
+	if( node->getNumConnectedInputs() > 0 ) {
+		if( expand )
+			im::SetNextTreeNodeOpen( true );
+
+		if( im::TreeNodeEx( label.c_str(), treeNodeFlags ) ) {
+			if( im::IsItemHovered() ) {
+				*hovered = node;
+			}
+
+			for( const auto &input : node->getInputs() ) {
+				printNodeFn( input.get(), expand, hovered );
+			}
+
+			im::TreePop();
+		}
+	}
+	else {
+		treeNodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet;
+		im::TreeNodeEx( label.c_str(), treeNodeFlags );
+
+		if( im::IsItemHovered() ) {
+			*hovered = node;
+		}
+	}
+
+	im::PopStyleColor();
+};
+
+} // anon namespace
 
 // called on first render loop, because we need a valid gl::context
 void AudioTests::initImGui()
@@ -207,6 +264,7 @@ void AudioTests::updateImGui()
 		im::Text( "user settings" );
 
 		im::Checkbox( "GUI (ctrl + g)", &mImGuiEnabled );
+		im::Checkbox( "Show audio::Context UI", &mContextUIEnabled );
 
 		im::Separator();
 		im::Text( "Audio" );
@@ -239,6 +297,77 @@ void AudioTests::updateImGui()
 
 		im::End();
 	}
+
+	if( mContextUIEnabled ) {
+		updateContextUI();
+	}
+}
+
+void AudioTests::updateContextUI()
+{
+	im::SetNextWindowPos( ivec2( 681, 2 ), ImGuiCond_FirstUseEver );
+	im::SetNextWindowSize( ivec2( 330, 420 ), ImGuiCond_FirstUseEver );
+	im::SetNextWindowCollapsed( true, ImGuiCond_FirstUseEver );
+
+	if( ! im::Begin( "Audio Context", &mContextUIEnabled ) ) {
+		im::End();
+		return;
+	}
+
+	auto ctx = audio::master();
+
+	im::Text( "dsp %s, samplerate: %d", ( ctx->isEnabled() ? "enabled" : "disabled" ), (int)ctx->getSampleRate() );
+	im::Separator();
+	im::Text( "Context Graph:" );
+	im::SameLine();
+
+	static bool expand = false;
+	im::Checkbox( "expand all", &expand );
+
+	im::BeginChild( "Context Graph", vec2( 0, im::GetWindowHeight() - 100 ) );
+	audio::Node *hovered = nullptr;
+	printNodeFn( ctx->getOutput().get(), expand, &hovered );
+
+#if defined( CI_AUDIO_DEBUG_NODE_ALLOCATIONS )
+	if( ! ctx->getAutoPulledNodes().empty() ) {
+		im::Separator();
+		im::Text( "auto pulled nodes: %d", ctx->getAutoPulledNodes().size() );
+		for( const auto& node : ctx->getAutoPulledNodes() ) {
+			printNodeFn( node, expand, &hovered );
+		}
+	}
+#endif
+
+	im::EndChild();
+
+	// show info at bottom of window for hovered audio::Nodes
+	im::Separator();
+	if( hovered ) {
+		string name = hovered->getName();
+		substituteNodeLabel( name );
+
+		const char *processMode = hovered->getProcessesInPlace() ? "in-place" : "sum"; 
+		string channelMode;
+		switch( hovered->getChannelMode() ) {
+			case audio::Node::ChannelMode::SPECIFIED:		channelMode = "specified"; break;
+			case audio::Node::ChannelMode::MATCHES_INPUT:	channelMode = "matches input"; break;
+			case audio::Node::ChannelMode::MATCHES_OUTPUT:	channelMode = "matches output"; break;
+			default: CI_ASSERT_NOT_REACHABLE(); break;
+		}
+
+		im::Text( "%s: channels: %d, mode: %s (%s)", name.c_str(), hovered->getNumChannels(), processMode, channelMode.c_str() );
+
+		auto mathNode = dynamic_cast<audio::MathNode *>( hovered );
+		if( mathNode ) {
+			im::SameLine();
+			im::Text( "| value: %0.3f", mathNode->getValue() );
+		}
+	}
+	else {
+		im::Text( "" );
+	}
+
+	im::End(); // Audio Context
 }
 
 CINDER_APP( AudioTests, app::RendererGl( app::RendererGl::Options().msaa( 2 ) ), prepareSettings )
