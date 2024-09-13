@@ -12,8 +12,6 @@ namespace im = ImGui;
 
 NodeEffectsTest::NodeEffectsTest()
 {	
-	mName = "NodeEffectsTest";
-
 	mSubTests = {
 		"one",
 		"force stereo",
@@ -188,10 +186,9 @@ void NodeEffectsTest::update()
 }
 
 // -----------------------------------------------------------------------
-// ImGui
+// UI
 // -----------------------------------------------------------------------
 
-// TODO: update UI
 void NodeEffectsTest::updateUI()
 {
 	float gain = mGain->getValue();

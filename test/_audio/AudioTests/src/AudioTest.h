@@ -15,6 +15,7 @@ public:
 	virtual void updateUI()	{}
 
 	const std::string&	getName() const	{ return mName; }
+	void				setName( const std::string &name ) { mName = name; }
 
 protected:
 	std::string mName;

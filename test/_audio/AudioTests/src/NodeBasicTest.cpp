@@ -20,8 +20,6 @@ namespace im = ImGui;
 
 NodeBasicTest::NodeBasicTest()
 {	
-	mName = "NodeTest";
-
 	mSubTests = {
 		"sine",
 		"2 to 1",
@@ -233,7 +231,7 @@ void NodeBasicTest::draw()
 }
 
 // -----------------------------------------------------------------------
-// ImGui
+// UI
 // -----------------------------------------------------------------------
 
 void NodeBasicTest::updateUI()

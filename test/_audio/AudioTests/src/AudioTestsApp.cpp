@@ -11,6 +11,7 @@
 #include "Factory.h"
 #include "NodeBasicTest.h"
 #include "NodeEffectsTest.h"
+#include "ParamTest.h"
 
 using namespace ci;
 using namespace std;
@@ -73,8 +74,9 @@ void AudioTestsApp::setup()
 {
 	initImGui();
 
-	mTestFactory.registerBuilder<NodeBasicTest>( "node basic" );
-	mTestFactory.registerBuilder<NodeEffectsTest>( "node effects" );
+	mTestFactory.registerBuilder<NodeBasicTest>( "Node Basic" );
+	mTestFactory.registerBuilder<NodeEffectsTest>( "Node Effects" );
+	mTestFactory.registerBuilder<ParamTest>( "Param" );
 
 #if TEST_LOW_LATENCY
 	auto lineOut = ctx->createOutputDeviceNode();
@@ -91,10 +93,15 @@ void AudioTestsApp::setup()
 
 void AudioTestsApp::reload()
 {
-	auto testNames = mTestFactory.getAllKeys();
-	mCurrentTest = mTestFactory.build( testNames[mCurrenTestIndex] );
+	auto ctx = audio::master();
+	audio::ScopedEnableContext scopedDisableCtx( ctx, false );
+	ctx->disconnectAllNodes();
 
-	CI_LOG_I( "finished building test: " << mCurrentTest->getName() );
+	string testName = mTestFactory.getAllKeys()[mCurrenTestIndex];
+	mCurrentTest = mTestFactory.build( testName );
+	mCurrentTest->setName( testName );
+
+	CI_LOG_I( "finished building test '" << testName << "', type: " << System::demangleTypeName( typeid( *mCurrentTest.get() ).name() ) );
 }
 
 void AudioTestsApp::printDefaultOutput()
@@ -123,10 +130,6 @@ void AudioTestsApp::keyDown( app::KeyEvent event )
 			mImGuiEnabled = ! mImGuiEnabled;
 			CI_LOG_I( "ImGui enabled: " << mImGuiEnabled );
 		}
-		else if( event.getChar() == '/' ) {
-			audio::master()->setEnabled( ! audio::master()->isEnabled() );
-			CI_LOG_I( "ImGui enabled: " << mImGuiEnabled );
-		}
 		else if( event.getChar() == 'q' ) {
 			CI_LOG_I( "Ctrl + q: quitting app." );
 			quit();
@@ -135,9 +138,13 @@ void AudioTestsApp::keyDown( app::KeyEvent event )
 			handled = false;
 		}
 	}
+	else if( event.getCode() == app::KeyEvent::KEY_SLASH ) {
+		audio::master()->setEnabled( ! audio::master()->isEnabled() );
+		CI_LOG_I( "ImGui enabled: " << mImGuiEnabled );
+	}
 
 	//if( ! handled ) {
-	//	mSuite.keyDown( event );
+	//	mCurrentTest->keyDown( event );
 	//}
 }
 
