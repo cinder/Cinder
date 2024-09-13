@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\samples\_audio\common\AudioDrawUtils.cpp" />
     <ClCompile Include="..\..\src\AudioTestsApp.cpp" />
+    <ClCompile Include="..\..\src\DeviceTest.cpp" />
     <ClCompile Include="..\..\src\NodeBasicTest.cpp" />
     <ClCompile Include="..\..\src\NodeEffectsTest.cpp" />
     <ClCompile Include="..\..\src\ParamTest.cpp" />
@@ -28,6 +29,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\samples\_audio\common\AudioDrawUtils.h" />
     <ClInclude Include="..\..\src\AudioTest.h" />
+    <ClInclude Include="..\..\src\DeviceTest.h" />
     <ClInclude Include="..\..\src\Factory.h" />
     <ClInclude Include="..\..\src\InterleavedPassThruNode.h" />
     <ClInclude Include="..\..\src\NodeBasicTest.h" />

@@ -18,6 +18,11 @@ using namespace std;
 namespace im = ImGui;
 
 #define TEST_LOW_LATENCY 0
+#define WASAPI_EXCLUSIVE_MODE 1 // MSW only
+
+#if WASAPI_EXCLUSIVE_MODE && defined( CINDER_MSW )
+#include "cinder/audio/msw/ContextWasapi.h"
+#endif
 
 // To use Live++, place necessary files in a folder called LivePP next to the cinder folder
 #define	LIVEPP_ENABLED 1
@@ -78,13 +83,18 @@ void AudioTestsApp::setup()
 	mTestFactory.registerBuilder<NodeEffectsTest>( "Node Effects" );
 	mTestFactory.registerBuilder<ParamTest>( "Param" );
 
+	auto ctx = audio::master();
+
+#if WASAPI_EXCLUSIVE_MODE && defined( CINDER_MSW )
+	CI_LOG_I( "enabling WASAPI exlusive mode" );
+	dynamic_cast<audio::msw::ContextWasapi *>( ctx )->setExclusiveModeEnabled();
+#endif
 #if TEST_LOW_LATENCY
 	auto lineOut = ctx->createOutputDeviceNode();
 	lineOut->getDevice()->updateFormat( audio::Device::Format().framesPerBlock( 64 ) );
 	ctx->setOutput( lineOut );
 #endif
 
-	auto ctx = audio::master();
 	CI_LOG_I( "Context samplerate: " << ctx->getSampleRate() << ", frames per block: " << ctx->getFramesPerBlock() );
 	printDefaultOutput();
 
@@ -247,12 +257,6 @@ void AudioTestsApp::initImGui()
 // only called from main thread, after ImGui has been initialized on the first Window's render thread
 void AudioTestsApp::updateImGui()
 {
-	//im::GetStyle().WindowRounding = 4.0f;
-	//im::GetStyle().Alpha = 0.85f;
-
-	//im::GetStyle().Colors[ImGuiCol_Text] = Color( 0.187f, 1, 0.269f );
-	//im::GetStyle().Colors[ImGuiCol_Text] = Color( 0.187f, 1, 1 );
-
 	im::GetIO().FontGlobalScale = getWindowContentScale();
 	im::GetIO().FontAllowUserScaling = true;
 
@@ -262,7 +266,6 @@ void AudioTestsApp::updateImGui()
 	if( im::Begin( "General", nullptr ) ) {
 		im::Text( "fps: %0.2f, seconds running: %0.1f", app::App::get()->getAverageFps(), app::App::get()->getElapsedSeconds() );
 		im::Separator();
-		//im::SameLine(); im::Text( "(ctrl + s)" );
 
 		if( im::Button( "reload" ) ) {
 			reload();
@@ -294,7 +297,6 @@ void AudioTestsApp::updateImGui()
 	}
 	im::End(); // "General"
 
-	//mSuite.updateUI();
 	if( mCurrentTest ) {
 		im::SetNextWindowPos( { 400, 100 }, ImGuiCond_FirstUseEver );
 		im::SetNextWindowSize( { 800, 600 }, ImGuiCond_FirstUseEver );
