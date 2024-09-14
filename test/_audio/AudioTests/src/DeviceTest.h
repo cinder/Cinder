@@ -11,9 +11,6 @@
 #include "cinder/audio/MonitorNode.h"
 #include "cinder/audio/SampleRecorderNode.h"
 
-const bool SET_FRAMES_PER_BLOCK = 0; // TODO: move to main app
-const size_t FRAMES_PER_BLOCK = 256; // TODO: move to main app
-
 class DeviceTest : public AudioTest {
   public:
 	DeviceTest();
@@ -39,7 +36,6 @@ class DeviceTest : public AudioTest {
 	void setupIOAndSine();
 	void setupSend();
 	void setupSendStereo();
-	void updateUIParams();
 
 	void setupSubTest( const std::string &testName );
 
@@ -53,11 +49,8 @@ class DeviceTest : public AudioTest {
 	ci::audio::GainNodeRef				mGain;
 	ci::audio::GenNodeRef				mGen;
 
-	//vector<TestWidget *> mWidgets;
-	//VSelector mTestSelector, mInputSelector, mOutputSelector;
-	//Button mPlayButton, mRecordButton;
-	//HSlider mGainSlider;
-	//TextInput mSamplerateInput, mFramesPerBlockInput, mNumInChannelsInput, mNumOutChannelsInput, mSendChannelInput;
+
+	int mSendChannel = 2;
 
 	ci::Anim<float> mInputDeviceNodeUnderrunFade, mInputDeviceNodeOverrunFade, mOutputDeviceNodeClipFade;
 	ci::Anim<float> mViewYOffset; // for iOS keyboard

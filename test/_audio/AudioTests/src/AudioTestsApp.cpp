@@ -12,13 +12,14 @@
 #include "NodeBasicTest.h"
 #include "NodeEffectsTest.h"
 #include "ParamTest.h"
+#include "DeviceTest.h"
 
 using namespace ci;
 using namespace std;
 namespace im = ImGui;
 
 #define TEST_LOW_LATENCY 0
-#define WASAPI_EXCLUSIVE_MODE 1 // MSW only
+#define WASAPI_EXCLUSIVE_MODE 0 // MSW only
 
 #if WASAPI_EXCLUSIVE_MODE && defined( CINDER_MSW )
 #include "cinder/audio/msw/ContextWasapi.h"
@@ -82,6 +83,7 @@ void AudioTestsApp::setup()
 	mTestFactory.registerBuilder<NodeBasicTest>( "Node Basic" );
 	mTestFactory.registerBuilder<NodeEffectsTest>( "Node Effects" );
 	mTestFactory.registerBuilder<ParamTest>( "Param" );
+	mTestFactory.registerBuilder<DeviceTest>( "Device" );
 
 	auto ctx = audio::master();
 

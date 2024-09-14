@@ -19,6 +19,8 @@
 
 #include "../../../../samples/_audio/common/AudioDrawUtils.h"
 
+const bool SET_FRAMES_PER_BLOCK = false;
+const size_t FRAMES_PER_BLOCK = 256;
 const double RECORD_SECONDS = 4.0;
 
 using namespace ci;
@@ -47,7 +49,7 @@ DeviceTest::DeviceTest()
 	mMonitor = ctx->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 480 ) ) );
 	mGain = ctx->makeNode( new audio::GainNode() );
 	//mGain = ctx->makeNode( new audio::GainNode( audio::Node::Format().channels( 1 ) ) ); // force mix down to mono
-	mGain->setValue( 0.8f );
+	mGain->setValue( 0.4f );
 
 	mGain->connect( mMonitor );
 
@@ -97,7 +99,7 @@ void DeviceTest::setOutputDevice( const audio::DeviceRef &device, size_t numChan
 							[this] {
 								CI_LOG_I( "OutputDeviceNode params changed:" );
 								printDeviceDetails( mOutputDeviceNode->getDevice() );
-								updateUIParams();
+								//updateUIParams();
 								//PRINT_GRAPH( audio::master() );
 							} );
 
@@ -113,11 +115,6 @@ void DeviceTest::setOutputDevice( const audio::DeviceRef &device, size_t numChan
 
 	CI_LOG_I( "OutputDeviceNode device properties: " );
 	printDeviceDetails( device );
-
-	// TODO: considering doing this automatically in Context::setOutput, but then also have to worry about initialize()
-	// - also may do a ScopedEnable that handles Context as well.
-	if( mPlayButton.mEnabled )
-		mOutputDeviceNode->enable();
 }
 
 void DeviceTest::setInputDevice( const audio::DeviceRef &device, size_t numChannels  )
@@ -308,10 +305,9 @@ void DeviceTest::setupSend()
 
 	auto input = mGen;
 
-	int channelIndex = mSendChannelInput.getValue();
-	CI_LOG_I( "routing input to channel: " << channelIndex );
+	CI_LOG_I( "routing input to channel: " << mSendChannel );
 
-	input >> mGain >> router->route( 0, channelIndex );
+	input >> mGain >> router->route( 0, mSendChannel );
 	router >> mMonitor >> ctx->getOutput();
 
 	mGen->enable();
@@ -325,10 +321,9 @@ void DeviceTest::setupSendStereo()
 	auto router = ctx->makeNode( new audio::ChannelRouterNode( audio::Node::Format().channels( mOutputDeviceNode->getNumChannels()	) ) );
 	auto upmix = ctx->makeNode( new audio::Node( audio::Node::Format().channels( 2 ) ) );
 
-	int channelIndex = mSendChannelInput.getValue();
-	CI_LOG_I( "routing input to channel: " << channelIndex );
+	CI_LOG_I( "routing input to channel: " << mSendChannel );
 
-	mGen >> upmix >> mGain >> router->route( 0, channelIndex );
+	mGen >> upmix >> mGain >> router->route( 0, mSendChannel );
 	router >> mMonitor >> ctx->getOutput();
 
 	mGen->enable();
@@ -537,6 +532,10 @@ void DeviceTest::setupSubTest( const string &test )
 	audio::ScopedEnableContext disableContext( audio::master(), false );
 	mGain->disconnectAllInputs();
 
+	if( im::Button( "record" ) ) {
+		startRecording();
+	}
+
 	if( test == "sinewave" )
 		setupSine();
 	else if( test == "noise" )
@@ -637,18 +636,6 @@ void DeviceTest::update()
 	//}
 }
 
-void DeviceTest::updateUIParams()
-{
-	auto ctx = audio::master();
-	
-	if( mSamplerateInput.getValue() != ctx->getSampleRate() ) {
-		mSamplerateInput.setValue( ctx->getSampleRate() );
-	}
-	if( mFramesPerBlockInput.getValue() != ctx->getFramesPerBlock() ) {
-		mFramesPerBlockInput.setValue( ctx->getFramesPerBlock() );
-	}
-}
-
 void DeviceTest::draw()
 {
 	gl::ScopedMatrices scopedMat;
@@ -663,11 +650,9 @@ void DeviceTest::draw()
 
 		float volume = mMonitor->getVolume();
 		const float padding = 20;
-		Rectf volumeRect( mGainSlider.mBounds.x1, mGainSlider.mBounds.y2 + padding, mGainSlider.mBounds.x1 + mGainSlider.mBounds.getWidth() * volume, mGainSlider.mBounds.y2 + padding + 20 );
+		Rectf volumeRect( padding, padding, padding * 2, padding + volume * 200 );
 		gl::drawSolidRect( volumeRect );
 	}
-
-	//drawWidgets( mWidgets );
 
 	if( mInputDeviceNodeUnderrunFade > 0.0001f ) {
 		gl::color( ColorA( 0.8f, 0.2f, 0, mInputDeviceNodeUnderrunFade ) );
@@ -695,5 +680,19 @@ void DeviceTest::draw()
 
 void DeviceTest::updateUI()
 {
+	float gain = mGain->getValue();
+	if( im::SliderFloat( "gain", &gain, 0, 1 ) ) {
+		mGain->setValue( gain );
+	}
+
+	auto ctx = audio::master();
+
+	int sampleRate = ctx->getSampleRate();
+
+	int framesPerBlock = ctx->getFramesPerBlock();
+
+	if( im::ListBox( "sub-tests", &mCurrentSubTest, mSubTests, mSubTests.size() ) ) {
+		setupSubTest( mSubTests[mCurrentSubTest] );
+	}
 }
 
