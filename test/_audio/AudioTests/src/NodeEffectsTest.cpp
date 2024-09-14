@@ -9,7 +9,6 @@ using namespace ci;
 using namespace std;
 namespace im = ImGui;
 
-
 NodeEffectsTest::NodeEffectsTest()
 {	
 	mSubTests = {

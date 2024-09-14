@@ -13,6 +13,8 @@
 #include "NodeEffectsTest.h"
 #include "ParamTest.h"
 #include "DeviceTest.h"
+#include "SamplePlayerTest.h"
+#include "SpectralTest.h"
 
 using namespace ci;
 using namespace std;
@@ -84,6 +86,8 @@ void AudioTestsApp::setup()
 	mTestFactory.registerBuilder<NodeEffectsTest>( "Node Effects" );
 	mTestFactory.registerBuilder<ParamTest>( "Param" );
 	mTestFactory.registerBuilder<DeviceTest>( "Device" );
+	mTestFactory.registerBuilder<SamplePlayerTest>( "Samples" );
+	mTestFactory.registerBuilder<SpectralTest>( "Spectral" );
 
 	auto ctx = audio::master();
 

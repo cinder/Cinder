@@ -27,6 +27,12 @@
     <ClCompile Include="..\..\src\DeviceTest.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\SamplePlayerTest.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SpectralTest.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Factory.h">
@@ -51,6 +57,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\DeviceTest.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SamplePlayerTest.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SpectralTest.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
