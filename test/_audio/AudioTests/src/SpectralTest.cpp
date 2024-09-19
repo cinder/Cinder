@@ -7,6 +7,8 @@
 #include "cinder/CinderImGui.h"
 #include "cinder/gl/gl.h"
 
+#include "cinder/audio/Context.h"
+
 // TODO: make these runtime configurable
 #define FFT_SIZE 2048
 #define WINDOW_SIZE 1024
@@ -18,6 +20,12 @@ namespace im = ImGui;
 
 SpectralTest::SpectralTest()
 {
+	mSubTests = {
+		"sine",
+		"sine (no output)",
+		"sample",
+	};
+
 	auto ctx = audio::master();
 
 	auto format = audio::MonitorSpectralNode::Format().fftSize( FFT_SIZE ).windowSize( WINDOW_SIZE ).windowType( WINDOW_TYPE );
@@ -37,34 +45,47 @@ SpectralTest::SpectralTest()
 
 	setupSine();
 
-	setupUI();
-
-	ctx->enable();
-	mEnableGraphButton.setEnabled( true );
-
-	mScaleDecibelsButton.setEnabled( mSpectrumPlot.getScaleDecibels() );
-
 	CI_LOG_V( "MonitorSpectralNode fftSize: " << mMonitorSpectralNode->getFftSize() << ", windowSize: " << mMonitorSpectralNode->getWindowSize() );
+}
+
+void SpectralTest::setupSubTest( const string &testName )
+{
+	auto ctx = audio::master();
+
+	bool enabled = ctx->isEnabled();
+	ctx->disable();
+	ctx->disconnectAllNodes();
+
+	if( testName == "sine" )
+		setupSine();
+	else if( testName == "sine (no output)" )
+		setupSineNoOutput();
+	else if( testName == "sample" )
+		setupSample();
+
+	ctx->setEnabled( enabled );
+
+	CI_LOG_I( "Finished setup for test: " << testName );
 }
 
 void SpectralTest::setupSine()
 {
 	mGen >> mMonitorSpectralNode >> audio::master()->getOutput();
-	if( mPlaybackButton.mEnabled )
+	if( mPlaybackEnabled )
 		mGen->enable();
 }
 
 void SpectralTest::setupSineNoOutput()
 {
 	mGen->connect( mMonitorSpectralNode );
-	if( mPlaybackButton.mEnabled )
+	if( mPlaybackEnabled )
 		mGen->enable();
 }
 
 void SpectralTest::setupSample()
 {
 	mPlayerNode >> mMonitorSpectralNode >> audio::master()->getOutput();
-	if( mPlaybackButton.mEnabled )
+	if( mPlaybackEnabled )
 		mPlayerNode->enable();
 }
 
@@ -178,7 +199,6 @@ void SpectralTest::processTap( ivec2 pos )
 
 		ctx->setEnabled( enabled );
 	}
-
 }
 
 void SpectralTest::processDrag( ivec2 pos )
@@ -191,24 +211,24 @@ void SpectralTest::processDrag( ivec2 pos )
 
 #endif
 
-void SpectralTest::fileDrop( FileDropEvent event )
+void SpectralTest::openFile( const ci::fs::path &fullPath )
 {
-	const fs::path &filePath = event.getFile( 0 );
-	CI_LOG_V( "File dropped: " << filePath );
-
-	mSourceFile = audio::load( loadFile( filePath ), audio::master()->getSampleRate() );
-
-	mPlayerNode->setBuffer( mSourceFile->loadBuffer() );
-
-	CI_LOG_V( "loaded and set new source buffer, frames: " << mSourceFile->getNumFrames() );
+	try {
+		mSourceFile = audio::load( loadFile( fullPath ), audio::master()->getSampleRate() );
+		mPlayerNode->setBuffer( mSourceFile->loadBuffer() );
+		CI_LOG_I( "loaded and set new source buffer, frames: " << mSourceFile->getNumFrames() );
+	}
+	catch( exception &e ) {
+		CI_LOG_EXCEPTION( "failed to load sample file at path: " << fullPath, e );
+	}
 }
 
+//	freq = bin * samplerate / sizeFft
 void SpectralTest::printBinFreq( size_t xPos )
 {
 	if( xPos < mSpectroMargin || xPos > app::getWindowWidth() - mSpectroMargin )
 		return;
 
-	//	freq = bin * samplerate / sizeFft
 
 	size_t numBins = mMonitorSpectralNode->getFftSize() / 2;
 	size_t spectroWidth = app::getWindowWidth() - mSpectroMargin * 2;
@@ -223,17 +243,8 @@ void SpectralTest::resize()
 	mSpectrumPlot.setBounds( Rectf( mSpectroMargin, mSpectroMargin, app::getWindowWidth() - mSpectroMargin, app::getWindowHeight() - mSpectroMargin ) );
 }
 
-void SpectralTest::update()
-{
-	// update playback button, since the player node may stop itself at the end of a file.
-	if( mTestSelector.currentSection() == "sample" && ! mPlayerNode->isEnabled() )
-		mPlaybackButton.setEnabled( false );
-}
-
 void SpectralTest::draw()
 {
-	gl::clear();
-
 	// draw magnitude spectrum
 	auto &mag = mMonitorSpectralNode->getMagSpectrum();
 	mSpectrumPlot.draw( mag );
@@ -243,7 +254,7 @@ void SpectralTest::draw()
 		auto max = max_element( mag.begin(), mag.end() );
 
 		string info = string( "min: " ) + toString( *min ) + string( ", max: " ) + toString( *max );
-		gl::drawString( info, vec2( mSpectroMargin, getWindowHeight() - 30.0f ) );
+		gl::drawString( info, vec2( mSpectroMargin, app::getWindowHeight() - 30.0f ) );
 	}
 
 	// draw vertical line for spectral centroid
@@ -259,11 +270,7 @@ void SpectralTest::draw()
 		gl::ScopedColor colorScope( 0.85f, 0.45f, 0, 0.4f );
 		gl::drawSolidRect( bar );
 
-		//if( app::getElapsedFrames() % 30 == 0 ) {
-		//	CI_LOG_I( "spectralCentroid: " << spectralCentroid );
-		//}
 	}
-
 }
 
 
@@ -273,11 +280,16 @@ void SpectralTest::draw()
 
 void SpectralTest::updateUI()
 {
-	float gain = mGain->getValue();
-	if( im::SliderFloat( "gain", &gain, 0, 1 ) ) {
-		mGain->setValue( gain );
+	//float gain = mGain->getValue();
+	//if( im::SliderFloat( "gain", &gain, 0, 1 ) ) {
+	//	mGain->setValue( gain );
+	//}
+
+	if( im::Checkbox( "play", &mPlaybackEnabled ) ) {
+		mGen->enable();
 	}
 
+	im::Text( "spectral centroid: %0.3f", mMonitorSpectralNode->getSpectralCentroid() );
 
 	if( im::ListBox( "sub-tests", &mCurrentSubTest, mSubTests, mSubTests.size() ) ) {
 		setupSubTest( mSubTests[mCurrentSubTest] );

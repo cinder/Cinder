@@ -4,6 +4,7 @@
 #include "cinder/Timeline.h"
 #include "cinder/Timer.h"
 #include "cinder/Log.h"
+#include "cinder/gl/draw.h"
 #include "cinder/CinderImGui.h"
 
 #define TEST_STEREO_INPUT_PANNING 0
@@ -15,6 +16,12 @@ namespace im = ImGui;
 
 SamplePlayerTest::SamplePlayerTest()
 {
+	mSubTests = {
+		"BufferPlayerNode",
+		"FilePlayerNode",
+		"recorder",
+	};
+
 	mUnderrunFade = mOverrunFade = mRecorderOverrunFade = 0;
 	mSamplePlayerNodeEnabledState = false;
 
@@ -25,6 +32,8 @@ SamplePlayerTest::SamplePlayerTest()
 	auto ctx = audio::master();
 
 	mPan = ctx->makeNode( new audio::Pan2dNode() );
+
+	// TODO: make a runtime bool and move this to makeNodes() method that can be triggered from gui
 #if TEST_STEREO_INPUT_PANNING
 	mPan->setStereoInputModeEnabled( true );
 #endif
@@ -37,10 +46,29 @@ SamplePlayerTest::SamplePlayerTest()
 	setupBufferPlayerNode();
 //	setupFilePlayerNode();
 
-	ctx->enable();
-	mEnableSamplePlayerNodeButton.setEnabled( true );
+	//ctx->enable();
 
-	CI_LOG_V( "context samplerate: " << ctx->getSampleRate() );
+	//CI_LOG_V( "context samplerate: " << ctx->getSampleRate() );
+}
+
+void SamplePlayerTest::setupSubTest( const string &testName )
+{
+	auto ctx = audio::master();
+
+	bool enabled = ctx->isEnabled();
+	ctx->disable();
+	ctx->disconnectAllNodes();
+
+	if( testName == "BufferPlayerNode" )
+		setupBufferPlayerNode();
+	else if( testName == "FilePlayerNode" )
+		setupFilePlayerNode();
+	else if( testName == "recorder" )
+		setupBufferRecorderNode();
+
+	ctx->setEnabled( enabled );
+
+	CI_LOG_I( "Finished setup for test: " << testName );
 }
 
 void SamplePlayerTest::setupBufferPlayerNode()
@@ -55,22 +83,22 @@ void SamplePlayerTest::setupBufferPlayerNode()
 	};
 
 	auto connectFn = [bufferPlayer, this] {
+		bool loopEnabled = mSamplePlayerNode ? mSamplePlayerNode->isLoopEnabled() : false;
+
 		mGain->disconnectAllInputs();
 		mSamplePlayerNode = bufferPlayer;
 		mSamplePlayerNode >> mGain >> mPan >> audio::master()->getOutput();
-		//PRINT_GRAPH( audio::master() );
-		mSamplePlayerNode->setLoopEnabled( mLoopButton.mEnabled );
-		mSamplePlayerNode->setLoopBeginTime( mLoopBeginSlider.mValueScaled );
-		mSamplePlayerNode->setLoopEndTime( mLoopEndSlider.mValueScaled != 0 ? mLoopEndSlider.mValueScaled : mSamplePlayerNode->getNumSeconds() );
+
+		mSamplePlayerNode->setLoopEnabled( loopEnabled );
+		mSamplePlayerNode->setLoopBeginTime( 0 );
+		mSamplePlayerNode->setLoopEndTime( mSamplePlayerNode->getNumSeconds() );
 	};
 
-	bool asyncLoad = mAsyncButton.mEnabled;
-	CI_LOG_V( "async load: " << boolalpha << asyncLoad << dec );
-	if( asyncLoad ) {
+	if( mLoadAsync ) {
 		mWaveformPlot.clear();
 		mAsyncLoadFuture = std::async( [=] {
 			loadFn();
-			dispatchAsync( [=] {
+			app::App::get()->dispatchAsync( [=] {
 				connectFn();
 			} );
 		} );
@@ -83,14 +111,16 @@ void SamplePlayerTest::setupBufferPlayerNode()
 
 void SamplePlayerTest::setupFilePlayerNode()
 {
+	bool loopEnabled = mSamplePlayerNode ? mSamplePlayerNode->isLoopEnabled() : false;
+	double loopBegin = mSamplePlayerNode ? mSamplePlayerNode->getLoopBeginTime() : 0.0;
+	double loopEnd = mSamplePlayerNode ? mSamplePlayerNode->getLoopEndTime() : 0.0;
+
 	mGain->disconnectAllInputs();
 
 	auto ctx = audio::master();
 
 //	mSourceFile->setMaxFramesPerRead( 8192 );
-	bool asyncRead = mAsyncButton.mEnabled;
-	CI_LOG_V( "async read: " << asyncRead );
-	mSamplePlayerNode = ctx->makeNode( new audio::FilePlayerNode( mSourceFile->clone(), asyncRead ) );
+	mSamplePlayerNode = ctx->makeNode( new audio::FilePlayerNode( mSourceFile->clone(), mLoadAsync ) );
 
 	// TODO: it is pretty surprising when you recreate mMonitor here without checking if there has already been one added.
 	//	- user will no longer see the old mMonitor, but the context still owns a reference to it, so another gets added each time we call this method.
@@ -103,11 +133,9 @@ void SamplePlayerTest::setupFilePlayerNode()
 	mSamplePlayerNode >> mGain >> mPan >> ctx->getOutput();
 	mPan >> mMonitor;
 
-	mSamplePlayerNode->setLoopEnabled( mLoopButton.mEnabled );
-	mSamplePlayerNode->setLoopBeginTime( mLoopBeginSlider.mValueScaled );
-	mSamplePlayerNode->setLoopEndTime( mLoopEndSlider.mValueScaled != 0 ? mLoopEndSlider.mValueScaled : mSamplePlayerNode->getNumSeconds() );
-
-	PRINT_GRAPH( audio::master() );
+	mSamplePlayerNode->setLoopEnabled( loopEnabled );
+	mSamplePlayerNode->setLoopBeginTime( loopBegin );
+	mSamplePlayerNode->setLoopEndTime( loopEnd );
 }
 
 void SamplePlayerTest::setupBufferRecorderNode()
@@ -120,22 +148,20 @@ void SamplePlayerTest::setupBufferRecorderNode()
 	CI_ASSERT( mSamplePlayerNode );
 
 	mSamplePlayerNode >> mRecorder;
-
-	PRINT_GRAPH( audio::master() );
 }
 
 void SamplePlayerTest::setSourceFile( const DataSourceRef &dataSource )
 {
 	mSourceFile = audio::load( dataSource, audio::master()->getSampleRate() );
 
-	getWindow()->setTitle( dataSource->getFilePath().filename().string() );
+	app::getWindow()->setTitle( dataSource->getFilePath().filename().string() );
 
-	CI_LOG_V( "SourceFile info: " );
-	console() << "samplerate: " << mSourceFile->getSampleRate() << endl;
-	console() << "native samplerate: " << mSourceFile->getSampleRateNative() << endl;
-	console() << "channels: " << mSourceFile->getNumChannels() << endl;
-	console() << "frames: " << mSourceFile->getNumFrames() << endl;
-	console() << "metadata:\n" << mSourceFile->getMetaData() << endl;
+	CI_LOG_I( "SourceFile info: " );
+	app::console() << "samplerate: " << mSourceFile->getSampleRate() << endl;
+	app::console() << "native samplerate: " << mSourceFile->getSampleRateNative() << endl;
+	app::console() << "channels: " << mSourceFile->getNumChannels() << endl;
+	app::console() << "frames: " << mSourceFile->getNumFrames() << endl;
+	app::console() << "metadata:\n" << mSourceFile->getMetaData() << endl;
 }
 
 void SamplePlayerTest::writeRecordedToFile()
@@ -150,18 +176,17 @@ void SamplePlayerTest::writeRecordedToFile()
 
 void SamplePlayerTest::triggerStartStop( bool start )
 {
-	float delaySeconds = mTriggerDelaySlider.mValueScaled;
-	if( delaySeconds <= 0.001f ) {
+	if( mTriggerDelaySeconds <= 0.001f ) {
 		if( start )
 			mSamplePlayerNode->start();
 		else
 			mSamplePlayerNode->stop();
 	}
 	else {
-		CI_LOG_V( "scheduling " << ( start ? "start" : "stop" ) << " with delay: " << delaySeconds
+		CI_LOG_I( "scheduling " << ( start ? "start" : "stop" ) << " with delay: " << mTriggerDelaySeconds
 				 << "\n\tprocessed frames: " << audio::master()->getNumProcessedFrames() << ", seconds: " << audio::master()->getNumProcessedSeconds() );
 
-		double when = audio::master()->getNumProcessedSeconds() + delaySeconds;
+		double when = audio::master()->getNumProcessedSeconds() + (double)mTriggerDelaySeconds;
 		if( start )
 			mSamplePlayerNode->start( when );
 		else
@@ -169,6 +194,7 @@ void SamplePlayerTest::triggerStartStop( bool start )
 	}
 }
 
+#if 0
 void SamplePlayerTest::setupUI()
 {
 	const float padding = 6.0f;
@@ -345,10 +371,11 @@ void SamplePlayerTest::processTap( ivec2 pos )
 			setupBufferRecorderNode();
 	}
 }
+#endif
 
 void SamplePlayerTest::seek( size_t xPos )
 {
-	mSamplePlayerNode->seek( mSamplePlayerNode->getNumFrames() * xPos / getWindowWidth() );
+	mSamplePlayerNode->seek( mSamplePlayerNode->getNumFrames() * xPos / app::getWindowWidth() );
 }
 
 void SamplePlayerTest::printBufferSamples( size_t xPos )
@@ -358,56 +385,48 @@ void SamplePlayerTest::printBufferSamples( size_t xPos )
 		return;
 
 	auto buffer = bufferPlayer->getBuffer();
-	size_t step = buffer->getNumFrames() / getWindowWidth();
+	size_t step = buffer->getNumFrames() / app::getWindowWidth();
 	size_t xScaled = xPos * step;
-	CI_LOG_V( "samples starting at " << xScaled << ":" );
+	CI_LOG_I( "samples starting at " << xScaled << ":" );
 	for( int i = 0; i < 100; i++ ) {
 		if( buffer->getNumChannels() == 1 )
-			console() << buffer->getChannel( 0 )[xScaled + i] << ", ";
+			app::console() << buffer->getChannel( 0 )[xScaled + i] << ", ";
 		else
-			console() << "[" << buffer->getChannel( 0 )[xScaled + i] << ", " << buffer->getChannel( 0 )[xScaled + i] << "], ";
+			app::console() << "[" << buffer->getChannel( 0 )[xScaled + i] << ", " << buffer->getChannel( 0 )[xScaled + i] << "], ";
 	}
-	console() << endl;
+	app::console() << endl;
 }
 
 void SamplePlayerTest::printSupportedExtensions()
 {
-	CI_LOG_V( "supported SourceFile extensions: " );
+	CI_LOG_I( "supported SourceFile extensions: " );
 	for( const auto &ext : audio::SourceFile::getSupportedExtensions() )
-		console() << ext << ", ";
+		app::console() << ext << ", ";
 
-	console() << endl;
+	app::console() << endl;
 }
 
-void SamplePlayerTest::mouseDown( MouseEvent event )
+// TODO: if mLoadAsync is true then use std::async like in setupBufferPlayerNode()
+// - for setSourceFile()
+// - for bufferPlayer->loadBuffer()
+void SamplePlayerTest::openFile( const ci::fs::path &fullPath )
 {
-//	printBufferSamples( event.getX() );
-}
+	try {
+		setSourceFile( loadFile( fullPath ) );
+		CI_LOG_I( "loaded and set new source buffer, frames: " << mSourceFile->getNumFrames() );
+	}
+	catch( exception &e ) {
+		CI_LOG_EXCEPTION( "failed to load sample file at path: " << fullPath, e );
+	}
 
-void SamplePlayerTest::keyDown( KeyEvent event )
-{
-	if( event.getCode() == KeyEvent::KEY_c )
-		testConverter();
-	if( event.getCode() == KeyEvent::KEY_w )
-		testWrite();
-	if( event.getCode() == KeyEvent::KEY_s )
-		mSamplePlayerNode->seekToTime( 1.0 );
-}
-
-void SamplePlayerTest::fileDrop( FileDropEvent event )
-{
-	const fs::path &filePath = event.getFile( 0 );
-	CI_LOG_V( "File dropped: " << filePath );
-
-	setSourceFile( loadFile( filePath ) );
 	mSamplePlayerNode->seek( 0 );
 
-	CI_LOG_V( "output samplerate: " << mSourceFile->getSampleRate() );
+	CI_LOG_I( "output samplerate: " << mSourceFile->getSampleRate() );
 
 	auto bufferPlayer = dynamic_pointer_cast<audio::BufferPlayerNode>( mSamplePlayerNode );
 	if( bufferPlayer ) {
 		bufferPlayer->loadBuffer( mSourceFile->clone() );
-		mWaveformPlot.load( bufferPlayer->getBuffer(), getWindowBounds() );
+		mWaveformPlot.load( bufferPlayer->getBuffer(), app::getWindowBounds() );
 	}
 	else {
 		auto filePlayer = dynamic_pointer_cast<audio::FilePlayerNode>( mSamplePlayerNode );
@@ -416,14 +435,10 @@ void SamplePlayerTest::fileDrop( FileDropEvent event )
 		filePlayer->setSourceFile( mSourceFile->clone() );
 	}
 
-	mLoopBeginSlider.mMax = mLoopEndSlider.mMax = (float)mSamplePlayerNode->getNumSeconds();
-	mLoopBeginSlider.set( mSamplePlayerNode->getLoopBeginTime() );
-	mLoopEndSlider.set( mSamplePlayerNode->getLoopEndTime() );
+	mSamplePlayerNode->setLoopEndTime( mSamplePlayerNode->getNumSeconds() );
 
-	CI_LOG_V( "loaded and set new source buffer, channels: " << mSourceFile->getNumChannels() << ", frames: " << mSourceFile->getNumFrames() );
-	PRINT_GRAPH( audio::master() );
+	CI_LOG_I( "loaded and set new source buffer, channels: " << mSourceFile->getNumChannels() << ", frames: " << mSourceFile->getNumFrames() );
 }
-
 
 void SamplePlayerTest::update()
 {
@@ -432,23 +447,20 @@ void SamplePlayerTest::update()
 	auto filePlayer = dynamic_pointer_cast<audio::FilePlayerNode>( mSamplePlayerNode );
 	if( filePlayer ) {
 		if( filePlayer->getLastUnderrun() )
-			timeline().apply( &mUnderrunFade, 1.0f, 0.0f, xrunFadeTime );
+			app::timeline().apply( &mUnderrunFade, 1.0f, 0.0f, xrunFadeTime );
 		if( filePlayer->getLastOverrun() )
-			timeline().apply( &mOverrunFade, 1.0f, 0.0f, xrunFadeTime );
+			app::timeline().apply( &mOverrunFade, 1.0f, 0.0f, xrunFadeTime );
 	}
 
-	// print SamplePlayerNode start / stop times
+	// testing delayed trigger: print SamplePlayerNode start / stop times
 	if( mSamplePlayerNodeEnabledState != mSamplePlayerNode->isEnabled() ) {
 		mSamplePlayerNodeEnabledState = mSamplePlayerNode->isEnabled();
 		string stateStr = mSamplePlayerNodeEnabledState ? "started" : "stopped";
-		CI_LOG_V( "mSamplePlayerNode " << stateStr << " at " << getElapsedSeconds() << ", isEof: " << boolalpha << mSamplePlayerNode->isEof() << dec );
+		CI_LOG_I( "mSamplePlayerNode " << stateStr << " at " << app::getElapsedSeconds() << ", isEof: " << boolalpha << mSamplePlayerNode->isEof() << dec );
 	}
 
-	bool testIsRecorder = ( mTestSelector.currentSection() == "recorder" );
-	mRecordButton.mHidden = mWriteButton.mHidden = mAutoResizeButton.mHidden = ! testIsRecorder;
-
 	// test auto resizing the Recorder's buffer depending on how full it is
-	if( testIsRecorder && mAutoResizeButton.mEnabled ) {
+	if( ( mSubTests[mCurrentSubTest] == "recorder" ) && mRecordAutoResize ) {
 		CI_ASSERT( mRecorder );
 
 		size_t writePos = mRecorder->getWritePosition();
@@ -456,12 +468,12 @@ void SamplePlayerTest::update()
 
 		if( writePos + mRecorder->getSampleRate() / 2 > numFrames ) {
 			size_t resizeFrames = numFrames + mRecorder->getSampleRate();
-			CI_LOG_V( "writePos: " << writePos << ", numFrames: " << numFrames << ", resizing frames to: " << resizeFrames );
+			CI_LOG_I( "writePos: " << writePos << ", numFrames: " << numFrames << ", resizing frames to: " << resizeFrames );
 			mRecorder->setNumFrames( resizeFrames );
 		}
 
 		if( mRecorder->getLastOverrun() )
-			timeline().apply( &mRecorderOverrunFade, 1.0f, 0.0f, xrunFadeTime );
+			app::timeline().apply( &mRecorderOverrunFade, 1.0f, 0.0f, xrunFadeTime );
 	}
 
 }
@@ -470,20 +482,20 @@ void SamplePlayerTest::draw()
 {
 	gl::clear();
 
-	if( mTestSelector.currentSection() == "recorder" ) {
+	if( mSubTests[mCurrentSubTest] == "recorder" ) {
 		audio::BufferRef recordedBuffer = mRecorder->getRecordedCopy();
-		drawAudioBuffer( *recordedBuffer, getWindowBounds() );
+		drawAudioBuffer( *recordedBuffer, app::getWindowBounds() );
 	}
 	else {
 		auto bufferPlayer = dynamic_pointer_cast<audio::BufferPlayerNode>( mSamplePlayerNode );
 		if( bufferPlayer )
 			mWaveformPlot.draw();
 		else if( mMonitor && mMonitor->isInitialized() )
-			drawAudioBuffer( mMonitor->getBuffer(), getWindowBounds() );
+			drawAudioBuffer( mMonitor->getBuffer(), app::getWindowBounds() );
 
-		float readPos = (float)getWindowWidth() * mSamplePlayerNode->getReadPosition() / mSamplePlayerNode->getNumFrames();
+		float readPos = (float)app::getWindowWidth() * mSamplePlayerNode->getReadPosition() / mSamplePlayerNode->getNumFrames();
 		gl::color( ColorA( 0, 1, 0, 0.7f ) );
-		gl::drawSolidRect( Rectf( readPos - 2, 0, readPos + 2, (float)getWindowHeight() ) );
+		gl::drawSolidRect( Rectf( readPos - 2, 0, readPos + 2, (float)app::getWindowHeight() ) );
 	}
 
 	if( mUnderrunFade > 0.0001f ) {
@@ -496,7 +508,6 @@ void SamplePlayerTest::draw()
 		gl::drawSolidRect( mOverrunRect );
 		gl::drawStringCentered( "play overrun", mOverrunRect.getCenter(), Color::black() );
 	}
-
 	if( mRecorderOverrunFade > 0.0001f ) {
 		gl::color( ColorA( 1, 0.5f, 0, mRecorderOverrunFade ) );
 		gl::drawSolidRect( mRecorderOverrunRect );
@@ -513,8 +524,8 @@ void SamplePlayerTest::testConverter()
 	size_t sourceMaxFramesPerBlock = 512;
 	auto converter = audio::dsp::Converter::create( mSourceFile->getSampleRate(), destSampleRate, mSourceFile->getNumChannels(), destChannels, sourceMaxFramesPerBlock );
 
-	CI_LOG_V( "FROM samplerate: " << converter->getSourceSampleRate() << ", channels: " << converter->getSourceNumChannels() << ", frames per block: " << converter->getSourceMaxFramesPerBlock() );
-	CI_LOG_V( "TO samplerate: " << converter->getDestSampleRate() << ", channels: " << converter->getDestNumChannels() << ", frames per block: " << converter->getDestMaxFramesPerBlock() );
+	CI_LOG_I( "FROM samplerate: " << converter->getSourceSampleRate() << ", channels: " << converter->getSourceNumChannels() << ", frames per block: " << converter->getSourceMaxFramesPerBlock() );
+	CI_LOG_I( "TO samplerate: " << converter->getDestSampleRate() << ", channels: " << converter->getDestNumChannels() << ", frames per block: " << converter->getDestMaxFramesPerBlock() );
 
 	audio::BufferDynamic sourceBuffer( converter->getSourceMaxFramesPerBlock(), converter->getSourceNumChannels() );
 	audio::Buffer destBuffer( converter->getDestMaxFramesPerBlock(), converter->getDestNumChannels() );
@@ -545,7 +556,7 @@ void SamplePlayerTest::testConverter()
 		target->write( &destBuffer, 0, result.second );
 	}
 
-	CI_LOG_V( "seconds: " << timer.getSeconds() );
+	CI_LOG_I( "seconds: " << timer.getSeconds() );
 }
 
 void SamplePlayerTest::testWrite()
@@ -557,9 +568,9 @@ void SamplePlayerTest::testWrite()
 		audio::TargetFileRef target = audio::TargetFile::create( fileName, mSourceFile->getSampleRate(), mSourceFile->getNumChannels() ); // INT_16
 		//	audio::TargetFileRef target = audio::TargetFile::create( fileName, mSourceFile->getSampleRate(), mSourceFile->getNumChannels(), audio::SampleType::FLOAT_32 );
 
-		CI_LOG_V( "writing " << audioBuffer->getNumFrames() << " frames at samplerate: " << mSourceFile->getSampleRate() << ", num channels: " << mSourceFile->getNumChannels() );
+		CI_LOG_I( "writing " << audioBuffer->getNumFrames() << " frames at samplerate: " << mSourceFile->getSampleRate() << ", num channels: " << mSourceFile->getNumChannels() );
 		target->write( audioBuffer.get() );
-		CI_LOG_V( "...complete." );
+		CI_LOG_I( "...complete." );
 
 //		size_t writeCount = 0;
 //		while( numFramesConverted < audioBuffer->getNumFrames() ) {
@@ -582,7 +593,55 @@ void SamplePlayerTest::updateUI()
 	if( im::SliderFloat( "gain", &gain, 0, 1 ) ) {
 		mGain->setValue( gain );
 	}
+	float pan = mPan->getPos();
+	if( im::SliderFloat( "pan", &pan, 0, 1 ) ) {
+		mPan->setPos( pan );
+	}
 
+	im::Checkbox( "load async", &mLoadAsync );
+
+	im::Separator();
+	im::Text( "SamplePlayer" );
+	if( mSamplePlayerNode ) {
+		bool playerEnabled = mSamplePlayerNode->isEnabled();
+		if( im::Checkbox( "enabled", &playerEnabled ) ) {
+			mSamplePlayerNode->setEnabled( playerEnabled );
+		}
+		im::SameLine();
+		bool loopEnabled = mSamplePlayerNode->isLoopEnabled();
+		if( im::Checkbox( "loop", &loopEnabled ) ) {
+			mSamplePlayerNode->setLoopEnabled( loopEnabled );
+		}
+		float readPos = (float)mSamplePlayerNode->getReadPositionTime();
+		if( im::SliderFloat( "read pos (s)", &readPos, 0, mSamplePlayerNode->getNumSeconds() ) ) {
+			mSamplePlayerNode->seekToTime( readPos );
+		}
+		float loopBegin = (float)mSamplePlayerNode->getLoopBeginTime();
+		float loopEnd = (float)mSamplePlayerNode->getLoopEndTime();
+		if( im::SliderFloat( "loop begin (s)", &loopBegin, 0, mSamplePlayerNode->getNumSeconds() ) ) {
+			loopBegin - min<float>( loopBegin, loopEnd );
+			mSamplePlayerNode->setLoopBeginTime( loopBegin );
+		}
+		if( im::SliderFloat( "loop end (s)", &loopEnd, 0, mSamplePlayerNode->getNumSeconds() ) ) {
+			loopEnd = max<float>( loopBegin, loopEnd );
+			mSamplePlayerNode->setLoopEndTime( loopEnd );
+		}
+	}
+
+	im::Separator();
+	im::DragFloat( "start / stop delay (s)", &mTriggerDelaySeconds, 0.02f, 0.0f, 5.0f );
+
+	if( mSubTests[mCurrentSubTest] == "recorder" ) {
+		im::Separator();
+		im::Text( "Recording" );
+		im::Checkbox( "record", &mRecording );
+		im::SameLine();
+		im::Checkbox( "auto-resize", &mRecordAutoResize );
+
+		if( im::Button( "write to file" ) ) {
+			writeRecordedToFile();
+		}
+	}
 
 	if( im::ListBox( "sub-tests", &mCurrentSubTest, mSubTests, mSubTests.size() ) ) {
 		setupSubTest( mSubTests[mCurrentSubTest] );

@@ -13,13 +13,13 @@ class SpectralTest : public AudioTest {
   public:
 	SpectralTest();
 
-	void fileDrop( FileDropEvent event ) override;
+	void openFile( const ci::fs::path &fullPath ) override;
 	void resize() override;
-	void update() override;
 	void draw() override;
 	void updateUI() override;
 
   private:
+	void setupSubTest( const std::string &testName );
 	void setupSine();
 	void setupSineNoOutput();
 	void setupSample();
@@ -34,10 +34,18 @@ class SpectralTest : public AudioTest {
 	ci::audio::MonitorSpectralNodeRef	mMonitorSpectralNode;
 	ci::audio::SourceFileRef			mSourceFile;
 
-	//vector<TestWidget *>			mWidgets;
-	//Button							mEnableGraphButton, mPlaybackButton, mLoopButton, mScaleDecibelsButton;
-	//VSelector						mTestSelector;
+	std::vector<std::string>	mSubTests;
+	int							mCurrentSubTest = 0;
+
+	// TODO: add gui for these
+	//Button							mLoopButton, mScaleDecibelsButton;
 	//HSlider							mSmoothingFactorSlider, mFreqSlider;
+
 	SpectrumPlot					mSpectrumPlot;
 	float							mSpectroMargin = 40;
+	bool							mUseScaleDecibels = true;
+	bool							mPlaybackEnabled = false;
+	bool							mLoopEnabled = false;
+	float							mLoopBegin = 0;
+	float							mLoopEnd = 1;
 };

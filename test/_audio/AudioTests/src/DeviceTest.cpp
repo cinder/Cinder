@@ -532,10 +532,6 @@ void DeviceTest::setupSubTest( const string &test )
 	audio::ScopedEnableContext disableContext( audio::master(), false );
 	mGain->disconnectAllInputs();
 
-	if( im::Button( "record" ) ) {
-		startRecording();
-	}
-
 	if( test == "sinewave" )
 		setupSine();
 	else if( test == "noise" )
@@ -685,11 +681,9 @@ void DeviceTest::updateUI()
 		mGain->setValue( gain );
 	}
 
-	auto ctx = audio::master();
-
-	int sampleRate = ctx->getSampleRate();
-
-	int framesPerBlock = ctx->getFramesPerBlock();
+	if( im::Button( "record" ) ) {
+		startRecording();
+	}
 
 	if( im::ListBox( "sub-tests", &mCurrentSubTest, mSubTests, mSubTests.size() ) ) {
 		setupSubTest( mSubTests[mCurrentSubTest] );

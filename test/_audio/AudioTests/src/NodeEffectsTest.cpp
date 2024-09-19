@@ -31,7 +31,6 @@ NodeEffectsTest::NodeEffectsTest()
 	//setupEcho();
 }
 
-
 void NodeEffectsTest::setupSubTest( const string &testName )
 {
 	auto ctx = audio::master();

@@ -41,6 +41,7 @@ class AudioTestsApp : public app::App {
   public:
 	void setup() override;
 	void keyDown( app::KeyEvent event ) override;
+	void fileDrop( app::FileDropEvent event ) override;
 	void resize() override;
 	void update() override;
 	void draw() override;
@@ -162,6 +163,15 @@ void AudioTestsApp::keyDown( app::KeyEvent event )
 	//if( ! handled ) {
 	//	mCurrentTest->keyDown( event );
 	//}
+}
+
+void AudioTestsApp::fileDrop( app::FileDropEvent event )
+{
+	if( mCurrentTest ) {
+		const fs::path &filePath = event.getFile( 0 );
+		CI_LOG_I( "opening file: " << filePath );
+		mCurrentTest->openFile( filePath );
+	}
 }
 
 void AudioTestsApp::resize()
@@ -286,12 +296,12 @@ void AudioTestsApp::updateImGui()
 		im::Text( "Audio" );
 
 		bool audioEnabled = audio::master()->isEnabled();
-		if( im::Checkbox( "enabled", &audioEnabled ) ) {
+		if( im::Checkbox( "enabled ('/')", &audioEnabled ) ) {
 			audio::master()->setEnabled( audioEnabled );
 		}
 
 		static vector<string> sTests = mTestFactory.getAllKeys();
-		if( im::Combo( "tests", &mCurrenTestIndex, sTests, sTests.size() ) ) {
+		if( im::Combo( "tests", &mCurrenTestIndex, sTests ) ) {
 			reload();
 		}
 

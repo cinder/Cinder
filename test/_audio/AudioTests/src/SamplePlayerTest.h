@@ -17,26 +17,19 @@ class SamplePlayerTest : public AudioTest {
   public:
     SamplePlayerTest();
 
-	void mouseDown( MouseEvent event ) override;
-
-	//void keyDown( KeyEvent event ) override;
-	void fileDrop( FileDropEvent event ) override;
-
+	void openFile( const ci::fs::path &fullPath ) override;
 	void update() override;
 	void draw() override;
 	void updateUI() override;
 
   private:
+	void setupSubTest( const std::string &testName );
 	void setupBufferPlayerNode();
 	void setupFilePlayerNode();
 	void setupBufferRecorderNode();
 	void setSourceFile( const ci::DataSourceRef &dataSource );
 	void writeRecordedToFile();
 	void triggerStartStop( bool start );
-
-	//void setupUI();
-	//void processDrag( ivec2 pos );
-	//void processTap( ivec2 pos );
 
 	void seek( size_t xPos );
 	void printBufferSamples( size_t xPos );
@@ -54,13 +47,15 @@ class SamplePlayerTest : public AudioTest {
 
 	WaveformPlot				mWaveformPlot;
 
-	//vector<TestWidget *>		mWidgets;
-	//Button						mEnableSamplePlayerNodeButton, mStartPlaybackButton, mStopPlaybackButton, mLoopButton, mAsyncButton, mRecordButton, mWriteButton, mAutoResizeButton;
-	//VSelector					mTestSelector;
-	//HSlider						mGainSlider, mPanSlider, mLoopBeginSlider, mLoopEndSlider, mTriggerDelaySlider;
+	std::vector<std::string>	mSubTests;
+	int							mCurrentSubTest = 0;
 
-	ci::Anim<float>					mUnderrunFade, mOverrunFade, mRecorderOverrunFade;
-	ci::Rectf						mUnderrunRect, mOverrunRect, mRecorderOverrunRect;
+	ci::Anim<float>				mUnderrunFade, mOverrunFade, mRecorderOverrunFade;
+	ci::Rectf					mUnderrunRect, mOverrunRect, mRecorderOverrunRect;
 	bool						mSamplePlayerNodeEnabledState;
+	bool						mLoadAsync = false;
+	bool						mRecording = false;
+	bool						mRecordAutoResize = true;
+	float						mTriggerDelaySeconds = 1.0f;
 	std::future<void>			mAsyncLoadFuture;
 };
