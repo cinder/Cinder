@@ -38,6 +38,9 @@ SpectralTest::SpectralTest()
 
 	mSourceFile = audio::load( app::loadAsset( "tone440L220R.mp3" ), ctx->getSampleRate() );
 
+	mGain = ctx->makeNode( new audio::GainNode() );
+	mGain->setValue( 0.6f );
+
 	auto audioBuffer = mSourceFile->loadBuffer();
 	CI_LOG_V( "loaded source buffer, frames: " << audioBuffer->getNumFrames() );
 
@@ -70,7 +73,7 @@ void SpectralTest::setupSubTest( const string &testName )
 
 void SpectralTest::setupSine()
 {
-	mGen >> mMonitorSpectralNode >> audio::master()->getOutput();
+	mGen >> mMonitorSpectralNode >> mGain >> audio::master()->getOutput();
 	if( mPlaybackEnabled )
 		mGen->enable();
 }
@@ -84,132 +87,10 @@ void SpectralTest::setupSineNoOutput()
 
 void SpectralTest::setupSample()
 {
-	mPlayerNode >> mMonitorSpectralNode >> audio::master()->getOutput();
+	mPlayerNode >> mMonitorSpectralNode >> mGain >> audio::master()->getOutput();
 	if( mPlaybackEnabled )
 		mPlayerNode->enable();
 }
-
-#if 0
-void SpectralTest::setupUI()
-{
-	Rectf buttonRect( 0.0f, 0.0f, 200.0f, mSpectroMargin - 2.0f );
-	float padding = 10.0f;
-	mEnableGraphButton.mIsToggle = true;
-	mEnableGraphButton.mTitleNormal = "graph off";
-	mEnableGraphButton.mTitleEnabled = "graph on";
-	mEnableGraphButton.mBounds = buttonRect;
-	mWidgets.push_back( &mEnableGraphButton );
-
-	buttonRect += vec2( buttonRect.getWidth() + padding, 0.0f );
-	mPlaybackButton.mIsToggle = true;
-	mPlaybackButton.mTitleNormal = "play";
-	mPlaybackButton.mTitleEnabled = "stop";
-	mPlaybackButton.mBounds = buttonRect;
-	mWidgets.push_back( &mPlaybackButton );
-
-	buttonRect += vec2( buttonRect.getWidth() + padding, 0.0f );
-	mLoopButton.mIsToggle = true;
-	mLoopButton.mTitleNormal = "loop off";
-	mLoopButton.mTitleEnabled = "loop on";
-	mLoopButton.mBounds = buttonRect;
-	mWidgets.push_back( &mLoopButton );
-
-	buttonRect += vec2( buttonRect.getWidth() + padding, 0.0f );
-	mScaleDecibelsButton.mIsToggle = true;
-	mScaleDecibelsButton.mTitleNormal = "linear";
-	mScaleDecibelsButton.mTitleEnabled = "decibels";
-	mScaleDecibelsButton.mBounds = buttonRect;
-	mWidgets.push_back( &mScaleDecibelsButton );
-
-	vec2 sliderSize( 200.0f, 30.0f );
-	Rectf selectorRect( getWindowWidth() - sliderSize.x - mSpectroMargin, buttonRect.y2 + padding, getWindowWidth() - mSpectroMargin, buttonRect.y2 + padding + sliderSize.y * 3 );
-	mTestSelector.mSegments.push_back( "sine" );
-	mTestSelector.mSegments.push_back( "sine (no output)" );
-	mTestSelector.mSegments.push_back( "sample" );
-	mTestSelector.mBounds = selectorRect;
-	mWidgets.push_back( &mTestSelector );
-
-	Rectf sliderRect( selectorRect.x1, selectorRect.y2 + padding, selectorRect.x2, selectorRect.y2 + padding + sliderSize.y );
-	mSmoothingFactorSlider.mBounds = sliderRect;
-	mSmoothingFactorSlider.mTitle = "Smoothing";
-	mSmoothingFactorSlider.mMin = 0.0f;
-	mSmoothingFactorSlider.mMax = 1.0f;
-	mSmoothingFactorSlider.set( mMonitorSpectralNode->getSmoothingFactor() );
-	mWidgets.push_back( &mSmoothingFactorSlider );
-
-	sliderRect += vec2( 0.0f, sliderSize.y + padding );
-	mFreqSlider.mBounds = sliderRect;
-	mFreqSlider.mTitle = "Sine Freq";
-	mFreqSlider.mMin = 0.0f;
-//	mFreqSlider.mMax = mContext->getSampleRate() / 2.0f;
-	mFreqSlider.mMax = 800;
-	mFreqSlider.set( mGen->getFreq() );
-	mWidgets.push_back( &mFreqSlider );
-
-
-	getWindow()->getSignalMouseDown().connect( [this] ( MouseEvent &event ) { processTap( event.getPos() ); } );
-	getWindow()->getSignalTouchesBegan().connect( [this] ( TouchEvent &event ) { processTap( event.getTouches().front().getPos() ); } );
-	getWindow()->getSignalMouseDrag().connect( [this] ( MouseEvent &event ) { processDrag( event.getPos() ); } );
-	getWindow()->getSignalTouchesMoved().connect( [this] ( TouchEvent &event ) {
-		for( const TouchEvent::Touch &touch : getActiveTouches() )
-			processDrag( touch.getPos() );
-	} );
-
-	gl::enableAlphaBlending();
-}
-
-// TODO: currently makes sense to enable processor + tap together - consider making these enabled together.
-// - possible solution: add a silent flag that is settable by client
-void SpectralTest::processTap( ivec2 pos )
-{
-	auto ctx = audio::master();
-	if( mEnableGraphButton.hitTest( pos ) )
-		ctx->setEnabled( ! ctx->isEnabled() );
-	else if( mPlaybackButton.hitTest( pos ) ) {
-		if( mTestSelector.currentSection() == "sine" || mTestSelector.currentSection() == "sine (no output)" )
-			mGen->setEnabled( mPlaybackButton.mEnabled );
-		else {
-			if( mPlaybackButton.mEnabled )
-				mPlayerNode->start();
-			else
-				mPlayerNode->stop();
-		}
-	}
-	else if( mLoopButton.hitTest( pos ) )
-		mPlayerNode->setLoopEnabled( ! mPlayerNode->isLoopEnabled() );
-	else if( mScaleDecibelsButton.hitTest( pos ) )
-		mSpectrumPlot.enableScaleDecibels( ! mSpectrumPlot.getScaleDecibels() );
-	else
-		printBinFreq( pos.x );
-
-	size_t currentIndex = mTestSelector.mCurrentSectionIndex;
-	if( mTestSelector.hitTest( pos ) && currentIndex != mTestSelector.mCurrentSectionIndex ) {
-		string currentTest = mTestSelector.currentSection();
-		CI_LOG_V( "selected: " << currentTest );
-
-		bool enabled = ctx->isEnabled();
-		ctx->disconnectAllNodes();
-
-		if( currentTest == "sine" )
-			setupSine();
-		if( currentTest == "sine (no output)" )
-			setupSineNoOutput();
-		if( currentTest == "sample" )
-			setupSample();
-
-		ctx->setEnabled( enabled );
-	}
-}
-
-void SpectralTest::processDrag( ivec2 pos )
-{
-	if( mSmoothingFactorSlider.hitTest( pos ) )
-		mMonitorSpectralNode->setSmoothingFactor( mSmoothingFactorSlider.mValueScaled );
-	if( mFreqSlider.hitTest( pos ) )
-		mGen->setFreq( mFreqSlider.mValueScaled );
-}
-
-#endif
 
 void SpectralTest::openFile( const ci::fs::path &fullPath )
 {
@@ -280,17 +161,61 @@ void SpectralTest::draw()
 
 void SpectralTest::updateUI()
 {
-	//float gain = mGain->getValue();
-	//if( im::SliderFloat( "gain", &gain, 0, 1 ) ) {
-	//	mGain->setValue( gain );
-	//}
+	if( mSpectrumPlot.getScaleDecibels() ) {
+		if( im::Button( "decibels scale" ) ) {
+			mSpectrumPlot.enableScaleDecibels( false );
+		}
+	}
+	else {
+		if( im::Button( "linear scale" ) ) {
+			mSpectrumPlot.enableScaleDecibels( true );
+		}
+	}
+	im::SameLine();
+	im::Text( "Spectral centroid: %0.3f", mMonitorSpectralNode->getSpectralCentroid() );
 
-	if( im::Checkbox( "play", &mPlaybackEnabled ) ) {
-		mGen->enable();
+	float gain = mGain->getValue();
+	if( im::SliderFloat( "gain", &gain, 0, 1 ) ) {
+		mGain->getParam()->applyRamp( gain, 0.3f );
+	}
+	float smoothing = mMonitorSpectralNode->getSmoothingFactor();
+	if( im::SliderFloat( "spectral smoothing", &smoothing, 0, 1 ) ) {
+		mMonitorSpectralNode->setSmoothingFactor( smoothing );
 	}
 
-	im::Text( "spectral centroid: %0.3f", mMonitorSpectralNode->getSpectralCentroid() );
+	im::Checkbox( "playing", &mPlaybackEnabled );
 
+	im::Separator();
+
+	if( mSubTests[mCurrentSubTest] == "sample" ) {
+		mPlayerNode->setEnabled( mPlaybackEnabled );
+		im::Text( "Sample" );
+		bool loopEnabled = mPlayerNode->isLoopEnabled();
+		if( im::Checkbox( "loop", &loopEnabled ) ) {
+			mPlayerNode->setLoopEnabled( loopEnabled );
+		}
+		im::SameLine();
+		if( im::Button( "reset" ) ) {
+			mPlayerNode->seek( 0 );
+		}
+
+		float readPos = (float)mPlayerNode->getReadPositionTime();
+		if( im::SliderFloat( "read pos (s)", &readPos, 0, mPlayerNode->getNumSeconds() ) ) {
+			mPlayerNode->seekToTime( readPos );
+		}
+
+	}
+	else {
+		mGen->setEnabled( mPlaybackEnabled );
+		im::Text( "Gen" );
+		float genFreq = mGen->getFreq();
+		if( im::SliderFloat( "Gen Freqency", &genFreq, -200, 1200 ) ) {
+			mGen->getParamFreq()->applyRamp( genFreq, 0.05f );
+		}
+	}
+
+
+	im::Separator();
 	if( im::ListBox( "sub-tests", &mCurrentSubTest, mSubTests, mSubTests.size() ) ) {
 		setupSubTest( mSubTests[mCurrentSubTest] );
 	}

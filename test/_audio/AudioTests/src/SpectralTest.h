@@ -3,6 +3,7 @@
 #include "AudioTest.h"
 
 #include "cinder/audio/GenNode.h"
+#include "cinder/audio/GainNode.h"
 #include "cinder/audio/MonitorNode.h"
 #include "cinder/audio/SamplePlayerNode.h"
 #include "cinder/audio/dsp/Dsp.h"
@@ -30,6 +31,7 @@ class SpectralTest : public AudioTest {
 
 
 	ci::audio::BufferPlayerNodeRef		mPlayerNode;
+	ci::audio::GainNodeRef				mGain;
 	ci::audio::GenNodeRef				mGen;
 	ci::audio::MonitorSpectralNodeRef	mMonitorSpectralNode;
 	ci::audio::SourceFileRef			mSourceFile;

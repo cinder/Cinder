@@ -114,9 +114,15 @@ void AudioTestsApp::reload()
 	audio::ScopedEnableContext scopedDisableCtx( ctx, false );
 	ctx->disconnectAllNodes();
 
+	auto firstRun = mCurrentTest == nullptr;
+
 	string testName = mTestFactory.getAllKeys()[mCurrenTestIndex];
 	mCurrentTest = mTestFactory.build( testName );
 	mCurrentTest->setName( testName );
+
+	if( ! firstRun ) {
+		mCurrentTest->resize();
+	}
 
 	CI_LOG_I( "finished building test '" << testName << "', type: " << System::demangleTypeName( typeid( *mCurrentTest.get() ).name() ) );
 }
@@ -310,6 +316,9 @@ void AudioTestsApp::updateImGui()
 			app::console() << "--------------------------------------------------" << endl;
 			app::console() << "-------------- Graph configuration: --------------" << endl;
 		}
+		if( im::Button( "print default output" ) ) {
+			printDefaultOutput();
+		}
 	}
 	im::End(); // "General"
 
@@ -341,7 +350,7 @@ void AudioTestsApp::updateContextUI()
 
 	auto ctx = audio::master();
 
-	im::Text( "dsp %s, samplerate: %d", ( ctx->isEnabled() ? "enabled" : "disabled" ), (int)ctx->getSampleRate() );
+	im::Text( "dsp %s, samplerate: %d, frames per black: %d", ( ctx->isEnabled() ? "enabled" : "disabled" ), (int)ctx->getSampleRate(), (int)ctx->getFramesPerBlock() );
 	im::Separator();
 	im::Text( "Context Graph:" );
 	im::SameLine();
