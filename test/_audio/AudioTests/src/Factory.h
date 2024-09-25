@@ -31,10 +31,17 @@
 namespace mason {
 
 //! Exception thrown when Factory cannot build an object for the requested key
-class FactoryException : public cinder::Exception {
+class FactoryExceptionBuilderNotFound : public cinder::Exception {
   public:
-	FactoryException( const std::string &key )
+	FactoryExceptionBuilderNotFound( const std::string &key )
 		: Exception( "no Builder for key: " + key )
+	{}
+};
+
+class FactoryExceptionDuplicateKey : public cinder::Exception {
+public:
+	FactoryExceptionDuplicateKey( const std::string &key )
+		: Exception( "Duplicate key: " + key )
 	{}
 };
 
@@ -51,6 +58,11 @@ class Factory {
 	{
 		static_assert( std::is_base_of<T, Y>::value, "Y must inherit from T" );
 
+		auto keyIt = std::find( mKeys.begin(), mKeys.end(), key );
+		if( keyIt != mKeys.end() ) {
+			throw FactoryExceptionDuplicateKey( key );
+		}
+
 		mKeys.push_back( key );
 		mBuilders.push_back( Builder<Y>() );
 	}
@@ -64,7 +76,7 @@ class Factory {
 			}
 		}
 
-		throw FactoryException( key );
+		throw FactoryExceptionBuilderNotFound( key );
 	}
 
 	const std::vector<std::string>&	getAllKeys() const
