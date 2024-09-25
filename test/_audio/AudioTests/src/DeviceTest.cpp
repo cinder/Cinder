@@ -626,10 +626,6 @@ void DeviceTest::update()
 		if( mOutputDeviceNode->getLastClip() )
 			app::timeline().apply( &mOutputDeviceNodeClipFade, 1.0f, 0.0f, xrunFadeTime );
 	}
-
-	//if( getElapsedFrames() % 20 == 0 ) {
-	//	CI_LOG_I( "framerate: " << to_string( getAverageFps() ) );
-	//}
 }
 
 void DeviceTest::draw()
@@ -685,6 +681,39 @@ void DeviceTest::updateUI()
 		startRecording();
 	}
 
+	if( im::Button( "print devices" ) ) {
+		app::console() << audio::Device::printDevicesToString() << endl;
+	}
+
+	const int maxVisibleDevices = 8;
+
+	const auto &inputDevices = audio::Device::getInputDevices();
+	int currentInputIndex = 0;
+	vector<string> inputNames;
+	for( int i = 0; i < inputDevices.size(); i++ ) {
+		inputNames.push_back( inputDevices[i]->getName() );
+		if( mOutputDeviceNode->getDevice()->getName() == inputNames.back() ) {
+			currentInputIndex = i;
+		}
+	}
+	if( im::ListBox( "input devices", &currentInputIndex, inputNames, std::min<int>( maxVisibleDevices, inputNames.size() ) ) ) {
+		// TODO: handle change
+	}
+
+	const auto &outputDevices = audio::Device::getOutputDevices();
+	int currentOutputIndex = 0;
+	vector<string> outputNames;
+	for( int i = 0; i < outputDevices.size(); i++ ) {
+		outputNames.push_back( outputDevices[i]->getName() );
+		if( mOutputDeviceNode->getDevice()->getName() == outputNames.back() ) {
+			currentOutputIndex = i;
+		}
+	}
+	if( im::ListBox( "output devices", &currentOutputIndex, outputNames, std::min<int>( maxVisibleDevices, outputNames.size() ) ) ) {
+		// TODO: handle change
+	}
+
+	im::Separator();
 	if( im::ListBox( "sub-tests", &mCurrentSubTest, mSubTests, mSubTests.size() ) ) {
 		setupSubTest( mSubTests[mCurrentSubTest] );
 	}
