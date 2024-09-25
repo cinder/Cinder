@@ -23,8 +23,9 @@
 
 #include "cinder/Exception.h"
 
-#include <map>
+#include <vector>
 #include <memory>
+#include <algorithm>
 #include <functional>
 
 namespace mason {
@@ -37,7 +38,10 @@ class FactoryException : public cinder::Exception {
 	{}
 };
 
-//! Allows for constructing shared_ptr<T> objects by string, passing \a Args to T's constructor.
+//! Utility for constructing shared_ptr<T> objects by string, passing \a Args to T's constructor.
+//! Keys are stored internally using a std::vector to preserve the order that they were added, 
+//! which can be useful for showing in GUIs or selecting by index.
+//! The resulting object gets built as `T( args... )`
 template <typename T, typename... Args>
 class Factory {
   public:
@@ -47,27 +51,25 @@ class Factory {
 	{
 		static_assert( std::is_base_of<T, Y>::value, "Y must inherit from T" );
 
-		mBuilderMap[key] = Builder<Y>();
+		mKeys.push_back( key );
+		mBuilders.push_back( Builder<Y>() );
 	}
 
 	//! Builds an object that inherits from T, which is associated with \a key via registerBuilder(), returning it in a shared_ptr.
 	std::shared_ptr<T>	build( const std::string &key, const Args&... args )
 	{
-		auto builderFnIt = mBuilderMap.find( key );
-		if( builderFnIt == mBuilderMap.end() )
-			throw FactoryException( key );
-
-		return builderFnIt->second( args... );
-	}
-
-	std::vector<std::string>	getAllKeys() const
-	{
-		std::vector<std::string> result;
-		for( const auto &mp : mBuilderMap ) {
-			result.push_back( mp.first );
+		for( size_t i = 0; i < mKeys.size(); i++ ) {
+			if( mKeys[i] == key ) {
+				return mBuilders[i]( args... );
+			}
 		}
 
-		return result;
+		throw FactoryException( key );
+	}
+
+	const std::vector<std::string>&	getAllKeys() const
+	{
+		return mKeys;
 	}
 
   private:
@@ -83,7 +85,8 @@ class Factory {
 
 	typedef std::function<std::shared_ptr<T>( Args... )>		BuilderFn;
 
-	std::map<std::string, BuilderFn> mBuilderMap;
+	std::vector<std::string>	mKeys;
+	std::vector<BuilderFn>		mBuilders;
 };
 
 } // namespace mason
