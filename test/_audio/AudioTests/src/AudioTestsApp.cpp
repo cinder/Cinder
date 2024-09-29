@@ -15,6 +15,7 @@
 #include "DeviceTest.h"
 #include "SamplePlayerTest.h"
 #include "SpectralTest.h"
+#include "WaveTableTest.h"
 
 using namespace ci;
 using namespace std;
@@ -33,7 +34,7 @@ namespace im = ImGui;
 #include "LPP_API_x64_CPP.h"
 #endif
 
-const int	SCREEN_INDEX	= 1;
+const int	SCREEN_INDEX	= 2;
 const ivec2 WINDOW_POS		= { 2000, 50 };
 const ivec2 WINDOW_SIZE		= { 1600, 1000 };
 
@@ -89,6 +90,7 @@ void AudioTestsApp::setup()
 	mTestFactory.registerBuilder<DeviceTest>( "Device" );
 	mTestFactory.registerBuilder<SamplePlayerTest>( "Samples" );
 	mTestFactory.registerBuilder<SpectralTest>( "Spectral" );
+	mTestFactory.registerBuilder<WaveTableTest>( "WaveTable" );
 
 	auto ctx = audio::master();
 
@@ -189,12 +191,11 @@ void AudioTestsApp::resize()
 
 void AudioTestsApp::update()
 {
-	if( mCurrentTest ) {
-		mCurrentTest->update();
-	}
-
 	if( mImGuiEnabled ) {
 		updateImGui();	
+	}
+	if( mCurrentTest ) {
+		mCurrentTest->update();
 	}
 }
 

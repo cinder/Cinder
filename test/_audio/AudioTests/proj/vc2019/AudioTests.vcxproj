@@ -27,6 +27,7 @@
     <ClCompile Include="..\..\src\ParamTest.cpp" />
     <ClCompile Include="..\..\src\SamplePlayerTest.cpp" />
     <ClCompile Include="..\..\src\SpectralTest.cpp" />
+    <ClCompile Include="..\..\src\WaveTableTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\samples\_audio\common\AudioDrawUtils.h" />
@@ -39,6 +40,7 @@
     <ClInclude Include="..\..\src\ParamTest.h" />
     <ClInclude Include="..\..\src\SamplePlayerTest.h" />
     <ClInclude Include="..\..\src\SpectralTest.h" />
+    <ClInclude Include="..\..\src\WaveTableTest.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{242B9F1A-CC82-4E3A-A21E-0533ABD26074}</ProjectGuid>
