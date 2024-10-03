@@ -27,6 +27,7 @@
     <ClCompile Include="..\..\src\ParamTest.cpp" />
     <ClCompile Include="..\..\src\SamplePlayerTest.cpp" />
     <ClCompile Include="..\..\src\SpectralTest.cpp" />
+    <ClCompile Include="..\..\src\StressTest.cpp" />
     <ClCompile Include="..\..\src\VoiceTest.cpp" />
     <ClCompile Include="..\..\src\WaveTableTest.cpp" />
   </ItemGroup>
@@ -41,6 +42,7 @@
     <ClInclude Include="..\..\src\ParamTest.h" />
     <ClInclude Include="..\..\src\SamplePlayerTest.h" />
     <ClInclude Include="..\..\src\SpectralTest.h" />
+    <ClInclude Include="..\..\src\StressTest.h" />
     <ClInclude Include="..\..\src\VoiceTest.h" />
     <ClInclude Include="..\..\src\WaveTableTest.h" />
   </ItemGroup>

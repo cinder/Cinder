@@ -17,6 +17,7 @@
 #include "SpectralTest.h"
 #include "WaveTableTest.h"
 #include "VoiceTest.h"
+#include "StressTest.h"
 
 using namespace ci;
 using namespace std;
@@ -93,6 +94,7 @@ void AudioTestsApp::setup()
 	mTestFactory.registerBuilder<SpectralTest>( "Spectral" );
 	mTestFactory.registerBuilder<WaveTableTest>( "WaveTable" );
 	mTestFactory.registerBuilder<VoiceTest>( "Voice" );
+	mTestFactory.registerBuilder<StressTest>( "Stress" );
 
 	auto ctx = audio::master();
 
