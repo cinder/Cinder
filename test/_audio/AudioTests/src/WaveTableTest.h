@@ -31,7 +31,4 @@ private:
 
 	ci::audio::BufferDynamic	mTableCopy;
 	SpectrumPlot				mSpectrumPlot;
-
-	std::vector<std::string>	mSubTests;
-	int							mCurrentSubTest = 0;
 };

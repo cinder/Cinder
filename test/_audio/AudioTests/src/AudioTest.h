@@ -4,6 +4,7 @@
 #include "cinder/Filesystem.h"
 
 #include <memory>
+#include <vector>
 
 using AudioTestRef = std::shared_ptr<class AudioTest>;
 
@@ -23,4 +24,7 @@ public:
 
 protected:
 	std::string mName;
+
+	std::vector<std::string>	mSubTests;
+	int							mCurrentSubTest = 0;
 };

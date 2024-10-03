@@ -39,9 +39,6 @@ class DeviceTest : public AudioTest {
 
 	void setupSubTest( const std::string &testName );
 
-	int							mCurrentSubTest = 0;
-	std::vector<std::string>	mSubTests;
-
 	ci::audio::InputDeviceNodeRef		mInputDeviceNode;
 	ci::audio::OutputDeviceNodeRef		mOutputDeviceNode;
 	ci::audio::MonitorNodeRef			mMonitor;

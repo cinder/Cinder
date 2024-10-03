@@ -26,19 +26,11 @@ class SpectralTest : public AudioTest {
 	void setupSample();
 	void printBinFreq( size_t xPos );
 
-
 	ci::audio::BufferPlayerNodeRef		mPlayerNode;
 	ci::audio::GainNodeRef				mGain;
 	ci::audio::GenNodeRef				mGen;
 	ci::audio::MonitorSpectralNodeRef	mMonitorSpectralNode;
 	ci::audio::SourceFileRef			mSourceFile;
-
-	std::vector<std::string>	mSubTests;
-	int							mCurrentSubTest = 0;
-
-	// TODO: add gui for these
-	//Button							mLoopButton, mScaleDecibelsButton;
-	//HSlider							mSmoothingFactorSlider, mFreqSlider;
 
 	SpectrumPlot					mSpectrumPlot;
 	float							mSpectroMargin = 40;

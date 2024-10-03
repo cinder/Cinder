@@ -27,9 +27,7 @@ private:
 
 	void applyChirp();
 
-	std::vector<std::string>	mSubTests;
-	int							mCurrentSubTest = 0;
-	bool						mUseSine = false; // if false, uses noise instead of sine
+	bool		mUseSine = false; // if false, uses noise instead of sine
 
 	ci::audio::GenNodeRef			mGen;
 	ci::audio::GainNodeRef			mGain;

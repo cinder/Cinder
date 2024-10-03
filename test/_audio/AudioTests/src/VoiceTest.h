@@ -25,8 +25,6 @@ class VoiceTest : public AudioTest {
 
 	//enum InputBus { SINE, NOISE };
 
-	std::vector<std::string>	mSubTests;
-	int							mCurrentSubTest = 0;
 	float						mVolume = 0.4f;
 };
 

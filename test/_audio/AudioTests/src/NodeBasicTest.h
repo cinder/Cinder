@@ -27,9 +27,6 @@ private:
 	void setupSplitStereo();
 	void setupSplitMerge();
 
-	std::vector<std::string>	mSubTests;
-	int							mCurrentSubTest = 0;
-
 	ci::audio::GainNodeRef		mGain;
 	ci::audio::MonitorNodeRef	mMonitor;
 	ci::audio::GenNodeRef		mGen, mNoise;

@@ -47,9 +47,6 @@ class SamplePlayerTest : public AudioTest {
 
 	WaveformPlot				mWaveformPlot;
 
-	std::vector<std::string>	mSubTests;
-	int							mCurrentSubTest = 0;
-
 	ci::Anim<float>				mUnderrunFade, mOverrunFade, mRecorderOverrunFade;
 	ci::Rectf					mUnderrunRect, mOverrunRect, mRecorderOverrunRect;
 	bool						mSamplePlayerNodeEnabledState;

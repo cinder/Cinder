@@ -30,9 +30,6 @@ private:
 
 	void writeParamEval( ci::audio::Param *param );
 
-	int							mCurrentSubTest = 0;
-	std::vector<std::string>	mSubTests;
-
 	ci::audio::GenNodeRef				mGen;
 	ci::audio::GainNodeRef				mGain;
 	ci::audio::Pan2dNodeRef				mPan;
