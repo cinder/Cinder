@@ -43,8 +43,10 @@ WaveTableTest::WaveTableTest()
 
 void WaveTableTest::setupSubTest( const std::string &testName )
 {
-	mGen = mGenPulse = mGenOsc = nullptr;
-	
+	mGen = nullptr;
+	mGenPulse = nullptr;
+	mGenOsc  = nullptr;
+
 	mMonitor->disconnectAllInputs();
 
 	if( testName == "sine" )

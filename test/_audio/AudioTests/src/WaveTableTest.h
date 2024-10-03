@@ -10,11 +10,10 @@
 
 class WaveTableTest : public AudioTest {
   public:
-	  WaveTableTest();
+	WaveTableTest();
 
 	void update() override;
 	void draw() override;
-
 	void updateUI() override;
 
 private:

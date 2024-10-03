@@ -24,9 +24,6 @@ class SpectralTest : public AudioTest {
 	void setupSine();
 	void setupSineNoOutput();
 	void setupSample();
-	void setupUI();
-	void processTap( ci::ivec2 pos );
-	void processDrag( ci::ivec2 pos );
 	void printBinFreq( size_t xPos );
 
 

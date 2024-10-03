@@ -36,6 +36,9 @@
     <ClCompile Include="..\..\src\WaveTableTest.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\VoiceTest.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Factory.h">
@@ -69,6 +72,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\WaveTableTest.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\VoiceTest.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

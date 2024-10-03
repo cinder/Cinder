@@ -8,7 +8,6 @@
 #include "cinder/CinderImGui.h"
 
 #define TEST_STEREO_INPUT_PANNING 0
-#define INITIAL_AUDIO_SAMPLE "tone440L220R.wav"
 
 using namespace ci;
 using namespace std;
@@ -27,7 +26,7 @@ SamplePlayerTest::SamplePlayerTest()
 
 	printSupportedExtensions();
 
-	setSourceFile( app::loadAsset( INITIAL_AUDIO_SAMPLE ) );
+	setSourceFile( app::loadAsset( "tone440L220R.wav" ) );
 
 	auto ctx = audio::master();
 
