@@ -35,25 +35,25 @@ StressTest::StressTest()
 	addGens();
 }
 
-void StressTest::setupSubTest( const string &testName )
+void StressTest::setupNextGenType( const string &genType )
 {
-	if( testName == "sine" )
+	if( genType == "sine" )
 		mSelectedGenType = SINE;
-	else if( testName == "triangle" )
+	else if( genType == "triangle" )
 		mSelectedGenType = TRIANGLE;
-	else if( testName == "osc sine" ) {
+	else if( genType == "osc sine" ) {
 		mSelectedGenType = OSC_SINE;
 		mWaveTable.reset();
 	}
-	else if( testName == "osc sawtooth" ) {
+	else if( genType == "osc sawtooth" ) {
 		mSelectedGenType = OSC_SAW;
 		mWaveTable.reset();
 	}
-	else if( testName == "osc square" ) {
+	else if( genType == "osc square" ) {
 		mSelectedGenType = OSC_SQUARE;
 		mWaveTable.reset();
 	}
-	else if( testName == "osc triangle" ) {
+	else if( genType == "osc triangle" ) {
 		mSelectedGenType = OSC_TRIANGLE;
 		mWaveTable.reset();
 	}
@@ -114,7 +114,6 @@ audio::GenNodeRef StressTest::makeOsc( audio::WaveformType type )
 		result->setWaveTable( mWaveTable );
 	else {
 		ctx->initializeNode( result );
-
 		mWaveTable = result->getWaveTable();
 	}
 
@@ -148,9 +147,9 @@ void StressTest::updateUI()
 {
 	im::Text( "Gen count: %d", mGenBank.size() );
 
-	float gain = mGain->getValue();
-	if( im::SliderFloat( "gain", &gain, 0, 1 ) ) {
-		mGain->setValue( gain );
+	float gain = audio::linearToDecibel( mGain->getValue() );
+	if( im::SliderFloat( "gain (db)", &gain, 0, 100 ) ) {
+		mGain->setValue( audio::decibelToLinear( gain ) );
 	}
 	im::InputInt( "add incr", &mAddIncr, 1, 10 );
 	if( im::Button( "add gens" ) ) {
@@ -167,7 +166,8 @@ void StressTest::updateUI()
 
 	im::Checkbox( "draw waveforms", &mDrawingEnabled );
 
-	if( im::ListBox( "sub-tests", &mCurrentSubTest, mSubTests, mSubTests.size() ) ) {
-		setupSubTest( mSubTests[mCurrentSubTest] );
+	// we're using mSubTests here for convenience, but this only affects Gens added in the future
+	if( im::ListBox( "next gen type", &mCurrentSubTest, mSubTests, mSubTests.size() ) ) {
+		setupNextGenType( mSubTests[mCurrentSubTest] );
 	}
 }

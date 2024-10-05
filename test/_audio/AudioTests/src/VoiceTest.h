@@ -26,5 +26,6 @@ class VoiceTest : public AudioTest {
 	//enum InputBus { SINE, NOISE };
 
 	float						mVolume = 0.4f;
+	float						mPan = 0.5f;
 };
 

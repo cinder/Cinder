@@ -33,6 +33,7 @@ void VoiceTest::openFile( const ci::fs::path &fullPath )
 {
 	mVoice = audio::Voice::create( audio::load( loadFile( fullPath ) ) );
 	mVoice->setVolume( mVolume );
+	mVoice->setPan( mPan );
 }
 
 void VoiceTest::setupSubTest( const std::string &testName )
@@ -51,25 +52,29 @@ void VoiceTest::setupBasic()
 {
 	mVoice = audio::Voice::create( audio::load( app::loadAsset( DEFAULT_SOUNDFILE ) ) );
 	mVoice->setVolume( mVolume );
+	mVoice->setPan( mPan );
 }
 
 void VoiceTest::setupBasicStereo()
 {
 	mVoice = audio::Voice::create( audio::load( app::loadAsset( DEFAULT_SOUNDFILE ) ), audio::Voice::Options().channels( 2 ) );
 	mVoice->setVolume( mVolume );
+	mVoice->setPan( mPan );
 }
 
 void VoiceTest::setupDifferentFile()
 {
 	mVoice = audio::Voice::create( audio::load( app::loadAsset( "tone440L220R.mp3" ) ) );
 	mVoice->setVolume( mVolume );
-
+	mVoice->setPan( mPan );
 }
+
 void VoiceTest::setupScope()
 {
 	auto sourceFile = audio::load( app::loadAsset( DEFAULT_SOUNDFILE ) );
 	mVoice = audio::Voice::create( sourceFile, audio::Voice::Options().connectToMaster( false ) );
 	mVoice->setVolume( mVolume );
+	mVoice->setPan( mPan );
 
 	auto ctx = audio::master();
 	mMonitor = ctx->makeNode( new audio::MonitorNode );
@@ -98,6 +103,9 @@ void VoiceTest::updateUI()
 	}
 	if( im::SliderFloat( "volume", &mVolume, 0, 1 ) ) {
 		mVoice->setVolume( mVolume );
+	}
+	if( im::SliderFloat( "pan", &mPan, 0, 1 ) ) {
+		mVoice->setPan( mPan );
 	}
 
 	if( im::ListBox( "sub-tests", &mCurrentSubTest, mSubTests, mSubTests.size() ) ) {

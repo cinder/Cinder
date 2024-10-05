@@ -311,11 +311,6 @@ void AudioTestsApp::updateImGui()
 			audio::master()->setEnabled( audioEnabled );
 		}
 
-		static vector<string> sTests = mTestFactory.getAllKeys();
-		if( im::Combo( "tests", &mCurrenTestIndex, sTests ) ) {
-			reload();
-		}
-
 		if( im::Button( "print audio graph" ) ) {
 			app::console() << audio::master()->printGraphToString();
 			app::console() << "--------------------------------------------------" << endl;
@@ -324,6 +319,11 @@ void AudioTestsApp::updateImGui()
 		if( im::Button( "print default output" ) ) {
 			printDefaultOutput();
 		}
+		static vector<string> sTests = mTestFactory.getAllKeys();
+		if( im::ListBox( "tests", &mCurrenTestIndex, sTests, (int)sTests.size() ) ) {
+			reload();
+		}
+
 	}
 	im::End(); // "General"
 

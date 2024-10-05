@@ -20,7 +20,7 @@ class StressTest : public AudioTest {
 	void removeGens();
 	void clearGens();
 
-	void setupSubTest( const std::string &testName );
+	void setupNextGenType( const std::string &genType );
 
 	ci::audio::GenNodeRef	makeSelectedGenType();
 	ci::audio::GenNodeRef	makeOsc( ci::audio::WaveformType type );
