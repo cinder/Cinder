@@ -31,13 +31,13 @@ namespace im = ImGui;
 #endif
 
 // To use Live++, place necessary files in a folder called LivePP next to the cinder folder
-#define	LIVEPP_ENABLED 1
+#define	LIVEPP_ENABLED 0
 #if LIVEPP_ENABLED
 #include "LPP_API_x64_CPP.h"
 #endif
 
-const int	SCREEN_INDEX	= 1;
-const ivec2 WINDOW_POS		= { 2000, 50 };
+const int	SCREEN_INDEX	= 0;
+const ivec2 WINDOW_POS		= { 200, 200 };
 const ivec2 WINDOW_SIZE		= { 1600, 1000 };
 
 class AudioTestsApp : public app::App {
