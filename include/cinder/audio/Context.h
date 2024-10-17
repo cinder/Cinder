@@ -133,6 +133,9 @@ class CI_API Context : public std::enable_shared_from_this<Context> {
 	//! Returns the time in seconds spent during the last process loop.
 	double getTimeDuringLastProcessLoop() const	{ return mTimeDuringLastProcessLoop; }
 
+	//! Returns nodes that are pulled by the graph (not connected to the output)
+	const	std::vector<Node *>& getAutoPulledNodes();
+
 	//! Returns a string representation of the Node graph for debugging purposes.
 	std::string printGraphToString();
 
@@ -155,7 +158,6 @@ class CI_API Context : public std::enable_shared_from_this<Context> {
 	void	disconnectRecursive( const NodeRef &node, std::set<NodeRef> &traversedNodes );
 	void	initRecursisve( const NodeRef &node, std::set<NodeRef> &traversedNodes  );
 	void	uninitRecursive( const NodeRef &node, std::set<NodeRef> &traversedNodes  );
-	const	std::vector<Node *>& getAutoPulledNodes(); // called if there are any nodes besides output that need to be pulled
 	void	processAutoPulledNodes();
 	void	preProcessScheduledEvents();
 	void	postProcessScheduledEvents();
