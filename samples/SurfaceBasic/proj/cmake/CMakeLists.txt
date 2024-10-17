@@ -12,4 +12,5 @@ ci_make_app(
 	SOURCES		${APP_PATH}/src/SurfaceBasicApp.cpp
 	INCLUDES	${APP_PATH}/include
 	CINDER_PATH ${CINDER_PATH}
+	RESOURCES   ${APP_PATH}/../data/cinder_logo.png
 )
