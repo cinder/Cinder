@@ -243,7 +243,7 @@ void printNodeFn( audio::Node *node, bool expand, audio::Node **hovered )
 	substituteNodeLabel( label );
 
 	ImGuiTreeNodeFlags treeNodeFlags = 0;
-	im::PushStyleColor( ImGuiCol_Text, node->isEnabled() ? vec4( 1 ) : im::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
+	im::PushStyleColor( ImGuiCol_Text, node->isEnabled() ? ImVec4( 1, 1, 1, 1 ) : im::GetStyleColorVec4( ImGuiCol_TextDisabled ) );
 	if( node->getNumConnectedInputs() > 0 ) {
 		if( expand )
 			im::SetNextTreeNodeOpen( true );
