@@ -4,6 +4,66 @@
 # cinder
 # ----------------------------------------------------------------------------------------------------------------------
 
+list( APPEND HDR_SET_CINDER
+	${CINDER_INC_DIR}/cinder/Area.h
+	${CINDER_INC_DIR}/cinder/Area.h
+	${CINDER_INC_DIR}/cinder/BandedMatrix.h
+	${CINDER_INC_DIR}/cinder/Base64.h
+	${CINDER_INC_DIR}/cinder/BSpline.h
+	${CINDER_INC_DIR}/cinder/BSplineFit.h
+	${CINDER_INC_DIR}/cinder/Buffer.h
+	${CINDER_INC_DIR}/cinder/Camera.h
+	${CINDER_INC_DIR}/cinder/CameraUi.h
+	${CINDER_INC_DIR}/cinder/Channel.h
+	${CINDER_INC_DIR}/cinder/CinderAssert.h
+	${CINDER_INC_DIR}/cinder/CinderMath.h
+	${CINDER_INC_DIR}/cinder/Clipboard.h
+	${CINDER_INC_DIR}/cinder/Color.h
+	${CINDER_INC_DIR}/cinder/DataSource.h
+	${CINDER_INC_DIR}/cinder/DataTarget.h
+	${CINDER_INC_DIR}/cinder/Display.h
+	${CINDER_INC_DIR}/cinder/Exception.h
+	${CINDER_INC_DIR}/cinder/Filesystem.h
+	${CINDER_INC_DIR}/cinder/FileWatcher.h
+	${CINDER_INC_DIR}/cinder/Font.h
+	${CINDER_INC_DIR}/cinder/Frustum.h
+	${CINDER_INC_DIR}/cinder/GeomIo.h
+	${CINDER_INC_DIR}/cinder/ImageFileTinyExr.h
+	${CINDER_INC_DIR}/cinder/ImageIo.h
+	${CINDER_INC_DIR}/cinder/ImageSourceFileRadiance.h
+	${CINDER_INC_DIR}/cinder/ImageSourceFileStbImage.h
+	${CINDER_INC_DIR}/cinder/ImageTargetFileStbImage.h
+	${CINDER_INC_DIR}/cinder/Json.h
+	${CINDER_INC_DIR}/cinder/Log.h
+	${CINDER_INC_DIR}/cinder/Matrix.h
+	${CINDER_INC_DIR}/cinder/MediaTime.h
+	${CINDER_INC_DIR}/cinder/ObjLoader.h
+	${CINDER_INC_DIR}/cinder/Path2d.h
+	${CINDER_INC_DIR}/cinder/Perlin.h
+	${CINDER_INC_DIR}/cinder/Plane.h
+	${CINDER_INC_DIR}/cinder/PolyLine.h
+	${CINDER_INC_DIR}/cinder/Rand.h
+	${CINDER_INC_DIR}/cinder/Ray.h
+	${CINDER_INC_DIR}/cinder/Rect.h
+	${CINDER_INC_DIR}/cinder/Shape2d.h
+	${CINDER_INC_DIR}/cinder/Signals.h
+	${CINDER_INC_DIR}/cinder/Sphere.h
+	${CINDER_INC_DIR}/cinder/Stream.h
+	${CINDER_INC_DIR}/cinder/Surface.h
+	${CINDER_INC_DIR}/cinder/System.h
+	${CINDER_INC_DIR}/cinder/Text.h
+	${CINDER_INC_DIR}/cinder/Timeline.h
+	${CINDER_INC_DIR}/cinder/TimelineItem.h
+	${CINDER_INC_DIR}/cinder/Timer.h
+	${CINDER_INC_DIR}/cinder/Triangulate.h
+	${CINDER_INC_DIR}/cinder/TriMesh.h
+	${CINDER_INC_DIR}/cinder/Tween.h
+	${CINDER_INC_DIR}/cinder/Unicode.h
+	${CINDER_INC_DIR}/cinder/Url.h
+	${CINDER_INC_DIR}/cinder/Utilities.h
+	${CINDER_INC_DIR}/cinder/Xml.h
+)
+
 list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Area.cpp
 	${CINDER_SRC_DIR}/cinder/Area.cpp
@@ -75,12 +135,23 @@ if( ( NOT CINDER_COCOA_TOUCH ) AND ( NOT CINDER_ANDROID ) )
 	)
 endif()
 
-list( APPEND CINDER_SRC_FILES   ${SRC_SET_CINDER} )
-source_group( "cinder" FILES    ${SRC_SET_CINDER} )
+list( APPEND CINDER_SRC_FILES        ${HDR_SET_CINDER} )
+list( APPEND CINDER_SRC_FILES        ${SRC_SET_CINDER} )
+source_group( "Header Files\\cinder" FILES  ${HDR_SET_CINDER} )
+source_group( "Source Files\\cinder" FILES  ${SRC_SET_CINDER} )
 
 # ----------------------------------------------------------------------------------------------------------------------
 # cinder::app
 # ----------------------------------------------------------------------------------------------------------------------
+
+list( APPEND HDR_SET_CINDER_APP
+	${CINDER_INC_DIR}/cinder/app/AppBase.h
+	${CINDER_INC_DIR}/cinder/app/KeyEvent.h
+	${CINDER_INC_DIR}/cinder/app/Platform.h
+	${CINDER_INC_DIR}/cinder/app/Renderer.h
+	${CINDER_INC_DIR}/cinder/app/RendererGl.h
+	${CINDER_INC_DIR}/cinder/app/Window.h
+)
 
 list( APPEND SRC_SET_CINDER_APP
 	${CINDER_SRC_DIR}/cinder/app/AppBase.cpp
@@ -91,14 +162,40 @@ list( APPEND SRC_SET_CINDER_APP
 	${CINDER_SRC_DIR}/cinder/app/Window.cpp
 )
 
-list( APPEND CINDER_SRC_FILES       ${SRC_SET_CINDER_APP} )
-source_group( "cinder\\app" FILES   ${SRC_SET_CINDER_APP} )
+list( APPEND CINDER_SRC_FILES                    ${HDR_SET_CINDER_APP} )
+list( APPEND CINDER_SRC_FILES                    ${SRC_SET_CINDER_APP} )
+source_group( "Header Files\\cinder\\app" FILES  ${HDR_SET_CINDER_APP} )
+source_group( "Source Files\\cinder\\app" FILES  ${SRC_SET_CINDER_APP} )
 
 # ----------------------------------------------------------------------------------------------------------------------
 # cinder::audio
 # ----------------------------------------------------------------------------------------------------------------------
 
 if( NOT CINDER_DISABLE_AUDIO )
+	list( APPEND HDR_SET_CINDER_AUDIO
+		${CINDER_INC_DIR}/cinder/audio/ChannelRouterNode.h
+		${CINDER_INC_DIR}/cinder/audio/Context.h
+		${CINDER_INC_DIR}/cinder/audio/DelayNode.h
+		${CINDER_INC_DIR}/cinder/audio/Device.h
+		${CINDER_INC_DIR}/cinder/audio/FileOggVorbis.h
+		${CINDER_INC_DIR}/cinder/audio/FilterNode.h
+		${CINDER_INC_DIR}/cinder/audio/GenNode.h
+		${CINDER_INC_DIR}/cinder/audio/InputNode.h
+		${CINDER_INC_DIR}/cinder/audio/Node.h
+		${CINDER_INC_DIR}/cinder/audio/NodeMath.h
+		${CINDER_INC_DIR}/cinder/audio/MonitorNode.h
+		${CINDER_INC_DIR}/cinder/audio/OutputNode.h
+		${CINDER_INC_DIR}/cinder/audio/PanNode.h
+		${CINDER_INC_DIR}/cinder/audio/Param.h
+		${CINDER_INC_DIR}/cinder/audio/SamplePlayerNode.h
+		${CINDER_INC_DIR}/cinder/audio/SampleRecorderNode.h
+		${CINDER_INC_DIR}/cinder/audio/Source.h
+		${CINDER_INC_DIR}/cinder/audio/Target.h
+		${CINDER_INC_DIR}/cinder/audio/Utilities.h
+		${CINDER_INC_DIR}/cinder/audio/Voice.h
+		${CINDER_INC_DIR}/cinder/audio/WaveTable.h
+	)
+    
 	list( APPEND SRC_SET_CINDER_AUDIO
 		${CINDER_SRC_DIR}/cinder/audio/ChannelRouterNode.cpp
 		${CINDER_SRC_DIR}/cinder/audio/Context.cpp
@@ -123,6 +220,13 @@ if( NOT CINDER_DISABLE_AUDIO )
 		${CINDER_SRC_DIR}/cinder/audio/WaveTable.cpp
 	)
 
+	list( APPEND HDR_SET_CINDER_AUDIO_DSP
+		${CINDER_INC_DIR}/cinder/audio/dsp/Biquad.h
+		${CINDER_INC_DIR}/cinder/audio/dsp/Converter.h
+		${CINDER_INC_DIR}/cinder/audio/dsp/Dsp.h
+		${CINDER_INC_DIR}/cinder/audio/dsp/Fft.h
+	)
+
 	list( APPEND SRC_SET_CINDER_AUDIO_DSP
 		${CINDER_SRC_DIR}/cinder/audio/dsp/Biquad.cpp
 		${CINDER_SRC_DIR}/cinder/audio/dsp/Converter.cpp
@@ -130,16 +234,49 @@ if( NOT CINDER_DISABLE_AUDIO )
 		${CINDER_SRC_DIR}/cinder/audio/dsp/Fft.cpp
 	)
 
-	list( APPEND CINDER_SRC_FILES           ${SRC_SET_CINDER_AUDIO} )
-	source_group( "cinder\\audio" FILES     ${SRC_SET_CINDER_AUDIO} )
+	list( APPEND CINDER_SRC_FILES                           ${HDR_SET_CINDER_AUDIO} )
+	list( APPEND CINDER_SRC_FILES                           ${SRC_SET_CINDER_AUDIO} )
+	source_group( "Header Files\\cinder\\audio" FILES       ${HDR_SET_CINDER_AUDIO} )
+	source_group( "Source Files\\cinder\\audio" FILES       ${SRC_SET_CINDER_AUDIO} )
 
-	list( APPEND CINDER_SRC_FILES           	${SRC_SET_CINDER_AUDIO_DSP} )
-	source_group( "cinder\\audio\\dsp" FILES    ${SRC_SET_CINDER_AUDIO_DSP} )
+	list( APPEND CINDER_SRC_FILES           	            ${HDR_SET_CINDER_AUDIO_DSP} )
+	list( APPEND CINDER_SRC_FILES           	            ${SRC_SET_CINDER_AUDIO_DSP} )
+	source_group( "Header Files\\cinder\\audio\\dsp" FILES  ${HDR_SET_CINDER_AUDIO_DSP} )
+	source_group( "Source Files\\cinder\\audio\\dsp" FILES  ${SRC_SET_CINDER_AUDIO_DSP} )
 endif()
 
 # ----------------------------------------------------------------------------------------------------------------------
 # cinder::gl
 # ----------------------------------------------------------------------------------------------------------------------
+
+list( APPEND HDR_SET_CINDER_GL
+	${CINDER_INC_DIR}/cinder/gl/Batch.h
+	${CINDER_INC_DIR}/cinder/gl/BufferObj.h
+	${CINDER_INC_DIR}/cinder/gl/BufferTexture.h
+	${CINDER_INC_DIR}/cinder/gl/ConstantConversions.h
+	${CINDER_INC_DIR}/cinder/gl/Context.h
+	${CINDER_INC_DIR}/cinder/gl/draw.h
+	${CINDER_INC_DIR}/cinder/gl/Environment.h
+	${CINDER_INC_DIR}/cinder/gl/Fbo.h
+	${CINDER_INC_DIR}/cinder/gl/gl.h
+	${CINDER_INC_DIR}/cinder/gl/GlslProg.h
+	${CINDER_INC_DIR}/cinder/gl/Pbo.h
+	${CINDER_INC_DIR}/cinder/gl/Query.h
+	${CINDER_INC_DIR}/cinder/gl/scoped.h
+	${CINDER_INC_DIR}/cinder/gl/Sampler.h
+	${CINDER_INC_DIR}/cinder/gl/Shader.h
+	${CINDER_INC_DIR}/cinder/gl/ShaderPreprocessor.h
+	${CINDER_INC_DIR}/cinder/gl/Sync.h
+	${CINDER_INC_DIR}/cinder/gl/Texture.h
+	${CINDER_INC_DIR}/cinder/gl/TextureFont.h
+	${CINDER_INC_DIR}/cinder/gl/TextureFormatParsers.h
+	${CINDER_INC_DIR}/cinder/gl/TransformFeedbackObj.h
+	${CINDER_INC_DIR}/cinder/gl/Ubo.h
+	${CINDER_INC_DIR}/cinder/gl/Vao.h
+	${CINDER_INC_DIR}/cinder/gl/Vbo.h
+	${CINDER_INC_DIR}/cinder/gl/VboMesh.h
+	${CINDER_INC_DIR}/cinder/gl/wrapper.h
+)
 
 list( APPEND SRC_SET_CINDER_GL
 	${CINDER_SRC_DIR}/cinder/gl/Batch.cpp
@@ -175,12 +312,29 @@ list( APPEND SRC_SET_CINDER_GL
 	${CINDER_SRC_DIR}/cinder/gl/nv/Multicast.cpp
 )
 
-list( APPEND CINDER_SRC_FILES       ${SRC_SET_CINDER_GL} )
-source_group( "cinder\\gl" FILES    ${SRC_SET_CINDER_GL} )
+list( APPEND CINDER_SRC_FILES                  ${HDR_SET_CINDER_GL} )
+list( APPEND CINDER_SRC_FILES                  ${SRC_SET_CINDER_GL} )
+source_group( "Header Files\\cinder\\gl" FILES ${HDR_SET_CINDER_GL} )
+source_group( "Source Files\\cinder\\gl" FILES ${SRC_SET_CINDER_GL} )
 
 # ----------------------------------------------------------------------------------------------------------------------
 # cinder::ip
 # ----------------------------------------------------------------------------------------------------------------------
+
+list( APPEND HDR_SET_CINDER_IP
+	${CINDER_INC_DIR}/cinder/ip/Blend.h
+	${CINDER_INC_DIR}/cinder/ip/Blur.h
+	${CINDER_INC_DIR}/cinder/ip/Checkerboard.h
+	${CINDER_INC_DIR}/cinder/ip/Fill.h
+	${CINDER_INC_DIR}/cinder/ip/Grayscale.h
+	${CINDER_INC_DIR}/cinder/ip/Premultiply.h
+	${CINDER_INC_DIR}/cinder/ip/Threshold.h
+	${CINDER_INC_DIR}/cinder/ip/EdgeDetect.h
+	${CINDER_INC_DIR}/cinder/ip/Flip.h
+	${CINDER_INC_DIR}/cinder/ip/Hdr.h
+	${CINDER_INC_DIR}/cinder/ip/Resize.h
+	${CINDER_INC_DIR}/cinder/ip/Trim.h
+)
 
 list( APPEND SRC_SET_CINDER_IP
 	${CINDER_SRC_DIR}/cinder/ip/Blend.cpp
@@ -197,19 +351,27 @@ list( APPEND SRC_SET_CINDER_IP
 	${CINDER_SRC_DIR}/cinder/ip/Trim.cpp
 )
 
-list( APPEND CINDER_SRC_FILES       ${SRC_SET_CINDER_IP} )
-source_group( "cinder\\ip" FILES    ${SRC_SET_CINDER_IP} )
+list( APPEND CINDER_SRC_FILES            ${HDR_SET_CINDER_IP} )
+list( APPEND CINDER_SRC_FILES            ${SRC_SET_CINDER_IP} )
+source_group( "Header Files\\cinder\\ip" FILES ${HDR_SET_CINDER_IP} )
+source_group( "Source Files\\cinder\\ip" FILES ${SRC_SET_CINDER_IP} )
 
 # ----------------------------------------------------------------------------------------------------------------------
 # cinder::svg
 # ----------------------------------------------------------------------------------------------------------------------
 
+list( APPEND HDR_SET_CINDER_SVG
+	${CINDER_INC_DIR}/cinder/svg/Svg.h
+)
+
 list( APPEND SRC_SET_CINDER_SVG
 	${CINDER_SRC_DIR}/cinder/svg/Svg.cpp
 )
 
+list( APPEND CINDER_SRC_FILES       ${HDR_SET_CINDER_SVG} )
 list( APPEND CINDER_SRC_FILES       ${SRC_SET_CINDER_SVG} )
-source_group( "cinder\\svg" FILES   ${SRC_SET_CINDER_SVG} )
+source_group( "Header Files\\cinder\\svg" FILES   ${HDR_SET_CINDER_SVG} )
+source_group( "Source Files\\cinder\\svg" FILES   ${SRC_SET_CINDER_SVG} )
 
 # ----------------------------------------------------------------------------------------------------------------------
 # tinyexr
@@ -297,6 +459,9 @@ endif()
 # ----------------------------------------------------------------------------------------------------------------------
 
 if( CINDER_ANTTWEAKBAR_ENABLED )
+	list( APPEND HDR_SET_CINDER_PARAMS
+		${CINDER_INC_DIR}/cinder/params/Params.h
+	)
 
 	list( APPEND SRC_SET_CINDER_PARAMS
 		${CINDER_SRC_DIR}/cinder/params/Params.cpp
@@ -315,16 +480,19 @@ if( CINDER_ANTTWEAKBAR_ENABLED )
 	)
 
 	list( APPEND CINDER_SRC_FILES
+		${HDR_SET_CINDER_PARAMS}
 		${SRC_SET_CINDER_PARAMS}
 		${SRC_SET_ANTTWEAKBAR}
 	)
 
-	source_group( "cinder\\params"	            FILES ${SRC_SET_CINDER_PARAMS} )
-	source_group( "thirdparty\\AntTweakBar"	    FILES ${SRC_SET_ANTTWEAKBAR} )
+	source_group( "Header Files\\cinder\\params"	FILES ${HDR_SET_CINDER_PARAMS} )
+	source_group( "Source Files\\cinder\\params"	FILES ${SRC_SET_CINDER_PARAMS} )
+	source_group( "thirdparty\\AntTweakBar"	        FILES ${SRC_SET_ANTTWEAKBAR} )
 
 endif()
 
 if( CINDER_IMGUI_ENABLED )
+	list( APPEND HDR_SET_CINDER_IMGUI ${CINDER_INC_DIR}/cinder/CinderImGui.h )
 	list( APPEND SRC_SET_CINDER_IMGUI ${CINDER_SRC_DIR}/cinder/CinderImGui.cpp )
 	if( CINDER_IMGUI_DIR )
 		list( APPEND SRC_SET_IMGUI
@@ -352,10 +520,12 @@ if( CINDER_IMGUI_ENABLED )
 	endif()
 
 	list( APPEND CINDER_SRC_FILES
+		${HDR_SET_CINDER_IMGUI}
 		${SRC_SET_CINDER_IMGUI}
 		${SRC_SET_IMGUI}
 	)
-	source_group( "cinder"					FILES ${SRC_SET_CINDER_IMGUI} )
+	source_group( "Header Files\\cinder"	FILES ${HDR_SET_CINDER_IMGUI} )
+	source_group( "Source Files\\cinder"	FILES ${SRC_SET_CINDER_IMGUI} )
 	source_group( "thirdparty\\imgui"	    FILES ${SRC_SET_IMGUI} )
 endif()
 

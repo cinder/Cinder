@@ -19,7 +19,9 @@ set( SRC_FILES
 )
 
 ci_make_app(
+	APP_NAME    "FallingGears"
 	SOURCES     ${SRC_FILES}
 	CINDER_PATH ${CINDER_PATH}
 	BLOCKS      Box2D
+    FOLDER      "cinder/samples"
 )

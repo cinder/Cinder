@@ -14,4 +14,5 @@ ci_make_app(
 	SOURCES     ${APP_PATH}/src/ObjLoaderApp.cpp
 	INCLUDES    ${APP_PATH}/include
 	RESOURCES   ${APP_PATH}/../../data/models/8lbs.obj
+    FOLDER      "cinder/samples/_opengl"
 )

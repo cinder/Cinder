@@ -13,4 +13,5 @@ ci_make_app(
 	CINDER_PATH ${CINDER_PATH}
 	INCLUDES    ${APP_PATH}/include
 	RESOURCES   ${APP_PATH}/../../data/sound/DrainMagic.ogg
+    FOLDER      "cinder/samples/_audio"
 )
