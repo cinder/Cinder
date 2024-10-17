@@ -348,6 +348,9 @@ class CI_API GlslProg {
 	static GlslProgRef create( DataSourceRef vertexShader, DataSourceRef fragmentShader = DataSourceRef() );
 	static GlslProgRef create( const std::string &vertexShader, const std::string &fragmentShader = std::string() );
 #endif
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+	static GlslProgRef create( DataSourceRef vertexShader, const std::vector<std::string>& varyings, GLenum format = GL_INTERLEAVED_ATTRIBS );
+#endif
 	~GlslProg();
 	
 	void			bind() const;
