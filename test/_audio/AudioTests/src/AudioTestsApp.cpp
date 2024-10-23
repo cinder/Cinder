@@ -370,11 +370,11 @@ void AudioTestsApp::updateContextUI()
 	audio::Node *hovered = nullptr;
 	printNodeFn( ctx->getOutput().get(), expand, &hovered );
 
-	size_t numAutoPulledNodes = ctx->getAutoPulledNodes().size();
-	if( numAutoPulledNodes ) {
+	const auto autoPulledNodes = ctx->getAutoPulledNodes();
+	if( autoPulledNodes.size() > 0 ) {
 		im::Separator();
-		im::Text( "auto pulled nodes: %d", numAutoPulledNodes );
-		for( const auto& node : ctx->getAutoPulledNodes() ) {
+		im::Text( "auto pulled nodes: %d", (int)autoPulledNodes.size() );
+		for( const auto& node : autoPulledNodes ) {
 			printNodeFn( node, expand, &hovered );
 		}
 	}
