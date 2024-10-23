@@ -218,6 +218,10 @@ void AudioTestsApp::draw()
 
 namespace {
 
+const ImGuiCond sWindowCond = ImGuiCond_FirstUseEver;
+//const ImGuiCond sWindowCond = ImGuiCond_Always;
+const float sWindowPadding = 10;
+
 static bool sThemeIsDark = true;
 static float sThemeAlpha = 0.85f;
 
@@ -287,9 +291,8 @@ void AudioTestsApp::updateImGui()
 	im::GetIO().FontGlobalScale = getWindowContentScale();
 	im::GetIO().FontAllowUserScaling = true;
 
-	//im::GetIO().ConfigWindowsMoveFromTitleBarOnly = false;
-	//im::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-
+	im::SetNextWindowPos( { sWindowPadding, sWindowPadding }, sWindowCond );
+	im::SetNextWindowSize( { 334, 375 }, sWindowCond );
 	if( im::Begin( "General", nullptr ) ) {
 		im::Text( "fps: %0.2f, seconds running: %0.1f", app::App::get()->getAverageFps(), app::App::get()->getElapsedSeconds() );
 		im::Separator();
@@ -328,8 +331,8 @@ void AudioTestsApp::updateImGui()
 	im::End(); // "General"
 
 	if( mCurrentTest ) {
-		im::SetNextWindowPos( { 400, 100 }, ImGuiCond_FirstUseEver );
-		im::SetNextWindowSize( { 800, 600 }, ImGuiCond_FirstUseEver );
+		im::SetNextWindowPos( { 354, 100 }, sWindowCond );
+		im::SetNextWindowSize( { 800, 490 }, sWindowCond );
 		im::Begin( mCurrentTest->getName().c_str() );
 
 		mCurrentTest->updateUI();
@@ -344,9 +347,9 @@ void AudioTestsApp::updateImGui()
 
 void AudioTestsApp::updateContextUI()
 {
-	im::SetNextWindowPos( ivec2( 681, 2 ), ImGuiCond_FirstUseEver );
-	im::SetNextWindowSize( ivec2( 330, 420 ), ImGuiCond_FirstUseEver );
-	im::SetNextWindowCollapsed( true, ImGuiCond_FirstUseEver );
+	const vec2 contextWindowSize = { 430, 420 };
+	im::SetNextWindowPos( vec2( getWindowSize() ) - contextWindowSize - vec2( sWindowPadding ), sWindowCond );
+	im::SetNextWindowSize( contextWindowSize, sWindowCond );
 
 	if( ! im::Begin( "Audio Context", &mContextUIEnabled ) ) {
 		im::End();
