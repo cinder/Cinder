@@ -76,7 +76,9 @@ void StressTest::addGens()
 
 void StressTest::removeGens()
 {
-	for( size_t i = 0; i < mAddIncr; i++ ) {
+	size_t gensToRemove = ( mAddIncr > mGenBank.size() ) ? mGenBank.size() : mAddIncr;
+
+	for( size_t i = 0; i < gensToRemove; i++ ) {
 		mGenBank.back()->disconnectAll();
 		mGenBank.pop_back();
 	}

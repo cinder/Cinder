@@ -358,7 +358,7 @@ void AudioTestsApp::updateContextUI()
 
 	auto ctx = audio::master();
 
-	im::Text( "dsp %s, samplerate: %d, frames per black: %d", ( ctx->isEnabled() ? "enabled" : "disabled" ), (int)ctx->getSampleRate(), (int)ctx->getFramesPerBlock() );
+	im::Text( "dsp %s, samplerate: %d, frames per block: %d", ( ctx->isEnabled() ? "enabled" : "disabled" ), (int)ctx->getSampleRate(), (int)ctx->getFramesPerBlock() );
 	im::Separator();
 	im::Text( "Context Graph:" );
 	im::SameLine();
