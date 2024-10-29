@@ -59,9 +59,9 @@ class AudioTestsApp : public app::App {
 	bool	mImGuiEnabled		= true;
 	bool	mContextUIEnabled	= true;
 
-	mason::Factory<AudioTest>	mTestFactory;
-	AudioTestRef				mCurrentTest;
-	int							mCurrenTestIndex = 0;
+	audiotest::Factory<AudioTest>	mTestFactory;
+	AudioTestRef					mCurrentTest;
+	int								mCurrenTestIndex = 0;
 };
 
 void prepareSettings( app::App::Settings *settings )

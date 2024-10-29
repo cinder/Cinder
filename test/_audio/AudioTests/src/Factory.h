@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-15, Richard Eakin - All rights reserved.
+ Copyright (c) 2014-24, Richard Eakin - All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided
  that the following conditions are met:
@@ -28,7 +28,7 @@
 #include <algorithm>
 #include <functional>
 
-namespace mason {
+namespace audiotest {
 
 //! Exception thrown when Factory cannot build an object for the requested key
 class FactoryExceptionBuilderNotFound : public cinder::Exception {
@@ -101,4 +101,4 @@ class Factory {
 	std::vector<BuilderFn>		mBuilders;
 };
 
-} // namespace mason
+} // namespace audiotest
