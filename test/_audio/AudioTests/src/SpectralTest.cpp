@@ -46,7 +46,7 @@ SpectralTest::SpectralTest()
 
 	mPlayerNode = ctx->makeNode( new audio::BufferPlayerNode( audioBuffer ) );
 
-	setupSine();
+	setupSubTest( "sine" );
 
 	CI_LOG_V( "MonitorSpectralNode fftSize: " << mMonitorSpectralNode->getFftSize() << ", windowSize: " << mMonitorSpectralNode->getWindowSize() );
 }

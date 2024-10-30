@@ -25,10 +25,7 @@ NodeEffectsTest::NodeEffectsTest()
 	//mUseSine = true; // set to start with GenSineNode
 
 	makeNodes();
-	setupOne();
-	setupDelay();
-	//setupFeedback();
-	//setupEcho();
+	setupSubTest( "one" );
 }
 
 void NodeEffectsTest::setupSubTest( const string &testName )
