@@ -240,8 +240,7 @@ void substituteNodeLabel( std::string &label )
 	}
 }
 
-// note: recursion level currently only for debugging
-void printNodeFn( audio::Node *node, bool expand, audio::Node **hovered )
+void showNodeFn( audio::Node *node, bool expand, audio::Node **hovered, set<audio::Node *> &traversedNodes  )
 {
 	string label = node->getName();
 	substituteNodeLabel( label );
@@ -253,12 +252,23 @@ void printNodeFn( audio::Node *node, bool expand, audio::Node **hovered )
 			im::SetNextTreeNodeOpen( true );
 
 		if( im::TreeNodeEx( label.c_str(), treeNodeFlags ) ) {
+
+			if( traversedNodes.count( node ) ) {
+				im::Text( "** recursion detected **" );
+				im::PopStyleColor();
+				im::TreePop();
+				return;
+			}
+			else {
+				traversedNodes.insert( node );
+			}
+
 			if( im::IsItemHovered() ) {
 				*hovered = node;
 			}
 
 			for( const auto &input : node->getInputs() ) {
-				printNodeFn( input.get(), expand, hovered );
+				showNodeFn( input.get(), expand, hovered, traversedNodes );
 			}
 
 			im::TreePop();
@@ -275,6 +285,60 @@ void printNodeFn( audio::Node *node, bool expand, audio::Node **hovered )
 
 	im::PopStyleColor();
 };
+
+//! util function for showing all nodes in a tree
+void showContextGraph( ci::audio::Context *ctx )
+{
+	set<audio::Node *> traversedNodes;
+	im::Text( "Context Graph:" );
+	im::SameLine();
+
+	static bool expand = false;
+	im::Checkbox( "expand all", &expand );
+
+	im::BeginChild( "Context Graph", vec2( 0, im::GetWindowHeight() - 100 ) );
+	audio::Node *hovered = nullptr;
+	showNodeFn( ctx->getOutput().get(), expand, &hovered, traversedNodes );
+
+	const auto autoPulledNodes = ctx->getAutoPulledNodes();
+	if( autoPulledNodes.size() > 0 ) {
+		im::Separator();
+		im::Text( "auto pulled nodes: %d", (int)autoPulledNodes.size() );
+		for( const auto& node : autoPulledNodes ) {
+			showNodeFn( node, expand, &hovered, traversedNodes );
+		}
+	}
+
+	im::EndChild();
+
+	// show info at bottom of window for hovered audio::Nodes
+	im::Separator();
+	if( hovered ) {
+		string name = hovered->getName();
+		substituteNodeLabel( name );
+
+		const char *processMode = hovered->getProcessesInPlace() ? "in-place" : "sum"; 
+		string channelMode;
+		switch( hovered->getChannelMode() ) {
+			case audio::Node::ChannelMode::SPECIFIED:		channelMode = "specified"; break;
+			case audio::Node::ChannelMode::MATCHES_INPUT:	channelMode = "matches input"; break;
+			case audio::Node::ChannelMode::MATCHES_OUTPUT:	channelMode = "matches output"; break;
+			default: CI_ASSERT_NOT_REACHABLE(); break;
+		}
+
+		im::Text( "%s: channels: %d, mode: %s (%s)", name.c_str(), hovered->getNumChannels(), processMode, channelMode.c_str() );
+
+		auto mathNode = dynamic_cast<audio::MathNode *>( hovered );
+		if( mathNode ) {
+			im::SameLine();
+			im::Text( "| value: %0.3f", mathNode->getValue() );
+		}
+	}
+	else {
+		im::Text( "" );
+	}
+
+}
 
 } // anon namespace
 
@@ -360,53 +424,7 @@ void AudioTestsApp::updateContextUI()
 
 	im::Text( "dsp %s, samplerate: %d, frames per block: %d", ( ctx->isEnabled() ? "enabled" : "disabled" ), (int)ctx->getSampleRate(), (int)ctx->getFramesPerBlock() );
 	im::Separator();
-	im::Text( "Context Graph:" );
-	im::SameLine();
-
-	static bool expand = false;
-	im::Checkbox( "expand all", &expand );
-
-	im::BeginChild( "Context Graph", vec2( 0, im::GetWindowHeight() - 100 ) );
-	audio::Node *hovered = nullptr;
-	printNodeFn( ctx->getOutput().get(), expand, &hovered );
-
-	const auto autoPulledNodes = ctx->getAutoPulledNodes();
-	if( autoPulledNodes.size() > 0 ) {
-		im::Separator();
-		im::Text( "auto pulled nodes: %d", (int)autoPulledNodes.size() );
-		for( const auto& node : autoPulledNodes ) {
-			printNodeFn( node, expand, &hovered );
-		}
-	}
-
-	im::EndChild();
-
-	// show info at bottom of window for hovered audio::Nodes
-	im::Separator();
-	if( hovered ) {
-		string name = hovered->getName();
-		substituteNodeLabel( name );
-
-		const char *processMode = hovered->getProcessesInPlace() ? "in-place" : "sum"; 
-		string channelMode;
-		switch( hovered->getChannelMode() ) {
-			case audio::Node::ChannelMode::SPECIFIED:		channelMode = "specified"; break;
-			case audio::Node::ChannelMode::MATCHES_INPUT:	channelMode = "matches input"; break;
-			case audio::Node::ChannelMode::MATCHES_OUTPUT:	channelMode = "matches output"; break;
-			default: CI_ASSERT_NOT_REACHABLE(); break;
-		}
-
-		im::Text( "%s: channels: %d, mode: %s (%s)", name.c_str(), hovered->getNumChannels(), processMode, channelMode.c_str() );
-
-		auto mathNode = dynamic_cast<audio::MathNode *>( hovered );
-		if( mathNode ) {
-			im::SameLine();
-			im::Text( "| value: %0.3f", mathNode->getValue() );
-		}
-	}
-	else {
-		im::Text( "" );
-	}
+	showContextGraph( ctx );
 
 	im::End(); // Audio Context
 }
