@@ -191,15 +191,34 @@ void NodeEffectsTest::updateUI()
 		mGain->setValue( gain );
 	}
 
-	if( im::Checkbox( "use sine", &mUseSine ) ) {
-		makeNodes();
-		setupSubTest( mSubTests[mCurrentSubTest] );
+	float pan = mPan->getPos();
+	if( im::SliderFloat( "pan", &pan, 0, 1 ) ) {
+		mPan->setPos( pan );
+	}
+
+	float lowpassCutoff = mLowPass->getCutoffFreq();
+	if( im::DragFloat( "lowpass cutoff", &lowpassCutoff, 1, 0, 10000 ) ) {
+		mLowPass->setCutoffFreq( lowpassCutoff );
+	}
+	float lowpassResonance = mLowPass->getResonance();
+	if( im::DragFloat( "lowpass resonance", &lowpassResonance, 0.01f, 0, 10 ) ) {
+		mLowPass->setResonance( lowpassResonance );
+	}
+
+	float delaySeconds = mDelay->getDelaySeconds();
+	if( im::DragFloat( "delay (s)", &delaySeconds, 0.01f, 0, 10 ) ) {
+		mDelay->setDelaySeconds( delaySeconds );
 	}
 
 	bool genEnabled = mGen->isEnabled();
 	if( im::Checkbox( "Gen enabled", &genEnabled ) ) {
 		mGen->setEnabled( genEnabled );
 	}
+	if( im::Checkbox( "use sine", &mUseSine ) ) {
+		makeNodes();
+		setupSubTest( mSubTests[mCurrentSubTest] );
+	}
+
 
 	if( im::Button( "chirp" ) ) {
 		applyChirp();
