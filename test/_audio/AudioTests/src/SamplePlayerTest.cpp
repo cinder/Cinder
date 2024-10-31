@@ -76,9 +76,7 @@ void SamplePlayerTest::setupBufferPlayerNode()
 
 	auto loadFn = [bufferPlayer, this] {
 		bufferPlayer->loadBuffer( mSourceFile->clone() );
-		mWaveformPlot.load( bufferPlayer->getBuffer(), app::getWindowBounds() );
-		CI_LOG_V( "loaded source buffer, frames: " << bufferPlayer->getBuffer()->getNumFrames() );
-
+		CI_LOG_I( "loaded source buffer, frames: " << bufferPlayer->getBuffer()->getNumFrames() );
 	};
 
 	auto connectFn = [bufferPlayer, this] {
@@ -98,12 +96,14 @@ void SamplePlayerTest::setupBufferPlayerNode()
 		mAsyncLoadFuture = std::async( [=] {
 			loadFn();
 			app::App::get()->dispatchAsync( [=] {
+				mWaveformPlot.load( bufferPlayer->getBuffer(), app::getWindowBounds() );
 				connectFn();
 			} );
 		} );
 	}
 	else {
 		loadFn();
+		mWaveformPlot.load( bufferPlayer->getBuffer(), app::getWindowBounds() );
 		connectFn();
 	};
 }
@@ -202,9 +202,6 @@ void SamplePlayerTest::printSupportedExtensions()
 	app::console() << endl;
 }
 
-// TODO: if mLoadAsync is true then use std::async like in setupBufferPlayerNode()
-// - for setSourceFile()
-// - for bufferPlayer->loadBuffer()
 void SamplePlayerTest::openFile( const ci::fs::path &fullPath )
 {
 	try {
@@ -221,8 +218,18 @@ void SamplePlayerTest::openFile( const ci::fs::path &fullPath )
 
 	auto bufferPlayer = dynamic_pointer_cast<audio::BufferPlayerNode>( mSamplePlayerNode );
 	if( bufferPlayer ) {
-		bufferPlayer->loadBuffer( mSourceFile->clone() );
-		mWaveformPlot.load( bufferPlayer->getBuffer(), app::getWindowBounds() );
+		if( mLoadAsync ) {
+			mAsyncLoadFuture = std::async( [=] {
+				bufferPlayer->loadBuffer( mSourceFile->clone() );
+				app::App::get()->dispatchAsync( [=] {
+					mWaveformPlot.load( bufferPlayer->getBuffer(), app::getWindowBounds() );
+				} );
+			} );
+		}
+		else {
+			bufferPlayer->loadBuffer( mSourceFile->clone() );
+			mWaveformPlot.load( bufferPlayer->getBuffer(), app::getWindowBounds() );
+		}
 	}
 	else {
 		auto filePlayer = dynamic_pointer_cast<audio::FilePlayerNode>( mSamplePlayerNode );
@@ -258,7 +265,7 @@ void SamplePlayerTest::update()
 	}
 
 	// testing delayed trigger: print SamplePlayerNode start / stop times
-	if( mSamplePlayerNodeEnabledState != mSamplePlayerNode->isEnabled() ) {
+	if( mSamplePlayerNode && mSamplePlayerNodeEnabledState != mSamplePlayerNode->isEnabled() ) {
 		mSamplePlayerNodeEnabledState = mSamplePlayerNode->isEnabled();
 		string stateStr = mSamplePlayerNodeEnabledState ? "started" : "stopped";
 		CI_LOG_I( "mSamplePlayerNode " << stateStr << " at " << app::getElapsedSeconds() << ", isEof: " << boolalpha << mSamplePlayerNode->isEof() << dec );
@@ -291,7 +298,7 @@ void SamplePlayerTest::draw()
 		audio::BufferRef recordedBuffer = mRecorder->getRecordedCopy();
 		drawAudioBuffer( *recordedBuffer, app::getWindowBounds() );
 	}
-	else {
+	else if( mSamplePlayerNode ) {
 		auto bufferPlayer = dynamic_pointer_cast<audio::BufferPlayerNode>( mSamplePlayerNode );
 		if( bufferPlayer )
 			mWaveformPlot.draw();
