@@ -19,6 +19,7 @@ class SamplePlayerTest : public AudioTest {
 
 	void openFile( const ci::fs::path &fullPath ) override;
 	void update() override;
+	void resize() override;
 	void draw() override;
 	void updateUI() override;
 
@@ -31,8 +32,6 @@ class SamplePlayerTest : public AudioTest {
 	void writeRecordedToFile();
 	void triggerStartStop( bool start );
 
-	void seek( size_t xPos );
-	void printBufferSamples( size_t xPos );
 	void printSupportedExtensions();
 
 	void testConverter();
