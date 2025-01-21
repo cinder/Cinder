@@ -466,6 +466,9 @@
 #ifndef __glad_h_
 #define __glad_h_
 
+#pragma push_macro("APIENTRY")
+
+
 #ifdef __gl_h_
 #error OpenGL header already included, remove this include, glad already provides it
 #endif
@@ -14157,5 +14160,7 @@ GLAPI int GLAD_GL_S3_s3tc;
 #ifdef __cplusplus
 }
 #endif
+
+#pragma pop_macro("APIENTRY")
 
 #endif
