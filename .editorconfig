@@ -1,0 +1,13 @@
+# editorconfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Default settings:
+[*]
+indent_style = tabs
+indent_size = 4
+
+# python:
+[*.py]
+indent_style = spaces
