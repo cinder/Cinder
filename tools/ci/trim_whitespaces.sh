@@ -59,14 +59,16 @@ fi
 
 # Function to process files
 process_files() {
+
   if [[ "$PREVIEW_MODE" == true ]]; then
-    echo "Preview mode: Listing files that would be processed..."
+    echo "Preview mode: Listing files that would be targeted..."
     find "${FOLDERS[@]}" -type f \( $(printf -- "-name %s -o " "${EXTENSIONS[@]}") -false \) \
-      -exec echo "Processing: {}" \;
+      -exec bash -c 'grep -q "[[:space:]]$" "$0" && echo "Targeted: $0"' {} \;
+
   else
-    echo "Action mode: Removing trailing whitespace..."
+    echo "Action mode: Removing trailing whitespaces..."
     find "${FOLDERS[@]}" -type f \( $(printf -- "-name %s -o " "${EXTENSIONS[@]}") -false \) \
-      -exec sed -i 's/[[:space:]]*$//' {} \;
+      -exec bash -c 'grep -q "[[:space:]]$" "$0" && sed -i "s/[[:space:]]*$//" "$0" && echo "Modified: $0"' {} \;
   fi
 }
 
