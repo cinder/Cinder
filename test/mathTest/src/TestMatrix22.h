@@ -37,8 +37,8 @@ template <typename T> void TestMatrix22( std::ostream& os )
 		bool result = false;
 		T data[4] = { 1, 2, 3, 4 };
 		MatT c0( 1, 2, 3, 4 );
-		result = ( ( data[0] == c0.m[0] ) && 
-			       ( data[1] == c0.m[1] ) && 
+		result = ( ( data[0] == c0.m[0] ) &&
+			       ( data[1] == c0.m[1] ) &&
 				   ( data[2] == c0.m[2] ) &&
 				   ( data[3] == c0.m[3] ) );
 		os << (result ? "passed" : "FAILED") << " : " << "Matrix22( T d0, T d1, T d2, T d3 );" << "\n";
@@ -59,8 +59,8 @@ template <typename T> void TestMatrix22( std::ostream& os )
 		bool result = false;
 		Matrix22<double> dmat0( 1, 2, 3, 4 );
 		Matrix22<float>  fmat0( 1, 2, 3, 4 );
-		result = ( ( dmat0 == Matrix22<double>( fmat0 ) ) && 
-			       ( fmat0 == Matrix22<float>( dmat0 ) ) ); 
+		result = ( ( dmat0 == Matrix22<double>( fmat0 ) ) &&
+			       ( fmat0 == Matrix22<float>( dmat0 ) ) );
 		os << (result ? "passed" : "FAILED") << " : " << "template< typename FromT > Matrix22( const Matrix22<FromT>& src );" << "\n";
 	}
 
@@ -125,10 +125,10 @@ template <typename T> void TestMatrix22( std::ostream& os )
 	{
 		bool result = false;
 		Matrix22<double> dmat0( 1, 2, 3, 4 );
-		Matrix22<float>  fmat0( 1, 2, 3, 4 );		
+		Matrix22<float>  fmat0( 1, 2, 3, 4 );
 		Matrix22<double> dmat1 = fmat0;
 		Matrix22<float>  fmat1 = dmat0;
-		result = ( ( dmat0 == dmat1 ) && 
+		result = ( ( dmat0 == dmat1 ) &&
 			       ( fmat0 == fmat1 ) );
 		os << (result ? "passed" : "FAILED") << " : " << "template< typename FromT > Matrix22<T>& operator=( const Matrix22<FromT>& rhs );" << "\n";
 	}
@@ -186,7 +186,7 @@ template <typename T> void TestMatrix22( std::ostream& os )
 		MatT m0( 1, 2, 3, 4 );
 		MatT m1( 5, 6, 7, 8 );
 		m0 += m1;
-		result = ( c0 == m0 );		
+		result = ( c0 == m0 );
 		os << (result ? "passed" : "FAILED") << " : " << "Matrix22<T>& operator+=( const Matrix22<T> &rhs );" << "\n";
 	}
 
@@ -264,7 +264,7 @@ template <typename T> void TestMatrix22( std::ostream& os )
 		MatT c0( 6, 8, 10, 12 );
 		MatT m0( 1, 2, 3, 4 );
 		MatT m1( 5, 6, 7, 8 );
-		result = ( c0 == ( m0 + m1 ) );	
+		result = ( c0 == ( m0 + m1 ) );
 		os << (result ? "passed" : "FAILED") << " : " << "const Matrix22<T> operator+( const Matrix22<T> &rhs ) const;" << "\n";
 	}
 
@@ -546,11 +546,11 @@ template <typename T> void TestMatrix22( std::ostream& os )
 	// void invert (T epsilon = FLT_MIN );
 	{
 		bool result = false;
-		MatT c0( 
-			(T)-67114.093959732, (T)0.3355704698, 
-			(T)0.5033557047,     (T)-1.68e-8 
+		MatT c0(
+			(T)-67114.093959732, (T)0.3355704698,
+			(T)0.5033557047,     (T)-1.68e-8
 		);
-		MatT m0( 
+		MatT m0(
 			(T)0.0000001, (T)2,
 			(T)3,         (T)400000
 		);
@@ -564,11 +564,11 @@ template <typename T> void TestMatrix22( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 
-			(T)-67114.093959732, (T)0.3355704698, 
-			(T)0.5033557047,     (T)-1.68e-8 
+		MatT c0(
+			(T)-67114.093959732, (T)0.3355704698,
+			(T)0.5033557047,     (T)-1.68e-8
 		);
-		MatT m0( 
+		MatT m0(
 			(T)0.0000001, (T)2,
 			(T)3,         (T)400000
 		);
@@ -589,7 +589,7 @@ template <typename T> void TestMatrix22( std::ostream& os )
 				multi = false;
 				break;
 			}
-			eu += da; 
+			eu += da;
 		}
 
 		result = single && multi;
@@ -637,7 +637,7 @@ template <typename T> void TestMatrix22( std::ostream& os )
 	// void rotate( T radians );
 	{
 		bool result = false;
-		MatT c0( (T) 2.182514, (T)-0.486452, 
+		MatT c0( (T) 2.182514, (T)-0.486452,
 			     (T) 4.606950, (T)-1.943200 );
 		MatT m0( 1, 2, 3, 4 );
 		m0.rotate( toRadians( (T)76 ) );
@@ -673,7 +673,7 @@ template <typename T> void TestMatrix22( std::ostream& os )
 		bool result = false;
 		MatT c0( (T)1.02, (T)3.04, (T)2.03, (T)4.05 );
 		MatT m0( (T)1.02, (T)2.03, (T)3.04, (T)4.05 );
-		result = ( c0 == m0.invertTransform() );		
+		result = ( c0 == m0.invertTransform() );
 		os << (result ? "passed" : "FAILED") << " : " << "Matrix22<T> invertTransform() const;" << "\n";
 	}
 
@@ -708,7 +708,7 @@ template <typename T> void TestMatrix22( std::ostream& os )
 	// static Matrix22<T> createRotation( T radians );
 	{
 		bool result = false;
-		MatT c0( (T) 0.241922, (T)-0.970296, 
+		MatT c0( (T) 0.241922, (T)-0.970296,
 			     (T) 0.970296, (T) 0.241922 );
 		result = ( c0 == MatT::createRotation( toRadians( (T)76 ) ) );
 		os << (result ? "passed" : "FAILED") << " : " << "static Matrix22<T> createRotation( T radians );" << "\n";

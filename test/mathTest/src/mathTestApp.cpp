@@ -18,7 +18,7 @@ static const std::string kPre = "   ";
 std::string MakeIndentedBlock( const std::stringstream& src )
 {
 	std::stringstream ss;
-	std::string data = src.str();	
+	std::string data = src.str();
 	if( ! data.empty() ) {
 		ss << kPre;
 		for( size_t i = 0; i < data.size(); ++i ) {
@@ -70,7 +70,7 @@ int main( int argc, char **argv )
 	DO_TEST( TestMatrix22<float> );
 	DO_TEST( TestMatrix33<float> );
 	DO_TEST( TestMatrix44<float> );
-	
+
 	std::cout << std::endl;
 
 	return 0;

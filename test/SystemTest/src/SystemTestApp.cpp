@@ -29,7 +29,7 @@ void SystemTestApp::setup()
 	console() << " CPUs:" << System::getNumCpus() << std::endl;
 	console() << " Cores:" << System::getNumCores() << std::endl;
 //	console() << " QuickTime version: " << std::hex << qtime::getQuickTimeVersion() << std::dec << " (" << qtime::getQuickTimeVersionString() << ")" << std::endl;
-#endif	
+#endif
 	console() << "Network Adapters: " << std::endl;
 	vector<System::NetworkAdapter> adapters = System::getNetworkAdapters();
 	for( vector<System::NetworkAdapter>::const_iterator netIt = adapters.begin(); netIt != adapters.end(); ++netIt )

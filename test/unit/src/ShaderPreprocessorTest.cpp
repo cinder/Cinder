@@ -73,7 +73,7 @@ TEST_CASE( "ShaderPreprocessor" )
 		REQUIRE( result.find( "#define BLARG" ) == string::npos );
 		REQUIRE( result.find( "#define SOMEVAR 2" ) == string::npos );
 	}
-	
+
 	SECTION( "test overwrite define" )
 	{
 		gl::ShaderPreprocessor preprocessor;
@@ -120,7 +120,7 @@ TEST_CASE( "ShaderPreprocessor" )
 		)";
 
 		gl::ShaderPreprocessor preprocessor;
-			
+
 		preprocessor.getSignalInclude().connect(
 			[&commonGlsl]( const fs::path &path, std::string *source ) {
 				if( path == fs::path( "commonSimple.glsl" ) ) {

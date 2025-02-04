@@ -60,7 +60,7 @@ TEST_CASE( "FileWatcher" )
 				   numCallbacksFired == 2;
 		};
 		updateFileWatcher( FileWatcher::instance(), 5, test );
-		
+
 		REQUIRE( numCallbacksFired == 2 );
 		REQUIRE( FileWatcher::instance().getNumWatches() == 1 );
 		REQUIRE( FileWatcher::instance().getNumWatchedFiles() == 1 );
@@ -84,7 +84,7 @@ TEST_CASE( "FileWatcher" )
 		REQUIRE( watcher.getNumWatchedFiles() == 1 );
 
 		updateFileWriteTime( WATCH_FILE );
-		
+
 		auto test = [&numCallbacksFired](FileWatcher& watcher) -> bool {
 			return numCallbacksFired == 2;
 		};
@@ -106,7 +106,7 @@ TEST_CASE( "FileWatcher" )
 		} );
 
 		REQUIRE( numCallbacksFired == 0 );
-		
+
 		updateFileWriteTime( WATCH_FILE );
 
 		auto test = [&numCallbacksFired](FileWatcher& watcher) -> bool {

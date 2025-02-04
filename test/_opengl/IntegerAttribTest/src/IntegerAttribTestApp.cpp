@@ -14,15 +14,15 @@ class IntegerAttribTestApp : public App {
   public:
 	void setup() override;
 	void draw() override;
-	
+
 	void setupBuffer();
 	void setupGlsl();
 	void setupVao();
-	
+
 	gl::GlslProgRef mGlsl;
 	gl::VboRef		mVbo;
 	gl::VaoRef		mVao;
-	
+
 	CameraPersp		mCam;
 };
 
@@ -31,7 +31,7 @@ void IntegerAttribTestApp::setup()
 	setupBuffer();
 	setupGlsl();
 	setupVao();
-	
+
 	mCam.setPerspective( 60.0f, getWindowAspectRatio(), .01f, 1000.0f );
 	mCam.lookAt( vec3( 0, 0, 5), vec3( 0, 0, 0 ) );
 }
@@ -39,11 +39,11 @@ void IntegerAttribTestApp::setup()
 void IntegerAttribTestApp::setupBuffer()
 {
 	std::vector<int> integerBuffer;
-	
+
 	for( int i = 0; i < 6; ++i ) {
 		integerBuffer.push_back( i );
 	}
-	
+
 	mVbo = gl::Vbo::create( GL_ARRAY_BUFFER, sizeof(int) * integerBuffer.size(), integerBuffer.data(), GL_STATIC_DRAW );
 }
 
@@ -63,10 +63,10 @@ void IntegerAttribTestApp::setupGlsl()
 void IntegerAttribTestApp::setupVao()
 {
 	mVao = gl::Vao::create();
-	
+
 	gl::ScopedVao scopeVao( mVao );
 	gl::ScopedBuffer scopeBuffer( mVbo );
-	
+
 	gl::enableVertexAttribArray( 0 );
 	gl::vertexAttribIPointer( 0, 1, GL_INT, 0, (const GLvoid*) 0 );
 }
@@ -78,9 +78,9 @@ void IntegerAttribTestApp::draw()
 	gl::ScopedGlslProg scopglsl( mGlsl );
 
 	gl::ScopedVao scopeVao( mVao );
-	
+
 	gl::setDefaultShaderVars();
-	
+
 	gl::drawArrays( GL_TRIANGLES, 0, 6 );
 }
 

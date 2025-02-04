@@ -25,7 +25,7 @@ static const int ROWS_TO_FILL = 50;
 class PboUploadTestApp : public App {
   public:
 	void setup();
-	void mouseDown( MouseEvent event );	
+	void mouseDown( MouseEvent event );
 	void update();
 	void draw();
 
@@ -40,11 +40,11 @@ void PboUploadTestApp::setup()
 	for( int b = 0; b < NUM_BUFFERS; ++b )
 		mTexs[b] = gl::Texture::create( IMAGE_WIDTH, IMAGE_HEIGHT, gl::Texture::Format().internalFormat( (IMAGE_CHANNELS==4)?GL_RGBA:GL_RGB ) );
 	mCurrentTex = 0;
-	
+
 	for( int b = 0; b < NUM_BUFFERS; ++b )
 		mPbos[b] = gl::Pbo::create( GL_PIXEL_UNPACK_BUFFER, IMAGE_WIDTH * IMAGE_HEIGHT * IMAGE_CHANNELS, nullptr, GL_STREAM_DRAW );
 	mCurrentPbo = 0;
-	
+
 	console() << *(mPbos[0]) << std::endl;
 	lastFpsUpdate = getElapsedSeconds();
 }
@@ -80,7 +80,7 @@ void PboUploadTestApp::update()
 		memcpy( (uint8_t*)pboData + IMAGE_WIDTH * IMAGE_CHANNELS * row, rowData, IMAGE_WIDTH * IMAGE_CHANNELS );
 	}
 	mPbos[mCurrentPbo]->unmap();
-	
+
 	mTexs[mCurrentTex]->update( mPbos[mCurrentPbo], (IMAGE_CHANNELS==4)?GL_RGBA:GL_RGB, GL_UNSIGNED_BYTE );
 
   #if defined( DOUBLE_BUFFER )
@@ -89,8 +89,8 @@ void PboUploadTestApp::update()
 #else
 	for( int row = 0; row < ROWS_TO_FILL; ++row ) {
 		memcpy( surface.getData( ivec2( 0, row ) ), rowData, IMAGE_WIDTH * IMAGE_CHANNELS );
-	}	
-	
+	}
+
 	mTexs[mCurrentTex]->update( surface );
 #endif
 
@@ -103,9 +103,9 @@ void PboUploadTestApp::draw()
 {
 	// clear out the window with black
 	gl::clear( Color( 0, 0, 0 ) );
-	
+
 	gl::draw( mTexs[mCurrentTex], getWindowBounds() );
-	
+
 	if( getElapsedSeconds() - lastFpsUpdate > 2.0f ) {
 		console() << getAverageFps() << std::endl;
 		lastFpsUpdate = getElapsedSeconds();

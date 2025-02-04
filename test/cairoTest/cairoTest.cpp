@@ -10,7 +10,7 @@ using boost::shared_ptr;
 
 #include "flint/app/App.h"
 #include "flint/cairo/Cairo.h"
-#include "flint/Fill.h"	
+#include "flint/Fill.h"
 
 #define TEST_SVG
 #define TEST_PDF
@@ -125,13 +125,13 @@ struct TestClipImage : public TestBase {
 struct TestCurveRectangle : public TestBase {
 	virtual void run( fli::cairo::Context &ctx ) {
 		double x0 = 25.6, y0 = 25.6, rect_width = 204.8, rect_height = 204.8, radius = 102.4;
-		
+
 		double x1,y1;
 		x1 = x0 + rect_width;
 		y1 = y0 + rect_height;
 		if( ( ! rect_width ) || ( ! rect_height ) )
 			return;
-		
+
 		ctx.moveTo( x0, y0 + radius );
         ctx.curveTo( x0 , y0, x0 , y0, x0 + radius, y0 );
         ctx.lineTo( x1 - radius, y0 );
@@ -140,7 +140,7 @@ struct TestCurveRectangle : public TestBase {
         ctx.curveTo( x1, y1, x1, y1, x1 - radius, y1 );
         ctx.lineTo( x0 + radius, y1 );
         ctx.curveTo( x0, y1, x0, y1, x0, y1- radius );
-        
+
         ctx.closePath();
 
 		ctx.setSourceRgb( 0.5, 0.5, 1 );
@@ -290,7 +290,7 @@ struct TestImagePattern : public TestBase {
 	virtual void run( fli::cairo::Context &ctx ) {
 		Surface beyonceSurface( loadImage( app::App::loadResource( "Beyonce.jpg", RES_BEYONCE_JPG, "JPG" ) ), SurfaceConstraintsCairo() );
 		fli::shared_ptr<fli::cairo::SurfaceImage> image( new cairo::SurfaceImage( beyonceSurface ) );
-		fli::shared_ptr<fli::cairo::Pattern> pattern( fli::cairo::Pattern::createForSurface( image.get() ) );		
+		fli::shared_ptr<fli::cairo::Pattern> pattern( fli::cairo::Pattern::createForSurface( image.get() ) );
 		pattern->setExtend( fli::cairo::EXTEND_REPEAT );
 
 		ctx.translate( 128.0, 128.0 );
@@ -301,7 +301,7 @@ struct TestImagePattern : public TestBase {
 		fli::cairo::Matrix mtx;
 		mtx.initScale( image->getWidth() / 256.0 * 5.0, image->getHeight() / 256.0 * 5.0 );
 		pattern->setMatrix( &mtx );
-		
+
 		ctx.setSource( pattern.get() );
 		ctx.rectangle( 0, 0, 256.0, 256.0 );
 		ctx.fill();
@@ -469,10 +469,10 @@ struct TestTextExtents : public TestBase {
 	}
 };
 
-int main( int argc, char **argv ) 
+int main( int argc, char **argv )
 {
 	map<string,TestBase*> tests;
-	
+
 	tests["arc"] = new TestArc();
 	tests["arc_negative"] = new TestArcNegative();
 	tests["clip"] = new TestClip();

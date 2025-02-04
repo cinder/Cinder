@@ -13,18 +13,18 @@ using namespace ci;
 using namespace ci::app;
 
 class ArcballTestApp : public App {
-  public:	
+  public:
 	void setup() override;
 	void resize() override;
 	void mouseDown( MouseEvent event ) override;
 	void mouseDrag( MouseEvent event ) override;
 	void draw() override;
 	void keyDown( KeyEvent event ) override;
-	
+
 	Arcball			mArcball;
 	CameraPersp		mCam, mDebugCam;
 	CameraUi		mCamUi;
-	
+
 	Sphere			mEarthSphere;
 	gl::BatchRef	mEarth, mMarker, mConstraintAxis;
 	gl::TextureRef	mEarthTex;

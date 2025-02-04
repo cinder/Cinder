@@ -199,7 +199,7 @@ TEST_CASE( "Utilities" )
 		REQUIRE( fromString<double>( "123.45" ) == Approx( 123.45 ) );
 		REQUIRE( fromString<string>( "hello" ) == string( "hello" ) );
 		REQUIRE( fromString<CustomType>( "123" ) == CustomType( 123 ) );
-		
+
 		string s( "http://libcinder.org" );
 		REQUIRE( fromString<Url>( s ).str() == Url( "http://libcinder.org" ).str() );
 	}
@@ -210,7 +210,7 @@ TEST_CASE( "Utilities" )
 		string str1 = loadString( app::loadAsset( "test_load_write_string.txt" ) );
 
 		// Save it to disk
-		const fs::path outPath = app::getAppPath() / "test_out.txt"; 
+		const fs::path outPath = app::getAppPath() / "test_out.txt";
 		writeString( outPath, str1 );
 
 		// Re-read it and compare the result;
@@ -219,31 +219,31 @@ TEST_CASE( "Utilities" )
 		REQUIRE( str1.size() == str2.size() );
 		REQUIRE( str1 == str2 );
 	}
-    
+
     SECTION( "split string " )
     {
         // one separator type
         string str1 = "one two three four";
         std::vector<string> resultStr1{"one", "two", "three", "four"};
         REQUIRE( ci::split(str1, ' ', false) == resultStr1 );
-        
+
         // multiple separators
         string str2 = "one,two---three four";
         std::vector<string> resultStr2{"one", "two", "", "", "three", "four"};
         REQUIRE( ci::split(str2, ",- ", false) == resultStr2 );
-        
-        
+
+
         // one separator, compress = true
         string str3 = "one,two,three,four";
         std::vector<string> resultStr3{"one", "two", "three", "four"};
         REQUIRE( ci::split(str3, ',', true) == resultStr3 );
-        
-        
+
+
         // multiple separators, compress = true
         string str4 = "one,two---three four";
         std::vector<string> resultStr4{"one", "two", "three", "four"};
         REQUIRE( ci::split(str4, ",- ", true) == resultStr4 );
-        
+
     }
 
 	SECTION( "asciiCaseEqual std::string" )
@@ -257,7 +257,7 @@ TEST_CASE( "Utilities" )
 		REQUIRE( ! ci::asciiCaseEqual( string("abc"), string("abd") ) );
 		REQUIRE( ! ci::asciiCaseEqual( string("abc"), string("abcd") ) );
 	}
-    
+
 	SECTION( "asciiCaseEqual const char*" )
 	{
 		REQUIRE( ci::asciiCaseEqual( "", "" ) );

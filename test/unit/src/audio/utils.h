@@ -4,7 +4,7 @@
 #include "cinder/CinderAssert.h"
 #include "cinder/Rand.h"
 
-#define ACCEPTABLE_FLOAT_ERROR 0.000001f 
+#define ACCEPTABLE_FLOAT_ERROR 0.000001f
 
 inline void fillRandom( ci::audio::Buffer *buffer )
 {

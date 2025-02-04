@@ -245,7 +245,7 @@ void AppTestApp::draw()
 	}
 
 	// draw test textures
-	
+
 	auto offset = vec2( 0 );
 
 	if( mTexAsset ) {

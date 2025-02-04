@@ -196,7 +196,7 @@ void AudioTestsApp::resize()
 void AudioTestsApp::update()
 {
 	if( mImGuiEnabled ) {
-		updateImGui();	
+		updateImGui();
 	}
 	if( mCurrentTest ) {
 		mCurrentTest->update();
@@ -317,7 +317,7 @@ void showContextGraph( ci::audio::Context *ctx )
 		string name = hovered->getName();
 		substituteNodeLabel( name );
 
-		const char *processMode = hovered->getProcessesInPlace() ? "in-place" : "sum"; 
+		const char *processMode = hovered->getProcessesInPlace() ? "in-place" : "sum";
 		string channelMode;
 		switch( hovered->getChannelMode() ) {
 			case audio::Node::ChannelMode::SPECIFIED:		channelMode = "specified"; break;

@@ -25,7 +25,7 @@ TEST_CASE("Path2d")
 		line.moveTo( 50, 50 ); line.lineTo( 150, 150 );
 		REQUIRE( subPathHelper( line, 0.3f, 0.7f ) );
 		REQUIRE( subPathHelper( line, 0.0f, 1.0f ) );
-		
+
 		Path2d quad;
 		quad.moveTo( 50, 50 ); quad.quadTo( 75, 123, 150, 147 );
 		REQUIRE( subPathHelper( quad, 0.3f, 0.7f ) );
@@ -36,7 +36,7 @@ TEST_CASE("Path2d")
 		REQUIRE( subPathHelper( cubic, 0.3f, 0.7f ) );
 		REQUIRE( subPathHelper( cubic, 0.0f, 1.0f ) );
 	}
-	
+
 	SECTION("getSubPath: Multi Segment")
 	{
 		Path2d p1;
@@ -44,7 +44,7 @@ TEST_CASE("Path2d")
 		REQUIRE( subPathHelper( p1, 0.3f, 0.7f ) );
 		REQUIRE( subPathHelper( p1, 0.2f, 1.0f ) );
 		REQUIRE( subPathHelper( p1, 0.0f, 0.7f ) );
-		
+
 		Path2d p2;
 		p2.moveTo( 50, 50 ); p2.lineTo( 123, 345 ); p2.quadTo( 77, 88, 111, 121 );
 		REQUIRE( subPathHelper( p2, 0.3f, 0.7f ) );
@@ -62,7 +62,7 @@ TEST_CASE("Path2d")
 		REQUIRE( subPathHelper( p3, 0.3f, 0.7f ) );
 		REQUIRE( subPathHelper( p3, 0.2f, 1.0f ) );
 		REQUIRE( subPathHelper( p3, 0.0f, 0.7f ) );
-		
+
 		Rand r1;
 		for( int p = 0; p < 50; ++p ) {
 			Path2d p4;
@@ -84,12 +84,12 @@ TEST_CASE("Path2d")
 			}
 			if( r1.nextBool() )
 				p4.close();
-			console() << p4 << std::endl;  
+			console() << p4 << std::endl;
 			REQUIRE( subPathHelper( p4, 0.3f, 0.7f ) );
 			REQUIRE( subPathHelper( p4, 0.2f, 1.0f ) );
-			REQUIRE( subPathHelper( p4, 0.0f, 0.7f ) );			
+			REQUIRE( subPathHelper( p4, 0.0f, 0.7f ) );
 		}
-		
+
 	}
 
 	// Distance
@@ -126,9 +126,9 @@ TEST_CASE("Path2d")
 		p.moveTo( input[0] );
 		p.lineTo( input[1] );
 		p.lineTo( input[2] );
-		
+
 		REQUIRE( p.calcDistance( vec2( 50, 150 ) ) == Approx( 0 ) ); // co-sited with middle point
-		REQUIRE( p.calcDistance( vec2( 50, 150 ), 0 ) == Approx( 50 ) ); // co-sited with righmost point, but test only the first segment		
+		REQUIRE( p.calcDistance( vec2( 50, 150 ), 0 ) == Approx( 50 ) ); // co-sited with righmost point, but test only the first segment
 		REQUIRE( p.calcDistance( vec2( -1, 150 ) ) == Approx( 1 ) ); // exterior, directly left 1
 		REQUIRE( p.calcSignedDistance( vec2( -1, 150 ) ) == Approx( 1 ) ); // interior, one unit right of the left vertical line
 		REQUIRE( p.calcDistance( vec2( 1, 150 ) ) == Approx( 1 ) ); // interior, one unit right of the left vertical line
@@ -140,10 +140,10 @@ TEST_CASE("Path2d")
 		Path2d p; // shape matches Path2d guide from the docs
 		p.moveTo( vec2( 300.0f, 270.0f ) );
 		p.quadTo( vec2( 300.0f, 70.0f ), vec2( 500.0f, 70.0f ) );
-		
+
 		REQUIRE( p.calcDistance( vec2( 300.0f, 270.0f ) ) == Approx( 0 ) ); // co-sited with first point
 		REQUIRE( glm::distance( p.calcClosestPoint( vec2( 300.0f, 270.0f ) ), vec2( 300.0f, 270.0f ) ) == Approx( 0 ) ); // co-sited with first point
-		REQUIRE( p.calcDistance( vec2( 300.0f, 70.0f ) ) == Approx( 70.71 ) ); // middle control point; closest is ( 350, 120 ); sqrt(50*50 + 50*50) 
+		REQUIRE( p.calcDistance( vec2( 300.0f, 70.0f ) ) == Approx( 70.71 ) ); // middle control point; closest is ( 350, 120 ); sqrt(50*50 + 50*50)
 		REQUIRE( glm::distance( p.calcClosestPoint( vec2( 300.0f, 70.0f ) ), vec2( 350.0f, 120.0f ) ) == Approx( 0 ) ); // middle control point
 	}
 
@@ -152,7 +152,7 @@ TEST_CASE("Path2d")
 		Path2d p; // shape matches Path2d guide from the docs
 		p.moveTo( vec2( 300.0f, 270.0f ) );
 		p.curveTo( vec2( 400.0f, 270.0f ), vec2( 400.0f, 70.0f ), vec2( 500.0f, 70.0f ) );
-				
+
 		REQUIRE( p.calcDistance( vec2( 300.0f, 270.0f ) ) == Approx( 0 ) ); // co-sited with first point
 		REQUIRE( glm::distance( p.calcClosestPoint( vec2( 300.0f, 270.0f ) ), vec2( 300.0f, 270.0f ) ) == Approx( 0 ) ); // co-sited with first point
 		REQUIRE( p.calcDistance( vec2( 400.0f, 270.0f ) ) == Approx( 51.2251847f ) ); // second control point; closest is ( 360.310f, 237.616f );
@@ -169,7 +169,7 @@ TEST_CASE("Path2d")
 		float t = p.calcNormalizedTime( 0.5f );
 		REQUIRE( glm::distance( p.getPosition( t ), vec2( 50, 50 ) ) == Approx( 0 ).epsilon( 0.001 ) );
 	}
-	
+
 	SECTION("translate")
 	{
 		Path2d p;

@@ -17,7 +17,7 @@ class iosQuickTimeTestApp : public App {
 	void mouseDrag( MouseEvent event ) override;
 	void update() override;
 	void draw() override;
-	
+
 	qtime::MovieGlRef		mMovie;
 	gl::TextureRef			mFrameTexture;
 	vector<gl::TextureRef>	mSavedTextures;
@@ -55,12 +55,12 @@ void iosQuickTimeTestApp::update()
 
 void iosQuickTimeTestApp::draw()
 {
-	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::clear( Color( 0, 0, 0 ) );
 	if( mFrameTexture ) {
 		Rectf centeredRect = Rectf( mFrameTexture->getBounds() ).getCenteredFit( getWindowBounds(), true );
 		gl::draw( mFrameTexture, centeredRect - vec2( 0, centeredRect.y1 ) );
 	}
-	
+
 	// draw saved textures
 	float savedWidth = getWindowWidth() / (float)mSavedTextures.size();
 	float savedHeight = savedWidth / mMovie->getAspectRatio();

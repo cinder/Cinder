@@ -19,7 +19,7 @@ using namespace std;
 namespace im = ImGui;
 
 NodeBasicTest::NodeBasicTest()
-{	
+{
 	mSubTests = {
 		"sine",
 		"2 to 1",

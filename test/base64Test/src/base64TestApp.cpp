@@ -10,7 +10,7 @@ using namespace std;
 class base64TestApp : public App {
   public:
 	void setup();
-	void mouseDown( MouseEvent event );	
+	void mouseDown( MouseEvent event );
 	void update();
 	void draw();
 };
@@ -22,7 +22,7 @@ std::string toString( Buffer b )
 	char *temp = new char[b.getSize()+1];
 	memcpy( temp, b.getData(), b.getSize() );
 	temp[b.getSize()] = 0;
-	return string( temp );	
+	return string( temp );
 }
 
 void base64TestApp::setup()
@@ -31,9 +31,9 @@ void base64TestApp::setup()
 	assert( toBase64( "any carnal pleasure" ) == "YW55IGNhcm5hbCBwbGVhc3VyZQ==" );
 	assert( toBase64( "any carnal pleasur" ) == "YW55IGNhcm5hbCBwbGVhc3Vy" );
 	assert( toBase64( "any carnal pleasu" ) == "YW55IGNhcm5hbCBwbGVhc3U=" );
-	assert( toBase64( "any carnal pleas" ) == "YW55IGNhcm5hbCBwbGVhcw==" );	
-	
-	for( int a = 0; a < 1000; ++a ) { 
+	assert( toBase64( "any carnal pleas" ) == "YW55IGNhcm5hbCBwbGVhcw==" );
+
+	for( int a = 0; a < 1000; ++a ) {
 		std::string test;
 		for( int t = 0; t < a; ++t )
 			test += 'A' + ( t % 26 );
@@ -58,7 +58,7 @@ void base64TestApp::update()
 void base64TestApp::draw()
 {
 	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::clear( Color( 0, 0, 0 ) );
 }
 
 

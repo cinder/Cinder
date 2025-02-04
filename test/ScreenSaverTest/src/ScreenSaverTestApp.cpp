@@ -130,7 +130,7 @@ void ScreenSaverTestApp::draw()
 //	CI_LOG_I( "Drawing" << *getDisplay() );
 
 	gl::enableAlphaBlending();
-		
+
 	if( isPreview() )
 		gl::clear( Color( 0, 0.95f, 1.0f ) );
 	else
@@ -139,7 +139,7 @@ void ScreenSaverTestApp::draw()
 	gl::color( mColor );
 	//gl::drawSolidCircle( getWindowCenter(), mRadius );
 	gl::drawSolidRect( Rectf( getWindowCenter() - vec2( mRadius, mRadius ), getWindowCenter() + vec2( mRadius, mRadius ) ) );
-	
+
 	if( mConfig.mDrawCinderLogo ) {
 		gl::color( Color::white() );
 		gl::draw( mLogo, getWindowCenter() - vec2( mLogo->getSize() / 2 ) );

@@ -68,7 +68,7 @@ void MyCinderApp::draw()
 	::CGContextFillEllipseInRect( ctx, CGRectMake( getWindowCenter().x - mRadius, getWindowCenter().y - mRadius,
 			mRadius * 2, mRadius * 2 ) );
 #else
-	gl::clear();	
+	gl::clear();
 	gl::color( Color( 1, 0.5f, 0.25f ) );
 	gl::drawSolidCircle( getWindowCenter(), mAnimatedRadius );
 	gl::color( mColor );
@@ -94,17 +94,17 @@ void MyCinderApp::mouseUp( MouseEvent event )
 
 void MyCinderApp::mouseDrag( MouseEvent event )
 {
-	console() << "Drag:" << event.getPos() << std::endl;	
+	console() << "Drag:" << event.getPos() << std::endl;
 }
 
 void MyCinderApp::mouseMove( MouseEvent event )
 {
-	console() << "Move:" << event.getPos() << std::endl;	
+	console() << "Move:" << event.getPos() << std::endl;
 }
 
 void MyCinderApp::touchesMoved( TouchEvent event )
 {
-	console() << "Touches Moved:" << event << std::endl;	
+	console() << "Touches Moved:" << event << std::endl;
 }
 
 void MyCinderApp::keyDown( KeyEvent event )
@@ -117,5 +117,5 @@ void MyCinderApp::keyDown( KeyEvent event )
 
 void MyCinderApp::fileDrop( FileDropEvent event )
 {
-	console() << "File Drop:" << event.getPos() << std::endl;	
+	console() << "File Drop:" << event.getPos() << std::endl;
 }

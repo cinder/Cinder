@@ -11,7 +11,7 @@ class SamplerObjectApp : public App {
   public:
 	void setup() override;
 	void draw() override;
-	
+
 	gl::TextureRef		mTex;
 	gl::Sampler			mSampler1;
 	gl::SamplerRef		mSampler2;
@@ -28,7 +28,7 @@ void SamplerObjectApp::setup()
 void SamplerObjectApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
-	
+
 	// left half should be nearest as dictated by sampler-less texture
 	gl::draw( mTex, Rectf( 0, 0, 160, 160 ) );
 	// left half should be linear as dictated by sampler

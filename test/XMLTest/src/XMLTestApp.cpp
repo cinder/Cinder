@@ -14,7 +14,7 @@ using namespace std;
 class XMLTestApp : public App {
   public:
 	void setup();
-	void mouseDown( MouseEvent event );	
+	void mouseDown( MouseEvent event );
 	void update();
 	void draw();
 };
@@ -26,7 +26,7 @@ const XmlTree& findTrackNamed( const XmlTree &library, const std::string &search
 		if( trackIter->getValue() == searchTrack )
 			return *trackIter;
 	}
-	
+
 	// failed to find a track named 'searchTrack'
 	throw XmlTree::ExcChildNotFound( library, searchTrack );
 }
@@ -68,9 +68,9 @@ void XMLTestApp::setup()
 	XmlTree ownerCity = doc.getChild( "///library/////owner/city" );
 	console() << "Path: " << ownerCity.getPath() << "  Value: " << ownerCity.getValue() << std::endl;
 	console() << doc;
-	
+
 	console() << findTrackNamed( doc.getChild( "library" ), "Wolf" );
-	
+
 	// Whoops - assignment by value doesn't modifying the original XmlTree
 	XmlTree firstTrackCopy = doc.getChild( "/library/album/track" );
 	firstTrackCopy.setValue( "Replacement name" );
@@ -114,7 +114,7 @@ void XMLTestApp::update()
 void XMLTestApp::draw()
 {
 	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::clear( Color( 0, 0, 0 ) );
 }
 
 

@@ -41,7 +41,7 @@ void CinderDLLApp::setup()
 	mCamera = CameraPersp( getWindowWidth(), getWindowHeight(), 50.0f, 0.01f, 10.0f );
 	mCameraUi = CameraUi( &mCamera, getWindow() );
 	mCamera.lookAt( vec3( 1.0f ), vec3( 0.0f ) );
-	
+
 	mObject = gl::Batch::create( geom::Teapot().subdivisions( 32 ), gl::getStockShader( gl::ShaderDef().color().lambert() ) );
 
 	mFbo = gl::Fbo::create( getWindowWidth(), getWindowHeight(), gl::Fbo::Format().depthTexture().samples( 8 ) );
@@ -64,7 +64,7 @@ void CinderDLLApp::mouseDown( MouseEvent event )
 void CinderDLLApp::update()
 {
 	gl::ScopedFramebuffer scopedFbo( mFbo );
-	gl::clear( Color::gray( 0.2f ) ); 
+	gl::clear( Color::gray( 0.2f ) );
 	gl::setMatrices( mCamera );
 
 	gl::ScopedDepth scopedDepth( true );

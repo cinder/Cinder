@@ -12,7 +12,7 @@ class ExtrudeSplineApp : public App {
   public:
 	ExtrudeSplineApp();
 	void draw() override;
-	
+
 	gl::BatchRef		mBatch[5];
 	gl::BatchRef		mBatchNormals[5];
 	gl::BatchRef		mBatchLines[5];
@@ -42,35 +42,35 @@ mTexture( gl::Texture2d::create( ip::checkerboard( 512, 512 ), gl::Texture2d::Fo
 	const auto createSpline = []( const vector<vec3> splinePoints ) {
 		return BSpline3f( splinePoints, splinePoints.size() - 1, false, true );
 	};
-	
+
 	// create the test geom::Sources
-	TriMesh source[5] = { 
+	TriMesh source[5] = {
 		geom::ExtrudeSpline( createCircle( 0.125f, 3 ),  // normals issues
-							createSpline( { vec3( 0, 0.0f, 0 ), vec3( 0, 0.25f, 0 ), vec3( 0, 0.5f, 0 ), vec3( 0, 0.75f, 0 ), vec3( 0, 1.0f, 0 ) } ), 
+							createSpline( { vec3( 0, 0.0f, 0 ), vec3( 0, 0.25f, 0 ), vec3( 0, 0.5f, 0 ), vec3( 0, 0.75f, 0 ), vec3( 0, 1.0f, 0 ) } ),
 							30 )
 							 >> geom::Translate( -2.0f, 0.0f, 0.0f ),
 
-		geom::ExtrudeSpline( createCircle( 0.125f, 5 ),  // normals issues 
-							createSpline( { vec3( 0, 0.0f, 0 ), vec3( 0, 0.25f, 0 ), vec3( 0, 0.5f, 0 ), vec3( 0, 0.75f, 0 ), vec3( 0, 1.0f, 0 ) } ), 
+		geom::ExtrudeSpline( createCircle( 0.125f, 5 ),  // normals issues
+							createSpline( { vec3( 0, 0.0f, 0 ), vec3( 0, 0.25f, 0 ), vec3( 0, 0.5f, 0 ), vec3( 0, 0.75f, 0 ), vec3( 0, 1.0f, 0 ) } ),
 							30 )
 							 >> geom::Translate( -1.0f, 0.0f, 0.0f ),
 
 		geom::ExtrudeSpline( createCircle( 0.125f, 5 ),   // normals reconstructed with TriMesh::recalculateNormals
-							createSpline( { vec3( 0, 0.0f, 0 ), vec3( 0, 0.25f, 0 ), vec3( 0, 0.5f, 0 ), vec3( 0, 0.75f, 0 ), vec3( 0, 1.0f, 0 ) } ), 
+							createSpline( { vec3( 0, 0.0f, 0 ), vec3( 0, 0.25f, 0 ), vec3( 0, 0.5f, 0 ), vec3( 0, 0.75f, 0 ), vec3( 0, 1.0f, 0 ) } ),
 							30 )
 							 >> geom::Translate( 0.0f, 0.0f, 0.0f ),
 
 		geom::ExtrudeSpline( createCircle( 0.125f, 9 ), // last segment normals / black faces
-							 createSpline( { vec3( 0, 0.0f, 0 ), vec3( 0.1, 0.5, 0 ), vec3( 0.2, 0.75, 0 ), vec3( 0.4, 1, 0 ), vec3( 0.6, 0.75, 0 ) } ), 
-							 30 ).thickness( []( float t ) { return smoothstep( 1.0f, 0.15f, t ); } ) 
+							 createSpline( { vec3( 0, 0.0f, 0 ), vec3( 0.1, 0.5, 0 ), vec3( 0.2, 0.75, 0 ), vec3( 0.4, 1, 0 ), vec3( 0.6, 0.75, 0 ) } ),
+							 30 ).thickness( []( float t ) { return smoothstep( 1.0f, 0.15f, t ); } )
 							 >> geom::Translate( 1.0f, 0.0f, 0.0f ),
-		
-		geom::ExtrudeSpline( createCircle( 0.025f, 15 ),  // last segment normals / black faces 
-							 createSpline( { vec3( 0, 0.0f, 0 ), vec3( 0.0, 0.0, 0 ), vec3( -0.2, 0.75, 0 ), vec3( -0.4, 1, 0 ) } ), 
-							 30 ).thickness( []( float t ) { return smoothstep( 1.0f, 0.15f, t ) * smoothstep( 0.0f, 0.15f, t ); } ) 
+
+		geom::ExtrudeSpline( createCircle( 0.025f, 15 ),  // last segment normals / black faces
+							 createSpline( { vec3( 0, 0.0f, 0 ), vec3( 0.0, 0.0, 0 ), vec3( -0.2, 0.75, 0 ), vec3( -0.4, 1, 0 ) } ),
+							 30 ).thickness( []( float t ) { return smoothstep( 1.0f, 0.15f, t ) * smoothstep( 0.0f, 0.15f, t ); } )
 							 >> geom::Translate( 2.0f, 0.0f, 0.0f )
 	};
-	
+
 	// recalculate the normals only for the third ExtrudeSpline
 	source[2].recalculateNormals( true, true );
 
@@ -87,8 +87,8 @@ mTexture( gl::Texture2d::create( ip::checkerboard( 512, 512 ), gl::Texture2d::Fo
 
 void ExtrudeSplineApp::draw()
 {
-	gl::clear( Color( 0, 0, 0 ) ); 
-	
+	gl::clear( Color( 0, 0, 0 ) );
+
 	gl::ScopedDepth scopedDepth( true );
 	gl::ScopedTextureBind scopedTexBind( mTexture );
 	gl::setMatrices( mCamera );

@@ -20,14 +20,14 @@ class SphereProjectionApp : public App {
 	void draw() override;
 
 	vec2 clipToScreenCoords( const vec2 &v ) const;
-	
+
 	vec3				mSpherePositions[3];
 	float				mSphereRadii[3];
 	CameraPersp			mCam;
 	float				mFov;
-	
+
 	params::InterfaceGlRef	mParams;
-	
+
 	gl::TextureRef			mTex;
 	gl::BatchRef			mPlaneBatch;
 
@@ -46,14 +46,14 @@ void SphereProjectionApp::setup()
 	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 200 ) ) );
 	mParams->addParam( "FOV", &mFov );
 	mParams->addButton( "Pause", [=] { if( mTimer.isStopped() ) mTimer.resume(); else mTimer.stop(); } );
-	
+
 	mCam.lookAt( vec3( 15, 10, 20 ), vec3( 0 ) );
-	
+
 	mTex = gl::Texture::create( ip::checkerboard( 256, 256 ) );
 	mTex->bind();
-	
+
 	mPlaneBatch = gl::Batch::create( geom::Plane().size( vec2( 40, 40 ) ), gl::getStockShader( gl::ShaderDef().texture() ) );
-	
+
 	mTimer.start();
 }
 
@@ -94,20 +94,20 @@ void SphereProjectionApp::draw()
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 	gl::enableAlphaBlending();
-	
+
 	gl::setMatrices( mCam );
 	gl::clear( Color( 0, 0, 0 ) );
 
 	gl::color( 1, 1, 1 );
 	mPlaneBatch->draw();
-	
+
 	gl::color( 1, 0, 0 );
 	gl::drawSphere( mSpherePositions[0], mSphereRadii[0], 40 );
 	gl::color( 0, 1, 0 );
 	gl::drawSphere( mSpherePositions[1], mSphereRadii[1], 40 );
 	gl::color( 0, 0, 1 );
 	gl::drawSphere( mSpherePositions[2], mSphereRadii[2], 40 );
-	
+
 	gl::setMatricesWindow( getWindowSize() );
 
 	for( int i = 0; i < 3; ++i ) {
@@ -124,12 +124,12 @@ void SphereProjectionApp::draw()
 		gl::drawLine( clipToScreenCoords( center - axisA ), clipToScreenCoords( center + axisA ) );
 		gl::drawLine( clipToScreenCoords( center - axisB ), clipToScreenCoords( center + axisB ) );
 		gl::color( 1, 1, 1, 1 );
-		
+
 		// draw bounding circle
 		mCam.calcScreenProjection( worldSpaceSphere, getWindowSize(), &center, &axisA, &axisB );
 		gl::drawStrokedCircle( center, std::max( length( axisA ), length( axisB ) ) );
 	}
-	
+
 	mParams->draw();
 }
 

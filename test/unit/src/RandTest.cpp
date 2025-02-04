@@ -117,7 +117,7 @@ TEST_CASE("Rand", "[noisy]")
 			nums.push_back( randGaussian() );
 		}
 		console() << "randGaussian() distribution" << std::endl;
-		printDistribution( nums, 20 );	
+		printDistribution( nums, 20 );
 	}
 
 	#ifdef NDEBUG

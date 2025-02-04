@@ -8,7 +8,7 @@ using namespace ci::app;
 using namespace std;
 
 class EventTestApp : public App {
- public:	
+ public:
 	void mouseDown( MouseEvent event );
 	void mouseUp( MouseEvent event );
 	void mouseWheel( MouseEvent event );
@@ -101,7 +101,7 @@ void EventTestApp::keyDown( KeyEvent event )
 	stringstream ss;
 	char ch = ( event.getChar() == 0 ) ? ' ' : event.getChar();
 	ss << "You pressed the '" << ch << "' key with code: " << event.getCode() << keyModifiersToText( event );
-	console() << ss.str() << endl;	
+	console() << ss.str() << endl;
 }
 
 void EventTestApp::keyUp( KeyEvent event )

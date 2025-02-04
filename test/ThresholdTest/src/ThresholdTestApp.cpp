@@ -44,11 +44,11 @@ void ThresholdTestApp::setup()
 	mParams->addParam( "Show Grayscale", &mShowOriginalGrayScale );
 	mParams->addParam( "Adaptive Kernel", &mAdaptiveThresholdKernel, "min=0 max=1000 keyIncr=k keyDecr=K" );
 	mParams->addParam( "Adaptive Percentage", &mAdaptiveThresholdPercentage, "min=0 max=1.0 step=0.01 keyIncr=p keyDecr=P" );
-	
+
 	mThresholdValue = 128;
 	mAdaptiveThresholdPercentage = 0.01f;
 	mAdaptiveThresholdKernel = 64;
-	
+
 	loadFile( getOpenFilePath() );
 }
 
@@ -95,7 +95,7 @@ void ThresholdTestApp::draw()
 
 	if( mTexture )
 		gl::draw( mTexture );
-	
+
 	mParams->draw();
 }
 

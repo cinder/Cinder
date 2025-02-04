@@ -14,7 +14,7 @@ class GLTileRenderTestApp : public App {
 	void update();
 	void drawFrame();
 	void draw();
-	
+
 	CameraPersp mCam;
 	float		mCurrentRotation;
 };
@@ -67,7 +67,7 @@ void GLTileRenderTestApp::drawFrame()
 {
 	glClearColor( 0.1f, 0.1f, 0.3f, 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
-		
+
 	gl::pushModelView();
 		glRotatef( mCurrentRotation, 0, 0, 1.0f );
 		glBegin( GL_TRIANGLES );
@@ -79,7 +79,7 @@ void GLTileRenderTestApp::drawFrame()
 			glVertex2f( -5, 5 );
 		glEnd();
 	gl::popModelView();
-	
+
 	glLineWidth( 17.0f );
 	glColor3f( 1, 0.5f, 0.25f );
 	glBegin( GL_LINE_LOOP );
@@ -89,8 +89,8 @@ void GLTileRenderTestApp::drawFrame()
 		glVertex2f( 7, -7 );
 		glVertex2f( 7, 7 );
 		glVertex2f( -1, 2 );
-	glEnd();	
-	
+	glEnd();
+
 	glColor3f( 1, 1, 0 );
 	glRasterPos2i( 0, 0 );
 	glBitmap( 16, 16, 0.0, 0.0, 0, 0, smiley );

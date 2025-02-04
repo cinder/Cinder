@@ -21,7 +21,7 @@ class TriMeshReadWriteTestApp : public App {
 	void	testObjFileWriteRead();
 	void	loadObjFile( const fs::path &filePath );
 	void	draw() override;
-	
+
 	CameraUi		mCamUi;
 	CameraPersp		mCam;
 	TriMeshRef		mMesh;
@@ -31,7 +31,7 @@ class TriMeshReadWriteTestApp : public App {
 };
 
 void TriMeshReadWriteTestApp::setup()
-{	
+{
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
 	mGlsl->uniform( "uTex0", 0 );
 
@@ -55,7 +55,7 @@ void TriMeshReadWriteTestApp::testObjFileWriteRead()
 #else
 	fs::path writePath = getAppPath().parent_path();
 #endif
-	
+
 	// write
 	t.start();
 	ObjLoader loader( loadResource( RES_8LBS_OBJ ) );

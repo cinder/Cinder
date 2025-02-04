@@ -34,7 +34,7 @@ void AABBtestApp::setup()
 
 	assert( mBox.intersects( AxisAlignedBox( vec3( -1 ), vec3( 1 ) ) ) );
 	assert( mBox.intersects( AxisAlignedBox( vec3( 3, 0, 1 ), vec3( 3, 1, 0 ) ) ) );
-	assert( !mBox.intersects( Ray( vec3( 4, 0, -10 ), vec3( 0, 0, 1 ) ) ) );	
+	assert( !mBox.intersects( Ray( vec3( 4, 0, -10 ), vec3( 0, 0, 1 ) ) ) );
 
 	mCube = gl::Batch::create( geom::WireCube().size( 1, 1, 1 ), gl::getStockShader( gl::ShaderDef().color() ) );
 
@@ -90,10 +90,10 @@ void AABBtestApp::draw()
 	vec3 src = vec3( 5 );
 	vec3 dir = vec3( -1 );
 	Ray ray( src, dir );
-	
+
 	gl::color( 1, 0, 0 );
 	gl::drawLine( src, src + 10.0f * dir );
-	
+
 	float min, max;
 	if( aabb.intersect( ray, &min, &max ) > 0 ) {
 		gl::color( 0, 1, 1 );

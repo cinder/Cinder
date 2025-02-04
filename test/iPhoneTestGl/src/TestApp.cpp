@@ -30,19 +30,19 @@ void TestApp::setup()
 			iter.b() = iter.y();
 		}
 	}
-	
+
 	mTex = gl::Texture( surface );
 	mTex = gl::Texture( loadImage( loadResource( "cinder_logo_alpha.png" ) ) );
-	
-	//mTempSurface = renderString( "Frame: " + toString( getElapsedFrames() ), Font( "Arial", 56 ), Color( 1, 0.5, 0.25 ) );	
+
+	//mTempSurface = renderString( "Frame: " + toString( getElapsedFrames() ), Font( "Arial", 56 ), Color( 1, 0.5, 0.25 ) );
 	mFont = Font( "Arial", 56 );
 	//Buffer buffer = loadStreamBuffer( loadFileStream( getResourcePath( "Beyonce.jpg" ) ) );
 	//mTex = gl::Texture( loadImage( DataSourceBuffer::createRef( buffer, ".jpg" ) ) );
 //	mTex = gl::Texture( loadImage( loadUrl( Url( "http://images.apple.com/home/images/hero_imac.jpg" ) ) ) );
 
 	console() << "System version: " << System::getOsMajorVersion() << "." << System::getOsMinorVersion() << "." << System::getOsBugFixVersion() << std::endl;
-	
-console() << "size: " << getWindowSize() << " @ " << getWindow()->getContentScale() << std::endl;	
+
+console() << "size: " << getWindowSize() << " @ " << getWindow()->getContentScale() << std::endl;
 }
 
 void TestApp::resize( int width, int height )
@@ -88,7 +88,7 @@ void TestApp::draw()
 		gl::multModelView( mCubeRotation );
 		gl::drawCube( vec3::zero(), vec3( 2.0f, 2.0f, 2.0f ) );
 	glPopMatrix();*/
-	
+
 	gl::setMatricesWindow( getWindowSize() );
 	gl::setViewport( getWindowBounds() );
 //	gl::drawString( (Rand::randBool() ? ( "Fjrameyq: " ) : ( "Frame: " )) + toString( getElapsedFrames() ), vec2( 10, 40 ), Color( 1, 0.5, 0.25 ), mFont );

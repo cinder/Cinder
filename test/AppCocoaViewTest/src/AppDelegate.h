@@ -9,7 +9,7 @@
 	IBOutlet CinderViewMac	*cinderView;
 	IBOutlet NSWindow		*window;
 	IBOutlet NSColorWell	*colorWell;
-	
+
 	MyCinderApp				*mApp;
 }
 
