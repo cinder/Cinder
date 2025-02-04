@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2010, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -45,7 +45,7 @@
 #define CI_GLSL(VERSION,CODE) "#version " #VERSION "\n" #CODE
 
 namespace cinder { namespace gl {
-	
+
 typedef std::shared_ptr<class GlslProg> GlslProgRef;
 
 class UniformValueCache;
@@ -76,7 +76,7 @@ class CI_API GlslProg {
 
 		friend class GlslProg;
 	};
-	
+
 	struct CI_API Uniform {
 		//! Returns a const reference of the name as defined inside the Glsl.
 		const std::string&	getName() const { return mName; }
@@ -93,25 +93,25 @@ class CI_API GlslProg {
 		GLenum				getType() const { return mType; }
 		//! Returns the defined UniformSemantic.
 		UniformSemantic		getUniformSemantic() const { return mSemantic; }
-		
+
 	  private:
 		std::string		mName;
 		GLint			mCount = 0, mLoc = -1, mIndex = -1;
 		GLenum			mType = ~0u;
 		UniformSemantic mSemantic = UniformSemantic::UNIFORM_USER_DEFINED;
-		
+
 		//! Used internally for the value cache. Size of a single element.
 		GLint			mTypeSize = 0;
 		//! Used internally for the value cache.
 		GLint			mBytePointer = 0;
-		
+
 		friend class GlslProg;
 	};
-	
+
 #if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 
 	struct CI_API UniformBlock {
-		
+
 		//! Returns a const reference of the name as defined inside the Glsl.
 		const std::string&	getName() const { return mName; }
 		//! Returns the implementation-dependent minimum total buffer object
@@ -123,7 +123,7 @@ class CI_API GlslProg {
 		//! Returns the Glsl generated or user generated block binding of this
 		//! uniform block.
 		GLint				getBlockBinding() const { return mBlockBinding; }
-		
+
 		//! Returns a const reference of all the active uniforms within this uniform block.
 		const std::vector<Uniform>& getActiveUniforms() const { return mActiveUniforms; }
 		//! Returns 3 different aspects of this block for more advanced partitioning of data. Contains
@@ -135,14 +135,14 @@ class CI_API GlslProg {
 		//! in basic machine units, of each of the active uniforms, or zero for uniforms not
 		//! declared as an array.
 		std::map<GLenum, std::vector<GLint>> getActiveUniformInfo() const { return mActiveUniformInfo; }
-		
+
 	  private:
 		std::string				mName;
 		GLint					mDataSize = 0, mLoc = -1;
 		mutable GLint			mBlockBinding;
 		std::vector<Uniform>	mActiveUniforms;
 		std::map<GLenum, std::vector<GLint>> mActiveUniformInfo;
-		
+
 		friend class GlslProg;
 	};
 
@@ -151,7 +151,7 @@ class CI_API GlslProg {
 #if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
 	struct CI_API TransformFeedbackVaryings {
-		
+
 		//! Returns a const reference of the name as defined inside the Glsl.
 		const std::string&	getName() const { return mName; }
 		//! Returns the number of transform feedback varying expected by the Glsl.
@@ -159,12 +159,12 @@ class CI_API GlslProg {
 		GLint				getCount() const { return mCount; }
 		//! Returns the GLenum representation of the type of this transform feedback varying (for example, \c GL_FLOAT_VEC3)
 		GLenum				getType() const { return mType; }
-		
+
 	  private:
 		std::string		mName;
 		GLint			mCount = 0;
 		GLenum			mType;
-		
+
 		friend class GlslProg;
 	};
 
@@ -173,7 +173,7 @@ class CI_API GlslProg {
 	struct CI_API Format {
 		//! Defaults to specifying location 0 for the \c geom::Attrib::POSITION semantic
 		Format();
-		
+
 		//! Supplies the GLSL source for the vertex shader
 		Format&		vertex( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the vertex shader
@@ -272,14 +272,14 @@ class CI_API GlslProg {
 		Format&		version( int version );
 		//! Returns the #version directive that the ShaderPreprocessor will add to shader sources, if they don't contain an explicit `#version` string.
 		int	getVersion() const;
-		
+
 		//! Returns the debugging label associated with the Program.
 		const std::string&	getLabel() const { return mLabel; }
 		//! Sets the debugging label associated with the Program. Calls glObjectLabel() when available.
 		void				setLabel( const std::string &label ) { mLabel = label; }
 		//! Sets the debugging label associated with the Program. Calls glObjectLabel() when available.
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
-        
+
 		//! Returns the fs::path for the vertex shader. Returns an empty fs::path if it isn't present.
 		const fs::path&	getVertexPath() const { return mVertexShaderPath; }
 		//! Returns the fs::path for the fragment shader. Returns an empty fs::path if it isn't present.
@@ -289,7 +289,7 @@ class CI_API GlslProg {
 		const std::vector<Attribute>&	getAttributes() const { return mAttributes; }
 		std::vector<Uniform>&			getUniforms() { return mUniforms; }
 		std::vector<Attribute>&			getAttributes() { return mAttributes; }
-		
+
 	  protected:
 		void			setShaderSource( const DataSourceRef &dataSource, std::string *shaderSourceDest, fs::path *shaderPathDest );
 		void			setShaderSource( const std::string &source, std::string *shaderSourceDest, fs::path *shaderPathDest );
@@ -327,7 +327,7 @@ class CI_API GlslProg {
 
 		friend class		GlslProg;
 	};
-  
+
 	typedef std::map<std::string,UniformSemantic>	UniformSemanticMap;
 	typedef std::map<std::string,geom::Attrib>		AttribSemanticMap;
 
@@ -349,11 +349,11 @@ class CI_API GlslProg {
 	static GlslProgRef create( const std::string &vertexShader, const std::string &fragmentShader = std::string() );
 #endif
 	~GlslProg();
-	
+
 	void			bind() const;
-	
+
 	GLuint			getHandle() const { return mHandle; }
-	
+
 	void	uniform( const std::string &name, bool data ) const;
 	void	uniform( const std::string &name, int data ) const;
 	void	uniform( const std::string &name, float data ) const;
@@ -413,16 +413,16 @@ class CI_API GlslProg {
 	void	uniform( int location, const mat2 *data, int count, bool transpose = false ) const;
 	void	uniform( int location, const mat3 *data, int count, bool transpose = false ) const;
 	void	uniform( int location, const mat4 *data, int count, bool transpose = false ) const;
-	
+
 	bool	hasAttribSemantic( geom::Attrib semantic ) const;
 	GLint	getAttribSemanticLocation( geom::Attrib semantic ) const;
 	GLint	operator[]( geom::Attrib sem ) const { return getAttribSemanticLocation( sem ); }
-	
+
 	//! Default mapping from uniform name to semantic. Can be modified via the reference. Not thread-safe.
 	static UniformSemanticMap&		getDefaultUniformNameToSemanticMap();
 	//! Default mapping from attribute name to semantic. Can be modified via the reference. Not thread-safe.
 	static AttribSemanticMap&		getDefaultAttribNameToSemanticMap();
-	
+
 	//! Returns the attrib location of the Attribute that matches \a name.
 	GLint							getAttribLocation( const std::string &name ) const;
 	//! Returns a const reference to the Active Attribute cache.
@@ -457,7 +457,7 @@ class CI_API GlslProg {
 	const TransformFeedbackVaryings* findTransformFeedbackVaryings( const std::string &name ) const;
 	//! Returns a const reference to the TransformFeedbackVaryings cache.
 	const std::vector<TransformFeedbackVaryings>& getActiveTransformFeedbackVaryings() const { return mTransformFeedbackVaryings; }
-#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )	
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	std::string		getShaderLog( GLuint handle ) const;
 
 	//! Returns a list of included files (via the `#include` directive) detected and parsed by the ShaderPreprocessor.
@@ -474,7 +474,7 @@ class CI_API GlslProg {
 	void			bindImpl() const;
 	GLuint			loadShader( const std::string &shaderSource, const fs::path &shaderPath, GLint shaderType, const ShaderPreprocessorRef &preprocessor );
 	void			link();
-	
+
 	//! Caches all active Attributes after linking.
 	void			cacheActiveAttribs();
 	//! Returns a pointer to the Attribute that matches \a name. Returns nullptr if the attrib doesn't exist.
@@ -483,7 +483,7 @@ class CI_API GlslProg {
 	void			cacheActiveUniforms();
 	//! Returns a pointer to the Uniform that matches \a location. Returns nullptr if the uniform doesn't exist.
 	const Uniform*	findUniform( int location, int *resultLocation ) const;
-	
+
 	//! Performs the finding, validation, and implementation of single uniform variables. Ends by calling the location
 	//! variant uniform function.
 	template<typename LookUp, typename T>
@@ -508,7 +508,7 @@ class CI_API GlslProg {
 	void			uniformMatImpl( const LookUp &lookUp, const T *data, int count, bool transpose ) const;
 	template<typename T>
 	void			uniformMatFunc( int location, const T *data, int count, bool transpose ) const;
-	
+
 	//! Logs an error and caches the name.
 	void			logMissingUniform( const std::string &name ) const;
 	//! Logs an error and caches the name.
@@ -544,9 +544,9 @@ class CI_API GlslProg {
 
 	template<typename T>
 	static std::string	cppTypeToGlslTypeName();
-	
+
 	GLuint									mHandle;
-	
+
 	std::vector<Attribute>						mAttributes;
 	std::vector<Uniform>						mUniforms;
 	mutable std::unique_ptr<UniformValueCache>	mUniformValueCache;
@@ -557,7 +557,7 @@ class CI_API GlslProg {
 	std::vector<TransformFeedbackVaryings>  mTransformFeedbackVaryings;
 	GLenum									mTransformFeedbackFormat;
 #endif
-	
+
 	// enumerates the uniforms we've already logged as missing so that we don't flood the log with the same message
 	mutable std::set<std::string>			mLoggedUniformNames;
 	mutable std::set<int>					mLoggedUniformLocations;
@@ -579,10 +579,10 @@ class CI_API GlslProgExc : public cinder::gl::Exception {
 class CI_API GlslProgCompileExc : public GlslProgExc {
   public:
 	GlslProgCompileExc( const std::string &log, GLint shaderType );
-	
+
 	//! Returns the glsl shader type: GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, ...
 	GLint getShaderType() const { return mShaderType; }
-	
+
   protected:
 	GLint mShaderType;
 };

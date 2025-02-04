@@ -40,7 +40,7 @@ public:
 	//! Returns the extents of the axis-aligned box.
 	const vec3& getExtents() const { return mExtents; }
 
-	//! Returns the size of the axis-aligned box. 
+	//! Returns the size of the axis-aligned box.
 	vec3 getSize() const { return 2.0f * mExtents; }
 
 	//! Returns the corner of the axis-aligned box with the smallest x, y and z coordinates.

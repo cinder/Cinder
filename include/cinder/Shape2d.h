@@ -74,18 +74,18 @@ class CI_API Shape2d {
 
 	//! Reverses the orientation of the shape's contours, changing CW to CCW and vice versa.
 	void	reverse();
-	
+
 	bool	empty() const { return mContours.empty(); }
 	void	clear() { mContours.clear(); }
 	size_t	getNumContours() const { return mContours.size(); }
-	
+
 	const Path2d&				getContour( size_t i ) const { return mContours[i]; }
 	Path2d&						getContour( size_t i ) { return mContours[i]; }
 	const std::vector<Path2d>&	getContours() const { return mContours; }
 	std::vector<Path2d>&		getContours() { return mContours; }
-	
+
 	const vec2&	getCurrentPoint() const { return mContours.back().getCurrentPoint(); }
-	
+
 	//! Appends the contours of \a shape to this Shape2d
 	void			append( const Shape2d &shape );
     void			appendContour( const Path2d &contour ) { mContours.push_back( contour ); }
@@ -144,7 +144,7 @@ class CI_API Shape2d {
 			}*/
 		}
 	}
-	
+
   private:
 	std::vector<Path2d>	mContours;
 };

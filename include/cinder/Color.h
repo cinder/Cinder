@@ -42,12 +42,12 @@ class CI_API ColorT
 {
   public:
 	T		r, g, b;
-	
+
 	ColorT() : r( 0 ), g( 0 ), b( 0 ) {}
 	ColorT( T red, T green, T blue )
 		: r( red ), g( green ), b( blue )
 	{}
-	ColorT( const ColorT<T> &src ) 
+	ColorT( const ColorT<T> &src )
 		: r( src.r ), g( src.g ), b( src.b )
 	{}
 	ColorT( const vec3 &src )
@@ -60,8 +60,8 @@ class CI_API ColorT
 	ColorT( ColorModel cm, float c0, float c1, float c2 );
 
 	template<typename FromT>
-	ColorT( const ColorT<FromT> &src ) 
-		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) ) 
+	ColorT( const ColorT<FromT> &src )
+		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) )
 	{}
 
 	template<class FromT>
@@ -161,7 +161,7 @@ class CI_API ColorT
 	{
 		uint8_t red = ( hexValue >> 16 ) & 255;
 		uint8_t green = ( hexValue >> 8 ) & 255;
-		uint8_t blue = hexValue & 255;		
+		uint8_t blue = hexValue & 255;
 		return ColorT<T>( CHANTRAIT<T>::convert( red ), CHANTRAIT<T>::convert( green ), CHANTRAIT<T>::convert( blue ) );
 	}
 
@@ -174,16 +174,16 @@ class CI_API ColorT
 
 template<typename T>
 class CI_API ColorAT {
- public: 
+ public:
 	T		r,g,b,a;
 
-	ColorAT() 
+	ColorAT()
 		: r( 0 ), g( 0 ), b( 0 ), a( 0 )
 	{}
 	ColorAT( T red, T green, T blue, T alpha = CHANTRAIT<T>::convert( 1.0f ) )
 		: r( red ), g( green ), b( blue ), a( alpha )
 	{}
-	ColorAT( const ColorAT<T> &src ) 
+	ColorAT( const ColorAT<T> &src )
 		: r( src.r ), g( src.g ), b( src.b ), a( src.a )
 	{}
 	ColorAT( const ColorT<T> &color, T alpha = CHANTRAIT<T>::convert( 1.0f ) )
@@ -194,10 +194,10 @@ class CI_API ColorAT {
 	ColorAT( ColorModel cm, float c0, float c1, float c2, float alpha = CHANTRAIT<T>::convert( 1.0f ) );
 
 	template<typename FromT>
-	ColorAT( const ColorT<FromT> &src ) 
-		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) ), a( CHANTRAIT<T>::convert( 1.0f ) ) 
+	ColorAT( const ColorT<FromT> &src )
+		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) ), a( CHANTRAIT<T>::convert( 1.0f ) )
 	{}
-	
+
 	ColorAT( const vec4 &src )
 		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) ), a( CHANTRAIT<T>::convert( src.a ) )
 	{
@@ -209,7 +209,7 @@ class CI_API ColorAT {
 	{}
 
 	template<class FromT>
-	ColorAT<T> operator=( const ColorAT<FromT>& rhs ) 
+	ColorAT<T> operator=( const ColorAT<FromT>& rhs )
 	{
 		r = CHANTRAIT<T>::convert( rhs.r );
 		g = CHANTRAIT<T>::convert( rhs.g );
@@ -217,7 +217,7 @@ class CI_API ColorAT {
 		a = CHANTRAIT<T>::convert( rhs.a );
 		return * this;
 	}
-	
+
 	//! Returns the components of the Color as expressed in the ColorModel \a cm
 	vec3 get( ColorModel cm ) const;
 	//! Sets the Color using ColorModel \a cm. The fourth component represents alpha.
@@ -307,7 +307,7 @@ class CI_API ColorAT {
 	{
 		uint8_t red = ( hexValue >> 16 ) & 255;
 		uint8_t green = ( hexValue >> 8 ) & 255;
-		uint8_t blue = hexValue & 255;		
+		uint8_t blue = hexValue & 255;
 		return ColorAT<T>( CHANTRAIT<T>::convert( red ), CHANTRAIT<T>::convert( green ), CHANTRAIT<T>::convert( blue ), CHANTRAIT<T>::max() );
 	}
 
@@ -420,25 +420,25 @@ inline ColorAT<T> normalize( const ColorAT<T> &c0 )
 // uint8_t * operators specializations
 template<>
 inline const ColorAT<uint8_t>& ColorAT<uint8_t>::operator*=( const ColorAT<uint8_t> &rhs )
-{ 
+{
 	r = r * rhs.r / 255; g = g * rhs.g / 255; b = b * rhs.b / 255; a = a * rhs.r; return *this;
 }
 
 template<>
 inline const ColorAT<uint8_t>& ColorAT<uint8_t>::operator*=( uint8_t rhs )
-{ 
+{
 	r = r * rhs / 255; g = g * rhs / 255; b = b * rhs / 255; return *this;
 }
 
 template<>
 inline ColorAT<uint8_t> ColorAT<uint8_t>::operator*( const ColorAT<uint8_t> &rhs ) const
-{ 
+{
 	return ColorAT<uint8_t>( r * rhs.r / 255, g * rhs.g / 255, b * rhs.b / 255 );
 }
 
 template<>
 inline ColorAT<uint8_t> ColorAT<uint8_t>::operator*( uint8_t rhs ) const
-{ 
+{
 	return ColorAT<uint8_t>( r * rhs / 255, g * rhs / 255, b * rhs / 255 );
 }
 
@@ -447,25 +447,25 @@ inline ColorAT<uint8_t> ColorAT<uint8_t>::operator*( uint8_t rhs ) const
 // uint8_t / operators specializations
 template<>
 inline const ColorAT<uint8_t>& ColorAT<uint8_t>::operator/=( const ColorAT<uint8_t> &rhs )
-{ 
+{
 	r = r * 255 / rhs.r; g = g * 255 / rhs.g; b = b / 255 * rhs.b; return *this;
 }
 
 template<>
 inline const ColorAT<uint8_t>& ColorAT<uint8_t>::operator/=( uint8_t rhs )
-{ 
+{
 	r = r * 255 / rhs; g = g * 255 / rhs; b = b / 255 * rhs; return *this;
 }
 
 template<>
 inline ColorAT<uint8_t> ColorAT<uint8_t>::operator/( const ColorAT<uint8_t> &rhs ) const
-{ 
+{
 	return ColorAT<uint8_t>( r * 255 / rhs.r, g * 255 / rhs.g, b * 255 / rhs.b, a );
 }
 
 template<>
 inline ColorAT<uint8_t> ColorAT<uint8_t>::operator/( uint8_t rhs ) const
-{ 
+{
 	return ColorAT<uint8_t>( r * 255 / rhs, g * 255 / rhs, b * 255 / rhs, a );
 }
 

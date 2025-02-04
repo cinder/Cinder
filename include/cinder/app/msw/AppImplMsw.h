@@ -64,7 +64,7 @@ class AppImplMsw {
  public:
 	AppImplMsw( class AppBase *aApp );
 	virtual ~AppImplMsw();
-	
+
 	class AppBase*		getApp() { return mApp; }
 
 	float			getFrameRate() const { return mFrameRate; }
@@ -73,10 +73,10 @@ class AppImplMsw {
 
 	virtual WindowRef	getWindow() const { return mActiveWindow; }
 	void				setWindow( WindowRef window ) { mActiveWindow = window; }
-	
+
 	static void	hideCursor();
 	static void	showCursor();
-	
+
   protected:
 	bool					setupHasBeenCalled() const { return mSetupHasBeenCalled; }
 	virtual void			closeWindow( class WindowImplMsw *windowImpl ) = 0;
@@ -184,7 +184,7 @@ class BlankingWindow {
 
   protected:
 	static void		registerWindowClass();
-	
+
 	HWND			mWnd;
 };
 

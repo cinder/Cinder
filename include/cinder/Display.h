@@ -52,7 +52,7 @@ class CI_API Display {
 	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! Returns the bounding Area of the Display in points, measured relative to primary display's upper-left corner.
 	Area			getBounds() const;
-	
+
 	//! Returns the system position (relative to the system's primary display's upper-left corner) of a Display-relative \a displayRelativeCoordinate. The results are suitable for use with app::Window's position functions.
 	ivec2			getSystemCoordinate( const ivec2 &displayRelativeCoordinate ) const;
 
@@ -75,11 +75,11 @@ class CI_API Display {
 	static DisplayRef						getDisplayForPoint( const ivec2 &pt );
 	//! Returns the Area which spans all Displays
 	static Area								getSpanningArea();
-	
+
 	friend CI_API std::ostream& operator<<( std::ostream &o, const Display &display )
 	{
 		return o << display.mArea << " @ " << display.mBitsPerPixel << "bpp @ scale " << display.mContentScale;
-	}	
+	}
 
   protected:
 	Area				mArea;

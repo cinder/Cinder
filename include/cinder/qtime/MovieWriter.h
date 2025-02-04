@@ -1,15 +1,15 @@
 /*
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
- 
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
- 
+
  * Redistributions of source code must retain the above copyright notice, this list of conditions and
  the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
  the following disclaimer in the documentation and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -160,13 +160,13 @@ class MovieWriter {
 	/** \brief Appends a frame to the Movie. The optional \a duration parameter allows a frame to be inserted for a time other than the Format's default duration.
 		\note Calling addFrame() after a call to finish() will throw a MovieWriterExcAlreadyFinished exception. **/
 	void addFrame( const ImageSourceRef &imageSource, float duration = -1.0f ) { mObj->addFrame( imageSource, duration ); }
-	
+
 	//! Returns the number of frames in the movie
 	uint32_t	getNumFrames() const { return mObj->mNumFrames; }
 
 	//! Completes the encoding of the movie and closes the file. Calling finish() more than once has no effect.
 	void finish() { mObj->finish(); }
-	
+
 	enum { CODEC_H264 = 'avc1', CODEC_JPEG = 'jpeg', CODEC_MP4 = 'mp4v', CODEC_PNG = 'png ', CODEC_RAW = 'raw ', CODEC_ANIMATION = 'rle ' };
 
   private:
@@ -174,11 +174,11 @@ class MovieWriter {
 	struct Obj {
 		Obj( const fs::path &path, int32_t width, int32_t height, const Format &format );
 		~Obj();
-		
+
 		void	addFrame( const ImageSourceRef &imageSource, float duration );
 		void	createCompressionSession();
 		void	finish();
-		
+
 		static OSStatus encodedFrameOutputCallback( void *refCon, ::ICMCompressionSessionRef session, OSStatus err, ICMEncodedFrameRef encodedFrame, void *reserved );
 
 		::Movie							mMovie;
@@ -186,22 +186,22 @@ class MovieWriter {
 		::Track							mTrack;
 		::Media							mMedia;
 		::ICMCompressionSessionRef		mCompressionSession;
-		::ICMCompressionPassModeFlags 	mMultiPassModeFlags;		
+		::ICMCompressionPassModeFlags 	mMultiPassModeFlags;
 		fs::path		mPath;
 		uint32_t		mNumFrames;
 		int64_t			mCurrentTimeValue;
-		
+
 		int32_t		mWidth, mHeight;
 		Format		mFormat;
-		bool		mRequestedMultiPass, mDoingMultiPass, mFinished;		
+		bool		mRequestedMultiPass, mDoingMultiPass, mFinished;
 
 		IoStreamRef		mMultiPassFrameCache;
 
 		std::vector<std::pair<int64_t,int64_t> >	mFrameTimes;
 	};
 	/// \endcond
-	
-	std::shared_ptr<Obj>		mObj;  
+
+	std::shared_ptr<Obj>		mObj;
 
   public:
 	//@{
@@ -209,7 +209,7 @@ class MovieWriter {
 	typedef std::shared_ptr<Obj> MovieWriter::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &MovieWriter::mObj; }
 	void reset() { mObj.reset(); }
-	//@}  
+	//@}
 };
 
 class MovieWriterExc : public Exception {

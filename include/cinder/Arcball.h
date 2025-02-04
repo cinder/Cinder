@@ -45,12 +45,12 @@ class CI_API Arcball {
 		: mCamera( camera ), mUseConstraint( false ), mSphere( sphere )
 	{
 	}
-	
+
 	void mouseDown( const app::MouseEvent &event )
 	{
 		mouseDown( event.getPos(), event.getWindow()->getSize() );
 	}
-	
+
 	void mouseDown( const vec2 &mousePos, const ivec2 &windowSize )
 	{
 		mInitialMousePos = mousePos;
@@ -63,7 +63,7 @@ class CI_API Arcball {
 	{
 		mouseDrag( event.getPos(), event.getWindow()->getSize() );
 	}
-	
+
 	void mouseDrag( const vec2 &mousePos, const ivec2 &windowSize )
 	{
 		float addition;
@@ -81,18 +81,18 @@ class CI_API Arcball {
 
 		mCurrentQuat = normalize( rotation * mInitialQuat );
 	}
-	
+
 	void			resetQuat()						{ mCurrentQuat = mInitialQuat = quat(); }
 	const quat& 	getQuat() const					{ return mCurrentQuat; }
 	void			setQuat( const quat &q )		{ mCurrentQuat = q; }
 	void			setSphere( const Sphere &s )	{ mSphere = s; }
 	const Sphere&	getSphere() const				{ return mSphere; }
-	
+
 	void		setConstraintAxis( const vec3 &constraintAxis )		{ mConstraintAxis = normalize( constraintAxis ); mUseConstraint = true; }
 	void		setNoConstraintAxis()								{ mUseConstraint = false; }
 	bool		isUsingConstraint() const							{ return mUseConstraint; }
 	const vec3&	getConstraintAxis() const							{ return mConstraintAxis; }
-	
+
 	void mouseOnSphere( const vec2 &point, const ivec2 &windowSize, vec3 *resultVector, float *resultAngleAddition )
 	{
 		float rayT;
@@ -114,7 +114,7 @@ class CI_API Arcball {
 			vec3 closestPointOnSphere = mSphere.closestPoint( newRay );
 			// our result point is the vector between this closest point on the sphere and its center
 			*resultVector = normalize( closestPointOnSphere - mSphere.getCenter() );
-			
+
 			// our angle addition is the screen-space distance between the mouse and the closest point on the sphere, divided into
 			// the screen-space radius of the sphere's projected ellipse, multiplied by pi
 			float screenRadius = std::max( length( axisA ), length( axisB ) );
@@ -144,7 +144,7 @@ class CI_API Arcball {
 				onPlane = -onPlane;
 			return ( onPlane * ( 1.0f / math<float>::sqrt( norm ) ) );
 		}
-		
+
 		if( dot( axis, vec3( 0, 0, 1 ) ) < 0.0001f )
 			onPlane = vec3( 1, 0, 0 );
 		else

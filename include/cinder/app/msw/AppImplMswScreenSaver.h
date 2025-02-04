@@ -38,7 +38,7 @@ class AppImplMswScreenSaver : public AppImplMsw {
  public:
 	AppImplMswScreenSaver( AppScreenSaver *app, HWND wnd, const AppScreenSaver::Settings &settings );
 	virtual ~AppImplMswScreenSaver() {}
-	
+
 	void		init( HWND aWnd );
 	void		run();
 	//! do nothing, we can't really force a quit
@@ -47,7 +47,7 @@ class AppImplMswScreenSaver : public AppImplMsw {
 	void        setFrameRate( float /*frameRate*/ ) override {}
 
 	LRESULT eventHandler( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
-	
+
 	WindowRef	getWindow() const override;
 	//! Returns the number of Windows the app has open
 	size_t		getNumWindows() const;

@@ -1,4 +1,4 @@
-/*  
+/*
  Copyright (c) 2012, The Cinder Project, All rights reserved.
  Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
@@ -37,7 +37,7 @@ class RendererDx : public Renderer {
   public:
 	RendererDx( int aAntiAliasing = AA_MSAA_16 );
 	~RendererDx();
-	
+
 	static RendererDxRef	create( int antiAliasing = AA_MSAA_16  ) { return RendererDxRef( new RendererDx( antiAliasing ) ); }
 	virtual RendererRef		clone() const { return RendererDxRef( new RendererDx( *this ) ); }
 
@@ -67,7 +67,7 @@ class RendererDx : public Renderer {
 	MatrixStack &getProjection() { return mProjection; }
 
 	class RendererImplDx	*mImpl;
-	
+
  protected:
 	RendererDx( const RendererDx &renderer );
 

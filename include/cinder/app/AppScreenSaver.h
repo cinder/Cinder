@@ -64,7 +64,7 @@ class AppScreenSaver : public AppBase {
 		//! When enabled, secondary displays are blanked (rendered as black) rather than issued \a draw() calls. Disabled by default on Mac OS X, enabled by default on MSW.
 		void	enableSecondaryDisplayBlanking( bool enable = true ) { mEnableSecondaryDisplayBlanking = enable; }
 		//! Returns whether secondary displays will be blanked (rendered as black) rather than issued \a draw() calls. Disabled by default on Mac OS X, enabled by default on MSW.
-		bool	isSecondaryDisplayBlankingEnabled() const { return mEnableSecondaryDisplayBlanking; }	
+		bool	isSecondaryDisplayBlankingEnabled() const { return mEnableSecondaryDisplayBlanking; }
 
 #if defined( CINDER_MAC )
 		//! Declares whether the application will respond to a \a createMacConfigDialog() call. Default is \c false
@@ -144,7 +144,7 @@ class AppScreenSaver : public AppBase {
 	{
 		AppBase::prepareLaunch();
 		AppBase::initialize( settings, std::make_shared<RendererT>(), title, 0, nullptr );
-	
+
 		if( settingsFn )
 			settingsFn( settings );
 	}

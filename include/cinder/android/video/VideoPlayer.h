@@ -25,14 +25,14 @@
 
 #include "cinder/android/CinderAndroid.h"
 #include "cinder/android/JniHelper.h"
-#include "cinder/gl/Texture.h" 
-#include "cinder/Url.h" 
+#include "cinder/gl/Texture.h"
+#include "cinder/Url.h"
 
 namespace cinder { namespace android { namespace app {
 
 class CinderNativeActivity;
 
-}}} // namespace cinder::android::app 
+}}} // namespace cinder::android::app
 
 namespace cinder { namespace android { namespace video {
 
@@ -55,7 +55,7 @@ public:
 
 	void					seekToTime( float seconds );
 	void					seekToStart();
-	void					seekToEnd();	
+	void					seekToEnd();
 
 	void 					setLoop( bool loop );
 

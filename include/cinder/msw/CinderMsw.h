@@ -81,7 +81,7 @@ class CI_API ComOStream : public ::IStream
 
     virtual HRESULT STDMETHODCALLTYPE QueryInterface( REFIID iid, void ** ppvObject );
     virtual ULONG STDMETHODCALLTYPE AddRef();
-    virtual ULONG STDMETHODCALLTYPE Release(); 
+    virtual ULONG STDMETHODCALLTYPE Release();
 
   // ISequentialStream Interface
   public:
@@ -112,7 +112,7 @@ public:
 
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface( REFIID iid, void ** ppvObject );
 	virtual ULONG STDMETHODCALLTYPE AddRef();
-	virtual ULONG STDMETHODCALLTYPE Release(); 
+	virtual ULONG STDMETHODCALLTYPE Release();
 
 	// ISequentialStream Interface
 public:

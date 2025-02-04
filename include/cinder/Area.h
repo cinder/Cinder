@@ -44,13 +44,13 @@ class CI_API Area {
 	explicit Area( const RectT<float> &r );
 
 	void			set( int32_t aX1, int32_t aY1, int32_t aX2, int32_t aY2 );
-		
+
 	int32_t		getWidth() const { return x2 - x1; }
 	int32_t		getHeight() const { return y2 - y1; }
 	ivec2		getSize() const { return ivec2( x2 - x1, y2 - y1 ); }
 	vec2		getCenter() const { return vec2( ( x1 + x2 ) / 2.0f, ( y1 + y2 ) / 2.0f ); }
 	int32_t		calcArea() const { return getWidth() * getHeight(); }
-	
+
 	void			clipBy( const Area &clip );
 	Area		getClipBy( const Area &clip ) const;
 
@@ -127,7 +127,7 @@ class CI_API Area {
 	friend CI_API std::ostream& operator<<( std::ostream &o, const Area &area )
 	{
 		return o << "(" << area.x1 << ", " << area.y1 << ")-(" << area.x2 << ", " << area.y2 << ")";
-	}	
+	}
 };
 
 extern CI_API std::pair<Area,ivec2> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcArea, const Area &dstSurfaceBounds, const ivec2 &dstLT );

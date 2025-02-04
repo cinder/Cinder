@@ -40,7 +40,7 @@ class CI_API Serial : private Noncopyable {
 		Device() {}
 		Device( const std::string &nameAndPath ) : mName( nameAndPath ), mPath( nameAndPath ) {}
 		Device( const std::string &name, const std::string &path ) : mName( name ), mPath( path ) {}
-		
+
 		const std::string& getName() const { return mName; }
 		const std::string& getPath() const { return mPath; }
 
@@ -48,7 +48,7 @@ class CI_API Serial : private Noncopyable {
 		std::string		mName;
 		std::string		mPath;
 	};
-	
+
 	//! Returns a vector of all serial devices available on the machine. Uses a cached list unless \a forceRefresh
 	static const std::vector<Serial::Device>& getDevices( bool forceRefresh = false );
 	//! Returns the first Serial::Device whose name is \a name. Returns a null Serial::Device if none are found. Uses a cached list of the serial devices unless \a forceRefresh.
@@ -62,7 +62,7 @@ class CI_API Serial : private Noncopyable {
 
 	//! Returns the Device associated with this Serial port
 	const Device&	getDevice() const;
-	
+
 	//! Reads \a numBytes bytes of data from the serial port to \a data.
 	void	readBytes( void *data, size_t numBytes );
 	//! Reads up to \a maximumBytes bytes of data from the serial port to \a data. Returns the number of bytes read.
@@ -85,7 +85,7 @@ class CI_API Serial : private Noncopyable {
 	void	flush( bool input = true, bool output = true );
 	//! Returns the number of bytes available for reading from the device
 	size_t	getNumBytesAvailable() const;
-	
+
   protected:
 	Serial( const Serial::Device &device, int baudRate );
 
@@ -98,7 +98,7 @@ class CI_API Serial : private Noncopyable {
 	static bool							sDevicesInited;
 	static std::vector<Serial::Device>	sDevices;
 };
-	
+
 class CI_API SerialExc : public Exception {
   public:
 	SerialExc( const std::string &description )
@@ -134,11 +134,11 @@ class CI_API SerialExcWriteFailure : public SerialExc {
 	{}
 };
 
-class CI_API SerialTimeoutExc : public SerialExc {	
+class CI_API SerialTimeoutExc : public SerialExc {
   public:
 	SerialTimeoutExc()
 		: SerialExc( "Serial timed out." )
 	{}
 };
-		
+
 } // namespace cinder

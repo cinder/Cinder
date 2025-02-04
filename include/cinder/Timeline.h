@@ -38,8 +38,8 @@ namespace cinder {
 
 typedef std::shared_ptr<class Cue>			CueRef;
 typedef std::shared_ptr<class Timeline>		TimelineRef;
-	
-class CI_API Timeline : public TimelineItem {		
+
+class CI_API Timeline : public TimelineItem {
   public:
 	//! Creates a new timeline, defaulted to infinite
 	static TimelineRef	create() { TimelineRef result( new Timeline() ); result->setInfinite( true ); return result; }
@@ -48,10 +48,10 @@ class CI_API Timeline : public TimelineItem {
 	void	step( float timestep );
 	//! Goes to a specific time and evaluates items.
 	void	stepTo( float absoluteTime );
-	
+
 	//! Returns the timeline's most recent current time
 	float	getCurrentTime() const { return mCurrentTime; }
-	
+
 	//! Replaces any existing tweens on the \a target with a new tween at the timeline's current time
 	template<typename T>
 	typename Tween<T>::Options apply( Anim<T> *target, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> )
@@ -93,7 +93,7 @@ class CI_API Timeline : public TimelineItem {
 		apply( newTween );
 		return typename Tween<T>::Options( newTween, thisRef() );
 	}
-	
+
 	//! Replaces any existing tweens on the \a target with a new tween at the timeline's current time. Consider the apply( Anim<T>* ) variant unless you have an advanced use case.
 	template<typename T>
 	typename Tween<T>::Options applyPtr( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> )
@@ -114,7 +114,7 @@ class CI_API Timeline : public TimelineItem {
 		insert( newTween );
 		return typename Tween<T>::Options( newTween, thisRef() );
 	}
-	
+
 	//! Creates a new tween and adds it to the end of the last tween on \a target, or if no existing tween matches the target, the current time. Consider the appendTo( Anim<T>* ) variant unless you have an advanced use case.
 	template<typename T>
 	typename Tween<T>::Options appendToPtr( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> )
@@ -143,7 +143,7 @@ class CI_API Timeline : public TimelineItem {
 
 	//! Replaces any existing TimelineItems that match \a item's target and adds \a item to the timeline. Safe to use from callback fn's.
 	void apply( TimelineItemRef item );
-	
+
 	//! add an item to the timeline at the current time. Safe to use from callback fn's.
 	void add( TimelineItemRef item );
 	//! adds an item to the timeline. Its start time is not modified. Safe to use from callback fn's.
@@ -171,7 +171,7 @@ class CI_API Timeline : public TimelineItem {
 	void				cloneAndReplaceTarget( void *target, void *replacementTarget );
 	//! Replaces the target of all TimelineItems whose target matches \a target, with \a replacementTarget
 	void				replaceTarget( void *target, void *replacementTarget );
-	
+
 	//! Remove all tweens from the Timeline. Do not call from callback fn's.
 	void clear();
 	//! Sets the time to zero, marks all tweens as not completed, and if \a unsetStarted, marks the tweens as not started. Do not call from callback fn's.
@@ -195,10 +195,10 @@ class CI_API Timeline : public TimelineItem {
 	//! \cond
 	virtual void	stepTo( float absoluteTime, bool /*reverse*/ ) { stepTo( absoluteTime ); }
 	//! \endcond
-	
-  protected:  
+
+  protected:
   	Timeline();
-	
+
 	virtual void reverse();
 	virtual TimelineItemRef cloneReverse() const;
 	virtual TimelineItemRef clone() const;
@@ -212,9 +212,9 @@ class CI_API Timeline : public TimelineItem {
 
 	bool						mDefaultAutoRemove;
 	float						mCurrentTime;
-	
+
 	std::multimap<void*,TimelineItemRef>		mItems;
-	
+
   private:
 	Timeline( const Timeline &rhs ); // private to prevent copying; use clone() method instead
 	Timeline& operator=( const Timeline &rhs ); // not defined to prevent copying
@@ -228,7 +228,7 @@ class CI_API Cue : public TimelineItem {
 
 	void					setFn( const std::function<void ()> &fn ) { mFunction = fn; }
 	std::function<void ()>	getFn() const { return mFunction; }
-	
+
   protected:
 	virtual void				reverse() { /* no-op */ }
 	virtual TimelineItemRef	cloneReverse() const;
@@ -239,7 +239,7 @@ class CI_API Cue : public TimelineItem {
 	virtual void update( float /*relativeTime*/ ) {} // update is a no-op for Cues
 	virtual void complete( bool /*reverse*/ ) {} // completion is a no-op for Cues
 	virtual bool updateAtLoopStart() { return true; }
-  
+
 	std::function<void ()>		mFunction;
 };
 

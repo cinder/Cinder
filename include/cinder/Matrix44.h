@@ -25,7 +25,7 @@
 #include "cinder/Cinder.h"
 #include "glm/mat4x4.hpp"
 
-namespace cinder { 
+namespace cinder {
 
 using glm::mat4;
 using glm::dmat4;

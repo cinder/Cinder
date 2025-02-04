@@ -41,7 +41,7 @@ class CI_API Sphere {
 
 	float	getRadius() const { return mRadius; }
 	void	setRadius( float radius ) { mRadius = radius; }
-	
+
 	vec3	getCenter() const { return mCenter; }
 	void	setCenter( const vec3 &center ) { mCenter = center; }
 

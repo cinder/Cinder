@@ -28,7 +28,7 @@
 
 #import <AppKit/NSView.h>
 #import <Foundation/Foundation.h>
-#import <AppKit/NSTouch.h> 
+#import <AppKit/NSTouch.h>
 #include "cinder/app/TouchEvent.h"
 
 #include <map>
@@ -60,7 +60,7 @@
 	BOOL						mHighDensityDisplayEnabled;
 	BOOL						mMultiTouchEnabled;
 	cinder::app::RendererRef	mRenderer;
-	
+
 	float						mContentScaleFactor;
 
 	NSMutableDictionary					*mTouchIdMap;

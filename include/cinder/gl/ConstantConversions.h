@@ -29,9 +29,9 @@ namespace cinder { namespace gl {
 
 //! Returns a string representation for a subset of the GL constants, stripping the "GL" prefix. Returns empty string if unknown.
 CI_API std::string		constantToString( GLenum constant );
-	
+
 CI_API uint8_t			typeToDimension( GLenum type );
-	
+
 CI_API uint8_t			typeToBytes( GLenum type );
 
 } } // namespace cinder::gl

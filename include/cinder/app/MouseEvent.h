@@ -70,7 +70,7 @@ class CI_API MouseEvent : public Event {
 	bool		isAccelDown() const			{ return (mModifiers & ACCEL_DOWN) ? true : false; }
 	//! Returns the number of detents the user has wheeled through. Positive values correspond to wheel-up and negative to wheel-down.
 	float		getWheelIncrement() const	{ return mWheelIncrement; }
-	
+
 	//! Returns the platform-native modifier mask
 	uint32_t	getNativeModifiers() const	{ return mNativeModifiers; }
 
@@ -88,7 +88,7 @@ class CI_API MouseEvent : public Event {
 		ACCEL_DOWN	= META_DOWN
 #endif
 	};
-			
+
   protected:
 	int				mInitiator;
 	ivec2			mPos;

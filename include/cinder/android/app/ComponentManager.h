@@ -23,7 +23,7 @@
 //
 //#include "cinder/android/JniHelper.h"
 //
-//namespace cinder { namespace app { 
+//namespace cinder { namespace app {
 //
 //class EventManagerAndroid;
 //
@@ -36,7 +36,7 @@
 // */
 //class ComponentManager {
 //public:
-//	
+//
 //	virtual ~ComponentManager();
 //
 //	static ComponentManager* 	instance();

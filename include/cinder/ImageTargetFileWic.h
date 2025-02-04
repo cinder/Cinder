@@ -38,22 +38,22 @@ typedef std::shared_ptr<class ImageTargetFileWic> ImageTargetFileWicRef;
 class ImageTargetFileWic : public ImageTarget {
   public:
 	static ImageTargetRef		create( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
-	
+
 	void*	getRowPointer( int32_t row ) override;
 	void	finalize() override;
-	
+
 	static void		registerSelf();
-	
+
   protected:
 	ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
-	
+
 	void		setupPixelFormat( const GUID &guid );
-	
+
 	std::shared_ptr<uint8_t>	mData;
 	int32_t						mRowBytes;
 	DataTargetRef				mDataTarget;
 	const GUID					*mCodecGUID;
-	
+
 	std::shared_ptr<IWICBitmapEncoder>			mEncoder;
 	std::shared_ptr<IWICBitmapFrameEncode>		mBitmapFrame;
 };

@@ -43,9 +43,9 @@ class ImageSourceFileRadiance : public ImageSource {
 
   protected:
 	ImageSourceFileRadiance( DataSourceRef dataSourceRef, ImageSource::Options options );
-	
+
 	void	loadStream( IStreamRef stream );
-	
+
 	std::unique_ptr<float[]>		mRgbData;
 };
 

@@ -31,7 +31,7 @@
 	#define CI_API
 #endif
 
-#if defined( CINDER_SHARED_BUILD ) || defined( CINDER_SHARED ) 
+#if defined( CINDER_SHARED_BUILD ) || defined( CINDER_SHARED )
 	// "needs to have dll-interface to be used by clients of class" warning
 	#pragma warning (disable: 4251)
 	// "non dll-interface class 'std::exception' used as base for dll-interface class" (Mostly for cinder::Exception)

@@ -61,7 +61,7 @@ class SourceFileMediaFoundation : public SourceFile {
 	ci::msw::ManagedComPtr<ci::msw::ComIStream>		mComIStream;
 	ci::msw::ManagedComPtr<::IMFByteStream>			mByteStream;
 	DataSourceRef									mDataSource; // stored so that clone() can tell if original data source is a file or windows resource
-	
+
 	size_t				mSampleRate;
 	size_t				mNumChannels;
 	size_t				mBytesPerSample;

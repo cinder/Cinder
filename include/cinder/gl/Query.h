@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -41,7 +41,7 @@ class CI_API Query {
 	static QueryRef create( GLenum target );
 
 	virtual ~Query();
-	
+
 	//! Returns the id of this object.
 	GLuint		getId() const { return mId; }
 	//! Returns the target of this object.
@@ -51,7 +51,7 @@ class CI_API Query {
 	virtual void begin();
 	//! Ends a query.
 	virtual void end();
-	
+
 	//! Returns the value of the underlying query with GLint precision.
 	GLint		getValueInt() const;
 	//! Returns the value of the underlying query with GLuint precision.
@@ -60,7 +60,7 @@ class CI_API Query {
 	GLint64		getValueInt64() const;
 	//! Returns the value of the underlying query with GLuint64 precision.
 	GLuint64	getValueUInt64() const;
-	
+
 	//! Writes the value of the query to the buffer bound to \c GL_QUERY_BUFFER, offset by \a params. Writes to address \a params when none is bound.
 	void		getValueInt( GLint* params ) const;
 	//! Writes the value of the query to the buffer bound to \c GL_QUERY_BUFFER, offset by \a params. Writes to address \a params when none is bound.
@@ -76,7 +76,7 @@ class CI_API Query {
 	bool		isValid() const;
   protected:
 	Query( GLuint target );
-	
+
 	GLuint mId;
 	GLenum mTarget;
   private:
@@ -96,14 +96,14 @@ class CI_API QueryTimeSwapped {
 	void begin();
 	//! Ends the time elapsed query and swaps the currently active query buffer.
 	void end();
-		
+
 	//! Returns the elapsed nano seconds from the previous frame query. This is the native data type of the underlying query object. Throws logic_error if not stopped.
 	uint64_t	getElapsedNanoseconds() const;
 	//! Returns the elapsed Milliseconds from the previous frame query. Converts from what gl returns, which is nano seconds. Throws logic_error if not stopped.
 	double		getElapsedMilliseconds() const;
 	//! Returns the elapsed seconds from the previous frame query. Converts from what gl returns, which is nano seconds. Throws logic_error if not stopped.
 	double		getElapsedSeconds() const;
-	
+
   private:
 	QueryTimeSwapped();
 	//! Swap the currently active query buffer.
@@ -116,7 +116,7 @@ class CI_API QueryTimeSwapped {
 	bool					mIsStopped;
 	size_t					mSwapIndex;
 };
-	
+
 class CI_API QueryException : public Exception {
   public:
 	QueryException( const std::string &description ) : Exception( description ) { }

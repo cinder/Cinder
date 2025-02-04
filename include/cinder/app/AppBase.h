@@ -65,7 +65,7 @@ enum InterfaceOrientation {
 };
 
 //! Signal used for retrieving the supported orientations. \t BitwiseAndEventCombiner is used so that any connection can forbid a certain orientation.
-typedef	signals::Signal<uint32_t (), signals::CollectorBitwiseAnd<uint32_t>>		EventSignalSupportedOrientations;	
+typedef	signals::Signal<uint32_t (), signals::CollectorBitwiseAnd<uint32_t>>		EventSignalSupportedOrientations;
 #endif
 
 typedef	signals::Signal<bool (), signals::CollectorBooleanAnd>						EventSignalShouldQuit;
@@ -85,7 +85,7 @@ class CI_API AppBase {
 		void	setWindowSize( const ivec2 &size )					{ mDefaultWindowFormat.setSize( size ); }
 		//! Gets the size of the default window measured in points
 		ivec2	getWindowSize() const								{ return mDefaultWindowFormat.getSize(); }
-		
+
 		//! Returns the position of the default window in screen coordinates measured in pixels
 		ivec2	getWindowPos() const								{ return mDefaultWindowFormat.getPos(); }
 		//! Sets the position of the default window in screen coordinates measured in pixels
@@ -201,17 +201,17 @@ class CI_API AppBase {
 	virtual void	update() {}
 	//! Override to perform any rendering once-per-loop or in response to OS-prompted requests for refreshes.
 	virtual void	draw() {}
-	
+
 	//! Override to receive mouse-down events.
 	virtual void	mouseDown( MouseEvent event ) {}
 	//! Override to receive mouse-up events.
-	virtual void	mouseUp( MouseEvent event ) {}	
+	virtual void	mouseUp( MouseEvent event ) {}
 	//! Override to receive mouse-wheel events.
 	virtual void	mouseWheel( MouseEvent event ) {}
 	//! Override to receive mouse-move events.
 	virtual void	mouseMove( MouseEvent event ) {}
 	//! Override to receive mouse-drag events.
-	virtual void	mouseDrag( MouseEvent event ) {}	
+	virtual void	mouseDrag( MouseEvent event ) {}
 
 	//! Override to respond to the beginning of a multitouch sequence
 	virtual void	touchesBegan( TouchEvent event ) {}
@@ -219,16 +219,16 @@ class CI_API AppBase {
 	virtual void	touchesMoved( TouchEvent event ) {}
 	//! Override to respond to the end of a multitouch sequence
 	virtual void	touchesEnded( TouchEvent event ) {}
-	
+
 	//! Override to receive key-down events.
 	virtual void	keyDown( KeyEvent event ) {}
 	//! Override to receive key-up events.
 	virtual void	keyUp( KeyEvent event ) {}
 	//! Override to receive window resize events.
 	virtual void	resize() {}
-	//! Override to receive file-drop events.	
+	//! Override to receive file-drop events.
 	virtual void	fileDrop( FileDropEvent event ) {}
-	
+
 	//! Override to cleanup any resources before app destruction
 	virtual void	cleanup() {}
 	//! Requests that the application exit gracefully upon completion of the current event loop. Use std::terminate() instead to end application immediately.
@@ -289,7 +289,7 @@ class CI_API AppBase {
 	virtual void	enablePowerManagement( bool powerManagement = true ) { mPowerManagement = powerManagement; }
 	//! is power management enabled, allowing screensavers and the system's power management to hide the application
 	virtual bool	isPowerManagementEnabled() const { return mPowerManagement; }
-	
+
 	//! Returns the width of the App's current window measured in points
 	int					getWindowWidth() const { return getWindow()->getWidth(); }
 	//! Returns the height of the App's current window measured in points
@@ -299,18 +299,18 @@ class CI_API AppBase {
 	//! Sets the size of the App's window measured in points. Ignored in full-screen mode.
 	void				setWindowSize( const ivec2 &size ) { getWindow()->setSize( size ); }
 	//! Returns the center of the App's window measured in points
-	/** Equivalent to <tt>vec2( getWindowWidth() * 0.5, getWindowHeight() * 0.5 )</tt> **/	
+	/** Equivalent to <tt>vec2( getWindowWidth() * 0.5, getWindowHeight() * 0.5 )</tt> **/
 	vec2				getWindowCenter() const { return vec2( (float)getWindowWidth(), (float)getWindowHeight() ) * 0.5f; }
 	//! Returns the size of the App's current window measured in points
 	ivec2				getWindowSize() const { return ivec2( getWindowWidth(), getWindowHeight() ); }
 	//! Returns the aspect ratio of the App's current window
 	float				getWindowAspectRatio() const { return getWindowWidth() / (float)getWindowHeight(); }
 	//! Returns the bounding area of the App's current window measured in points.
-	/** Equivalent to <tt>Area( 0, 0, getWindowWidth(), getWindowHeight() );</tt> **/	
+	/** Equivalent to <tt>Area( 0, 0, getWindowWidth(), getWindowHeight() );</tt> **/
 	Area				getWindowBounds() const { return Area( 0, 0, getWindowWidth(), getWindowHeight() ); }
 	//! Returns the contentScale of the App's window, which is the multiplier that maps points to pixels
 	float				getWindowContentScale() const { return getWindow()->getContentScale(); }
-	
+
 	//! Returns tcoordinates of the top-left corner of the current window measured in points
 	ivec2				getWindowPos() const { return getWindow()->getPos(); }
 	//! Returns the X coordinate of the top-left corner of the current window measured in points
@@ -321,7 +321,7 @@ class CI_API AppBase {
 	void        		setWindowPos( int x, int y ) { setWindowPos( ivec2( x, y ) ); }
 	//! Sets the coordinates of the top-left corner of the current window measured points
 	virtual void        setWindowPos( const ivec2 &windowPos ) { getWindow()->setPos( windowPos ); }
-    
+
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	virtual float		getFrameRate() const = 0;
 	//! Sets the maximum frame-rate the App will attempt to maintain.
@@ -335,7 +335,7 @@ class CI_API AppBase {
 	//! Returns the sampling rate in seconds for measuring the average frame-per-second as returned by getAverageFps()
 	double				getFpsSampleInterval() const { return mFpsSampleInterval; }
 	//! Sets the sampling rate in seconds for measuring the average frame-per-second as returned by getAverageFps()
-	void				setFpsSampleInterval( double sampleInterval ) { mFpsSampleInterval = sampleInterval; }	
+	void				setFpsSampleInterval( double sampleInterval ) { mFpsSampleInterval = sampleInterval; }
 
 	//! Returns whether the App is in full-screen mode or not.
 	virtual bool		isFullScreen() const { return getWindow()->isFullScreen(); }
@@ -400,7 +400,7 @@ class CI_API AppBase {
 
 	//! Executes a std::function on the App's primary thread ahead of the next update()
 	void	dispatchAsync( const std::function<void()> &fn );
-	
+
 	template<typename T>
 	decltype(std::declval<T>()()) dispatchSync( T fn );
 
@@ -418,7 +418,7 @@ class CI_API AppBase {
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
 	//! Returns whether a call to quit() has been issued
 	bool			getQuitRequested() const { return mQuitRequested; }
-	void			setQuitRequested() { mQuitRequested = true; }	
+	void			setQuitRequested() { mQuitRequested = true; }
 	virtual void	privateSetup__();
 	virtual void	privateUpdate__();
 	bool			privateEmitShouldQuit()		{ return mSignalShouldQuit.emit(); }
@@ -460,7 +460,7 @@ class CI_API AppBase {
 
 	signals::Signal<void()>		mSignalUpdate, mSignalCleanup, mSignalWillResignActive, mSignalDidBecomeActive;
 	EventSignalShouldQuit		mSignalShouldQuit;
-	
+
 	signals::Signal<void(const DisplayRef &display)>	mSignalDisplayConnected, mSignalDisplayDisconnected, mSignalDisplayChanged;
 
 	std::shared_ptr<asio::io_context>	mIo;

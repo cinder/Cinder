@@ -36,5 +36,5 @@
 	#include <ghc/fs_fwd.hpp>
 	namespace cinder {
 		namespace fs = ghc::filesystem;
-	} 
+	}
 #endif

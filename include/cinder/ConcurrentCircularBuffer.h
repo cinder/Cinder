@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2012, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -71,7 +71,7 @@ class ConcurrentCircularBuffer : private Noncopyable {
 		if( ! is_not_full_impl() )
 			return false;
 		mContainer.push_back( item );
-		mNotEmptyCond.notify_one();	
+		mNotEmptyCond.notify_one();
 		return true;
 	}
 
@@ -95,7 +95,7 @@ class ConcurrentCircularBuffer : private Noncopyable {
 		std::lock_guard<std::mutex> lock( mMutex );
 		return is_not_full_impl();
 	}
-	
+
 	void cancel() {
 		std::lock_guard<std::mutex> lock( mMutex );
 		mCanceled = true;
@@ -113,10 +113,10 @@ class ConcurrentCircularBuffer : private Noncopyable {
 		mContainer.clear();
 		mNotFullCond.notify_all();
 	}
-	
+
 	//! Returns the number of items the buffer can hold
 	size_t getCapacity() const { return (size_t)mContainer.capacity(); }
-	
+
 	//! Returns the number of items the buffer is currently holding
 	size_t getSize() const {
 		std::lock_guard<std::mutex> lock( mMutex );

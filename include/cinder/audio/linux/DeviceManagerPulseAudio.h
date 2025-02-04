@@ -67,6 +67,6 @@ private:
     DeviceInfo& getDeviceInfo( const DeviceRef &device );
 	void parseDevices( DeviceInfo::Usage usage );
 	std::map<DeviceRef, DeviceInfo>	mDeviceInfoSet;
-};	
+};
 
-} } } // namespace cinder::audio::linux 	
+} } } // namespace cinder::audio::linux

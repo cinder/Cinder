@@ -52,6 +52,6 @@ private:
 	DeviceRef getDefaultDevice();
 
 	DeviceRef   mDefaultDevice;
-};	
+};
 
-} } } // namespace cinder::audio::linux 	
+} } } // namespace cinder::audio::linux

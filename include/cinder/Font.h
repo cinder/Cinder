@@ -54,13 +54,13 @@ class FontObj;
 //! Represents an instance of a font at a point size. \ImplShared
 class CI_API Font {
  public:
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	typedef uint32_t		Glyph;
 	struct GlyphMetrics {
 		ivec2				advance;
 	};
 #else
-	typedef uint16_t		Glyph;	
+	typedef uint16_t		Glyph;
 	struct CI_API GlyphMetrics {};
 #endif
 
@@ -96,7 +96,7 @@ class CI_API Font {
 #if defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	FT_Face					getFreetypeFace() const;
 #endif
-	
+
 	static const std::vector<std::string>&		getNames( bool forceRefresh = false );
 	static Font				getDefault();
 
@@ -127,18 +127,18 @@ class CI_API FontLoadFailedExc : public cinder::Exception {
   public:
 	FontLoadFailedExc() throw() {}
 	FontLoadFailedExc( const std::string &fontName ) throw();
-	virtual const char* what() const throw() { return mMessage; }	
+	virtual const char* what() const throw() { return mMessage; }
   private:
-	char mMessage[2048];	
+	char mMessage[2048];
 };
 
 class CI_API FontInvalidNameExc : public cinder::Exception {
   public:
 	FontInvalidNameExc() throw() {}
 	FontInvalidNameExc( const std::string &fontName ) throw();
-	virtual const char* what() const throw() { return mMessage; }	
+	virtual const char* what() const throw() { return mMessage; }
   private:
-	char mMessage[2048];	
+	char mMessage[2048];
 };
 
 class CI_API FontGlyphFailureExc : public cinder::Exception {

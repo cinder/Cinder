@@ -41,7 +41,7 @@
 	#include "cinder/app/msw/AppMsw.h"
 	namespace cinder { namespace app {
 		typedef AppMsw		App;
-	} } // namespace cinder::app		
+	} } // namespace cinder::app
 	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_MSW( APP, RENDERER, ##__VA_ARGS__ )
 #elif defined( CINDER_UWP )
 	#include "cinder/app/winrt/AppWinRt.h"

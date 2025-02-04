@@ -90,7 +90,7 @@ class CI_API ObjLoader : public geom::Source {
         float		Ka[3];
         float		Kd[3];
     };
-    
+
 	struct Face {
 		int						mNumVertices;
 		std::vector<int32_t>	mVertexIndices;
@@ -109,7 +109,7 @@ class CI_API ObjLoader : public geom::Source {
 
 	//! Returns the total number of groups.
 	size_t		getNumGroups() const { return mGroups.size(); }
-	
+
 	//! Returns a vector<> of the Groups in the OBJ.
 	const std::vector<Group>&		getGroups() const { return mGroups; }
 

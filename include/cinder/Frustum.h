@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2011, The Cinder Project, All rights reserved.
  This code is intended for use with the Cinder C++ library: http://libcinder.org
- 
+
  Portions of this code (C) Paul Houx
  All rights reserved.
 
@@ -89,7 +89,7 @@ class CI_API FrustumT {
 
 	//! Returns a const reference to the Plane associated with /a section of the Frustum.
 	const PlaneT<T>& getPlane( FrustumSection section ) const { return mFrustumPlanes[section]; }
-	
+
   protected:
 	PlaneT<T>	mFrustumPlanes[6];
 };

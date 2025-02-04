@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2015, The Barbarian Group
  All rights reserved.
- 
+
  Portions of this code (C) Paul Houx
  All rights reserved.
 
@@ -38,13 +38,13 @@
 namespace cinder {
 
 typedef std::shared_ptr<class TriMesh>		TriMeshRef;
-	
+
 class CI_API TriMesh : public geom::Source {
  public:
 	class CI_API Format {
 	  public:
 		Format();
-		
+
 		Format&		positions( uint8_t dims = 3 ) { mPositionsDims = dims; return *this; }
 		Format&		normals() { mNormalsDims = 3; return *this; }
 		Format&		tangents() { mTangentsDims = 3; return *this; }
@@ -63,7 +63,7 @@ class CI_API TriMesh : public geom::Source {
 		Format&		texCoords2( uint8_t dims = 2 ) { mTexCoords2Dims = dims; return *this; }
 		//! Enables and establishes the dimensions of texture coords for unit 3
 		Format&		texCoords3( uint8_t dims = 2 ) { mTexCoords3Dims = dims; return *this; }
-		
+
 		uint8_t		mPositionsDims, mNormalsDims, mTangentsDims, mBitangentsDims, mBoneIndicesDims, mBoneWeightsDims, mColorsDims;
 		uint8_t		mTexCoords0Dims, mTexCoords1Dims, mTexCoords2Dims, mTexCoords3Dims;
 	};
@@ -76,15 +76,15 @@ class CI_API TriMesh : public geom::Source {
 	TriMesh( const Format &format = Format().positions().normals().texCoords() );
 	TriMesh( const geom::Source &source );
 	TriMesh( const geom::Source &source, const Format &format );
-	
+
 	//! Creates a suitable TriMesh::Format for representing a geom::Source \a source
 	static Format		formatFromSource( const geom::Source &source );
-	
+
 	void			loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
 	geom::Source*	clone() const override { return new TriMesh( *this ); }
-	
+
 	void		clear();
-	
+
 	bool		hasNormals() const { return ! mNormals.empty(); }
 	bool		hasTangents() const { return ! mTangents.empty(); }
 	bool		hasBitangents() const { return ! mBitangents.empty(); }
@@ -110,17 +110,17 @@ class CI_API TriMesh : public geom::Source {
 	void		appendPosition( const vec3 &position ) { appendPositions( &position, 1 ); }
 	//! Appends a position which can be referred to with appendTriangle() or appendIndices()
 	void		appendPosition( const vec4 &position ) { appendPositions( &position, 1 ); }
-	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
+	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices()
 	void		appendPositions( const vec2 *positions, size_t num );
-	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
+	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices()
 	void		appendPositions( const vec3 *positions, size_t num );
-	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
+	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices()
 	void		appendPositions( const vec4 *positions, size_t num );
-	//! Appends a single normal  
+	//! Appends a single normal
 	void		appendNormal( const vec3 &normal ) { mNormals.push_back( normal ); }
 	//! Functions similarly to appendPositions(), appending multiple normals at once.
 	void		appendNormals( const vec3 *normals, size_t num );
-	//! Appends a single tangent  
+	//! Appends a single tangent
 	void		appendTangent( const vec3 &tangent ) { mTangents.push_back( tangent ); }
 	//! Functions similarly to appendPositions(), appending multiple tangents at once.
 	void		appendTangents( const vec3 *tangents, size_t num );
@@ -171,12 +171,12 @@ class CI_API TriMesh : public geom::Source {
 	void		appendTexCoord2( const vec4 &v ) { appendTexCoords2( &v, 1 ); }
 	//! appends a 4D texture coordinate for unit 3
 	void		appendTexCoord3( const vec4 &v ) { appendTexCoords3( &v, 1 ); }
-	
+
 	//! Appends multiple RGB colors to the TriMesh
 	void		appendColors( const Color *rgbs, size_t num );
 	//! Appends multiple RGBA colors to the TriMesh
 	void		appendColors( const ColorA *rgbas, size_t num );
-	
+
 	//! Appends multiple 2D texcoords for unit 0
 	void		appendTexCoords0( const vec2 *texCoords, size_t num );
 	//! Appends multiple 2D texcoords for unit 1
@@ -185,7 +185,7 @@ class CI_API TriMesh : public geom::Source {
 	void		appendTexCoords2( const vec2 *texCoords, size_t num );
 	//! Appends multiple 2D texcoords for unit 3
 	void		appendTexCoords3( const vec2 *texCoords, size_t num );
-	
+
 	//! Appends multiple 3D texcoords for unit 0
 	void		appendTexCoords0( const vec3 *texCoords, size_t num );
 	//! Appends multiple 3D texcoords for unit 1
@@ -203,7 +203,7 @@ class CI_API TriMesh : public geom::Source {
 	void		appendTexCoords2( const vec4 *texCoords, size_t num );
 	//! Appends multiple 4D texcoords for unit 3
 	void		appendTexCoords3( const vec4 *texCoords, size_t num );
-	
+
 	//! Appends a single triange whose 3 vertices are at indices \a v0, \a v1 and \a v2
 	void		appendTriangle( uint32_t v0, uint32_t v1, uint32_t v2 )
 	{ mIndices.push_back( v0 ); mIndices.push_back( v1 ); mIndices.push_back( v2 ); }
@@ -382,7 +382,7 @@ class CI_API TriMesh : public geom::Source {
 
 	uint8_t		mPositionsDims, mNormalsDims, mTangentsDims, mBitangentsDims, mBoneIndicesDims, mBoneWeightsDims, mColorsDims;
 	uint8_t		mTexCoords0Dims, mTexCoords1Dims, mTexCoords2Dims, mTexCoords3Dims;
-  
+
 	std::vector<float>		mPositions;
 	std::vector<float>		mColors;
 	std::vector<vec3>		mNormals; // always dim=3
@@ -392,7 +392,7 @@ class CI_API TriMesh : public geom::Source {
 	std::vector<vec4>		mBoneWeights; // always dim=4
 	std::vector<float>		mTexCoords0, mTexCoords1, mTexCoords2, mTexCoords3;
 	std::vector<uint32_t>	mIndices;
-	
+
 	friend class TriMeshGeomTarget;
 };
 

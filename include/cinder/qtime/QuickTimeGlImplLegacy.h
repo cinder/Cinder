@@ -64,13 +64,13 @@ class MovieGl : public MovieBase {
 
 		virtual void		releaseFrame();
 		virtual void		newFrame( CVImageBufferRef cvImage );
-		
+
 		gl::TextureRef			mTexture;
 #if defined( CINDER_MSW )
 		gl::Texture2dCacheRef	mTextureCache;
 #endif
 	};
- 	
+
 	std::shared_ptr<Obj>				mObj;
 	virtual MovieBase::Obj*		getObj() const { return mObj.get(); }
 
@@ -80,7 +80,7 @@ class MovieGl : public MovieBase {
 	typedef std::shared_ptr<Obj> MovieGl::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &MovieGl::mObj; }
 	void reset() { mObj.reset(); }
-	//@}  
+	//@}
 };
 
 } } // namespace cinder::qtime

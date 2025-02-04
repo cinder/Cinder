@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2012, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -33,7 +33,7 @@ namespace cinder {
 
 class CI_API SvgRendererGl : public svg::Renderer {
   public:
-	SvgRendererGl() : svg::Renderer() { 
+	SvgRendererGl() : svg::Renderer() {
 		mFillStack.push_back( svg::Paint( Color::black() ) );
 		mStrokeStack.push_back( svg::Paint() );
 		mFillOpacityStack.push_back( 1.0f );
@@ -43,13 +43,13 @@ class CI_API SvgRendererGl : public svg::Renderer {
 		gl::pushModelMatrix();
 		mFillRuleStack.push_back( svg::FILL_RULE_NONZERO );
 	}
-	
+
 	~SvgRendererGl() {
 		gl::popModelMatrix();
 	}
-  
+
 	void	pushGroup( const svg::Group &group, float opacity ) {}
-	
+
 	void	drawPath( const svg::Path &path ) override {
 		if( ! mFillStack.back().isNone() ) {
 			gl::color( getCurFillColor() );
@@ -126,15 +126,15 @@ class CI_API SvgRendererGl : public svg::Renderer {
 			gl::color( getCurStrokeColor() );
 			gl::drawStrokedEllipse( ellipse.getCenter(), ellipse.getRadiusX(), ellipse.getRadiusY() );
 		}
-	}	
-    
+	}
+
 	void	drawImage( const Surface8u &surface, const Rectf &drawRect ) {
 		gl::color( Color::white() );
 		gl::draw( gl::Texture::create( surface ), drawRect );
 	}
 
 	void	drawTextSpan( const svg::TextSpan &span ) override {
-	
+
 	}
 
 	void	popGroup() override {}
@@ -146,7 +146,7 @@ class CI_API SvgRendererGl : public svg::Renderer {
 	void	popMatrix() override {
 		gl::popModelMatrix();
 	}
-	
+
 	void	pushFill( const svg::Paint &paint ) override { mFillStack.push_back( paint ); }
 	void	popFill() override { mFillStack.pop_back(); }
 	void	pushStroke( const svg::Paint &paint ) override { mStrokeStack.push_back( paint ); }
@@ -163,7 +163,7 @@ class CI_API SvgRendererGl : public svg::Renderer {
 	void	pushStrokeWidth( float width ) override { mStrokeWidthStack.push_back( width ); glLineWidth( width ); }
 	void	popStrokeWidth() override { mStrokeWidthStack.pop_back(); glLineWidth( mStrokeWidthStack.back() ); }
 	void	pushFillRule( svg::FillRule rule ) override { mFillRuleStack.push_back( rule ); }
-	void	popFillRule() override { mFillRuleStack.pop_back(); }	
+	void	popFillRule() override { mFillRuleStack.pop_back(); }
 
 
 	std::vector<svg::Paint>		mFillStack, mStrokeStack;

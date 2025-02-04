@@ -99,7 +99,7 @@ class PlatformCocoa : public Platform {
 	std::vector<std::string>		stackTrace() override;
 
 	void							setThreadName( const std::string &name ) override;
-	
+
 	const std::vector<DisplayRef>& getDisplays() override;
 
 #if defined( CINDER_MAC )
@@ -126,7 +126,7 @@ class PlatformCocoa : public Platform {
 
   private:
 	mutable NSBundle*		mBundle;
-	
+
 	bool					mDisplaysInitialized;
 	std::vector<DisplayRef>	mDisplays;
 
@@ -154,11 +154,11 @@ class DisplayMac : public Display {
 
 	std::string			getName() const override;
 
-  protected:	
+  protected:
 	static void	displayReconfiguredCallback( CGDirectDisplayID displayId, CGDisplayChangeSummaryFlags flags, void *userInfo );
 
 	CGDirectDisplayID	mDirectDisplayId;
-	
+
 	friend app::PlatformCocoa;
 };
 
@@ -169,7 +169,7 @@ class DisplayCocoaTouch : public Display {
   public:
 	DisplayCocoaTouch( UIScreen *screen );
 	~DisplayCocoaTouch();
-	
+
 	UIScreen*	getUiScreen() const { return mUiScreen; }
 	//! Returns a vector of resolutions the Display supports
 	const std::vector<ivec2>&	getSupportedResolutions() const { return mSupportedResolutions; }
@@ -179,8 +179,8 @@ class DisplayCocoaTouch : public Display {
   protected:
 	UIScreen				*mUiScreen;
 	std::vector<ivec2>		mSupportedResolutions;
-	
-	friend app::PlatformCocoa;	
+
+	friend app::PlatformCocoa;
 };
 #endif
 

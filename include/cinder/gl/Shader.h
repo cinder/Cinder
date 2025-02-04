@@ -37,7 +37,7 @@ class CI_API ShaderDef {
   public:
 	ShaderDef();
 
-	ShaderDef&		color();	
+	ShaderDef&		color();
 	ShaderDef&		texture( const TextureRef &tex = TextureRef() );
 	ShaderDef&		texture( GLenum target );
 	ShaderDef&		lambert();
@@ -46,24 +46,24 @@ class CI_API ShaderDef {
 	ShaderDef&		uniformBasedPosAndTexCoord();
 
 	bool			isTextureSwizzleDefault() const;
-	std::string		getTextureSwizzleString() const;	
+	std::string		getTextureSwizzleString() const;
 
 	bool operator<( const ShaderDef &rhs ) const;
-	
+
   protected:
 	bool					mTextureMapping;
 	bool					mTextureMappingRectangleArb;
 #if defined( CINDER_ANDROID )
 	bool 					mTextureMappingExternalOes;
-#endif	
+#endif
 	std::array<GLint,4>		mTextureSwizzleMask;
 	bool					mUniformBasedPosAndTexCoord;
 
 	bool					mColor;
 	bool					mLambert;
-	
+
 	friend class EnvironmentCore;
 	friend class EnvironmentEs;
 };
-	
+
 } } // namespace cinder::gl

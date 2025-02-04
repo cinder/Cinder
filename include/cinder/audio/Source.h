@@ -28,7 +28,7 @@
 #include "cinder/Noncopyable.h"
 
 namespace cinder { namespace audio {
-	
+
 typedef std::shared_ptr<class Source>			SourceRef;
 typedef std::shared_ptr<class SourceFile>		SourceFileRef;
 

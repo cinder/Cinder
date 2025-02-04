@@ -47,7 +47,7 @@ class CI_API Event {
 
   public:
 	virtual ~Event() {}
-	
+
 	bool			mHandled;
 	WindowRef		mWindow;
 };

@@ -43,7 +43,7 @@
 // Using dear imgui via a shared library is not recommended, because of function call overhead and because we don't guarantee backward nor forward ABI compatibility.
 #define IMGUI_API CI_API
 
-// Custom implicit cast operators	
+// Custom implicit cast operators
 // Custom implicit cast operators
 #ifndef CINDER_IMGUI_NO_IMPLICIT_CASTS
 #define IM_VEC2_CLASS_EXTRA                                            \

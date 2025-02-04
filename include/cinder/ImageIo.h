@@ -74,7 +74,7 @@ class CI_API ImageIo {
 
 	void	setSize( int32_t width, int32_t height ) { mWidth = width; mHeight = height; }
 	void	setColorModel( ColorModel colorModel ) { mColorModel  = colorModel; }
-	void	setDataType( DataType aDataType ) { mDataType = aDataType; }	
+	void	setDataType( DataType aDataType ) { mDataType = aDataType; }
 	void	setChannelOrder( ChannelOrder aChannelOrder ) { mChannelOrder = aChannelOrder; }
 
 	int32_t						mWidth, mHeight;
@@ -86,7 +86,7 @@ class CI_API ImageIo {
 class CI_API ImageSource : public ImageIo {
   public:
 	ImageSource() : ImageIo(), mIsPremultiplied( false ), mPixelAspectRatio( 1 ), mCustomPixelInc( 0 ), mFrameCount( 1 ) {}
-	virtual ~ImageSource() {}  
+	virtual ~ImageSource() {}
 
 	//! Optional parameters passed when creating an Image. \see loadImage()
 	class Options {
@@ -102,7 +102,7 @@ class CI_API ImageSource : public ImageIo {
 		int32_t				getIndex() const				{ return mIndex; }
 		//! Returns whether throwOnFirstException() is enabled or not.
 		bool				getThrowOnFirstException()		{ return mThrowOnFirstException; }
-		
+
 	  protected:
 		int32_t			mIndex;
 		bool			mThrowOnFirstException;
@@ -113,7 +113,7 @@ class CI_API ImageSource : public ImageIo {
 	//! Returns whether the ImageSource's color data has been premultiplied by its alpha channel
 	bool		isPremultiplied() const;
 	//! Returns the number of bytes necessary to represent a row of the ImageSource
-	size_t		getRowBytes() const;	
+	size_t		getRowBytes() const;
 	//! Returns the number of images. Generally \c 1 but may not be in the case of animated GIFs. \see Options::index()
 	int32_t		getCount() const { return mFrameCount; }
 
@@ -147,7 +147,7 @@ class CI_API ImageSource : public ImageIo {
 	bool						mIsPremultiplied;
 	int8_t						mCustomPixelInc;
 	int32_t						mFrameCount;
-	
+
 	int8_t						mRowFuncSourceRed, mRowFuncSourceGreen, mRowFuncSourceBlue, mRowFuncSourceAlpha;
 	int8_t						mRowFuncTargetRed, mRowFuncTargetGreen, mRowFuncTargetBlue, mRowFuncTargetAlpha;
 	int8_t						mRowFuncSourceGray, mRowFuncTargetGray;
@@ -161,28 +161,28 @@ class CI_API ImageTarget : public ImageIo {
 	virtual void*	getRowPointer( int32_t row ) = 0;
 	virtual void	setRow( int32_t /*row*/, const void * /*data*/ ) { throw; }
 	virtual void	finalize() { }
-	
+
 	class Options {
 	  public:
 		Options() : mQuality( 0.9f ), mColorModelDefault( true ) {}
-		
+
 		Options& quality( float quality ) { mQuality = quality; return *this; }
 		Options& colorModel( ImageIo::ColorModel cm ) { mColorModelDefault = false; mColorModel = cm; return *this; }
-		
+
 		void	setColorModelDefault() { mColorModelDefault = true; }
-		
+
 		float				getQuality() const { return mQuality; }
 		bool				isColorModelDefault() const { return mColorModelDefault; }
 		ImageIo::ColorModel	getColorModel() const { return mColorModel; }
-		
+
 	  protected:
 		float					mQuality;
 		bool					mColorModelDefault;
 		ImageIo::ColorModel		mColorModel;
 	};
-	
+
   protected:
-	ImageTarget() {}	
+	ImageTarget() {}
 };
 
 #if defined( CINDER_UWP )
@@ -246,29 +246,29 @@ struct CI_API ImageIoRegistrar {
 
 	static ImageSourceRef	createSource( DataSourceRef dataSource, ImageSource::Options options, std::string extension );
 	static ImageTargetRef	createTarget( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, std::string extension );
-	
+
 	static void		registerSourceType( std::string extension, SourceCreationFunc func, int32_t priority = 2 );
 	static void		registerSourceGeneric( SourceCreationFunc func, int32_t priority = 2 );
-	
+
 	static void		registerTargetType( std::string extension, TargetCreationFunc func, int32_t priority, const std::string &extensionData );
-	
+
   private:
-	
+
 	struct CI_API Inst {
 		void	registerSourceType( std::string extension, SourceCreationFunc func, int32_t priority );
 		void	registerSourceGeneric( SourceCreationFunc func, int32_t priority );
-		void	registerTargetType( std::string extension, TargetCreationFunc func, int32_t priority, const std::string &extensionData );		
+		void	registerTargetType( std::string extension, TargetCreationFunc func, int32_t priority, const std::string &extensionData );
 
 		ImageSourceRef	createSource( DataSourceRef dataSource, ImageSource::Options options, std::string extension );
 		ImageTargetRef	createTarget( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, std::string extension );
-	
+
 		std::map<std::string, std::multimap<int32_t,SourceCreationFunc> >	mSources;
 		std::map<int32_t, SourceCreationFunc>								mGenericSources;
 		std::map<std::string, std::multimap<int32_t,std::pair<TargetCreationFunc,std::string> > >	mTargets;
 	};
 
-	static ImageIoRegistrar::Inst*	instance();		
-		
+	static ImageIoRegistrar::Inst*	instance();
+
 	friend class ImageIo;
 };
 

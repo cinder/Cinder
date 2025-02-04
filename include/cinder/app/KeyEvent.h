@@ -41,7 +41,7 @@ class CI_API KeyEvent : public Event {
 	//! Returns the ASCII character associated with the event.
 	char		getChar() const { return mChar; }
 	//! Returns the UTF-32 character associated with the event.
-	uint32_t	getCharUtf32() const { return mChar32; } 
+	uint32_t	getCharUtf32() const { return mChar32; }
 	//! Returns the key code associated with the event, which maps into the enum listed below
 	int			getCode() const { return mCode; }
 	//! Returns the modifiers associated with the event. Can also use the convenience methods below to check for a specific modifiered,
@@ -53,9 +53,9 @@ class CI_API KeyEvent : public Event {
 	//! Returns whether the Control key was pressed during the event.
 	bool		isControlDown() const { return (mModifiers & CTRL_DOWN) ? true : false; }
 	//! Returns whether the meta key was pressed during the event. Maps to the Windows key on Windows and the Command key on Mac OS X.
-	bool		isMetaDown() const { return (mModifiers & META_DOWN) ? true : false; }	
+	bool		isMetaDown() const { return (mModifiers & META_DOWN) ? true : false; }
 	//! Returns whether the accelerator key was pressed during the event. Maps to the Control key on Windows and the Command key on Mac OS X.
-	bool		isAccelDown() const { return (mModifiers & ACCEL_DOWN) ? true : false; }	
+	bool		isAccelDown() const { return (mModifiers & ACCEL_DOWN) ? true : false; }
 	//! Returns the platform-native key-code. Advanced users only.
 	int			getNativeKeyCode() const { return mNativeKeyCode; }
 
@@ -169,7 +169,7 @@ class CI_API KeyEvent : public Event {
 		KEY_KP_PLUS		= 270,
 		KEY_KP_ENTER	= 271,
 		KEY_KP_EQUALS	= 272,
-		
+
 		KEY_UP			= 273,
 		KEY_DOWN		= 274,
 		KEY_RIGHT		= 275,
@@ -179,7 +179,7 @@ class CI_API KeyEvent : public Event {
 		KEY_END			= 279,
 		KEY_PAGEUP		= 280,
 		KEY_PAGEDOWN	= 281,
-		
+
 		KEY_F1			= 282,
 		KEY_F2			= 283,
 		KEY_F3			= 284,
@@ -195,7 +195,7 @@ class CI_API KeyEvent : public Event {
 		KEY_F13			= 294,
 		KEY_F14			= 295,
 		KEY_F15			= 296,
-		
+
 		KEY_NUMLOCK		= 300,
 		KEY_CAPSLOCK	= 301,
 		KEY_SCROLLOCK	= 302,
@@ -211,7 +211,7 @@ class CI_API KeyEvent : public Event {
 		KEY_RSUPER		= 312,		/* Right "Windows" key */
 		KEY_MODE		= 313,		/* "Alt Gr" key */
 		KEY_COMPOSE		= 314,		/* Multi-key compose key */
-		
+
 		KEY_HELP		= 315,
 		KEY_PRINT		= 316,
 		KEY_SYSREQ		= 317,
@@ -220,10 +220,10 @@ class CI_API KeyEvent : public Event {
 		KEY_POWER		= 320,		/* Power Macintosh power key */
 		KEY_EURO		= 321,		/* Some european keyboards */
 		KEY_UNDO		= 322,		/* Atari keyboard has Undo */
-		
+
 		KEY_LAST
 	};
-	
+
   protected:
 	int				mCode;
 	uint32_t		mChar32;

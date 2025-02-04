@@ -105,7 +105,7 @@ class CI_API TextureBase {
 #if ! defined( CINDER_GL_ES )
 	//! Sets the depth wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are \c GL_REPEAT, \c GL_CLAMP_TO_EDGE, etc. Default is \c GL_CLAMP_TO_EDGE.
 	void			setWrapR( GLenum wrapR );
-#endif	
+#endif
 	/** \brief Sets the filtering behavior when a texture is displayed at a lower resolution than its native resolution.
 	 * Possible values are \li \c GL_NEAREST \li \c GL_LINEAR \li \c GL_NEAREST_MIPMAP_NEAREST \li \c GL_LINEAR_MIPMAP_NEAREST \li \c GL_NEAREST_MIPMAP_LINEAR \li \c GL_LINEAR_MIPMAP_LINEAR **/
 	void			setMinFilter( GLenum minFilter );
@@ -139,7 +139,7 @@ class CI_API TextureBase {
 	//! Returns the maximum anisotropic filtering maximum allowed by the hardware
 	static GLfloat	getMaxAnisotropyMax();
 
-	//! Returns the Texture's swizzle mask (corresponding to \c GL_TEXTURE_SWIZZLE_RGBA)	
+	//! Returns the Texture's swizzle mask (corresponding to \c GL_TEXTURE_SWIZZLE_RGBA)
 	std::array<GLint,4>	getSwizzleMask() const { return mSwizzleMask; }
 	//! Returns whether this hardware supports texture swizzling (via \c GL_TEXTURE_SWIZZLE_RGBA)
 	static bool		supportsHardwareSwizzle();
@@ -159,7 +159,7 @@ class CI_API TextureBase {
 #if ! defined( CINDER_GL_ES )
 		void	setTargetRect() { mTarget = GL_TEXTURE_RECTANGLE; }
 #endif
-		
+
 		//! Enables or disables mipmapping. Default is disabled.
 		void	enableMipmapping( bool enableMipmapping = true ) { mMipmapping = enableMipmapping; mMipmappingSpecified = true; }
 		//! Specifies the index of the lowest defined mipmap level. Default is \c 0. Ignored on ES 2.
@@ -170,22 +170,22 @@ class CI_API TextureBase {
 		GLuint	getBaseMipmapLevel() const { return mBaseMipmapLevel; }
 		//! Returns the max mipmap level.
 		GLuint	getMaxMipmapLevel() const { return mMaxMipmapLevel; }
-		
+
 		//! Sets whether the storage for the cannot be changed in the future (making glTexImage*D() calls illegal). More efficient when possible. Default is \c false.
 		void	setImmutableStorage( bool immutable = true ) { mImmutableStorage = immutable; }
 		//! Returns whether the storage for the cannot be changed in the future (making glTexImage*D() calls illegal). Default is \c false.
 		bool	isImmutableStorage() const { return mImmutableStorage; }
-		
+
 		//! Sets the Texture's internal format. A value of -1 implies selecting the best format for the context.
 		void	setInternalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; }
 		//! Sets the Texture's internal format to be automatically selected based on the context.
 		void	setAutoInternalFormat() { mInternalFormat = -1; }
-		
+
 		//! Sets the data type parameter used by glTexImage2D when glTexStorage2D is unavailable. Defaults to \c -1 which implies automatic determination. Primary use is to pass \c GL_FLOAT or \c GL_HALF_FLOAT to create 32F or 16F textures on ES 2 when OES_texture_float is available.
 		void	setDataType( GLint dataType ) { mDataType = dataType; }
 		//! Sets the Texture's data type format to be automatically selected based on the context.
 		void	setAutoDataType() { mDataType = -1; }
-		
+
 		// Specifies the texture comparison mode for currently bound depth textures.
 		void	setCompareMode( GLenum compareMode ) { mCompareMode = compareMode; }
 		// Specifies the comparison operator used when \c GL_TEXTURE_COMPARE_MODE is set to \c GL_COMPARE_R_TO_TEXTURE
@@ -215,12 +215,12 @@ class CI_API TextureBase {
 		void	setMagFilter( GLenum magFilter ) { mMagFilter = magFilter; }
 		//! Sets the anisotropic filter amount. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxAnisotropyMax();
 		void    setMaxAnisotropy( GLfloat maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; }
-		
+
 		//! Returns the texture's target
 		GLenum	getTarget() const { return mTarget; }
 		//! Returns whether the texture has mipmapping enabled
 		bool	hasMipmapping() const { return mMipmapping; }
-		
+
 		//! Returns the Texture's internal format. A value of -1 implies automatic selection of the internal format based on the context.
 		GLint	getInternalFormat() const { return mInternalFormat; }
 		//! Returns whether the Texture's internal format will be automatically selected based on the context.
@@ -229,7 +229,7 @@ class CI_API TextureBase {
 		GLint	getDataType() const { return mDataType; }
 		//! Returns whether the Texture's data type will be automatically selected based on the context.
 		bool	isAutoDataType() const { return mDataType == -1; }
-		
+
 		//! Returns the horizontal wrapping behavior for the texture coordinates.
 		GLenum	getWrapS() const { return mWrapS; }
 		//! Returns the vertical wrapping behavior for the texture coordinates.
@@ -262,7 +262,7 @@ class CI_API TextureBase {
 		void	setSwizzleMask( GLint r, GLint g, GLint b, GLint a );
 		//! Returns the swizzle mask corresponding to \c GL_TEXTURE_SWIZZLE_RGBA.
 		const std::array<GLint,4>&	getSwizzleMask() const { return mSwizzleMask; }
-		
+
 		//! Returns the debugging label associated with the Texture.
 		const std::string&	getLabel() const { return mLabel; }
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
@@ -279,11 +279,11 @@ class CI_API TextureBase {
 #endif
 	protected:
 		Format();
-	
+
 		GLenum				mTarget;
 		GLenum				mWrapS, mWrapT, mWrapR;
 		GLenum				mMinFilter, mMagFilter;
-		GLint				mCompareMode, mCompareFunc;		
+		GLint				mCompareMode, mCompareFunc;
 		bool				mMipmapping, mMipmappingSpecified;
 		bool				mMinFilterSpecified;
 		GLuint				mBaseMipmapLevel;
@@ -308,11 +308,11 @@ class CI_API TextureBase {
   protected:
 	TextureBase();
 	TextureBase( GLenum target, GLuint textureId, GLint internalFormat );
-	
+
 	void			initParams( Format &format, GLint defaultInternalFormat, GLint defaultDataType );
 
 	virtual void	printDims( std::ostream &os ) const = 0;
-	
+
 	GLenum				mTarget;
 	GLuint				mTextureId;
 	mutable GLint		mInternalFormat;
@@ -321,7 +321,7 @@ class CI_API TextureBase {
 	bool				mDoNotDispose;
 	std::array<GLint,4>	mSwizzleMask;
 	std::string			mLabel; // debugging label
-	
+
 	friend CI_API std::ostream& operator<<( std::ostream &os, const TextureBase &rhs );
 };
 
@@ -346,7 +346,7 @@ class CI_API TextureData {
 		std::vector<Face>&			getFaces() { return mFaces; }
 		Face&						back() { return mFaces.back(); }
 		void						push_back( const Face &face ) { mFaces.push_back( face ); }
-		
+
 		std::vector<Face>			mFaces;
 	};
 
@@ -365,8 +365,8 @@ class CI_API TextureData {
 	GLint				getDepth() const { return mDepth; }
 	void				setDepth( GLint depth ) { mDepth = depth; }
 	GLint				getNumFaces() const { return mNumFaces; }
-	void				setNumFaces( GLint numFaces ) { mNumFaces = numFaces; }	
-	
+	void				setNumFaces( GLint numFaces ) { mNumFaces = numFaces; }
+
 	bool				isCompressed() const { return mDataType == 0; }
 	GLint				getInternalFormat() const { return mInternalFormat; }
 	void				setInternalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; }
@@ -395,7 +395,7 @@ class CI_API TextureData {
 
   private:
 	void		init();
-	
+
 	GLint				mWidth, mHeight, mDepth, mNumFaces;
 	GLint				mInternalFormat;
 	GLenum				mDataFormat, mDataType;
@@ -403,7 +403,7 @@ class CI_API TextureData {
 	std::array<GLint,4>	mSwizzleMask;
 
 	std::vector<Level>	mLevels; // mip-levels
-	
+
   #if ! defined( CINDER_GL_ES )
 	PboRef						mPbo;
 	void*						mPboMappedPtr;
@@ -442,7 +442,7 @@ class CI_API Texture1d : public TextureBase {
 #endif
 	  protected:
 		std::function<void(Texture1d*)>		mDeleter;
-		
+
 		friend Texture1d;
 	};
 
@@ -451,12 +451,12 @@ class CI_API Texture1d : public TextureBase {
 	static Texture1dRef create( const Surface8u &surface, const Format &format = Format() );
 	//! Constructs a Texture1d using the data pointed to by \a data, in format \a dataFormat. For a dataType other than \c GL_UNSIGNED_CHAR use \a format.setDataType()
 	static Texture1dRef	create( const void *data, GLenum dataFormat, int width, const Format &format = Format() );
-	
+
 	//! Updates the Texture1d using the top row of \a surface.
 	void	update( const Surface8u &surface, int mipLevel = 0 );
 	//! Updates the pixels of a Texture1d with the data pointed to by \a data, of format \a dataFormat (Ex: GL_RGB), and type \a dataType (Ex: GL_UNSIGNED_BYTE) of size \a width.
 	void	update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int offset = 0 );
-	
+
 	//! Returns the width of the texture in pixels
 	GLint			getWidth() const override { return mWidth; }
 	//! Returns the height of the texture in pixels, which is always \c 1
@@ -509,7 +509,7 @@ class CI_API Texture2d : public TextureBase {
 		Format& immutableStorage( bool immutable = true ) { setImmutableStorage( immutable ); return *this; }
 #if ! defined( CINDER_GL_ES )
 		Format& intermediatePbo( const PboRef &intermediatePbo ) { setIntermediatePbo( intermediatePbo ); return *this; }
-#endif		
+#endif
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
 		//! Sets a custom deleter for destruction of the shared_ptr<Texture2d>
@@ -521,10 +521,10 @@ class CI_API Texture2d : public TextureBase {
 	  protected:
 		bool								mLoadTopDown;
 		std::function<void(Texture2d*)>		mDeleter;
-		
+
 		friend		Texture2d;
 	};
-	
+
 	//! Constructs a texture of size(\a width, \a height) and allocates storage.
 	static Texture2dRef	create( int width, int height, const Format &format = Format() );
 	//! Constructs a texture of size(\a width, \a height). Pixel data is provided by \a data in format \a dataFormat (Ex: \c GL_RGB, \c GL_RGBA). Use \a format.setDataType() to specify a dataType other than \c GL_UNSIGNED_CHAR. Ignores \a format.loadTopDown().
@@ -613,10 +613,10 @@ class CI_API Texture2d : public TextureBase {
 	void			setTopDown( bool topDown = true ) { mTopDown = topDown; }
 	//! Explicitly regenerate mipmaps assuming mipmapping is enabled.
 	void			regenerateMipmap();
-	
+
 	//! Returns an ImageSource pointing to this Texture
 	ImageSourceRef	createSource();
-	
+
   protected:
 
 	Texture2d( int width, int height, Format format = Format() );
@@ -630,7 +630,7 @@ class CI_API Texture2d : public TextureBase {
 	Texture2d( const ImageSourceRef &imageSource, Format format = Format() );
 	Texture2d( GLenum target, GLuint textureId, int width, int height, bool doNotDispose );
 	Texture2d( const TextureData &data, Format format );
-	
+
 	void	printDims( std::ostream &os ) const override;
 	void	initParams( Format &format, GLint defaultInternalFormat, GLint defaultDataType );
 	void	initMaxMipmapLevel();
@@ -648,7 +648,7 @@ class CI_API Texture2d : public TextureBase {
 	ivec2		mActualSize; // true texture size in pixels, as opposed to clean bounds
 	Area		mCleanBounds; // relative to upper-left origin regardless of top-down
 	bool		mTopDown;
-	
+
 	friend class Texture2dCache;
 };
 
@@ -686,7 +686,7 @@ class CI_API Texture3d : public TextureBase {
 #endif
 	  protected:
 		std::function<void(Texture3d*)>		mDeleter;
-		
+
 		friend Texture3d;
 	};
 
@@ -694,11 +694,11 @@ class CI_API Texture3d : public TextureBase {
 	static Texture3dRef create( GLint width, GLint height, GLint depth, const Format &format = Format() );
 	//! Constructs a texture of size(\a width, \a height, \a depth). Pixel data is provided by \a data in format \a dataFormat (Ex: \c GL_RGB, \c GL_RGBA). Use \a format.setDataType() to specify a dataType other than \c GL_UNSIGNED_CHAR.
 	static Texture3dRef create( const void *data, GLenum dataFormat, int width, int height, int depth, const Format &format = Format() );
-  
+
 	void	update( const Surface &surface, int depth, int mipLevel = 0 );
 
 	void	update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int height, int depth, int xOffset = 0, int yOffset = 0, int zOffset = 0 );
-	
+
 	//! Returns the width of the texture in pixels
 	GLint			getWidth() const override { return mWidth; }
 	//! Returns the height of the texture in pixels
@@ -733,7 +733,7 @@ class CI_API TextureCubeMap : public TextureBase
 		Format& wrapS( GLenum wrapS ) { mWrapS = wrapS; return *this; }
 		Format& wrapT( GLenum wrapT ) { mWrapT = wrapT; return *this; }
 #if ! defined( CINDER_GL_ES )
-		Format& wrapR( GLenum wrapR ) { mWrapR = wrapR; return *this; }		
+		Format& wrapR( GLenum wrapR ) { mWrapR = wrapR; return *this; }
 #endif // ! defined( CINDER_GL_ES )
 		Format& minFilter( GLenum minFilter ) { setMinFilter( minFilter ); return *this; }
 		Format& magFilter( GLenum magFilter ) { setMagFilter( magFilter ); return *this; }
@@ -749,10 +749,10 @@ class CI_API TextureCubeMap : public TextureBase
 #endif
 	  protected:
 		std::function<void(TextureCubeMap*)>	mDeleter;
-		
+
 		friend TextureCubeMap;
 	};
-  
+
 	static TextureCubeMapRef	create( int32_t width, int32_t height, const Format &format = Format() );
 	//! Automatically infers Horizontal Cross, Vertical Cross, Row, or Column based on image aspect ratio
 	static TextureCubeMapRef	create( const ImageSourceRef &imageSource, const Format &format = Format() );
@@ -788,7 +788,7 @@ class CI_API TextureCubeMap : public TextureBase
 	static TextureCubeMapRef createTextureCubeMapImpl( const ImageSourceRef &imageSource, const Format &format );
 
 	void	printDims( std::ostream &os ) const override;
-	
+
 	GLint		mWidth, mHeight;
 };
 
@@ -799,14 +799,14 @@ class CI_API Texture2dCache : public std::enable_shared_from_this<Texture2dCache
   public:
 	static Texture2dCacheRef create();
 	static Texture2dCacheRef create( const Surface8u &prototypeSurface, const Texture2d::Format &format );
-	
+
 	Texture2dRef		cache( const Surface8u &data );
   protected:
 	Texture2dCache();
 	Texture2dCache( const Surface8u &prototypeSurface, const Texture2d::Format &format );
-		
+
 	void			markTextureAsFree( int id );
-	
+
 	int					mWidth;
 	int					mHeight;
 	Texture2d::Format	mFormat;
@@ -823,17 +823,17 @@ class CI_API SurfaceConstraintsGLTexture : public SurfaceConstraints {
 };
 
 class CI_API KtxParseExc : public Exception {
-  public:	
+  public:
 	KtxParseExc( const std::string &description ) : Exception( description )	{}
 };
 
 class CI_API DdsParseExc : public Exception {
-  public:	
+  public:
 	DdsParseExc( const std::string &description ) : Exception( description )	{}
 };
 
 class CI_API TextureDataExc : public Exception {
-  public:	
+  public:
 	TextureDataExc( const std::string &description ) : Exception( description )	{}
 };
 
@@ -848,5 +848,5 @@ class CI_API TextureDataStoreTooSmallExc : public Exception {
 
 	virtual const char* what() const throw()	{ return "The data store allocated for a TextureData is too small"; }
 };
-	
+
 } } // namespace cinder::gl

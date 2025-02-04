@@ -47,7 +47,7 @@ class ImageSourceFileWic : public ImageSource {
 
   protected:
 	ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource::Options options );
-	
+
 	static IWICImagingFactory* getFactory();
 
 	bool	processFormat( const ::GUID &guid, ::GUID *convertGUID );

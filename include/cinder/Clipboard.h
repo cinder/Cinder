@@ -44,7 +44,7 @@ class CI_API Clipboard {
 	//! Sets the clipboard contents to the UTF-8 string \a str
 	static void				setString( const std::string &str );
 	//! Sets the clipboard contents to the ImageSource \a image
-	static void				setImage( ImageSourceRef image, ImageTarget::Options options = ImageTarget::Options() );	
+	static void				setImage( ImageSourceRef image, ImageTarget::Options options = ImageTarget::Options() );
 };
 
 } // namespace cinder

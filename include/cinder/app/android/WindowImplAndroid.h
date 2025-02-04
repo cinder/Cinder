@@ -31,7 +31,7 @@ class AppImplAndroid;
 
 class WindowImplAndroid {
  public:
-    
+
     WindowImplAndroid( ANativeWindow *nativeWindow, const Window::Format &format, RendererRef sharedRenderer, AppImplAndroid *appImpl );
     virtual ~WindowImplAndroid();
 

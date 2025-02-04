@@ -77,9 +77,9 @@ class CI_API Context {
 	};
 
 	//! Creates a new OpenGL context, sharing resources and pixel format with sharedContext. This (essentially) must be done from the primary thread on MSW. ANGLE doesn't support multithreaded use. Destroys the platform Context on destruction.
-	static ContextRef	create( const Context *sharedContext );	
+	static ContextRef	create( const Context *sharedContext );
 	//! Creates based on an existing platform-specific GL context. \a platformContext is CGLContextObj on Mac OS X, EAGLContext on iOS, HGLRC on MSW. \a platformContext is an HDC on MSW and ignored elsewhere. Does not assume ownership of the platform's context.
-	static ContextRef	createFromExisting( const std::shared_ptr<PlatformData> &platformData );	
+	static ContextRef	createFromExisting( const std::shared_ptr<PlatformData> &platformData );
 
 	~Context();
 
@@ -105,7 +105,7 @@ class CI_API Context {
 	std::vector<mat4>&			getProjectionMatrixStack() { return mProjectionMatrixStack; }
 	//! Returns a const reference to the stack of Projection matrices
 	const std::vector<mat4>&	getProjectionMatrixStack() const { return mProjectionMatrixStack; }
-	
+
 	//! Binds a VAO. Consider using a ScopedVao instead.
 	void		bindVao( Vao *vao );
 	//! Binds a VAO. Consider using a ScopedVao instead.
@@ -114,7 +114,7 @@ class CI_API Context {
 	void		pushVao( Vao *vao );
 	//! Pushes and binds the VAO \a vao
 	void		pushVao( const VaoRef &vao ) { pushVao( vao.get() ); }
-	//! Duplicates and pushes the current VAO binding 
+	//! Duplicates and pushes the current VAO binding
 	void		pushVao();
 	//! Pops the current VAO binding
 	void		popVao();
@@ -138,9 +138,9 @@ class CI_API Context {
 	//! Returns a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively of the viewport
 	std::pair<ivec2,ivec2>	getViewport();
 
-	//! Sets the scissor box based on a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively	
+	//! Sets the scissor box based on a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively
 	void					setScissor( const std::pair<ivec2, ivec2> &scissor );
-	//! Pushes the scissor box based on a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively	
+	//! Pushes the scissor box based on a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively
 	void					pushScissor( const std::pair<ivec2, ivec2> &scissor );
 	//! Duplicates and pushes the top of the Scissor box stack
 	void					pushScissor();
@@ -190,9 +190,9 @@ class CI_API Context {
 	void					pushStencilMask( GLuint front, GLuint back );
 	//! Pops the current stencil mask, which controls the front and back writing of individual bits in the stencil planes (front and back).
 	void					popStencilMask( bool forceRestore = false );
-	//! Returns the current stencil mask, which controls the front and back writing of individual bits in the stencil planes (front and back). 
+	//! Returns the current stencil mask, which controls the front and back writing of individual bits in the stencil planes (front and back).
 	glm::u8vec2				getStencilMask();
-	
+
 #if ! defined( CINDER_GL_ES )
 	//! Analogous to glLogicOp( \a mode ). Valid arguments are \c GL_CLEAR, \c GL_SET, \c GL_COPY, \c GL_COPY_INVERTED, \c GL_NOOP, \c GL_INVERT, \c GL_AND, \c GL_NAND, \c GL_OR, \c GL_NOR, \c GL_XOR, \c GL_EQUIV, \c GL_AND_REVERSE, \c GL_AND_INVERTED, \c GL_OR_REVERSE, or \c GL_OR_INVERTED.
 	void		logicOp( GLenum mode );
@@ -254,7 +254,7 @@ class CI_API Context {
 	void				glslProgCreated( const GlslProg *glslProg );
 	//! Used by object tracking.
 	void				glslProgDeleted( const GlslProg *glslProg );
-	
+
 #if ! defined( CINDER_GL_ES_2 )
 	//! Binds \a ref to the specific \a index within \a target. Analogous to glBindBufferBase()
 	void bindBufferBase( GLenum target, GLuint index, const BufferObjRef &buffer );
@@ -304,7 +304,7 @@ class CI_API Context {
 	//! Duplicates and pushes the active texture unit
 	void		pushActiveTexture();
 	//! Sets the active texture unit; expects values relative to \c 0, \em not GL_TEXTURE0. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
-	void		popActiveTexture( bool forceRestore = false );	
+	void		popActiveTexture( bool forceRestore = false );
 	//! Returns the active texture unit with values relative to \c 0, \em not GL_TEXTURE0
 	uint8_t		getActiveTexture();
 
@@ -375,10 +375,10 @@ class CI_API Context {
 	//! Duplicates and pushes the current line width.
 	void		pushLineWidth();
 	//! Sets the current line width. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
-	void		popLineWidth( bool forceRestore = false );	
+	void		popLineWidth( bool forceRestore = false );
 	//! Returns the current line width.
 	float		getLineWidth();
-	
+
 	//! Analogous to glDepthMask(). Enables or disables writing into the depth buffer.
 	void		depthMask( GLboolean enable );
 	//! Push the depth buffer writing flag.
@@ -389,7 +389,7 @@ class CI_API Context {
 	void		popDepthMask( bool forceRestore = false );
 	//! Returns the depth buffer writing flag.
 	GLboolean	getDepthMask();
-	
+
 	//! Set the depth buffer comparison function. Analogous to glDepthFunc(). Valid arguments are \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL and \c GL_ALWAYS. Default is \c GL_LESS.
 	void		depthFunc( GLenum func );
 	//! Push the depth buffer comparison function. Valid arguments are \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL and \c GL_ALWAYS. Default is \c GL_LESS.
@@ -413,10 +413,10 @@ class CI_API Context {
 	//! Returns the current polygon rasterization mode. \a face must be \c GL_FRONT_AND_BACK.
 	GLenum		getPolygonMode( GLenum face );
 #endif
-	
+
 	void		sanityCheck();
 	void		printState( std::ostream &os ) const;
-	
+
 	// Object Tracking
 	//! Returns the container of live Textures. Requires object tracking to be enabled.
 	const std::set<const TextureBase*>&	getLiveTextures() const { return mLiveTextures; }
@@ -529,16 +529,16 @@ class CI_API Context {
 	void allocateDefaultVboAndVao();
 
 	std::map<ShaderDef,GlslProgRef>		mStockShaders;
-	
+
 	std::map<GLenum,std::vector<int>>	mBufferBindingStack;
 	std::map<GLenum,std::vector<int>>	mRenderbufferBindingStack;
 	std::vector<const GlslProg*>		mGlslProgStack;
 	std::vector<Vao*>					mVaoStack;
-	
+
 #if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	TransformFeedbackObjRef				mCachedTransformFeedbackObj;
 #endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
-	
+
 	// Blend state stacks
 	std::vector<GLint>					mBlendSrcRgbStack, mBlendDstRgbStack;
 	std::vector<GLint>					mBlendSrcAlphaStack, mBlendDstAlphaStack;
@@ -567,16 +567,16 @@ class CI_API Context {
 
 	std::vector<GLboolean>		mDepthMaskStack;
 	std::vector<GLenum>			mDepthFuncStack;
-	
+
 	std::map<GLenum,std::vector<GLboolean>>	mBoolStateStack;
 	// map<TextureUnit,map<TextureTarget,vector<Binding ID Stack>>>
 	std::map<uint8_t,std::map<GLenum,std::vector<GLint>>>	mTextureBindingStack;
 	std::vector<uint8_t>					mActiveTextureStack;
-	
+
 #if defined( CINDER_GL_HAS_SAMPLERS )
 	std::vector<std::vector<GLuint>>	mSamplerBindingStack;
-#endif	
-	
+#endif
+
 	VaoRef						mDefaultVao;
 	VboRef						mDefaultArrayVbo[4], mDefaultElementVbo;
 	uint8_t						mDefaultArrayVboIdx;
@@ -590,16 +590,16 @@ class CI_API Context {
 	void	allocateDrawTextureVboAndVao();
 
 	std::shared_ptr<PlatformData>	mPlatformData;
-	
+
 	std::vector<std::pair<ivec2,ivec2>>		mViewportStack;
 	std::vector<std::pair<ivec2,ivec2>>		mScissorStack;
 
 	VaoRef						mImmVao; // Immediate-mode VAO
 	VboRef						mImmVbo; // Immediate-mode VBO
 
-	ci::ColorAf					mColor;	
+	ci::ColorAf					mColor;
 	std::vector<mat4>		mModelMatrixStack;
-	std::vector<mat4>		mViewMatrixStack;	
+	std::vector<mat4>		mViewMatrixStack;
 	std::vector<mat4>		mProjectionMatrixStack;
 	std::vector<float>		mLineWidthStack;
 
@@ -616,7 +616,7 @@ class CI_API Context {
 	std::set<const Fbo*>			mLiveFbos;
 
 	friend class				Environment;
-	
+
 	friend class				Texture2d;
 };
 

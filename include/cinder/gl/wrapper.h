@@ -92,16 +92,16 @@ CI_API void bindStockShader( const class ShaderDef &shader );
 CI_API void setDefaultShaderVars();
 
 CI_API void clear( const ColorA &color = ColorA::black(), bool clearDepthBuffer = true );
-	
+
 CI_API void clear( GLbitfield mask );
 CI_API void clearColor( const ColorA &color );
 CI_API void clearDepth( const double depth );
 CI_API void clearDepth( const float depth );
 CI_API void clearStencil( const int s );
-	
+
 CI_API void colorMask( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha );
 CI_API void depthMask( GLboolean flag );
-	
+
 CI_API void stencilFunc( GLenum func, GLint ref, GLuint mask );
 CI_API void stencilOp( GLenum fail, GLenum zfail, GLenum zpass );
 CI_API void stencilMask( GLuint mask );
@@ -122,7 +122,7 @@ CI_API std::pair<ivec2, ivec2> getScissor();
 CI_API void scissor( const std::pair<ivec2, ivec2> positionAndSize );
 CI_API inline void scissor( int x, int y, int width, int height ) { scissor( std::pair<ivec2, ivec2>( ivec2( x, y ), ivec2( width, height ) ) ); }
 CI_API inline void scissor( const ivec2 &position, const ivec2 &size ) { scissor( std::pair<ivec2, ivec2>( position, size ) ); }
-	
+
 CI_API void enable( GLenum state, bool enable = true );
 CI_API inline void disable( GLenum state ) { enable( state, false ); }
 
@@ -166,7 +166,7 @@ CI_API inline void enableDepth( bool enable = true ) { enableDepthRead( enable )
 CI_API void enableStencilTest( bool enable = true );
 //! Disables the stencil test operation. Analagous to `glEnable( GL_STENCIL_TEST, false );`
 CI_API void disableStencilTest();
- 
+
 //! Sets the View and Projection matrices based on a Camera
 CI_API void setMatrices( const ci::Camera &cam );
 CI_API void setModelMatrix( const ci::mat4 &m );
@@ -249,7 +249,7 @@ CI_API void end();
 
 #if ! defined( CINDER_GL_ES_2 )
 CI_API void bindBufferBase( GLenum target, int index, BufferObjRef buffer );
-	
+
 CI_API void beginTransformFeedback( GLenum primitiveMode );
 CI_API void endTransformFeedback();
 CI_API void resumeTransformFeedback();
@@ -263,7 +263,7 @@ CI_API void patchParameteri( GLenum pname, GLint value );
 CI_API void patchParameterfv( GLenum pname, GLfloat *value );
 #endif
 #endif
-	
+
 CI_API void color( float r, float g, float b );
 CI_API void color( float r, float g, float b, float a );
 CI_API void color( const ci::Color &c );
@@ -298,7 +298,7 @@ CI_API bool isWireframeEnabled();
 CI_API inline void setWireframeEnabled( bool enable = true )	{ if( enable ) enableWireframe(); else disableWireframe(); }
 #endif
 
-//! Sets the width of rasterized lines to \a width. The initial value is 1. Analogous to glLineWidth(). 
+//! Sets the width of rasterized lines to \a width. The initial value is 1. Analogous to glLineWidth().
 CI_API void	lineWidth( float width );
 #if ! defined( CINDER_GL_ES )
 //! Specifies the rasterized diameter of points. If point size mode is disabled (via gl::disable \c GL_PROGRAM_POINT_SIZE), this value will be used to rasterize points. Otherwise, the value written to the shading language built-in variable \c gl_PointSize will be used. Analogous to glPointSize().
@@ -350,7 +350,7 @@ CI_API void	readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum 
 
 // Compute
 #if defined( CINDER_GL_HAS_COMPUTE_SHADER )
-//! Launches one or more compute work groups. Analogous to glDispatchCompute(). 
+//! Launches one or more compute work groups. Analogous to glDispatchCompute().
 CI_API inline void	dispatchCompute( GLuint numGroupsX, GLuint numGroupsY = 1, GLuint numGroupsZ = 1 ) { glDispatchCompute( numGroupsX, numGroupsY, numGroupsZ ); }
 //! Defines a barrier ordering memory transactions. Analogous to glMemoryBarrier().
 CI_API inline void	memoryBarrier( GLbitfield barriers ) { glMemoryBarrier( barriers ); }

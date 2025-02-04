@@ -35,7 +35,7 @@ class CI_API Url {
 	Url() {}
 	//! Constructs a URL from a string. If \a isEscaped is false, automatically calls Url::encode(). Assumes UTF-8 input.
 	explicit Url( const std::string &urlString, bool isEscaped = false );
-	
+
 	//! Returns the string representation of the URL as std::string. Encoded as UTF-8.
 	std::string	str() const { return mStr; }
 	//! Returns the string representation of the URL as char*. Encoded as UTF-8.
@@ -43,7 +43,7 @@ class CI_API Url {
 
 	//! Replaces illegal URL characters as defined by RFC 2396 with their escaped equivalents and returns a copy of \a unescaped. Assumes UTF-8 input.
 	static std::string encode( const std::string &unescaped );
-		
+
  private:
 	std::string		mStr;
 };
@@ -68,19 +68,19 @@ class CI_API UrlOptions {
   	UrlOptions( bool ignoreCache = false, float timeoutSeconds = 30.0f )
 		: mIgnoreCache( ignoreCache ), mTimeout( timeoutSeconds )
 	{}
-	
+
 	UrlOptions&		ignoreCache( bool ignore = true ) { mIgnoreCache = ignore; return *this; }
 	bool			getIgnoreCache() const { return mIgnoreCache; }
 	void			setIgnoreCache( bool ignore = true ) { mIgnoreCache = ignore; }
-	
+
 	UrlOptions&		timeout( float seconds ) { mTimeout = seconds; return *this; }
 	float			getTimeout() const { return mTimeout; }
 	void			setTimeout( float seconds ) { mTimeout = seconds; }
-	
+
   private:
 	bool			mIgnoreCache;
 	float			mTimeout;
-	
+
 };
 
 //! \cond
@@ -92,7 +92,7 @@ class CI_API IStreamUrlImpl {
 
   public:
 	virtual ~IStreamUrlImpl() {}
-  
+
 	std::string			getUser() const { return mUser; }
 	std::string			getPassword() const { return mPassword; }
 	const UrlOptions&	getOptions() const { return mOptions; }
@@ -102,10 +102,10 @@ class CI_API IStreamUrlImpl {
 	virtual void		seekRelative( off_t relativeOffset ) = 0;
 	virtual off_t		tell() const = 0;
 	virtual off_t		size() const = 0;
-	
+
 	virtual bool		isEof() const = 0;
 	virtual void		IORead( void *t, size_t size ) = 0;
-	
+
   protected:
 	const std::string		mUser, mPassword;
 	const UrlOptions		mOptions;
@@ -120,13 +120,13 @@ class CI_API IStreamUrl : public IStreamCinder {
   public:
 	//! Creates a new IStreamUrlRef from the Url \a url with an optional login and password
 	static IStreamUrlRef		create( const Url &url, const std::string &user = "", const std::string &password = "", const UrlOptions &options = UrlOptions() );
-	
+
 	virtual size_t		readDataAvailable( void *dest, size_t maxSize ) { return mImpl->readDataAvailable( dest, maxSize ); }
 	virtual void		seekAbsolute( off_t absoluteOffset ) { return mImpl->seekAbsolute( absoluteOffset ); }
 	virtual void		seekRelative( off_t relativeOffset ) { return mImpl->seekRelative( relativeOffset ); }
 	virtual off_t		tell() const { return mImpl->tell(); }
 	virtual off_t		size() const { return mImpl->size(); }
-	
+
 	virtual bool		isEof() const { return mImpl->isEof(); }
 
 	std::string			getUser() const { return mImpl->getUser(); }

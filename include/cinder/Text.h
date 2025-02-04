@@ -31,7 +31,7 @@
 #include <vector>
 #include <deque>
 #include <string>
-#include <map> 
+#include <map>
 
 // Core Text forward declarations
 #if defined( CINDER_COCOA )
@@ -44,17 +44,17 @@ namespace cinder {
 class CI_API TextLayout {
  public:
 	/*! \brief This is an abstract line
-	 
+
 	 Makes a TextLayout Object.
-	 
+
 	 */
 	TextLayout();
 
 	//! Sets the background color for the TextLayout. Implicit opqaue alpha.
 	void	clear( const Color &color );
 	//! Sets the background color and alpha for the TextLayout to unpremulitiplied color \a color
-	void	clear( const ColorA &color );	
-	
+	void	clear( const ColorA &color );
+
 	//! Adds a left-justified line of text to the layout. Assumes UTF-8 encoding.
 	void	addLine( const std::string &line );
 	//! Adds a centered line of text to the layout. Assumes UTF-8 encoding.
@@ -77,14 +77,14 @@ class CI_API TextLayout {
 
 	//! Returns a Surface into which the TextLayout is rendered. If \a useAlpha the Surface will contain an alpha channel. If \a premultiplied the alpha will be premulitplied.
 	Surface		render( bool useAlpha = false, bool premultiplied = false );
-	
+
  private:
 	ColorA	mBackgroundColor;
 	Font	mCurrentFont;
 	ColorA	mCurrentColor;
 	float	mCurrentLeadingOffset;
 	int		mHorizontalBorder, mVerticalBorder;
-  
+
 	std::deque<std::shared_ptr<class Line> >		mLines;
 };
 
@@ -92,7 +92,7 @@ class CI_API TextBox {
   public:
 	typedef enum Alignment { LEFT, CENTER, RIGHT } Alignment;
 	enum { GROW = 0 };
-	
+
 	TextBox() : mAlign( LEFT ), mSize( GROW, GROW ), mFont( Font::getDefault() ), mInvalid( true ), mColor( 1, 1, 1, 1 ), mBackgroundColor( 0, 0, 0, 0 ), mPremultiplied( false ), mLigate( true ) {}
 
 	TextBox&			size( ivec2 sz ) { setSize( sz ); return *this; }
@@ -132,7 +132,7 @@ class CI_API TextBox {
 	vec2				measure() const;
 	/** Returns a vector of pairs of glyph indices and the position of their left baselines
 		\warning Does not support word wrapping on Windows. **/
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	std::vector<std::pair<Font::Glyph,vec2>>	measureGlyphs( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics = nullptr ) const;
 #else
 	std::vector<std::pair<Font::Glyph,vec2>>	measureGlyphs() const;

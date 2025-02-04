@@ -1,16 +1,16 @@
 /*
  Copyright (c) 2015, The Cinder Project, All rights reserved.
- 
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
- 
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
- 
+
  * Redistributions of source code must retain the above copyright notice, this list of conditions and
  the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
  the following disclaimer in the documentation and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -68,7 +68,7 @@ class MovieWriter {
 		FileType	getFileType() const { return mFileType; }
 		//! Sets the output file type, defined in MovieWriter::FileType. Default is \c FileType::QUICK_TIME_MOVIE.
 		Format&		fileType( FileType fileType ) { mFileType = fileType; return *this; }
-		
+
 		//! Returns the overall quality for encoding in the range of [\c 0,\c 1.0] for the JPEG codec. Defaults to \c 0.99. \c 1.0 corresponds to lossless.
 		float		getJpegQuality() const { return mJpegQuality; }
 		//! Sets the overall quality for encoding when using the JPEG codec. Must be in a range of [\c 0,\c 1.0]. Defaults to \c 0.99. \c 1.0 corresponds to lossless.
@@ -104,7 +104,7 @@ class MovieWriter {
 		long		mTimeBase;
 		float		mDefaultFrameDuration;
 		float		mJpegQuality;
-		
+
 		// H.264 only
 		bool		mFrameReorderingEnabled;
 		bool		mH264AverageBitsPerSecondSpecified;
@@ -137,7 +137,7 @@ class MovieWriter {
 
 	//! Appends a frame to the Movie. The optional \a duration parameter allows a frame to be inserted for a durationtime other than the Format's default duration.
 	void addFrame( const Surface8u& imageSource, float duration = -1.0f );
-	
+
 	//! Returns the number of frames in the movie
 	uint32_t	getNumFrames() const { return mNumFrames; }
 
@@ -150,7 +150,7 @@ class MovieWriter {
 	AVAssetWriter*							mWriter;
 	AVAssetWriterInput*						mWriterSink;
 	AVAssetWriterInputPixelBufferAdaptor*	mSinkAdapater;
-	
+
 	uint32_t		mNumFrames;
 	double			mCurrentSeconds;
 	int32_t			mWidth, mHeight;

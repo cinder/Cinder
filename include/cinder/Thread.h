@@ -41,10 +41,10 @@ class CI_API ThreadSetup {
   public:
 	ThreadSetup() {
 	}
-	
-	~ThreadSetup() {	
+
+	~ThreadSetup() {
 	}
-	
+
   protected:
 #if defined( CINDER_COCOA )
 	cocoa::SafeNsAutoreleasePool	mAutoreleasePool;

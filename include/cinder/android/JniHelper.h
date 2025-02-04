@@ -67,7 +67,7 @@ public:
 
 	jobject 			GetActivityObject() { return mActivityObject; }
 
-	jclass				RetrieveClass( const std::string& name, bool clearExc = true );	
+	jclass				RetrieveClass( const std::string& name, bool clearExc = true );
 
 	static std::string 	StdStringFromJString( JNIEnv* jniEnv, jstring jstr );
 	static void 		ThrowAsCppException( JNIEnv* jniEnv, const std::string& msg, bool clearExc = true );
@@ -96,7 +96,7 @@ public:
 		// CallStaticLongMethod
 		// CallStaticFloatMethod
 		// CallStaticDoubleMethod
-		//	
+		//
 		CI_CALL_STATIC_TYPE_METHOD_DECL( jobject, Object )
 		CI_CALL_STATIC_TYPE_METHOD_DECL( jboolean, Boolean )
 		CI_CALL_STATIC_TYPE_METHOD_DECL( jbyte, Byte )
@@ -106,7 +106,7 @@ public:
 		CI_CALL_STATIC_TYPE_METHOD_DECL( jlong, Long )
 		CI_CALL_STATIC_TYPE_METHOD_DECL( jfloat, Float )
 		CI_CALL_STATIC_TYPE_METHOD_DECL( jdouble, Double )
-	#undef CI_CALL_STATIC_TYPE_METHOD_DECL	
+	#undef CI_CALL_STATIC_TYPE_METHOD_DECL
 
 	void CallStaticVoidMethod( jclass clazz, jmethodID methodId, ... );
 
@@ -129,7 +129,7 @@ public:
 		// CallLongMethod
 		// CallFloatMethod
 		// CallDoubleMethod
-		//	
+		//
 		CI_CALL_TYPE_METHOD_DECL( jobject, Object )
 		CI_CALL_TYPE_METHOD_DECL( jboolean, Boolean )
 		CI_CALL_TYPE_METHOD_DECL( jbyte, Byte )
@@ -150,7 +150,7 @@ public:
 	jfieldID GetStaticObjectFieldId( jclass clazz, const std::string& name, const std::string& sig );
 
 	#define CI_GET_STATIC_TYPE_FIELDID_DECL( _jname ) \
-		jfieldID GetStatic##_jname##FieldId( jclass clazz, const std::string& name );	
+		jfieldID GetStatic##_jname##FieldId( jclass clazz, const std::string& name );
 
 		//
 		// GetStaticBooleanFieldID
@@ -162,7 +162,7 @@ public:
 		// GetStaticFloatFieldID
 		// GetStaticDoubleFieldID
 		// GetStaticStringFieldID
-		//	
+		//
 		CI_GET_STATIC_TYPE_FIELDID_DECL( Boolean )
 		CI_GET_STATIC_TYPE_FIELDID_DECL( Byte )
 		CI_GET_STATIC_TYPE_FIELDID_DECL( Char )
@@ -172,7 +172,7 @@ public:
 		CI_GET_STATIC_TYPE_FIELDID_DECL( Float )
 		CI_GET_STATIC_TYPE_FIELDID_DECL( Double )
 		CI_GET_STATIC_TYPE_FIELDID_DECL( String )
-	#undef CI_GET_STATIC_TYPE_FIELDID_DECL	
+	#undef CI_GET_STATIC_TYPE_FIELDID_DECL
 
 	#define CI_GET_STATIC_TYPE_FIELD_DECL( _jtype, _jname ) \
 		_jtype GetStatic##_jname##Field( jclass clazz, jfieldID fieldId );
@@ -186,7 +186,7 @@ public:
 		// GetStaticLongField
 		// GetStaticFloatField
 		// GetStaticDoubleField
-		//	
+		//
 		CI_GET_STATIC_TYPE_FIELD_DECL( jobject, Object )
 		CI_GET_STATIC_TYPE_FIELD_DECL( jboolean, Boolean )
 		CI_GET_STATIC_TYPE_FIELD_DECL( jbyte, Byte )
@@ -212,7 +212,7 @@ public:
 		// SetStaticLongField
 		// SetStaticFloatField
 		// SetStaticDoubleField
-		//	
+		//
 		CI_SET_STATIC_TYPE_FIELD_DECL( jobject, Object )
 		CI_SET_STATIC_TYPE_FIELD_DECL( jboolean, Boolean )
 		CI_SET_STATIC_TYPE_FIELD_DECL( jbyte, Byte )
@@ -224,7 +224,7 @@ public:
 		CI_SET_STATIC_TYPE_FIELD_DECL( jdouble, Double )
 	#undef CI_SET_STATIC_TYPE_FIELD_DECL
 
-	void SetStaticStringField( jclass clazz, jfieldID fieldId, const std::string& value );	
+	void SetStaticStringField( jclass clazz, jfieldID fieldId, const std::string& value );
 
 	// ---------------------------------------------------------------------------------------------
 	// Java Fields
@@ -233,7 +233,7 @@ public:
 	jfieldID GetObjectFieldId( jclass clazz, const std::string& name, const std::string& sig );
 
 	#define CI_GET_TYPE_FIELDID_DECL( _jname ) \
-		jfieldID Get##_jname##FieldId( jclass clazz, const std::string& name );	
+		jfieldID Get##_jname##FieldId( jclass clazz, const std::string& name );
 
 		//
 		// GetBooleanFieldID
@@ -245,7 +245,7 @@ public:
 		// GetFloatFieldID
 		// GetDoubleFieldID
 		// GetStringFieldID
-		//	
+		//
 		CI_GET_TYPE_FIELDID_DECL( Boolean )
 		CI_GET_TYPE_FIELDID_DECL( Byte )
 		CI_GET_TYPE_FIELDID_DECL( Char )
@@ -255,7 +255,7 @@ public:
 		CI_GET_TYPE_FIELDID_DECL( Float )
 		CI_GET_TYPE_FIELDID_DECL( Double )
 		CI_GET_TYPE_FIELDID_DECL( String )
-	#undef CI_GET_TYPE_FIELDID_DECL	
+	#undef CI_GET_TYPE_FIELDID_DECL
 
 	#define CI_GET_TYPE_FIELD_DECL( _jtype, _jname ) \
 		_jtype Get##_jname##Field( jobject obj, jfieldID fieldId );
@@ -270,7 +270,7 @@ public:
 		// GetLongField
 		// GetFloatField
 		// GetDoubleField
-		//	
+		//
 		CI_GET_TYPE_FIELD_DECL( jobject, Object )
 		CI_GET_TYPE_FIELD_DECL( jboolean, Boolean )
 		CI_GET_TYPE_FIELD_DECL( jbyte, Byte )
@@ -297,7 +297,7 @@ public:
 		// SetLongField
 		// SetFloatField
 		// SetDoubleField
-		//	
+		//
 		CI_SET_TYPE_FIELD_DECL( jobject, Object )
 		CI_SET_TYPE_FIELD_DECL( jboolean, Boolean )
 		CI_SET_TYPE_FIELD_DECL( jbyte, Byte )
@@ -309,7 +309,7 @@ public:
 		CI_SET_TYPE_FIELD_DECL( jdouble, Double )
 	#undef CI_SET_TYPE_FIELD_DECL
 
-	void SetStringField( jobject obj, jfieldID fieldId, const std::string& value );	
+	void SetStringField( jobject obj, jfieldID fieldId, const std::string& value );
 
 
 	jobject				NewGlobalRef( jobject obj );
@@ -318,7 +318,7 @@ public:
 	JniGlobalObjectRef	TrackedNewGlobalRef( jobject obj );
 	void 				TrackedDeleteGlobalRef( const JniGlobalObjectRef& globalRef );
 
-	jstring 			NewStringUTF( const std::string& str );	
+	jstring 			NewStringUTF( const std::string& str );
 	void 				DeleteLocalRef( jobject localRef );
 
 	jsize 				GetArrayLength( jarray array );
@@ -343,7 +343,7 @@ public:
 	std::string			GetPendingExceptionString( bool clearExc = true );
 	*/
 
-private:	
+private:
 	static std::unique_ptr<JniHelper>	sInstance;
 
 	JniHelper( ANativeActivity* nativeActivity );
@@ -361,6 +361,6 @@ private:
 	jmethodID 		mThrowableGetMessageMethodId	= nullptr;
 	jmethodID		mThrowableToStringMethodId 		= nullptr;
 	*/
-};	
+};
 
 }} // namespace cinder::android

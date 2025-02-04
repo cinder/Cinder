@@ -58,7 +58,7 @@ class CI_API Path2d {
 	void	arcTo( const vec2 &p, const vec2 &t, float radius );
 	void	arcTo( float x, float y, float tanX, float tanY, float radius) { arcTo( vec2( x, y ), vec2( tanX, tanY ), radius ); }
 	void	arcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &p2 );
-	
+
 	//!
 	void    relativeMoveTo( float dx, float dy ) { relativeMoveTo( vec2( dx, dy ) ); }
 	void    relativeMoveTo( const vec2 &delta );
@@ -76,7 +76,7 @@ class CI_API Path2d {
 	void    relativeSmoothCurveTo( const vec2 &delta2, const vec2 &delta3 );
 	void    relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, float dx, float dy ) { relativeArcTo( rx, ry, phi, largeArcFlag, sweepFlag, vec2( dx, dy ) ); }
 	void	relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &delta );
-	
+
 	//! Closes the path, by drawing a straight line from the first to the last point. This is only legal as the last command.
 	void	close() { mSegments.push_back( CLOSE ); }
 	bool	isClosed() const { return ! mSegments.empty() && mSegments.back() == CLOSE; }
@@ -110,10 +110,10 @@ class CI_API Path2d {
 	//! Creates an Archimedean spiral at \a center and returns it as a Path2d. The spiral runs from \a innerRadius to \a outerRadius and the radius will increase by \a spacing every full revolution.
 	//! You can provide an optional radial \a offset.
 	static Path2d spiral( const vec2 &center, float innerRadius, float outerRadius, float spacing, float offset = 0 );
-    
+
 	//! Reverses the orientation of the path, changing CW to CCW and vice versa.
     void	reverse();
-	
+
 	bool	empty() const { return mPoints.empty(); }
 	void	clear() { mSegments.clear(); mPoints.clear(); }
 	size_t	getNumSegments() const { return mSegments.size(); }
@@ -130,7 +130,7 @@ class CI_API Path2d {
 
 	//! Stores into \a segment the segment # associated with \a t, and if \a relativeT is not NULL, the t relative to its segment, in the range <tt>[0,1]</tt>
 	void	getSegmentRelativeT( float t, size_t *segment, float *relativeT ) const;
-	
+
 	std::vector<vec2>	subdivide( float approximationScale = 1.0f ) const;
 	//! if \a resultTangents aren't null then un-normalized tangents corresponding to \a resultPositions are calculated.
 	void				subdivide( std::vector<vec2> *resultPositions, std::vector<vec2> *resultTangents, float approximationScale = 1.0f ) const;
@@ -168,11 +168,11 @@ class CI_API Path2d {
 	//! Appends a new segment of type \a segmentType to the Path2d. \a points must contain an appropriate number of points for the segment type. Note that while the first point for the segment is always required, it will only be used when the Path2d is initially empty.
 	void	appendSegment( SegmentType segmentType, const vec2 *points );
 	void	removeSegment( size_t segment );
-	
+
 	//! Returns the bounding box around all control points. As with Shape2d, note this is not necessarily the bounding box of the Path's shape.
 	Rectf	calcBoundingBox() const;
 	//! Returns the precise bounding box around the curve itself. Slower to calculate than calcBoundingBox().
-	Rectf	calcPreciseBoundingBox() const;	
+	Rectf	calcPreciseBoundingBox() const;
 
 	//! Returns whether the path is defined in clockwise order.
 	bool calcClockwise() const;
@@ -198,7 +198,7 @@ class CI_API Path2d {
 	float	calcLength() const;
 	//! Calculates the length of a specific segment in the range [\a minT,\a maxT], where \a minT and \a maxT range from 0 to 1 and are relative to the segment
 	float	calcSegmentLength( size_t segment, float minT = 0, float maxT = 1 ) const;
-	
+
 	//! Calculates the t value corresponding to \a relativeTime in the range [0,1) within epsilon of \a tolerance. For example, \a relativeTime of 0.5f returns the t-value corresponding to half the length. \a maxIterations dictates the number of refinement loop iterations allowed, setting an upper bound for worst-case performance. Consider a Path2dCalcCache if using frequently.
 	float	calcNormalizedTime( float relativeTime, bool wrap = true, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
 	//! Calculates a t-value corresponding to arc length \a distance. If \a wrap then the t-value loops inside the 0-1 range as \a distance exceeds the arc length. Consider a Path2dCalcCache if using frequently.
@@ -217,12 +217,12 @@ class CI_API Path2d {
 
 	friend class Shape2d;
 	friend class Path2dCalcCache;
-	
+
 	friend CI_API std::ostream& operator<<( std::ostream &out, const Path2d &p );
   private:
 	void	arcHelper( const vec2 &center, float radius, float startRadians, float endRadians, bool forward );
 	void	arcSegmentAsCubicBezier( const vec2 &center, float radius, float startRadians, float endRadians );
-	
+
 	//! Returns the minimum distance from point \a pt to segment \a segment. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
 	float	calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) const;
 
@@ -231,7 +231,7 @@ class CI_API Path2d {
 
 	//! Returns the point on segment \a segment that is closest to \a pt. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
 	vec2	calcClosestPoint( const vec2 &pt, size_t segment, size_t firstPoint ) const;
-	
+
 	std::vector<vec2>			mPoints;
 	std::vector<SegmentType>	mSegments;
 };
@@ -262,7 +262,7 @@ CI_API inline std::ostream& operator<<( std::ostream &out, const Path2d &p )
 		}
 
 	}
-	
+
 	return out;
 }
 
@@ -270,7 +270,7 @@ CI_API inline std::ostream& operator<<( std::ostream &out, const Path2d &p )
 class CI_API Path2dCalcCache {
   public:
 	Path2dCalcCache( const Path2d &path );
-	
+
 	const Path2d&	getPath2d() const { return mPath; }
 	float			getLength() const { return mLength; }
 

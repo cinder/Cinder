@@ -278,7 +278,7 @@ std::unique_ptr<T, FreeDeleter<T> > makeAlignedArray( size_t size, size_t alignm
 	//ptr = std::align( alignment, size, ptr, size );
 	//CI_ASSERT( ptr );
 	(void)alignment;
-	
+
 	return std::unique_ptr<T, FreeDeleter<T> >( static_cast<T *>( ptr ) );
 }
 

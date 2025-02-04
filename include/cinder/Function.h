@@ -40,14 +40,14 @@ class CI_API CallbackMgr {
   public:
 	typedef typename std::vector<std::pair<CallbackId,std::function<SIG> > >	collection;
 	typedef typename collection::iterator										iterator;
-	
+
 	CallbackId	registerCb( std::function<SIG> cb )
 	{
 		CallbackId cbId = 0;
 		if( ! mCallbacks.empty() )
 			cbId = mCallbacks.rbegin()->first + 1;
 		mCallbacks.push_back( std::make_pair( cbId, cb ) );
-		return cbId;	
+		return cbId;
 	}
 
 	CallbackId	registerCb( iterator position, std::function<SIG> cb )
@@ -56,7 +56,7 @@ class CI_API CallbackMgr {
 		if( ! mCallbacks.empty() )
 			cbId = mCallbacks.rbegin()->first + 1;
 		mCallbacks.insert( position, std::make_pair( cbId, cb ) );
-		return cbId;	
+		return cbId;
 	}
 
 	void call() { for( iterator it = begin(); it != end(); ++it ) it->second(); }
@@ -70,14 +70,14 @@ class CI_API CallbackMgr {
 	void call( A1 a1, A2 a2, A3 a3, A4 a4 ) { for( iterator it = begin(); it != end(); ++it ) it->second( a1, a2, a3, a4 ); }
 	template<typename A1, typename A2, typename A3, typename A4, typename A5>
 	void call( A1 a1, A2 a2, A3 a3, A4 a4, A5 a5 ) { for( iterator it = begin(); it != end(); ++it ) it->second( a1, a2, a3, a4, a5 ); }
-	
+
 	void	unregisterCb( CallbackId cbId ) { mCallbacks.erase( find( cbId ) ); }
-	
+
 	bool	empty() const { return mCallbacks.empty(); }
 
 	iterator find( CallbackId cbId ) { for( iterator it = begin(); it != end(); ++it ) if( it->first == cbId ) return it; return mCallbacks.end(); }
 	iterator begin() { return mCallbacks.begin(); }
-	iterator end() { return mCallbacks.end(); }  
+	iterator end() { return mCallbacks.end(); }
 
 	collection&		getCallbacks() { return mCallbacks; }
 

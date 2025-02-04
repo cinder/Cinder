@@ -28,7 +28,7 @@
 
 #if defined( CINDER_ANDROID )
   #include "cinder/gl/Texture.h"
-#endif 
+#endif
 
 #if defined( CINDER_MAC ) || defined( CINDER_COCOA_TOUCH_DEVICE )
 	#if defined( __OBJC__ )
@@ -49,7 +49,7 @@
 #elif defined( CINDER_ANDROID )
 	namespace cinder {
 		class CaptureImplJni;
-	}	
+	}
 #endif
 
 #include <map>
@@ -88,7 +88,7 @@ class CI_API Capture {
 	float		getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! Returns the bounding rectangle of the capture imagee, which is Area( 0, 0, width, height )
 	Area		getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
-	
+
 	//! Returns a SurfaceRef representing the current captured frame.
 	Surface8uRef	getSurface() const;
 
@@ -136,7 +136,7 @@ class CI_API Capture {
 		Device() {}
 		std::string		mName;
 	};
-		
+
  protected:
  	Capture( int32_t width, int32_t height, const DeviceRef device );
 
@@ -147,7 +147,7 @@ class CI_API Capture {
 #elif defined( CINDER_MSW )
 	CaptureImplDirectShow			*mImpl;
 #elif defined( CINDER_ANDROID )
-	CaptureImplJni					*mImpl;		
+	CaptureImplJni					*mImpl;
 #endif
 };
 

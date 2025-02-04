@@ -86,7 +86,7 @@ class CI_API MonitorNode : public NodeAutoPullable {
 
 	//! Copies audio frames from the RingBuffer into mCopiedBuffer, which is suitable for operation on the main thread.
 	void fillCopiedBuffer();
-	
+
 	std::vector<dsp::RingBuffer>	mRingBuffers;	// one per channel
 	Buffer							mCopiedBuffer;	// used to safely read audio frames on a non-audio thread
 	size_t							mWindowSize;
@@ -104,7 +104,7 @@ class CI_API MonitorSpectralNode : public MonitorNode {
 		Format&     fftSize( size_t size )              { mFftSize = size; return *this; }
 		//! The windowing function applied to the samples before computing the transform. Defaults to WindowType::BLACKMAN
 		Format&		windowType( dsp::WindowType type )	{ mWindowType = type; return *this; }
-		//! \see MonitorNode::Format::windowSize() 
+		//! \see MonitorNode::Format::windowSize()
 		Format&		windowSize( size_t size )			{ MonitorNode::Format::windowSize( size ); return *this; }
 
 		size_t			getFftSize() const				{ return mFftSize; }

@@ -32,11 +32,11 @@ namespace cinder {
 
 typedef std::shared_ptr<class DataTarget>	DataTargetRef;
 
-class CI_API DataTarget { 
+class CI_API DataTarget {
   public:
 	virtual bool	providesFilePath() = 0;
 	virtual bool	providesUrl() = 0;
-	
+
 	const fs::path&			getFilePath() const;
 	const Url&				getUrl() const;
 	const fs::path&			getFilePathHint() const;
@@ -45,12 +45,12 @@ class CI_API DataTarget {
 
   protected:
 	DataTarget( const fs::path &aFilePath, const Url &aUrl )
-		: mFilePath( aFilePath ), mUrl( aUrl ) 
+		: mFilePath( aFilePath ), mUrl( aUrl )
 	{}
 	virtual ~DataTarget() {}
-	
+
 	void	setFilePathHint( const fs::path &aFilePathHint );
-	
+
 //	Buffer				mBuffer; // TODO: is this used? if not remove
 	fs::path			mFilePath;
 	fs::path			mFilePathHint;
@@ -63,16 +63,16 @@ typedef std::shared_ptr<class DataTargetPath>	DataTargetPathRef;
 class CI_API DataTargetPath : public DataTarget {
   public:
 	static DataTargetPathRef	createRef( const fs::path &path );
-	
+
 	virtual bool	providesFilePath() { return true; }
 	virtual bool	providesUrl() { return false; }
-	
+
 	virtual OStreamRef		getStream();
-	
+
   protected:
 	explicit DataTargetPath( const fs::path &path );
-  
-	OStreamFileRef	mStream;  
+
+	OStreamFileRef	mStream;
 };
 
 
@@ -84,13 +84,13 @@ class CI_API DataTargetStream : public DataTarget {
 
 	virtual bool	providesFilePath() { return false; }
 	virtual bool	providesUrl() { return false; }
-	
+
 	virtual OStreamRef		getStream() { return mStream; }
-	
+
   protected:
 	DataTargetStream( OStreamRef stream );
-  
-	OStreamRef	mStream;  	
+
+	OStreamRef	mStream;
 };
 
 //! Returns a DataTarget to file path \a path, and optionally creates any necessary directories when \a createParents is \c true.

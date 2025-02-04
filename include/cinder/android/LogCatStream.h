@@ -36,7 +36,7 @@ namespace cinder { namespace android {
 void LogCatOutput( const char *text );
 
 template <class CharT, class TraitsT = std::char_traits<CharT> >
-class basic_debugbuf : 
+class basic_debugbuf :
     public std::basic_stringbuf<CharT, TraitsT>
 {
 public:
@@ -63,16 +63,16 @@ inline void basic_debugbuf<char>::log_cat(const char *text)
 }
 
 template<class CharT, class TraitsT = std::char_traits<CharT> >
-class basic_dostream : 
+class basic_dostream :
     public std::basic_ostream<CharT, TraitsT>
 {
 public:
 
     basic_dostream() : std::basic_ostream<CharT, TraitsT>
                 (new basic_debugbuf<CharT, TraitsT>()) {}
-    ~basic_dostream() 
+    ~basic_dostream()
     {
-        delete this->rdbuf(); 
+        delete this->rdbuf();
     }
 };
 

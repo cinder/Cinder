@@ -33,7 +33,7 @@ class CaptureImplAvFoundationDevice : public Capture::Device {
   public:
 	CaptureImplAvFoundationDevice( AVCaptureDevice *device );
 	~CaptureImplAvFoundationDevice();
-	
+
 	bool						checkAvailable() const;
 	bool						isConnected() const;
 	Capture::DeviceIdentifier	getUniqueId() const { return mUniqueId; }
@@ -52,7 +52,7 @@ class CaptureImplAvFoundationDevice : public Capture::Device {
 	CVPixelBufferRef				mWorkingPixelBuffer;
 	cinder::Surface8uRef			mCurrentFrame;
 	NSString						*mDeviceUniqueId;
-	
+
 	cinder::Capture::DeviceRef		mDevice;
 	bool							mHasNewFrame;
 	bool							mIsCapturing;

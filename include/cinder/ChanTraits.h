@@ -28,7 +28,7 @@
 namespace cinder {
 
 template<typename T>
-struct CI_API CHANTRAIT 
+struct CI_API CHANTRAIT
 {
 };
 

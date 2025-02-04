@@ -55,9 +55,9 @@ class CI_API Context : public std::enable_shared_from_this<Context> {
 	//! Allows the user to set the master Context and DeviceManager, overriding the defaults.
 	static void					setMaster( Context *masterContext, DeviceManager *deviceManager );
 
-	//! Creates and returns a platform-specific OutputDeviceNode, which delivers audio to the hardware output device specified by \a device. 
+	//! Creates and returns a platform-specific OutputDeviceNode, which delivers audio to the hardware output device specified by \a device.
 	virtual OutputDeviceNodeRef		createOutputDeviceNode( const DeviceRef &device = Device::getDefaultOutput(), const Node::Format &format = Node::Format() ) = 0;
-	//! Creates and returns a platform-specific InputDeviceNode, which captures audio from the hardware input device specified by \a device. 
+	//! Creates and returns a platform-specific InputDeviceNode, which captures audio from the hardware input device specified by \a device.
 	virtual InputDeviceNodeRef		createInputDeviceNode( const DeviceRef &device = Device::getDefaultInput(), const Node::Format &format = Node::Format() ) = 0;
 
 	//! Interface for creating new Node's of type \a NodeT, which is owned by this Context. All Node's must be created using the Context.

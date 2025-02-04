@@ -39,7 +39,7 @@ class CaptureImplCocoaDummyDevice : public Capture::Device {
 	{
 		mName = name;
 	}
-	
+
 	bool						checkAvailable() const { return true; }
 	bool						isConnected() const { return true; }
 	Capture::DeviceIdentifier	getUniqueId() const { return mUniqueId; }

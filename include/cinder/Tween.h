@@ -92,16 +92,16 @@ class CI_API TweenBase : public TimelineItem {
 
 	void			setReverseStartFn( StartFn reverseStartFunction ) { mReverseStartFunction = reverseStartFunction; }
 	StartFn			getReverseStartFn() const { return mReverseStartFunction; }
-	
-	void			setUpdateFn( UpdateFn updateFunction ) { mUpdateFunction = updateFunction; }									
+
+	void			setUpdateFn( UpdateFn updateFunction ) { mUpdateFunction = updateFunction; }
 	UpdateFn		getUpdateFn() const { return mUpdateFunction; }
-																																					
+
 	void			setFinishFn( FinishFn finishFn ) { mFinishFunction = finishFn; }
 	FinishFn		getFinishFn() const { return mFinishFunction; }
 
 	void			setReverseFinishFn( FinishFn reverseFinishFn ) { mReverseFinishFunction = reverseFinishFn; }
 	FinishFn		getReverseFinishFn() const { return mReverseFinishFunction; }
-	
+
 	class CI_API Options {
 	  protected:
 		Options( TimelineRef timeline )
@@ -110,10 +110,10 @@ class CI_API TweenBase : public TimelineItem {
 
 		void	appendTo( TweenBase &tweenBase, void *target, float offset );
 		void	timelineEnd( TweenBase &tweenBase, float offset );
-	  
+
 		TimelineRef		mTimeline;
 	};
-	
+
   protected:
 	virtual void reset( bool unsetStarted )
 	{
@@ -128,11 +128,11 @@ class CI_API TweenBase : public TimelineItem {
 			mFinishFunction();
 	}
 
-  
+
 	StartFn			mStartFunction, mReverseStartFunction;
-	UpdateFn		mUpdateFunction;	
+	UpdateFn		mUpdateFunction;
 	FinishFn		mFinishFunction, mReverseFinishFunction;
-  
+
 	EaseFn		mEaseFunction;
 	float		mDuration;
 	bool		mCopyStartValue;
@@ -151,7 +151,7 @@ class TweenRef : public std::shared_ptr<Tween<T> > {
 		: std::shared_ptr<Tween<T> >()
 	{}
 };
-		
+
 template<typename T>
 class Tween : public TweenBase {
   public:
@@ -163,20 +163,20 @@ class Tween : public TweenBase {
 		: TweenBase( target, true, startTime, duration, easeFunction ), mStartValue( *target ), mEndValue( endValue ), mLerpFunction( lerpFunction )
 	{
 	}
-	
+
 	Tween( T *target, T startValue, T endValue, float startTime, float duration,
 			EaseFn easeFunction = easeNone, LerpFn lerpFunction = &tweenLerp<T> )
 		: TweenBase( target, false, startTime, duration, easeFunction ), mStartValue( startValue ), mEndValue( endValue ), mLerpFunction( lerpFunction )
 	{
 	}
-	
+
 	virtual ~Tween() {}
-	
+
 	//! Returns the starting value for the tween. If the tween will copy its target's value upon starting (isCopyStartValue()) and the tween has not started, this returns the value of its target when the tween was created
 	T	getStartValue() const { return mStartValue; }
-	T	getEndValue() const { return mEndValue; }			
+	T	getEndValue() const { return mEndValue; }
 	T*	getTarget() const { return reinterpret_cast<T*>( mTarget ); }
-	
+
 	//! Returns whether the tween will copy its target's value upon starting
 	bool	isCopyStartValue() { return mCopyStartValue; }
 
@@ -202,19 +202,19 @@ class Tween : public TweenBase {
 		Options&	infinite( bool doInfinite = true ) { mTweenRef->setInfinite( doInfinite ); return *this; }
 		Options&	timelineEnd( float offset = 0 ) { TweenBase::Options::timelineEnd( *mTweenRef, offset ); return *this; }
 		template<typename Y>
-		Options&	appendTo( Anim<Y> *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget->ptr(), offset ); return *this; }	
-		Options&	appendTo( void *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget, offset ); return *this; }	
+		Options&	appendTo( Anim<Y> *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget->ptr(), offset ); return *this; }
+		Options&	appendTo( void *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget, offset ); return *this; }
 		Options&	lerpFn( const typename Tween<T>::LerpFn &lerpFn ) { mTweenRef->setLerpFn( lerpFn ); return *this; }
-		
+
 		operator TweenRef<T>() { return mTweenRef; }
 
 	  protected:
 		Options( TweenRef<T> tweenRef, TimelineRef timeline )
 			: TweenBase::Options( timeline ), mTweenRef( tweenRef )
 		{}
-				
+
 		TweenRef<T>		mTweenRef;
-		
+
 		friend class Timeline;
 	};
 
@@ -231,7 +231,7 @@ class Tween : public TweenBase {
 		result->mCopyStartValue = false;
 		return result;
 	}
-	
+
 	virtual TimelineItemRef	cloneReverse() const
 	{
 		std::shared_ptr<Tween<T> > result( new Tween<T>( *this ) );
@@ -239,7 +239,7 @@ class Tween : public TweenBase {
 		result->mCopyStartValue = false;
 		return result;
 	}
-	
+
 	virtual void start( bool reverse )
 	{
 		if( mCopyStartValue )
@@ -249,17 +249,17 @@ class Tween : public TweenBase {
 		else if( ( ! reverse ) && mStartFunction )
 			mStartFunction();
 	}
-	
+
 	virtual void update( float relativeTime )
 	{
 		*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
 		if( mUpdateFunction )
 			mUpdateFunction();
 	}
-	
 
-	T	mStartValue, mEndValue;	
-	
+
+	T	mStartValue, mEndValue;
+
 	LerpFn				mLerpFunction;
 };
 
@@ -270,14 +270,14 @@ class FnTween : public Tween<T> {
 		: Tween<T>( &mValue, startValue, endValue, startTime, duration, easeFunction, lerpFunction ), mFn( fn ), mValue( startValue )
 	{
 	}
-	
+
 	virtual void update( float relativeTime )
 	{
 		Tween<T>::update( relativeTime );
 		if( mFn )
 			mFn( mValue );
-	}	
-	
+	}
+
 	std::function<void (T)>		mFn;
 	T							mValue;
 };
@@ -303,7 +303,7 @@ class CI_API AnimBase {
 
 	//! returns false if any tweens are active on 'this', otherwise true
 	bool isComplete() const;
-	
+
 	//! returns the parent timeline for the Anim<> or NULL if there is none
 	TimelineRef	getParent() const { return mParentTimeline; }
 
@@ -311,13 +311,13 @@ class CI_API AnimBase {
 	AnimBase( void *voidPtr ) : mVoidPtr( voidPtr ) {}
 	AnimBase( const AnimBase &rhs, void *voidPtr );
 	~AnimBase();
-	
+
 	void 	set( const AnimBase &rhs );
 	void 	setReplace( const AnimBase &rhs );
-	
+
 	void		setParentTimeline( TimelineRef parentTimeline );
 
-	void			*mVoidPtr;	
+	void			*mVoidPtr;
 	TimelineRef		mParentTimeline;
 };
 
@@ -327,17 +327,17 @@ class Anim : public AnimBase {
 	Anim()
 		: AnimBase( &mValue )
 	{}
-  	Anim( T value ) 
+  	Anim( T value )
 		: AnimBase( &mValue), mValue( value )
 	{}
   	Anim( const Anim<T> &rhs ) // normal copy constructor
 		: AnimBase( rhs, &mValue ), mValue( rhs.mValue )
   	{}
-  	
+
 	const T&	operator()() const { return mValue; }
-	T&			operator()() { return mValue; }	
-	
-	operator const T&() const { return mValue; }	
+	T&			operator()() { return mValue; }
+
+	operator const T&() const { return mValue; }
 	Anim<T>& operator=( const Anim &rhs ) { // copy assignment
 		if( this != &rhs ) {
 			set( rhs );
@@ -366,7 +366,7 @@ class Anim : public AnimBase {
 
 	const T&	value() const { return mValue; }
 	T&			value() { return mValue; }
-  	
+
   	const T*		ptr() const { return &mValue; }
   	T*				ptr() { return &mValue; }
 
@@ -383,9 +383,9 @@ class Anim : public AnimBase {
   public:
 	TweenScope() {}
 	TweenScope( const TweenScope &rhs ) {}	// do nothing for copy; these are our tweens alone
-	TweenScope& operator=( const TweenScope &rhs ) { return *this; }	// do nothing for copy; these are our tweens alone	
+	TweenScope& operator=( const TweenScope &rhs ) { return *this; }	// do nothing for copy; these are our tweens alone
 	~TweenScope();
-	
+
 	TweenScope& operator+=( TimelineItemRef item );
 	void add( TimelineItemRef item );
 

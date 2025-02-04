@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2013, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -80,16 +80,16 @@ class CI_API Renderbuffer {
 
   private:
 	//! Create a Renderbuffer \a width pixels wide and \a heigh pixels high, with an internal format of \a internalFormat, MSAA samples \a msaaSamples, and CSAA samples \a coverageSamples
-	Renderbuffer( int width, int height, GLenum internalFormat, int msaaSamples, int coverageSamples );  
-  
+	Renderbuffer( int width, int height, GLenum internalFormat, int msaaSamples, int coverageSamples );
+
 	void	init( int aWidth, int aHeight, GLenum internalFormat, int msaaSamples, int coverageSamples );
-  
+
 	int					mWidth, mHeight;
 	GLuint				mId;
 	GLenum				mInternalFormat;
 	int					mSamples, mCoverageSamples;
 	std::string			mLabel; // debug label
-	
+
 	friend CI_API std::ostream& operator<<( std::ostream &os, const Renderbuffer &rhs );
 };
 
@@ -122,14 +122,14 @@ class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
 	Format			getFormat() { return mFormat; }
 
 	//! Returns a reference to the color Texture2d of the FBO (at \c GL_COLOR_ATTACHMENT0). Resolves multisampling and renders mipmaps if necessary. Returns an empty Ref if there is no Texture2d attached at \c GL_COLOR_ATTACHMENT0
-	Texture2dRef	getColorTexture();	
+	Texture2dRef	getColorTexture();
 	//! Returns a reference to the depth Texture2d of the FBO. Resolves multisampling and renders mipmaps if necessary. Returns an empty Ref if there is no Texture2d as a depth attachment.
 	Texture2dRef	getDepthTexture();
 	//! Returns a Texture2dRef attached at \a attachment (such as \c GL_COLOR_ATTACHMENT0). Resolves multisampling and renders mipmaps if necessary. Returns NULL if a Texture2d is not bound at \a attachment.
 	Texture2dRef	getTexture2d( GLenum attachment );
 	//! Returns a TextureBaseRef attached at \a attachment (such as \c GL_COLOR_ATTACHMENT0). Resolves multisampling and renders mipmaps if necessary. Returns NULL if a Texture is not bound at \a attachment.
 	TextureBaseRef	getTextureBase( GLenum attachment );
-	
+
 	//! Binds the color texture associated with an Fbo to its target. Optionally binds to a multitexturing unit when \a textureUnit is non-zero. Optionally binds to a multitexturing unit when \a textureUnit is non-zero. \a attachment specifies which color buffer in the case of multiple attachments.
 	void 			bindTexture( int textureUnit = 0, GLenum attachment = GL_COLOR_ATTACHMENT0 );
 	//! Unbinds the texture associated with an Fbo attachment
@@ -165,17 +165,17 @@ class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
 	static GLint	getMaxSamples();
 	//! Returns the maximum number of color attachments the graphics card is capable of using for an Fbo
 	static GLint	getMaxAttachments();
-	
+
 	//! Returns the debugging label associated with the Fbo.
 	const std::string&	getLabel() const { return mLabel; }
 	//! Sets the debugging label associated with the Fbo. Calls glObjectLabel() when available.
 	void				setLabel( const std::string &label );
-	
+
 	//! Returns a copy of the pixels in \a attachment within \a area (cropped to the bounding rectangle of the attachment) as a Surface8u. \a attachment ignored on ES 2.
 	Surface8u		readPixels8u( const Area &area, GLenum attachment = GL_COLOR_ATTACHMENT0 ) const;
 	//! Returns a copy of the pixels in \a attachment within \a area (cropped to the bounding rectangle of the attachment) as a Surface32f. \a attachment ignored on ES 2.
 	Surface32f		readPixels32f( const Area &area, GLenum attachment = GL_COLOR_ATTACHMENT0 ) const;
-	
+
 	//! \brief Defines the Format of the Fbo, which is passed in via create().
 	//!
 	//! The default provides an 8-bit RGBA color texture attachment and a 24-bit depth renderbuffer attachment, multi-sampling and stencil disabled.
@@ -188,14 +188,14 @@ class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
 		Format&	colorTexture( const Texture::Format &textureFormat = getDefaultColorTextureFormat( true ) ) { mColorTexture = true; mColorTextureFormat = textureFormat; return *this; }
 		//! Disables both a color Texture and a color Buffer
 		Format&	disableColor() { mColorTexture = false; return *this; }
-		
+
 		//! Enables a depth renderbuffer with an internal format of \a internalFormat, which defaults to \c GL_DEPTH_COMPONENT24. Disables a depth texture.
 		Format&	depthBuffer( GLenum internalFormat = getDefaultDepthInternalFormat() ) { mDepthTexture = false; mDepthBuffer = true; mDepthBufferInternalFormat = internalFormat; return *this; }
 		//! Enables a depth texture with a format of \a textureFormat, which defaults to \c GL_DEPTH_COMPONENT24. Disables a depth renderbuffer.
 		Format&	depthTexture( const Texture::Format &textureFormat = getDefaultDepthTextureFormat()) { mDepthTexture = true; mDepthBuffer = false; mDepthTextureFormat = textureFormat; return *this; }
 		//! Disables both a depth Texture and a depth Buffer
 		Format&	disableDepth() { mDepthBuffer = false; return *this; }
-		
+
 		//! Sets the number of MSAA samples. Defaults to none.
 		Format& samples( int samples ) { mSamples = samples; return *this; }
 		//! Sets the number of CSAA samples. Defaults to none.
@@ -207,7 +207,7 @@ class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
 		Format&	attachment( GLenum attachmentPoint, const RenderbufferRef &buffer, RenderbufferRef multisampleBuffer = RenderbufferRef() );
 		//! Adds a Texture attachment \a texture at \a attachmentPoint (such as \c GL_COLOR_ATTACHMENT0). Replaces any existing attachment at the same attachment point.
 		Format&	attachment( GLenum attachmentPoint, const TextureBaseRef &texture, RenderbufferRef multisampleBuffer = RenderbufferRef() );
-		
+
 		//! Sets the internal format for the depth buffer. Defaults to \c GL_DEPTH_COMPONENT24. Common options also include \c GL_DEPTH_COMPONENT16 and \c GL_DEPTH_COMPONENT32
 		void	setDepthBufferInternalFormat( GLint depthInternalFormat ) { mDepthBufferInternalFormat = depthInternalFormat; }
 		//! Sets the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling. Note that not all implementations support multisampling.
@@ -239,7 +239,7 @@ class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
 		bool	hasDepthBuffer() const { return mDepthBuffer; }
 		//! Returns whether the FBO has a Renderbuffer as a stencil attachment.
 		bool	hasStencilBuffer() const { return mStencilBuffer; }
-		
+
 		//! Returns the default color Texture::Format for this platform
 		static Texture::Format	getDefaultColorTextureFormat( bool alpha = true );
 		//! Returns the default depth Texture::Format for this platform
@@ -257,7 +257,7 @@ class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
 		void				setLabel( const std::string &label ) { mLabel = label; }
 		//! Sets the debugging label associated with the Fbo. Calls glObjectLabel() when available.
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
-		
+
 	  protected:
 		GLenum			mDepthBufferInternalFormat;
 		int				mSamples, mCoverageSamples;
@@ -267,7 +267,7 @@ class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
 		Texture::Format	mColorTextureFormat, mDepthTextureFormat;
 		std::string		mLabel; // debug label
 
-		
+
 		std::map<GLenum,RenderbufferRef>	mAttachmentsBuffer;
 		std::map<GLenum,RenderbufferRef>	mAttachmentsMultisampleBuffer;
 		std::map<GLenum,TextureBaseRef>		mAttachmentsTexture;
@@ -277,7 +277,7 @@ class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
 
  protected:
 	Fbo( int width, int height, const Format &format );
- 
+
 	void		init();
 	void		initMultisamplingSettings( bool *useMsaa, bool *useCsaa, Format *format );
 	void		prepareAttachments( const Format &format, bool multisampling );
@@ -293,15 +293,15 @@ class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
 	Format				mFormat;
 	GLuint				mId;
 	GLuint				mMultisampleFramebufferId;
-	
+
 	std::map<GLenum,RenderbufferRef>	mAttachmentsBuffer; // map from attachment ID to Renderbuffer
-	std::map<GLenum,RenderbufferRef>	mAttachmentsMultisampleBuffer; // map from attachment ID to Renderbuffer	
+	std::map<GLenum,RenderbufferRef>	mAttachmentsMultisampleBuffer; // map from attachment ID to Renderbuffer
 	std::map<GLenum,TextureBaseRef>		mAttachmentsTexture; // map from attachment ID to Texture
 
 	std::string			mLabel; // debugging label
 
 	mutable bool		mNeedsResolve, mNeedsMipmapUpdate;
-	
+
 	friend CI_API std::ostream& operator<<( std::ostream &os, const Fbo &rhs );
 };
 
@@ -313,26 +313,26 @@ class CI_API FboCubeMap : public Fbo {
 	struct CI_API Format : private Fbo::Format {
 		// Default constructor. Enables a depth RenderBuffer and a color CubeMap
 		Format();
-		
+
 		//! Sets the TextureCubeMap format for the default CubeMap.
 		Format&							textureCubeMapFormat( const TextureCubeMap::Format &format )	{ mTextureCubeMapFormat = format; return *this; }
 		//! Returns the TextureCubeMap format for the default CubeMap.
 		const TextureCubeMap::Format&	getTextureCubeMapFormat() const { return mTextureCubeMapFormat; }
-		
+
 		//! Disables a depth Buffer
 		Format&	disableDepth() { mDepthBuffer = false; return *this; }
 
 		//! Sets the debugging label associated with the Fbo. Calls glObjectLabel() when available.
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
-		
+
 	  protected:
 		gl::TextureCubeMap::Format	mTextureCubeMapFormat;
-		
+
 		friend class FboCubeMap;
 	};
-  
+
 	static FboCubeMapRef	create( int32_t faceWidth, int32_t faceHeight, const Format &format = Format() );
-	
+
 	//! Binds a face of the Fbo as the currently active framebuffer. \a faceTarget expects values in the \c GL_TEXTURE_CUBE_MAP_POSITIVE_X family.
 	void 	bindFramebufferFace( GLenum faceTarget, GLint level = 0, GLenum target = GL_FRAMEBUFFER, GLenum attachment = GL_COLOR_ATTACHMENT0 );
 	//! Returns the view matrix appropriate for a given face (in the \c GL_TEXTURE_CUBE_MAP_POSITIVE_X family) looking from the position \a eyePos
@@ -340,10 +340,10 @@ class CI_API FboCubeMap : public Fbo {
 
 	//! Returns a TextureCubeMapRef attached at \a attachment (default \c GL_COLOR_ATTACHMENT0). Resolves multisampling and renders mipmaps if necessary. Returns NULL if a TextureCubeMap is not bound at \a attachment.
 	TextureCubeMapRef	getTextureCubeMap( GLenum attachment = GL_COLOR_ATTACHMENT0 );
-	
+
   protected:
 	FboCubeMap( int32_t faceWidth, int32_t faceHeight, const Format &format, const TextureCubeMapRef &textureCubeMap );
-  
+
 	TextureCubeMapRef		mTextureCubeMap;
 };
 

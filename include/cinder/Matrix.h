@@ -64,7 +64,7 @@ CI_API inline glm::mat4 transform2dTo3d( const glm::mat3 &m )
 	result[3][1] = m[2][1];
 	result[3][2] = 0;
 	result[3][3] = m[2][2];
-	
+
 	return result;
 }
 
@@ -74,10 +74,10 @@ CI_API glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir );
 // Parallel Transport Frames
 //
 //  These methods compute a set of reference frames, defined by their
-//  transformation matrix, along a curve. It is designed so that the 
-//  array of points and the array of matrices used to fetch these routines 
+//  transformation matrix, along a curve. It is designed so that the
+//  array of points and the array of matrices used to fetch these routines
 //  don't need to be ordered as the curve.
-//  
+//
 //  A typical usage would be :
 //
 //      m[0] = firstFrame( p[0], p[1], p[2] );
@@ -97,11 +97,11 @@ class CI_API ParallelTransport {
 
 	mat4 nextFrame( const vec3 &point, const vec3 &tangent );
 	mat4 lastFrame();
-	
+
   protected:
 	bool	mFirstFrame;
 	vec3	mFirstFrameFirstPoint, mFirstFrameSecondPoint;
-	
+
 	mat4	mPrevMatrix;
 	vec3	mPrevPoint, mPrevTangent;
 };
@@ -109,24 +109,24 @@ class CI_API ParallelTransport {
 template<typename T>
 CI_API glm::tmat4x4<T,glm::defaultp> firstFrame(
 	const glm::tvec3<T,glm::defaultp> &firstPoint,
-	const glm::tvec3<T,glm::defaultp> &secondPoint, 
+	const glm::tvec3<T,glm::defaultp> &secondPoint,
 	const glm::tvec3<T,glm::defaultp> &thirdPoint
 );
 
 template<typename T>
-CI_API glm::tmat4x4<T,glm::defaultp> nextFrame( 
-	const glm::tmat4x4<T,glm::defaultp> &prevMatrix, 
+CI_API glm::tmat4x4<T,glm::defaultp> nextFrame(
+	const glm::tmat4x4<T,glm::defaultp> &prevMatrix,
 	const glm::tvec3<T,glm::defaultp> &prevPoint,
 	const glm::tvec3<T,glm::defaultp> &curPoint,
 	glm::tvec3<T,glm::defaultp> prevTangent,
-	glm::tvec3<T,glm::defaultp> curTangent 
+	glm::tvec3<T,glm::defaultp> curTangent
 );
-			
+
 template<typename T>
-CI_API glm::tmat4x4<T,glm::defaultp> lastFrame( 
-	const glm::tmat4x4<T,glm::defaultp> &prevMatrix, 
-	const glm::tvec3<T,glm::defaultp> &prevPoint, 
-	const glm::tvec3<T,glm::defaultp> &lastPoint 
+CI_API glm::tmat4x4<T,glm::defaultp> lastFrame(
+	const glm::tmat4x4<T,glm::defaultp> &prevMatrix,
+	const glm::tvec3<T,glm::defaultp> &prevPoint,
+	const glm::tvec3<T,glm::defaultp> &lastPoint
 );
 
 } // namespace cinder

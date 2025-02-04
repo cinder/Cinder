@@ -68,7 +68,7 @@ public:
 		bool								isConnected() const;
 		Capture::DeviceIdentifier			getUniqueId() const { return mUniqueId; }
 		bool								isFrontFacing() const { return mFrontFacing; }
-		ci::android::hardware::Camera*		getNative() const { return mNativeDevice; }		
+		ci::android::hardware::Camera*		getNative() const { return mNativeDevice; }
 
 		const std::vector<ivec2>&			getSupportedResolutions() const { return mSupportedResolutions; }
 
@@ -95,7 +95,7 @@ private:
 	mutable gl::Texture2dRef 			mCurrentTexture;
 
 	static bool 							sDevicesEnumerated;
-	static std::vector<Capture::DeviceRef>	sDevices;	
+	static std::vector<Capture::DeviceRef>	sDevices;
 };
 
 } // namespace cinder

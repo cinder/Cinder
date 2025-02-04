@@ -48,7 +48,7 @@ CI_API float midiToFreq( float midi );
 //! Convert \a timeSeconds to frames running at \a sampleRate, rounding to the nearest integral frame.
 CI_API uint64_t timeToFrame( double timeSeconds, double sampleRate );
 
-//! Checks if the absolute value of any sample in \a buffer is over \a threshold. Optionally provide \a recordFrame to record the frame index. \return true if one is found, false otherwise. 
+//! Checks if the absolute value of any sample in \a buffer is over \a threshold. Optionally provide \a recordFrame to record the frame index. \return true if one is found, false otherwise.
 CI_API bool thresholdBuffer( const Buffer &buffer, float threshold, size_t *recordFrame = nullptr );
 
 } } // namespace cinder::audio

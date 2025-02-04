@@ -96,20 +96,20 @@ class CI_API Logger : private Noncopyable {
 
 	void setTimestampEnabled( bool enable = true )	{ mTimeStampEnabled = enable; }
 	bool isTimestampEnabled() const					{ return mTimeStampEnabled; }
-	
+
 	void	setLevel( Level level ) { mLevel = level; }
 	Level	getLevel() const { return mLevel; }
 
   protected:
 	Logger( Level level = static_cast<Level>( CI_MIN_LOG_LEVEL ) ) : mLevel( level ), mTimeStampEnabled( false ) {}
-	
+
 	void writeDefault( std::ostream &stream, const Metadata &meta, const std::string &text );
 
 	Level	mLevel;
   private:
 	bool	mTimeStampEnabled;
 };
-	
+
 typedef std::shared_ptr<Logger>	LoggerRef;
 
 //! LoggerConsole prints log messages in the application console window.
@@ -146,13 +146,13 @@ class CI_API LoggerFile : public Logger {
 //! LoggerFileRotating will write log messages to a file that is rotated at midnight.
 class CI_API LoggerFileRotating : public LoggerFile {
 public:
-	
+
 	//! Creates a rotating log file that will rotate when the first logging event occurs after midnight.
 	//! \p formatStr will be passed to strftime to determine the file name.
 	LoggerFileRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true, std::function<void( const fs::path& )> fileChangeFn = nullptr );
-	
+
 	virtual ~LoggerFileRotating() { }
-	
+
 	void write( const Metadata &meta, const std::string &text ) override;
 
 protected:
@@ -164,7 +164,7 @@ protected:
 	std::string		mDailyFormatStr;
 	int				mYearDay;
 };
-	
+
 //! LoggerBreakpoint doesn't actually print anything, but triggers a breakpoint on log events above a specified threshold.
 class CI_API LoggerBreakpoint : public Logger {
   public:
@@ -181,7 +181,7 @@ class CI_API LoggerSystem : public Logger {
 public:
 	LoggerSystem();
 	virtual ~LoggerSystem();
-	
+
 	void write( const Metadata &meta, const std::string &text ) override;
 
 protected:
@@ -226,25 +226,25 @@ public:
 	std::mutex& getMutex() const			{ return mMutex; }
 	//! Set the logging level for all active loggers.
 	void	setLevel( Level level );
-	
+
 	void write( const Metadata &meta, const std::string &text );
-	
+
 	template<typename LoggerT, typename... Args>
 	std::shared_ptr<LoggerT> makeLogger( Args&&... args );
 
 	template<typename LoggerT, typename... Args>
 	std::shared_ptr<LoggerT> makeOrGetLogger( Args&&... args );
-	
+
 protected:
 	LogManager();
 
 	std::vector<LoggerRef>			mLoggers;
-	
+
 	mutable std::mutex				mMutex;
-	
+
 	static LogManager 				*sInstance;
 };
-	
+
 struct CI_API Entry {
 	// TODO: move &&location
 	Entry( Level level, const Location &location );
@@ -296,7 +296,7 @@ template<typename LoggerT, typename... Args>
 std::shared_ptr<LoggerT> LogManager::makeLogger( Args&&... args )
 {
 	static_assert( std::is_base_of<Logger, LoggerT>::value, "LoggerT must inherit from log::Logger" );
-	
+
 	std::shared_ptr<LoggerT> result = std::make_shared<LoggerT>( std::forward<Args>( args )... );
 	addLogger( result );
 	return result;
@@ -306,17 +306,17 @@ template<typename LoggerT, typename... Args>
 std::shared_ptr<LoggerT> LogManager::makeOrGetLogger( Args&&... args )
 {
 	static_assert( std::is_base_of<Logger, LoggerT>::value, "LoggerT must inherit from log::Logger" );
-	
+
 	auto vector = getLoggers<LoggerT>();
 	if( ! vector.empty() ) {
 		return vector.front();
 	}
-	
+
 	std::shared_ptr<LoggerT> result = std::make_shared<LoggerT>( std::forward<Args>( args )... );
 	addLogger( result );
 	return result;
 }
-	
+
 template<typename LoggerT>
 std::vector<std::shared_ptr<LoggerT>> LogManager::getLoggers()
 {
@@ -332,7 +332,7 @@ std::vector<std::shared_ptr<LoggerT>> LogManager::getLoggers()
 
 	return result;
 }
-	
+
 } } // namespace cinder::log
 
 // ----------------------------------------------------------------------------------

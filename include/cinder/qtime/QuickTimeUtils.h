@@ -89,7 +89,7 @@ class ImageTargetCvPixelBuffer : public cinder::ImageTarget {
 
   protected:
 	ImageTargetCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr );
-	
+
 	void		convertDataToYpCbCr();
 	void		convertDataToAYpCbCr();
 
@@ -116,7 +116,7 @@ class ImageTargetGWorld : public cinder::ImageTarget {
 
   protected:
 	ImageTargetGWorld( ImageSourceRef imageSource );
-	
+
 	::GWorldPtr			mGWorld;
 	::PixMapHandle		mPixMap;
 	size_t				mRowBytes;

@@ -79,7 +79,7 @@ class AppWinRt : public AppBase {
 
   private:
 	static void		initialize( AppWinRt::Settings *settings, ::Platform::Array<::Platform::String^>^ args, const RendererRef &defaultRenderer );
-	void			launch() override {}	
+	void			launch() override {}
 	// Responsible for the primary runloop
 	void			run( Windows::UI::Core::CoreWindow^ window );
 
@@ -93,7 +93,7 @@ class AppWinRt : public AppBase {
 	void			windowSizeChange( Windows::UI::Core::CoreWindow^ sender );
 
 	void			handlePointerDown( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args );
-	void			handlePointerMoved( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args ); 
+	void			handlePointerMoved( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args );
 	void			handlePointerUp( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args );
 
 	void			handleKeyDown( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args );

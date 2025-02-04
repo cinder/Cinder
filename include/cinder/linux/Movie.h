@@ -45,21 +45,21 @@ namespace cinder { namespace linux {
 class MovieBase {
   public:
 	virtual		~MovieBase();
-	
+
 	//! Returns the width of the movie in pixels
-	int32_t		getWidth() const; 
+	int32_t		getWidth() const;
 	//! Returns the height of the movie in pixels
-	int32_t		getHeight() const; 
+	int32_t		getHeight() const;
 	//! Returns the size of the movie in pixels
-	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }	
+	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }
 	//! Returns the movie's aspect ratio, the ratio of its width to its height
 	float		getAspectRatio() const { return static_cast<float>(mWidth) / static_cast<float>(mHeight); }
 	//! the Area defining the Movie's bounds in pixels: [0,0]-[width,height]
 	Area		getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
-	
+
 	//! Returns the movie's pixel aspect ratio. Returns 1.0 if the movie does not contain an explicit pixel aspect ratio.
 	float		getPixelAspectRatio() const;
-	
+
 	//! Returns whether the movie has loaded and buffered enough to playback without interruption
 	bool		checkPlaythroughOk();
 	//! Returns whether the movie is in a loaded state, implying its structures are ready for reading but it may not be ready for playback
@@ -125,34 +125,34 @@ class MovieBase {
 	void		play( bool toggle = false );
 	//! Stops playback
 	void		stop();
-	
+
 	signals::Signal<void()>&	getNewFrameSignal() { return mSignalNewFrame; }
 	signals::Signal<void()>&	getReadySignal() { return mSignalReady; }
 	signals::Signal<void()>&	getCancelledSignal() { return mSignalCancelled; }
 	signals::Signal<void()>&	getEndedSignal() { return mSignalEnded; }
 	signals::Signal<void()>&	getJumpedSignal() { return mSignalJumped; }
 	signals::Signal<void()>&	getOutputWasFlushedSignal() { return mSignalOutputWasFlushed; }
-	
+
  protected:
 	MovieBase();
 	void init();
 	void initFromUrl( const Url& url );
 	void initFromPath( const fs::path& filePath );
-		
+
 	//void lock() { mMutex.lock(); }
 	//void unlock() { mMutex.unlock(); }
-	
+
 	int32_t						mWidth, mHeight;
 	int32_t						mFrameCount;
 	bool						mProtected;
 	bool						mPlayingForward, mLoop, mPalindrome;
 	bool						mHasVideo;
 	bool						mPlaying;	// required to auto-start the movie
-	
+
 	std::unique_ptr<gst::video::GstPlayer>	mGstPlayer;
 
 	//std::mutex					mMutex;
-	
+
 	signals::Signal<void()>		mSignalNewFrame, mSignalReady, mSignalCancelled, mSignalEnded, mSignalJumped, mSignalOutputWasFlushed;
 };
 
@@ -163,17 +163,17 @@ typedef std::shared_ptr<class MovieGl> MovieGlRef;
 class MovieGl : public MovieBase {
   public:
 	virtual ~MovieGl();
-	
+
 	static MovieGlRef create( const Url& url ) { return MovieGlRef( new MovieGl( url ) ); }
 	static MovieGlRef create( const fs::path& path ) { return MovieGlRef( new MovieGl( path ) ); }
-	
+
 	//! Returns the gl::Texture representing the Movie's current frame, bound to the \c GL_TEXTURE_RECTANGLE_ARB target
 	gl::TextureRef	getTexture();
-	
+
   protected:
 	MovieGl( const Url& url );
 	MovieGl( const fs::path& path );
-		
+
 	gl::TextureRef	mTexture;
 };
 

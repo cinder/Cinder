@@ -305,7 +305,7 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	//! Returns a vec2 mapped from points to pixels by multiplying by getContentScale()
 	vec2	toPixels( vec2 s ) const { return s * getContentScale(); }
 	//! Returns a ivec2 mapped from points to pixels by multiplying by getContentScale()
-	ivec2	toPixels( ivec2 s ) const { return ivec2( (int32_t)(s.x * getContentScale()), (int32_t)(s.y * getContentScale()) ); }	
+	ivec2	toPixels( ivec2 s ) const { return ivec2( (int32_t)(s.x * getContentScale()), (int32_t)(s.y * getContentScale()) ); }
 	//! Returns an Area mapped from points to pixels by multiplying by getContentScale()
 	Area	toPixels( const Area &a ) const { const float s = getContentScale(); return Area( (int32_t)(a.x1 * s), (int32_t)(a.y1 * s), (int32_t)(a.x2 * s), (int32_t)(a.y2 * s) ); }
 	//! Returns a Rectf mapped from points to pixels by multiplying by getContentScale()
@@ -317,17 +317,17 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	//! Returns a vec2 mapped from pixels to points by dividing by getContentScale()
 	vec2	toPoints( vec2 s ) const { return s / getContentScale(); }
 	//! Returns a ivec2 mapped from pixels to points by dividing by getContentScale()
-	ivec2	toPoints( ivec2 s ) const { return ivec2( (int32_t)(s.x / getContentScale()), (int32_t)(s.y / getContentScale()) ); }	
+	ivec2	toPoints( ivec2 s ) const { return ivec2( (int32_t)(s.x / getContentScale()), (int32_t)(s.y / getContentScale()) ); }
 	//! Returns an Area mapped from pixels to points by dividing by getContentScale()
 	Area	toPoints( const Area &a ) const { const float s = 1.0f / getContentScale(); return Area( (int32_t)(a.x1 * s), (int32_t)(a.y1 * s), (int32_t)(a.x2 * s), (int32_t)(a.y2 * s) ); }
 	//! Returns a Rectf mapped from pixels to points by dividing by getContentScale()
 	Rectf	toPoints( const Rectf &a ) const { return a / getContentScale(); }
-	
+
 	//! Returns the Window's title as a UTF-8 string.
 	std::string		getTitle() const;
 	//! Sets the Window's title as a UTF-8 string.
 	void			setTitle( const std::string &title );
-	
+
 	//! Returns whether the window has a border (chrome/frame)
 	bool	isBorderless() const;
 	//! Sets whether the window has a border (chrome/frame)
@@ -427,11 +427,11 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	//! Sets the window-specific data associated with this Window. The variable is \c deleted upon destruction of the Window.
 	template<typename T>
 	void		setUserData( T *userData ) { mUserData = std::shared_ptr<void>( std::shared_ptr<T>( userData ) ); }
-	
+
 	//! Returns whether this Window is valid. \c false means it should no longer be used (neither read nor write)
 	bool	isValid() const { return mValid; }
 	void	setInvalid() { mValid = false; }
-	
+
 	//! \cond
 	// This should not be called except by App implementations
 #if defined( CINDER_COCOA ) && defined( __OBJC__ )
@@ -451,22 +451,22 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 		WindowRef result( new Window );
 		result->setImpl( impl );
 		result->setApp( app );
-		
+
 		return result;
 	}
 	//! \endcond
 
 	AppBase*			getApp() const { return mApp; }
-	
+
   protected:
 	Window() : mValid( true ), mImpl( 0 ) {}
-  
+
 	void	testValid() const {
 		if( ! mValid )
 			throw ExcInvalidWindow();
 	}
 
-	void		setApp( AppBase *app ) { mApp = app; }	
+	void		setApp( AppBase *app ) { mApp = app; }
 	void		applyCurrentContext();
 
 #if defined( CINDER_COCOA )
@@ -480,21 +480,21 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 #elif defined( CINDER_UWP )
 	void		setImpl( WindowImplWinRt *impl ) { mImpl = impl; }
 #elif defined( CINDER_ANDROID )
-  void    setImpl( WindowImplAndroid *impl ) { mImpl = impl; }    
+  void    setImpl( WindowImplAndroid *impl ) { mImpl = impl; }
 #elif defined( CINDER_LINUX )
-  void    setImpl( WindowImplLinux *impl ) { mImpl = impl; }    
+  void    setImpl( WindowImplLinux *impl ) { mImpl = impl; }
 #endif
 
 	AppBase							*mApp;
 	bool						mValid;
 	std::shared_ptr<void>		mUserData;
-	
+
 	EventSignalMouse		mSignalMouseDown, mSignalMouseDrag, mSignalMouseUp, mSignalMouseWheel, mSignalMouseMove;
 	EventSignalTouch		mSignalTouchesBegan, mSignalTouchesMoved, mSignalTouchesEnded;
 	EventSignalKey			mSignalKeyDown, mSignalKeyUp;
 	EventSignalWindow		mSignalDraw, mSignalPostDraw, mSignalMove, mSignalResize, mSignalDisplayChange, mSignalClose;
 	EventSignalFileDrop		mSignalFileDrop;
-	
+
 #if defined( CINDER_COCOA )
   #if defined( __OBJC__ )
 	id<WindowImplCocoa>		mImpl;
@@ -510,7 +510,7 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 #elif defined( CINDER_LINUX )
 	WindowImplLinux		*mImpl;
 #endif
- 
+
 private:
 #if defined( CINDER_ANDROID )
 	friend class AppImplAndroid;
@@ -518,7 +518,7 @@ private:
 #elif defined( CINDER_LINUX )
 	friend class AppImplLinux;
 	WindowImplLinux     *getImpl() { return mImpl; }
-#endif    
+#endif
 };
 
 } } // namespace cinder::app

@@ -89,7 +89,7 @@ class CI_API ShaderPreprocessor {
 
 	//! Returns a Signal that the user can connect to in order to handle custom includes.
 	SignalIncludeHandler& getSignalInclude()	{ return mSignalInclude; }
-	
+
   private:
 	void			parseDirectives( const std::string &source, const fs::path &sourcePath, std::string *directives, std::string *sourceBody, int *versionNumber, int *lineNumberStart );
 	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory, int lineNumberStart, int versionNumber, std::set<fs::path> &includeTree );
@@ -97,7 +97,7 @@ class CI_API ShaderPreprocessor {
 	std::string		readStream( std::istream &stream, const fs::path &sourcePath, int lineNumberStart, int versionNumber, std::set<fs::path> &includeTree );
 	std::string		getLineDirective( const fs::path &sourcePath, int lineNumber, int sourceStringNumber, int versionNumber ) const;
 	fs::path		findFullPath( const fs::path &includePath, const fs::path &currentPath );
-	
+
 	int								mVersion;
 	std::vector<std::pair<std::string,std::string>>		mDefineDirectives; // [macro, value]
 	std::vector<fs::path>			mSearchDirectories;

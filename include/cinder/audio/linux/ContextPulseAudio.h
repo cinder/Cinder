@@ -87,6 +87,6 @@ class ContextPulseAudio : public Context {
   private:
 	std::vector<std::weak_ptr<Node>>	mDeviceNodes;
 	std::unique_ptr<pulse::Context>     mPulseContext;
-};	
+};
 
 } } } // namespace cinder::audio::linux

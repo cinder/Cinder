@@ -35,7 +35,7 @@ class CI_API Timer {
 	Timer();
 	//! Constructs a default timer which is initialized as running unless \a startOnConstruction is false
 	Timer( bool startOnConstruction );
-	
+
 	//! Begins timing. Optional \a offsetSeconds parameter allows a relative offset
 	void	start( double offsetSeconds = 0 );
 	//! Returns the elapsed seconds if the timer is running, or the total time between calls to start() and stop() if it is stopped.
@@ -47,7 +47,7 @@ class CI_API Timer {
 
 	//! Returns whether the timer is currently running
 	bool	isStopped() const { return mIsStopped; }
-	
+
   private:
 	bool	mIsStopped;
 #if defined( CINDER_COCOA )

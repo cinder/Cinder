@@ -62,7 +62,7 @@ struct NullLookupProc {
 template <typename NodeData, unsigned char K=3, class LookupProc = NullLookupProc> class KdTree {
 public:
 	typedef std::pair<const NodeData*, uint32_t> NodeDataIndex;
-	
+
 	// KdTree Public Methods
 	template<typename NodeDataVector>
 	KdTree( const NodeDataVector &data );
@@ -76,7 +76,7 @@ public:
 	void recursiveBuild( uint32_t nodeNum, uint32_t start, uint32_t end, std::vector<NodeDataIndex> &buildNodes );
 	void lookup( const NodeData &p, const LookupProc &process, float maxDist ) const;
 	void findNearest( float p[K], float result[K], uint32_t *resultIndex ) const;
-	
+
 private:
 	// KdTree Private Methods
 	void privateLookup(uint32_t nodeNum, float p[K], const LookupProc &process, float &maxDistSquared) const;
@@ -103,7 +103,7 @@ struct NodeDataTraits
 	static float getAxis( const NodeData &data, int axis ) {
 		if( axis == 0 ) return data.x;
 		else if( axis == 1 ) return data.y;
-		else return (float)data.z;		
+		else return (float)data.z;
 	}
 	static float getAxis0( const NodeData &data ) { return static_cast<float>( data.x ); }
 	static float getAxis1( const NodeData &data ) { return static_cast<float>( data.y ); }
@@ -121,7 +121,7 @@ struct NodeDataTraits<vec2>
 {
 	static float getAxis( const vec2 &data, int axis ) {
 		if( axis == 0 ) return data.x;
-		else return data.y; 
+		else return data.y;
 	}
 	static float getAxis0( const vec2 &data ) { return static_cast<float>( data.x ); }
 	static float getAxis1( const vec2 &data ) { return static_cast<float>( data.y ); }
@@ -182,7 +182,7 @@ void KdTree<NodeData, K, LookupProc>::recursiveBuild( uint32_t nodeNum, uint32_t
 		boundMin[k] = FLT_MAX;
 		boundMax[k] = FLT_MIN;
 	}
-	
+
 	for( uint32_t i = start; i < end; ++i ) {
 		for( uint8_t axis = 0; axis < K; axis++ ) {
 			// NOT Compiling? you should define NOMINMAX
@@ -196,7 +196,7 @@ void KdTree<NodeData, K, LookupProc>::recursiveBuild( uint32_t nodeNum, uint32_t
 		if( boundMax[k] - boundMin[k] > maxExtent ) {
 			splitAxis = k;
 			maxExtent = boundMax[k] - boundMin[k];
-		}	
+		}
 	}
 	uint32_t splitPos = ( start + end ) / 2;
 	std::nth_element( &buildNodes[start], &buildNodes[splitPos], &buildNodes[end-1] + 1, CompareNode<NodeData>(splitAxis) );
@@ -215,7 +215,7 @@ void KdTree<NodeData, K, LookupProc>::recursiveBuild( uint32_t nodeNum, uint32_t
 }
 
 template<typename NodeData, unsigned char K, typename LookupProc>
-void KdTree<NodeData, K, LookupProc>::lookup( const NodeData &p, const LookupProc &proc, float maxDist ) const 
+void KdTree<NodeData, K, LookupProc>::lookup( const NodeData &p, const LookupProc &proc, float maxDist ) const
 {
 	float maxDistSqrd = maxDist * maxDist;
 	float pt[K];
@@ -226,7 +226,7 @@ void KdTree<NodeData, K, LookupProc>::lookup( const NodeData &p, const LookupPro
 }
 
 template<typename NodeData, unsigned char K, typename LookupProc>
-void KdTree<NodeData, K, LookupProc>::privateLookup( uint32_t nodeNum, float p[K], const LookupProc &process, float &maxDistSquared ) const 
+void KdTree<NodeData, K, LookupProc>::privateLookup( uint32_t nodeNum, float p[K], const LookupProc &process, float &maxDistSquared ) const
 {
 	KdNode<K> *node = &nodes[nodeNum];
 	// process kd-tree node's children
@@ -252,7 +252,7 @@ void KdTree<NodeData, K, LookupProc>::privateLookup( uint32_t nodeNum, float p[K
 		float v = NodeDataTraits<NodeData>::getAxis( *mNodeData[nodeNum].first, k ) - p[k];
 		distSqr += v * v;
 	}
-	
+
 	if( distSqr < maxDistSquared )
 		process.process( mNodeData[nodeNum].second, distSqr, maxDistSquared );
 }
@@ -291,7 +291,7 @@ void KdTree<NodeData, K, LookupProc>::privateFindNearest( uint32_t nodeNum, floa
 							  maxDistSquared, result, resultIndex );
 		}
 	}
-	
+
 	float distSqr = NodeDataTraits<NodeData>::distanceSquared( *mNodeData[nodeNum].first, p );
 	if( distSqr < maxDistSquared ) {
 		maxDistSquared = distSqr;
