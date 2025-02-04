@@ -48,9 +48,9 @@ void EuroMapApp::setup()
 {
 	mMapDoc = svg::Doc::create( loadAsset( "Europe.svg" ) );
 	mMapTex = renderSvgToTexture( mMapDoc, getWindowSize() );
-	
+
 	mFont = gl::TextureFont::create( Font( loadAsset( "Dosis-Medium.ttf" ), 36 ) );
-	
+
 	mCurrentCountry = 0;
 }
 
@@ -62,7 +62,7 @@ void EuroMapApp::mouseMove( MouseEvent event )
 	mCurrentCountry = newNode;
 	// if the current node has no name just set it to NULL
 	if( mCurrentCountry && mCurrentCountry->getId().empty() )
-		mCurrentCountry = NULL;	
+		mCurrentCountry = NULL;
 }
 
 void EuroMapApp::draw()
@@ -70,7 +70,7 @@ void EuroMapApp::draw()
 	gl::clear();
 	gl::enableAlphaBlending();
 	glLineWidth( 2.0f );
-	
+
 	if( mMapTex ) {
 		gl::color( Color::white() );
 		gl::draw( mMapTex );
@@ -80,16 +80,16 @@ void EuroMapApp::draw()
 		// draw the outline
 		gl::color( 1, 0.5f, 0.25f, mCurrentCountryAlpha );
 		gl::draw( mCurrentCountry->getShapeAbsolute() );
-	
+
 		// draw the name
 		string countryName = mCurrentCountry->getId();
 		vec2 pos = mCurrentCountry->getBoundingBoxAbsolute().getCenter();
 		pos.x -= mFont->measureString( countryName ).x / 2;
-		
+
 		gl::color( ColorA( 1, 1, 1, mCurrentCountryAlpha ) );
 		mFont->drawString( countryName, pos + vec2( 2, 2 ) );
 		gl::color( ColorA( 0, 0, 0, mCurrentCountryAlpha ) );
-		mFont->drawString( countryName, pos );		
+		mFont->drawString( countryName, pos );
 	}
 }
 

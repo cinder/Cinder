@@ -24,25 +24,25 @@ class ShadowMappingBasic : public App {
 	void resize() override;
 	void update() override;
 	void draw() override;
-	
+
 	void drawScene( bool shadowMap );
 	void renderDepthFbo();
-	
+
   private:
 	gl::FboRef			mFbo;
 
 	CameraPersp			mCam;
 	CameraPersp			mLightCam;
 	vec3				mLightPos;
-	
+
 	gl::GlslProgRef		mGlsl;
 	gl::Texture2dRef	mShadowMapTex;
-	
+
 	gl::BatchRef		mTeapotBatch;
 	gl::BatchRef		mTeapotShadowedBatch;
 	gl::BatchRef		mFloorBatch;
 	gl::BatchRef		mFloorShadowedBatch;
-	
+
 	float				mTime;
 };
 
@@ -55,7 +55,7 @@ void ShadowMappingBasic::prepareSettings( Settings *settings )
 void ShadowMappingBasic::setup()
 {
 	mLightPos = vec3( 0.0f, 5.0f, 1.0f );
-	
+
 /*
 	try {
 		gl::Texture2d::Format depthFormat;
@@ -77,7 +77,7 @@ void ShadowMappingBasic::setup()
 */
 
 	gl::Texture2d::Format depthFormat;
-	
+
 #if defined( CINDER_GL_ES )
 	depthFormat.setInternalFormat( GL_DEPTH_COMPONENT16 );
 	depthFormat.setDataType( GL_UNSIGNED_INT );
@@ -88,15 +88,15 @@ void ShadowMappingBasic::setup()
 	depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
 	depthFormat.setMagFilter( GL_LINEAR );
 	depthFormat.setMinFilter( GL_LINEAR );
-	depthFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );	
+	depthFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
 #endif
 	depthFormat.setCompareFunc( GL_LEQUAL );
-	
+
 	mShadowMapTex = gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT, depthFormat );
 
 	mCam.setPerspective( 40.0f, getWindowAspectRatio(), 0.5f, 500.0f );
-	
-	try {	
+
+	try {
 		gl::Fbo::Format fboFormat;
 		fboFormat.attachment( GL_DEPTH_ATTACHMENT, mShadowMapTex );
 		mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, fboFormat );
@@ -104,11 +104,11 @@ void ShadowMappingBasic::setup()
 	catch( const std::exception& e ) {
 		console() << "FBO ERROR: " << e.what() << std::endl;
 	}
-	
+
 	// Set up camera from the light's viewpoint
 	mLightCam.setPerspective( 100.0f, mFbo->getAspectRatio(), 0.5f, 10.0f );
 	mLightCam.lookAt( mLightPos, vec3( 0.0f ) );
-	
+
 	try {
 #if defined( CINDER_GL_ES )
 		mGlsl = gl::GlslProg::create( loadAsset( "shadow_shader_es2.vert" ), loadAsset( "shadow_shader_es2.frag" ) );
@@ -120,15 +120,15 @@ void ShadowMappingBasic::setup()
 		CI_LOG_EXCEPTION( "glsl load failed", exc );
 		std::terminate();
 	}
-	
+
 	auto teapot				= geom::Teapot().subdivisions( 8 );
 	mTeapotBatch			= gl::Batch::create( teapot, gl::getStockShader( gl::ShaderDef() ) );
 	mTeapotShadowedBatch	= gl::Batch::create( teapot, mGlsl );
-	
+
 	auto floor				= geom::Cube().size( 10.0f, 0.5f, 10.0f );
 	mFloorBatch				= gl::Batch::create( floor, gl::getStockShader( gl::ShaderDef() ) );
 	mFloorShadowedBatch		= gl::Batch::create( floor, mGlsl );
-	
+
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 }
@@ -159,7 +159,7 @@ void ShadowMappingBasic::renderDepthFbo()
 	gl::setMatrices( mLightCam );
 
 	drawScene( true );
-	
+
 	// Disable polygon offset for final render
 	gl::disable( GL_POLYGON_OFFSET_FILL );
 }
@@ -176,10 +176,10 @@ void ShadowMappingBasic::drawScene( bool shadowMap )
 		mTeapotShadowedBatch->draw();
 
 	gl::popModelMatrix();
-	
+
 	gl::color( Color( 0.7f, 0.7f, 0.7f ) );
 	gl::translate( 0.0f, -2.0f, 0.0f );
-	
+
 	if( shadowMap )
 		mFloorBatch->draw();
 	else
@@ -201,9 +201,9 @@ void ShadowMappingBasic::draw()
 	mGlsl->uniform( "uShadowMap", 0 );
 	mGlsl->uniform( "uLightPos", mvLightPos );
 	mGlsl->uniform( "uShadowMatrix", shadowMatrix );
-	
+
 	drawScene( false );
-    
+
     // Uncomment for debug
     /*
     gl::setMatricesWindow( getWindowSize() );

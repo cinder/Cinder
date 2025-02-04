@@ -70,7 +70,7 @@ void FallingGearsApp::setup()
 	mScene.getWorld()->SetDebugDraw( &mDebugDraw );
 
 	setupGraphics();
-	
+
 	ImGui::Initialize();
 }
 

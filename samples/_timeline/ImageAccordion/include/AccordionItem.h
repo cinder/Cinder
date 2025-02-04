@@ -13,28 +13,28 @@
 #include <vector>
 
 class AccordionItem {
-  public:	
+  public:
 	AccordionItem( ci::Timeline &timeline, float x, float y, float height,
 					float contractedWidth, float expandedWidth, ci::gl::TextureRef image,
 					std::string title, std::string subtitle );
 	void update();
 	void draw();
-	
+
 	bool isPointIn( const ci::vec2 &pt );
 	void animTo( float newX, float newWidth, bool revealText = false );
 
-  private:	
+  private:
 	ci::Anim<float>	mX, mWidth;
 	float			mY, mHeight;
 	float			mExpandedWidth;
 	ci::Anim<float>	mTextAlpha;
-	
+
 	std::string		mTitle, mSubtitle;
-	
+
 	ci::gl::TextureRef	mImage, mText;
 	ci::Rectf			mTextRect;
 	ci::Area			mImageArea,  mTextArea;
-	
+
 	ci::Timeline	&mTimeline;
 	float			mAnimDuration;
 	ci::EaseFn		mAnimEase;

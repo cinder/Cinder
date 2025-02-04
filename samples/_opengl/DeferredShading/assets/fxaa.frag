@@ -27,15 +27,15 @@ void main( void )
 	float lumaBL	= dot( rgbBL, luma );
 	float lumaBR	= dot( rgbBR, luma );
 	float lumaM		= dot( rgbM,  luma );
-	
+
 	float lumaMin = min( lumaM, min( min( lumaUL, lumaUR ), min( lumaBL, lumaBR ) ) );
 	float lumaMax = max( lumaM, max( max( lumaUL, lumaUR ), max( lumaBL, lumaBR ) ) );
-	
+
 	vec2 dir = vec2( -( ( lumaUL + lumaUR ) - ( lumaBL + lumaBR ) ), ( lumaUL + lumaBL ) - ( lumaUR + lumaBR ) );
-	
+
 	float dirReduce	= max( ( lumaUL + lumaUR + lumaBL + lumaBR ) * ( 0.25 * fxaaReduceMul ), fxaaReduceMin );
 	float rcpDirMin	= 1.0 / ( min ( abs( dir.x ), abs( dir.y ) ) + dirReduce );
-	
+
 	dir = min( vec2(  fxaaSpanMax,  fxaaSpanMax ),
 		  max( vec2( -fxaaSpanMax, -fxaaSpanMax ),
 		  dir * rcpDirMin ) ) * uPixel;
@@ -46,7 +46,7 @@ void main( void )
 	vec3 color1 = color0 * 0.5 + 0.25 * (
 		texture( uSampler, uv + dir * -0.5 ).rgb +
 		texture( uSampler, uv + dir *  0.5 ).rgb );
-	
+
 	float lumaB = dot( color1, luma );
 
 	vec4 color	= vec4( color1, 1.0 );

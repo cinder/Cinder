@@ -28,15 +28,15 @@ void main( void )
 {
 	vec2 uv					= gl_FragCoord.xy / uWindowSize;
 	vec4 position			= texture( uSamplerPosition, uv );
-	
+
 	// Do not draw background
 	if ( length( position.xyz ) <= 0.0 ) {
 		discard;
 	}
-	
+
 	vec3 L 					= uLightPosition - position.xyz;
 	float d 				= length( L );
-	
+
 	// Only draw fragment if it occurs inside the light volume
 	if ( d > uLightRadius ) {
 		discard;
@@ -51,7 +51,7 @@ void main( void )
 	float NdotL	 			= max( 0.0, dot( N, L ) );
 	float HdotN				= max( 0.0, dot( H, N ) );
 	float Ks				= pow( HdotN, 100.0 );
-	float att				= 1.0 / pow( ( d / ( 1.0 - pow( d / uLightRadius, 2.0 ) ) ) / uLightRadius + 1.0, 2.0 ); 
+	float att				= 1.0 / pow( ( d / ( 1.0 - pow( d / uLightRadius, 2.0 ) ) ) / uLightRadius + 1.0, 2.0 );
 
 	// Calculate color
 	vec4 Ia					= uLightColorAmbient;

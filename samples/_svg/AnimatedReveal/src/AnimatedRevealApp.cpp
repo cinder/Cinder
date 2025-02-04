@@ -21,12 +21,12 @@ class AnimatedRevealApp : public App {
 	void draw();
 	void fileDrop( FileDropEvent event );
 	void load( const fs::path &path );
-	
+
 	svg::DocRef		mDoc;
 	gl::TextureRef	mTex;
 	int				mMinRenderElement;
 	bool			mDone;
-	
+
 #if defined( RECORD_MOVIE )
 	qtime::MovieWriter		mMovie;
 #endif
@@ -52,12 +52,12 @@ Surface renderCairo( svg::DocRef doc, const svg::RenderVisitor &visitor )
 void AnimatedRevealApp::load( const fs::path &path )
 {
 	mMinRenderElement = 0;
-	try { 
+	try {
 		if( path.extension() == ".svgz" ) // compressed
 			mDoc = svg::Doc::createFromSvgz( loadFile( path ) );
 		else
 			mDoc = svg::Doc::create( loadFile( path ) );
-			
+
 		mDone = false;
 #if defined( RECORD_MOVIE )
 		mMovie = qtime::MovieWriter( fs::path( getHomeDirectory() + "AnimatedReveal.mov" ), mDoc->getWidth(), mDoc->getHeight() );
@@ -109,7 +109,7 @@ struct SlowFillVisitor {
 			return false;
 		}
 	}
-	
+
 	int		mCurIdx, mMinIdx, *mResultMinIdx;
 	bool	*mResultDone;
 	size_t	mMinPixelArea, mCurrentPixelArea;
@@ -142,7 +142,7 @@ void AnimatedRevealApp::update()
 void AnimatedRevealApp::draw()
 {
 	gl::enableAlphaBlending();
-	gl::clear(); 
+	gl::clear();
 	if( mTex )
 		gl::draw( mTex );
 	else

@@ -33,7 +33,7 @@ void main() {
 	vModelPosition	= ciModelMatrix * ciPosition;
 	vModelNormal	= (ciModelMatrix * vec4(ciNormal, 0.0)).xyz;
 	vNormal			= normalize( ciNormalMatrix * ciNormal );
-	
+
 	vShadowCoord	= (biasMat * uShadowMatrix * ciModelMatrix) * ciPosition;
 	gl_Position		= ciModelViewProjection * ciPosition;
 }

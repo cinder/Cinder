@@ -34,18 +34,18 @@ void Swatch::scatter( Timeline &timeline, float width, float height )
 	vec2 pos1( 0.0f, mPos().y );
 	vec2 pos2( 0.0f, height );
 	vec2 pos3 = vec2( Rand::randFloat( width ), Rand::randFloat( height - 50.0f, height + 50.0f ) );//pos2 + rVec;
-	
+
 	float dur = Rand::randFloat( 0.25f, 0.5f );
-	
+
 	// pos
 	timeline.apply( &mPos, mPos(), 0.2f, EaseInAtan( 10 ) ).finishFn( bind( &Swatch::setSelected, this ) );
 	timeline.appendTo( &mPos, pos2, 0.0001f, EaseNone() );
 	timeline.appendTo( &mPos, pos3, dur, EaseOutAtan( 20 ) );
-	
+
 	// alpha
 	timeline.apply( &mAlpha, 0.0f, 0.2f, EaseInAtan( 10 ) );
 	timeline.appendTo( &mAlpha, 1.0f, dur, EaseOutAtan( 10 ) );
-	
+
 	// scale
 	float s = (float)Rand::randInt( 3, 7 );
 	timeline.apply( &mScale, 1.0f, 0.2f, EaseInAtan( 10 ) );

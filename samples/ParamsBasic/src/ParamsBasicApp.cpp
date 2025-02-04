@@ -29,7 +29,7 @@ class TweakBarApp : public App {
 	ColorA					mColor;
 	string					mString;
 	bool					mPrintFps;
-	
+
 	void					setLightDirection( vec3 direction );
 	vec3					getLightDirection() { return mLightDirection; }
 	vec3					mLightDirection;

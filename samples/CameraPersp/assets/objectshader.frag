@@ -17,11 +17,11 @@ void main( void )
 	vec3 Normal			= normalize( vNormal );
 	vec3 LightVec		= normalize( LightPos - vPosition.xyz );
 	float NdotL			= max( dot( vNormal, LightVec ), 0.0 );
-	
+
 	vec3 Diffuse		= vec3( NdotL ) + vec3 ( 0.2, 0.3, 0.5 );
-	
+
 	float Specular		= pow( NdotL, 100.0 );
-	
+
 	vec3 reflectedEyeWorldSpace = reflect( EyeDirWorldSpace, normalize(NormalWorldSpace) );
 	oColor.rgb = vec3 ( texture( uCubeMapTex, reflectedEyeWorldSpace ) ) * Diffuse + Specular;
 	oColor.a = 1.0;

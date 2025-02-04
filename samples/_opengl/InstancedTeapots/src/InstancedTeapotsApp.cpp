@@ -10,12 +10,12 @@ using namespace ci::app;
 using namespace std;
 
 class InstancedTeapotsApp : public App {
-  public:	
+  public:
 	void setup();
 	void resize();
 	void update();
 	void draw();
-	
+
 	CameraPersp			mCam;
 	gl::BatchRef		mBatch;
 	gl::TextureRef		mTexture;
@@ -31,7 +31,7 @@ const pair<float,float> CAMERA_Y_RANGE( 32, 80 );
 void InstancedTeapotsApp::setup()
 {
 	mCam.lookAt( vec3( 0, CAMERA_Y_RANGE.first, 0 ), vec3( 0 ) );
-	
+
 	mTexture = gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ), gl::Texture::Format().mipmap() );
 #if defined( CINDER_GL_ES_2 )
 	mGlsl = gl::GlslProg::create( loadAsset( "shader_es2.vert" ), loadAsset( "shader_es2.frag" ) );
@@ -52,14 +52,14 @@ void InstancedTeapotsApp::setup()
 			positions.push_back( vec3( instanceX * vec3( DRAW_SCALE, 0, 0 ) + instanceY * vec3( 0, 0, DRAW_SCALE ) ) );
 		}
 	}
-	
+
 	// create the VBO which will contain per-instance (rather than per-vertex) data
 	mInstanceDataVbo = gl::Vbo::create( GL_ARRAY_BUFFER, positions.size() * sizeof(vec3), positions.data(), GL_DYNAMIC_DRAW );
 
 	// we need a geom::BufferLayout to describe this data as mapping to the CUSTOM_0 semantic, and the 1 (rather than 0) as the last param indicates per-instance (rather than per-vertex)
 	geom::BufferLayout instanceDataLayout;
 	instanceDataLayout.append( geom::Attrib::CUSTOM_0, 3, 0, 0, 1 /* per instance */ );
-	
+
 	// now add it to the VboMesh we already made of the Teapot
 	mesh->appendVbo( instanceDataLayout, mInstanceDataVbo );
 
@@ -68,15 +68,15 @@ void InstancedTeapotsApp::setup()
 
 	gl::enableDepthWrite();
 	gl::enableDepthRead();
-	
-	mTexture->bind();	
+
+	mTexture->bind();
 }
 
 void InstancedTeapotsApp::resize()
 {
 	// now tell our Camera that the window aspect ratio has changed
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
-	
+
 	// and in turn, let OpenGL know we have a new camera
 	gl::setMatrices( mCam );
 }
@@ -85,7 +85,7 @@ void InstancedTeapotsApp::update()
 {
 	// move the camera up and down on Y
 	mCam.lookAt( vec3( 0, CAMERA_Y_RANGE.first + abs(sin( getElapsedSeconds() / 4)) * (CAMERA_Y_RANGE.second - CAMERA_Y_RANGE.first), 0 ), vec3( 0 ) );
-	
+
 	// update our instance positions; map our instance data VBO, write new positions, unmap
 	vec3 *positions = (vec3*)mInstanceDataVbo->mapReplace();
 	for( size_t potX = 0; potX < NUM_INSTANCES_X; ++potX ) {

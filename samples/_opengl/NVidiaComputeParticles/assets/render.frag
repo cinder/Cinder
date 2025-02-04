@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------------
 // File:        ComputeParticles/assets/shaders/renderFS.glsl
 // Url:         https://github.com/NVIDIAGameWorks/OpenGLSamples/tree/master/samples/es3aep-kepler/ComputeParticles
-// SDK Version: v1.2 
+// SDK Version: v1.2
 // Email:       gameworks@nvidia.com
 // Site:        http://developer.nvidia.com/
 //

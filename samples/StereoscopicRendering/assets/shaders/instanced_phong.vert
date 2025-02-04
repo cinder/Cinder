@@ -20,12 +20,12 @@ void main()
 {
 	vec4 position = ciPosition;
 	position.xyz += aInstancePosition;
-	
-	vertPosition = ciModelView * position;       
+
+	vertPosition = ciModelView * position;
 	vertNormal = ciNormalMatrix * ciNormal;
 	vertColor = vec4( aInstanceColor, 1 );
 	vertUp = ciModelView * vec4(0, 1, 0, 0);
-	
+
 	// vertex shader must always pass projection space position
 	gl_Position = ciModelViewProjection * position;
 }

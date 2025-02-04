@@ -13,7 +13,7 @@ void main()
 {
 	vertColor = ciColor;
 	vertTexCoord0 = ciTexCoord0;
-	
+
 	// vertex shader must always pass projection space position
 	gl_Position = ciModelViewProjection * ciPosition;
 }

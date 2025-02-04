@@ -252,7 +252,7 @@ void GeometryApp::draw()
 		}
 	}
 
-	// 
+	//
 	gl::disableDepthWrite();
 
 	// Draw the grid.
@@ -323,7 +323,7 @@ void GeometryApp::keyDown( KeyEvent event )
 			else
 				mViewMode = WIREFRAME;
 			break;
-#endif 
+#endif
 		case KeyEvent::KEY_w:
 			mShowWirePrimitive = !mShowWirePrimitive;
 			break;
@@ -357,7 +357,7 @@ void GeometryApp::updateGui()
 	static vector<string> texturingModes = { "None", "Procedural", "Sampler" };
 
 	ImGui::Begin( "Geometry Demo" );
-	
+
 	ImGui::Combo( "Primitive", (int*)&mPrimitiveSelected, primitives );
 	ImGui::Combo( "Quality", (int*)&mQualitySelected, qualities );
 	ImGui::Combo( "Viewing Mode", (int*)&mViewMode, viewModes );

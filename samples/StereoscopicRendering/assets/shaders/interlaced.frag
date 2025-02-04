@@ -12,7 +12,7 @@ out vec4            fragColor;
 const vec4	kOffset = vec4(0.5, 1.0, 0.5, 0.0);
 
 void main()
-{	
+{
 	// find the actual screen coordinate of this fragment
 	float y = uWindowSize.y - gl_FragCoord.y + uWindowOrigin.y;
 

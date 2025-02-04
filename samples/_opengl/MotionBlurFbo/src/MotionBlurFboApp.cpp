@@ -14,12 +14,12 @@ using namespace ci;
 using namespace ci::app;
 
 class MotionBlurFboApp : public App {
-  public:	
+  public:
 	void setup();
 	void keyDown( KeyEvent event );
 	void updateCubeRotation( double time );
 	void draw();
-	
+
 	CameraPersp			mCam;
 	mat4			mCubeRotation;
 	gl::BatchRef		mBatch;
@@ -86,7 +86,7 @@ void MotionBlurFboApp::draw()
 			updateCubeRotation( startTime + i / (float)SUBFRAMES );
 			gl::multModelMatrix( mCubeRotation );
 			mBatch->draw();
-			
+
 			// now add this frame to the accumulation FBO
 			mAccumFbo->bindFramebuffer();
 			gl::setMatricesWindow( mAccumFbo->getSize() );
@@ -95,7 +95,7 @@ void MotionBlurFboApp::draw()
 			gl::draw( mFbo->getColorTexture() );
 		}
 	}
-	
+
 	gl::disableDepthRead();
 	gl::disableAlphaBlending();
 	// set the color to be 1/SUBFRAMES, which divides the HDR image by the number of sub-frames we rendered

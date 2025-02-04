@@ -1,39 +1,39 @@
 /**
- 
+
  Eric Renaud-Houde - August 2014
- 
+
  This sample illustrates common shadow mapping techniques.
- 
+
  Overview ~
- 
+
  A first pass stores the scene's depth information (from the light's POV)
  into a FBO.  When the shaded scene is rendered, a depth test is performed on
  each fragment. In the light's projective space, a fragment whose depth is
  greater than that of the shadow map must be occluded: it is shadowed.
- 
+
  Common problems - Tradeoffs ~
- 
+
  Aliasing: Other than increasing the resolution of the depth map, additionnal
  techniques can be used to soften the shadow edges. We demonstrate
  percentage-closer filtering (PCF) and random sampling. Note that sometimes
  lower resolution on the shadow map may help soften/blur the shadow.
- 
+
  Surface acne/self-shadowing: Also occurring with traditional ray-tracing, this
  surface noise occurs on false depth tests (due to imprecision of a fragment's
  depth). Various offsets (such as glPolygonOffset & z-offsets in the light's
  projective space) can be used to prevent this problem.
- 
+
  Peter Panning: The shadows don't reach the objects that cast them. This
  problem occurs when the offsets are too large. Offsets must be tweaked
  carefully to avoid problems on either end.
- 
+
  Sampling noise: The random sampling method exhibits noise (which should
  still be less visually objectionable than aliasing). This is due to a low
  number of samples. More advanced GPU techniques allow one to increase this
  sample count.
- 
+
  References ~
- 
+
  OpenGL 4.0 Shading Language Cookbook by David Wolff
  https://github.com/daw42/glslcookbook
  Tutorial 16 : Shadow mapping
@@ -42,7 +42,7 @@
  http://msdn.microsoft.com/en-us/library/windows/desktop/ee416324(v=vs.85).aspx
  Soft Shadow Mapping
  http://codeflow.org/entries/2013/feb/15/soft-shadow-mapping/
- 
+
  */
 
 
@@ -71,7 +71,7 @@ public:
 	{
 		reset( size );
 	}
-	
+
 	void reset( int size )
 	{
 		gl::Texture2d::Format depthFormat;
@@ -82,7 +82,7 @@ public:
 		depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
 		depthFormat.setCompareFunc( GL_LEQUAL );
 		mTextureShadowMap = gl::Texture2d::create( size, size, depthFormat );
-		
+
 		gl::Fbo::Format fboFormat;
 		fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureShadowMap );
 		mShadowMap = gl::Fbo::create( size, size, fboFormat );
@@ -90,7 +90,7 @@ public:
 
 	const gl::FboRef&		getFbo() const { return mShadowMap; }
 	const gl::Texture2dRef&	getTexture() const { return mTextureShadowMap; }
-	
+
 	float					getAspectRatio() const { return mShadowMap->getAspectRatio(); }
 	ivec2					getSize() const { return mShadowMap->getSize(); }
 private:
@@ -112,7 +112,7 @@ class ShadowMappingApp : public App {
 	void setup() override;
 	void update() override;
 	void draw() override;
-	
+
 	void keyDown( KeyEvent event ) override;
   private:
 	void drawScene( float spinAngle, const gl::GlslProgRef& glsl = nullptr );
@@ -120,21 +120,21 @@ class ShadowMappingApp : public App {
 	float						mFrameRate;
 	CameraPersp					mCamera;
 	CameraUi					mCamUi;
-	
+
 	gl::BatchRef				mTeapot, mTeapotShadowed;
 	gl::BatchRef				mSphere, mSphereShadowed;
 	std::vector<std::pair<mat4, vec3>>	mTransforms;
-	
-	
+
+
 	gl::GlslProgRef				mShadowShader;
 	ShadowMapRef				mShadowMap;
 	int							mShadowMapSize;
 	bool						mOnlyShadowmap;
-	
+
 	LightData					mLight;
 
 	int							mShadowTechnique;
-	
+
 	float						mDepthBias;
 	bool						mEnableNormSlopeOffset;
 	float						mRandomOffset;
@@ -145,16 +145,16 @@ class ShadowMappingApp : public App {
 void ShadowMappingApp::setup()
 {
 	Rand::randomize();
-	
+
 	mFrameRate				= 0;
 	mShadowMapSize			= 2048;
-	
+
 	mLight.distanceRadius	= 100.0f;
 	mLight.viewpoint		= vec3( mLight.distanceRadius );
 	mLight.fov				= 10.0f;
 	mLight.target			= vec3( 0 );
 	mLight.toggleViewpoint	= false;
-	
+
 	mShadowTechnique		= 1;
 	mDepthBias				= -0.0005f;
 	mRandomOffset			= 1.2f;
@@ -162,8 +162,8 @@ void ShadowMappingApp::setup()
 	mEnableNormSlopeOffset	= false;
 	mOnlyShadowmap			= false;
 	mPolygonOffsetFactor	= mPolygonOffsetUnits = 3.0f;
-	
-	
+
+
 	try {
 #if defined( CINDER_GL_ES )
 		mShadowShader	= gl::GlslProg::create( loadAsset( "shadow_mapping_es3.vert"), loadAsset("shadow_mapping_es3.frag") );
@@ -173,22 +173,22 @@ void ShadowMappingApp::setup()
 	} catch ( const gl::GlslProgCompileExc& exc ) {
 		console() << "Shader failed to load: " << exc.what() << std::endl;
 	}
-	
+
 	mShadowMap		= ShadowMap::create( mShadowMapSize );
 	mLight.camera.setPerspective( mLight.fov, mShadowMap->getAspectRatio(), 0.5, 500.0 );
-	
+
 	ImGui::Initialize();
-	
+
 	auto positionGlsl = gl::getStockShader( gl::ShaderDef() );
-	
+
 	auto teapot = gl::VboMesh::create( geom::Teapot().subdivisions(5) );
 	mTeapot = gl::Batch::create( teapot, positionGlsl );
 	mTeapotShadowed = gl::Batch::create( teapot, mShadowShader );
-	
+
 	auto sphere = gl::VboMesh::create( geom::Icosphere() );
 	mSphere = gl::Batch::create( sphere, positionGlsl );
 	mSphereShadowed = gl::Batch::create( sphere, mShadowShader );
-		
+
 	for ( size_t i = 0; i < 10; ++i ) {
 		vec3 v( 25.0f * randVec3() );
 		mat4 m{};
@@ -197,7 +197,7 @@ void ShadowMappingApp::setup()
 		m *= rotate( 2 * glm::pi<float>() * randFloat(), randVec3() );
 		mTransforms.emplace_back( m, randVec3() );
 	}
-	
+
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 
@@ -235,11 +235,11 @@ void ShadowMappingApp::update()
 	float e	= (float) getElapsedSeconds();
 	float c = cos( e );
 	float s	= sin( e );
-	
+
 	for ( auto& transform : mTransforms ) {
 		transform.first *= orientate4( vec3( c, s, -c ) * 0.01f );
 	}
-	
+
 	mLight.viewpoint.x = mLight.distanceRadius * sin( 0.25f * e );
 	mLight.viewpoint.z = mLight.distanceRadius * cos( 0.25f * e );
 	mLight.camera.lookAt( mLight.viewpoint, mLight.target );
@@ -252,7 +252,7 @@ void ShadowMappingApp::drawScene( float spinAngle, const gl::GlslProgRef& shadow
 		gl::ScopedColor red( Color( 0.98f, 0.22f, 0.10f ));
 		gl::ScopedModelMatrix push;
 		gl::scale( vec3(4) );
-		
+
 		if( shadowGlsl ) {
 			shadowGlsl->uniform( "uIsTeapot", false );
 			mSphereShadowed->draw();
@@ -262,7 +262,7 @@ void ShadowMappingApp::drawScene( float spinAngle, const gl::GlslProgRef& shadow
 			mSphere->draw();
 		}
 	}
-	
+
 	{
 		gl::ScopedColor white( Color( 0.90f, 0.97f, 0.97f ) );
 		for ( const auto& transform : mTransforms ) {
@@ -280,14 +280,14 @@ void ShadowMappingApp::drawScene( float spinAngle, const gl::GlslProgRef& shadow
 void ShadowMappingApp::draw()
 {
 	gl::clear( Color( 0.07f, 0.05f, 0.1f ) );
-	
+
 	// Elapsed time called here: the scene must be absolutely identical on both renders!
 	float spinAngle = 0.5f * (float) app::getElapsedSeconds();
-	
+
 	// Offset to help combat surface acne (self-shadowing)
 	gl::enable( GL_POLYGON_OFFSET_FILL );
 	glPolygonOffset( mPolygonOffsetFactor, mPolygonOffsetUnits );
-	
+
 	// Render scene into shadow map
 	gl::setMatrices( mLight.camera );
 	gl::viewport( mShadowMap->getSize() );
@@ -303,7 +303,7 @@ void ShadowMappingApp::draw()
 	{
 		gl::ScopedGlslProg bind( mShadowShader );
 		gl::ScopedTextureBind texture( mShadowMap->getTexture() );
-		
+
 		mShadowShader->uniform( "uShadowMap", 0 );
 		mShadowShader->uniform( "uShadowMatrix", mLight.camera.getProjectionMatrix() * mLight.camera.getViewMatrix() );
 		mShadowShader->uniform( "uShadowTechnique", mShadowTechnique );
@@ -313,12 +313,12 @@ void ShadowMappingApp::draw()
 		mShadowShader->uniform( "uNumRandomSamples", mNumRandomSamples );
 		mShadowShader->uniform( "uEnableNormSlopeOffset", mEnableNormSlopeOffset );
 		mShadowShader->uniform( "uLightPos", vec3( gl::getModelView() * vec4( mLight.viewpoint, 1.0 ) ) );
-		
+
 		drawScene( spinAngle, mShadowShader );
 	}
-	
+
 	gl::disable( GL_POLYGON_OFFSET_FILL );
-	
+
 	// Render light direction vector
 	gl::drawVector( mLight.viewpoint, 4.5f * normalize( mLight.viewpoint ) );
 }

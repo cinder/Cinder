@@ -212,7 +212,7 @@ int PickingFBOApp::pick( const ivec2 &mousePos )
 		for( int32_t x = 0; x < pixels.getWidth(); ++x )
 			if( colorToIndex( pixels.getPixel( ivec2( x, y ) ) ) == 0 )
 				pixels.setPixel( ivec2( x, y ), ColorA8u( 255, 255, 255, 255 ) );
-	
+
 	mDebugTexture = gl::Texture::create( pixels );
 #endif
 
@@ -297,9 +297,9 @@ void PickingFBOApp::setupGrid( int xSize, int zSize, int spacing )
 	for( int zVal = -zSize; zVal < zMax; zVal += spacing ) {
 		if( zVal == 0 ) // Center line.
 			mGridMesh->color( black );
-		else 
+		else
 			mGridMesh->color( defaultColor );
-		
+
 		mGridMesh->vertex( (float)xSize, 0, (float)zVal );
 		mGridMesh->vertex( (float)-xSize, 0, (float)zVal );
 	}// end for each z dir line
@@ -443,5 +443,5 @@ void PickingFBOApp::setSelectedColors( int selected )
 	}
 }
 
-CINDER_APP( PickingFBOApp, RendererGl, []( App::Settings *settings ) {	
+CINDER_APP( PickingFBOApp, RendererGl, []( App::Settings *settings ) {
 							settings->setMultiTouchEnabled( false ); } )

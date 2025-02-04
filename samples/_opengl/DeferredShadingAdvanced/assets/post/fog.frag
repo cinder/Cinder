@@ -19,4 +19,3 @@ void main( void )
 	color		*= clamp( pow( depth, kFalloff ) * kDensity, 0.0, 1.0 );
 	oColor		= max( vec4( color, 1.0 ), texture( uSamplerColor, vertex.uv ) * ( depth > 1.0 ? vec4( color, 1.0 ) : vec4( 1.0 ) ) );
 }
- 

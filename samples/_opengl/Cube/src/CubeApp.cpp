@@ -8,12 +8,12 @@ using namespace ci;
 using namespace ci::app;
 
 class RotatingCubeApp : public App {
-  public:	
+  public:
 	void	setup() override;
 	void	resize() override;
 	void	update() override;
 	void	draw() override;
-	
+
 	CameraPersp			mCam;
 	gl::BatchRef		mBatch;
 	gl::TextureRef		mTexture;

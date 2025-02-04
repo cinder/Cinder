@@ -13,7 +13,7 @@ using namespace std;
 
 // Particle type holds information for rendering and simulation.
 // Used to buffer initial simulation values.
-// Using std140 in ssbo requires we have members on 4 byte alignment. 
+// Using std140 in ssbo requires we have members on 4 byte alignment.
 #pragma pack( push, 1 )
 //__declspec( align( 4 ) )
 struct Particle
@@ -97,10 +97,10 @@ void ParticleSphereCSApp::setup()
 	mParticleBuffer = gl::Ssbo::create( particles.size() * sizeof(Particle), particles.data(), GL_STATIC_DRAW );
 	gl::ScopedBuffer scopedParticleSsbo( mParticleBuffer );
 	mParticleBuffer->bindBase( 0 );
-	
+
 	// Create a default color shader.
 	try {
-#if CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_1 
+#if CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_1
 		mRenderProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particleRender_es31.vert" ) )
 			.fragment( loadAsset( "particleRender_es31.frag" ) )
 			.attribLocation( "particleId", 0 ) );
@@ -118,17 +118,17 @@ void ParticleSphereCSApp::setup()
 	std::vector<GLuint> ids( NUM_PARTICLES );
 	GLuint currId = 0;
 	std::generate( ids.begin(), ids.end(), [&currId]() -> GLuint { return currId++; } );
-	
+
 	mIdsVbo = gl::Vbo::create<GLuint>( GL_ARRAY_BUFFER, ids, GL_STATIC_DRAW );
     mAttributes = gl::Vao::create();
 	gl::ScopedVao vao( mAttributes );
 	gl::ScopedBuffer scopedIds( mIdsVbo );
 	gl::enableVertexAttribArray( 0 );
 	gl::vertexAttribIPointer( 0, 1, GL_UNSIGNED_INT, sizeof( GLuint ), 0 );
-	
+
 	try {
 		//// Load our update program.
-#if CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_1 
+#if CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_1
 		mUpdateProg = gl::GlslProg::
 			create( gl::GlslProg::Format().compute( loadAsset( "particleUpdate_es31.comp" ) ) );
 #else
@@ -163,7 +163,7 @@ void ParticleSphereCSApp::update()
 {
 	// Update particles on the GPU
 	gl::ScopedGlslProg prog( mUpdateProg );
-	
+
 	mUpdateProg->uniform( "uMouseForce", mMouseForce );
 	mUpdateProg->uniform( "uMousePos", mMousePos );
 	gl::ScopedBuffer scopedParticleSsbo( mParticleBuffer );
@@ -187,11 +187,11 @@ void ParticleSphereCSApp::draw()
 	gl::ScopedGlslProg render( mRenderProg );
 	gl::ScopedBuffer scopedParticleSsbo( mParticleBuffer );
 	gl::ScopedVao vao( mAttributes );
-	
+
 	gl::context()->setDefaultShaderVars();
 
 	gl::drawArrays( GL_POINTS, 0, NUM_PARTICLES );
-	
+
 	gl::setMatricesWindow( app::getWindowSize() );
 	gl::drawString( toString( static_cast<int>( getAverageFps() ) ) + " fps", vec2( 32.0f, 52.0f ) );
 }

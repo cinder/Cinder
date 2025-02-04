@@ -96,7 +96,7 @@ void MultichannelOutputApp::shiftRouteChannel()
 
 	mChannelRouterNode->disconnectAllInputs();
 	mGain->disconnectAllOutputs();
-	
+
 	mGain >> mChannelRouterNode->route( 0, mCurrentChannel );
 }
 

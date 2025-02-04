@@ -11,4 +11,3 @@ void main( void )
 {
 	oColor = vec4( vec3( uNear / ( 1.0 - texture( uSamplerDepth, vertex.uv ).r ) ), 1.0 );
 }
- 

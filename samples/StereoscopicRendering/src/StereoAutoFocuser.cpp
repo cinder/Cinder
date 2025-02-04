@@ -36,7 +36,7 @@ void StereoAutoFocuser::autoFocus( CameraStereo *cam, const Area &area, GLuint b
 	// create or resize buffers
 	createBuffers( area );
 
-	// blit (multi-sampled) depth buffer to (non-multi-sampled) auto focus fbo	
+	// blit (multi-sampled) depth buffer to (non-multi-sampled) auto focus fbo
 	// (they need to be the same size for this to work!)
 	{
 		Area dstArea = mFboLarge->getBounds();
@@ -65,7 +65,7 @@ void StereoAutoFocuser::autoFocus( CameraStereo *cam, const Area &area, GLuint b
 	glReadPixels( 0, 0, AF_WIDTH, AF_HEIGHT, GL_DEPTH_COMPONENT, GL_FLOAT, &mBuffer.front() );
 	mFboSmall->unbindFramebuffer();
 
-	// find minimum value 
+	// find minimum value
 	std::vector<GLfloat>::const_iterator itr = std::min_element( mBuffer.begin(), mBuffer.end() );
 
 	size_t p = itr - mBuffer.begin();
@@ -85,7 +85,7 @@ void StereoAutoFocuser::autoFocus( CameraStereo *cam, const Area &area, GLuint b
 
 void StereoAutoFocuser::draw()
 {
-	// visual debugging 
+	// visual debugging
 	gl::ScopedBlendAlpha blend;
 	gl::ScopedColor color( ColorA( 0, 1, 1, 0.1f ) );
 	gl::drawSolidRect( mArea );

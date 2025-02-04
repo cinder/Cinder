@@ -10,16 +10,16 @@ using namespace ci;
 using namespace ci::app;
 
 class ArcballDemoApp : public App {
-  public:	
+  public:
 	void setup() override;
 	void resize() override;
 	void mouseDown( MouseEvent event ) override;
 	void mouseDrag( MouseEvent event ) override;
 	void draw() override;
-	
+
 	Arcball			mArcball;
 	CameraPersp		mCamera;
-	
+
 	Sphere			mEarthSphere;
 	gl::BatchRef	mEarth;
 	gl::TextureRef	mEarthTex;

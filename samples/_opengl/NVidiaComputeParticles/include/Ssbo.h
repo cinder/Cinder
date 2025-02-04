@@ -32,8 +32,8 @@ protected:
 
 //! Represents an OpenGL Shader Storage Buffer Object
 template<class T>
-class SsboT : public Ssbo { 
-public: 
+class SsboT : public Ssbo {
+public:
 	typedef std::shared_ptr<SsboT<T>>	Ref;
 
 	//! Creates a shader storage buffer object with storage for \a allocationSize bytes, and filled with data \a data if it is not NULL.

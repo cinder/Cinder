@@ -19,4 +19,3 @@ protected:
 	ci::mat4		mModelMatrix;
 	ci::mat3		mNormalMatrix;
 };
- 

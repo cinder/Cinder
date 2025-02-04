@@ -12,7 +12,7 @@ using namespace std;
 class HighDynamicRangeApp : public App {
   public:
 	void setup() override;
-	void mouseDrag( MouseEvent event ) override;	
+	void mouseDrag( MouseEvent event ) override;
 	void draw() override;
 	void fileDrop( FileDropEvent event ) override;
 

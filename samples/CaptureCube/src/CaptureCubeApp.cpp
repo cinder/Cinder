@@ -11,12 +11,12 @@ using namespace ci;
 using namespace ci::app;
 
 class CaptureCubeApp : public App {
-  public:	
+  public:
 	void	setup() override;
 	void	resize() override;
 	void	update() override;
 	void	draw() override;
-	
+
 	CameraPersp			mCam;
 	CaptureRef			mCapture;
 	gl::Texture2dRef	mTexture;
@@ -41,7 +41,7 @@ void CaptureCubeApp::setup()
 		layout.addCenteredLine( "Detected" );
 		mTexture = gl::Texture2d::create( layout.render() );
 	}
-	
+
 	mCam.lookAt( vec3( 3, 2, -3 ), vec3( 0 ) );
 	gl::enableDepthRead();
 	gl::enableDepthWrite();

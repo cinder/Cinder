@@ -54,13 +54,13 @@ void WordNode::draw() const
 	p += vec2( 1.0f, 1.0f );
 	gl::drawSolidRect( Rectf( p.x - mRadius, p.y - mRadius, p.x + mRadius, p.y + mRadius ) );
 
-	
+
 	// draw color circle
 	gl::color( mColor );
 	p = mPos();
 	gl::drawSolidRect( Rectf( p.x - mRadius, p.y - mRadius, p.x + mRadius, p.y + mRadius ) );
 
-	
+
 	// draw string
 	// biggest square that can fit in the circle is radius * sqrt(2) per side  x^2 = (r^2)/2
 	const float squareSide = sqrtf( ( mRadius * mRadius ) / 2.0f );

@@ -58,10 +58,10 @@ void main()
 	else if ( uTexturingMode == 2 )
 		diffuse *= texture2D( uTex0, TexCoord.st ).rgb;
 
-	// specular coefficient 
+	// specular coefficient
 	vec3 specular = blinn * cSpecular;
 
-	// alpha 
+	// alpha
 	float alpha = ( uTexturingMode == 3 ) ? 0.75 : 1.0;
 
 	// final color

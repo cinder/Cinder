@@ -15,8 +15,8 @@ class ImageFileBasicApp : public App {
 	void setup();
 	void keyDown( KeyEvent event );
 	void draw();
-	
-	dx::Texture		mTexture;	
+
+	dx::Texture		mTexture;
 };
 
 void ImageFileBasicApp::setup()
@@ -53,7 +53,7 @@ void ImageFileBasicApp::draw()
 {
 	dx::clear();
 	dx::enableAlphaBlending();
-	
+
 	if( mTexture )
 		dx::draw( mTexture, vec2( 0, 0 ) );
 }

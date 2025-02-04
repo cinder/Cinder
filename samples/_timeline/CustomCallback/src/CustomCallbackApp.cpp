@@ -20,14 +20,14 @@ struct Circle {
 		mRadius = mPos().x;
 		mRadius = std::min( mRadius, getWindowWidth() - mPos().x );
 		mRadius = std::min( mRadius, mPos().y );
-		mRadius = std::min( mRadius, getWindowHeight() - mPos().y );		
+		mRadius = std::min( mRadius, getWindowHeight() - mPos().y );
 	}
 
 	void draw() {
 		gl::color( Color( 1.0f, 0.5f, 0.25f ) );
 		gl::drawSolidCircle( mPos, mRadius );
 	}
-	
+
 	Anim<vec2>	mPos;
 	float		mRadius;
 };
@@ -37,20 +37,20 @@ struct ColorToGreenFunctor {
 	ColorToGreenFunctor( Color *colorPtr )
 		: mColorPtr( colorPtr )
 	{}
-	
+
 	void operator()() {
 		*mColorPtr = Color( 0.5f, 0.9f, 0.5f );
 	}
-	
+
 	Color		*mColorPtr;
 };
 
 class CustomCallbackApp : public App {
   public:
 	void setup();
-	void mouseDown( MouseEvent event );	
+	void mouseDown( MouseEvent event );
 	void draw();
-	
+
 	Circle		mCircle;
 };
 
@@ -78,7 +78,7 @@ void CustomCallbackApp::mouseDown( MouseEvent event )
 
 void CustomCallbackApp::draw()
 {
-	gl::clear( gBackgroundColor ); 	
+	gl::clear( gBackgroundColor );
 	mCircle.draw();
 }
 

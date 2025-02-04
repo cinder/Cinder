@@ -16,7 +16,7 @@ class MovieWriterApp : public App {
 	void update() override;
 	void draw() override;
 	void cleanup() override { mMovieExporter.reset(); }
-	
+
 	qtime::MovieWriterRef mMovieExporter;
 };
 

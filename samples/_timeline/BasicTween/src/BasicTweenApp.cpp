@@ -12,12 +12,12 @@ class BasicTweenApp : public App {
 	void setup() override;
 	void mouseDown( MouseEvent event ) override;
 	void draw() override;
-  
+
 	Anim<vec2>		mBlackPos, mWhitePos;
 };
 
 void BasicTweenApp::setup()
-{	
+{
 	mBlackPos = mWhitePos = getWindowCenter();
 }
 
@@ -32,10 +32,10 @@ void BasicTweenApp::mouseDown( MouseEvent event )
 void BasicTweenApp::draw()
 {
 	gl::clear( Color( 0.5f, 0.5f, 0.5f ) );
-	
+
 	gl::color( Color::black() );
 	gl::drawSolidCircle( mBlackPos, 20.0f );
-	
+
 	gl::color( Color::white() );
 	gl::drawSolidCircle( mWhitePos, 16.0f );
 }

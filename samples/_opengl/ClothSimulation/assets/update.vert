@@ -57,12 +57,12 @@ void main(void)
 {
 	vec3 p = position_mass.xyz;    // p can be our position
 	p = calcRayIntersection( p );
-	
+
 	float m = position_mass.w;     // m is the mass of our vertex
 	vec3 u = velocity;             // u is the initial velocity
 	vec3 F = gravity * m - c * u;  // F is the force on the mass
 	bool fixed_node = true;        // Becomes false when force is applied
-	
+
 	for( int i = 0; i < 4; i++) {
 		if( connection[i] != -1 ) {
 			// q is the position of the other vertex
@@ -73,24 +73,24 @@ void main(void)
 			fixed_node = false;
 		}
 	}
-	
+
 	// If this is a fixed node, reset force to zero
 	if( fixed_node ) {
 		F = vec3(0.0);
 	}
-	
+
 	// Accelleration due to force
 	vec3 a = F / m;
-	
+
 	// Displacement
 	vec3 s = u * t + 0.5 * a * t * t;
-	
+
 	// Final velocity
 	vec3 v = u + a * t;
-	
+
 	// Constrain the absolute value of the displacement per step
 	s = clamp(s, vec3(-25.0), vec3(25.0));
-	
+
 	// Write the outputs
 	tf_position_mass = vec4(p + s, m);
 	tf_velocity = v;

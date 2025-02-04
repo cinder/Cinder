@@ -19,18 +19,18 @@ class WordNode {
 	WordNode( const std::string &word );
 
 	const std::string&	getWord() const { return mWord; }
-	
+
 	bool	shouldBeDeleted() const;
 	void	setShouldBeDeleted();
-	
+
 	bool	isSelected() const;
 	void	setSelected();
 
 	bool	isPointInside( const ci::vec2 &pt ) const;
-	
+
 	void	draw() const;
 
-	// Timelined properties		
+	// Timelined properties
 	ci::Anim<ci::vec2>		mPos;
 	ci::Anim<float>			mRadius;
 	float					mRadiusDest;

@@ -36,7 +36,7 @@ void ImmediateModeApp::mouseDown(  MouseEvent event )
 
 void ImmediateModeApp::draw()
 {
-	gl::clear();	
+	gl::clear();
 
 	gl::VertBatch vb( GL_TRIANGLES );
 		vb.color( 1, 0, 0 );

@@ -33,7 +33,7 @@ class CullableObject {
   public:
 	CullableObject( const ci::gl::BatchRef &batch );
 	~CullableObject();
-	
+
 	void update( double elapsed );
 	void draw();
 
@@ -41,16 +41,16 @@ class CullableObject {
 	bool isCulled() { return mIsCulled; }
 
 	const ci::mat4& getTransform() const { return mTransform; }
-	
+
 	//! For sorting purposes
 	const ci::vec3& getPosition() const { return mPosition; }
 	//!
 	const ci::vec3& getRotation() const { return mRotation; }
 	//!
 	float getScale() const { return mScale; }
-	
+
 	void setTransform( const ci::vec3 &position, const ci::vec3 &rotation, float scale );
-	
+
   protected:
 	//! keep track of culling state
 	bool			mIsCulled;

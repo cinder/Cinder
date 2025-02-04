@@ -15,7 +15,7 @@ class HighDensityDisplayApp : public App {
 	void mouseDrag( MouseEvent event ) override;
 	void displayChange();
 	void draw() override;
-	
+
 	// This will maintain a list of points which we will draw line segments between
 	PolyLine2f		mPoints;
 
@@ -74,7 +74,7 @@ void HighDensityDisplayApp::draw()
 		gl::lineWidth( toPixels( 1.0f ) );
 		gl::draw( mPoints );
 	gl::popModelMatrix();
-	
+
 	// rotate a 200x200pt square at the center of the window
 	gl::pushModelMatrix();
 		gl::color( 1.0f, 0.2f, 0.15f );

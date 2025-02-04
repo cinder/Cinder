@@ -27,7 +27,7 @@ class LocationApp : public App {
 	void	headingChanged( HeadingEvent event );
 #endif
 	void	locationChanged( LocationEvent event );
-	
+
   private:
 	vec3			mLocation;
 	float			mHeading;
@@ -46,7 +46,7 @@ void LocationApp::setup()
 	mHeading = 0;
 	timeline().apply( &mRotationAngle, 0.0f, (float)(2 * M_PI), 8.0f ).loop();
 	timeline().apply( &mDotRadius, 0.0f, 0.1f, 0.5f ).loop();
-	
+
 	LocationManager::enable();
 	LocationManager::getSignalLocationChanged().connect( signals::slot( this, &LocationApp::locationChanged ) );
 #if defined( CINDER_COCOA_TOUCH )
@@ -69,7 +69,7 @@ void LocationApp::setup()
 	mArrow.lineTo( vec2(         0.0f,  size * 0.25f ) );
 	mArrow.lineTo( vec2( -size * 0.5f,  size * 0.5f  ) );
 	mArrow.close();
-	
+
 	mEarthBatch = gl::Batch::create( geom::Sphere().subdivisions( 50 ), gl::getStockShader( gl::ShaderDef().texture().lambert() ) );
 }
 
@@ -84,8 +84,8 @@ void LocationApp::draw()
 
 	// Rotate the globe
 	gl::rotate( angleAxis( mRotationAngle(), vec3( 0, 1, 0 ) ) );
-	
-	// Draw the globe with shading. Rotate it 90 degrees on 
+
+	// Draw the globe with shading. Rotate it 90 degrees on
 	// its Y axis to line up the texture with the location
 	gl::color( ColorAf::white() );
 	{
@@ -105,19 +105,19 @@ void LocationApp::draw()
 	gl::setMatricesWindow( getWindowSize() );
 	gl::enableDepthRead( false );
 	gl::enableDepthWrite( false );
-	
+
 	// Plot arrow position
 	float radius = 256.0f;
 	float rotation = toRadians( mHeading ) - (float)M_PI * 0.5f;
 	float x = math<float>::cos( rotation );
 	float y = math<float>::sin( rotation );
 	vec2 position = getWindowCenter() + vec2( x, y ) * radius;
-	
+
 	gl::translate( position );
 	gl::rotate( angleAxis( -mHeading, vec3( 0, 0, 1 ) ) );
 	gl::translate( position * -1.0f );
 	gl::translate( position );
-	
+
 	gl::color( Colorf( 0, 0, 1 ) );
 	gl::drawSolid( mArrow );
 #endif
@@ -136,7 +136,7 @@ void LocationApp::locationChanged( LocationEvent event )
 	// Get the location coordinate
 	vec2 coord = event.getCoordinate();
 	console() << "Location: " << coord << endl;
-	
+
 	// Convert the location to radians
 	coord.x = toRadians( 180.0f - ( 90.0f + coord.x ) );
 	coord.y = toRadians( coord.y );

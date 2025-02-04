@@ -40,4 +40,3 @@ void main( void )
 	}
 	oColor				= vec4( sum / float( kNumSampleDirections ), depth, 0.0, 1.0 );
 }
- 

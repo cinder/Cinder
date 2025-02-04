@@ -91,7 +91,7 @@ void QTimeAdvApp::addActiveMovie( qtime::MovieGlRef movie )
 	console() << "Frames:    " << movie->getNumFrames() << std::endl;
 	console() << "Framerate: " << movie->getFramerate() << std::endl;
 	movie->setLoop( true, false );
-	
+
 	mMovies.push_back( movie );
 	movie->play();
 }
@@ -109,7 +109,7 @@ void QTimeAdvApp::loadMovieUrl( const string &urlString )
 void QTimeAdvApp::loadMovieFile( const fs::path &moviePath )
 {
 	qtime::MovieGlRef movie;
-	
+
 	try {
 		movie = qtime::MovieGl::create( moviePath );
 
@@ -163,7 +163,7 @@ void QTimeAdvApp::draw()
 			float drawWidth = getWindowWidth() * relativeWidth;
 			float drawHeight = ( getWindowWidth() * relativeWidth ) / mMovies[m]->getAspectRatio();
 			float x = drawOffsetX;
-			float y = ( getWindowHeight() - drawHeight ) / 2.0f;			
+			float y = ( getWindowHeight() - drawHeight ) / 2.0f;
 
 			gl::color( Color::white() );
 			gl::draw( texture, Rectf( x, y, x + drawWidth, y + drawHeight ) );

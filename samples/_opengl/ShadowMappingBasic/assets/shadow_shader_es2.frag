@@ -14,7 +14,7 @@ void main( void )
 	highp vec3 Normal		= normalize( vNormal );
 	highp vec3 LightVec		= normalize( uLightPos - vPosition.xyz );
 	highp float NdotL		= max( dot( vNormal, LightVec ), 0.0 );
-	
+
 	highp vec3 Diffuse		= vec3( NdotL );
 	highp vec3 Ambient		= vec3( 0.2 );
 

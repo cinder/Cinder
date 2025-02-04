@@ -34,19 +34,19 @@ class TransformFeedbackSmokeParticlesApp : public App {
 	void mouseDown( MouseEvent event );
 	void update();
 	void draw();
-	
+
 	void loadBuffers();
 	void loadShaders();
 	void loadTexture();
-	
+
   private:
 	gl::VaoRef						mPVao[2];
 	gl::TransformFeedbackObjRef		mPFeedbackObj[2];
 	gl::VboRef						mPPositions[2], mPVelocities[2], mPStartTimes[2], mPInitVelocity;
-	
+
 	gl::GlslProgRef					mPUpdateGlsl, mPRenderGlsl;
 	gl::TextureRef					mSmokeTexture;
-	
+
 	Rand							mRand;
 	CameraPersp						mCam;
 	TriMeshRef						mTrimesh;
@@ -56,10 +56,10 @@ class TransformFeedbackSmokeParticlesApp : public App {
 void TransformFeedbackSmokeParticlesApp::setup()
 {
 	mDrawBuff = 1;
-	
+
 	mCam.setPerspective( 60.0f, getWindowAspectRatio(), .01f, 1000.0f );
 	mCam.lookAt( vec3( 0, 0, 10 ), vec3( 0, 0, 0 ) );
-	
+
 	loadTexture();
 	loadShaders();
 	loadBuffers();
@@ -84,7 +84,7 @@ void TransformFeedbackSmokeParticlesApp::loadShaders()
 		transformFeedbackVaryings[PositionIndex] = "Position";
 		transformFeedbackVaryings[VelocityIndex] = "Velocity";
 		transformFeedbackVaryings[StartTimeIndex] = "StartTime";
-		
+
 		ci::gl::GlslProg::Format mUpdateParticleGlslFormat;
 		// Notice that we don't offer a fragment shader. We don't need
 		// one because we're not trying to write pixels while updating
@@ -100,17 +100,17 @@ void TransformFeedbackSmokeParticlesApp::loadShaders()
 			.attribLocation( "VertexVelocity",			VelocityIndex )
 			.attribLocation( "VertexStartTime",			StartTimeIndex )
 			.attribLocation( "VertexInitialVelocity",	InitialVelocityIndex );
-		
+
 		mPUpdateGlsl = ci::gl::GlslProg::create( mUpdateParticleGlslFormat );
 	}
 	catch( const ci::gl::GlslProgCompileExc &ex ) {
 		console() << "PARTICLE UPDATE GLSL ERROR: " << ex.what() << std::endl;
 	}
-	
+
 	mPUpdateGlsl->uniform( "H", 1.0f / 60.0f );
 	mPUpdateGlsl->uniform( "Accel", vec3( 0.0f ) );
 	mPUpdateGlsl->uniform( "ParticleLifetime", 3.0f );
-	
+
 	try {
 		ci::gl::GlslProg::Format mRenderParticleGlslFormat;
 		// This being the render glsl, we provide a fragment shader.
@@ -118,13 +118,13 @@ void TransformFeedbackSmokeParticlesApp::loadShaders()
 			.fragment( loadAsset( "renderSmoke.frag" ) )
 			.attribLocation("VertexPosition",			PositionIndex )
 			.attribLocation( "VertexStartTime",			StartTimeIndex );
-		
+
 		mPRenderGlsl = ci::gl::GlslProg::create( mRenderParticleGlslFormat );
 	}
 	catch( const ci::gl::GlslProgCompileExc &ex ) {
 		console() << "PARTICLE RENDER GLSL ERROR: " << ex.what() << std::endl;
 	}
-	
+
 	mPRenderGlsl->uniform( "ParticleTex", 0 );
 	mPRenderGlsl->uniform( "MinParticleSize", 1.0f );
 	mPRenderGlsl->uniform( "MaxParticleSize", 64.0f );
@@ -135,27 +135,27 @@ void TransformFeedbackSmokeParticlesApp::loadBuffers()
 {
 	// Initialize positions
 	std::vector<vec3> positions( nParticles, vec3( 0.0f ) );
-	
+
 	// Create Position Vbo with the initial position data
 	mPPositions[0] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, positions.size() * sizeof(vec3), positions.data(), GL_STATIC_DRAW );
 	// Create another Position Buffer that is null, for ping-ponging
 	mPPositions[1] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, positions.size() * sizeof(vec3), nullptr, GL_STATIC_DRAW );
-	
+
 	// Reuse the positions vector that we've already made
 	std::vector<vec3> normals = std::move( positions );
-	
+
 	for( auto normalIt = normals.begin(); normalIt != normals.end(); ++normalIt ) {
 		// Creating a random velocity for each particle in a unit sphere
 		*normalIt = ci::randVec3() * mix( 0.0f, 1.5f, mRand.nextFloat() );
 	}
-	
+
 	// Create the Velocity Buffer using the newly buffered velocities
 	mPVelocities[0] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, normals.size() * sizeof(vec3), normals.data(), GL_STATIC_DRAW );
 	// Create another Velocity Buffer that is null, for ping-ponging
 	mPVelocities[1] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, normals.size() * sizeof(vec3), nullptr, GL_STATIC_DRAW );
 	// Create an initial velocity buffer, so that you can reset a particle's velocity after it's dead
 	mPInitVelocity = ci::gl::Vbo::create( GL_ARRAY_BUFFER,	normals.size() * sizeof(vec3), normals.data(), GL_STATIC_DRAW );
-	
+
 	// Create time data for the initialization of the particles
 	array<GLfloat, nParticles> timeData;
 	float time = 0.0f;
@@ -169,34 +169,34 @@ void TransformFeedbackSmokeParticlesApp::loadBuffers()
 	mPStartTimes[0] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, timeData.size() * sizeof( float ), timeData.data(), GL_DYNAMIC_COPY );
 	// Create the StartTime ping-pong buffer
 	mPStartTimes[1] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, nParticles * sizeof( float ), nullptr, GL_DYNAMIC_COPY );
-	
+
 	for( int i = 0; i < 2; i++ ) {
 		// Initialize the Vao's holding the info for each buffer
 		mPVao[i] = ci::gl::Vao::create();
-		
+
 		// Bind the vao to capture index data for the glsl
 		mPVao[i]->bind();
 		mPPositions[i]->bind();
 		ci::gl::vertexAttribPointer( PositionIndex, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 		ci::gl::enableVertexAttribArray( PositionIndex );
-		
+
 		mPVelocities[i]->bind();
 		ci::gl::vertexAttribPointer( VelocityIndex, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 		ci::gl::enableVertexAttribArray( VelocityIndex );
-		
+
 		mPStartTimes[i]->bind();
 		ci::gl::vertexAttribPointer( StartTimeIndex, 1, GL_FLOAT, GL_FALSE, 0, 0 );
 		ci::gl::enableVertexAttribArray( StartTimeIndex );
-		
+
 		mPInitVelocity->bind();
 		ci::gl::vertexAttribPointer( InitialVelocityIndex, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 		ci::gl::enableVertexAttribArray( InitialVelocityIndex );
-		
+
 		// Create a TransformFeedbackObj, which is similar to Vao
 		// It's used to capture the output of a glsl and uses the
 		// index of the feedback's varying variable names.
 		mPFeedbackObj[i] = gl::TransformFeedbackObj::create();
-		
+
 		// Bind the TransformFeedbackObj and bind each corresponding buffer
 		// to it's index.
 		mPFeedbackObj[i]->bind();
@@ -215,7 +215,7 @@ void TransformFeedbackSmokeParticlesApp::update()
 {
 	// This equation just reliably swaps all concerned buffers
 	mDrawBuff = 1 - mDrawBuff;
-	
+
 	gl::ScopedGlslProg	glslScope( mPUpdateGlsl );
 	// We use this vao for input to the Glsl, while using the opposite
 	// for the TransformFeedbackObj.
@@ -224,18 +224,18 @@ void TransformFeedbackSmokeParticlesApp::update()
 	// stop the rasterizer. This will make sure that OpenGL won't
 	// move to the rasterization stage.
 	gl::ScopedState		stateScope( GL_RASTERIZER_DISCARD, true );
-	
+
 	mPUpdateGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
-	
+
 	// Opposite TransformFeedbackObj to catch the calculated values
 	// In the opposite buffer
 	mPFeedbackObj[1-mDrawBuff]->bind();
-	
+
 	// We begin Transform Feedback, using the same primitive that
 	// we're "drawing". Using points for the particle system.
 	gl::beginTransformFeedback( GL_POINTS );
 	gl::drawArrays( GL_POINTS, 0, nParticles );
-	gl::endTransformFeedback();	
+	gl::endTransformFeedback();
 }
 
 void TransformFeedbackSmokeParticlesApp::draw()
@@ -244,21 +244,21 @@ void TransformFeedbackSmokeParticlesApp::draw()
 	gl::clear( Color( 0, 0, 0 ) );
 	static float rotateRadians = 0.0f;
 	rotateRadians += 0.01f;
-	
+
 	gl::ScopedVao			vaoScope( mPVao[1-mDrawBuff] );
 	gl::ScopedGlslProg		glslScope( mPRenderGlsl );
 	gl::ScopedTextureBind	texScope( mSmokeTexture );
 	gl::ScopedState			stateScope( GL_PROGRAM_POINT_SIZE, true );
 	gl::ScopedBlend			blendScope( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-	
+
 	gl::pushMatrices();
 	gl::setMatrices( mCam );
 	gl::multModelMatrix( rotate( rotateRadians, vec3( 0, 1, 0 ) ) );
-	
+
 	mPRenderGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
 	gl::setDefaultShaderVars();
 	gl::drawArrays( GL_POINTS, 0, nParticles );
-	
+
 	gl::popMatrices();
 }
 

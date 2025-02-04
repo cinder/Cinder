@@ -28,7 +28,7 @@ TrianglePiece::TrianglePiece( vec2 _startPt, vec2 _pt1, vec2 _pt2, vec2 _pt3, fl
 	mVertices[2] = _pt3;
 	mRotation = _rotation;
 	mScale = _scale;
-	
+
 	mReadyToDraw = false;
 	mVisible = false;
 	mTransOut = false;
@@ -36,7 +36,7 @@ TrianglePiece::TrianglePiece( vec2 _startPt, vec2 _pt1, vec2 _pt2, vec2 _pt3, fl
 
 void TrianglePiece::reset( float _delay, gl::TextureRef tempTex )
 {
-	mTempTex = tempTex;	
+	mTempTex = tempTex;
 	setTransition(_delay);
 }
 
@@ -66,7 +66,7 @@ void TrianglePiece::setVisible( bool vis )
 }
 
 void TrianglePiece::update( gl::TextureRef tex, vec2 pt1, vec2 pt2, vec2 pt3 )
-{	 
+{
 	if( ! mTransOut ) {
 		mTexVertices[0] = pt1;
 		mTexVertices[1] = pt2;
@@ -80,15 +80,15 @@ void TrianglePiece::draw()
 {
 	if( ! mReadyToDraw ) return;
 	if( mAlpha == 0.0f ) return;
-	
+
 	gl::ScopedModelMatrix scopedMat;
 	gl::ScopedColor scopedCol;
 	gl::translate( mStartPt );	// move to the start point
 	gl::scale( mScale );		// scale the triangle
 	gl::rotate( mRotation );	// rotate on the Z axis
-	
+
 	gl::color( 1.0f, 1.0f, 1.0f, mAlpha );
-	
+
 	// draw the texture to the triangle
 	gl::ScopedGlslProg glslScp( gl::getStockShader( gl::ShaderDef().color().texture() ) );
 	gl::ScopedTextureBind texScp( mDrawTex );

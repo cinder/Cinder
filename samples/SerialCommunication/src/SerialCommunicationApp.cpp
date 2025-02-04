@@ -27,9 +27,9 @@ class SerialCommunicationApp : public App {
 	SerialRef	mSerial;
 	uint8_t		mCounter;
 	string		mLastString;
-	
+
 	gl::TextureRef	mTexture;
-	
+
 	double mLastRead, mLastUpdate;
 };
 
@@ -52,23 +52,23 @@ void SerialCommunicationApp::setup()
 		CI_LOG_EXCEPTION( "coult not initialize the serial device", exc );
 		exit( -1 );
 	}
-	
+
 	// wait for * as a sign for first contact
 	char contact = 0;
 	while( contact != '*' )	{
 		contact = (char)mSerial->readByte();
 	}
-	
+
 	// request actual data
 	mSerial->writeByte( mCounter );
-	
+
 	// clear accumulated contact messages in buffer
 	char b = '*';
 	while( mSerial->getNumBytesAvailable() > -1 ) {
 		b = mSerial->readByte();
 		console() << b << "_";
 	}
-		
+
 	mSerial->flush();
 }
 
@@ -80,12 +80,12 @@ void SerialCommunicationApp::mouseDown( MouseEvent event )
 void SerialCommunicationApp::update()
 {
 //	console() << "Bytes available: " << mSerial->getNumBytesAvailable() << std::endl;
-	
+
 	double now = getElapsedSeconds();
 	double deltaTime = now - mLastUpdate;
 	mLastUpdate = now;
 	mLastRead += deltaTime;
-	
+
 	if( mLastRead > READ_INTERVAL )	{
 		mSendSerialMessage = true;
 		mLastRead = 0.0;
@@ -94,7 +94,7 @@ void SerialCommunicationApp::update()
 	if( mSendSerialMessage ) {
 		// request next chunk
 		mSerial->writeByte( mCounter );
-		
+
 		try{
 			// read until newline, to a maximum of BUFSIZE bytes
 			mLastString = mSerial->readStringUntil( '\n', BUFSIZE );
@@ -103,12 +103,12 @@ void SerialCommunicationApp::update()
 		catch( SerialTimeoutExc &exc ) {
 			CI_LOG_EXCEPTION( "timeout", exc );
 		}
-		
+
 		mSendSerialMessage = false;
 		mCounter += 8;
 
 		console() << "last string: " << mLastString << endl;
-		
+
 		TextLayout simple;
 		simple.setFont( Font( "Arial Black", 24 ) );
 		simple.setColor( Color( .7, .7, .2 ) );
@@ -123,7 +123,7 @@ void SerialCommunicationApp::update()
 void SerialCommunicationApp::draw()
 {
 	gl::clear();
-	
+
 	if( mTexture )
 		gl::draw( mTexture, vec2( 10, 10 ) );
 }

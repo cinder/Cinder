@@ -17,7 +17,7 @@ class SuperformulaGpuApp : public App {
 	void	draw() override;
 
 	void	setupGeometry();
-	
+
 	CameraPersp				mCam;
 	gl::BatchRef			mBatch, mNormalsBatch;
 	gl::GlslProgRef			mGlsl, mNormalsGlsl;
@@ -27,7 +27,7 @@ class SuperformulaGpuApp : public App {
 	float					mNormalsLength;
 	int						mSubdivisions;
 	int						mCheckerFrequency;
-	
+
 	// This is dependent on the C++ compiler structuring these vars in RAM the same way that GL's std140 does
 	struct {
 		float	mA1, mA2;
@@ -134,7 +134,7 @@ void SuperformulaGpuApp::update()
 
 	// buffer our data to our UBO to reflect any changed parameters
 	mFormulaParamsUbo->bufferSubData( 0, sizeof( mFormulaParams ), &mFormulaParams );
-	
+
 	mNormalsBatch->getGlslProg()->uniform( "uNormalsLength", mNormalsLength );
 	mBatch->getGlslProg()->uniform( "uCheckerFrequency", mCheckerFrequency );
 }

@@ -18,7 +18,7 @@ class CustomTremoloNode : public ci::audio::Node {
 	void setRate( float rate )		{ mRate = rate; }
 	// Set the depth of maximum amplitude decrease (max amp = mag(1 - mDepth))
 	void setDepth( float depth )	{ mDepth = depth; }
-	
+
   protected:
 	// The base Node class calls a few optional lifecycle methods, initialize() and process() are the most important of these.
 	// See Node's header for a complete list of methods available for overriding.

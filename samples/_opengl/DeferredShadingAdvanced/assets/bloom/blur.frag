@@ -24,6 +24,6 @@ void main( void )
 	sum += texture( uSampler, vertex.uv + sz *  0.6 ) * 0.038650411513543079;
 	sum += texture( uSampler, vertex.uv + sz *  0.8 ) * 0.020595286319257878;
 	sum += texture( uSampler, vertex.uv + sz *  1.0 ) * 0.009167927656011385;
-	
+
 	oColor = kAttenuation * sum;
 }

@@ -18,7 +18,7 @@
 class Swatch {
   public:
 	Swatch( ci::Color color, ci::vec2 pos, ci::Rectf rect );
-	
+
 	void mouseOver( ci::Timeline &timeline );
 	void mouseOff( ci::Timeline &timeline );
 	void scatter( ci::Timeline &timeline, float width, float height );
@@ -33,6 +33,6 @@ class Swatch {
 	ci::Anim<float> mScale;
 	ci::Anim<float> mAlpha;
 	ci::Rectf mRect;
-	
+
 	bool mIsSelected;
 };

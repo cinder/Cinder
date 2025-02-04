@@ -12,14 +12,14 @@ class fontSampleApp : public App {
  public:
 	void		setup();
 	void		drawCharacterVerbose( cairo::Context &ctx, vec2 where );
-	void		draw();	
+	void		draw();
 
 	void		keyDown( KeyEvent event ) { if( event.getChar() == 'f' ) { setRandomFont(); setRandomGlyph(); } else setRandomGlyph(); }
 	void		mouseDown( MouseEvent event ) { writeImage( getHomeDirectory() / "wisteriaShot.jpg", copyWindowSurface() ); }
-	
+
 	void		setRandomFont();
 	void		setRandomGlyph();
-	
+
 	Font			mFont;
 	Shape2d			mShape;
 	vector<string>	mFontNames;
@@ -42,7 +42,7 @@ void fontSampleApp::setup()
 		console() << ss.str();
 #endif
 	}
-	
+
 	setRandomFont();
 	setRandomGlyph();
 }
@@ -104,7 +104,7 @@ struct VerboseCharDraw {
 			mCtx.setSource( dotColor );
 			mCtx.circle( points[0], radius );
 			mCtx.circle( points[1], radius );
-			mCtx.circle( points[2], radius );						
+			mCtx.circle( points[2], radius );
 			mCtx.fill();
 			mCtx.setSource( lineColor );
 			mCtx.moveTo( *previousPoint ); mCtx.curveTo( points[0], points[1], points[2] );
@@ -117,7 +117,7 @@ struct VerboseCharDraw {
 		}
 		return true;
 	}
-	
+
 	cairo::Context &mCtx;
 };
 
@@ -125,32 +125,32 @@ void fontSampleApp::drawCharacterVerbose( cairo::Context &ctx, vec2 where )
 {
 	cairo::Matrix prevMat;
 	ctx.getMatrix( &prevMat );
-	
+
 	// draw it filled
 	ctx.setSourceRgb( 1.0f, 1.0, 0.5f );
 	ctx.translate( where );
 	// Uncomment below to render the character filled
 	// ctx.appendPath( mShape );
 	// ctx.fill();
-	
+
 	VerboseCharDraw verb( ctx );
 	mShape.iterate<VerboseCharDraw>( verb );
-	
+
 	ctx.setMatrix( prevMat );
 }
 
 void fontSampleApp::draw()
 {
 	cairo::Context ctx( cairo::createWindowSurface() );
-	
+
 	// clear the screen
 	ctx.setSourceRgb( 0.2f, 0.2f, 0.2f );
 	ctx.paint();
-	
+
 	// draw the current character including the control points as dots
 	ctx.setSourceRgb( 1.0f, 1.0, 0.5f );
 	drawCharacterVerbose( ctx, vec2( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
-	
+
 	// Render the name of the font in the font itself
 	ctx.setFont( mFont );
 	ctx.setFontSize( 18 );
@@ -158,7 +158,7 @@ void fontSampleApp::draw()
 	ctx.setSourceRgb( 0.5f, 0.75f, 1.0f );
 	ctx.showText( mFont.getFullName() );
 	ctx.stroke();
-	
+
 	// draw a lower case 'a'
 #if 0
 	Shape2d aPath;

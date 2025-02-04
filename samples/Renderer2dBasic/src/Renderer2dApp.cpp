@@ -17,7 +17,7 @@ class Renderer2dApp : public App {
   public:
 	void setup() override;
 	void draw() override;
-	
+
 #if defined( CINDER_COCOA )
 	CGImageRef	mImage;
 #elif defined( CINDER_MSW )
@@ -57,7 +57,7 @@ void Renderer2dApp::draw()
 	Gdiplus::Graphics graphics( getWindow()->getDc() );
 	Gdiplus::LinearGradientBrush brush( Gdiplus::Rect( 0, 0, getWindowWidth(), getWindowHeight() ),
 		Gdiplus::Color( 0, 0, 0 ), Gdiplus::Color( 220, 220, 220 ), Gdiplus::LinearGradientModeVertical );
-	graphics.FillRectangle( &brush, 0, 0, getWindowWidth(), getWindowHeight() ); 
+	graphics.FillRectangle( &brush, 0, 0, getWindowWidth(), getWindowHeight() );
 	graphics.DrawImage( mImage, ( getWindowWidth() - mImageSurface.getWidth() ) / 2, ( getWindowHeight() - mImageSurface.getHeight() ) / 2,
 		mImageSurface.getWidth(), mImageSurface.getHeight() );
 #endif

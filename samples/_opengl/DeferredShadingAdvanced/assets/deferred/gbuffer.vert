@@ -44,10 +44,9 @@ void main( void )
 	p.w					= 1.0;
 	vertex.color		*= light.diffuse.rgb;
 #endif
-	
+
 #if defined( INSTANCED_MODEL )
 	p					= vInstanceModelMatrix * p;
 #endif
 	gl_Position			= ciModelViewProjection * p;
 }
- 

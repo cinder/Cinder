@@ -30,4 +30,3 @@ void main( void )
 	}
 	oColor		*= kExposure;
 }
- 

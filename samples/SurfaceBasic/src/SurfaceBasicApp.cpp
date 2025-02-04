@@ -11,8 +11,8 @@ using namespace std;
 class SurfaceBasicApp : public App {
   public:
 	void	setup();
-	void	draw();	
-	
+	void	draw();
+
 	gl::Texture2dRef		mProcessedImageTex;
 };
 
@@ -84,7 +84,7 @@ Surface processImage( const Surface input )
 {
 	// make the result be a copy of input, taking care of our upper-left quadrant as well
 	Surface resultSurface( input.clone() );
-	
+
 	// let's do the upper-right, an inverted image
 	invertArea( &resultSurface, Area( input.getWidth() / 2, 0, input.getWidth(), input.getHeight() / 2 ) );
 
@@ -92,8 +92,8 @@ Surface processImage( const Surface input )
 	thresholdArea( &resultSurface, Area( input.getWidth() / 2, input.getHeight() / 2, input.getWidth(), input.getHeight() ) );
 
 	// and finally the lower left, an edge-detected image
-	edgeDetectArea( &resultSurface, Area( 0, input.getHeight() / 2, input.getWidth() / 2, input.getHeight() ) ); 
-	
+	edgeDetectArea( &resultSurface, Area( 0, input.getHeight() / 2, input.getWidth() / 2, input.getHeight() ) );
+
 	return resultSurface;
 }
 

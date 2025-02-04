@@ -1,4 +1,4 @@
-#version 310 es 
+#version 310 es
 #extension GL_ARB_shader_storage_buffer_object : require
 
 layout( location = 0 ) in int particleId;

@@ -26,7 +26,7 @@ void main(void)
 	float h			= 1.0/width;
 	float w2		= w*2.0;
 	float h2		= h*2.0;
-	
+
 	kernel[0] = 0.707106781;
 	kernel[1] = 1.0;
 	kernel[2] = 0.707106781;
@@ -36,11 +36,11 @@ void main(void)
 	kernel[6] = 0.707106781;
 	kernel[7] = 1.0;
 	kernel[8] = 0.707106781;
-	
+
 	offset[0] = vec2( -w, -h);
 	offset[1] = vec2(0.0, -h);
 	offset[2] = vec2(  w, -h);
-	
+
 	offset[3] = vec2( -w, 0.0);
 	offset[4] = vec2(0.0, 0.0);
 	offset[5] = vec2(  w, 0.0);
@@ -48,22 +48,22 @@ void main(void)
 	offset[6] = vec2( -w, h);
 	offset[7] = vec2(0.0, h);
 	offset[8] = vec2(  w, h);
-	
+
 
 	vec2 texColor		= texture( tex, vTexCoord0 ).rb;
 	float texSrcColor	= texture( texSrc, vTexCoord0 ).r;
-	
+
 	vec2 sum			= vec2( 0.0, 0.0 );
-	
+
 	for( int i=0; i<KERNEL_SIZE; i++ ){
 		vec2 tmp	= texture( tex, vTexCoord0 + offset[i] ).rb;
 		sum			+= tmp * kernel[i];
 	}
-	
-	
+
+
 	float F		= f + texSrcColor * 0.025 - 0.0005;
 	float K		= k + texSrcColor * 0.025 - 0.0005;
-	
+
 	float u		= texColor.r;
 	float v		= texColor.g;
 	float uvv	= u * v * v;
@@ -102,19 +102,19 @@ void main(void)
 	kernel[22] = 7.0/331.0;
 	kernel[23] = 4.0/331.0;
 	kernel[24] = 1.0/331.0;
-	
+
 	offset[0]  = vec2(-w2, -h2);
 	offset[1]  = vec2( -w, -h2);
 	offset[2]  = vec2(0.0, -h2);
 	offset[3]  = vec2(  w, -h2);
 	offset[4]  = vec2( w2, -h2);
-	
+
 	offset[5]  = vec2(-w2, -h);
 	offset[6]  = vec2( -w, -h);
 	offset[7]  = vec2(0.0, -h);
 	offset[8]  = vec2(  w, -h);
 	offset[9]  = vec2( w2, -h);
-	
+
 	offset[10] = vec2(-w2, 0.0);
 	offset[11] = vec2( -w, 0.0);
 	offset[12] = vec2(0.0, 0.0);
@@ -126,7 +126,7 @@ void main(void)
 	offset[17] = vec2(0.0, h);
 	offset[18] = vec2(  w, h);
 	offset[19] = vec2( w2, h);
-	
+
 	offset[20] = vec2(-w2, h2);
 	offset[21] = vec2( -w, h2);
 	offset[22] = vec2(0.0, h2);

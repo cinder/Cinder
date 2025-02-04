@@ -13,4 +13,3 @@ vec2 calcTexCoordFromUv( vec2 uv )
 	uv			+= offset;
 	return uv;
 }
- 

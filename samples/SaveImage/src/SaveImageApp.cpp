@@ -22,16 +22,16 @@ struct Circle {
 		mColor = Color( CM_HSV, Rand::randFloat( 0, 1 ), Rand::randFloat( 0.6f, 0.7f ), 1 );
 		mSpeed = Rand::randPosNegFloat( 0.001f, 0.05f );
 	}
-	
+
 	void update() {
 		mAngle += mSpeed;
 	}
-	
+
 	void draw() {
 		gl::color( mColor );
 		gl::drawSolidCircle( mCenter + vec2( cos( mAngle ), sin( mAngle ) ) * mRadiusOfTravel, mRadius );
 	}
-		
+
 	vec2	mCenter;
 	float	mSpeed, mAngle;
 	float	mRadiusOfTravel, mRadius;
@@ -52,7 +52,7 @@ class SaveImageApp : public App {
 void SaveImageApp::setup()
 {
 	mCurrentFrame = 0;
-	
+
 	for( size_t s = 0; s < 100; ++s )
 		mCircles.push_back( Circle( vec2( Rand::randFloat( 0, 640 ), Rand::randFloat( 0, 480 ) ) ) );
 }
@@ -60,7 +60,7 @@ void SaveImageApp::setup()
 void SaveImageApp::mouseDown( MouseEvent event )
 {
 	// pull down the current window as a surface and pass it to writeImage
-	writeImage( getHomeDirectory() / "cinder" / "saveImage_" / ( toString( mCurrentFrame ) + ".png" ), copyWindowSurface() );	
+	writeImage( getHomeDirectory() / "cinder" / "saveImage_" / ( toString( mCurrentFrame ) + ".png" ), copyWindowSurface() );
 	mCurrentFrame++;
 }
 
@@ -73,7 +73,7 @@ void SaveImageApp::update()
 void SaveImageApp::draw()
 {
 	gl::clear( Color( 0.2f, 0.2f, 0.2f ) );
-	
+
 	for( list<Circle>::iterator circleIter = mCircles.begin(); circleIter != mCircles.end(); ++circleIter ) {
 		circleIter->draw();
 	}

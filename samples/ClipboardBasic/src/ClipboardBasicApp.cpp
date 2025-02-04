@@ -30,10 +30,10 @@ void ClipboardBasicApp::keyDown( KeyEvent event )
 
 void ClipboardBasicApp::draw()
 {
-	gl::clear( Color( 0.5f, 0.5f, 0.5f ) ); 
+	gl::clear( Color( 0.5f, 0.5f, 0.5f ) );
 	gl::setMatricesWindow( getWindowSize() );
 	gl::enableAlphaBlending();
-	
+
 	if( Clipboard::hasImage() ) {
 		auto img = Clipboard::getImage();
 		// be aware of a race condition here; the clipboard might have changed between hasImage() and getImage()

@@ -15,13 +15,13 @@ using namespace std;
 
 struct TouchPoint {
 	TouchPoint() {}
-	TouchPoint( const vec2 &initialPt, const Color &color ) : mColor( color ), mTimeOfDeath( -1.0 ) 
+	TouchPoint( const vec2 &initialPt, const Color &color ) : mColor( color ), mTimeOfDeath( -1.0 )
 	{
-		mLine.push_back( initialPt ); 
+		mLine.push_back( initialPt );
 	}
-	
+
 	void addPoint( const vec2 &pt ) { mLine.push_back( pt ); }
-	
+
 	void draw() const
 	{
 		if( mTimeOfDeath > 0 ) // are we dying? then fade out
@@ -31,11 +31,11 @@ struct TouchPoint {
 
 		gl::draw( mLine );
 	}
-	
+
 	void startDying() { mTimeOfDeath = getElapsedSeconds() + 2.0f; } // two seconds til dead
-	
+
 	bool isDead() const { return getElapsedSeconds() > mTimeOfDeath; }
-	
+
 	PolyLine2f		mLine;
 	Color			mColor;
 	float			mTimeOfDeath;
@@ -127,7 +127,7 @@ void MultiTouchApp::draw()
 		else
 			++dyingIt;
 	}
-	
+
 	// draw yellow circles at the active touch points
 	gl::color( Color( 1, 1, 0 ) );
 	for( const auto &touch : getActiveTouches() )

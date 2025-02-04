@@ -49,7 +49,7 @@ void main( void )
 		float f		= max( kRadiusSquared - vv, 0.0 );
 		sum			+= f * f * f * max( ( vn - kBias ) / ( kEpsilon + vv ), 0.0 );
 	}
-	
+
 	float v			= max( 0.0, 1.0 - sum * ( kRadius / pow( kRadius, 6.0f ) ) * ( kRadius / float( kNumSamples ) ) );
 	if ( abs( dFdx( position.z ) ) < 0.02 ) {
 		v			-= dFdx( v ) * ( float( ss.x & 1 ) - 0.5 );

@@ -18,16 +18,16 @@ void main( void )
 	vec2 uv				= calcTexCoordFromFrag( gl_FragCoord.xy );
 
 	Light light			= uLights[ vInstanceId ];
-	
+
 	vec4 position 		= unpackPosition( uv );
-	
+
 	vec3 L 				= ( uViewMatrix * vec4( light.position, 1.0 ) ).xyz - position.xyz;
 	float d 			= length( L );
 	if ( d > light.volume ) {
 		discard;
 	}
 	L 					/= d;
-	
+
 	vec4 albedo 		= texture( uSamplerAlbedo, uv );
 	int materialId		= int( texture( uSamplerMaterial, uv ).r );
 	Material material 	= uMaterials[ materialId ];
@@ -53,9 +53,8 @@ void main( void )
 	float c				= dot( q, q );
 	float s				= 1.0f / sqrt( c - b * b );
 	s					= smoothstep( 0.005, 1.0, s * (atan( (s + b) * s) - atan( b * s ) ) );
-	
+
 	oColor 				= ( ( Ia + att * ( Id + Is ) + Ie ) * light.intensity );
 	oColor.rgb			*= ( vec3( 1.0 - kScatter ) + vec3( 2.5 * light.diffuse.rgb * vec3( s )) * kScatter );
 	oColor.a			= 1.0;
 }
- 

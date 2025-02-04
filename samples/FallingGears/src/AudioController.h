@@ -24,7 +24,7 @@ class AudioController {
 
 	struct Params {
 		Params() : mAltoLowPassFreq( 3200 )	{}
-		
+
 		float	mAltoLowPassFreq;
 	};
 

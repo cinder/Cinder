@@ -173,7 +173,7 @@ void WaveformPlot::draw()
 
 		gl::color( mColorAverage );
 		gl::draw( waveforms[3].getMesh() );
-		
+
 		gl::popMatrices();
 	}
 }

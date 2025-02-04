@@ -6,7 +6,7 @@ class Material
 {
 public:
 	Material();
-	
+
 	Material&			colorAmbient( const ci::ColorAf& c );
 	Material&			colorDiffuse( const ci::ColorAf& c );
 	Material&			colorEmission( const ci::ColorAf& c );
@@ -18,7 +18,7 @@ public:
 	const ci::ColorAf&	getColorEmission() const;
 	const ci::ColorAf&	getColorSpecular() const;
 	float				getShininess() const;
-	
+
 	void				setColorAmbient( const ci::ColorAf& c );
 	void				setColorDiffuse( const ci::ColorAf& c );
 	void				setColorEmission( const ci::ColorAf& c );

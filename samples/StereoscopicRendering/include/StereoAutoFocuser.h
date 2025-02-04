@@ -58,7 +58,7 @@ public:
 		Lower values will gradually adjust the convergence.
 		If your autoFocusSpeed is less than 1.0, repeatedly call the autoFocus() function from your update() method. */
 	void					setSpeed( float factor ) { mSpeed = ci::math<float>::clamp( factor, 0.01f, 1.0f ); }
-	//! Returns the auto-focus depth, which influences the parallax effect.  
+	//! Returns the auto-focus depth, which influences the parallax effect.
 	float					getDepth() const { return mDepth; }
 	/** Sets the auto-focus depth. A value of 1.0 will adjust the convergence in such a way that the nearest objects
 		are at the plane of the screen and cause no parallax. Lower values will cause the nearest objects to appear behind your
@@ -71,10 +71,10 @@ public:
 private:
 	void					createBuffers( const ci::Area &area );
 
-	//! Perform auto focus by sampling the specified area of the specified depth buffer 
+	//! Perform auto focus by sampling the specified area of the specified depth buffer
 	void					autoFocus( ci::CameraStereo *cam, const ci::Area &area, GLuint buffer );
 public:
-	//! width and height of the auto focus sample 
+	//! width and height of the auto focus sample
 	static const int		AF_WIDTH = 64;
 	static const int		AF_HEIGHT = 64;
 private:

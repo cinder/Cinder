@@ -69,7 +69,7 @@ void DelayFeedback::setup()
 
 	// The basic audio::Node's used here are an oscillator with a triangle waveform, a gain, and a delay.
 	// The complexity in the sound comes from how they are connected and controlled.
-	
+
 	auto ctx = audio::master();
 	mOsc = ctx->makeNode( new audio::GenOscNode );
 	mGain = ctx->makeNode( new audio::GainNode( 0 ) );

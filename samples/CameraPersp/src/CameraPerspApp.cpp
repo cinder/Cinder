@@ -14,7 +14,7 @@ using namespace std;
 
 class CameraPerspApp : public App {
   public:
-	
+
 	static void prepareSettings ( Settings* settings );
 	void setup() override;
 	void keyDown( KeyEvent event ) override;
@@ -23,10 +23,10 @@ class CameraPerspApp : public App {
 	void mouseDrag( MouseEvent event ) override;
 	void update() override;
 	void draw() override;
-	
+
 	void setDefaultValues();
 	void renderObjectToFbo();
-	
+
 	static const int			FBO_WIDTH = 1024, FBO_HEIGHT = 768;
 	gl::FboRef					mObjectFbo;
 	CameraPersp					mObjectCam;
@@ -35,10 +35,10 @@ class CameraPerspApp : public App {
 	CameraUi					mCamUi;
 	gl::GlslProgRef				mObjectGlsl;
 	gl::TextureCubeMapRef		mCubeMap;
-	
+
 	std::vector<gl::BatchRef>	mObjects;
 	size_t						mCurrObject;
-	
+
 	// params for the main camera
 	vec3						mEyePoint;
 	vec3						mLookAt;
@@ -47,7 +47,7 @@ class CameraPerspApp : public App {
 	float						mNearPlane;
 	float						mFarPlane;
 	vec2						mLensShift;
-	
+
 	vector<string>				mObjectNames;
 	int							mObjectSelection;
 
@@ -62,16 +62,16 @@ void CameraPerspApp::prepareSettings( Settings* settings )
 void CameraPerspApp::setup()
 {
 	setWindowSize( 1280, 480 );
-	
+
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 	gl::enableAlphaBlending();
-	
+
 	setDefaultValues();
-	
+
 	gl::Fbo::Format format;
 	mObjectFbo	= gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format.depthTexture() );
-	
+
 	try {
 		mCubeMap = gl::TextureCubeMap::create( loadImage( loadResource( RES_ENV_MAP ) ), gl::TextureCubeMap::Format().mipmap() );
 		mObjectGlsl = gl::GlslProg::create( loadAsset( "objectshader.vert" ), loadAsset( "objectshader.frag" ) );
@@ -79,7 +79,7 @@ void CameraPerspApp::setup()
 		console() << e.what() << endl;
 		quit();
 	}
-	
+
 	gl::BatchRef ref = gl::Batch::create( geom::Teapot().subdivisions( 16 ), mObjectGlsl );
 	ref->getGlslProg()->uniform( "uCubeMapTex", 0 );
 	mObjects.push_back( ref );
@@ -87,12 +87,12 @@ void CameraPerspApp::setup()
 	mObjects.push_back( gl::Batch::create( geom::Cone().subdivisionsAxis( 32 ), mObjectGlsl ) );
 	mObjects.push_back( gl::Batch::create( geom::Helix().subdivisionsAxis( 32 ), mObjectGlsl ) );
 	mObjects.push_back( gl::Batch::create( geom::Cylinder().subdivisionsAxis( 32 ), mObjectGlsl ) );
-	
+
 	ImGui::Initialize();
 
 	mObjectSelection = 0;
 	mObjectNames = { "Teapot", "Torus", "Cone", "Helix", "Cylinder" };
-	
+
 	mViewCam.setEyePoint( vec3( 0.0f, 0.0f, 10.0f) );
 	mViewCam.setPerspective( 60, getWindowWidth() * 0.5f / getWindowHeight(), 1, 1000 );
 	mViewCam.lookAt( vec3( 0 ) );
@@ -164,16 +164,16 @@ void CameraPerspApp::renderObjectToFbo()
 	gl::ScopedFramebuffer fbScp( mObjectFbo );
 	gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
 	gl::ScopedViewport scpVp( ivec2( 0 ), mObjectFbo->getSize() );
-	
+
 	mObjectCam.setEyePoint( mEyePoint );
 	mObjectCam.setPerspective( mFov, mObjectFbo->getAspectRatio(), mNearPlane, mFarPlane );
 	mObjectCam.setLensShift( mLensShift );
 	mObjectCam.lookAt( mLookAt );
 	gl::setMatrices( mObjectCam );
-	
+
 	gl::ScopedGlslProg shader( mObjectGlsl );
 	gl::color( Color::white() );
-	
+
 	mCubeMap->bind();
 	mObjects.at( mCurrObject )->draw();
 }
@@ -185,12 +185,12 @@ void CameraPerspApp::draw()
 
 	gl::setMatrices( mViewCam );
 	gl::viewport( getWindowWidth() / 2, 0.0f, getWindowWidth() / 2, getWindowHeight() );
-	
+
 	vec3 wTopLeft;
 	vec3 wTopRight;
 	vec3 wBottomLeft;
 	vec3 wBottomRight;
-	
+
 	// Draw the far plane rect
 	mObjectCam.getFarClipCoordinates( &wTopLeft, &wTopRight, &wBottomLeft, &wBottomRight );
 	auto farPlane = gl::VertBatch( GL_TRIANGLE_STRIP );
@@ -200,19 +200,19 @@ void CameraPerspApp::draw()
 	farPlane.vertex( wTopRight );
 	farPlane.vertex( wBottomRight );
 	farPlane.draw();
-	
+
 	// Draw a ray from the camera to the lookAt Point
 	auto ray = gl::VertBatch( GL_LINES );
 	ray.color( Color( 0.0f, 1.0f, 0.0f ) );
 	ray.vertex( mEyePoint );
 	ray.vertex( mLookAt );
 	ray.draw();
-	
+
 	// Draw a ray from mouse to the far plane
 	vec2 sTopLeft		= mObjectCam.worldToScreen( wTopLeft, getWindowWidth() / 2, getWindowHeight() );
 	vec2 sBottomRight	= mObjectCam.worldToScreen( wBottomRight, getWindowWidth() / 2, getWindowHeight() );
 	Rectf r				= Rectf( sTopLeft, sBottomRight );
-	
+
 	if ( r.contains( mLastMousePos ) ) {
 		Ray clickRay = mObjectCam.generateRay( mLastMousePos, ivec2( getWindowWidth() / 2, getWindowHeight() ) );
 		auto rayLine = gl::VertBatch( GL_LINES );
@@ -225,7 +225,7 @@ void CameraPerspApp::draw()
 	// Draw camera frustrum
 	gl::color( ColorA( 0.8f, 0.8f, 0.8f, 0.5f ) );
 	gl::drawFrustum( mObjectCam );
-	
+
 	// Draw the object in the scene
 	mObjectFbo->bindTexture();
 	gl::color( Color( 1.0f, 1.0f, 1.0f ) );
@@ -235,7 +235,7 @@ void CameraPerspApp::draw()
 	gl::ScopedGlslProg shaderScp2( gl::getStockShader( gl::ShaderDef().texture().color() ) );
 	mObjectCam.getNearClipCoordinates( &wTopLeft, &wTopRight, &wBottomLeft, &wBottomRight );
 	mObjectFbo->bindTexture();
-	
+
 	auto nearPlane = gl::VertBatch( GL_TRIANGLE_STRIP );
 	nearPlane.color( ColorA ( 1.0f, 1.0f, 1.0f, 0.7f ) );
 	nearPlane.texCoord( 0.0f, 1.0f );

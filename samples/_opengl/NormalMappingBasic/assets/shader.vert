@@ -16,7 +16,7 @@ out vec3		BitangentViewSpace;
 out vec2		TexCoord0;
 
 void main()
-{	
+{
 	// calculate view space position (required for lighting)
 	VertexViewSpace = ciModelView * ciPosition;
 

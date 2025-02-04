@@ -4,7 +4,7 @@ from cinder/Matrix.h to build a parallel transport frame.
 
 If you look in Tube.cpp - you will see this function:
 
-void Tube::buildPTF() 
+void Tube::buildPTF()
 {
 	mFrames.clear();
 
@@ -25,25 +25,25 @@ void Tube::buildPTF()
 	}
 }
 
-mPs are the points of the b-spline along t, which is 0 to 1. mPs is an array of vec3. 
+mPs are the points of the b-spline along t, which is 0 to 1. mPs is an array of vec3.
 mTs are the tangents of the b-spline along t. mTs is an array of vec3. Must be normalized.
-mFrames is an array of matrices that gets built using mPs and mTs. 	
+mFrames is an array of matrices that gets built using mPs and mTs.
 
-mPs, mTs and mFrames are all the same size. You will need at least 3 
-points and 3 tangents. Anything smaller than that won't work. 
+mPs, mTs and mFrames are all the same size. You will need at least 3
+points and 3 tangents. Anything smaller than that won't work.
 
 The sample uses a b-spline curve. But you can use almost any curve as long as you
-can caclulate the tangent (or first derivative) for it. 
+can caclulate the tangent (or first derivative) for it.
 
 Once you have mFrames built - you can just multiply against it to put whatever you
-want into the corrent orientation at the segment of the curve. If you use something 
-like a square or a circle - it needs to face down Z. 
+want into the corrent orientation at the segment of the curve. If you use something
+like a square or a circle - it needs to face down Z.
 
 Check out these functions:
 	- buildMesh()
 	- drawFrames()
 	- drawFrameSlices()
-	
+
 They each illustrate an example of how to use the frame for different scenarios. */
 
 #include "cinder/app/App.h"
@@ -68,26 +68,26 @@ class TubularApp : public App {
 	void keyDown( KeyEvent event ) override;
 	void update() override;
 	void draw() override;
-	
+
   private:
 	Tube					mTube;
-	
+
 	std::vector<vec3>		mBasePoints;
-	std::vector<vec3>		mCurPoints;	
+	std::vector<vec3>		mCurPoints;
 	BSpline3f				mBSpline;
 	TriMeshRef				mTubeMesh;
-	
+
 	CameraPersp				mCam;
-	
+
 	bool					mParallelTransport;
 	bool					mDrawCurve;
 	bool					mDrawFrames;
 	bool					mDrawMesh;
 	bool					mDrawSlices;
-	
+
 	bool					mWireframe;
 	bool					mPause;
-	
+
 	int32_t					mNumSegs;
 	int						mShape;
 	CameraUi				mCamUi;
@@ -104,20 +104,20 @@ void TubularApp::setup()
 	mBasePoints.push_back( vec3( -3,  4, 0 ) );
 	mBasePoints.push_back( vec3(  5,  1, 0 ) );
 	mBasePoints.push_back( vec3( -5, -1, 0 ) );
-	mBasePoints.push_back( vec3(  3, -4, 0 ) );	
+	mBasePoints.push_back( vec3(  3, -4, 0 ) );
 	mCurPoints = mBasePoints;
-	
+
 	int  degree = 3;
 	bool loop = false;
 	bool open = true;
 	mBSpline = BSpline3f( mCurPoints, degree, loop, open );
-	
+
 	// Tube
 	mNumSegs = 32;
 	mTube.setBSpline( mBSpline );
 	mTube.setNumSegments( mNumSegs );
 	mTube.sampleCurve();
-	
+
 	//
 	mParallelTransport	= true;
 	mDrawCurve			= false;
@@ -127,7 +127,7 @@ void TubularApp::setup()
 	mShape				= 0;
 	mWireframe			= true;
 	mPause				= false;
-	
+
 	mTubeMesh = TriMesh::create( TriMesh::Format().positions() );
 
 	ImGui::Initialize();
@@ -175,7 +175,7 @@ void TubularApp::update()
 		break;
 	}
 	mTube.setProfile( prof );
-	
+
 	// BSpline
 	if( ! mPause ) {
 		float t = getElapsedSeconds();
@@ -191,13 +191,13 @@ void TubularApp::update()
 			mCurPoints[i] = mBasePoints[i] + vec3( dx, dy, dz );
 		}
 	}
-	
+
 	// Make the b-spline
 	int degree = 3;
 	bool loop = false;
 	bool open = true;
-	mBSpline = BSpline3f( mCurPoints, degree, loop, open );	
-	
+	mBSpline = BSpline3f( mCurPoints, degree, loop, open );
+
 	// Tube
 	mTube.setBSpline( mBSpline );
 	mTube.setNumSegments( mNumSegs );
@@ -213,7 +213,7 @@ void TubularApp::update()
 
 void TubularApp::draw()
 {
-	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::clear( Color( 0, 0, 0 ) );
 
 	gl::setMatrices( mCam );
 
@@ -224,22 +224,22 @@ void TubularApp::draw()
 		gl::draw( *mTubeMesh );
 		gl::disableWireframe();
 	}
-	
+
 	gl::enableAdditiveBlending();
 	if( mDrawMesh && mTubeMesh->getNumTriangles() ) {
 		gl::color( ColorA( 1, 1, 1, 0.25f ) );
 		gl::draw( *mTubeMesh );
 	}
-	
+
 	if( mDrawSlices ) {
 		mTube.drawFrameSlices( 0.25f );
 	}
-	
+
 	if( mDrawCurve ) {
 		gl::color( Color( 1, 1, 1 ) );
 		mTube.drawPs();
 	}
-		
+
 	if( mDrawFrames ) {
 		mTube.drawFrames( 0.5f );
 	}

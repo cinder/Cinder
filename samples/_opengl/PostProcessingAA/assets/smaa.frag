@@ -26,7 +26,7 @@ void main()
     fragColor = vec4( SMAALumaEdgeDetectionPS( texcoord, offset, uColorTex ), 0.0, 0.0 );
 #elif SMAA_PASS == 2
 	ivec4 subsampleIndices = ivec4(0, 0, 0, 0);
-	fragColor = SMAABlendingWeightCalculationPS( texcoord, pixcoord, offset, 
+	fragColor = SMAABlendingWeightCalculationPS( texcoord, pixcoord, offset,
 	   uEdgesTex, uAreaTex, uSearchTex, subsampleIndices );
 #elif SMAA_PASS == 3
 	fragColor = SMAANeighborhoodBlendingPS( texcoord, offset[0], uColorTex, uBlendTex );

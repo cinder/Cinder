@@ -79,10 +79,10 @@ void DebugMesh::setMesh( const TriMesh& mesh )
 
 		mVertices.push_back( mesh.getPositions<3>()[i] );
 		mVertices.push_back( mesh.getPositions<3>()[i] + scale * mesh.getNormals()[i] );
-		
+
 		mColors.push_back( Color( 0, 0, 0 ) );
 		mColors.push_back( Color( 0, 0, 1 ) );
-		
+
 		mIndices.push_back( idx );
 		mIndices.push_back( idx + 1 );
 

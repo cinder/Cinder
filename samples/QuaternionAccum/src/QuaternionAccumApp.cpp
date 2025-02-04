@@ -114,7 +114,7 @@ void QuaternionAccumApp::drawSpline()
 {
 	// Draw the spline as a line strip.
 	gl::ScopedColor color( 0.8f, 0.2f, 0.8f, 0.8f );
-	
+
 	gl::lineWidth( 2.0f );
 
 	gl::begin( GL_LINE_STRIP );

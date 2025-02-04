@@ -247,7 +247,7 @@ void NormalMappingApp::update()
 	// keep track of time
 	float fElapsed = (float)getElapsedSeconds() - mTime;
 	mTime += fElapsed;
-	
+
 	// rotate the mesh
 	if( mAutoRotate )
 		mAutoRotateAngle += (fElapsed * 0.2f);
@@ -285,7 +285,7 @@ void NormalMappingApp::update()
 void NormalMappingApp::draw()
 {
 	// clear the window
-	gl::clear(); 
+	gl::clear();
 	gl::color( Color::white() );
 
 	if( isInitialized() ) {
@@ -307,7 +307,7 @@ void NormalMappingApp::draw()
 		if( mViewMode == ViewMode::Mesh && mShaderWireframe ) {
 			// use our wireframe shader for this scope
 			gl::ScopedGlslProg glslProgScope( mShaderWireframe );
-	
+
 			gl::pushModelMatrix();
 			gl::multModelMatrix( mMeshTransform );
 			gl::draw( mMesh );
@@ -318,13 +318,13 @@ void NormalMappingApp::draw()
 		{
 			// use our own normal mapping shader for this scope
 			gl::ScopedGlslProg GlslProgScope( mShaderNormalMapping );
-	
+
 			gl::pushModelMatrix();
 			gl::multModelMatrix( mMeshTransform );
 			gl::draw( mMesh );
 			gl::popModelMatrix();
 		}
-	
+
 		// render normals, tangents and bitangents if necessary
 		if( mShowNormalsAndTangents ) {
 			// use a default shader for this scope
@@ -365,7 +365,7 @@ void NormalMappingApp::keyDown( KeyEvent event )
 }
 
 TriMesh NormalMappingApp::createMesh( const fs::path& mshFile )
-{	
+{
 	TriMesh mesh( TriMesh::Format().positions(3).texCoords(2).normals() );
 	Timer	timer;
 

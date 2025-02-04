@@ -45,7 +45,7 @@ vec4 getRandomOffset( int i ) {
 }
 
 vec2 getNormSlopeBias( vec3 N, vec3 L ) {
-	
+
     float cos_alpha = clamp(dot(N, L), 0.0, 1.0 );
     float offset_scale_N = sqrt(1.0 - cos_alpha * cos_alpha); // sin(acos(L·N))
     float offset_scale_L = offset_scale_N / cos_alpha;    // tan(acos(L·N))
@@ -59,7 +59,7 @@ float sampleBasic( vec4 sc ) {
 float samplePCF3x3( vec4 sc )
 {
 	const int s = 2;
-	
+
 	float shadow = 0.0;
 	shadow += textureProjOffset( uShadowMap, sc, ivec2(-s,-s) );
 	shadow += textureProjOffset( uShadowMap, sc, ivec2(-s, 0) );
@@ -77,28 +77,28 @@ float samplePCF4x4( vec4 sc )
 {
 	const int r = 2;
 	const int s = 2 * r;
-	
+
 	float shadow = 0.0;
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-s,-s) );
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-r,-s) );
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2( r,-s) );
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2( s,-s) );
-	
+
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-s,-r) );
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-r,-r) );
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2( r,-r) );
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2( s,-r) );
-	
+
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-s, r) );
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-r, r) );
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2( r, r) );
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2( s, r) );
-	
+
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-s, s) );
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-r, s) );
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2( r, s) );
 	shadow += textureProjOffset( uShadowMap,  sc, ivec2( s, s) );
-		
+
 	return shadow/16.0;
 }
 
@@ -123,7 +123,7 @@ void main()
 	vec3	C = normalize( -vPosition.xyz );
 	// Surface reflection vector
 	vec3	R = normalize( -reflect( L, N ) );
-	
+
 	// Modulated ambient (with fake red indirect lighting coming from the sphere)
 	vec3	sphereGlow = vec3( 0.6, 0.15, 0.15 );
 	vec3	indirectGlow = vec3( clamp( dot( 0.8 * normalize(vModelNormal), -normalize(vModelPosition.xyz) ), 0.0, 0.55 ), 0.0, 0.0 );
@@ -133,12 +133,12 @@ void main()
 	vec3	D = vec3( NdotL );
 	// Specular factor
 	vec3	S = pow( max( dot( R, C ), 0.0 ), 50.0 ) * vec3(1.0);
-		
+
 	// Sample the shadowmap to compute the shadow value
 	float shadow = 1.0f;
 	vec4 sc = vShadowCoord;
 	sc.z += uDepthBias;
-	
+
 	if( uShadowTechnique == 0 ) {
 		shadow = sampleBasic( sc );
 	}
@@ -152,7 +152,7 @@ void main()
 		vec2 offset	= mix( vec2(uRandomOffset), getNormSlopeBias( N, L ), float(uEnableNormSlopeOffset) );
 		shadow = sampleRandom( sc, offset );
 	}
-	
+
 	fragColor.rgb = mix( ( ( D + S ) * shadow + A ) * vColor.rgb, vec3(shadow), float(uOnlyShadowmap) );
 	fragColor.a = 1.0;
 }

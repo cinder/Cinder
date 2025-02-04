@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------------
 // File:        ComputeParticles/ParticleSystem.cpp
 // Url:         https://github.com/NVIDIAGameWorks/OpenGLSamples/tree/master/samples/es3aep-kepler/ComputeParticles
-// SDK Version: v1.2 
+// SDK Version: v1.2
 // Email:       gameworks@nvidia.com
 // Site:        http://developer.nvidia.com/
 //
@@ -79,7 +79,7 @@ class NVidiaComputeParticlesApp : public App {
 
 	void update() override;
 	void draw() override;
-	
+
 	void setupShaders();
 	void setupBuffers();
 	void resetParticleSystem( float size );
@@ -87,7 +87,7 @@ class NVidiaComputeParticlesApp : public App {
 	void setupNoiseTexture3D();
 
 	enum { WORK_GROUP_SIZE = 128, NUM_PARTICLES = 1 << 18 };
-	
+
 	gl::VboRef mVBO;
 	gl::VboMeshRef teapot;
 	gl::GlslProgRef mRenderProg;
@@ -239,7 +239,7 @@ void NVidiaComputeParticlesApp::draw()
 		gl::ScopedBuffer scopedIndicex( mIndicesVbo );
 		gl::drawElements( GL_TRIANGLES, NUM_PARTICLES * 6, GL_UNSIGNED_INT, 0 );
 	}
-	
+
 	gl::disableAlphaBlending();
 }
 

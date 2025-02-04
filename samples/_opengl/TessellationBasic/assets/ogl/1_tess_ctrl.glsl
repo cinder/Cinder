@@ -17,7 +17,7 @@ void main ()
 {
 	EvaluationPointWorld[gl_InvocationID] = ControlPointWorld[gl_InvocationID];
 	TcsColor[gl_InvocationID] = VsColor[gl_InvocationID];
-	
+
 	// Calculate the tessellation levels
 	gl_TessLevelInner[0] = uTessLevelInner; // number of nested primitives to generate
 	gl_TessLevelOuter[0] = uTessLevelOuter; // times to subdivide first side

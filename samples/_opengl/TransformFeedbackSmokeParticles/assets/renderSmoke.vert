@@ -9,7 +9,7 @@ out float Transp; // To Fragment Shader
 uniform float MinParticleSize;
 uniform float MaxParticleSize;
 
-uniform float Time; 
+uniform float Time;
 uniform float ParticleLifetime;
 
 uniform mat4 ciModelViewProjection;

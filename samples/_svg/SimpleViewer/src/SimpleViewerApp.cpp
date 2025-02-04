@@ -58,11 +58,11 @@ gl::TextureRef renderCairoToTexture( svg::DocRef doc )
 void SimpleViewerApp::load( fs::path path )
 {
 	try {
-		if( path.extension() != ".svgz" ) 
+		if( path.extension() != ".svgz" )
 			mDoc = svg::Doc::create( path );
 		else // compressed
 			mDoc = svg::Doc::createFromSvgz( loadFile( path ) );
-		
+
 		mTex = renderCairoToTexture( mDoc );
 	}
 	catch( ci::Exception &exc ) {
@@ -78,7 +78,7 @@ void SimpleViewerApp::draw()
 
 	if( mDoc ) {
 		gl::color( Color::white() );
-		
+
 		if( mTex ) {
 			if( mUseCairo )
 				gl::draw( mTex );

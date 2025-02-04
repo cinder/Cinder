@@ -15,16 +15,16 @@ using namespace ci;
 using namespace ci::app;
 
 class ExtrudeApp : public App {
-  public:	
+  public:
 	void	setup() override;
 	void	keyDown( KeyEvent event ) override;
 	void	resize() override;
 	void	update() override;
 	void	draw() override;
-	
+
 	void	randomSpline();
 	void	makeGeom();
-	
+
 	CameraPersp				mCam;
 	bool					mDrawNormals, mDrawWireframe, mCaps, mUseSpline;
 	gl::BatchRef			mBatch, mNormalsBatch;
@@ -58,12 +58,12 @@ void ExtrudeApp::setup()
 	mCam.lookAt( vec3( 30, 20, 40 ), vec3( 0 ) );
 
 	mGlsl = gl::getStockShader( gl::ShaderDef().color().lambert() );
-	
+
 	mFont = ci::Font( "Georgia", 32 );
 	mCurrentChar = '&';
 	randomSpline();
 	makeGeom();
-	
+
 	mGlsl->bind();
 }
 
@@ -96,7 +96,7 @@ void ExtrudeApp::makeGeom()
 
 	// this remaps the TEX_COORD_0s to color; it has to be so explicit because VC++ balks about ambiguous calls
 	std::function<Colorf(vec3)> texCoordToColor = []( vec3 v ) ->Colorf { return Colorf( v.x, v.y, v.z ); };
-	
+
 	if( mUseSpline ) {
 		auto extrudeSource = geom::ExtrudeSpline( shape, mSpline, mSubdivisions, mApproximation ).caps( mCaps );
 		mBatch = gl::Batch::create( extrudeSource >> geom::ColorFromAttrib( geom::TEX_COORD_0,
@@ -110,7 +110,7 @@ void ExtrudeApp::makeGeom()
 		// this remaps the TEX_COORD_0s to color
 		mBatch = gl::Batch::create( extrudeSource >> geom::ColorFromAttrib( geom::TEX_COORD_0,
 											texCoordToColor ), mGlsl );
-		
+
 		mNormalsBatch = gl::Batch::create( extrudeSource >> geom::VertexNormalLines( 3.0f ), gl::getStockShader( gl::ShaderDef().color() ) );
 	}
 }

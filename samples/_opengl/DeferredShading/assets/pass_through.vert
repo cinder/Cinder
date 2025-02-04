@@ -5,7 +5,7 @@ in vec2 	ciTexCoord0;
 
 out vec2    uv;
 
-void main( void ) 
+void main( void )
 {
     uv = ciTexCoord0;
 	gl_Position = ciModelViewProjection * ciPosition;

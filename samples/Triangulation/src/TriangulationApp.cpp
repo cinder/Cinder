@@ -19,10 +19,10 @@ class TriangulationApp : public App {
 	void		keyDown( KeyEvent event ) { setRandomGlyph(); }
 
 	void		recalcMesh();
-	
+
 	void		setRandomFont();
 	void		setRandomGlyph();
-	
+
 	Font				mFont;
 	Shape2d				mShape;
 	vector<string>		mFontNames;
@@ -38,11 +38,11 @@ class TriangulationApp : public App {
 void TriangulationApp::setup()
 {
 	ImGui::Initialize();
-	
+
 	mFontNames = Font::getNames();
 	mFont = Font( "Times", mFontSize );
 	mShape = mFont.getGlyphShape( mFont.getGlyphChar( 'A' ) );
-	
+
 	// load VBO
 	recalcMesh();
 }
@@ -51,7 +51,7 @@ void TriangulationApp::recalcMesh()
 {
 	TriMesh mesh = Triangulator( mShape, mPrecision ).calcMesh( Triangulator::WINDING_ODD );
 	mNumPoints = mesh.getNumIndices();
-	mVboMesh = gl::VboMesh::create( mesh ); 
+	mVboMesh = gl::VboMesh::create( mesh );
 	mOldPrecision = mPrecision;
 }
 

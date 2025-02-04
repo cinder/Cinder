@@ -7,7 +7,7 @@ using namespace ci;
 using namespace ci::app;
 
 class perlinTestApp : public App {
- public:	
+ public:
 	void		prepareSettings( Settings *settings );
 
 	void		setup();
@@ -24,9 +24,9 @@ class perlinTestApp : public App {
 	int						mOctaves;
 	float					mTime;
 	Perlin					mPerlin;
-	
+
 	float					mFrequency;
-	
+
 	vec2	mGradientPos;
 	bool	mDrawLines;
 	bool	mDrawNormalized;
@@ -63,7 +63,7 @@ void perlinTestApp::setup()
 	mDrawNormalized = false;
 	mPaused = false;
 	mDrawLines = true;
-	
+
 	mGradientPos = vec2( getWindowWidth(), getWindowHeight() ) / 2.0f;
 
 	mNoiseSurface = new cairo::SurfaceImage( getWindowWidth(), getWindowHeight(), false );
@@ -71,12 +71,12 @@ void perlinTestApp::setup()
 }
 
 void perlinTestApp::mouseDown( MouseEvent event )
-{		
+{
 	mGradientPos = vec2( event.getX(), event.getY() );
 }
 
 void perlinTestApp::mouseDrag( MouseEvent event )
-{		
+{
 	mGradientPos = vec2( event.getX(), event.getY() );
 }
 
@@ -138,7 +138,7 @@ void perlinTestApp::draw()
 	ctx.moveTo( mGradientPos );
 	vec3 norm = mPerlin.dfBm( vec3( mGradientPos.x, mGradientPos.y, mTime ) * mFrequency ) * 20.0f;
 	ctx.lineTo( mGradientPos.x + norm.x, mGradientPos.y + norm.y );
-	ctx.stroke();	
+	ctx.stroke();
 
 	// draw gradient vector field
 	if( mDrawLines ) {
@@ -161,7 +161,7 @@ void perlinTestApp::draw()
 				ctx.lineTo( vec2( x, y ) + deriv.normalized() * 20.0f );*/
 			}
 		}
-		ctx.stroke();	
+		ctx.stroke();
 	}
 }
 
