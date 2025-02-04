@@ -90,10 +90,10 @@ BSplineBasis& BSplineBasis::operator=( const BSplineBasis &basis )
 	mDegree = basis.mDegree;
 	mOpen = basis.mOpen;
 	mUniform = basis.mUniform;
-	
+
 	if( mNumCtrlPoints > 0 ) {
 		int numKnots = initialize( mNumCtrlPoints, mDegree, mOpen );
-		memcpy( mKnots, basis.mKnots, sizeof(float) * numKnots );	
+		memcpy( mKnots, basis.mKnots, sizeof(float) * numKnots );
 	}
 	else {
 		mKnots = 0;
@@ -448,12 +448,12 @@ BSpline<D,T>& BSpline<D,T>::operator=( const BSpline &bspline )
 	mLoop = bspline.mLoop;
 	mBasis = bspline.mBasis;
 	mReplicate = bspline.mReplicate;
-	
+
 	if( mNumCtrlPoints > 0 )
 		createControl( bspline.mCtrlPoints );
 	else
 		mCtrlPoints = 0;
-	
+
 	return *this;
 }
 
@@ -592,17 +592,17 @@ float BSpline<D,T>::getTime( float length ) const
 		// get speed along curve
 		float speed = getSpeed( p );
 
-		// if result will lie outside [a,b] 
+		// if result will lie outside [a,b]
 		if( ((p-a)*speed - func)*((p-b)*speed - func) > -TOLERANCE ) {
 			// do bisection
 			p = 0.5f*(a+b);
-		}    
+		}
 		else {
 			// otherwise Newton-Raphson
 			p -= func/speed;
 		}
 	}
-	
+
 	// We failed to converge, but hopefully 'p' is close enough anyway
 	return p;
 }

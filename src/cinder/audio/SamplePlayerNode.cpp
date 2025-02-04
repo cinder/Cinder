@@ -155,7 +155,7 @@ void BufferPlayerNode::setBuffer( const BufferRef &buffer )
 			setNumChannels( buffer->getNumChannels() );
 			configureConnections();
 		}
-		
+
 		mNumFrames = buffer->getNumFrames();
 	}
 	else

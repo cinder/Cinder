@@ -42,7 +42,7 @@ class TransformFeedbackObjImplHardware : public TransformFeedbackObj {
 	{
 		glDeleteTransformFeedbacks( 1, &mId );
 	}
-	
+
 	void bindImpl( Context * /*context*/ )
 	{
 		glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mId );
@@ -71,14 +71,14 @@ class TransformFeedbackObjImplSoftware : public TransformFeedbackObj {
 	~TransformFeedbackObjImplSoftware()
 	{
 	}
-	
+
 	void bindImpl( class Context * /*context*/ )
 	{
 		for( auto bufferIt = mBufferBases.begin(); bufferIt != mBufferBases.end(); bufferIt++ ) {
 			glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, bufferIt->first, bufferIt->second->getId() );
 		}
 	}
-	
+
 	void unbindImpl( class Context * /*context*/ )
 	{
 	}
@@ -86,7 +86,7 @@ class TransformFeedbackObjImplSoftware : public TransformFeedbackObj {
 	void setIndex( int index, BufferObjRef buffer )
 	{
 		bool changed = false;
-		
+
 		auto exists = mBufferBases.find( index );
 		if( exists == mBufferBases.end() ) {
 			mBufferBases.insert( std::pair<int, BufferObjRef>( index, buffer ) );
@@ -98,7 +98,7 @@ class TransformFeedbackObjImplSoftware : public TransformFeedbackObj {
 				changed = true;
 			}
 		}
-		
+
 		if( changed ) {
 			glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, index, buffer->getId() );
 		}

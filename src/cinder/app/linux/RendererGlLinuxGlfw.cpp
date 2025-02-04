@@ -82,7 +82,7 @@ void RendererGlLinux::defaultResize() const
 	glfwGetFramebufferSize( mContext, &width, &height );
 
 	gl::viewport( 0, 0, width, height );
-	gl::setMatricesWindow( width, height );	
+	gl::setMatricesWindow( width, height );
 }
 
 void RendererGlLinux::swapBuffers() const

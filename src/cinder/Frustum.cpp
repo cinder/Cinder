@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2011, The Cinder Project, All rights reserved.
  This code is intended for use with the Cinder C++ library: http://libcinder.org
- 
+
  Portions of this code (C) Paul Houx
  All rights reserved.
 
@@ -38,7 +38,7 @@ FrustumT<T>::FrustumT( const Camera &cam )
 	// set planes using camera
 	set( cam );
 }
-	
+
 template<typename T>
 FrustumT<T>::FrustumT( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr, const Vec3T &ftl, const Vec3T &ftr, const Vec3T &fbl, const Vec3T &fbr )
 {
@@ -59,7 +59,7 @@ void FrustumT<T>::set( const Camera &cam )
 
 	vec3 ftl, ftr, fbl, fbr;
 	cam.getFarClipCoordinates( &ftl, &ftr, &fbl, &fbr );
-	
+
 	set( ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr );
 }
 
@@ -73,10 +73,10 @@ void FrustumT<T>::set( const Camera &cam, const Vec3T &ntl, const Vec3T &ntr, co
 	Vec3T ftr = normalize( ntr - eye ) * farClip;
 	Vec3T fbl = normalize( nbl - eye ) * farClip;
 	Vec3T fbr = normalize( nbr - eye ) * farClip;
-	
+
 	set( ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr );
 }
-	
+
 template<typename T>
 void FrustumT<T>::set( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr, const Vec3T &ftl, const Vec3T &ftr, const Vec3T &fbl, const Vec3T &fbr )
 {

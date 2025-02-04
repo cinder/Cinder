@@ -42,10 +42,10 @@
 	#include <agile.h>
 	using namespace Windows::Storage;
 	using namespace Windows::System;
-#elif defined( CINDER_ANDROID ) 
+#elif defined( CINDER_ANDROID )
 	#include "cinder/UrlImplJni.h"
 	typedef cinder::IStreamUrlImplJni		IStreamUrlPlatformImpl;
-#elif defined( CINDER_LINUX ) 
+#elif defined( CINDER_LINUX )
 	#include "cinder/UrlImplCurl.h"
 	typedef cinder::IStreamUrlImplCurl		IStreamUrlPlatformImpl;
 #else
@@ -82,7 +82,7 @@ std::string urlencode( const std::string &c )
 			(c[i]=='~' || c[i]=='-' || c[i]=='_' || c[i]=='.')
 		)
 		{
-std::cout << "Appending: " << std::string( &c[i], 1 ) << std::endl; 			
+std::cout << "Appending: " << std::string( &c[i], 1 ) << std::endl;
 			escaped.append( &c[i], 1 );
 		}
 		else
@@ -92,8 +92,8 @@ std::cout << "Appending: " << std::string( &c[i], 1 ) << std::endl;
 		}
 	}
 	return escaped;
-}	
-#endif	
+}
+#endif
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ std::string Url::encode( const std::string &unescaped )
 #elif defined( CINDER_LINUX )
 	// Curl does not seem to agree with encoded URIs.
 	return unescaped;
-#endif	
+#endif
 }
 
 #if ! defined( CINDER_UWP )

@@ -99,7 +99,7 @@ bool MovieBase::checkPlaythroughOk()
 bool MovieBase::isLoaded() const
 {
     // With GStreamer if we are loaded we can also play
-    // in contrast with qt where it seems that you can be loaded 
+    // in contrast with qt where it seems that you can be loaded
     // but not ready to play.
     return mGstPlayer->isLoaded();
 }
@@ -122,7 +122,7 @@ float MovieBase::getFramerate() const
 
 int32_t MovieBase::getNumFrames()
 {
-    return mGstPlayer->getNumFrames();	
+    return mGstPlayer->getNumFrames();
 }
 
 bool MovieBase::hasVisuals() const
@@ -184,13 +184,13 @@ void MovieBase::setLoop( bool loop, bool palindrome )
 bool MovieBase::stepForward()
 {
     bool handled = mGstPlayer->stepForward();
-    return handled;	
+    return handled;
 }
 
 bool MovieBase::stepBackward()
 {
     // @TODO: Fix me!
-    return false;	
+    return false;
 }
 
 bool MovieBase::setRate( float rate )
@@ -246,7 +246,7 @@ MovieGl::MovieGl( const fs::path& path )
 MovieGl::~MovieGl()
 {
 }
-	
+
 gl::TextureRef MovieGl::getTexture()
 {
 	return mGstPlayer->getVideoTexture();
@@ -255,5 +255,5 @@ gl::TextureRef MovieGl::getTexture()
 }} // namespace cinder::linux
 
 #if defined( __CLANG__ )
-	#pragma diagnostic pop 
+	#pragma diagnostic pop
 #endif

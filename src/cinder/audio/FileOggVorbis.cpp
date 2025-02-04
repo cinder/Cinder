@@ -151,7 +151,7 @@ size_t SourceFileOggVorbis::readFn( void *ptr, size_t size, size_t nmemb, void *
 	return bytesRead / size;
 }
 
-// static 
+// static
 int SourceFileOggVorbis::seekFn( void *datasource, ogg_int64_t offset, int whence )
 {
 	auto sourceFile = (SourceFileOggVorbis *)datasource;
@@ -184,7 +184,7 @@ int SourceFileOggVorbis::closeFn( void * /*datasource*/ )
 long SourceFileOggVorbis::tellFn( void *datasource )
 {
 	auto sourceFile = (SourceFileOggVorbis *)datasource;
-	
+
 	return static_cast<long>( sourceFile->mStream->tell() );
 }
 

@@ -1,16 +1,16 @@
 /*
  Copyright (c) 2014, The Cinder Project, All rights reserved.
- 
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
- 
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
- 
+
  * Redistributions of source code must retain the above copyright notice, this list of conditions and
  the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
  the following disclaimer in the documentation and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -53,7 +53,7 @@ class MovieGl::TextureCache : public std::enable_shared_from_this<MovieGl::Textu
 	~TextureCache();
 	gl::TextureRef		add( CVImageBufferRef cvImage );
 	void				remove( GLuint texId );
-	
+
   private:
 	std::vector<GLuint>		mTextures;
 };
@@ -88,13 +88,13 @@ gl::TextureRef MovieGl::TextureCache::add( CVImageBufferRef cvImage )
 		delete texture;
 		::CVPixelBufferRelease( cvImage );
 	};
-		
+
 	auto result = gl::Texture2d::create( GL_TEXTURE_RECTANGLE, texId, texWidth, texHeight, true, deleter );
 	result->setTopDown( true );
 
 	gl::ScopedTextureBind bind( result );
-	CGLTexImageIOSurface2D( app::AppBase::get()->getRenderer()->getCglContext(), GL_TEXTURE_RECTANGLE, GL_RGBA, texWidth, texHeight, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, ioSurface, 0);        
-	
+	CGLTexImageIOSurface2D( app::AppBase::get()->getRenderer()->getCglContext(), GL_TEXTURE_RECTANGLE, GL_RGBA, texWidth, texHeight, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, ioSurface, 0);
+
 	return result;
 }
 
@@ -126,7 +126,7 @@ MovieGl::MovieGl( const fs::path& path )
 {
 	MovieBase::initFromPath( path );
 }
-	
+
 MovieGl::MovieGl( const MovieLoader &loader )
 #if defined( CINDER_COCOA_TOUCH )
 	: mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
@@ -136,7 +136,7 @@ MovieGl::MovieGl( const MovieLoader &loader )
 {
 	MovieBase::initFromLoader( loader );
 }
-		
+
 MovieGl::~MovieGl()
 {
 	deallocateVisualContext();
@@ -145,11 +145,11 @@ MovieGl::~MovieGl()
 gl::TextureRef MovieGl::getTexture()
 {
 	updateFrame();
-	
+
 	lock();
 	gl::TextureRef result = mTexture;
 	unlock();
-	
+
 	return result;
 }
 
@@ -160,7 +160,7 @@ NSDictionary* MovieGl::avPlayerItemOutputDictionary() const
 				[NSDictionary dictionary], kCVPixelBufferIOSurfacePropertiesKey,
 				[NSNumber numberWithBool:YES], kCVPixelBufferOpenGLCompatibilityKey, nil];
 }
-	
+
 void MovieGl::allocateVisualContext()
 {
 #if defined( CINDER_COCOA_TOUCH )
@@ -175,7 +175,7 @@ void MovieGl::allocateVisualContext()
 		else {
 			throw AvfTextureErrorExc();
 		}
-	}	
+	}
 #endif
 }
 
@@ -186,7 +186,7 @@ void MovieGl::deallocateVisualContext()
 		::CFRelease( mVideoTextureRef );
 		mVideoTextureRef = nullptr;
 	}
-	
+
 	if( mVideoTextureCacheRef ) {
 		::CVOpenGLESTextureCacheFlush( mVideoTextureCacheRef, 0 );
 		::CFRelease( mVideoTextureCacheRef );
@@ -216,14 +216,14 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 															GL_UNSIGNED_BYTE,        // GLenum type
 															0,                       // size_t planeIndex
 															&videoTextureRef );      // CVOpenGLESTextureRef *textureOut
-	
+
 	if( err )
 		throw AvfTextureErrorExc();
-	
+
 	GLenum target = ::CVOpenGLESTextureGetTarget( videoTextureRef );
 	GLuint name = ::CVOpenGLESTextureGetName( videoTextureRef );
 	bool topDown = ::CVOpenGLESTextureIsFlipped( videoTextureRef );
-	
+
 	// custom deleter fires when last reference to Texture goes out of scope
 	auto deleter = [cvImage, videoTextureRef] ( gl::Texture *texture ) {
 		::CVPixelBufferUnlockBaseAddress( cvImage, kCVPixelBufferLock_ReadOnly );
@@ -231,9 +231,9 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 		::CFRelease( videoTextureRef );
 		delete texture;
 	};
-	
+
 	mTexture = gl::Texture2d::create( target, name, mWidth, mHeight, true, deleter );
-	
+
 	// query and set clean bounds
 	vec2 lowerLeft, lowerRight, upperRight, upperLeft;
 	::CVOpenGLESTextureGetCleanTexCoords( videoTextureRef, &lowerLeft.x, &lowerRight.x, &upperRight.x, &upperLeft.x );
@@ -242,10 +242,10 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 			(int32_t)(lowerRight.x * mWidth ), (int32_t)(lowerRight.y * mHeight ) ) );
 	else
 		mTexture->setCleanBounds( Area( (int32_t)upperLeft.x, (int32_t)upperLeft.y, (int32_t)lowerRight.x, (int32_t)lowerRight.y ) );
-	
+
 	mTexture->setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
 	mTexture->setTopDown( topDown );
-	
+
 #elif defined( CINDER_MAC )
 
 	mTexture = mTextureCache->add( cvImage );
@@ -257,7 +257,7 @@ void MovieGl::releaseFrame()
 {
 	mTexture.reset();
 }
-	
+
 } } // namespace cinder::qtime
 
 #endif

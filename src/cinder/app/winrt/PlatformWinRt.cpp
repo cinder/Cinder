@@ -110,7 +110,7 @@ void PlatformWinRt::getOpenFilePathAsync( const std::function<void(const fs::pat
 
     FileOpenPicker^ picker = ref new FileOpenPicker();
     picker->SuggestedStartLocation = PickerLocationId::Desktop;
- 
+
 	for( auto iter = extensions.begin(); iter != extensions.end(); ++iter ) {
 		std::wstring temp(iter->begin(), iter->end());
 		picker->FileTypeFilter->Append( ref new ::Platform::String(temp.c_str()));
@@ -139,7 +139,7 @@ void PlatformWinRt::getFolderPathAsync( const std::function<void(const fs::path&
 	}
     FolderPicker^ folderPicker = ref new FolderPicker();
     folderPicker->SuggestedStartLocation = PickerLocationId::Desktop;
- 
+
 	for( auto iter = extensions.begin(); iter != extensions.end(); ++iter ) {
 		std::wstring temp(iter->begin(), iter->end());
 		folderPicker->FileTypeFilter->Append( ref new Platform::String(temp.c_str()));
@@ -174,7 +174,7 @@ void PlatformWinRt::getSaveFilePathAsync( const std::function<void(const fs::pat
 	savePicker->SuggestedStartLocation = PickerLocationId::PicturesLibrary;
 
     auto plainTextExtensions = ref new ::Platform::Collections::Vector<String^>();
-	
+
 	if( ! extensions.empty() ) {
 		for( auto iter = extensions.begin(); iter != extensions.end(); ++iter ) {
 			std::wstring temp(iter->begin(), iter->end());
@@ -183,7 +183,7 @@ void PlatformWinRt::getSaveFilePathAsync( const std::function<void(const fs::pat
 	}
 	else if( ! initialPath.empty() ) {
 		plainTextExtensions->Append( ref new ::Platform::String( initialPath.extension().wstring().c_str() ) );
-	} 
+	}
 
     savePicker->FileTypeChoices->Insert( "", plainTextExtensions );
 
@@ -207,7 +207,7 @@ std::ostream& PlatformWinRt::console()
 {
 	if( ! mOutputStream )
 		mOutputStream.reset( new cinder::msw::dostream );
-	
+
 	return *mOutputStream;
 }
 

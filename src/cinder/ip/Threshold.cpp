@@ -43,7 +43,7 @@ void thresholdImpl( SurfaceT<T> *surface, T value, const Area &area )
 			dstPtr[blueOffset] = ( dstPtr[blueOffset] > value ) ? maxValue : 0;;
 			dstPtr += pixelInc;
 		}
-	}	
+	}
 }
 
 template<typename T>
@@ -66,7 +66,7 @@ void thresholdImpl( const SurfaceT<T> &srcSurface, T value, const Area &srcArea,
 		for( int32_t x = area.getX1(); x < area.getX2(); ++x ) {
 			dstPtr[dstRedOffset] = ( srcPtr[srcRedOffset] > value ) ? maxValue : 0;
 			dstPtr[dstGreenOffset] = ( srcPtr[srcGreenOffset] > value ) ? maxValue : 0;
-			dstPtr[dstBlueOffset] = ( srcPtr[srcBlueOffset] > value ) ? maxValue : 0;;			
+			dstPtr[dstBlueOffset] = ( srcPtr[srcBlueOffset] > value ) ? maxValue : 0;;
 			dstPtr += dstPixelInc;
 			srcPtr += srcPixelInc;
 		}
@@ -121,7 +121,7 @@ void threshold( const ChannelT<T> &srcChannel, T value, ChannelT<T> *dstChannel 
 template<typename T>
 void calculateAdaptiveThreshold( const ChannelT<T> *srcChannel, typename CHANTRAIT<T>::Accum *integralImage, int32_t windowSize, float percentageDelta, ChannelT<T> *dstChannel )
 {
-	typedef typename CHANTRAIT<T>::Accum SUMT; 
+	typedef typename CHANTRAIT<T>::Accum SUMT;
 
 	int32_t imageWidth = srcChannel->getWidth();
 	int32_t imageHeight = srcChannel->getHeight();
@@ -150,7 +150,7 @@ void calculateAdaptiveThreshold( const ChannelT<T> *srcChannel, typename CHANTRA
 			if( x2 >= imageWidth ) x2 = imageWidth - 1;
 			if( y1 < 0 ) y1 = 0;
 			if( y2 >= imageHeight ) y2 = imageHeight - 1;
-			
+
 			int32_t count = ( x2 - x1 ) * ( y2 - y1 );
 
 			// I(x,y)=s(x2,y2)-s(x1,y2)-s(x2,y1)+s(x1,x1)
@@ -169,7 +169,7 @@ void calculateAdaptiveThreshold( const ChannelT<T> *srcChannel, typename CHANTRA
 template<typename T>
 void calculateAdaptiveThresholdZero( const ChannelT<T> *srcChannel, typename CHANTRAIT<T>::Accum *integralImage, int32_t windowSize, ChannelT<T> *dstChannel )
 {
-	typedef typename CHANTRAIT<T>::Accum SUMT; 
+	typedef typename CHANTRAIT<T>::Accum SUMT;
 
 	int32_t imageWidth = srcChannel->getWidth();
 	int32_t imageHeight = srcChannel->getHeight();
@@ -194,7 +194,7 @@ void calculateAdaptiveThresholdZero( const ChannelT<T> *srcChannel, typename CHA
 			if( x2 >= imageWidth ) x2 = imageWidth - 1;
 			if( y1 < 0 ) y1 = 0;
 			if( y2 >= imageHeight ) y2 = imageHeight - 1;
-			
+
 			int32_t count = ( x2 - x1 ) * ( y2 - y1 );
 
 			// I(x,y)=s(x2,y2)-s(x1,y2)-s(x2,y1)+s(x1,x1)
@@ -239,7 +239,7 @@ void calculateIntegralImage( const ChannelT<T> &channel, typename CHANTRAIT<T>::
 		// reset this column sum
 		typename CHANTRAIT<T>::Accum sum = 0;
 
-		for( int32_t i = 0; i < imageWidth; i++ ) {		
+		for( int32_t i = 0; i < imageWidth; i++ ) {
 			uint32_t index = j * imageWidth + i;
 
 			sum += src[j*srcRowBytes+i*srcInc];
@@ -254,7 +254,7 @@ void calculateIntegralImage( const ChannelT<T> &channel, typename CHANTRAIT<T>::
 template<typename T>
 void adaptiveThreshold( const ChannelT<T> &srcChannel, int32_t windowSize, float percentageDelta, ChannelT<T> *dstChannel )
 {
-	typedef typename CHANTRAIT<T>::Accum SUMT; 
+	typedef typename CHANTRAIT<T>::Accum SUMT;
 
 	int32_t imageWidth = srcChannel.getWidth();
 	int32_t imageHeight = srcChannel.getHeight();
@@ -263,16 +263,16 @@ void adaptiveThreshold( const ChannelT<T> &srcChannel, int32_t windowSize, float
 	// create the integral image
 	integralImage = (SUMT*)malloc( imageWidth * imageHeight * sizeof( typename CHANTRAIT<T>::Accum ) );
 	calculateIntegralImage( srcChannel, integralImage );
-	
+
 	calculateAdaptiveThreshold( &srcChannel, integralImage, windowSize, percentageDelta, dstChannel );
 
-	free( integralImage );	
+	free( integralImage );
 }
 
 template<typename T>
 void adaptiveThreshold( ChannelT<T> *channel, int32_t windowSize, float percentageDelta )
 {
-	typedef typename CHANTRAIT<T>::Accum SUMT; 
+	typedef typename CHANTRAIT<T>::Accum SUMT;
 
 	int32_t imageWidth = channel->getWidth();
 	int32_t imageHeight = channel->getHeight();
@@ -284,13 +284,13 @@ void adaptiveThreshold( ChannelT<T> *channel, int32_t windowSize, float percenta
 
 	calculateAdaptiveThreshold( channel, integralImage, windowSize, percentageDelta, channel );
 
-	free( integralImage );	
+	free( integralImage );
 }
 
 template<typename T>
 void adaptiveThresholdZero( ChannelT<T> *channel, int32_t windowSize )
 {
-	typedef typename CHANTRAIT<T>::Accum SUMT; 
+	typedef typename CHANTRAIT<T>::Accum SUMT;
 
 	int32_t imageWidth = channel->getWidth();
 	int32_t imageHeight = channel->getHeight();
@@ -299,16 +299,16 @@ void adaptiveThresholdZero( ChannelT<T> *channel, int32_t windowSize )
 	// create the integral image
 	integralImage = (SUMT*)malloc( imageWidth * imageHeight * sizeof( typename CHANTRAIT<T>::Accum ) );
 	calculateIntegralImage( *channel, integralImage );
-	
+
 	calculateAdaptiveThresholdZero( channel, integralImage, windowSize, channel );
 
-	free( integralImage );	
+	free( integralImage );
 }
 
 template<typename T>
 void adaptiveThresholdZero( const ChannelT<T> &srcChannel, int32_t windowSize, ChannelT<T> *dstChannel )
 {
-	typedef typename CHANTRAIT<T>::Accum SUMT; 
+	typedef typename CHANTRAIT<T>::Accum SUMT;
 
 	int32_t imageWidth = srcChannel.getWidth();
 	int32_t imageHeight = srcChannel.getHeight();
@@ -317,10 +317,10 @@ void adaptiveThresholdZero( const ChannelT<T> &srcChannel, int32_t windowSize, C
 	// create the integral image
 	integralImage = (SUMT*)malloc( imageWidth * imageHeight * sizeof( typename CHANTRAIT<T>::Accum ) );
 	calculateIntegralImage( srcChannel, integralImage );
-	
+
 	calculateAdaptiveThresholdZero( &srcChannel, integralImage, windowSize, dstChannel );
 
-	free( integralImage );	
+	free( integralImage );
 }
 
 template<typename T>

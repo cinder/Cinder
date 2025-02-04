@@ -90,7 +90,7 @@ using namespace cinder::app;
 	cinder::app::RendererRef			mDefaultRenderer;
 	std::list<WindowImplCocoaView*>		mWindows;
 	WindowImplCocoaView					*mActiveWindow;
-	
+
 	bool								mNeedsUpdate;
 	bool								mFrameRateEnabled;
 	float								mFrameRate;
@@ -271,7 +271,7 @@ using namespace cinder::app;
 		if( screen )
 			return cinder::app::PlatformCocoa::get()->findFromNsScreen( screen );
 	}
-	
+
 	return cinder::DisplayRef();
 }
 
@@ -306,7 +306,7 @@ using namespace cinder::app;
 	NSRect frame = [mCinderView frame];
 	mSize = cinder::ivec2( frame.size.width, frame.size.height );
 	mPos = cinder::ivec2( frame.origin.x, frame.origin.y );
-	
+
 	mWindowRef->emitResize();
 }
 
@@ -350,7 +350,7 @@ using namespace cinder::app;
 	mSize.x = (int)contentRect.size.width;
 	mSize.y = (int)contentRect.size.height;
 	mPos = cinder::ivec2( contentRect.origin.x, contentRect.origin.y );
-	
+
 	// for some renderers, ok really just GL, we want an existing renderer so we can steal its context to share with. If this comes back with NULL that's fine - we're first
 	cinder::app::RendererRef sharedRenderer = [appImpl findSharedRenderer:winFormat.getRenderer()];
 
@@ -375,16 +375,16 @@ using namespace cinder::app;
 - (AppImplCocoaView *)init:(cinder::app::AppCocoaView *)app settings:(const AppCocoaView::Settings &)settings defaultRenderer:(cinder::app::RendererRef)defaultRenderer
 {
 	self = [super init];
-	
+
 	mApp = app;
 	mDefaultRenderer = defaultRenderer;
 	mAnimationTimer = nil;
 	mFrameRateEnabled = settings.isFrameRateEnabled();
 	mFrameRate = settings.getFrameRate();
-	
+
 	// register for notification of application termination
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:NSApplicationWillTerminateNotification object:nil];
-	
+
 	return self;
 }
 
@@ -405,7 +405,7 @@ using namespace cinder::app;
 		if( typeid(renderer) == typeid(match) )
 			return renderer;
 	}
-	
+
 	return cinder::app::RendererRef();
 }
 
@@ -426,7 +426,7 @@ using namespace cinder::app;
 {
 	if( index >= mWindows.size() )
 		return cinder::app::WindowRef();
-	
+
 	std::list<WindowImplCocoaView*>::iterator iter = mWindows.begin();
 	std::advance( iter, index );
 	return (*iter)->mWindowRef;
@@ -446,7 +446,7 @@ using namespace cinder::app;
 {
 	if( mAnimationTimer && [mAnimationTimer isValid] )
 		[mAnimationTimer invalidate];
-	
+
 	float interval = ( mFrameRateEnabled ) ? 1.0f / mFrameRate : 0.001f;
 	mAnimationTimer = [NSTimer	 timerWithTimeInterval:interval
 												target:self
@@ -461,12 +461,12 @@ using namespace cinder::app;
 {
 	// issue update() event
 	mApp->privateUpdate__();
-	
+
 	// all live windows are ready to draw now that we've fired an update
 	for( auto &win : mWindows ) {
 		[win->mCinderView setReadyToDraw:YES];
-	}	
-	
+	}
+
 	// walk all windows and draw them
 	for( auto &win : mWindows ) {
 		[self setActiveWindow:win];
@@ -547,8 +547,8 @@ void AppCocoaView::launch()
 		[win->mCinderView makeCurrentContext];
 		[mImpl setActiveWindow:win];
 		win->mWindowRef->emitResize();
-	}	
-	
+	}
+
 	[mImpl startAnimationTimer];
 }
 

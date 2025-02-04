@@ -207,7 +207,7 @@ string ShaderPreprocessor::parse( const std::string &source, const fs::path &sou
 // - returns directives string and remaining source separately, so that parseTopLevel can start after the directives we've added
 // - lineNumberStart indicates what value a #line directive should have after parsing #include statements
 void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::path &sourcePath, std::string *directives, std::string *sourceBody, int *versionNumber, int *lineNumberStart )
-{		
+{
 	// go through each line and find the #version directive
 	int lineNumber = 1;
 	bool hasVersionLine = false;
@@ -274,7 +274,7 @@ string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &
 }
 
 string ShaderPreprocessor::parseRecursive( const fs::path &includePath, const fs::path &currentDirectory, int versionNumber, set<fs::path> &includeTree )
-{	
+{
 	string output;
 	string signalIncludeResult;
 	const int lineNumberStart = 1;
@@ -352,7 +352,7 @@ std::string ShaderPreprocessor::getLineDirective( const fs::path &sourcePath, in
 	if( versionNumber >= 330 )
 		lineNumber += 1;
 
-	string fileId = mUseFilenameInLineDirective ? "\"" + sourcePath.filename().string() + "\"" : to_string( sourceStringNumber ); 
+	string fileId = mUseFilenameInLineDirective ? "\"" + sourcePath.filename().string() + "\"" : to_string( sourceStringNumber );
 	return "#line " + to_string( lineNumber ) + " " + fileId + "\n";
 }
 

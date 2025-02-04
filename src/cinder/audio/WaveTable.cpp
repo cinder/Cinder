@@ -160,7 +160,7 @@ float WaveTable::lookup( float *outputArray, size_t outputLength, float currentP
 		outputArray[i] = tableLookup( table, tableSize, currentPhase );
 		currentPhase = fract( currentPhase + freqArray[i] * samplePeriod );
 	}
-	
+
 	return currentPhase;
 }
 

@@ -54,7 +54,7 @@
 //	}
 //}
 //
-//ComponentManager::~ComponentManager() 
+//ComponentManager::~ComponentManager()
 //{
 //}
 //
@@ -116,22 +116,22 @@
 //	}
 //*/
 //
-//dbg_app_fn_exit( __PRETTY_FUNCTION__ );	
+//dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 //}
 //
 //void ComponentManager::destroyJni()
 //{
-//	if( JniHelper::Get()->AttachCurrentThread() ) {	
+//	if( JniHelper::Get()->AttachCurrentThread() ) {
 //		JniHelper::Get()->DeleteGlobalRef( Java::ClassObject  );
 //		Java::ClassObject				= nullptr;
 //		Java::getInstance  				= nullptr;
 //		Java::isBackCameraAvailable 	= nullptr;
 //		Java::isFrontCameraAvailable 	= nullptr;
-//		Java::getCamera 				= nullptr;		
+//		Java::getCamera 				= nullptr;
 //	}
 //
-///*	
-//	if( JniHelper::Get()->AttachCurrentThread() ) {	
+///*
+//	if( JniHelper::Get()->AttachCurrentThread() ) {
 //		JniHelper::Get()->DeleteGlobalRef( ComponentManager::sJavaClass  );
 //		ComponentManager::sJavaClass = nullptr;
 //
@@ -139,7 +139,7 @@
 //		ComponentManager::sJavaMethodIsFrontCameraAvailable = nullptr;
 //		ComponentManager::sJavaMethodGetCamera = nullptr;
 //	}
-//*/	
+//*/
 //}
 //
 //ComponentManager* ComponentManager::instance()
@@ -178,7 +178,7 @@
 //	ci::android::hardware::Camera::cacheJni();
 //	ci::android::net::UrlLoader::cacheJni();
 //
-//dbg_app_fn_exit( __PRETTY_FUNCTION__ );	
+//dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 //}
 //
 //void ComponentManager::unregisterComponents()
@@ -190,14 +190,14 @@
 //	ci::android::hardware::Camera::destroyJni();
 //	ci::android::net::UrlLoader::destroyJni();
 //
-//dbg_app_fn_exit( __PRETTY_FUNCTION__ );	
+//dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 //}
 //
 //void ComponentManager::deleteGlobalRefs()
 //{
 //dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 //
-//dbg_app_fn_exit( __PRETTY_FUNCTION__ );	
+//dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 //}
 //
 //}}} // namespace cinder::android::app

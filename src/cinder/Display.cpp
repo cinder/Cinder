@@ -57,7 +57,7 @@ Area Display::getSpanningArea()
 	for( vector<DisplayRef>::const_iterator displayIt = (Display::getDisplays().begin())++; displayIt != Display::getDisplays().end(); ++displayIt ) {
 		result.include( (*displayIt)->getBounds() );
 	}
-	
+
 	return result;
 }
 

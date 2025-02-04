@@ -98,7 +98,7 @@ bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sha
 	//
 	EGLint format;
 	eglGetConfigAttrib( mDisplay, mConfig, EGL_NATIVE_VISUAL_ID, &format );
-	ANativeWindow_setBuffersGeometry( nativeWindow, 0, 0, format );	
+	ANativeWindow_setBuffersGeometry( nativeWindow, 0, 0, format );
 
 	mSurface = eglCreateWindowSurface( mDisplay, mConfig, nativeWindow, NULL );
 

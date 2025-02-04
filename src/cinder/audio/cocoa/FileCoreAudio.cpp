@@ -139,7 +139,7 @@ vector<string> SourceFileCoreAudio::getSupportedExtensions()
 	}
 
 	::CFRelease( extensionsCF );
-	
+
 	return result;
 }
 

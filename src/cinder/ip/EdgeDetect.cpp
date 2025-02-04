@@ -89,7 +89,7 @@ void edgeDetectSobel( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSuface )
 	template CI_API void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &dstLT, ChannelT<T> *dstChannel ); \
 	template CI_API void edgeDetectSobel( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &dstLT, SurfaceT<T> *dstSurface ); \
 	template CI_API void edgeDetectSobel( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel );	\
-	template CI_API void edgeDetectSobel( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface );	
+	template CI_API void edgeDetectSobel( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface );
 
 edgeDetect_PROTOTYPES(uint8_t)
 edgeDetect_PROTOTYPES(uint16_t)

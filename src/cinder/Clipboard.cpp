@@ -29,10 +29,10 @@
 	#import <Cocoa/Cocoa.h>
 	#import <AppKit/NSPasteboard.h>
 	#import <AppKit/NSImage.h>
-#elif defined( CINDER_COCOA_TOUCH )	
+#elif defined( CINDER_COCOA_TOUCH )
 	#include "cinder/cocoa/CinderCocoa.h"
 	#include "cinder/cocoa/CinderCocoaTouch.h"
-	#import <UIKit/UIPasteboard.h>	
+	#import <UIKit/UIPasteboard.h>
 #elif defined( CINDER_MSW )
 	#include <windows.h>
 	#define max(a, b) (((a) > (b)) ? (a) : (b))
@@ -80,11 +80,11 @@ bool Clipboard::hasString()
 	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
     NSArray *classArray = [NSArray arrayWithObject:[NSString class]];
     NSDictionary *options = [NSDictionary dictionary];
- 
+
 	return [pasteboard canReadObjectForClasses:classArray options:options];
 #elif defined( CINDER_COCOA_TOUCH )
-	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard]; 
-	return [pasteboard containsPasteboardTypes:UIPasteboardTypeListString];	
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	return [pasteboard containsPasteboardTypes:UIPasteboardTypeListString];
 #elif defined( CINDER_MSW )
 	std::set<UINT> textFormats;
 	textFormats.insert( CF_TEXT ); textFormats.insert( CF_UNICODETEXT ); textFormats.insert( CF_OEMTEXT );
@@ -100,11 +100,11 @@ bool Clipboard::hasImage()
 	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
     NSArray *classArray = [NSArray arrayWithObject:[NSImage class]];
     NSDictionary *options = [NSDictionary dictionary];
- 
+
 	return [pasteboard canReadObjectForClasses:classArray options:options];
 #elif defined( CINDER_COCOA_TOUCH )
-	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard]; 
-	return [pasteboard containsPasteboardTypes:UIPasteboardTypeListImage];		
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	return [pasteboard containsPasteboardTypes:UIPasteboardTypeListImage];
 #elif defined( CINDER_MSW )
 	std::set<UINT> imageFormats;
 	imageFormats.insert( CF_BITMAP ); imageFormats.insert( CF_DIB ); imageFormats.insert( CF_DIBV5 );
@@ -113,14 +113,14 @@ bool Clipboard::hasImage()
 	return false;
 #endif
 }
-	
+
 std::string Clipboard::getString()
 {
 #if defined( CINDER_MAC )
 	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
     NSArray *classArray = [NSArray arrayWithObject:[NSString class]];
     NSDictionary *options = [NSDictionary dictionary];
- 
+
 	if( [pasteboard canReadObjectForClasses:classArray options:options] ) {
 		NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:options];
         NSString *text = [objectsToPaste firstObject];
@@ -133,7 +133,7 @@ std::string Clipboard::getString()
 		return std::string();
 	}
 #elif defined( CINDER_COCOA_TOUCH )
-	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard]; 
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 	NSString *str = pasteboard.string;
 	if( str )
 		return cocoa::convertNsString( str );
@@ -169,7 +169,7 @@ ImageSourceRef Clipboard::getImage()
 	else
 		return ImageSourceRef();
 #elif defined( CINDER_COCOA_TOUCH )
-	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard]; 
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 	UIImage *image = pasteboard.image;
 	if( image )
 		return ImageSourceRef( *cocoa::convertUiImage( image ) );
@@ -213,11 +213,11 @@ void Clipboard::setString( const std::string &str )
 	::EmptyClipboard();
 	std::u16string wstr = toUtf16( str );
 	HANDLE hglbCopy = ::GlobalAlloc( GMEM_MOVEABLE, sizeof(uint16_t) * (wstr.length()+1) );
-	// Lock the handle and copy the text to the buffer. 
-	void *lptstrCopy = ::GlobalLock( hglbCopy ); 
-	memcpy( lptstrCopy, &wstr[0], sizeof(uint16_t) * (wstr.length()+1) ); 
+	// Lock the handle and copy the text to the buffer.
+	void *lptstrCopy = ::GlobalLock( hglbCopy );
+	memcpy( lptstrCopy, &wstr[0], sizeof(uint16_t) * (wstr.length()+1) );
 	::GlobalUnlock( hglbCopy );
-	::SetClipboardData( CF_UNICODETEXT, hglbCopy ); 
+	::SetClipboardData( CF_UNICODETEXT, hglbCopy );
 	::CloseClipboard();
 #elif defined( CINDER_LINUX )
  	glfwSetClipboardString( (GLFWwindow*)app::getWindow()->getNative(), str.c_str() );
@@ -230,12 +230,12 @@ void Clipboard::setImage( ImageSourceRef imageSource, ImageTarget::Options optio
 	cocoa::ImageTargetCgImageRef target = cocoa::ImageTargetCgImage::createRef( imageSource, options );
 	imageSource->load( target );
 	target->finalize();
-	
+
 	NSBitmapImageRep *imageRep = [[[NSBitmapImageRep alloc] initWithCGImage:target->getCgImage()] autorelease];
 	NSImage *image = [[NSImage alloc] initWithSize:[imageRep size]];
 	[image addRepresentation: imageRep];
 	[[NSPasteboard generalPasteboard] declareTypes: [NSArray arrayWithObject: NSTIFFPboardType] owner:nil];
-	[[NSPasteboard generalPasteboard] setData:[image TIFFRepresentation] forType:NSTIFFPboardType];	
+	[[NSPasteboard generalPasteboard] setData:[image TIFFRepresentation] forType:NSTIFFPboardType];
 	[image release];
 #elif defined( CINDER_COCOA_TOUCH )
 	(void) options;
@@ -250,10 +250,10 @@ void Clipboard::setImage( ImageSourceRef imageSource, ImageTarget::Options optio
 	}
 	::EmptyClipboard();
 	int32_t rowBytes = (( imageSource->getWidth() * 32 + 31 ) / 32 ) * 4;
-	size_t dataSize = sizeof(BITMAPV5HEADER) + imageSource->getHeight() * rowBytes; 
+	size_t dataSize = sizeof(BITMAPV5HEADER) + imageSource->getHeight() * rowBytes;
 	HANDLE hglbCopy = ::GlobalAlloc( GMEM_MOVEABLE, dataSize );
-	uint8_t *destData = reinterpret_cast<uint8_t*>( ::GlobalLock( hglbCopy ) ); 
-	
+	uint8_t *destData = reinterpret_cast<uint8_t*>( ::GlobalLock( hglbCopy ) );
+
 	// we create 'tempSurface' convert 'imageSource' into a Surface8u
 	// then alpha blend 'tempSurface' into 'destSurface'.
 	// Unfortunately alpha on Win32 Clipboard just seems to be a total mess, so we're punting and forcing it to be opaque on black.
@@ -285,7 +285,7 @@ void Clipboard::setImage( ImageSourceRef imageSource, ImageTarget::Options optio
 	*(reinterpret_cast<BITMAPV5HEADER*>(destData)) = bi;
 
 	::GlobalUnlock( hglbCopy );
-	::SetClipboardData( CF_DIBV5, hglbCopy ); 
+	::SetClipboardData( CF_DIBV5, hglbCopy );
 	::CloseClipboard();
 #elif defined( CINDER_LINUX )
 	CI_LOG_E( "Clipboard::setImage() not supported on Linux" );

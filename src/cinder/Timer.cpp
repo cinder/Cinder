@@ -36,12 +36,12 @@
 namespace cinder {
 
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-static double LinuxGetElapsedSeconds() 
+static double LinuxGetElapsedSeconds()
 {
 	struct timespec now;
 	::clock_gettime(CLOCK_MONOTONIC, &now);
 	return (double)((now.tv_sec * 1000000000LL) + now.tv_nsec)/1000000000.0;
-} 
+}
 #endif
 
 
@@ -71,7 +71,7 @@ Timer::Timer( bool startOnConstruction )
 	mInvNativeFreq = 1.0 / nativeFreq.QuadPart;
 	mStartTime = mEndTime = -1;
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	mEndTime = mStartTime = -1;	
+	mEndTime = mStartTime = -1;
 #endif
 	if( startOnConstruction ) {
 		start();
@@ -79,7 +79,7 @@ Timer::Timer( bool startOnConstruction )
 }
 
 void Timer::start( double offsetSeconds )
-{	
+{
 #if defined( CINDER_COCOA )
 	mStartTime = ::CFAbsoluteTimeGetCurrent() - offsetSeconds;
 #elif defined( CINDER_MSW )

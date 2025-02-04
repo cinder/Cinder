@@ -74,15 +74,15 @@ void Batch::initVao( const AttributeMapping &attributeMapping )
 
 	mVao = Vao::create();
 	ctx->pushVao( mVao );
-	
+
 	mVboMesh->buildVao( mGlsl, attributeMapping );
-	
+
 	ctx->popVao();
 	ctx->popBufferBinding( GL_ARRAY_BUFFER );
-	
+
 	if( ! mVao->getLayout().isVertexAttribArrayEnabled( 0 ) )
 		CI_LOG_W("VertexAttribArray at location 0 not enabled, this has performance implications.");
-	
+
 	mAttribMapping = attributeMapping;
 }
 
@@ -101,7 +101,7 @@ void Batch::replaceVboMesh( const VboMeshRef &vboMesh )
 void Batch::draw( GLint first, GLsizei count )
 {
 	auto ctx = gl::context();
-	
+
 	gl::ScopedGlslProg ScopedGlslProg( mGlsl );
 	gl::ScopedVao ScopedVao( mVao );
 	ctx->setDefaultShaderVars();
@@ -113,7 +113,7 @@ void Batch::draw( GLint first, GLsizei count )
 void Batch::drawInstanced( GLsizei instanceCount )
 {
 	auto ctx = gl::context();
-	
+
 	gl::ScopedGlslProg ScopedGlslProg( mGlsl );
 	gl::ScopedVao ScopedVao( mVao );
 	ctx->setDefaultShaderVars();
@@ -168,7 +168,7 @@ VertBatch::VertBatch( GLenum primType, bool useContextDefaultBuffers )
 
 VertBatchRef VertBatch::create( GLenum primType, bool useContextDefaultBuffers )
 {
-	return VertBatchRef( new VertBatch( primType, useContextDefaultBuffers ) ); 
+	return VertBatchRef( new VertBatch( primType, useContextDefaultBuffers ) );
 }
 
 void VertBatch::setType( GLenum primType )
@@ -221,10 +221,10 @@ void VertBatch::addVertex( const vec4 &v )
 		while( mNormals.size() < mVertices.size() )
 			mNormals.push_back( mNormals.back() );
 	}
-	
+
 	if( ! mColors.empty() ) {
 		while( mColors.size() < mVertices.size() )
-			mColors.push_back( mColors.back() );	
+			mColors.push_back( mColors.back() );
 	}
 
 	if( ! mTexCoords0.empty() ) {
@@ -257,7 +257,7 @@ void VertBatch::draw()
 {
 	ScopedVao scopedVao( mVao );
 	setupBuffers();
-	
+
 	auto ctx = context();
 	ctx->setDefaultShaderVars();
 	ctx->drawArrays( mPrimType, 0, (GLsizei)mVertices.size() );
@@ -266,7 +266,7 @@ void VertBatch::draw()
 void VertBatch::setupBuffers()
 {
 	auto ctx = gl::context();
-	
+
 	auto glslProg = ctx->getGlslProg();
 	if( ! glslProg )
 		return;
@@ -277,19 +277,19 @@ void VertBatch::setupBuffers()
 	const size_t texCoords0SizeBytes = mTexCoords0.size() * sizeof(vec4);
 	const size_t texCoords1SizeBytes = mTexCoords1.size() * sizeof(vec4);
 	size_t totalSizeBytes = verticesSizeBytes + normalsSizeBytes + colorsSizeBytes + texCoords0SizeBytes + texCoords1SizeBytes;
-	
+
 	ScopedBuffer scopedVbo( mVbo );
 
 	// if this VBO was freshly made, or we don't own the buffer because we use the context defaults
 	if( ( ! mVertices.empty() ) && ( mForceUpdate || ( ! mOwnsBuffers ) ) ) {
 		mForceUpdate = false;
 		mVbo->ensureMinimumSize( totalSizeBytes );
-		
+
 		// upload positions
 		GLintptr offset = 0;
 		mVbo->bufferSubData( offset, verticesSizeBytes, &mVertices[0] );
 		offset += verticesSizeBytes;
-		
+
 		// upload normals
 		if( ! mNormals.empty() ) {
 			mVbo->bufferSubData( offset, normalsSizeBytes, &mNormals[0] );
@@ -351,7 +351,7 @@ void VertBatch::setupBuffers()
 		ctx->enableVertexAttribArray( loc );
 		ctx->vertexAttribPointer( loc, 4, GL_FLOAT, false, 0, (const GLvoid*)offset );
 	}
-	
+
 	mVao->replacementBindEnd();
 }
 
@@ -406,7 +406,7 @@ geom::AttribSet	VertBatch::getAvailableAttribs() const
 {
 	geom::AttribSet attribs;
 	attribs.insert( geom::Attrib::POSITION );
-	
+
 	if( ! mNormals.empty() )
 		attribs.insert( geom::Attrib::NORMAL );
 	if( ! mColors.empty() )
@@ -415,7 +415,7 @@ geom::AttribSet	VertBatch::getAvailableAttribs() const
 		attribs.insert( geom::Attrib::TEX_COORD_0 );
 	if( ! mTexCoords1.empty() )
 		attribs.insert( geom::Attrib::TEX_COORD_1 );
-	
+
 	return attribs;
 }
 

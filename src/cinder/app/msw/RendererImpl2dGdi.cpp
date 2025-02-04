@@ -46,7 +46,7 @@ void RendererImpl2dGdi::swapBuffers() const
 
 		// Always select the old bitmap back into the device context
 		::SelectObject( mDoubleBufferDc, mDoubleBufferOldBitmap );
-		::DeleteDC( mDoubleBufferDc );		
+		::DeleteDC( mDoubleBufferDc );
 	}
 
 	if( mPaintEvents )
@@ -61,7 +61,7 @@ void RendererImpl2dGdi::makeCurrentContext( bool /*force*/ )
 		mPaintDc = ::BeginPaint( mWindowImpl->getHwnd(), &mPaintStruct );
 	else
 		mPaintDc = ::GetDC( mWindowImpl->getHwnd() );
-	
+
 	if( mDoubleBuffer ) {
 		::RECT clientRect;
 		::GetClientRect( mWindowImpl->getHwnd(), &clientRect );
@@ -72,7 +72,7 @@ void RendererImpl2dGdi::makeCurrentContext( bool /*force*/ )
 			if( mDoubleBufferBitmap ) {
 				::DeleteObject( mDoubleBufferBitmap );
 			}
-			
+
 			mDoubleBufferBitmap = ::CreateCompatibleBitmap( mPaintDc, windowSize.x, windowSize.y );
 			mDoubleBufferBitmapSize = windowSize;
 		}
@@ -111,7 +111,7 @@ Surface8u RendererImpl2dGdi::copyWindowContents( const Area &area )
 		return Surface8u();
 	}
 	::SelectObject( memDC, oldBitmap );
-	
+
 	auto tempSurface = msw::convertHBitmap( copyBitmap );
 	Surface8u result( *tempSurface );
 

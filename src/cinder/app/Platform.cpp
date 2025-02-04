@@ -130,7 +130,7 @@ fs::path Platform::getAssetPath( const fs::path &relativePath ) const
 void Platform::addAssetDirectory( const fs::path &directory )
 {
 	// Relax this check on Android since it will always be false.
-#if ! defined( CINDER_ANDROID )	
+#if ! defined( CINDER_ANDROID )
 	CI_ASSERT( fs::is_directory( directory ) );
 #endif
 

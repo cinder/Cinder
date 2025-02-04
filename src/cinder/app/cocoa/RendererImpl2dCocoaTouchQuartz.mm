@@ -30,10 +30,10 @@
 - (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView
 {
 	self = [super init];
-	
+
 	view = cinderView;
 	mCurrentRef = nil;
-	
+
 	return self;
 }
 

@@ -85,7 +85,7 @@ MovieGl::MovieGl( const void *data, size_t dataSize, const std::string &fileName
 	: MovieBase(), mObj( new Obj() )
 {
 	MovieBase::initFromMemory( data, dataSize, fileNameHint, mimeTypeHint );
-	allocateVisualContext();	
+	allocateVisualContext();
 }
 
 MovieGl::MovieGl( DataSourceRef dataSource, const std::string mimeTypeHint )
@@ -144,7 +144,7 @@ void MovieGl::Obj::newFrame( CVImageBufferRef cvImage )
 	CVPixelBufferRef imgRef = reinterpret_cast<CVPixelBufferRef>( cvImage );
 	CVPixelBufferLockBaseAddress( imgRef, 0 );
 	uint8_t *ptr = reinterpret_cast<uint8_t*>( CVPixelBufferGetBaseAddress( imgRef ) );
-	
+
 	int32_t rowBytes = CVPixelBufferGetBytesPerRow( imgRef );
 	OSType type = CVPixelBufferGetPixelFormatType( imgRef );
 	size_t width = CVPixelBufferGetWidth( imgRef );
@@ -158,7 +158,7 @@ void MovieGl::Obj::newFrame( CVImageBufferRef cvImage )
 		sco = SurfaceChannelOrder::BGR;
 	else if( type == k32BGRAPixelFormat )
 		sco = SurfaceChannelOrder::BGRA;
-	
+
 	if( ! mTextureCache ) {
 		gl::Texture::Format format;
 #if ! defined( CINDER_GL_ES )
@@ -168,7 +168,7 @@ void MovieGl::Obj::newFrame( CVImageBufferRef cvImage )
 		mTextureCache = gl::Texture2dCache::create( Surface8u( ptr, width, height, rowBytes, sco ), format );
 	}
 	mTexture = mTextureCache->cache( Surface8u( ptr, width, height, rowBytes, sco ) );
-	
+
 	::CVBufferRelease( imgRef );
 #endif
 }

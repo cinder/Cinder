@@ -48,13 +48,13 @@ void hdrNormalize( Surface32f *surface )
 			srcPtr += pixelInc;
 		}
 	}
-	
+
 	// if min==max then we should just fill with black
 	if( minVal == maxVal ) {
 		fill( surface, Color( 0, 0, 0 ) );
 		return;
 	}
-	
+
 	float scale = 1.0f / ( maxVal - minVal );
 	for( int32_t y = 0; y < surface->getHeight(); ++y ) {
 		float *dstPtr = surface->getData( ivec2( 0, y ) );
@@ -65,7 +65,7 @@ void hdrNormalize( Surface32f *surface )
 
 			dstPtr += pixelInc;
 		}
-	}	
+	}
 }
 
 void hdrNormalize( Channel32f *channel )
@@ -79,7 +79,7 @@ void hdrNormalize( Channel32f *channel )
 		fill<float>( channel, 0 );
 		return;
 	}
-	
+
 	float scale = 1.0f / ( maxVal - minVal );
 	Channel32f::Iter iter = channel->getIter();
 	while( iter.line() ) {

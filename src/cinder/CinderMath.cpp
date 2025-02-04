@@ -367,7 +367,7 @@ void convertToBezierForm( const glm::tvec2<T, glm::defaultp> *controlPoints, con
 }
 
 //! Returns the sign of the value (-1 if < 0, 0 if == 0, 1 if > 0). Faster than using glm::sign()!
-template <typename T> 
+template <typename T>
 int sgn( T val )
 {
 	return ( T( 0 ) < val ) - ( val < T( 0 ) );
@@ -491,7 +491,7 @@ int findRoots( const glm::tvec2<T, glm::defaultp> *controlPoints, int degree, T 
 	// Otherwise, solve recursively after subdividing control polygon.
 	glm::tvec2<T, glm::defaultp> left[6], right[6];
 	bezier<T>( controlPoints, degree, 0.5f, left, right );
-	
+
 	T left_t[6], right_t[6];
 	int left_count = findRoots<T>( left, degree, left_t, depth + 1 );
 	int right_count = findRoots<T>( right, degree, right_t, depth + 1 );
@@ -618,17 +618,17 @@ static half_float float_to_half( float32_t f )
     float32_t f16infty = { 31 << 23 };
     float32_t magic = { 15 << 23 };
     uint sign_mask = 0x80000000u;
-    uint round_mask = ~0xfffu; 
+    uint round_mask = ~0xfffu;
     half_float o = { 0 };
- 
+
     uint sign = f.u & sign_mask;
     f.u ^= sign;
- 
+
     // NOTE all the integer compares in this function can be safely
     // compiled into signed compares since all operands are below
     // 0x80000000. Important if you want fast straight SSE2 code
     // (since there's no unsigned PCMPGTD).
- 
+
     if (f.u >= f32infty.u) // Inf or NaN (all exponent bits set)
         o.u = (f.u > f32infty.u) ? 0x7e00 : 0x7c00; // NaN->qNaN and Inf->Inf
     else // (De)normalized number or zero
@@ -637,10 +637,10 @@ static half_float float_to_half( float32_t f )
         f.f *= magic.f;
         f.u -= round_mask;
         if (f.u > f16infty.u) f.u = f16infty.u; // Clamp to signed infinity if overflowed
- 
+
         o.u = f.u >> 13; // Take the bits!
     }
- 
+
     o.u |= sign >> 16;
     return o;
 }

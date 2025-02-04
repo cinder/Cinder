@@ -170,7 +170,7 @@ std::pair<GLint,GLint> getVersion()
 std::string getString( GLenum name )
 {
 	const GLubyte* s = glGetString( name );
-	
+
 	if( s )
 		return std::string( reinterpret_cast<const char*>( s ) );
 	else
@@ -547,25 +547,25 @@ mat3 calcNormalMatrix()
 {
 	return glm::inverseTranspose( glm::mat3( getModelView() ) );
 }
-	
+
 mat3 calcModelMatrixInverseTranspose()
 {
 	auto m = glm::inverseTranspose( getModelMatrix() );
 	return mat3( m );
 }
-	
+
 mat4 calcViewportMatrix()
 {
 	auto curViewport = getViewport();
-	
+
 	const float a = ( curViewport.second.x - curViewport.first.x ) / 2.0f;
 	const float b = ( curViewport.second.y - curViewport.first.y ) / 2.0f;
 	const float c = 1.0f / 2.0f;
-	
+
 	const float tx = ( curViewport.second.x + curViewport.first.x ) / 2.0f;
 	const float ty = ( curViewport.second.y + curViewport.second.y ) / 2.0f;
 	const float tz = 1.0f / 2.0f;
-	
+
 	return mat4(
 		a, 0, 0, 0,
 		0, b, 0, 0,
@@ -749,7 +749,7 @@ void patchParameterfv( GLenum pname, GLfloat *value )
 {
 	glPatchParameterfv( pname, value );
 }
-#endif 
+#endif
 #endif // defined( CINDER_GL_HAS_TESS_SHADER )
 
 void color( float r, float g, float b )

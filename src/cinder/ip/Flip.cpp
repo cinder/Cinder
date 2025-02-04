@@ -31,14 +31,14 @@ void flipVertical( SurfaceT<T> *surface )
 {
 	const ptrdiff_t rowBytes = surface->getRowBytes();
 	unique_ptr<uint8_t[]> buffer( new uint8_t[rowBytes] );
-	
+
 	const int32_t lastRow = surface->getHeight() - 1;
 	const int32_t halfHeight = surface->getHeight() / 2;
 	for( int32_t y = 0; y < halfHeight; ++y ) {
 		memcpy( buffer.get(), surface->getData( ivec2( 0, y ) ), rowBytes );
 		memcpy( surface->getData( ivec2( 0, y ) ), surface->getData( ivec2( 0, lastRow - y ) ), rowBytes );
 		memcpy( surface->getData( ivec2( 0, lastRow - y ) ), buffer.get(), rowBytes );
-	}	
+	}
 }
 
 namespace { // anonymous
@@ -61,12 +61,12 @@ void flipVerticalRawRgba( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurfac
 	const uint8_t srcGreen = srcSurface.getChannelOrder().getGreenOffset();
 	const uint8_t srcBlue = srcSurface.getChannelOrder().getBlueOffset();
 	const uint8_t srcAlpha = srcSurface.getChannelOrder().getAlphaOffset();
-	
+
 	const uint8_t dstRed = destSurface->getChannelOrder().getRedOffset();
 	const uint8_t dstGreen = destSurface->getChannelOrder().getGreenOffset();
 	const uint8_t dstBlue = destSurface->getChannelOrder().getBlueOffset();
 	const uint8_t dstAlpha = destSurface->getChannelOrder().getAlphaOffset();
-	
+
 	for( int32_t y = 0; y < size.y; ++y ) {
 		const T *src = srcSurface.getData( ivec2( 0, y ) );
 		T *dst = destSurface->getData( ivec2( 0, size.y - y - 1 ) );
@@ -89,12 +89,12 @@ void flipVerticalRawRgbFullAlpha( const SurfaceT<T> &srcSurface, SurfaceT<T> *de
 	const uint8_t srcBlue = srcSurface.getChannelOrder().getBlueOffset();
 	const T fullAlpha = CHANTRAIT<T>::max();
 	const uint8_t srcPixelInc = srcSurface.getPixelInc();
-	
+
 	const uint8_t dstRed = destSurface->getChannelOrder().getRedOffset();
 	const uint8_t dstGreen = destSurface->getChannelOrder().getGreenOffset();
 	const uint8_t dstBlue = destSurface->getChannelOrder().getBlueOffset();
 	const uint8_t dstAlpha = destSurface->getChannelOrder().getAlphaOffset();
-	
+
 	for( int32_t y = 0; y < size.y; ++y ) {
 		const T *src = srcSurface.getData( ivec2( 0, y ) );
 		T *dst = destSurface->getData( ivec2( 0, size.y - y - 1 ) );
@@ -116,12 +116,12 @@ void flipVerticalRawRgb( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface
 	const uint8_t srcGreen = srcSurface.getChannelOrder().getGreenOffset();
 	const uint8_t srcBlue = srcSurface.getChannelOrder().getBlueOffset();
 	const uint8_t srcPixelInc = srcSurface.getPixelInc();
-	
+
 	const uint8_t dstRed = destSurface->getChannelOrder().getRedOffset();
 	const uint8_t dstGreen = destSurface->getChannelOrder().getGreenOffset();
 	const uint8_t dstBlue = destSurface->getChannelOrder().getBlueOffset();
 	const uint8_t dstPixelInc = destSurface->getPixelInc();
-	
+
 	for( int32_t y = 0; y < size.y; ++y ) {
 		const T *src = srcSurface.getData( ivec2( 0, y ) );
 		T *dst = destSurface->getData( ivec2( 0, size.y - y - 1 ) );
@@ -140,7 +140,7 @@ template<typename T>
 void flipVertical( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface )
 {
 	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcSurface.getBounds(), destSurface->getBounds(), destSurface->getBounds(), ivec2(0,0) );
-	
+
 	if( destSurface->getChannelOrder() == srcSurface.getChannelOrder() )
 		flipVerticalRawSameChannelOrder( srcSurface, destSurface, srcDst.first.getSize() );
 	else if( destSurface->hasAlpha() && srcSurface.hasAlpha() )
@@ -155,7 +155,7 @@ template<typename T>
 void flipVertical( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel )
 {
 	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcChannel.getBounds(), destChannel->getBounds(), destChannel->getBounds(), ivec2(0,0) );
-	
+
 	if( srcChannel.isPlanar() && destChannel->isPlanar() ) { // both channels are planar, so do a series of memcpy()'s
 		const size_t srcPixelInc = srcChannel.getIncrement();
 		const size_t copyBytes = srcDst.first.getWidth() * srcPixelInc * sizeof(T);
@@ -187,7 +187,7 @@ void flipHorizontal( SurfaceT<T> *surface )
 	const int32_t height = surface->getHeight();
 	const int32_t width = surface->getWidth();
 	const int32_t halfWidth = width / 2;
-	
+
 	if( surface->getPixelInc() == 4 ) {
 		for( int32_t y = 0; y < height; ++y ) {
 			T *rowPtr = surface->getData( ivec2( 0, y ) );
@@ -219,8 +219,8 @@ void flipHorizontal( SurfaceT<T> *surface )
 	template CI_API void flipVertical<T>( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface );\
 	template CI_API void flipVertical<T>( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel );\
 	template CI_API void flipHorizontal<T>( SurfaceT<T> *surface );
-	
-	
+
+
 flip_PROTOTYPES(uint8_t)
 flip_PROTOTYPES(uint16_t)
 flip_PROTOTYPES(float)

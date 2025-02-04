@@ -38,7 +38,7 @@
 	using namespace Windows::Storage;
 	using namespace Concurrency;
 #elif defined( CINDER_ANDROID )
-	#include "cinder/app/android/PlatformAndroid.h"	
+	#include "cinder/app/android/PlatformAndroid.h"
 #endif
 
 using namespace std;
@@ -140,7 +140,7 @@ vector<string> ImageIo::getLoadExtensions()
 vector<string> ImageIo::getWriteExtensions()
 {
 	vector<string> result;
-	const map<string, multimap<int32_t,pair<ImageIoRegistrar::TargetCreationFunc,string> > > &targets( ImageIoRegistrar::instance()->mTargets ); 
+	const map<string, multimap<int32_t,pair<ImageIoRegistrar::TargetCreationFunc,string> > > &targets( ImageIoRegistrar::instance()->mTargets );
 	for( map<string, multimap<int32_t,pair<ImageIoRegistrar::TargetCreationFunc,string> > >::const_iterator targetIt = targets.begin(); targetIt != targets.end(); ++targetIt )
 		result.push_back( targetIt->first );
 
@@ -172,7 +172,7 @@ void ImageSource::rowFuncSourceRgb( ImageTargetRef target, int32_t row, const vo
 	const SD *sourceData = reinterpret_cast<const SD*>( data );
 	TD *targetData = reinterpret_cast<TD*>( target->getRowPointer( row ) );
 	int32_t width = getWidth();
-	
+
 	if( TCM == CM_RGB ) {
 		if( ALPHA ) {
 			for( int32_t c = 0; c < width; c++ ) { // both source and target have alpha
@@ -204,7 +204,7 @@ void ImageSource::rowFuncSourceRgb( ImageTargetRef target, int32_t row, const vo
 					sourceData += mRowFuncSourceInc;
 				}
 			}
-		}		
+		}
 	}
 	else if( TCM == CM_GRAY ) {
 		if( ALPHA ) {
@@ -220,8 +220,8 @@ void ImageSource::rowFuncSourceRgb( ImageTargetRef target, int32_t row, const vo
 				targetData[mRowFuncTargetGray]	= CHANTRAIT<TD>::convert( CHANTRAIT<SD>::grayscale( sourceData[mRowFuncSourceRed], sourceData[mRowFuncSourceGreen], sourceData[mRowFuncSourceBlue] ) );
 				targetData += mRowFuncTargetInc;
 				sourceData += mRowFuncSourceInc;
-			}			
-		}		
+			}
+		}
 	}
 	else { // the target has asked for an unknown color space, so they can sort out conversion on their own
 		target->setRow( row, data );
@@ -235,7 +235,7 @@ void ImageSource::rowFuncSourceGray( ImageTargetRef target, int32_t row, const v
 	const SD *sourceData = reinterpret_cast<const SD*>( data );
 	TD *targetData = reinterpret_cast<TD*>( target->getRowPointer( row ) );
 	int32_t width = getWidth();
-	
+
 	if( TCM == CM_RGB ) {
 		if( ALPHA ) {
 			for( int32_t c = 0; c < width; c++ ) {
@@ -256,8 +256,8 @@ void ImageSource::rowFuncSourceGray( ImageTargetRef target, int32_t row, const v
 				targetData[mRowFuncTargetBlue]	= convertedData;
 				targetData += mRowFuncTargetInc;
 				sourceData += mRowFuncSourceInc;
-			}			
-		}		
+			}
+		}
 	}
 	else if( TCM == CM_GRAY ) {
 		if( ALPHA ) {
@@ -273,8 +273,8 @@ void ImageSource::rowFuncSourceGray( ImageTargetRef target, int32_t row, const v
 				targetData[mRowFuncTargetGray]	= CHANTRAIT<TD>::convert( sourceData[mRowFuncTargetGray] );
 				targetData += mRowFuncTargetInc;
 				sourceData += mRowFuncSourceInc;
-			}			
-		}		
+			}
+		}
 	}
 	else { // the target has asked for an unknown color space, so they can sort out conversion on their own
 		target->setRow( row, data );
@@ -285,7 +285,7 @@ void ImageSource::setupRowFuncRgbSource( ImageTargetRef target )
 {
 	translateRgbColorModelToOffsets( mChannelOrder, &mRowFuncSourceRed, &mRowFuncSourceGreen, &mRowFuncSourceBlue, &mRowFuncSourceAlpha, &mRowFuncSourceInc );
 	if( target->getColorModel() == CM_RGB )
-		translateRgbColorModelToOffsets( target->getChannelOrder(), &mRowFuncTargetRed, &mRowFuncTargetGreen, &mRowFuncTargetBlue, &mRowFuncTargetAlpha, &mRowFuncTargetInc );	
+		translateRgbColorModelToOffsets( target->getChannelOrder(), &mRowFuncTargetRed, &mRowFuncTargetGreen, &mRowFuncTargetBlue, &mRowFuncTargetAlpha, &mRowFuncTargetInc );
 	else
 		translateGrayColorModelToOffsets( target->getChannelOrder(), &mRowFuncTargetGray, &mRowFuncTargetAlpha, &mRowFuncTargetInc );
 }
@@ -294,7 +294,7 @@ void ImageSource::setupRowFuncGraySource( ImageTargetRef target )
 {
 	translateGrayColorModelToOffsets( mChannelOrder, &mRowFuncSourceGray, &mRowFuncSourceAlpha, &mRowFuncSourceInc );
 	if( target->getColorModel() == CM_RGB )
-		translateRgbColorModelToOffsets( target->getChannelOrder(), &mRowFuncTargetRed, &mRowFuncTargetGreen, &mRowFuncTargetBlue, &mRowFuncTargetAlpha, &mRowFuncTargetInc );	
+		translateRgbColorModelToOffsets( target->getChannelOrder(), &mRowFuncTargetRed, &mRowFuncTargetGreen, &mRowFuncTargetBlue, &mRowFuncTargetAlpha, &mRowFuncTargetInc );
 	else
 		translateGrayColorModelToOffsets( target->getChannelOrder(), &mRowFuncTargetGray, &mRowFuncTargetAlpha, &mRowFuncTargetInc );
 }
@@ -410,7 +410,7 @@ void loadImageAsync(const fs::path path, std::function<void (ImageSourceRef)> ca
         catch (const ImageIoExceptionFailedLoad&)
         {
 			auto copyTask = winrt::copyFileToTempDirAsync(path);
-			copyTask.then([options, extension, callback](StorageFile^ file) 
+			copyTask.then([options, extension, callback](StorageFile^ file)
 			{
 				fs::path temp = fs::path( msw::toUtf8String( file->Path->Data() ) );
 				// Image was loaded. This callback is on the main UI thread
@@ -427,14 +427,14 @@ ImageSourceRef loadImage( const fs::path &path, ImageSource::Options options, st
 {
 #if defined( CINDER_ANDROID )
 	if( ci::app::PlatformAndroid::isAssetPath( path ) ) {
-		return loadImage( (DataSourceRef)DataSourceAndroidAsset::create( path ), options, extension );			
+		return loadImage( (DataSourceRef)DataSourceAndroidAsset::create( path ), options, extension );
 	}
 	else {
 		return loadImage( (DataSourceRef)DataSourcePath::create( path ), options, extension );
 	}
-#else	
+#else
 	return loadImage( (DataSourceRef)DataSourcePath::create( path ), options, extension );
-#endif	
+#endif
 }
 
 ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options, string extension )
@@ -448,7 +448,7 @@ ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options
 		extension = dataSource->getFilePathHint().extension().string();
 #else
 		extension = dataSource->getFilePathHint().extension();
-#endif	
+#endif
 	return ImageIoRegistrar::createSource( dataSource, options, extension );
 }
 
@@ -504,12 +504,12 @@ ImageTargetRef ImageIoRegistrar::createTarget( DataTargetRef dataTarget, ImageSo
 
 ImageTargetRef ImageIoRegistrar::Inst::createTarget( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, std::string extension )
 {
-	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>(tolower) );	
-	
+	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>(tolower) );
+
 	// strip the leading '.' that may be present
 	if( extension.find( '.' ) == 0 )
 		extension = extension.substr( 1, string::npos );
-	
+
 	map<string, multimap<int32_t,pair<ImageIoRegistrar::TargetCreationFunc,string> > >::iterator sIt = mTargets.find( extension );
 	if( sIt != mTargets.end() )	{
 		ImageIoRegistrar::TargetCreationFunc creationFunc = sIt->second.begin()->second.first;
@@ -517,7 +517,7 @@ ImageTargetRef ImageIoRegistrar::Inst::createTarget( DataTargetRef dataTarget, I
 		return (*creationFunc)( dataTarget, imageSource, options, extensionData );
 	}
 	else
-		return ImageTargetRef(); // couldn't find a handler for this extension	
+		return ImageTargetRef(); // couldn't find a handler for this extension
 }
 
 ImageSourceRef ImageIoRegistrar::createSource( DataSourceRef dataSource, ImageSource::Options options, string extension )
@@ -574,8 +574,8 @@ void ImageIoRegistrar::registerSourceType( string extension, SourceCreationFunc 
 void ImageIoRegistrar::Inst::registerSourceType( string extension, SourceCreationFunc func, int32_t priority )
 {
 	// make sure the extension is all lower-case
-	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>(tolower) );	
-	
+	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>(tolower) );
+
 	map<string,multimap<int32_t,SourceCreationFunc> >::iterator sIt = mSources.find( extension );
 	if( sIt != mSources.end() ) {	// do we already have a source of this extension?
 		// let's make sure this func is not already registered against this extension (which can happen in the big generic handlers)
@@ -600,7 +600,7 @@ void ImageIoRegistrar::registerTargetType( string extension, TargetCreationFunc 
 void ImageIoRegistrar::Inst::registerTargetType( string extension, TargetCreationFunc func, int32_t priority, const string &extensionData )
 {
 	// make sure the extension is all lower-case
-	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>(tolower) );	
+	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>(tolower) );
 
 	map<string, multimap<int32_t,pair<ImageIoRegistrar::TargetCreationFunc,string> > >::iterator sIt = mTargets.find( extension );
 	if( sIt != mTargets.end() ) {	// do we already have a target for this extension?

@@ -64,7 +64,7 @@ OStreamRef DataTargetPath::getStream()
 {
 	if( ! mStream )
 		mStream = writeFileStream( mFilePath );
-		
+
 	return mStream;
 }
 
@@ -89,7 +89,7 @@ DataTargetPathRef writeFile( const fs::path &path, bool createParents )
 		if( ! path.parent_path().empty() )
 			fs::create_directories( path.parent_path() );
 	}
-	
+
  	return DataTargetPath::createRef( path );
 }
 

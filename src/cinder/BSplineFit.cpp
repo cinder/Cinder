@@ -43,7 +43,7 @@ namespace cinder {
 
 template<typename T>
 class BSplineFitBasis {
- public: 
+ public:
 	// Construction and destruction.  This class is only for open uniform
 	// B-spline basis functions.  The input is the number of control points
 	// for a B-spline curve using this basis and the degree of that curve.
@@ -247,7 +247,7 @@ BSplineFit<T>::BSplineFit( int iDimension, int iSampleQuantity, const T* afSampl
 {
 	if( iControlQuantity <= iDegree + 1 ) iControlQuantity = iDegree + 2;
 	if( iControlQuantity > iSampleQuantity ) iControlQuantity = iSampleQuantity;
-	iDegree = constrain( iDegree, 1, iControlQuantity - 1 );	
+	iDegree = constrain( iDegree, 1, iControlQuantity - 1 );
 
 	assert(iDimension >= 1);
 	assert(1 <= iDegree && iDegree < iControlQuantity);

@@ -70,10 +70,10 @@ void Sampler::initParams()
 	glSamplerParameteri( mId, GL_TEXTURE_WRAP_S, mFormat.mWrapS );
 	glSamplerParameteri( mId, GL_TEXTURE_WRAP_T, mFormat.mWrapT );
 	glSamplerParameteri( mId, GL_TEXTURE_WRAP_R, mFormat.mWrapR );
-	
+
 	glSamplerParameteri( mId, GL_TEXTURE_MIN_FILTER, mFormat.mMinFilter );
 	glSamplerParameteri( mId, GL_TEXTURE_MAG_FILTER, mFormat.mMagFilter );
-	
+
 	glSamplerParameteri( mId, GL_TEXTURE_COMPARE_MODE, mFormat.mCompareMode );
 	glSamplerParameteri( mId, GL_TEXTURE_COMPARE_FUNC, mFormat.mCompareFunc );
 
@@ -192,15 +192,15 @@ void Sampler::unbind( uint8_t textureUnit ) const
 Sampler::Format::Format()
 {
 	mWrapS = mWrapT = mWrapR = GL_REPEAT;
-	mMinFilter = GL_LINEAR; 
+	mMinFilter = GL_LINEAR;
 	mMagFilter = GL_LINEAR;
-	mCompareMode = GL_NONE; 
+	mCompareMode = GL_NONE;
 	mCompareFunc = GL_LEQUAL;
 
 #if ! defined( CINDER_GL_ES )
 	mBorderColor = { 0, 0, 0, 0 };
 	mMinLod = -1000.0f;
-	mMaxLod = 1000.0f;	
+	mMaxLod = 1000.0f;
 #endif
 
 	mMaxAnisotropy = -1.0f;

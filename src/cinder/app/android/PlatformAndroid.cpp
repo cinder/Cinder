@@ -58,13 +58,13 @@ PlatformAndroid::PlatformAndroid()
 
 	dbg_app_log( "PlatformAndroid::PlatformAndroid" );
 
-	// Make sure the static instance is null in case 
+	// Make sure the static instance is null in case
 	// this is an activity restart.
 	cinder::FontManager_destroyStaticInstance();
 }
 
 PlatformAndroid::~PlatformAndroid()
-{	
+{
 	dbg_app_log( "PlatformAndroid::~PlatformAndroid" );
 }
 
@@ -76,9 +76,9 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
-PlatformAndroid* PlatformAndroid::get() 
-{ 
-	return reinterpret_cast<PlatformAndroid*>( Platform::get() ); 
+PlatformAndroid* PlatformAndroid::get()
+{
+	return reinterpret_cast<PlatformAndroid*>( Platform::get() );
 }
 
 void PlatformAndroid::cleanupLaunch()
@@ -114,7 +114,7 @@ fs::path PlatformAndroid::getAssetPath( const fs::path &relativePath ) const
 		}
 	}
 
-	return fs::path(); // empty implies failure	
+	return fs::path(); // empty implies failure
 }
 
 DataSourceRef PlatformAndroid::loadResource( const fs::path &resourcePath )
@@ -122,13 +122,13 @@ DataSourceRef PlatformAndroid::loadResource( const fs::path &resourcePath )
 	return loadAsset( resourcePath );
 }
 
-fs::path PlatformAndroid::getResourceDirectory() const 
-{ 
-	return fs::path(); 
+fs::path PlatformAndroid::getResourceDirectory() const
+{
+	return fs::path();
 }
 
 fs::path PlatformAndroid::getResourcePath( const fs::path &rsrcRelativePath ) const
-{ 
+{
 	return getAssetPath( rsrcRelativePath );
 }
 
@@ -153,7 +153,7 @@ std::ostream& PlatformAndroid::console()
 
 	if( ! mOutputStream )
 		mOutputStream.reset( new cinder::android::dostream );
-	
+
 	return *mOutputStream;
 }
 
@@ -190,7 +190,7 @@ fs::path PlatformAndroid::getDefaultExecutablePath() const
 void PlatformAndroid::sleep( float milliseconds )
 {
 	useconds_t microsecs = milliseconds * 1000;
-	::usleep( microsecs );	
+	::usleep( microsecs );
 }
 
 void PlatformAndroid::launchWebBrowser( const Url &url )
@@ -248,7 +248,7 @@ std::vector<std::string> PlatformAndroid::stackTrace()
 		std::string s = symbol;
 		// Avoid these symbols
 		if( ( s != "cinder::app::PlatformAndroid::stackTrace()" ) && ( s != "cinder::stackTrace()" ) )  {
-			result.push_back( std::string( symbol ) );			
+			result.push_back( std::string( symbol ) );
 		}
 	}
 
@@ -264,7 +264,7 @@ const std::vector<DisplayRef>& PlatformAndroid::getDisplays()
 		newDisplay->mContentScale = 1.0f;
 		newDisplay->mBitsPerPixel = 32;
 
-		mDisplays.push_back( DisplayRef( newDisplay ) );		
+		mDisplays.push_back( DisplayRef( newDisplay ) );
 
 		mDisplaysInitialized = true;
 	}
@@ -289,7 +289,7 @@ void PlatformAndroid::prepareAssetLoading()
 	fs::path directory = "";
 	auto it = find( assetDirs.begin(), assetDirs.end(), directory );
 	if( it == assetDirs.end() ) {
-		addAssetDirectory( directory );	
+		addAssetDirectory( directory );
 	}
 }
 
@@ -309,7 +309,7 @@ fs::path PlatformAndroid::findAssetPath( const fs::path &relativePath )
 		}
 	}
 
-	return fs::path(); // empty implies failure	
+	return fs::path(); // empty implies failure
 }
 
 void PlatformAndroid::findAndAddAssetBasePath()

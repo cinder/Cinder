@@ -80,7 +80,7 @@ AppImplAndroid::AppImplAndroid( AppAndroid *aApp, const AppAndroid::Settings &se
 	// Set the active window
 	if( ! mWindows.empty() ) {
 		setWindow( mWindows.back()->getWindow() );
-	}	
+	}
 }
 
 AppImplAndroid::~AppImplAndroid()
@@ -92,9 +92,9 @@ AppImplAndroid *AppImplAndroid::getInstance()
 	return sInstance;
 }
 
-AppAndroid* AppImplAndroid::getApp() 
-{ 
-	return mApp; 
+AppAndroid* AppImplAndroid::getApp()
+{
+	return mApp;
 }
 
 struct android_app *AppImplAndroid::getNative()
@@ -168,7 +168,7 @@ void AppImplAndroid::onTouchBegan( int id, float x, float y )
 	beganTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, tt.currentTime, nullptr ) );
 
 	// Update active touches
-	updateActiveTouches();	
+	updateActiveTouches();
 
 	// Emit
 	if( mApp->isMultiTouchEnabled() ) {
@@ -204,9 +204,9 @@ void AppImplAndroid::onTouchMoved( int id, float x, float y )
 		movedTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, tt.currentTime, nullptr ) );
 
 		// Update active touches
-		updateActiveTouches();	
-	
-		// Emit	
+		updateActiveTouches();
+
+		// Emit
 		if( mApp->isMultiTouchEnabled() ) {
 			TouchEvent event( getWindow(), movedTouches );
 			getWindow()->emitTouchesMoved( &event );
@@ -223,7 +223,7 @@ void AppImplAndroid::onTouchesMoved( const std::vector<AppImplAndroid::TrackedTo
 	double currentTime = app::getElapsedSeconds();
 
 	std::vector<TouchEvent::Touch> movedTouches;
-	for( const AppImplAndroid::TrackedTouch& mtt : moveTrackedTouches ) {	
+	for( const AppImplAndroid::TrackedTouch& mtt : moveTrackedTouches ) {
 		std::map<int, TrackedTouch>::iterator iter = mTrackedTouches.find( mtt.id );
 		if( iter != mTrackedTouches.end() ) {
 			TrackedTouch& tt = iter->second;
@@ -231,7 +231,7 @@ void AppImplAndroid::onTouchesMoved( const std::vector<AppImplAndroid::TrackedTo
 
 			vec2 pos = vec2( tt.x, tt.y );
 			vec2 prevPos = vec2( tt.prevX, tt.prevY );
-			movedTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, tt.currentTime, nullptr ) );			
+			movedTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, tt.currentTime, nullptr ) );
 		}
 	}
 
@@ -249,11 +249,11 @@ void AppImplAndroid::onTouchesMoved( const std::vector<AppImplAndroid::TrackedTo
 				auto iter = mTrackedTouches.find( mMouseTouchId );
 				TrackedTouch& tt = iter->second;
 				mMouseTouchPos = ivec2( tt.x, tt.y );
-				
+
 				int initiator = MouseEvent::LEFT_DOWN;
 				int modifier = MouseEvent::LEFT_DOWN;
 				MouseEvent event( getWindow(), initiator, tt.x, tt.y, modifier, 0.0f, 0 );
-				getWindow()->emitMouseDrag( &event );	
+				getWindow()->emitMouseDrag( &event );
 			}
 		}
 	}
@@ -272,7 +272,7 @@ void AppImplAndroid::onTouchEnded( int id, float x, float y )
 		vec2 prevPos = vec2( tt.prevX, tt.prevY );
 		std::vector<TouchEvent::Touch> endedTouches;
 		endedTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, tt.currentTime, nullptr ) );
-		
+
 		// Emit
 		if( mApp->isMultiTouchEnabled() ) {
 			TouchEvent event( getWindow(), endedTouches );
@@ -281,7 +281,7 @@ void AppImplAndroid::onTouchEnded( int id, float x, float y )
 		else {
 			if( id == mMouseTouchId ) {
 				mMouseTouchId = -1;
-				
+
 				int initiator = MouseEvent::LEFT_DOWN;
 				int modifier = MouseEvent::LEFT_DOWN;
 				MouseEvent event( getWindow(), initiator, tt.x, tt.y, modifier, 0.0f, 0 );
@@ -323,7 +323,7 @@ void AppImplAndroid::updateActiveTouches()
 		vec2 pos = vec2( tt.x, tt.y );
 		vec2 prevPos = vec2( tt.prevX, tt.prevY );
 		TouchEvent::Touch touch = TouchEvent::Touch( pos, prevPos, tt.id, tt.currentTime, nullptr );
-		
+
 		mActiveTouches.push_back( touch );
 	}
 }
@@ -347,7 +347,7 @@ WindowRef AppImplAndroid::createWindow( Window::Format format )
 void AppImplAndroid::reinitializeWindowSurface()
 {
 	if( mActiveWindow ) {
-		// When the reinitialized from EnvironmentManager android_app->window (mNativeApp) will 
+		// When the reinitialized from EnvironmentManager android_app->window (mNativeApp) will
 		// contain a new window. Propogate that along to the WindowImplAndroid.
 		mActiveWindow->getImpl()->reinitializeWindowSurface( mNativeApp->window );
 	}
@@ -368,17 +368,17 @@ void AppImplAndroid::sleep( double seconds )
 {
 	useconds_t milliseconds = (useconds_t)(seconds*1000.0);
 	useconds_t microsecs = milliseconds * 1000;
-	::usleep( microsecs );	    
+	::usleep( microsecs );
 }
 
-bool AppImplAndroid::setupHasBeenCalled() const 
-{ 
-	return mSetupHasBeenCalled; 
+bool AppImplAndroid::setupHasBeenCalled() const
+{
+	return mSetupHasBeenCalled;
 }
 
-float AppImplAndroid::getFrameRate() const 
-{ 
-	return mFrameRate; 
+float AppImplAndroid::getFrameRate() const
+{
+	return mFrameRate;
 }
 
 void AppImplAndroid::setFrameRate( float frameRate )
@@ -409,17 +409,17 @@ RendererRef AppImplAndroid::findSharedRenderer( const RendererRef &searchRendere
 			return renderer;
 	}
 
-	return RendererRef();	
+	return RendererRef();
 }
 
-WindowRef AppImplAndroid::getWindow() const 
-{ 
-	return mActiveWindow; 
+WindowRef AppImplAndroid::getWindow() const
+{
+	return mActiveWindow;
 }
 
-void AppImplAndroid::setWindow( WindowRef window ) 
-{ 
-	mActiveWindow = window; 
+void AppImplAndroid::setWindow( WindowRef window )
+{
+	mActiveWindow = window;
 }
 
 size_t AppImplAndroid::getNumWindows() const
@@ -431,7 +431,7 @@ WindowRef AppImplAndroid::getWindowIndex( size_t index ) const
 {
 	if( index >= mWindows.size() )
 		return cinder::app::WindowRef();
-	
+
 	auto winIt = mWindows.begin();
 	std::advance( winIt, index );
 	return (*winIt)->mWindowRef;
@@ -491,7 +491,7 @@ ivec2 AppImplAndroid::getMousePos() const
 // 	std::ifstream is( procPath.c_str() );
 // 	if( is.is_open() ) {
 // 		std::vector<char> buf;
-		
+
 // 		char c;
 // 		while( is.get( c ) ) {
 // 			buf.push_back( c );
@@ -504,7 +504,7 @@ ivec2 AppImplAndroid::getMousePos() const
 // 		if( ! buf.empty() ) {
 // 			result = std::string( (const char *)(&buf[0]), buf.size() );
 // 		}
-// 	}	
+// 	}
 
 // 	return result;
 // }

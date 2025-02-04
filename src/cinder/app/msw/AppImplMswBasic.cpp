@@ -201,7 +201,7 @@ WindowRef AppImplMswBasic::getWindowIndex( size_t index )
 {
 	if( index >= mWindows.size() )
 		return cinder::app::WindowRef();
-	
+
 	auto winIt = mWindows.begin();
 	std::advance( winIt, index );
 	return (*winIt)->mWindowRef;

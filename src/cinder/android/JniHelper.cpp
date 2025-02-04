@@ -30,7 +30,7 @@
 #include "cinder/android/AndroidDevLog.h"
 
 
-namespace cinder { namespace android { 
+namespace cinder { namespace android {
 
 /** \class JniGlobalObject
  *
@@ -80,8 +80,8 @@ public:
 
 	void removeGlobalRef( const JniGlobalObjectRef& ref ) {
 		if( mGlobalRefs.end() != std::find( mGlobalRefs.begin(), mGlobalRefs.end(), ref ) ) {
-			mGlobalRefs.erase( 
-				std::remove( mGlobalRefs.begin(), mGlobalRefs.end(), ref ), 
+			mGlobalRefs.erase(
+				std::remove( mGlobalRefs.begin(), mGlobalRefs.end(), ref ),
 				mGlobalRefs.end()
 			);
 		}
@@ -123,7 +123,7 @@ static void JvmHelper_ThreadExit( void* block )
 	if( nullptr != block ) {
 		JniThreadVars* threadVars = reinterpret_cast<JniThreadVars*>( block );
 		delete threadVars;
-		dbg_app_log("JVMAttach_ThreadExit -> deleted JNI threadVars (via pthread_key_create destructor)");		
+		dbg_app_log("JVMAttach_ThreadExit -> deleted JNI threadVars (via pthread_key_create destructor)");
 
 		if( nullptr != sJavaVm ) {
 			sJavaVm->DetachCurrentThread();
@@ -161,7 +161,7 @@ static JNIEnv* JvmHelper_Attach()
 	if( nullptr == value ) {
 		JniThreadVars* threadVars = new JniThreadVars();
 		if( 0 == pthread_setspecific( sThreadExitKey, (void*)threadVars ) ) {
-			dbg_app_log( "JvmHelper_Attach -> allocated JNI threadVars (via pthread_setspecific)" );			
+			dbg_app_log( "JvmHelper_Attach -> allocated JNI threadVars (via pthread_setspecific)" );
 		}
 		else {
 			dbg_app_error( "vmHelper_Attach -> pthread_setspecific failed allocating JNI threadVars!" );
@@ -216,8 +216,8 @@ JniHelper::JniHelper( ANativeActivity* nativeActivity )
 			// ClassLoader
 			{
 				// Get android.app.NativeActivity
-				jclass activityClass = jniEnv->FindClass( "android/app/NativeActivity" );			
-				mActivityClass = (jclass)jniEnv->NewGlobalRef( activityClass );			
+				jclass activityClass = jniEnv->FindClass( "android/app/NativeActivity" );
+				mActivityClass = (jclass)jniEnv->NewGlobalRef( activityClass );
 
 				// Get getClassLoader in android.app.NativeActivity
 				mGetClassLoaderMethodId	= jniEnv->GetMethodID( mActivityClass, "getClassLoader", "()Ljava/lang/ClassLoader;" );
@@ -280,7 +280,7 @@ JniHelper::~JniHelper()
 
 void JniHelper::Initialize( ANativeActivity* nativeActivity )
 {
-dbg_app_fn_enter( __PRETTY_FUNCTION__ );	
+dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 	if( JniHelper::sInstance ) {
 		return;
 	}
@@ -292,11 +292,11 @@ dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 
 void JniHelper::Destroy()
 {
-dbg_app_fn_enter( __PRETTY_FUNCTION__ );	
+dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 	if( JniHelper::sInstance ) {
 		JniHelper::sInstance.reset();
 	}
-dbg_app_fn_exit( __PRETTY_FUNCTION__ );	
+dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
 JniHelper* JniHelper::Get()
@@ -312,7 +312,7 @@ jclass JniHelper::RetrieveClass( const std::string& name, bool clearExc )
 		jstring jstrClassName = jniEnv->NewStringUTF( name.c_str() );
 		result = reinterpret_cast<jclass>( jniEnv->CallObjectMethod( mClassLoaderObject, mLoadClassMethodId, jstrClassName ) );
 		JNI_THROW_CPP_EXC( jniEnv, "RetrieveClass failed on CallObjectMethod for: " + name, clearExc );
-		
+
 		jniEnv->DeleteLocalRef( jstrClassName );
 	}
 	return result;
@@ -321,7 +321,7 @@ jclass JniHelper::RetrieveClass( const std::string& name, bool clearExc )
 std::string JniHelper::StdStringFromJString( JNIEnv* jniEnv, jstring jstr )
 {
 	std::string result;
-	if( ( nullptr != jniEnv ) && ( nullptr != jstr ) ) {		
+	if( ( nullptr != jniEnv ) && ( nullptr != jstr ) ) {
 		const char *utf = jniEnv->GetStringUTFChars( jstr, nullptr );
 		jsize n = jniEnv->GetStringUTFLength( jstr );
 		result = std::string( utf, n );
@@ -425,7 +425,7 @@ _jtype JniHelper::CallStatic##_jname##Method( jclass clazz, jmethodID methodId, 
 // CallStaticLongMethod
 // CallStaticFloatMethod
 // CallStaticDoubleMethod
-//	
+//
 CI_CALL_STATIC_TYPE_METHOD_IMPL( jobject, Object, nullptr )
 CI_CALL_STATIC_TYPE_METHOD_IMPL( jboolean, Boolean, 0 )
 CI_CALL_STATIC_TYPE_METHOD_IMPL( jbyte, Byte, 0 )
@@ -437,7 +437,7 @@ CI_CALL_STATIC_TYPE_METHOD_IMPL( jfloat, Float, 0.0f )
 CI_CALL_STATIC_TYPE_METHOD_IMPL( jdouble, Double, 0.0 )
 #undef CI_CALL_STATIC_TYPE_METHOD_IMPL
 
-void JniHelper::CallStaticVoidMethod( jclass clazz, jmethodID methodId, ... ) 
+void JniHelper::CallStaticVoidMethod( jclass clazz, jmethodID methodId, ... )
 {
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
@@ -495,7 +495,7 @@ _jtype JniHelper::Call##_jname##Method( jobject obj, jmethodID methodId, ... )	\
 // CallLongMethod
 // CallFloatMethod
 // CallDoubleMethod
-//	
+//
 CI_CALL_TYPE_METHOD_IMPL( jobject, Object, nullptr )
 CI_CALL_TYPE_METHOD_IMPL( jboolean, Boolean, 0 )
 CI_CALL_TYPE_METHOD_IMPL( jbyte, Byte, 0 )
@@ -505,9 +505,9 @@ CI_CALL_TYPE_METHOD_IMPL( jint, Int, 0 )
 CI_CALL_TYPE_METHOD_IMPL( jlong, Long, 0 )
 CI_CALL_TYPE_METHOD_IMPL( jfloat, Float, 0.0f )
 CI_CALL_TYPE_METHOD_IMPL( jdouble, Double, 0.0 )
-#undef CI_CALL_TYPE_METHOD_IMPL	
+#undef CI_CALL_TYPE_METHOD_IMPL
 
-void JniHelper::CallVoidMethod( jobject obj, jmethodID methodId, ... ) 
+void JniHelper::CallVoidMethod( jobject obj, jmethodID methodId, ... )
 {
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
@@ -528,7 +528,7 @@ jfieldID JniHelper::GetStaticFieldId( jclass clazz, const std::string& name, con
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
 		result = jniEnv->GetStaticFieldID( clazz, name.c_str(), sig.c_str() );
-	}	
+	}
 
 	return result;
 }
@@ -555,7 +555,7 @@ jfieldID JniHelper::GetStatic##_jname##FieldId( jclass clazz, const std::string&
 // GetStaticFloatFieldID
 // GetStaticDoubleFieldID
 // GetStaticStringleFieldID
-//	
+//
 CI_GET_STATIC_TYPE_FIELDID_IMPL( Boolean, "Z" )
 CI_GET_STATIC_TYPE_FIELDID_IMPL( Byte, "B" )
 CI_GET_STATIC_TYPE_FIELDID_IMPL( Char, "C" )
@@ -588,7 +588,7 @@ _jtype JniHelper::GetStatic##_jname##Field( jclass clazz, jfieldID fieldId )	\
 // GetStaticLongFieldID
 // GetStaticFloatFieldID
 // GetStaticDoubleFieldID
-//	
+//
 CI_GET_STATIC_TYPE_FIELD_IMPL( jobject, Object, nullptr )
 CI_GET_STATIC_TYPE_FIELD_IMPL( jboolean, Boolean, 0 )
 CI_GET_STATIC_TYPE_FIELD_IMPL( jbyte, Byte, 0 )
@@ -625,7 +625,7 @@ void JniHelper::SetStatic##_jname##Field( jclass clazz, jfieldID fieldId, _jtype
 // SetStaticLongField
 // SetStaticFloatField
 // SetStaticDoubleField
-//	
+//
 CI_SET_STATIC_TYPE_FIELD_IMPL( jobject, Object )
 CI_SET_STATIC_TYPE_FIELD_IMPL( jboolean, Boolean )
 CI_SET_STATIC_TYPE_FIELD_IMPL( jbyte, Byte )
@@ -644,7 +644,7 @@ void JniHelper::SetStaticStringField( jclass clazz, jfieldID fieldId, const std:
 		jstring jstr = jniEnv->NewStringUTF( value.c_str() );
 		jniEnv->SetStaticObjectField( clazz, fieldId, (jobject)jstr );
 		jniEnv->DeleteLocalRef( (jobject)jstr );
-	}	
+	}
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -657,7 +657,7 @@ jfieldID JniHelper::GetFieldId( jclass clazz, const std::string& name, const std
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
 		result = jniEnv->GetFieldID( clazz, name.c_str(), sig.c_str() );
-	}	
+	}
 
 	return result;
 }
@@ -683,7 +683,7 @@ jfieldID JniHelper::Get##_jname##FieldId( jclass clazz, const std::string& name 
 // GetFloatFieldID
 // GetDoubleFieldID
 // GetStringleFieldID
-//	
+//
 CI_GET_TYPE_FIELDID_IMPL( Boolean, "Z" )
 CI_GET_TYPE_FIELDID_IMPL( Byte, "B" )
 CI_GET_TYPE_FIELDID_IMPL( Char, "C" )
@@ -716,7 +716,7 @@ _jtype JniHelper::Get##_jname##Field( jobject obj, jfieldID fieldId )	\
 // GetLongField
 // GetFloatField
 // GetDoubleField
-//	
+//
 CI_GET_TYPE_FIELD_IMPL( jobject, Object, nullptr )
 CI_GET_TYPE_FIELD_IMPL( jboolean, Boolean, 0 )
 CI_GET_TYPE_FIELD_IMPL( jbyte, Byte, 0 )
@@ -755,7 +755,7 @@ void JniHelper::Set##_jname##Field( jobject obj, jfieldID fieldId, _jtype value 
 // SetLongField
 // SetFloatField
 // SetDoubleField
-//	
+//
 CI_SET_TYPE_FIELD_IMPL( jobject, Object )
 CI_SET_TYPE_FIELD_IMPL( jboolean, Boolean )
 CI_SET_TYPE_FIELD_IMPL( jbyte, Byte )
@@ -774,12 +774,12 @@ void JniHelper::SetStringField( jobject obj, jfieldID fieldId, const std::string
 		jstring jstr = jniEnv->NewStringUTF( value.c_str() );
 		jniEnv->SetObjectField( obj, fieldId, (jobject)jstr );
 		jniEnv->DeleteLocalRef( (jobject)jstr );
-	}	
+	}
 }
 
 jobject JniHelper::NewGlobalRef( jobject obj )
 {
-	jobject result = nullptr;	
+	jobject result = nullptr;
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv && ( nullptr != obj ) ) {
 		result = jniEnv->NewGlobalRef( obj );
@@ -793,7 +793,7 @@ void JniHelper::DeleteGlobalRef( jobject globalRef )
 	if( jniEnv && ( nullptr != globalRef ) ) {
 		try {
 			jniEnv->DeleteGlobalRef( globalRef );
-			JNI_THROW_CPP_EXC( jniEnv, "DeleteGlobalRef error" , true );		
+			JNI_THROW_CPP_EXC( jniEnv, "DeleteGlobalRef error" , true );
 		}
 		catch( const std::exception& e ) {
 			dbg_app_error( e.what() );
@@ -828,7 +828,7 @@ void JniHelper::TrackedDeleteGlobalRef( const JniGlobalObjectRef& trackedGlobalR
 		}
 	}
 
-/*	
+/*
 dbg_app_log( "TrackedDeleteGlobalRef Mark 0:" );
 	if( trackedGlobalRef ) {
 		jobject obj = trackedGlobalRef->getObject();
@@ -843,7 +843,7 @@ dbg_app_log( "TrackedDeleteGlobalRef Mark 0:" );
 			currentThreadVars->removeGlobalRef( trackedGlobalRef );
 		}
 	}
-*/	
+*/
 }
 
 jstring JniHelper::NewStringUTF( const std::string& str )
@@ -881,7 +881,7 @@ jobject	JniHelper::GetObjectArrayElements( jobjectArray array, jsize index )
 	if( jniEnv ) {
 		result = jniEnv->GetObjectArrayElement( array, index );
 	}
-	return result;	
+	return result;
 }
 
 jbyte* JniHelper::GetByteArrayElements( jbyteArray array, jboolean* isCopy )
@@ -901,7 +901,7 @@ jint* JniHelper::GetIntArrayElements( jintArray array, jboolean* isCopy )
 	if( jniEnv ) {
 		result = jniEnv->GetIntArrayElements( array, isCopy );
 	}
-	return result;	
+	return result;
 }
 
 void JniHelper::ReleaseByteArrayElements( jbyteArray array, jbyte* elems, jint mode )
@@ -917,7 +917,7 @@ void JniHelper::ReleaseIntArrayElements( jintArray array, jint* elems, jint mode
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
 		jniEnv->ReleaseIntArrayElements( array, elems, mode );
-	}	
+	}
 }
 
 jthrowable JniHelper::ExceptionOccurred()

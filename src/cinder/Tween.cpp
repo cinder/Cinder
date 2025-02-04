@@ -62,7 +62,7 @@ AnimBase::AnimBase( const AnimBase &rhs, void *voidPtr )
 	mParentTimeline = rhs.mParentTimeline;
 	if( mParentTimeline ) {
 		mParentTimeline->cloneAndReplaceTarget( rhs.mVoidPtr, mVoidPtr );
-	}	
+	}
 }
 
 AnimBase::~AnimBase()
@@ -76,7 +76,7 @@ void AnimBase::set( const AnimBase &rhs )
 	setParentTimeline( rhs.mParentTimeline );
 	if( mParentTimeline ) {
 		mParentTimeline->cloneAndReplaceTarget( rhs.mVoidPtr, mVoidPtr );
-	}	
+	}
 }
 
 // Implements move semantics
@@ -85,7 +85,7 @@ void AnimBase::setReplace( const AnimBase &rhs )
 	setParentTimeline( rhs.mParentTimeline );
 	if( mParentTimeline ) {
 		mParentTimeline->replaceTarget( rhs.mVoidPtr, mVoidPtr );
-	}	
+	}
 }
 
 bool AnimBase::isComplete() const
@@ -113,13 +113,13 @@ void AnimBase::setParentTimeline( TimelineRef parentTimeline )
 	if( mParentTimeline && ( parentTimeline != mParentTimeline ) ) {
 		mParentTimeline->removeTarget( mVoidPtr );
 	}
-	mParentTimeline = parentTimeline;  		
+	mParentTimeline = parentTimeline;
 }
 
 // these are to provide a compiler firewall to use Timeline from the TweenOptions
 void TweenBase::Options::appendTo( TweenBase &tweenBase, void *endTarget, float offset )
 {
-	tweenBase.setStartTime( mTimeline->findEndTimeOf( endTarget ) + offset );	
+	tweenBase.setStartTime( mTimeline->findEndTimeOf( endTarget ) + offset );
 }
 
 void TweenBase::Options::timelineEnd( TweenBase &tweenBase, float offset )

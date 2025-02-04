@@ -52,7 +52,7 @@ void fill_impl( SurfaceT<T> *surface, const ColorAT<T> &color, const Area &area 
 		fill_impl( surface, ColorT<T>( color.r, color.g, color.b ), area );
 		return;
 	}
-	
+
 	const Area clippedArea = area.getClipBy( surface->getBounds() );
 
 	ptrdiff_t rowBytes = surface->getRowBytes();
@@ -103,7 +103,7 @@ template<typename T>
 void fill( ChannelT<T> *channel, T value, const Area &area )
 {
 	const Area clippedArea = area.getClipBy( channel->getBounds() );
-	
+
 	ptrdiff_t rowBytes = channel->getRowBytes();
 	uint8_t inc = channel->getIncrement();
 	for( int32_t y = clippedArea.getY1(); y < clippedArea.getY2(); ++y ) {
@@ -112,7 +112,7 @@ void fill( ChannelT<T> *channel, T value, const Area &area )
 			*dstPtr = value;
 			dstPtr += inc;
 		}
-	}	
+	}
 }
 
 template<typename T>

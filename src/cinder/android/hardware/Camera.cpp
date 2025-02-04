@@ -81,7 +81,7 @@ void Camera::DeviceInfo::cacheJni()
 
 void Camera::DeviceInfo::destroyJni()
 {
-	if( JniHelper::Get()->AttachCurrentThread() ) {	
+	if( JniHelper::Get()->AttachCurrentThread() ) {
 		JniHelper::Get()->DeleteGlobalRef( Java::ClassObject  );
 		Java::ClassObject	= nullptr;
 		Java::id 			= nullptr;
@@ -90,7 +90,7 @@ void Camera::DeviceInfo::destroyJni()
 	}
 }
 
-void Camera::DeviceInfo::sync() 
+void Camera::DeviceInfo::sync()
 {
 	if( ! mJavaObject ) {
 		return;
@@ -105,7 +105,7 @@ void Camera::DeviceInfo::sync()
 	if( nullptr == arrayObj ) {
 		throw std::runtime_error( "Error reading resolutions field from Java" );
 	}
-	
+
 	jsize n = JniHelper::Get()->GetArrayLength( arrayObj );
 	if( n > 0 ) {
 		jint* elems = JniHelper::Get()->GetIntArrayElements( arrayObj, nullptr );
@@ -222,7 +222,7 @@ dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
 void Camera::destroyJni()
-{	
+{
 dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 
 	Camera::DeviceInfo::destroyJni();
@@ -283,7 +283,7 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 		Camera::sInstance.reset();
 		dbg_app_log( "Camera::destroyInstance(): destroyed sInstance!" );
 	}
-		
+
 dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
@@ -333,7 +333,7 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 
 dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 
-	return result;	
+	return result;
 }
 
 void Camera::startCapture( const std::string& deviceId, int width, int height )
@@ -343,11 +343,11 @@ void Camera::startCapture( const std::string& deviceId, int width, int height )
 
 	/*
 	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
-	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_startCapture, (jint)mWidth, (jint)mHeight );	
+	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_startCapture, (jint)mWidth, (jint)mHeight );
 	*/
-	
+
 	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
-	jstring jstrDeviceId = JniHelper::Get()->NewStringUTF( deviceId );	
+	jstring jstrDeviceId = JniHelper::Get()->NewStringUTF( deviceId );
 	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_startCapture, jstrDeviceId, (jint)mWidth, (jint)mHeight );
 	JniHelper::Get()->DeleteLocalRef( jstrDeviceId );
 
@@ -389,7 +389,7 @@ void Camera::initPreviewTexture(int textureId)
 	}
 
 	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
-	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_initPreviewTexture, (jint)textureId );	
+	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_initPreviewTexture, (jint)textureId );
 }
 
 void Camera::updateTexImage()
@@ -445,7 +445,7 @@ static void InitConvertTable()
 	}
 
 	ind=640;
-	
+
 	for (i=0;i<384;i++) {
 		clp[ind++]=255;
 	}
@@ -548,7 +548,7 @@ void Camera::getPixels( Surface8u* outSurface ) const
 					}
 				}
 				*/
-			}			
+			}
 
 			if( nullptr != dataPtr ) {
 				jniEnv->ReleaseByteArrayElements( byteArray, dataPtr, JNI_ABORT );
@@ -620,15 +620,15 @@ void Camera::getPixels( Surface8u* outSurface ) const
 // 			CinderCamera::sGetWidthMethodId 		= JniHelper::Get()->GetStaticMethodId( CinderCamera::sCinderCameraClass, "getWidth", "()I" );
 // 			CinderCamera::sGetHeightMethodId 		= JniHelper::Get()->GetStaticMethodId( CinderCamera::sCinderCameraClass, "getHeight", "()I" );
 
-// 			FN_LOG( CinderCamera::sInitializeMethodId );	
-// 			FN_LOG( CinderCamera::sHasFrontCameraMethodId );	
-// 			FN_LOG( CinderCamera::sHasBackCameraMethodId );	
-// 			FN_LOG( CinderCamera::sStartCaptureMethodId );	
-// 			FN_LOG( CinderCamera::sStopCaptureMethodId );	
-// 			FN_LOG( CinderCamera::sLockPixelsMethodId );	
-// 			FN_LOG( CinderCamera::sUnlockPixelsMethodId );	
-// 			FN_LOG( CinderCamera::sGetWidthMethodId );	
-// 			FN_LOG( CinderCamera::sGetHeightMethodId );				
+// 			FN_LOG( CinderCamera::sInitializeMethodId );
+// 			FN_LOG( CinderCamera::sHasFrontCameraMethodId );
+// 			FN_LOG( CinderCamera::sHasBackCameraMethodId );
+// 			FN_LOG( CinderCamera::sStartCaptureMethodId );
+// 			FN_LOG( CinderCamera::sStopCaptureMethodId );
+// 			FN_LOG( CinderCamera::sLockPixelsMethodId );
+// 			FN_LOG( CinderCamera::sUnlockPixelsMethodId );
+// 			FN_LOG( CinderCamera::sGetWidthMethodId );
+// 			FN_LOG( CinderCamera::sGetHeightMethodId );
 // 		}
 // 	}
 // }
@@ -636,7 +636,7 @@ void Camera::getPixels( Surface8u* outSurface ) const
 // void CinderCamera::destroyJni()
 // {
 // 	if( JniHelper::Get()->AttachCurrentThread() ) {
-		
+
 // 		JniHelper::Get()->DeleteGlobalRef( CinderCamera::sCinderCameraClass );
 
 // 		CinderCamera::sCinderCameraClass		= nullptr;
@@ -646,9 +646,9 @@ void Camera::getPixels( Surface8u* outSurface ) const
 // 		CinderCamera::sStartCaptureMethodId 	= nullptr;
 // 		CinderCamera::sStopCaptureMethodId 		= nullptr;
 // 		CinderCamera::sLockPixelsMethodId 		= nullptr;
-// 		CinderCamera::sUnlockPixelsMethodId 	= nullptr;	
+// 		CinderCamera::sUnlockPixelsMethodId 	= nullptr;
 // 		CinderCamera::sGetWidthMethodId 		= nullptr;
-// 		CinderCamera::sGetHeightMethodId 		= nullptr;	
+// 		CinderCamera::sGetHeightMethodId 		= nullptr;
 // 	}
 // }
 
@@ -665,7 +665,7 @@ void Camera::getPixels( Surface8u* outSurface ) const
 // 		}
 // 	}
 
-// 	return mInitialized;	
+// 	return mInitialized;
 // }
 
 // void CinderCamera::startCapture()
@@ -676,12 +676,12 @@ void Camera::getPixels( Surface8u* outSurface ) const
 
 // 	if( JniHelper::Get()->AttachCurrentThread() ) {
 // 		JniHelper::Get()->CallStaticVoidMethod( CinderCamera::sCinderCameraClass, CinderCamera::sStartCaptureMethodId );
-		
+
 // 		mWidth = JniHelper::Get()->CallStaticIntMethod( CinderCamera::sCinderCameraClass, CinderCamera::sGetWidthMethodId );
 // 		mHeight = JniHelper::Get()->CallStaticIntMethod( CinderCamera::sCinderCameraClass, CinderCamera::sGetHeightMethodId );
 
 // 		mCapturing = true;
-// 	}	
+// 	}
 // }
 
 // void CinderCamera::stopCapture()
@@ -694,7 +694,7 @@ void Camera::getPixels( Surface8u* outSurface ) const
 // 		JniHelper::Get()->CallStaticVoidMethod( CinderCamera::sCinderCameraClass, CinderCamera::sStopCaptureMethodId );
 
 // 		mCapturing = false;
-// 	}	
+// 	}
 // }
 
 // /*
@@ -722,7 +722,7 @@ void Camera::getPixels( Surface8u* outSurface ) const
 // 				}
 // 			}
 // 			JniHelper::Get()->DeatchCurrentThread();
-// 		}	
+// 		}
 // 	}
 
 // 	return result;
@@ -871,7 +871,7 @@ void Camera::getPixels( Surface8u* outSurface ) const
 
 // 					const uint8_t * src = (const uint8_t *)dataPtr;
 // 					uint8_t * dst = (uint8_t *)result.getData();
-// 					ConvertYUV2RGB( src, src + (mWidth*mHeight), dst, mWidth, mHeight );					
+// 					ConvertYUV2RGB( src, src + (mWidth*mHeight), dst, mWidth, mHeight );
 // 				}
 // 			}
 
@@ -883,9 +883,9 @@ void Camera::getPixels( Surface8u* outSurface ) const
 // 		if( hasPixels ) {
 // 			const uint8_t * src = (const uint8_t *)mBuffer.getData();
 // 			uint8_t * dst = (uint8_t *)result.getData();
-// 			ConvertYUV2RGB( src, src + (mWidth*mHeight), dst, mWidth, mHeight );			
+// 			ConvertYUV2RGB( src, src + (mWidth*mHeight), dst, mWidth, mHeight );
 // 		}
-// */		
+// */
 // 	}
 
 // 	return result;

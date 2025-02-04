@@ -95,7 +95,7 @@ ImageSourcePng::ImageSourcePng( DataSourceRef dataSourceRef, ImageSource::Option
 		mPngPtr = 0;
 		throw ImageSourcePngException( "Could not destroy png read struct." );
 	}
-	
+
 	if( ! loadHeader() )
 		throw ImageSourcePngException( "Could not load png header." );
 }
@@ -122,7 +122,7 @@ bool ImageSourcePng::loadHeader()
 
 		setSize( width, height );
 		setDataType( ( bitDepth == 16 ) ? ImageIo::UINT16 : ImageIo::UINT8 );
-		
+
 	#ifdef CINDER_LITTLE_ENDIAN
 		png_set_swap( mPngPtr );
 	#endif
@@ -130,7 +130,7 @@ bool ImageSourcePng::loadHeader()
 		switch( colorType ) {
 			case PNG_COLOR_TYPE_GRAY:
 				setColorModel( ImageIo::CM_GRAY );
-				setChannelOrder( ImageIo::Y );			
+				setChannelOrder( ImageIo::Y );
 			break;
 			case PNG_COLOR_TYPE_GRAY_ALPHA:
 				setColorModel( ImageIo::CM_GRAY );
@@ -147,15 +147,15 @@ bool ImageSourcePng::loadHeader()
 			break;
 			default:
 				throw ImageSourcePngException( "Unexpected png color type." );
-		}	
+		}
 
 		png_set_expand_gray_1_2_4_to_8( mPngPtr );
 		png_set_palette_to_rgb( mPngPtr );
 		png_set_tRNS_to_alpha( mPngPtr );
-		
+
 		png_read_update_info( mPngPtr, mInfoPtr );
 	}
-	
+
 	return success;
 }
 
@@ -183,7 +183,7 @@ void ImageSourcePng::load( ImageTargetRef target )
 			((*this).*func)( target, row, row_pointer.get() );
 		}
 	}
-	
+
 	if( ! success )
 		throw ImageSourcePngException( "Failure during load." );
 }

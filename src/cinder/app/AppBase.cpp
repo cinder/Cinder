@@ -48,7 +48,7 @@
  		#undef  SAVED__GNUC__
  	#else
 		#undef __GNUC__
- 	#endif 
+ 	#endif
 
  	#if defined( SAVED__GNUC_MINOR__ )
  		#undef  __GNUC_MINOR__
@@ -101,7 +101,7 @@ AppBase::Settings::Settings()
 AppBase::Settings::Settings()
 	: mShouldQuit( false ), mQuitOnLastWindowClose( true ), mPowerManagementEnabled( false ),
 	  mFrameRate( 60 ), mFrameRateEnabled( true ), mHighDensityDisplayEnabled( false ), mMultiTouchEnabled( false )
-#endif		
+#endif
 {
 }
 
@@ -148,7 +148,7 @@ AppBase::AppBase()
 	mIo = shared_ptr<asio::io_context>( new asio::io_context() );
 	mIoWork = shared_ptr<asio::io_context::work>( new asio::io_context::work( *mIo ) );
 
-	// due to an issue with boost::filesystem's static initialization on Windows, 
+	// due to an issue with boost::filesystem's static initialization on Windows,
 	// it's necessary to create a fs::path here in case of secondary threads doing the same thing simultaneously
 #if defined( CINDER_MSW )
 	fs::path dummyPath( "dummy" );
@@ -160,15 +160,15 @@ AppBase::~AppBase()
 	mIo->stop();
 }
 
-AppBase* AppBase::get() 
-{ 
-	return sInstance; 
+AppBase* AppBase::get()
+{
+	return sInstance;
 }
 
 // These are called by application instantiation main functions
 // static
 void AppBase::prepareLaunch()
-{	
+{
 	Platform::get()->prepareLaunch();
 }
 
@@ -214,10 +214,10 @@ void AppBase::cleanupLaunch()
 	Platform::get()->cleanupLaunch();
 
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	// This will delete Platform::sInstance if it's not null. 
+	// This will delete Platform::sInstance if it's not null.
 	// Afterwards Platform::sInstance will be set to null.
 	Platform::set( nullptr );
-#endif 	
+#endif
 }
 
 void AppBase::privateSetup__()

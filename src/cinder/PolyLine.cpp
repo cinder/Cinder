@@ -79,7 +79,7 @@ T PolyLineT<T>::getPosition( float t ) const
 	if( mPoints.size() <= 1 ) return T();
 	if( t >= 1 ) return mPoints.back();
 	if( t <= 0 ) return mPoints[0];
-	
+
 	size_t numSpans = mPoints.size() - 1;
 	size_t span = (size_t)math<R>::floor( t * numSpans );
 	R lerpT = ( t - span / (R)numSpans ) * numSpans;
@@ -93,7 +93,7 @@ T PolyLineT<T>::getDerivative( float t ) const
 	if( mPoints.size() <= 1 ) return T();
 	if( t >= 1 ) return mPoints.back() - mPoints[mPoints.size()-2];
 	if( t <= 0 ) return mPoints[1] - mPoints[0];
-	
+
 	size_t numSpans = mPoints.size() - 1;
 	size_t span = (size_t)math<R>::floor( t * numSpans );
 	return mPoints[span+1] - mPoints[span];
@@ -176,7 +176,7 @@ bool PolyLineT<T>::contains( const vec2 &pt ) const
 	temp[0] = mPoints[mPoints.size()-1];
 	temp[1] = mPoints[0];
 	crossings += linearCrossings( &(temp[0]), pt );
-	
+
 	return (crossings & 1) == 1;
 }
 

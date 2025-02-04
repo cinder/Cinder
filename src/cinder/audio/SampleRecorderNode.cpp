@@ -70,7 +70,7 @@ void resizeBufferAndShuffleChannels( BufferDynamic *buffer, size_t resultNumFram
 		buffer->setNumFrames( resultNumFrames );
 	}
 }
-	
+
 }
 
 // ----------------------------------------------------------------------------------------------------

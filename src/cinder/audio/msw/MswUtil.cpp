@@ -65,7 +65,7 @@ void copyWaveFormat( const ::WAVEFORMATEX &source, ::WAVEFORMATEX *dest )
 std::string	waveFormatToString( const ::WAVEFORMATEX &wfx )
 {
 	std::string result;
-	result += ".Format.wFormatTag: "; 
+	result += ".Format.wFormatTag: ";
 	if( wfx.wFormatTag == WAVE_FORMAT_EXTENSIBLE )
 		result += "WAVE_FORMAT_EXTENSIBLE";
 	else if( wfx.wFormatTag == WAVE_FORMAT_PCM )
@@ -78,8 +78,8 @@ std::string	waveFormatToString( const ::WAVEFORMATEX &wfx )
 	result += ", .Format.wBitsPerSample: " +  std::to_string( (int)wfx.wBitsPerSample );
 
 	if( wfx.wFormatTag == WAVE_FORMAT_EXTENSIBLE ) {
-		const auto &wfxextensible = (const ::WAVEFORMATEXTENSIBLE &)wfx; 
-		result += ", .SubFormat: "; 
+		const auto &wfxextensible = (const ::WAVEFORMATEXTENSIBLE &)wfx;
+		result += ", .SubFormat: ";
 		if( wfxextensible.SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT )
 			result += "KSDATAFORMAT_SUBTYPE_IEEE_FLOAT";
 		else if( wfxextensible.SubFormat == KSDATAFORMAT_SUBTYPE_PCM )

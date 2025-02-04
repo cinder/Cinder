@@ -1,16 +1,16 @@
 /*
  Copyright (c) 2015, The Cinder Project, All rights reserved.
- 
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
- 
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
- 
+
  * Redistributions of source code must retain the above copyright notice, this list of conditions and
  the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
  the following disclaimer in the documentation and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -43,7 +43,7 @@ MovieWriter::Format::Format()
 
 	mFrameReorderingEnabled = false;
 	jpegQuality( 0.99f );
-	
+
 	mH264AverageBitsPerSecondSpecified = false;
 	mH264AverageBitsPerSecond = 0;
 }
@@ -109,7 +109,7 @@ MovieWriter::MovieWriter( const fs::path &path, int32_t width, int32_t height, c
 	// AVFoundation will fail if the path already exists.
 	if( fs::exists( path ) )
 		fs::remove( path );
-	
+
 	NSURL* localOutputURL = [NSURL fileURLWithPath:[NSString stringWithCString:path.c_str() encoding:[NSString defaultCStringEncoding]]];
 	NSError* error = nil;
 	mWriter = [[AVAssetWriter alloc] initWithURL:localOutputURL fileType:fileTypeToAvFileType( format.getFileType() ) error:&error];
@@ -126,7 +126,7 @@ MovieWriter::MovieWriter( const fs::path &path, int32_t width, int32_t height, c
 	else if( format.getCodec() == Codec::JPEG ) {
 		[compressionProperties setValue:[NSNumber numberWithFloat:format.getJpegQuality()] forKey:AVVideoQualityKey];
 	}
-	
+
 	NSMutableDictionary* outputSettings = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 											codecToAvVideoCodecKey( format.getCodec() ), AVVideoCodecKey,
 											[NSNumber numberWithInteger:mWidth], AVVideoWidthKey,
@@ -144,10 +144,10 @@ MovieWriter::MovieWriter( const fs::path &path, int32_t width, int32_t height, c
 				[NSNumber numberWithInt:kCVPixelFormatType_32ARGB], kCVPixelBufferPixelFormatTypeKey,
 #endif
 				nil ];
-	
+
 	mSinkAdapater = [AVAssetWriterInputPixelBufferAdaptor assetWriterInputPixelBufferAdaptorWithAssetWriterInput:mWriterSink
 																					 sourcePixelBufferAttributes:sourcePixelBufferAttributes];
-	
+
 	[mSinkAdapater retain];
 	[mWriter addInput:mWriterSink];
 	mWriter.movieFragmentInterval = CMTimeMakeWithSeconds( 1.0, 1000 );
@@ -166,7 +166,7 @@ MovieWriter::~MovieWriter()
 {
 	if( ! mFinished )
 		finish();
-	
+
 	::CVPixelBufferPoolRelease( mSinkAdapater.pixelBufferPool );
 	[mSinkAdapater release];
 	[mWriter release];
@@ -176,7 +176,7 @@ void MovieWriter::addFrame( const Surface8u& imageSource, float duration )
 {
 	if( mFinished )
 		throw MovieWriterExcAlreadyFinished();
-	
+
 	if( [mWriter status] != AVAssetWriterStatusWriting ) {
 		NSString* str = [[mWriter error] description];
 		std::string descr = str ? std::string([str UTF8String]): "";
@@ -199,20 +199,20 @@ void MovieWriter::addFrame( const Surface8u& imageSource, float duration )
 		NSDate *future = [NSDate dateWithTimeIntervalSinceNow:0.01];
 		[[NSRunLoop currentRunLoop] runUntilDate:future];
 	}
-	
+
 	[mSinkAdapater appendPixelBuffer:pixelBuffer withPresentationTime:CMTimeMakeWithSeconds( mCurrentSeconds, (int32_t)mFormat.mTimeBase )];
-	
+
 	mCurrentSeconds += ( duration <= 0 ) ? mFormat.mDefaultFrameDuration : duration;
 	++mNumFrames;
 }
-	
+
 void MovieWriter::finish()
 {
 	if( mFinished )
 		return;
-	
+
 	[mWriterSink markAsFinished];
-	
+
 	// finishWriting: only wants to be called from a secondary thread
 	__block __typeof__(mWriter) _mWriter = mWriter;
 	[mWriter retain]; // released inside block
@@ -220,7 +220,7 @@ void MovieWriter::finish()
 		[_mWriter finishWriting];
 		[_mWriter release];
 	} );
-	
+
 	mFinished = true;
 }
 

@@ -53,9 +53,9 @@ ptrdiff_t base64_decode_block( const char* code_in, const size_t length_in, char
 	const char* codechar = code_in;
 	char* plainchar = plaintext_out;
 	char fragment;
-	
+
 	*plainchar = state_in->plainchar;
-	
+
 	switch (state_in->step)
 	{
 		while (1)
@@ -143,9 +143,9 @@ ptrdiff_t base64_encode_block(const char* plaintext_in, size_t length_in, char* 
 	char* codechar = code_out;
 	char result;
 	char fragment;
-	
+
 	result = state_in->result;
-	
+
 	switch (state_in->step)
 	{
 		while (1)
@@ -184,7 +184,7 @@ ptrdiff_t base64_encode_block(const char* plaintext_in, size_t length_in, char* 
 			*codechar++ = base64_encode_value(result);
 			result  = (fragment & 0x03f) >> 0;
 			*codechar++ = base64_encode_value(result);
-			
+
 			++(state_in->stepcount);
 			if ( ( charsPerLine != 0 ) && ( state_in->stepcount == charsPerLine/4 ) )
 			{
@@ -200,7 +200,7 @@ ptrdiff_t base64_encode_block(const char* plaintext_in, size_t length_in, char* 
 ptrdiff_t base64_encode_blockend( char* code_out, base64_encodestate* state_in )
 {
 	char* codechar = code_out;
-	
+
 	switch (state_in->step) {
 	case step_B:
 		*codechar++ = base64_encode_value(state_in->result);
@@ -214,7 +214,7 @@ ptrdiff_t base64_encode_blockend( char* code_out, base64_encodestate* state_in )
 	case step_A:
 		break;
 	}
-	
+
 	return codechar - code_out;
 }
 
@@ -247,7 +247,7 @@ std::string toBase64( const void *input, size_t inputSize, int charsPerLine )
 	ptrdiff_t resultSize = base64_encode_block( reinterpret_cast<const char*>(input), inputSize, &buffer[0], &encs, charsPerLine );
 	resultSize += base64_encode_blockend( &buffer[resultSize], &encs );
 	buffer[resultSize] = 0; // null terminate the string
-	
+
 	std::string result( buffer );
 	delete [] buffer;
 	return result;

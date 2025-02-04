@@ -53,7 +53,7 @@ bool MediaFoundationInitializer::sIsMfInitialized = false;
 
 namespace {
 
-inline double	nanoSecondsToSeconds( LONGLONG ns )		{ return (double)ns / 10000000.0; } 
+inline double	nanoSecondsToSeconds( LONGLONG ns )		{ return (double)ns / 10000000.0; }
 inline LONGLONG secondsToNanoSeconds( double seconds )	{ return (LONGLONG)seconds * 10000000; }
 
 ::GUID getMfAudioFormat( SampleType sampleType )
@@ -149,7 +149,7 @@ size_t SourceFileMediaFoundation::performRead( Buffer *buffer, size_t bufferFram
 			}
 		}
 		else if( outNumFrames + readCount > numFramesNeeded ) {
-			// if the IMFSample num frames is over the specified buffer size, 
+			// if the IMFSample num frames is over the specified buffer size,
 			// record how many samples are left over and use up what was asked for.
 			mFramesRemainingInReadBuffer = outNumFrames + readCount - numFramesNeeded;
 			outNumFrames = numFramesNeeded - readCount;
@@ -204,7 +204,7 @@ void SourceFileMediaFoundation::initReader()
 	if( mDataSource->isFilePath() ) {
 		hr = ::MFCreateSourceReaderFromURL( mDataSource->getFilePath().wstring().c_str(), attributesPtr.get(), &sourceReader );
 		if( hr != S_OK ) {
-			string errorString = string( "SourceFileMediaFoundation: Failed to create SourceReader from URL: " ) +  mDataSource->getFilePath().string(); 
+			string errorString = string( "SourceFileMediaFoundation: Failed to create SourceReader from URL: " ) +  mDataSource->getFilePath().string();
 			if( hr == HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND ) )
 				errorString += ", file not found.";
 			throw AudioFileExc( errorString );
@@ -283,7 +283,7 @@ void SourceFileMediaFoundation::initReader()
 	hr = mSourceReader->GetPresentationAttribute( MF_SOURCE_READER_MEDIASOURCE, MF_PD_DURATION, &durationProp );
 	CI_ASSERT( hr == S_OK );
 	LONGLONG duration = durationProp.uhVal.QuadPart;
-	
+
 	mSeconds = nanoSecondsToSeconds( duration );
 	mNumFrames = mFileNumFrames = size_t( mSeconds * (double)mSampleRate );
 
@@ -372,7 +372,7 @@ size_t SourceFileMediaFoundation::processNextReadSample( bool *endOfFile )
 }
 
 // From what I can tell, there is no straightforward way to ask Media Foundation for a list of extensions that relate to the decoders it supports
-// So instead we create the list by hand, with microsoft's supported audio formats webpage as reference: http://msdn.microsoft.com/en-us/library/windows/desktop/dd757927(v=vs.85).aspx 
+// So instead we create the list by hand, with microsoft's supported audio formats webpage as reference: http://msdn.microsoft.com/en-us/library/windows/desktop/dd757927(v=vs.85).aspx
 // To note, I tried MFTEnumEx and was able to get a list of GUID's for codecs, but not extensions. Also, it appears this method is unavailable in Windows Runtime.
 // static
 vector<std::string> SourceFileMediaFoundation::getSupportedExtensions()
@@ -414,7 +414,7 @@ TargetFileMediaFoundation::TargetFileMediaFoundation( const DataTargetRef &dataT
 	::IMFSinkWriter *sinkWriter;
 	HRESULT hr = ::MFCreateSinkWriterFromURL( dataTarget->getFilePath().wstring().c_str(), NULL, NULL, &sinkWriter );
 	if( hr != S_OK ) {
-		string errorString = string( "TargetFileMediaFoundation: Failed to create SinkWriter from URL: " ) +  dataTarget->getFilePath().string(); 
+		string errorString = string( "TargetFileMediaFoundation: Failed to create SinkWriter from URL: " ) +  dataTarget->getFilePath().string();
 		if( hr == HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND ) )
 			errorString += ", file not found.";
 		throw AudioFileExc( errorString );

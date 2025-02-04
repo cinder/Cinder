@@ -302,7 +302,7 @@ bool WasapiAudioClientImpl::testWin10SharedModeLowLatency( const ::WAVEFORMATEX 
 
 	LOG_AUDIOCLIENT( "mix format: " << waveFormatToString( *mixFormat ) );
 
-	// The wfx parameter below is optional (Its needed only for MATCH_FORMAT clients). Otherwise, wfx will be assumed 
+	// The wfx parameter below is optional (Its needed only for MATCH_FORMAT clients). Otherwise, wfx will be assumed
 	// to be the current engine format based on the processing mode for this stream
 	//WAVEFORMATEX *matchFormat = nullptr;
 	UINT32 defaultPeriodInFrames;
@@ -320,7 +320,7 @@ bool WasapiAudioClientImpl::testWin10SharedModeLowLatency( const ::WAVEFORMATEX 
 	ASSERT_HR_OK( hr );
 	LOG_AUDIOCLIENT( "currentPeriodInFrames: " << currentPeriodInFrames << ", currentFormat: " << waveFormatToString( *currentFormat ) );
 
-	// legal periods are any multiple of fundamentalPeriodInFrames between 
+	// legal periods are any multiple of fundamentalPeriodInFrames between
 	// minPeriodInFrames and maxPeriodInFrames, inclusive
 	// the Windows shared-mode engine uses defaultPeriodInFrames unless an audio client // has specifically requested otherwise
 
@@ -697,7 +697,7 @@ void WasapiCaptureClientImpl::captureAudio()
 			mInputDeviceNode->markOverrun();
 			return;
 		}
-	
+
 		BYTE *audioBuffer;
 		UINT32 numFramesAvailable;
 		DWORD flags;
@@ -897,7 +897,7 @@ void InputDeviceNodeWasapi::uninitialize()
 void InputDeviceNodeWasapi::enableProcessing()
 {
 	HRESULT hr = mCaptureImpl->mAudioClient->Start();
-	ASSERT_HR_OK( hr );	
+	ASSERT_HR_OK( hr );
 }
 
 void InputDeviceNodeWasapi::disableProcessing()
@@ -954,7 +954,7 @@ WasapiExc::WasapiExc( const std::string &description )
 }
 
 WasapiExc::WasapiExc( const std::string &description, int32_t hr )
-	: AudioExc( "", hr ) 
+	: AudioExc( "", hr )
 {
 	stringstream ss;
 	ss << description << " (HRESULT: " << hex << hr << dec << ", '" << hresultToString( hr ) << "')";

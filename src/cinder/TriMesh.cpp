@@ -28,7 +28,7 @@
 #include "cinder/Log.h"
 #if defined( CINDER_ANDROID )
 	#include "cinder/android/CinderAndroid.h"
-#endif 
+#endif
 
 using namespace std;
 
@@ -41,11 +41,11 @@ class TriMeshGeomTarget : public geom::Target {
 	TriMeshGeomTarget( TriMesh *mesh )
 		: mMesh( mesh )
 	{}
-	
+
 	uint8_t	getAttribDims( geom::Attrib attr ) const override;
 	void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
 	void copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
-	
+
   protected:
 	TriMesh		*mMesh;
 };
@@ -72,7 +72,7 @@ void TriMeshGeomTarget::copyIndices( geom::Primitive primitive, const uint32_t *
 		default: // All good
 		break;
 	}
-			
+
 	mMesh->mIndices.resize( targetNumIndices );
 	copyIndexDataForceTriangles( primitive, source, numIndices, 0, mMesh->mIndices.data() );
 }
@@ -118,10 +118,10 @@ void TriMesh::loadFromSource( const geom::Source &source )
 	if( mTexCoords1Dims ) attribs.insert( geom::Attrib::TEX_COORD_1 );
 	if( mTexCoords2Dims ) attribs.insert( geom::Attrib::TEX_COORD_2 );
 	if( mTexCoords3Dims ) attribs.insert( geom::Attrib::TEX_COORD_3 );
-	
+
 	TriMeshGeomTarget target( this );
 	source.loadInto( &target, attribs );
-	
+
 	// if source is-nonindexed, generate indices
 	if( source.getNumIndices() == 0 )
 		target.generateIndices( source.getPrimitive(), source.getNumVertices() );
@@ -189,7 +189,7 @@ TriMesh::Format TriMesh::formatFromSource( const geom::Source &source )
 	// tex coords 3
 	if( source.getAttribDims( geom::Attrib::TEX_COORD_3 ) > 0 )
 		result.mTexCoords3Dims = source.getAttribDims( geom::Attrib::TEX_COORD_3 );
-	
+
 	return result;
 }
 
@@ -204,12 +204,12 @@ void TriMesh::loadInto( geom::Target *target, const geom::AttribSet &requestedAt
 			size_t strideBytes;
 
 			getAttribPointer( attrib, &pointer, &strideBytes, &dims );
-			
+
 			if( pointer )
 				target->copyAttrib( attrib, dims, strideBytes, pointer, getNumVertices() );
 		}
 	}
-	
+
 	// copy indices
 	if( getNumIndices() )
 		target->copyIndices( geom::Primitive::TRIANGLES, mIndices.data(), getNumIndices(), 4 /* bytes per index */ );
@@ -455,7 +455,7 @@ AxisAlignedBox TriMesh::calcBoundingBox() const
 		else if( v.z > max.z )
 			max.z = v.z;
 	}
-	
+
 	return AxisAlignedBox( min, max );
 }
 
@@ -862,13 +862,13 @@ void TriMesh::subdivide( int division, bool normalize )
 						const vec2 e = mix( b, c, j * rcp );
 						return mix( d, e, i * div );
 					};
-					
+
 					auto lerpBilinear3 = [&] (const vec3 &a, const vec3 &b, const vec3 &c) {
 						const vec3 d = mix( a, c, j * rcp );
 						const vec3 e = mix( b, c, j * rcp );
 						return mix( d, e, i * div );
 					};
-					
+
 					auto lerpBilinear4 = [&] (const vec4 &a, const vec4 &b, const vec4 &c) {
 						const vec4 d = mix( a, c, j * rcp );
 						const vec4 e = mix( b, c, j * rcp );

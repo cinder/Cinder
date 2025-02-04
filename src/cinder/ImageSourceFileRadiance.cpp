@@ -207,7 +207,7 @@ bool oldStyleDecrunch( RgbePixel *scanline, int len, IStreamCinder *stream )
 {
 	int i;
 	int rshift = 0;
-	
+
 	while( len > 0 ) {
 		stream->read( &scanline[0][R] );
 		stream->read( &scanline[0][G] );
@@ -232,7 +232,7 @@ bool oldStyleDecrunch( RgbePixel *scanline, int len, IStreamCinder *stream )
 			rshift = 0;
 		}
 	}
-	
+
 	return true;
 }
 } // anonymous namespace

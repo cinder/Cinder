@@ -32,7 +32,7 @@ DeviceManagerJack::DeviceManagerJack()
 
 DeviceManagerJack::~DeviceManagerJack()
 {
-	
+
 }
 
 } } } // namespace cinder::audio::linux

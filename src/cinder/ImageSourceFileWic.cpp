@@ -87,15 +87,15 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 
 	// Initialize COM
 	msw::initializeCom();
-	
+
     // Create WIC factory
 	IWICImagingFactory* factory = getFactory();
-	
+
     // Create a decoder
 	IWICBitmapDecoder *decoderP = NULL;
 #if defined( CINDER_UWP )
 		std::string s = dataSourceRef->getFilePath().string();
-		std::wstring filePath =	std::wstring(s.begin(), s.end());                 
+		std::wstring filePath =	std::wstring(s.begin(), s.end());
 #else
 		std::wstring filePath =	dataSourceRef->getFilePath().wstring().c_str();
 #endif
@@ -119,7 +119,7 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad( "Could not create WIC Stream." );
 		mStream = msw::makeComShared( pIWICStream );
-		
+
 		mBuffer = dataSourceRef->getBuffer();
 		hr = mStream->InitializeFromMemory( reinterpret_cast<BYTE*>( mBuffer->getData() ), static_cast<DWORD>( mBuffer->getSize() ) );
 		if( ! SUCCEEDED(hr) )
@@ -149,11 +149,11 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 	UINT width = 0, height = 0;
 	mFrame->GetSize( &width, &height );
 	mWidth = width; mHeight = height;
-	
+
 	hr = mFrame->GetPixelFormat( &mPixelFormat );
 	if( ! SUCCEEDED(hr) )
 		throw ImageIoExceptionFailedLoad( "Could not retrieve pixel format from WIC Decoder." );
-	
+
 	mRequiresConversion = processFormat( mPixelFormat, &mConvertPixelFormat );
 	mRowBytes = mWidth * ImageIo::dataTypeBytes( mDataType ) * channelOrderNumChannels( mChannelOrder );
 }
@@ -162,7 +162,7 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 bool ImageSourceFileWic::processFormat( const ::GUID &guid, ::GUID *convertGUID )
 {
 	if( ( guid == GUID_WICPixelFormat1bppIndexed ) ||
-		( guid == GUID_WICPixelFormat2bppIndexed ) || 
+		( guid == GUID_WICPixelFormat2bppIndexed ) ||
 		( guid == GUID_WICPixelFormat4bppIndexed ) ||
 		( guid == GUID_WICPixelFormat8bppIndexed ) ||
 		( guid == GUID_WICPixelFormat16bppBGR555 ) ||
@@ -170,7 +170,7 @@ bool ImageSourceFileWic::processFormat( const ::GUID &guid, ::GUID *convertGUID 
 		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
 		return true;
 	}
-	else if( guid == GUID_WICPixelFormat24bppBGR ) {		
+	else if( guid == GUID_WICPixelFormat24bppBGR ) {
 		setChannelOrder( ImageIo::BGR ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 );
 	}
 	else if( guid == GUID_WICPixelFormat24bppRGB ) {
@@ -193,7 +193,7 @@ bool ImageSourceFileWic::processFormat( const ::GUID &guid, ::GUID *convertGUID 
 	}
 	else if( guid == GUID_WICPixelFormat64bppPRGBA ) {
 		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT16 ); setPremultiplied( true );
-	}	
+	}
 	else if( guid == GUID_WICPixelFormat128bppRGBFloat ) {
 		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 );
 	}
@@ -223,7 +223,7 @@ void ImageSourceFileWic::load( ImageTargetRef target )
 	std::unique_ptr<uint8_t[]> data( new uint8_t[mRowBytes * mHeight] );
 
 	if( mRequiresConversion ) {
-		IWICFormatConverter *pIFormatConverter = NULL;	
+		IWICFormatConverter *pIFormatConverter = NULL;
 		::HRESULT hr = getFactory()->CreateFormatConverter( &pIFormatConverter );
 		if( ! SUCCEEDED( hr ) )
 			throw ImageIoExceptionFailedLoad( "Could not create WIC Format Converter." );
@@ -235,7 +235,7 @@ void ImageSourceFileWic::load( ImageTargetRef target )
 	}
 	else
 		mFrame->CopyPixels( NULL, (UINT)mRowBytes, mRowBytes * mHeight, data.get() );
-	
+
 	const uint8_t *dataPtr = data.get();
 	for( int32_t row = 0; row < mHeight; ++row ) {
 		((*this).*func)( target, row, dataPtr );

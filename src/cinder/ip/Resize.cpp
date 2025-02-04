@@ -137,7 +137,7 @@ void scanlineFilterChannelToBuffer( WeightTable<WT> *weights, int32_t x, int32_t
 		}
 		*lineBuffer++ = SCALETRAIT<T>::CHANNELTOBUFFER( sum );
 		weights++;
-	}	
+	}
 }
 
 // assumes channels are of same dimensions
@@ -147,11 +147,11 @@ void resample( const vector<const ChannelT<T>*> &srcChannels, const FilterBase &
 	Rectf clippedSrcRect;
 	Area clippedDstArea;
 	getClippedScaledRects( srcChannels[0]->getBounds(), Rectf( srcArea ), dstChannels[0]->getBounds(), dstArea, &clippedSrcRect, &clippedDstArea );
-	
-	if ( ( clippedSrcRect.getWidth() <= 0 ) || ( clippedDstArea.getWidth() <= 0 ) 
+
+	if ( ( clippedSrcRect.getWidth() <= 0 ) || ( clippedDstArea.getWidth() <= 0 )
 		|| ( clippedSrcRect.getHeight() <= 0 ) || ( clippedDstArea.getHeight() <= 0 ) )
 		return;
-	
+
 	FilterParams filterParamsX, filterParamsY;
 	Mapping m;
 	int32_t dstWidth = (int32_t)clippedDstArea.getWidth(), dstHeight = (int32_t)clippedDstArea.getHeight();
@@ -273,7 +273,7 @@ void makeWeightTable( float cen, const FilterBase &filter, const FilterParams *p
 				lastnonzero = i;	// find last nonzero
 		}
 	}
-		
+
 	if ( sum == 0 ) {
 		nz = wtab->end-wtab->start;
 		wtab->start = (wtab->start+wtab->end) >> 1;
@@ -304,7 +304,7 @@ void makeWeightTable( float cen, const FilterBase &filter, const FilterParams *p
 			t = SCALETRAIT<T>::WEIGHTONE - sum;
 			wtab->weight[i - start] += t;	/* fudge center sample */
 		}
-	}   
+	}
 }
 
 template<typename T>
@@ -321,7 +321,7 @@ void resize( const SurfaceT<T> &srcSurface, const Area &srcArea, SurfaceT<T> *ds
 	dstChannels.push_back( &dstSurface->getChannelBlue() );
 	if ( srcSurface.hasAlpha() && dstSurface->hasAlpha() ) {
 		srcChannels.push_back( &srcSurface.getChannelAlpha() );
-		dstChannels.push_back( &dstSurface->getChannelAlpha() );	
+		dstChannels.push_back( &dstSurface->getChannelAlpha() );
 	}
 
 	resample( srcChannels, filter, srcArea, dstArea, dstChannels );
@@ -332,10 +332,10 @@ void resize( const ChannelT<T> &srcChannel, const Area &srcArea, ChannelT<T> *ds
 {
 	vector<const ChannelT<T>*> srcChannels;
 	vector<ChannelT<T>*> dstChannels;
-	
+
 	srcChannels.push_back( &srcChannel );
 	dstChannels.push_back( dstChannel );
-	
+
 	resample( srcChannels, filter, srcArea, dstArea, dstChannels );
 }
 

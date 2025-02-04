@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2010, The Cinder Project
  All rights reserved.
- 
+
  Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
  This code is designed for use with the Cinder C++ library, http://libcinder.org
@@ -74,14 +74,14 @@ XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, bo
 	if( mFilter.empty() ) { // empty filter means nothing matches
 		setToEnd( &root.getChildren() );
 		return;
-	}	
+	}
 
 	for( vector<string>::const_iterator filterComp = mFilter.begin(); filterComp != mFilter.end(); ++filterComp ) {
 		if( mIterStack.empty() ) // first item
 			mSequenceStack.push_back( &root.getChildren() );
 		else
 			mSequenceStack.push_back( &(*mIterStack.back())->getChildren() );
-		
+
 		Container::const_iterator child = findNextChildNamed( *mSequenceStack.back(), mSequenceStack.back()->begin(), *filterComp, mCaseSensitive );
 		if( child != (mSequenceStack.back())->end() )
 			mIterStack.push_back( child );
@@ -109,9 +109,9 @@ bool XmlTree::ConstIter::isDone() const
 void XmlTree::ConstIter::increment()
 {
 	++mIterStack.back();
-	
+
 	if( ! mFilter.empty() ) {
-	
+
 		bool found = false;
 		do {
 			Container::const_iterator next = findNextChildNamed( *mSequenceStack.back(), mIterStack.back(), mFilter[mSequenceStack.size()-1], mCaseSensitive );
@@ -174,7 +174,7 @@ XmlTree& XmlTree::operator=( const XmlTree &rhs )
 		mChildren.push_back( unique_ptr<XmlTree>( new XmlTree( *childIt ) ) );
 		mChildren.back()->mParent = this;
 	}
-	
+
 	return *this;
 }
 
@@ -187,7 +187,7 @@ XmlTree::XmlTree( const std::string &xmlString, ParseOptions parseOptions )
 	else
 		doc.parse<rapidxml::parse_doctype_node>( &strCopy[0] );
 	parseItem( doc, NULL, this, parseOptions );
-	setNodeType( NODE_DOCUMENT ); // call this after parse - constructor replaces it	
+	setNodeType( NODE_DOCUMENT ); // call this after parse - constructor replaces it
 }
 
 void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *result, const XmlTree::ParseOptions &options )
@@ -208,7 +208,7 @@ void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *resu
 					type = XmlTree::NODE_CDATA;
 				}
 			}
-			break;						
+			break;
 			case rapidxml::node_comment:
 				type = XmlTree::NODE_COMMENT;
 			break;
@@ -226,7 +226,7 @@ void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *resu
 			default:
 				continue;
 		}
-		
+
 		result->getChildren().push_back( unique_ptr<XmlTree>( new XmlTree ) );
 		parseItem( *item, result, result->getChildren().back().get(), options );
 		result->getChildren().back()->setNodeType( type );
@@ -289,12 +289,12 @@ XmlTree& XmlTree::setAttribute( const std::string &attrName, const std::string &
 	for( atIt = mAttributes.begin(); atIt != mAttributes.end(); ++atIt )
 		if( atIt->getName() == attrName )
 			break;
-	
+
 	if( atIt == mAttributes.end() )
 		mAttributes.push_back( Attr( this, attrName, value ) );
 	else
 		atIt->setValue( value );
-		
+
 	return *this;
 }
 
@@ -303,14 +303,14 @@ bool XmlTree::hasAttribute( const std::string &attrName ) const
 	for( list<Attr>::const_iterator atIt = mAttributes.begin(); atIt != mAttributes.end(); ++atIt )
 		if( atIt->getName() == attrName )
 			return true;
-	
+
 	return false;
 }
 
 string	XmlTree::getPath( char separator ) const
 {
 	string result;
-	
+
 	const XmlTree *node = this;
 	while( node ) {
 		string nodeName = node->getTag();
@@ -319,7 +319,7 @@ string	XmlTree::getPath( char separator ) const
 		result = nodeName + result;
 		node = node->mParent;
 	}
-		
+
 	return result;
 }
 
@@ -355,7 +355,7 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 		case XmlTree::NODE_COMMENT: type = rapidxml::node_comment; break;
 		case XmlTree::NODE_CDATA: type = rapidxml::node_cdata; break;
 		case XmlTree::NODE_DATA: type = rapidxml::node_data; break;
-		
+
 		default: throw ExcUnknownNodeType();
 	}
 	rapidxml::xml_node<char> *node = 0;
@@ -374,14 +374,14 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 
 	for( list<Attr>::const_iterator attrIt = mAttributes.begin(); attrIt != mAttributes.end(); ++attrIt )
 		node->append_attribute( doc.allocate_attribute( doc.allocate_string( attrIt->getName().c_str() ), doc.allocate_string( attrIt->getValue().c_str() ) ) );
-		
+
 	for( Container::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
 		(*childIt)->appendRapidXmlNode( doc, node );
 }
 
 shared_ptr<rapidxml::xml_document<char> > XmlTree::createRapidXmlDoc( bool createDocument ) const
 {
-	shared_ptr<rapidxml::xml_document<char> > result( new rapidxml::xml_document<>() );	
+	shared_ptr<rapidxml::xml_document<char> > result( new rapidxml::xml_document<>() );
 	if( isDocument() || createDocument ) {
 		rapidxml::xml_node<char> *declarationNode = result->allocate_node( rapidxml::node_declaration, "", "" );
 		result->append_node( declarationNode );

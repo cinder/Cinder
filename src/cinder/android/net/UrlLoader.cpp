@@ -22,7 +22,7 @@
  */
 
 #include "cinder/android/net/UrlLoader.h"
-#include "cinder/android/AndroidDevLog.h" 
+#include "cinder/android/AndroidDevLog.h"
 #include <sstream>
 
 namespace cinder { namespace android { namespace net {
@@ -76,13 +76,13 @@ void UrlLoader::cacheJni()
 		}
 		catch( const std::exception& e ) {
 			dbg_app_error( e.what() );
-		}		
+		}
 	}
 }
 
 void UrlLoader::destroyJni()
 {
-	if( JniHelper::Get()->AttachCurrentThread() ) {	
+	if( JniHelper::Get()->AttachCurrentThread() ) {
 		JniHelper::Get()->DeleteGlobalRef( UrlLoader::sJavaClass  );
 		UrlLoader::sJavaClass 				= nullptr;
 		UrlLoader::sJavaStaticMethodCreate	= nullptr;
@@ -100,7 +100,7 @@ void UrlLoader::initialize()
 		if( nullptr != javaObject ) {
 			mJavaObject = reinterpret_cast<jobject>( JniHelper::Get()->NewGlobalRef( javaObject ) );
 			jni_obtained_check( UrlLoader::mJavaObject );
-		}		
+		}
 	}
 }
 

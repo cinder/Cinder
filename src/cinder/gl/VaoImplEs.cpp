@@ -38,7 +38,7 @@ namespace cinder { namespace gl {
 class VaoImplEs : public Vao {
   public:
 	virtual ~VaoImplEs();
-	
+
 	VaoImplEs();
 
 	// Does the actual "work" of binding the VAO; called by Context
@@ -53,7 +53,7 @@ class VaoImplEs : public Vao {
 	void	reassignContext( Context *newContext ) override;
 
 	void	reassignImpl( Context *newContext );
-	
+
 	friend class Context;
 };
 
@@ -62,7 +62,7 @@ VaoRef createVaoImplEs()
 {
 	return VaoRef( new VaoImplEs );
 }
-	
+
 VaoImplEs::VaoImplEs()
 {
 	mId	= 0;
@@ -82,7 +82,7 @@ void VaoImplEs::bindImpl( Context *context )
 		reassignImpl( context );
 	}
 
-	glBindVertexArray( mId );	
+	glBindVertexArray( mId );
 
 	if( context ) {
 		context->reflectBufferBinding( GL_ELEMENT_ARRAY_BUFFER, mLayout.mElementArrayBufferBinding );
@@ -146,7 +146,7 @@ void VaoImplEs::enableVertexAttribArrayImpl( GLuint index )
 void VaoImplEs::disableVertexAttribArrayImpl( GLuint index )
 {
 	mLayout.disableVertexAttribArray( index );
-	
+
 	glDisableVertexAttribArray( index );
 }
 

@@ -178,9 +178,9 @@ bool RendererGlLinux::initialize( ci::ivec2 renderSize, RendererRef sharedRender
 		checkGlStatus();
 		return false;
 	}
-#else 
+#else
 	// Create context
-	int ctxattribs[] = { OSMESA_FORMAT, OSMESA_RGBA, 
+	int ctxattribs[] = { OSMESA_FORMAT, OSMESA_RGBA,
 						 OSMESA_DEPTH_BITS, 32,
 						 OSMESA_STENCIL_BITS, 8,
 						 OSMESA_ACCUM_BITS, 16,

@@ -200,7 +200,7 @@ float Perlin::noise( float x, float y, float z ) const
 	return	nlerp(w, nlerp( v, nlerp( u, a, b ),
 							 nlerp( u, c, d ) ),
 					nlerp(v, nlerp( u, e, f ),
-							 nlerp( u, g, h ) ) );	
+							 nlerp( u, g, h ) ) );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -236,7 +236,7 @@ vec2 Perlin::dnoise( float x, float y ) const
 	float b = grad( mPerms[BA], x-1, y   );
 	float c = grad( mPerms[AB], x  , y-1   );
 	float d = grad( mPerms[BB], x-1, y-1   );
-	
+
     const float k1 =   b - a;
     const float k2 =   c - a;
     const float k4 =   a - b - c + d;
@@ -255,7 +255,7 @@ vec3 Perlin::dnoise( float x, float y, float z ) const
 
 	if( du < 0.000001f ) du = 1.0f;
 	if( dv < 0.000001f ) dv = 1.0f;
-	if( dw < 0.000001f ) dw = 1.0f;	
+	if( dw < 0.000001f ) dw = 1.0f;
 
 	float a = grad( mPerms[AA  ], x  , y  , z   );
 	float b = grad( mPerms[BA  ], x-1, y  , z   );

@@ -66,9 +66,9 @@ PlatformLinux::~PlatformLinux()
 {
 }
 
-PlatformLinux* PlatformLinux::get() 
-{ 
-	return reinterpret_cast<PlatformLinux*>( Platform::get() ); 
+PlatformLinux* PlatformLinux::get()
+{
+	return reinterpret_cast<PlatformLinux*>( Platform::get() );
 }
 
 void PlatformLinux::cleanupLaunch()
@@ -76,19 +76,19 @@ void PlatformLinux::cleanupLaunch()
 	cinder::FontManager_destroyStaticInstance();
 }
 
-DataSourceRef PlatformLinux::loadResource( const fs::path &resourcePath ) 
+DataSourceRef PlatformLinux::loadResource( const fs::path &resourcePath )
 {
 	fs::path fullPath = getResourcePath( resourcePath );
 	if( fullPath.empty() )
 		throw ResourceLoadExc( std::string( "Could not resolve absolute path for: " ) + resourcePath.string() );
 	else
-		return DataSourcePath::create( fullPath );	
+		return DataSourcePath::create( fullPath );
 }
 
-fs::path PlatformLinux::getResourceDirectory() const 
+fs::path PlatformLinux::getResourceDirectory() const
 {
 	// @TODO: Implement
-	return fs::path();	
+	return fs::path();
 }
 
 fs::path PlatformLinux::getResourcePath( const fs::path &rsrcRelativePath ) const
@@ -127,7 +127,7 @@ fs::path PlatformLinux::getResourcePath( const fs::path &rsrcRelativePath ) cons
 			return fullPath;
 	}
 
-	return fs::path(); // empty implies failure	
+	return fs::path(); // empty implies failure
 }
 
 struct DialogHelper {
@@ -167,7 +167,7 @@ struct DialogHelper {
 				ss << " ";
 			}
 		}
-		
+
 		std::string cmd = ss.str();
 		if( ! cmd.empty() ) {
 			FILE* pipe = popen( cmd.c_str(), "r" );
@@ -191,7 +191,7 @@ struct DialogHelper {
 					result = value;
 				}
 			}
-			pclose(pipe);			
+			pclose(pipe);
 		}
 
 		return result;
@@ -325,22 +325,22 @@ struct DialogHelper {
 };
 
 
-fs::path PlatformLinux::getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) 
+fs::path PlatformLinux::getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )
 {
 	return DialogHelper::getOpenFilePath( initialPath, extensions );
 }
 
-fs::path PlatformLinux::getFolderPath( const fs::path &initialPath ) 
+fs::path PlatformLinux::getFolderPath( const fs::path &initialPath )
 {
 	return DialogHelper::getFolderPath( initialPath );
 }
 
-fs::path PlatformLinux::getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) 
+fs::path PlatformLinux::getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )
 {
 	return DialogHelper::getSaveFilePath( initialPath, extensions );
 }
 
-std::map<std::string, std::string> PlatformLinux::getEnvironmentVariables() 
+std::map<std::string, std::string> PlatformLinux::getEnvironmentVariables()
 {
 	std::map<std::string, std::string> result;
 
@@ -357,21 +357,21 @@ std::map<std::string, std::string> PlatformLinux::getEnvironmentVariables()
 	return result;
 }
 
-fs::path PlatformLinux::expandPath( const fs::path &path ) 
+fs::path PlatformLinux::expandPath( const fs::path &path )
 {
 	fs::path filename = path.filename();
 
 	char actualPath[PATH_MAX];
-	if( ::realpath( path.parent_path().c_str(), actualPath ) ) { 
+	if( ::realpath( path.parent_path().c_str(), actualPath ) ) {
 		fs::path expandedPath = fs::path( std::string( actualPath ) );
 		expandedPath /= filename;
-		return expandedPath;	
-	}   
+		return expandedPath;
+	}
 
-	return fs::path();  
+	return fs::path();
 }
 
-fs::path PlatformLinux::getHomeDirectory() const 
+fs::path PlatformLinux::getHomeDirectory() const
 {
 	fs::path result;
 
@@ -407,7 +407,7 @@ fs::path PlatformLinux::getHomeDirectory() const
 	return result;
 }
 
-fs::path PlatformLinux::getDocumentsDirectory() const 
+fs::path PlatformLinux::getDocumentsDirectory() const
 {
 	fs::path result;
 
@@ -422,7 +422,7 @@ fs::path PlatformLinux::getDocumentsDirectory() const
 	return result;
 }
 
-fs::path PlatformLinux::getDefaultExecutablePath() const 
+fs::path PlatformLinux::getDefaultExecutablePath() const
 {
 	std::vector<char> buf( PATH_MAX );
 	std::memset( &(buf[0]), 0, buf.size()  );
@@ -433,13 +433,13 @@ fs::path PlatformLinux::getDefaultExecutablePath() const
  	return fs::path( std::string( &(buf[0]), len ) ).parent_path();
 }
 
-void PlatformLinux::sleep( float milliseconds ) 
+void PlatformLinux::sleep( float milliseconds )
 {
 	unsigned long sleepMicroSecs = milliseconds*1000L;
-	usleep( sleepMicroSecs );	
+	usleep( sleepMicroSecs );
 }
 
-void PlatformLinux::launchWebBrowser( const Url &url ) 
+void PlatformLinux::launchWebBrowser( const Url &url )
 {
 	pid_t pid = fork();
 
@@ -458,10 +458,10 @@ void PlatformLinux::launchWebBrowser( const Url &url )
 	}
 }
 
-std::vector<std::string> PlatformLinux::stackTrace() 
+std::vector<std::string> PlatformLinux::stackTrace()
 {
 	// @TODO: Implement
-	return std::vector<std::string>();	
+	return std::vector<std::string>();
 }
 
 void PlatformLinux::setThreadName( const std::string &name )
@@ -485,7 +485,7 @@ void PlatformLinux::removeDisplay( const DisplayRef &display )
 {
 	DisplayRef displayCopy = display;
 	mDisplays.erase( std::remove( mDisplays.begin(), mDisplays.end(), displayCopy ), mDisplays.end() );
-				
+
 	if( app::AppBase::get() )
 		app::AppBase::get()->emitDisplayDisconnected( displayCopy );
 }
@@ -528,7 +528,7 @@ void DisplayLinux::displayReconfiguredCallback( GLFWmonitor* monitor, int event 
 		if( display )
 			platform->removeDisplay( display ); // this will signal
 		else
-			CI_LOG_W( "Received removed from displayReconfiguredCallback() on unknown display" );		
+			CI_LOG_W( "Received removed from displayReconfiguredCallback() on unknown display" );
 	}
 	else if( event == GLFW_CONNECTED ) {
 		auto display = platform->findDisplayFromGlfwMonitor( monitor );
@@ -540,7 +540,7 @@ void DisplayLinux::displayReconfiguredCallback( GLFWmonitor* monitor, int event 
 			ivec2 pos;
 			glfwGetMonitorPos(monitor, &pos.x, &pos.y);
 
-			newDisplay->mArea = Area( pos.x, pos.y, 
+			newDisplay->mArea = Area( pos.x, pos.y,
 				pos.x + size.x, pos.y + size.y );
 
 			newDisplay->mBitsPerPixel = videoMode->redBits + videoMode->greenBits + videoMode->blueBits;
@@ -551,7 +551,7 @@ void DisplayLinux::displayReconfiguredCallback( GLFWmonitor* monitor, int event 
 			platform->addDisplay( DisplayRef( newDisplay ) ); // this will signal
 		}
 		else
-			CI_LOG_W( "Received add from displayReconfiguredCallback() for already known display" );				
+			CI_LOG_W( "Received add from displayReconfiguredCallback() for already known display" );
 	}
 }
 
@@ -559,7 +559,7 @@ const std::vector<DisplayRef>& app::PlatformLinux::getDisplays()
 {
 	auto glfwInitialized = ::glfwInit();
 	if( ! mDisplaysInitialized && glfwInitialized ) {
-		// this is our first call; register a callback with CoreGraphics for any 
+		// this is our first call; register a callback with CoreGraphics for any
 		// display changes. Note that this only works with a run loop
 		::glfwSetMonitorCallback( DisplayLinux::displayReconfiguredCallback );
 		int32_t numMonitors, nonPrimaryIndex = 1;
@@ -569,7 +569,7 @@ const std::vector<DisplayRef>& app::PlatformLinux::getDisplays()
 		for( size_t i = 0; i < numMonitors; ++i ) {
 			GLFWmonitor *monitor = monitors[i];
 			auto newDisplay = std::make_shared<DisplayLinux>();
-			
+
 			const auto *videoMode = ::glfwGetVideoMode( monitor );
 			auto size = ivec2( videoMode->width, videoMode->height );
 			ivec2 pos;
@@ -588,9 +588,9 @@ const std::vector<DisplayRef>& app::PlatformLinux::getDisplays()
 				mDisplays[nonPrimaryIndex++] = std::move( newDisplay );
 		}
 
-		mDisplaysInitialized = true;	
+		mDisplaysInitialized = true;
 	}
-	
+
 	return mDisplays;
 }
 #else // EGL

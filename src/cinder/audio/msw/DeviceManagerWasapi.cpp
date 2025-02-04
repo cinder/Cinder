@@ -203,7 +203,7 @@ size_t DeviceManagerWasapi::getNumOutputChannels( const DeviceRef &device )
 {
 	auto& devInfo = getDeviceInfo( device );
 	if( devInfo.mUsage != DeviceInfo::Usage::OUTPUT )
-		return 0;	
+		return 0;
 
 	return devInfo.mNumChannels;
 }
@@ -333,7 +333,7 @@ void DeviceManagerWasapi::parseDevices( DeviceInfo::Usage usage )
 		devInfo.mKey = ci::msw::toUtf8String( devInfo.mEndpointId );
 		devInfo.mState = endpointState;
 		::CoTaskMemFree( endpointIdLpwStr );
-		
+
 		::PROPVARIANT formatVar;
 		hr = properties->GetValue( PKEY_AudioEngine_DeviceFormat, &formatVar );
 		CI_ASSERT( hr == S_OK );
@@ -440,7 +440,7 @@ HRESULT DeviceManagerWasapi::Impl::OnDefaultDeviceChanged( EDataFlow flow, ERole
 {
 #if 0
 	auto devName = getDevice( new_default_device_id )->getName();
-	
+
 	CI_LOG_I( "device name: " << devName << ", flow: " << deviceFlowToStr( flow ) << ", role: " << deviceRoloToStr( role ) );
 
 	if( new_default_device_id == NULL ) {

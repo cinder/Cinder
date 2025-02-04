@@ -52,17 +52,17 @@ void parseKtx( const DataSourceRef &dataSource, TextureData *resultData )
 	static const uint8_t FileIdentifier[12] = {
 		0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A
 	};
-	
+
 	KtxHeader header;
 	auto ktxStream = dataSource->createStream();
 	ktxStream->readData( &header, sizeof(header) );
-	
+
 	if( memcmp( header.identifier, FileIdentifier, sizeof(FileIdentifier) ) )
-		throw KtxParseExc( "File identifier mismatch" );			
-	
+		throw KtxParseExc( "File identifier mismatch" );
+
 	if( header.endianness != 0x04030201 )
 		throw KtxParseExc( "Only little endian currently supported" );
-	
+
 	if( header.numberOfArrayElements != 0 )
 		throw KtxParseExc( "Array textures not currently supported" );
 
@@ -71,7 +71,7 @@ void parseKtx( const DataSourceRef &dataSource, TextureData *resultData )
 
 	if( header.pixelDepth != 0 )
 		throw KtxParseExc( "3D textures not currently supported" );
-	
+
 	resultData->setWidth( header.pixelWidth );
 	resultData->setHeight( header.pixelHeight );
 	resultData->setDepth( header.pixelDepth );
@@ -80,20 +80,20 @@ void parseKtx( const DataSourceRef &dataSource, TextureData *resultData )
 	resultData->setDataFormat( header.glFormat );
 	resultData->setDataType( header.glType );
 	resultData->setUnpackAlignment( 4 );
-	
+
 	ktxStream->seekRelative( header.bytesOfKeyValueData );
 
 	// clear output containers
 	resultData->clear();
 	size_t byteOffset = 0;
 	for( int levelIdx = 0; levelIdx < std::max<int>( 1, header.numberOfMipmapLevels ); ++levelIdx ) {
-		
+
 		resultData->push_back( TextureData::Level() );
 		TextureData::Level &level = resultData->back();
 		level.width = std::max<int>( 1, header.pixelWidth >> levelIdx );
 		level.height = std::max<int>( 1, header.pixelHeight >> levelIdx );
 		level.depth = 0;
-		
+
 		uint32_t imageSize;
 		ktxStream->readData( &imageSize, sizeof(imageSize) ); // the size of a single face
 
@@ -104,7 +104,7 @@ void parseKtx( const DataSourceRef &dataSource, TextureData *resultData )
 				resultData->allocateDataStore( imageSize * header.numberOfFaces );
 			resultData->mapDataStore();
 		}
-		
+
 		for( int arrayElement = 0; arrayElement < std::max<int>( 1, header.numberOfArrayElements ); ++arrayElement ) { // currently always 0->1
 			for( uint32_t faceIdx = 0; faceIdx < header.numberOfFaces; ++faceIdx ) { // currently always 0->1 or 0->6
 				level.push_back( TextureData::Face() );
@@ -115,7 +115,7 @@ void parseKtx( const DataSourceRef &dataSource, TextureData *resultData )
 					if( byteOffset + imageSize > resultData->getDataStoreSize() )
 						throw TextureDataStoreTooSmallExc();
 					ktxStream->readData( resultData->getDataStorePtr( byteOffset ), imageSize );
-					
+
 //					newFace.back().depth = zSlice;
 					byteOffset += imageSize;
 				}
@@ -202,7 +202,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 		union
 		{
 			uint32_t           dwBackBufferCount;      // number of back buffers requested
-			uint32_t           dwDepth;                // the depth if this is a volume texture 
+			uint32_t           dwDepth;                // the depth if this is a volume texture
 		};
 		union
 		{
@@ -250,7 +250,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 	char filecode[4];
 	int numFaces = 1;
 	ddsStream->readData( filecode, 4 );
-	if( strncmp( filecode, "DDS ", 4 ) != 0 ) { 
+	if( strncmp( filecode, "DDS ", 4 ) != 0 ) {
 		throw DdsParseExc( "File identifier mismatch" );
 	}
 
@@ -304,7 +304,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 #endif
 	}
 	else {
-		switch( ddsd.ddpfPixelFormat.dwFourCC ) { 
+		switch( ddsd.ddpfPixelFormat.dwFourCC ) {
 #if ! defined( CINDER_GL_ANGLE )
 			case 20 /*D3DFMT_R8G8B8*/:
 				internalFormat = GL_RGB8;
@@ -319,15 +319,15 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 				blockSizeBytes = sizeof(uint8_t) * 4;
 			break;
 #endif
-			case FOURCC_DXT1: 
+			case FOURCC_DXT1:
 				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 				blockSizeBytes = 8;
-			break; 
-			case FOURCC_DXT3: 
+			break;
+			case FOURCC_DXT3:
 				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-			break; 
-			case FOURCC_DXT5: 
-				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; 
+			break;
+			case FOURCC_DXT5:
+				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 			break;
 #if ! defined( CINDER_GL_ANGLE )
 			case FOURCC_ATI1: // aka DX10 BC4
@@ -392,7 +392,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 			default:
 				throw DdsParseExc( "Unsupported image format" );
 			break;
-		} 
+		}
 	}
 
 	if( (dataType == 0) && ( ! (ddsd.ddpfPixelFormat.dwFlags & DDPF_FOURCC) ) )
@@ -428,9 +428,9 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 	resultData->allocateDataStore( spaceRequired );
 
 	// allocate all levels and faces
-	for( int levelIdx = 0; levelIdx < numMipMaps && (ddsd.dwWidth || ddsd.dwHeight); ++levelIdx ) { 
+	for( int levelIdx = 0; levelIdx < numMipMaps && (ddsd.dwWidth || ddsd.dwHeight); ++levelIdx ) {
 		resultData->push_back( TextureData::Level() );
-		TextureData::Level &level = resultData->back();		
+		TextureData::Level &level = resultData->back();
 		level.width = std::max<int>( 1, (ddsd.dwWidth>>levelIdx) );
 		level.height = std::max<int>( 1, (ddsd.dwHeight>>levelIdx) );
 		level.depth = 0;
@@ -441,7 +441,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 	resultData->mapDataStore();
 	size_t byteOffset = 0;
 	for( int faceIdx = 0; faceIdx < numFaces; ++faceIdx ) {
-		for( int levelIdx = 0; levelIdx < numMipMaps && (ddsd.dwWidth || ddsd.dwHeight); ++levelIdx ) { 
+		for( int levelIdx = 0; levelIdx < numMipMaps && (ddsd.dwWidth || ddsd.dwHeight); ++levelIdx ) {
 			const uint32_t imageSize = calcImageLevelSize( levelIdx );
 
 			TextureData::Level &level = resultData->getLevels()[levelIdx];

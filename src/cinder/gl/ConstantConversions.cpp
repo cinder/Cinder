@@ -65,7 +65,7 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_UNSIGNED_INT_SAMPLER_2D] = "UNSIGNED_INT_SAMPLER_2D";
 		sSymbols[GL_UNSIGNED_INT_SAMPLER_3D] = "UNSIGNED_INT_SAMPLER_3D";
 		sSymbols[GL_UNSIGNED_INT_SAMPLER_2D_ARRAY] = "UNSIGNED_INT_SAMPLER_2D_ARRAY";
-		sSymbols[GL_UNSIGNED_INT_SAMPLER_CUBE] = "UNSIGNED_INT_SAMPLER_CUBE";		
+		sSymbols[GL_UNSIGNED_INT_SAMPLER_CUBE] = "UNSIGNED_INT_SAMPLER_CUBE";
 		sSymbols[GL_SAMPLER_2D_SHADOW] = "SAMPLER_2D_SHADOW";
 		sSymbols[GL_SAMPLER_2D_ARRAY_SHADOW] = "SAMPLER_2D_ARRAY_SHADOW";
 		sSymbols[GL_SAMPLER_CUBE_SHADOW] = "GL_SAMPLER_CUBE_SHADOW";
@@ -103,7 +103,7 @@ std::string	constantToString( GLenum constant )
 		// Buffer bindings
 		sSymbols[GL_ARRAY_BUFFER] = "GL_ARRAY_BUFFER";
 		sSymbols[GL_ELEMENT_ARRAY_BUFFER] = "GL_ELEMENT_ARRAY_BUFFER";
-		
+
 #if ! defined( CINDER_GL_ES_2 )
 		sSymbols[GL_PIXEL_PACK_BUFFER] = "GL_PIXEL_PACK_BUFFER";
 		sSymbols[GL_PIXEL_UNPACK_BUFFER] = "GL_PIXEL_UNPACK_BUFFER";
@@ -147,7 +147,7 @@ std::string	constantToString( GLenum constant )
 #if defined( CINDER_GL_ES )
 		sSymbols[GL_LUMINANCE] = "GL_LUMINANCE";
 		sSymbols[GL_LUMINANCE_ALPHA] = "GL_LUMINANCE_ALPHA";
-#endif		
+#endif
 
 		sSymbols[GL_RED] = "GL_RED";
 		sSymbols[GL_RG] = "GL_RG";
@@ -165,10 +165,10 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_RG32F] = "GL_RG32F";
 		sSymbols[GL_RGB32F] = "GL_RGB32F";
 		sSymbols[GL_RGBA32F] = "GL_RGBA32F";
-		
+
 		sSymbols[GL_R11F_G11F_B10F] = "GL_R11F_G11F_B10F";
 		sSymbols[GL_RGB9_E5] = "GL_RGB9_E5";
-		
+
 #if ! defined( CINDER_GL_ES_2 )
 		sSymbols[GL_R8I] = "GL_R8I";
 		sSymbols[GL_R8UI] = "GL_R8UI";
@@ -209,7 +209,7 @@ std::string	constantToString( GLenum constant )
 
 	#if ( ! defined( CINDER_GL_ES ) ) || ( defined( CINDER_GL_ES ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 ) )
 		sSymbols[GL_RGB10_A2UI] = "GL_RGB10_A2UI";
-	#endif		
+	#endif
 #endif
 
 #if defined( CINDER_GL_HAS_TEXTURE_NORM16 )
@@ -242,7 +242,7 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_RGB16_SNORM] = "GL_RGB16_SNORM";
   #endif
 #endif
-		
+
 #if ! defined( CINDER_GL_ES )
 		sSymbols[GL_RGBA2] = "GL_RGBA2";
 		sSymbols[GL_RGBA12] = "GL_RGBA12";
@@ -274,15 +274,15 @@ std::string	constantToString( GLenum constant )
 #endif // ! defined( CINDER_GL_ES_2 )
 
 #if defined( CINDER_GL_HAS_COMPUTE_SHADER )
-		sSymbols[GL_IMAGE_1D] = "GL_IMAGE_1D"; 
-		sSymbols[GL_IMAGE_2D] = "GL_IMAGE_2D"; 
-		sSymbols[GL_IMAGE_3D] = "GL_IMAGE_3D"; 
+		sSymbols[GL_IMAGE_1D] = "GL_IMAGE_1D";
+		sSymbols[GL_IMAGE_2D] = "GL_IMAGE_2D";
+		sSymbols[GL_IMAGE_3D] = "GL_IMAGE_3D";
 #endif
-		
+
 		initialized = true;
 	}
 
-/*	
+/*
 	static bool initialized = false;
 	static std::unordered_map<GLenum,std::string> sSymbols;
 	if( ! initialized ) {
@@ -310,7 +310,7 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_UNSIGNED_INT_SAMPLER_2D] = "UNSIGNED_INT_SAMPLER_2D";
 		sSymbols[GL_UNSIGNED_INT_SAMPLER_3D] = "UNSIGNED_INT_SAMPLER_3D";
 		sSymbols[GL_UNSIGNED_INT_SAMPLER_2D_ARRAY] = "UNSIGNED_INT_SAMPLER_2D_ARRAY";
-		sSymbols[GL_UNSIGNED_INT_SAMPLER_CUBE] = "UNSIGNED_INT_SAMPLER_CUBE";		
+		sSymbols[GL_UNSIGNED_INT_SAMPLER_CUBE] = "UNSIGNED_INT_SAMPLER_CUBE";
 		sSymbols[GL_SAMPLER_2D_SHADOW] = "SAMPLER_2D_SHADOW";
 		sSymbols[GL_SAMPLER_2D_ARRAY_SHADOW] = "SAMPLER_2D_ARRAY_SHADOW";
 		sSymbols[GL_SAMPLER_CUBE_SHADOW] = "GL_SAMPLER_CUBE_SHADOW";
@@ -469,11 +469,11 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_COLOR_ATTACHMENT8] = "GL_COLOR_ATTACHMENT8";
 		sSymbols[GL_COLOR_ATTACHMENT9] = "GL_COLOR_ATTACHMENT9";
 #endif // ! defined( CINDER_GL_ES_2 )
-		
+
 		initialized = true;
 	}
-*/	
-	
+*/
+
 	auto it = sSymbols.find( constant );
 	if( it != sSymbols.end() )
 		return it->second;
@@ -484,7 +484,7 @@ std::string	constantToString( GLenum constant )
 		return ss.str();
 	}
 }
-	
+
 uint8_t typeToDimension( GLenum type )
 {
 	switch (type) {
@@ -540,7 +540,7 @@ uint8_t typeToDimension( GLenum type )
 		break;
 	}
 }
-	
+
 uint8_t typeToBytes( GLenum type )
 {
 	switch( type ) {
@@ -561,15 +561,15 @@ uint8_t typeToBytes( GLenum type )
 		case GL_SAMPLER_2D_ARRAY:				return sizeof(int); break;
 		case GL_SAMPLER_2D_SHADOW:				return sizeof(int); break;
 		case GL_SAMPLER_2D_ARRAY_SHADOW:		return sizeof(int); break;
-		case GL_SAMPLER_CUBE_SHADOW:			return sizeof(int); break;						
+		case GL_SAMPLER_CUBE_SHADOW:			return sizeof(int); break;
 		case GL_INT_SAMPLER_2D:					return sizeof(int); break;
 		case GL_INT_SAMPLER_3D:					return sizeof(int); break;
 		case GL_INT_SAMPLER_CUBE:				return sizeof(int); break;
-		case GL_INT_SAMPLER_2D_ARRAY:			return sizeof(int); break;		
+		case GL_INT_SAMPLER_2D_ARRAY:			return sizeof(int); break;
 		case GL_SAMPLER_3D:						return sizeof(int); break;
 		case GL_UNSIGNED_INT_SAMPLER_2D:		return sizeof(int); break;
 		case GL_UNSIGNED_INT_SAMPLER_3D:		return sizeof(int); break;
-		case GL_UNSIGNED_INT_SAMPLER_CUBE:		return sizeof(int); break;		
+		case GL_UNSIGNED_INT_SAMPLER_CUBE:		return sizeof(int); break;
 		case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:	return sizeof(int); break;
 #else
 	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
@@ -583,7 +583,7 @@ uint8_t typeToBytes( GLenum type )
 
 #if defined( CINDER_ANDROID )
 		case GL_SAMPLER_EXTERNAL_OES: return sizeof(int); break;
-#endif		
+#endif
 
 		case GL_SAMPLER_CUBE:		return sizeof(int); break;
 		case GL_FLOAT:				return sizeof(float); break;
@@ -594,7 +594,7 @@ uint8_t typeToBytes( GLenum type )
 		case GL_UNSIGNED_INT_VEC3:	return sizeof(glm::uvec3); break;
 		case GL_UNSIGNED_INT_VEC4:	return sizeof(glm::uvec4); break;
 #endif
-		
+
 		case GL_INT_VEC2:			return sizeof(ivec2); break;
 		case GL_FLOAT_VEC2:			return sizeof(vec2); break;
 		case GL_BOOL_VEC2:			return sizeof(glm::bvec2); break;

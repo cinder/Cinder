@@ -1,16 +1,16 @@
 /*
  Copyright (c) 2012, The Cinder Project, All rights reserved.
- 
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
- 
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
- 
+
  * Redistributions of source code must retain the above copyright notice, this list of conditions and
  the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
  the following disclaimer in the documentation and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -46,28 +46,28 @@
 	mCinderView = cinderView;
 	// Get the layer
 	CAEAGLLayer *eaglLayer = (CAEAGLLayer *)mCinderView.layer;
-	
+
 	eaglLayer.opaque = TRUE;
 	eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSNumber numberWithBool:FALSE], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
-	
+
 	mBackingWidth = 0;
 	mBackingHeight = 0;
-	
+
 	mMsaaSamples = renderer->getOptions().getMsaa();
-	
+
 	mUsingStencil = renderer->getOptions().getStencil();
 	mObjectTracking = renderer->getOptions().getObjectTracking();
 	mDepthInternalFormat = ( renderer->getOptions().getDepthBufferDepth() == 24 ) ? GL_DEPTH_COMPONENT24 : GL_DEPTH_COMPONENT16;
 	if( mUsingStencil )
 		mDepthInternalFormat = GL_DEPTH24_STENCIL8;
 	mColorInternalFormat = GL_RGBA8;
-	
+
 	[self allocateGraphics:sharedRenderer];
 	// make sure that mContext was set properly; if not we failed to allocate
 	if( ! mContext )
 		throw cinder::app::ExcRendererAllocation( "Failed to allocate GL context" );
-	
+
 	return self;
 }
 
@@ -84,14 +84,14 @@
 	}
 	else
 		mContext = [[EAGLContext alloc] initWithAPI:api];
-	
+
 	if( ! mContext ) {
 		[self release];
 		return;
 	}
 	else
 		[EAGLContext setCurrentContext:mContext];
-	
+
 	cinder::gl::Environment::setEs();
 
 	// setup msaa samples and clamp to max on this hardware
@@ -116,12 +116,12 @@
 	// This call associates the storage for the current render buffer with the EAGLDrawable (our CAEAGLLayer)
 	// allowing us to draw into a buffer that will later be rendered to the screen wherever the layer is (which corresponds with our view).
 	[mContext renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer*)mCinderView.layer];
-	
+
 	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, mViewRenderbuffer );
-	
+
 	glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &mBackingWidth );
 	glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &mBackingHeight );
-	
+
 	if( ! mUsingMsaa ) {
 		// setup depth (+stencil) buffer
 		glGenRenderbuffers( 1, &mDepthRenderbuffer );
@@ -139,7 +139,7 @@
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderbuffer );
 	}
 	else {
-		// for MSAA we setup a parallel Framebuffer; the non-MSAA framebuffer doesn't get a depthbuffer		
+		// for MSAA we setup a parallel Framebuffer; the non-MSAA framebuffer doesn't get a depthbuffer
 		glGenFramebuffers( 1, &mMsaaFramebuffer );
 		glGenRenderbuffers( 1, &mMsaaRenderbuffer );
 		mCinderContext->bindFramebuffer( GL_FRAMEBUFFER, mMsaaFramebuffer );
@@ -151,7 +151,7 @@
 		glGenRenderbuffers( 1, &mDepthRenderbuffer );
 		glBindRenderbuffer( GL_RENDERBUFFER, mDepthRenderbuffer );
 		glRenderbufferStorageMultisample( GL_RENDERBUFFER, mMsaaSamples, mDepthInternalFormat, mBackingWidth, mBackingHeight );
-		
+
 		if( mUsingStencil ) {
 #if defined( CINDER_GL_ES_2 )
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderbuffer );
@@ -204,7 +204,7 @@
 		glBindRenderbuffer( GL_RENDERBUFFER, mMsaaRenderbuffer );
 		glRenderbufferStorageMultisample( GL_RENDERBUFFER, mMsaaSamples, mColorInternalFormat, mBackingWidth, mBackingHeight );
 	}
-	
+
 	if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
 		CI_LOG_E( "Failed to reallocate application framebuffer" );
 	}
@@ -213,7 +213,7 @@
 - (void)makeCurrentContext:(bool)force
 {
 	mCinderContext->makeCurrent( force );
-    
+
 	// This application only creates a single default framebuffer which is already bound at this point.
 	// This call is redundant, but needed if dealing with multiple framebuffers.
 	if( mUsingMsaa ) {
@@ -243,7 +243,7 @@
 		glInvalidateFramebuffer( GL_FRAMEBUFFER, 2, attachments );
 #endif
 	}
-	
+
 	mCinderContext->bindFramebuffer( GL_FRAMEBUFFER, mViewFramebuffer );
     glBindRenderbuffer( GL_RENDERBUFFER, mViewRenderbuffer );
     [mContext presentRenderbuffer:GL_RENDERBUFFER];

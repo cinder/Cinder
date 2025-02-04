@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2013, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -24,9 +24,9 @@
 
 /*
  * Copyright 2001-2004 Unicode, Inc.
- * 
+ *
  * Disclaimer
- * 
+ *
  * This source code is provided as is by Unicode, Inc. No claims are
  * made as to fitness for any particular purpose. No warranties of any
  * kind are expressed or implied. The recipient agrees to determine
@@ -34,9 +34,9 @@
  * purchased on magnetic or optical media from Unicode, Inc., the
  * sole remedy for any claim will be exchange of defective media
  * within 90 days of receipt.
- * 
+ *
  * Limitations on Rights to Redistribute This Code
- * 
+ *
  * Unicode, Inc. hereby grants the right to freely use the information
  * supplied in this file in the creation of products supporting the
  * Unicode Standard, and to make copies of this file in any form
@@ -76,7 +76,7 @@ std::u16string toUtf16( const char *utf8Str, size_t lengthInBytes )
 {
 	if( lengthInBytes == 0 )
 		lengthInBytes = strlen( utf8Str );
-	
+
 	std::u16string result;
 	utf8::utf8to16( utf8Str, utf8Str + lengthInBytes, back_inserter( result ));
 	return result;
@@ -93,7 +93,7 @@ std::u32string toUtf32( const char *utf8Str, size_t lengthInBytes )
 {
 	if( lengthInBytes == 0 )
 		lengthInBytes = strlen( utf8Str );
-	
+
 	std::u32string result;
 	utf8::utf8to32( utf8Str, utf8Str + lengthInBytes, back_inserter( result ));
 	return result;
@@ -116,7 +116,7 @@ std::string toUtf8( const char16_t *utf16Str, size_t lengthInBytes )
 
 	std::string result;
 	utf8::utf16to8( utf16Str, utf16Str + lengthInBytes, back_inserter( result ));
-	return result;	
+	return result;
 }
 
 std::string	toUtf8( const std::u16string &utf16Str )
@@ -154,7 +154,7 @@ size_t stringLengthUtf8( const char *str, size_t lengthInBytes )
 		lengthInBytes = strlen( str );
 	while( nextCharUtf8( (const char*)str, &nextByte, lengthInBytes ) != 0xFFFF )
 		++result;
-	return result;	
+	return result;
 }
 
 uint32_t nextCharUtf8( const char *str, size_t *inOutByte, size_t lengthInBytes )
@@ -173,7 +173,7 @@ size_t advanceCharUtf8( const char *str, size_t numChars, size_t lengthInBytes )
 		if( lb_get_next_char_utf8( (const utf8_t*)str, lengthInBytes, &nextByte ) == 0xFFFF )
 			break;
 	}
-	
+
 	return nextByte;
 }
 
@@ -238,7 +238,7 @@ void lineBreakUtf8( const char *line, const std::function<bool(const char *, siz
 {
 	const size_t lengthInBytes = strlen( line );
 	shared_ptr<char> brks = shared_ptr<char>( (char*)malloc( lengthInBytes ), free );
-	
+
 	set_linebreaks_utf8( (const uint8_t*)line, lengthInBytes, NULL, brks.get() );
 
 	// Byte-suffixed variables correspond to a byte in the UTF8 string, as opposed to the character
@@ -250,7 +250,7 @@ void lineBreakUtf8( const char *line, const std::function<bool(const char *, siz
 		int minChar = 0;
 		int maxChar = (int)charLen - (int)lineStartChar;
 		int curChar = 0;
-		
+
 		// test to see if we're already on a mustbreak
 		if( brks.get()[lineStartByte] != 0 ) {
 			// update our maxChar to reflect any MUSTBREAKS
@@ -267,7 +267,7 @@ void lineBreakUtf8( const char *line, const std::function<bool(const char *, siz
 					++maxCharWithMustBreaks;
 			}
 			maxChar = maxCharWithMustBreaks + 1;
-		
+
 			while( minChar < maxChar ) {
 				curChar = minChar + (maxChar-minChar+1)/2;
 				size_t newByte = advanceCharUtf8( line + lineStartByte, curChar, lengthInBytes );
@@ -310,7 +310,7 @@ void calcLinebreaksUtf8( const char *str, std::vector<uint8_t> *resultBreaks )
 void calcLinebreaksUtf8( const char *str, size_t strLength, std::vector<uint8_t> *resultBreaks )
 {
 	resultBreaks->resize( strLength, 0 );
-	
+
 	// our UnicodeBreaks enum lines up with the liblinebreak definitions
 	set_linebreaks_utf8( (const uint8_t*)str, strLength, NULL, (char*)&(*resultBreaks)[0] );
 }
@@ -327,9 +327,9 @@ void calcLinebreaksUtf16( const uint16_t *str, std::vector<uint8_t> *resultBreak
 void calcLinebreaksUtf16( const uint16_t *str, size_t strLength, std::vector<uint8_t> *resultBreaks )
 {
 	resultBreaks->resize( strLength, 0 );
-	
+
 	// our UnicodeBreaks enum lines up with the liblinebreak definitions
-	set_linebreaks_utf16( (const unsigned short*)str, strLength, NULL, (char*)&(*resultBreaks)[0] );	
+	set_linebreaks_utf16( (const unsigned short*)str, strLength, NULL, (char*)&(*resultBreaks)[0] );
 }
 
 }

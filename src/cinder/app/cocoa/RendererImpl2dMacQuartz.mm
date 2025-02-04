@@ -50,11 +50,11 @@
 - (id)initWithFrame:(NSRect)frame cinderView:(NSView *)cinderView
 {
 	self = [super init];
-	
+
 	view = [[CocoaRendererQuartzView alloc] initWithFrame:frame];
 	currentRef = nil;
 	[cinderView addSubview:view];
-	
+
 	return self;
 }
 
@@ -71,7 +71,7 @@
 - (NSBitmapImageRep*)getContents:(cinder::Area)area
 {
 	[view lockFocus];
-	
+
 	// We need to recreate the CGContextRef if this method isn't called between startDraw and finishDraw
 	CGContextRef tempRef = currentRef;
 	if( ! tempRef )
@@ -99,11 +99,11 @@
 	// set the clipping rectangle to be the parent (CinderView)'s bounds
 	CGRect boundsRect = NSRectToCGRect([[view superview] bounds]);
 	CGContextClipToRect( currentRef, boundsRect );
-	
+
 	// undo any previously transformations, so that we start with identity CTM
 	CGAffineTransform originalCtm = ::CGContextGetCTM( currentRef );
 	CGAffineTransform originalCtmInv = ::CGAffineTransformInvert( originalCtm );
-	::CGContextConcatCTM( currentRef, originalCtmInv );	
+	::CGContextConcatCTM( currentRef, originalCtmInv );
 }
 
 - (void)finishDraw

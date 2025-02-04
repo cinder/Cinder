@@ -100,7 +100,7 @@ const vector<DeviceRef>& DeviceManagerAudioSession::getDevices()
 {
 	if( mDevices.empty() )
 		getRemoteIODevice(); // this will call addDevice() with the default device.
-	
+
 	return mDevices;
 }
 
@@ -108,7 +108,7 @@ void DeviceManagerAudioSession::setInputEnabled( bool enable )
 {
 	if( mInputEnabled == enable )
 		return;
-	
+
 	NSString *category = ( enable ? AVAudioSessionCategoryPlayAndRecord : AVAudioSessionCategoryAmbient );
 
 	NSError *error = nil;

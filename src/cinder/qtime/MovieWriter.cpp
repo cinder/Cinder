@@ -1,15 +1,15 @@
 /*
  Copyright (c) 2010, The Cinder Project (http://libcinder.org)
  All rights reserved.
- 
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
- 
+
  * Redistributions of source code must retain the above copyright notice, this list of conditions and
  the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
  the following disclaimer in the documentation and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -126,7 +126,7 @@ MovieWriter::Format& MovieWriter::Format::setQuality( float quality )
                                 kQTPropertyClass_ICMCompressionSessionOptions,
                                 kICMCompressionSessionOptionsPropertyID_Quality,
                                 sizeof(compressionQuality),
-                                &compressionQuality );	
+                                &compressionQuality );
 	return *this;
 }
 
@@ -205,11 +205,11 @@ MovieWriter::Obj::~Obj()
 
 MovieWriter::Obj::Obj( const fs::path &path, int32_t width, int32_t height, const Format &format )
 	: mPath( path ), mWidth( width ), mHeight( height ), mFormat( format ), mFinished( false )
-{	
+{
     OSErr       err = noErr;
     Handle      dataRef;
     OSType      dataRefType;
- 
+
 	startQuickTime();
 
     //Create movie file
@@ -229,7 +229,7 @@ MovieWriter::Obj::Obj( const fs::path &path, int32_t width, int32_t height, cons
 	err = ::GetMoviesError();
 	if( err )
 		throw MovieWriterExc();
-        
+
 	//Create track media
 	mMedia = ::NewTrackMedia( mTrack, ::VideoMediaType, mFormat.mTimeBase, 0, 0 );
 	err = ::GetMoviesError();
@@ -247,7 +247,7 @@ MovieWriter::Obj::Obj( const fs::path &path, int32_t width, int32_t height, cons
 	mCurrentTimeValue = 0;
 	mNumFrames = 0;
 }
-	
+
 void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource, float duration )
 {
 	if( mFinished )
@@ -291,8 +291,8 @@ void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource, float durati
 }
 
 extern "C" {
-OSStatus MovieWriter::Obj::encodedFrameOutputCallback( void *refCon, 
-                   ICMCompressionSessionRef session, 
+OSStatus MovieWriter::Obj::encodedFrameOutputCallback( void *refCon,
+                   ICMCompressionSessionRef session,
                    OSStatus err,
                    ICMEncodedFrameRef encodedFrame,
                    void * /*reserved*/ )
@@ -355,11 +355,11 @@ void MovieWriter::Obj::createCompressionSession()
 	::ICMCompressionSessionOptionsRef sessionOptions = NULL;
 	::ICMMultiPassStorageRef multiPassStorage = 0;
 	bool attemptMultiPass = mFormat.mEnableMultiPass;
-	
+
 	err = ::ICMCompressionSessionOptionsCreateCopy( NULL, mFormat.mOptions, &sessionOptions );
 	if( err )
 		goto bail;
-	
+
 	// We need durations when we store frames.
 	err = ::ICMCompressionSessionOptionsSetDurationsNeeded( sessionOptions, true );
 	if( err )
@@ -380,11 +380,11 @@ void MovieWriter::Obj::createCompressionSession()
 	}
 	else {
 		err = enableMultiPassWithTemporaryFile( sessionOptions, &multiPassStorage );
-		if( err ) 
+		if( err )
 			goto bail;
 		mRequestedMultiPass = true;
 	}
-	
+
 	encodedFrameOutputRecord.encodedFrameOutputCallback = encodedFrameOutputCallback;
 	encodedFrameOutputRecord.encodedFrameOutputRefCon = this;
 	encodedFrameOutputRecord.frameDataAllocator = NULL;
@@ -395,7 +395,7 @@ void MovieWriter::Obj::createCompressionSession()
 
 	if( mRequestedMultiPass ) {
 		mDoingMultiPass = ::ICMCompressionSessionSupportsMultiPassEncoding( mCompressionSession, 0, &mMultiPassModeFlags ) != 0;
-		
+
 		if( mDoingMultiPass ) {
 			fs::path tempPath;
 #if defined( CINDER_MSW )
@@ -474,7 +474,7 @@ void MovieWriter::Obj::finish()
 					if( (mMultiPassModeFlags & kICMCompressionPassMode_NoSourceFrames) == 0 ) {
 						::CVPixelBufferRef pixelBuffer;
 						uint32_t width, height, format, rowBytes, dataSize;
-						
+
 						mMultiPassFrameCache->read( &width );
 						mMultiPassFrameCache->read( &height );
 						mMultiPassFrameCache->read( &format );
@@ -519,16 +519,16 @@ void MovieWriter::Obj::finish()
 		err = ::EndMediaEdits( mMedia );
 		if( err )
 			throw MovieWriterExc();
-            
+
 		err = ::ExtendMediaDecodeDurationToDisplayEndTime( mMedia, NULL );
 		if( err )
 			throw MovieWriterExc();
-            
+
 		//Add media to track
 		err = ::InsertMediaIntoTrack( mTrack, 0, 0, (TimeValue)::GetMediaDisplayDuration( mMedia ), fixed1 );
 		if( err )
 			throw MovieWriterExc();
-            
+
 		//Write movie
 		err = ::AddMovieToStorage( mMovie, mDataHandler );
 		if( err )
@@ -536,7 +536,7 @@ void MovieWriter::Obj::finish()
 	}
 
 	::ICMCompressionSessionRelease( mCompressionSession );
-        
+
 	// Close movie file
 	if( mDataHandler )
 		::CloseMovieStorage( mDataHandler );
@@ -572,7 +572,7 @@ bool MovieWriter::getUserCompressionSettings( Format *result, ImageSourceRef ima
 	}
 
 	// build a preview image
-#if defined( CINDER_MSW )	
+#if defined( CINDER_MSW )
 	GWorldPtr previewImageGWorld = 0;
 	PixMapHandle previewImagePixMap = 0;
 	if( imageSource ) {

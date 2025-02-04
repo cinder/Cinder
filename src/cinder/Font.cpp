@@ -58,9 +58,9 @@
 	#include "cinder/winrt/FontEnumerator.h"
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
  	#include "ft2build.h"
-	#include FT_FREETYPE_H 
-	#include FT_OUTLINE_H 
- 	#include "cinder/linux/FreeTypeUtil.h" 
+	#include FT_FREETYPE_H
+	#include FT_OUTLINE_H
+ 	#include "cinder/linux/FreeTypeUtil.h"
 	#include <set>
  	#if defined( CINDER_ANDROID )
 		#include "freetype/ftsnames.h"
@@ -88,10 +88,10 @@ class FontObj : public std::enable_shared_from_this<FontObj> {
 	FontObj( const std::string &aName, float aSize );
 	FontObj( DataSourceRef dataSource, float size );
 	~FontObj();
-		
+
 	void		finishSetup();
-		
-		
+
+
 	std::string				mName;
 	float					mSize;
 #if defined( CINDER_COCOA )
@@ -112,9 +112,9 @@ class FontObj : public std::enable_shared_from_this<FontObj> {
 	BufferRef				mFileData;
 	FT_Face 				mFace = nullptr;
 	void 					releaseFreeTypeFace();
-#endif 		
+#endif
 	size_t					mNumGlyphs;
-};	
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FontManager
@@ -129,14 +129,14 @@ class FontManager
 	Font					getDefault() const
 	{
 		if( ! mDefault )
-#if defined( CINDER_COCOA )        
+#if defined( CINDER_COCOA )
             mDefault = Font( "Helvetica", 12 );
 #elif defined( CINDER_MSW )
             mDefault = Font( "Arial", 12 );
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
             mDefault = Font( "Roboto", 12 );
 #endif
-		
+
 		return mDefault;
 	}
 
@@ -146,7 +146,7 @@ class FontManager
 		std::string 	name;
 		fs::path 		path;
 		FontInfo() {}
-		FontInfo( const std::string& aKey, const std::string& aName, const fs::path& aPath ) 
+		FontInfo( const std::string& aKey, const std::string& aName, const fs::path& aPath )
 			: key( aKey ), name( aName ), path( aPath ) {}
 	};
 
@@ -167,7 +167,7 @@ class FontManager
 	Gdiplus::Graphics*	getGraphics() const { return mGraphics; }
 	LONG				convertSizeToLogfontHeight( float size ) { return ::MulDiv( (long)size, -::GetDeviceCaps( mFontDc, LOGPIXELSY ), 96 ); }
 #endif
-	
+
 #if defined( CINDER_MAC )
 	NSFontManager		*nsFontManager;
 #elif defined( CINDER_MSW_DESKTOP )
@@ -178,7 +178,7 @@ class FontManager
 #elif defined( CINDER_ANDROID )
 	FT_Library				mLibrary;
 	std::vector<FontInfo>	mFontInfos;
-#elif defined( CINDER_LINUX )	
+#elif defined( CINDER_LINUX )
 	FT_Library			mLibrary;
 #endif
 
@@ -193,20 +193,20 @@ class FontManager
 		}
 		mTrackedFonts.erase( fontObj );
 	}
-#endif	
+#endif
 
 	friend class Font;
 	friend class FontObj;
 
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	friend void FontManager_destroyStaticInstance();
-#endif	
+#endif
 };
 
 FontManager* FontManager::sInstance = nullptr;
 
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-void FontManager_destroyStaticInstance() 
+void FontManager_destroyStaticInstance()
 {
 	if( nullptr != FontManager::sInstance ) {
 		delete FontManager::sInstance;
@@ -224,7 +224,7 @@ FontManager::FontManager()
 #elif defined( CINDER_MSW_DESKTOP )
 	mFontDc = ::CreateCompatibleDC( NULL );
 	mGraphics = new Gdiplus::Graphics( mFontDc );
-#elif defined( CINDER_UWP ) 
+#elif defined( CINDER_UWP )
 	if( FT_Init_FreeType( &mLibrary ) ) {
 		throw FontInvalidNameExc("Failed to initialize freetype");
 	}
@@ -253,17 +253,17 @@ FontManager::FontManager()
 					if( std::string::npos != startPos ) {
 						keyName.replace( startPos, regular.length(), "" );
 						mFontInfos.push_back( FontInfo( keyName, fontName, fontPath ) );
-					} 	
+					}
 
 					FT_Done_Face( tmpFace );
 				}
 			}
-		}		
+		}
 	}
 	else {
 		throw FontInvalidNameExc("Failed to initialize FreeType");
 	}
-#elif defined( CINDER_LINUX )	
+#elif defined( CINDER_LINUX )
 	if( FT_Init_FreeType( &mLibrary ) ) {
 		throw FontInvalidNameExc("Failed to initialize freetype");
 	}
@@ -321,7 +321,7 @@ FontManager::FontInfo FontManager::getFontInfo( const std::string& fontName ) co
 		int hits = 0;
 		for( const auto& tok : tokens ) {
 			if( std::string::npos != fontInfos.key.find( tok ) ) {
-				hits += tok.size();	
+				hits += tok.size();
 			}
 		}
 
@@ -390,14 +390,14 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 			::FcPattern   *pat = ::FcPatternCreate();
 			::FcObjectSet *os  = ::FcObjectSetBuild( FC_FILE, FC_FAMILY, FC_STYLE, (char *)0 );
 			::FcFontSet   *fs  = ::FcFontList (0, pat, os);
-		
+
 			for( size_t i = 0; i < fs->nfont; ++i ) {
 				::FcPattern *font = fs->fonts[i];
 
 				//::FcChar8 *str = ::FcNameUnparse( font );
 				::FcChar8 *family = nullptr;
-				if( ::FcPatternGetString( font, FC_FAMILY, 0, &family ) == FcResultMatch ) 
-				{					
+				if( ::FcPatternGetString( font, FC_FAMILY, 0, &family ) == FcResultMatch )
+				{
 					string fontName = std::string( (const char*)family );
 					mFontNames.push_back( fontName );
 				}
@@ -415,7 +415,7 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 #endif
 		mFontsEnumerated = true;
 	}
-	
+
 	return mFontNames;
 }
 
@@ -456,7 +456,7 @@ Font Font::getDefault()
 }
 
 const std::string& Font::getName() const
-{ 
+{
 	return mObj->mName;
 }
 
@@ -511,7 +511,7 @@ vector<Font::Glyph> Font::getGlyphs( const string &s ) const
 {
 	vector<Font::Glyph> result;
 
-	CFRange range = CFRangeMake( 0, 0 );	
+	CFRange range = CFRangeMake( 0, 0 );
 	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( s, *this, ColorA( 1, 1, 1, 1 ) );
 	CTLineRef line = ::CTLineCreateWithAttributedString( attrStr );
 	CFArrayRef runsArray = ::CTLineGetGlyphRuns( line );
@@ -521,13 +521,13 @@ vector<Font::Glyph> Font::getGlyphs( const string &s ) const
 		CFIndex glyphCount = ::CTRunGetGlyphCount( runRef );
 		CGGlyph glyphBuffer[glyphCount];
 		::CTRunGetGlyphs( runRef, range, glyphBuffer );
-		for( size_t t = 0; t < glyphCount; ++t )			
+		for( size_t t = 0; t < glyphCount; ++t )
 			result.push_back( glyphBuffer[t] );
 	}
-	
+
 	::CFRelease( attrStr );
 	::CFRelease( line );
-	
+
 	return result;
 }
 
@@ -606,7 +606,7 @@ Font::Glyph Font::getGlyphChar( char c ) const
 	::SelectObject( FontManager::instance()->getFontDc(), mObj->mHfont );
 	if( ::GetGlyphIndices( FontManager::instance()->getFontDc(), theChar, 1, buffer, GGI_MARK_NONEXISTING_GLYPHS ) == GDI_ERROR )
 		return 0;
-	
+
 	return (Glyph)buffer[0];
 }
 
@@ -623,11 +623,11 @@ Font::Glyph Font::getGlyphIndex( size_t idx ) const
 		else
 			ct += rangeIt->second - rangeIt->first;
 	}
-	
+
 	// this idx is invalid
 	if( ! found )
 		ct = 0;
-	
+
 	return (Glyph)ct;
 }
 
@@ -639,11 +639,11 @@ vector<Font::Glyph> Font::getGlyphs( const string &utf8String ) const
 	DWORD numGlyphs = ::GetGlyphIndices( FontManager::instance()->getFontDc(), (wchar_t*)&wideString[0], (int)wideString.length(), buffer.get(), GGI_MARK_NONEXISTING_GLYPHS );
 	if( numGlyphs == GDI_ERROR )
 		return vector<Glyph>();
-	
+
 	vector<Glyph> result;
 	for( DWORD glyph = 0; glyph < numGlyphs; ++glyph )
 		result.push_back( (Glyph)buffer.get()[glyph] );
-	
+
 	return result;
 }
 
@@ -677,7 +677,7 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 
 		ptr += sizeof( TTPOLYGONHEADER );
 
-		resultShape.moveTo( msw::toVec2( header->pfxStart ) ); 
+		resultShape.moveTo( msw::toVec2( header->pfxStart ) );
 		while( ptr < endPoly ) {
 			TTPOLYCURVE *curve = reinterpret_cast<TTPOLYCURVE*>( ptr );
 			POINTFX *points = curve->apfx;
@@ -718,7 +718,7 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 		}
 		resultShape.close();
 	}
-	
+
 	return resultShape;
 }
 
@@ -751,7 +751,7 @@ std::string Font::getFullName() const
 float Font::getLinespace() const
 {
 	const FT_Size_Metrics& metrics  = mObj->mFace->size->metrics;
-	return (float)(metrics.height / 64.0f);		
+	return (float)(metrics.height / 64.0f);
 }
 #endif
 
@@ -788,7 +788,7 @@ Font::Glyph Font::getGlyphChar( char c ) const
 
 Font::Glyph Font::getGlyphIndex( size_t idx ) const
 {
-#if defined( CINDER_UWP )	
+#if defined( CINDER_UWP )
 	size_t ct = 0;
 	bool found = false;
 	for( vector<pair<uint16_t,uint16_t> >::const_iterator rangeIt = mObj->mUnicodeRanges.begin(); rangeIt != mObj->mUnicodeRanges.end(); ++rangeIt ) {
@@ -800,16 +800,16 @@ Font::Glyph Font::getGlyphIndex( size_t idx ) const
 		else
 			ct += rangeIt->second - rangeIt->first;
 	}
-	
+
 	// this idx is invalid
 	if( ! found )
 		ct = 0;
-	
+
 	return (Glyph)ct;
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	FT_UInt result = FT_Get_Char_Index( mObj->mFace, (FT_ULong)idx );
 	return result;
-#endif	
+#endif
 }
 
 vector<Font::Glyph> Font::getGlyphs( const string &utf8String ) const
@@ -906,7 +906,7 @@ FontObj::FontObj( const string &aName, float aSize )
 	if( mCGFont == 0 )
 		throw FontInvalidNameExc( aName );
 	mCTFont = ::CTFontCreateWithGraphicsFont( mCGFont, (CGFloat)mSize, 0, 0 );
-	
+
 	::CFStringRef fullName = ::CGFontCopyFullName( mCGFont );
 	string result = cocoa::convertCfString( fullName );
 	::CFRelease( fullName );
@@ -922,7 +922,7 @@ FontObj::FontObj( const string &aName, float aSize )
 	::SelectObject( FontManager::instance()->getFontDc(), mHfont );
     mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( (wchar_t*)faceName.c_str(), mSize * 72 / 96 /* Mac<->PC size conversion factor */ ) );
 	mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( FontManager::instance()->getFontDc(), mHfont ) );
-	
+
 	finishSetup();
 #elif defined( CINDER_UWP )
 	//gotta go through a long tedious process just to get a font file
@@ -1010,10 +1010,10 @@ FontObj::FontObj( const string &aName, float aSize )
 
 	mFileData = dataSource->getBuffer();
 	FT_Error error = FT_New_Memory_Face(
-		FontManager::instance()->mLibrary, 
-		(FT_Byte*)mFileData->getData(), 
-		mFileData->getSize(), 
-		0, 
+		FontManager::instance()->mLibrary,
+		(FT_Byte*)mFileData->getData(),
+		mFileData->getSize(),
+		0,
 		&mFace
 	);
 	if( error ) {
@@ -1052,10 +1052,10 @@ FontObj::FontObj( const string &aName, float aSize )
 
 		mFileData = dataSource->getBuffer();
 		FT_Error error = FT_New_Memory_Face(
-			FontManager::instance()->mLibrary, 
-			(FT_Byte*)mFileData->getData(), 
-			mFileData->getSize(), 
-			0, 
+			FontManager::instance()->mLibrary,
+			(FT_Byte*)mFileData->getData(),
+			mFileData->getSize(),
+			0,
 			&mFace
 		);
 		if( error ) {
@@ -1142,7 +1142,7 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 	}
 	else
 		throw FontInvalidNameExc();
-	
+
 	// now that we know the name thanks to GDI+, let's load the HFONT
 	// this is only because we can't seem to get the LOGFONT -> HFONT to work down in finishSetup
 	DWORD numFonts = 0;
@@ -1153,10 +1153,10 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 	finishSetup();
 #elif defined( CINDER_UWP )
 	FT_New_Memory_Face(
-		FontManager::instance()->mLibrary, 
-		(FT_Byte*)dataSource->getBuffer()->getData(), 
-		dataSource->getBuffer()->getSize(), 
-		0, 
+		FontManager::instance()->mLibrary,
+		(FT_Byte*)dataSource->getBuffer()->getData(),
+		dataSource->getBuffer()->getSize(),
+		0,
 		&mFace
 	);
 
@@ -1164,10 +1164,10 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	mFileData = dataSource->getBuffer();
 	FT_New_Memory_Face(
-		FontManager::instance()->mLibrary, 
-		(FT_Byte*)mFileData->getData(), 
-		mFileData->getSize(), 
-		0, 
+		FontManager::instance()->mLibrary,
+		(FT_Byte*)mFileData->getData(),
+		mFileData->getSize(),
+		0,
 		&mFace
 	);
 
@@ -1185,7 +1185,7 @@ FontObj::~FontObj()
 	::CFRelease( mCTFont );
 #elif defined( CINDER_MSW_DESKTOP )
 	if( mHfont ) // this should be replaced with something exception-safe
-		::DeleteObject( mHfont ); 
+		::DeleteObject( mHfont );
 #elif defined( CINDER_UWP )
 	FT_Done_Face(mFace);
 	free( mFileData );
@@ -1214,7 +1214,7 @@ void FontObj::finishSetup()
 		mHfont = ::CreateFontIndirectW( &mLogFont );
 	if( ! mHfont )
 		throw FontInvalidNameExc();
-	
+
 	::SelectObject( FontManager::instance()->getFontDc(), mHfont );
 
 	if( ! ::GetTextMetrics( FontManager::instance()->getFontDc(), &mTextMetric ) )

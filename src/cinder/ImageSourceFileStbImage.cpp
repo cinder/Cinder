@@ -1,6 +1,6 @@
 /*
  Copyright (c) 2015, The Cinder Project, All rights reserved.
- 
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -36,11 +36,11 @@ void ImageSourceFileStbImage::registerSelf()
 {
 	static bool alreadyRegistered = false;
 	static const int32_t SOURCE_PRIORITY = 3; // OS-default are 2; this is lower priority
-	
+
 	if( alreadyRegistered )
 		return;
 	alreadyRegistered = true;
-	
+
 	ImageIoRegistrar::SourceCreationFunc sourceFunc = ImageSourceFileStbImage::create;
 	ImageIoRegistrar::registerSourceType( "jpg", sourceFunc, SOURCE_PRIORITY );
 	ImageIoRegistrar::registerSourceType( "jpeg", sourceFunc, SOURCE_PRIORITY );
@@ -84,14 +84,14 @@ ImageSourceFileStbImage::ImageSourceFileStbImage( DataSourceRef dataSourceRef, I
 			mData32f = stbi_loadf_from_memory( (unsigned char*)buffer->getData(), (int)buffer->getSize(), &width, &height, &components, 0 /*any # of components*/ );
 			if( ! mData32f )
 				throw ImageIoException( stbi_failure_reason() );
-			
+
 			mRowBytes = width * components * sizeof(float);
 		}
 		else {
 			mData8u = stbi_load_from_memory( (unsigned char*)buffer->getData(), (int)buffer->getSize(), &width, &height, &components, 0 /*any # of components*/ );
 			if( ! mData8u )
 				throw ImageIoException( stbi_failure_reason() );
-				
+
 			mRowBytes = width * components;
 		}
 	}
@@ -113,7 +113,7 @@ ImageSourceFileStbImage::ImageSourceFileStbImage( DataSourceRef dataSourceRef, I
 		break;
 		case 3:
 			setColorModel( ImageIo::CM_RGB );
-			setChannelOrder( ImageIo::ChannelOrder::RGB );			
+			setChannelOrder( ImageIo::ChannelOrder::RGB );
 		break;
 		case 4:
 			setColorModel( ImageIo::CM_RGB );

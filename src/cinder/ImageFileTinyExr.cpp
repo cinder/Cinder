@@ -81,7 +81,7 @@ ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageS
 		status = ParseEXRHeaderFromMemory( mExrHeader.get(), &version, memory, &error );
 		if( status != TINYEXR_SUCCESS )
 			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR header; Error message: " ) + error );
-		
+
 		status = LoadEXRImageFromMemory( mExrImage.get(), mExrHeader.get(), memory, &error );
 		if( status != TINYEXR_SUCCESS )
 			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR file; Error message: " ) + error );
