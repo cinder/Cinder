@@ -71,5 +71,8 @@ cinderConfig.cmake
 blocks/
 !blocks/[__AppTemplates,Box2D,Cairo,FMOD,LocationManager,MotionManager,OSC,QuickTime,TUIO]
 
-#ImGui stored settings
+# ImGui stored settings
 imgui.ini
+
+# VS code artifacts
+.vscode
