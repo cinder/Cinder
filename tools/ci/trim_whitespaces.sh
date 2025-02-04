@@ -9,9 +9,9 @@ DEFAULT_CWD="./"
 display_help() {
   echo "Usage: $0 [options]"
   echo "Options:"
-  echo "  --path PATH         Relative path to the folders (default: './' for CWD)"
-  echo "  --folders FOLDERS   Comma-separated list of folders (default: 'src,include,tests')"
-  echo "  --extensions EXTS   Comma-separated list of extensions (default: '*.cpp,*.h,*.hpp,*.txt')"
+  echo "  --path PATH         Relative path to the folders (default: '$DEFAULT_CWD')"
+  echo "  --folders FOLDERS   Comma-separated list of folders (default: '$(IFS=,; echo "${DEFAULT_FOLDERS[*]}")')"
+  echo "  --extensions EXTS   Comma-separated list of extensions (default: '$(IFS=,; echo "${DEFAULT_EXTENSIONS[*]}")')"
   echo "  --preview           Enable preview mode (list files without making changes)"
   echo "  --help              Display this help message"
   exit 0
