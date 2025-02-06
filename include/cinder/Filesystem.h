@@ -33,7 +33,7 @@
 #endif
 
 #ifndef GHC_USE_STD_FS
-	#include <ghc/fs_fwd.hpp>
+	#include <ghc/fs_std_fwd.hpp>
 	namespace cinder {
 		namespace fs = ghc::filesystem;
 	} 
