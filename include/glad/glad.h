@@ -472,6 +472,8 @@
 #define __gl_h_
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
+#pragma push_macro("APIENTRY")
+#define GLAD_PUSHED_APIENTRY
 #define APIENTRY __stdcall
 #endif
 
@@ -14157,5 +14159,10 @@ GLAPI int GLAD_GL_S3_s3tc;
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef GLAD_PUSHED_APIENTRY
+#undef GLAD_PUSHED_APIENTRY
+#pragma pop_macro("APIENTRY")
+#endif // GLAD_PUSHED_APIENTRY
 
 #endif
