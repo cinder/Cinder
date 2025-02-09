@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2010, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -70,48 +70,48 @@ class CI_API XmlTree {
 			increment();
 			return *this;
 		}
-		
+
 		//! Increments the iterator to the next child. If using a non-empty filterPath increments to the next child which matches the filterPath.
 		const ConstIter operator++(int) {
 			ConstIter prev( *this );
 			++(*this);
-			return prev; 
+			return prev;
 		}
-		
+
 		bool operator!=( const ConstIter &rhs ) { return ( mSequenceStack.back() != rhs.mSequenceStack.back() ) || ( mIterStack.back() != rhs.mIterStack.back() ); }
 		bool operator==( const ConstIter &rhs ) { return ( mSequenceStack.back() == rhs.mSequenceStack.back() ) && ( mIterStack.back() == rhs.mIterStack.back() ); }
-		
+
 	  protected:
 		//! \cond
 		void	increment();
 		void	setToEnd( const Container *seq );
 		bool	isDone() const;
-		
+
 		std::vector<const Container*>				mSequenceStack;
 		std::vector<Container::const_iterator>		mIterStack;
 		std::vector<std::string>					mFilter;
 		bool										mCaseSensitive;
-		//! \endcond		
+		//! \endcond
 	};
 
-	//! An iterator over the children of an XmlTree.	
+	//! An iterator over the children of an XmlTree.
 	class CI_API Iter : public XmlTree::ConstIter {
 	  public:
 		//! \cond
 		Iter( Container *sequence )
 			: ConstIter( sequence )
 		{}
-		
+
 		Iter( Container *sequence, Container::iterator iter )
 			: ConstIter( sequence, iter )
 		{}
-	
+
 		Iter( XmlTree &root, const std::string &filterPath, bool caseSensitive, char separator )
 			: ConstIter( root, filterPath, caseSensitive, separator )
 		{}
 		//! \endcond
 
-		
+
 		//! Returns a reference to the XmlTree the iterator currently points to.
 		XmlTree&		operator*() const { return const_cast<XmlTree&>(**mIterStack.back()); }
 		//! Returns a pointer to the XmlTree the iterator currently points to.
@@ -122,14 +122,14 @@ class CI_API XmlTree {
 			increment();
 			return *this;
 		}
-		
+
 		//! Increments the iterator to the next child. If using a non-empty filterPath increments to the next child which matches the filterPath.
 		const Iter operator++(int) {
 			Iter prev( *this );
 			++(*this);
-			return prev; 
+			return prev;
 		}
-		
+
 		bool operator!=( const Iter &rhs ) { return ( mSequenceStack.back() != rhs.mSequenceStack.back() ) || ( mIterStack.back() != rhs.mIterStack.back() ); }
 		bool operator==( const Iter &rhs ) { return ( mSequenceStack.back() == rhs.mSequenceStack.back() ) && ( mIterStack.back() == rhs.mIterStack.back() ); }
 
@@ -148,28 +148,28 @@ class CI_API XmlTree {
 		//! Assigns the Attr a new value, and creates it if it doesn't exist. The equivalent of calling <tt>setAttribute( this->getName(), toString( newValue ) )</tt>.
 		template<typename T>
 		Attr&	operator=( const T& val ) { mValue = toString( val ); mXml->setAttribute( mName, mValue ); return *this; }
-		
+
 		bool	operator==( const char *rhs ) const { return mValue == rhs; }
 		bool	operator==( const std::string &rhs ) const { return mValue == rhs; }
 		bool	operator!=( const char *rhs ) const { return mValue != rhs; }
 		bool	operator!=( const std::string &rhs ) const { return mValue != rhs; }
-		
+
 		//! Returns the value of the attribute cast to T using ci::fromString().
 		template<typename T>
 		T		as() const { return fromString<T>( mValue ); }
-		
+
 		//! Returns true if the Attr value is empty
 		bool	empty() const { return mValue.empty(); }
-		
+
 		//! Returns the name of the attribute as a string.
 		const std::string&		getName() const { return mName; }
 		//! Returns the value of the attribute as a string.
 		std::string				getValue() const { return mValue; }
-		/** \brief Returns the value of the attribute parsed as a T. Requires T to support the istream>> operator. 
-		<br><tt>float size = myAttr.getValue<float>( "size" );</tt> **/		
+		/** \brief Returns the value of the attribute parsed as a T. Requires T to support the istream>> operator.
+		<br><tt>float size = myAttr.getValue<float>( "size" );</tt> **/
 		template<typename T>
 		T						getValue() const { return fromString<T>( mValue ); }
-		
+
 		/** Sets the value of the attribute to \a value. **/
 		void					setValue( const std::string &value ) { mValue = value; }
 		/** Sets the value of the attribute to \a value, which is cast to a string first. Requires T to support the ostream<< operator. **/
@@ -186,14 +186,14 @@ class CI_API XmlTree {
 	  public:
 		//! Default options. Disables parsing comments, enables collapsing CDATA, ignores data children.
 		ParseOptions() : mParseComments( false ), mCollapseCData( true ), mIgnoreDataChildren( true ) {}
-		
+
 		//! Sets whether XML comments are parsed or not.
 		ParseOptions& parseComments( bool parse = true ) { mParseComments = parse; return *this; }
 		//! Sets whether CDATA blocks are collapsed automatically or not.
 		ParseOptions& collapseCData( bool collapse = true ) { mCollapseCData = collapse; return *this; }
 		//! Sets whether data nodes are created as children, in addition to being available as the value of the parent. Default true.
 		ParseOptions& ignoreDataChildren( bool ignore = true ) { setIgnoreDataChildren( ignore ); return *this; }
-		
+
 		//! Returns whether XML comments are parsed or not.
 		bool	getParseComments() const { return mParseComments; }
 		//! Sets whether XML comments are parsed or not.
@@ -206,7 +206,7 @@ class CI_API XmlTree {
 		bool	getIgnoreDataChildren() const { return mIgnoreDataChildren; }
 		//! Sets whether data nodes are created as children, in addition to being available as the value of the parent.
 		void	setIgnoreDataChildren( bool ignore = true ) { mIgnoreDataChildren = ignore; }
-		
+
 	  private:
 		bool	mParseComments, mCollapseCData, mIgnoreDataChildren;
 	};
@@ -220,7 +220,7 @@ class CI_API XmlTree {
 	//! Copy constuctor
 	XmlTree( const XmlTree &rhs );
 	XmlTree& operator=( const XmlTree &rhs );
-	
+
 	/** \brief Parses XML contained in \a dataSource using the options \a parseOptions. Commonly used with the results of loadUrl(), loadFile() or loadResource().
 		<br><tt>XmlTree myDoc( loadUrl( "http://rss.cnn.com/rss/cnn_topstories.rss" ) );</tt> **/
 	explicit XmlTree( DataSourceRef dataSource, ParseOptions parseOptions = ParseOptions() ) {
@@ -255,7 +255,7 @@ class CI_API XmlTree {
 	const std::string&			getTag() const { return mTag; }
 	//! Sets the tag or name of the node to the string \a tag.
 	void						setTag( const std::string &tag ) { mTag = tag; }
-	
+
 	//! Returns the value of the node as a string.
 	std::string					getValue() const { return mValue; }
 	//! Returns the value of the node parsed as a T. Requires T to support the istream>> operator.
@@ -277,7 +277,7 @@ class CI_API XmlTree {
 	XmlTree&					getParent() { return *mParent; }
 	//! Returns a reference to the node which is the parent of this node.
 	const XmlTree&				getParent() const { return *mParent; }
-	
+
 	//! Returns the first child that matches \a relativePath or end() if none matches
 	Iter						find( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) { return Iter( *this, relativePath, caseSensitive, separator ); }
 	//! Returns the first child that matches \a relativePath or end() if none matches
@@ -294,9 +294,9 @@ class CI_API XmlTree {
 	//! Returns a reference to the node's list of children nodes.
 	const Container&	getChildren() const { return mChildren; }
 
-	//! Returns a reference to the node's list of attributes.	
+	//! Returns a reference to the node's list of attributes.
 	std::list<Attr>&			getAttributes() { return mAttributes; }
-	//! Returns a reference to the node's list of attributes.	
+	//! Returns a reference to the node's list of attributes.
 	const std::list<Attr>&		getAttributes() const { return mAttributes; }
 
 	//! Returns a reference to the node attribute named \a attrName. Throws AttrNotFoundExc if no attribute exists with that name.
@@ -312,7 +312,7 @@ class CI_API XmlTree {
 	//! Returns the first child that matches \a childName. Throws ExcChildNotFound if none matches.
 	XmlTree&					operator/( const std::string &childName ) { return getChild( childName ); }
 
-	/** \brief Returns the value of the attribute \a attrName parsed as a T. Throws AttrNotFoundExc if no attribute exists with that name. Requires T to support the istream>> operator. 
+	/** \brief Returns the value of the attribute \a attrName parsed as a T. Throws AttrNotFoundExc if no attribute exists with that name. Requires T to support the istream>> operator.
 		<br><tt>float size = myNode.getAttributeValue<float>( "size" );</tt> **/
 	template<typename T>
 	T							getAttributeValue( const std::string &attrName ) const { return getAttribute( attrName ).getValue<T>(); }
@@ -338,25 +338,25 @@ class CI_API XmlTree {
 	XmlTree&					setAttribute( const std::string &attrName, const T &value ) { return setAttribute( attrName, toString( value ) ); }
 	/** Returns whether the node has an attribute named \a attrName. **/
 	bool						hasAttribute( const std::string &attrName ) const;
-	/** Returns a path to this node, separated by the character \a separator. **/	
+	/** Returns a path to this node, separated by the character \a separator. **/
 	std::string					getPath( char separator = '/' ) const;
-	
-	/** Returns an Iter to the first child node of this node. **/	
+
+	/** Returns an Iter to the first child node of this node. **/
 	Iter						begin() { return Iter( &mChildren ); }
-	/** Returns an Iter to the children node of this node which match the path \a filterPath. **/	
-	Iter						begin( const std::string &filterPath, bool caseSensitive = false, char separator = '/' ) { return Iter( *this, filterPath, caseSensitive, separator ); }	
-	/** Returns an Iter to the first child node of this node. **/	
+	/** Returns an Iter to the children node of this node which match the path \a filterPath. **/
+	Iter						begin( const std::string &filterPath, bool caseSensitive = false, char separator = '/' ) { return Iter( *this, filterPath, caseSensitive, separator ); }
+	/** Returns an Iter to the first child node of this node. **/
 	ConstIter					begin() const { return ConstIter( &mChildren ); }
-	/** Returns an Iter to the children node of this node which match the path \a filterPath. **/	
-	ConstIter					begin( const std::string &filterPath, bool caseSensitive = false, char separator = '/' ) const { return ConstIter( *this, filterPath, caseSensitive, separator ); }	
-	/** Returns an Iter which marks the end of the children of this node. **/	
+	/** Returns an Iter to the children node of this node which match the path \a filterPath. **/
+	ConstIter					begin( const std::string &filterPath, bool caseSensitive = false, char separator = '/' ) const { return ConstIter( *this, filterPath, caseSensitive, separator ); }
+	/** Returns an Iter which marks the end of the children of this node. **/
 	Iter						end() { return Iter( &mChildren, mChildren.end() ); }
-	/** Returns an Iter which marks the end of the children of this node. **/	
+	/** Returns an Iter which marks the end of the children of this node. **/
 	ConstIter					end() const { return ConstIter( &mChildren, mChildren.end() ); }
-	/** Appends a copy of the node \a newChild to the children of this node. **/	
+	/** Appends a copy of the node \a newChild to the children of this node. **/
 	void						push_back( const XmlTree &newChild );
 
-	/** Returns the DOCTYPE string for this node. Only meaningful on a document's root node. **/	
+	/** Returns the DOCTYPE string for this node. Only meaningful on a document's root node. **/
 	std::string					getDocType() const { return mDocType; }
 	/** Sets the DOCTYPE string for this node. Only meaningful on a document's root node. **/
 	void						setDocType( const std::string &docType ) { mDocType = docType; }
@@ -369,14 +369,14 @@ class CI_API XmlTree {
 	//! Base class for XmlTree exceptions.
 	class CI_API Exception : public cinder::Exception {
 	};
-	
+
 	//! Exception expressing the absence of an expected child node.
 	class CI_API ExcChildNotFound : public XmlTree::Exception {
 	  public:
 		ExcChildNotFound( const XmlTree &node, const std::string &childPath ) throw();
-	  
+
 		virtual const char* what() const throw() { return mMessage; }
-	  
+
 	  private:
 		char mMessage[2048];
 	};
@@ -385,9 +385,9 @@ class CI_API XmlTree {
 	class CI_API ExcAttrNotFound : public XmlTree::Exception {
 	  public:
 		ExcAttrNotFound( const XmlTree &node, const std::string &attrName ) throw();
-			  
+
 		virtual const char* what() const throw() { return mMessage; }
-	  
+
 	  private:
 		char mMessage[2048];
 	};
@@ -397,7 +397,7 @@ class CI_API XmlTree {
 	};
 
 	//! Returns a shared_ptr to a RapidXML xml_document. If \a createDocument is true then an implicit parent NODE_DOCUMENT is created when necessary and \a this is treated as the root element.
-	std::shared_ptr<rapidxml::xml_document<char> >	createRapidXmlDoc( bool createDocument = false ) const;	
+	std::shared_ptr<rapidxml::xml_document<char> >	createRapidXmlDoc( bool createDocument = false ) const;
 
   private:
 	XmlTree*	getNodePtr( const std::string &relativePath, bool caseSensitive, char separator ) const;
@@ -412,7 +412,7 @@ class CI_API XmlTree {
 	XmlTree						*mParent;
 	Container					mChildren;
 	std::list<Attr>				mAttributes;
-	
+
 	static void		loadFromDataSource( DataSourceRef dataSource, XmlTree *result, const ParseOptions &parseOptions );
 };
 

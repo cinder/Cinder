@@ -25,9 +25,9 @@
 #include "cinder/gl/scoped.h"
 
 namespace cinder { namespace gl {
-	
+
 #if ! defined( CINDER_GL_ES )
-	
+
 BufferTextureRef BufferTexture::create( const BufferObjRef &buffer, GLenum internalFormat )
 {
 	return BufferTextureRef( new BufferTexture( buffer, internalFormat ) );
@@ -70,8 +70,8 @@ void BufferTexture::unbindTexture( uint8_t textureUnit )
 	ScopedActiveTexture activeTexture( textureUnit );
 	gl::context()->bindTexture( mTarget, 0 );
 }
-	
+
 #endif
-	
+
 } }
 

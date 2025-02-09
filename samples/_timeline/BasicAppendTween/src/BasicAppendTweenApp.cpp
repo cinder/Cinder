@@ -13,11 +13,11 @@ class BasicAppendTweenApp : public App {
 	void setup() override;
 	void setDestinations();
 	void startTweening();
-	void mouseDown( MouseEvent event ) override;	
+	void mouseDown( MouseEvent event ) override;
 	void draw() override;
-	
+
 	Anim<vec2>		mPos;
-	
+
 	int				mNumDestinations;
 	vector<vec2>	mDestinations;
 };
@@ -62,17 +62,17 @@ void BasicAppendTweenApp::draw()
 {
 	gl::clear( Color( 0.2f, 0.2f, 0.2f ) );
 	gl::enableAlphaBlending();
-	
+
 	for( int i=0; i<mNumDestinations; i++ ){
 		gl::color( Color( 1, 0, 0 ) );
 		gl::drawSolidCircle( mDestinations[i], 3.0f );
-		
+
 		if( i > 0 ){
 			gl::color( ColorA( 1, 0, 0, 0.25f ) );
 			gl::drawLine( mDestinations[i], mDestinations[i-1] );
 		}
 	}
-	
+
 	gl::color( Color::white() );
 	gl::drawSolidCircle( mPos, 20.0f );
 }

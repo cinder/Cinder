@@ -162,7 +162,7 @@ void FrustumCullingReduxApp::update()
 
 	// perform frustum culling **********************************************************************************
 
-	// Save the current culling field of view. If mShowRevealingFov = true, 
+	// Save the current culling field of view. If mShowRevealingFov = true,
 	// this will narrow the camera's FOV so that you can see the culling effect.
 	float originalFov = mRenderCam.getFov();
 	mRenderCam.setFov( mCullingFov );

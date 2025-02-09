@@ -4,11 +4,11 @@
 #include "cinder/Color.h"
 #include "cinder/Vector.h"
 
-class Light 
+class Light
 {
 public:
 	Light();
-	
+
 	Light&				colorAmbient( const ci::ColorAf& c );
 	Light&				colorDiffuse( const ci::ColorAf& c );
 	Light&				colorSpecular( const ci::ColorAf& c );

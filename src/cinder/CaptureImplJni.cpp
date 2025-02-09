@@ -42,10 +42,10 @@ class SurfaceCache {
 			mSurfaceUsed.push_back( false );
 		}
 	}
-	
+
 	Surface8uRef getNewSurface()
 	{
-		// try to find an available block of pixel data to wrap a surface around	
+		// try to find an available block of pixel data to wrap a surface around
 		for( size_t i = 0; i < mSurfaceData.size(); ++i ) {
 			if( ! mSurfaceUsed[i] ) {
 				mSurfaceUsed[i] = true;
@@ -141,7 +141,7 @@ CaptureImplJni::CaptureImplJni( int width, int height, const Capture::DeviceRef 
 		int leastDiff = std::numeric_limits<int>::max();
 		int preferredWidth = mWidth;
 		int preferredHeight = mHeight;
-		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
+		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );
 		if( fullDevice ) {
 			for( const auto& res : fullDevice->getSupportedResolutions() ) {
 				int area = res.x*res.y;
@@ -159,7 +159,7 @@ CaptureImplJni::CaptureImplJni( int width, int height, const Capture::DeviceRef 
 
 		ci::app::console() << "mWidth=" << mWidth << ", mHeight=" << mHeight << std::endl;
 
-		mSurfaceCache = std::shared_ptr<SurfaceCache>( new SurfaceCache( mWidth, mHeight, SurfaceChannelOrder::RGB, 4 ) );	
+		mSurfaceCache = std::shared_ptr<SurfaceCache>( new SurfaceCache( mWidth, mHeight, SurfaceChannelOrder::RGB, 4 ) );
 	}
 }
 
@@ -182,7 +182,7 @@ void CaptureImplJni::start()
 		return;
 	}
 
-	auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
+	auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );
 	if( fullDevice ) {
 		fullDevice->start(mWidth, mHeight);
 		mCapturing = true;
@@ -194,7 +194,7 @@ void CaptureImplJni::stop()
 	mCapturing = false;
 
 	if( mDevice ) {
-		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
+		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );
 		fullDevice->stop();
 		mDevice.reset();
 	}
@@ -209,7 +209,7 @@ bool CaptureImplJni::checkNewFrame() const
 {
 	bool result = false;
 	if( isCapturing() && mDevice ) {
-		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
+		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );
 		result = fullDevice && fullDevice->getNative() && fullDevice->getNative()->isNewFrameAvailable();
 	}
 	return result;
@@ -220,9 +220,9 @@ Surface8uRef CaptureImplJni::getSurface() const
 	if( checkNewFrame() ) {
 		mCurrentFrame = mSurfaceCache->getNewSurface();
 
-		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
+		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );
 		fullDevice->getNative()->getPixels( &(*mCurrentFrame) );
-		fullDevice->getNative()->clearNewFrameAvailable();		
+		fullDevice->getNative()->clearNewFrameAvailable();
 	}
 
 	return mCurrentFrame;
@@ -238,13 +238,13 @@ gl::Texture2dRef CaptureImplJni::getTexture() const
 		texFmt.wrap( GL_CLAMP_TO_EDGE );
 		mCurrentTexture = gl::Texture2d::create( mWidth, mHeight, texFmt );
 
-		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
-		fullDevice->getNative()->initPreviewTexture( mCurrentTexture->getId() );		
+		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );
+		fullDevice->getNative()->initPreviewTexture( mCurrentTexture->getId() );
 	}
 
 	if( checkNewFrame() ) {
-		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
-		fullDevice->getNative()->updateTexImage();				
+		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );
+		fullDevice->getNative()->updateTexImage();
 	}
 
 	return mCurrentTexture;
@@ -255,7 +255,7 @@ const std::vector<Capture::DeviceRef>& CaptureImplJni::getDevices( bool forceRef
 	if( ( ! CaptureImplJni::sDevicesEnumerated ) || forceRefresh ) {
 		try{
 			auto nativeDevices = ci::android::hardware::Camera::getInstance()->enumerateDevices();
-			for( auto& nd : nativeDevices ) {				
+			for( auto& nd : nativeDevices ) {
 				auto device = std::make_shared<CaptureImplJni::Device>( nd->id, nd->frontFacing, nd->resolutions, ci::android::hardware::Camera::getInstance() );
 				sDevices.push_back( device );
 			}

@@ -15,9 +15,9 @@ class StencilReflectionApp : public App {
 	void setup();
 	void update();
 	void draw();
-	
+
 	void drawScene();
-    
+
     gl::FboRef		mFbo;
     CameraPersp		mCam;
 	float			mRotation = 0.2f;
@@ -27,22 +27,22 @@ class StencilReflectionApp : public App {
 void StencilReflectionApp::setup()
 {
     gl::bindStockShader( gl::ShaderDef().color() );
-    
+
     gl::Fbo::Format mFormat;
 	// Below are the formats to allow stencil buffers on a user generated FBO
 	// Look at the bottom to see how to turn stencil buffers on for the system
 	// FBO
     mFormat.colorTexture().depthBuffer().stencilBuffer().samples( 16 );
     mFbo = gl::Fbo::create( toPixels( getWindowWidth() ), toPixels( getWindowHeight() ), mFormat );
-	
-    mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 ); 
+
+    mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
     mCam.lookAt( vec3( 0, -5, -1 ), vec3( 0, 0, 1 ) );
-	
+
 	mLeftScissor = std::make_pair(  vec2( 0, 0 ),
 								  vec2( toPixels( getWindowWidth() ) / 2, toPixels( getWindowHeight() ) ) );
 	mRightScissor = std::make_pair( vec2( toPixels( getWindowWidth() ) / 2, 0 ),
 								  vec2( toPixels( getWindowWidth() ) / 2, toPixels( getWindowHeight() ) ) );
-	
+
 	gl::enableDepthWrite();
     gl::enableDepthRead();
 	gl::clearColor( Color( 1, 1, 1 ) );
@@ -51,7 +51,7 @@ void StencilReflectionApp::setup()
 void StencilReflectionApp::update()
 {
 	mRotation -= 0.05f;
-    
+
     mFbo->bindFramebuffer();
 	drawScene();
     mFbo->unbindFramebuffer();
@@ -106,10 +106,10 @@ void StencilReflectionApp::drawScene()
 				gl::ScopedState			scopeCull( GL_CULL_FACE, true );
 				gl::multModelMatrix( translate( vec3( 0, 0, 1 ) ) );
 				gl::color( ColorA( 1.0f, 1.0f, 1.0f, .09f ) );
-				
+
 				glCullFace( GL_FRONT );
 				gl::drawCube( vec3( 0, 0, 1), vec3( 1, 1, 1 ) );
-				
+
 				glCullFace( GL_BACK );
 				gl::drawCube( vec3( 0, 0, 1), vec3( 1, 1, 1 ) );
 			}

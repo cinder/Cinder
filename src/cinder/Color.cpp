@@ -200,14 +200,14 @@ void ColorAT<T>::set( ColorModel cm, const vec4 &v )
 			throw ImageIoExceptionIllegalColorModel();
 	}
 }
-	
+
 std::ostream& operator<<( std::ostream &lhs, const ColorT<float> &rhs )
 {
 	lhs << "[" << rhs.r << "," << rhs.g << "," << rhs.b << "]";
 	return lhs;
 }
-	
-std::ostream& operator<<( std::ostream &lhs, const ColorAT<float> &rhs ) 
+
+std::ostream& operator<<( std::ostream &lhs, const ColorAT<float> &rhs )
 {
 	lhs << "[" << rhs.r << "," << rhs.g << "," << rhs.b << "," << rhs.a << "]";
 	return lhs;
@@ -234,7 +234,7 @@ Colorf hsvToRgb( const vec3 &hsv )
     float val = hsv.z;
 
     float x = 0.0f, y = 0.0f, z = 0.0f;
-    
+
     if( hue == 1 ) hue = 0;
     else
 		hue *= 6;
@@ -269,13 +269,13 @@ vec3 rgbToHsv( const Colorf &c )
     float val = max;
     float sat = 0;
     float hue = 0;
-    
+
     if( max != 0 )
 		sat = range/max;
-    
+
     if( sat != 0 ) {
 		float h;
-		
+
 		if( x == max )
 			h = (y - z) / range;
 		else if( y == max )
@@ -284,11 +284,11 @@ vec3 rgbToHsv( const Colorf &c )
 			h = 4 + ( x - y ) / range;
 
 		hue = h / 6.0f;
-		    
+
 		if( hue < 0.0f )
 			hue += 1.0f;
     }
-    
+
     return vec3( hue, sat, val );
 }
 

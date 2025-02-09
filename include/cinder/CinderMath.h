@@ -102,7 +102,7 @@ struct CI_API math<float>
 #if defined( _MSC_VER )
 	static float	cbrt( float x )		{ return ( x > 0 ) ? (::powf( x, 1.0f / 3.0f )) : (- ::powf( -x, 1.0f / 3.0f ) ); }
 #else
-	static float	cbrt  (float x)			{ return ::cbrtf( x ); }	
+	static float	cbrt  (float x)			{ return ::cbrtf( x ); }
 #endif
 	static float	ceil  (float x)			{return ::ceilf (x);}
 	static float	abs   (float x)			{return ::fabsf (x);}

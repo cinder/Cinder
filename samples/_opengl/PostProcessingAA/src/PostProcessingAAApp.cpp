@@ -54,7 +54,7 @@ class PostProcessingAAApp : public App {
 	enum DividerMode { MODE_COMPARISON, MODE_ORIGINAL1, MODE_FXAA, MODE_SMAA, MODE_ORIGINAL2, MODE_COUNT };
   public:
 	static void prepare( Settings *settings );
-	
+
 	void setup() override;
 	void update() override;
 	void draw() override;

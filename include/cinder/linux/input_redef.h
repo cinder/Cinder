@@ -1,6 +1,6 @@
-#pragma once 
+#pragma once
 
-// Generated using: 
+// Generated using:
 //    grep KEY_ /usr/include/linux/input.h > input_redef.h
 //
 

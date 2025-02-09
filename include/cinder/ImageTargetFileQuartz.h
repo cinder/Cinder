@@ -39,17 +39,17 @@ class ImageTargetFileQuartz : public cocoa::ImageTargetCgImage {
 	static ImageTargetRef		createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
 
 	virtual void	finalize();
-	
+
 	static void		registerSelf();
-	
+
   protected:
 	ImageTargetFileQuartz( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
 
 	void			setupImageDestOptions( ImageTarget::Options options );
-	
+
 	::CGImageDestinationRef			mImageDest;
 	std::shared_ptr<__CFDictionary>	mImageDestOptions;
-	
+
 	std::shared_ptr<uint8_t>		mData;
 };
 

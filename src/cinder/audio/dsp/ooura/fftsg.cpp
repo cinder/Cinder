@@ -48,23 +48,23 @@ macro definitions
                         n >= 1, n = power of 2
         a[0...2*n-1]   :input/output data (double *)
                         input data
-                            a[2*j] = Re(x[j]), 
+                            a[2*j] = Re(x[j]),
                             a[2*j+1] = Im(x[j]), 0<=j<n
                         output data
-                            a[2*k] = Re(X[k]), 
+                            a[2*k] = Re(X[k]),
                             a[2*k+1] = Im(X[k]), 0<=k<n
         ip[0...*]      :work area for bit reversal (int *)
                         length of ip >= 2+sqrt(n)
-                        strictly, 
-                        length of ip >= 
+                        strictly,
+                        length of ip >=
                             2+(1<<(int)(log(n+0.5)/log(2))/2).
                         ip[0],ip[1] are pointers of the cos/sin table.
         w[0...n/2-1]   :cos/sin table (double *)
                         w[],ip[] are initialized if ip[0] == 0.
     [remark]
-        Inverse of 
+        Inverse of
             cdft(2*n, -1, a, ip, w);
-        is 
+        is
             cdft(2*n, 1, a, ip, w);
             for (j = 0; j <= 2 * n - 1; j++) {
                 a[j] *= 1.0 / n;
@@ -78,8 +78,8 @@ macro definitions
             R[k] = sum_j=0^n-1 a[j]*cos(2*pi*j*k/n), 0<=k<=n/2
             I[k] = sum_j=0^n-1 a[j]*sin(2*pi*j*k/n), 0<k<n/2
         <case2> IRDFT (excluding scale)
-            a[k] = (R[0] + R[n/2]*cos(pi*k))/2 + 
-                   sum_j=1^n/2-1 R[j]*cos(2*pi*j*k/n) + 
+            a[k] = (R[0] + R[n/2]*cos(pi*k))/2 +
+                   sum_j=1^n/2-1 R[j]*cos(2*pi*j*k/n) +
                    sum_j=1^n/2-1 I[j]*sin(2*pi*j*k/n), 0<=k<n
     [usage]
         <case1>
@@ -104,16 +104,16 @@ macro definitions
                                 a[1] = R[n/2]
         ip[0...*]      :work area for bit reversal (int *)
                         length of ip >= 2+sqrt(n/2)
-                        strictly, 
-                        length of ip >= 
+                        strictly,
+                        length of ip >=
                             2+(1<<(int)(log(n/2+0.5)/log(2))/2).
                         ip[0],ip[1] are pointers of the cos/sin table.
         w[0...n/2-1]   :cos/sin table (double *)
                         w[],ip[] are initialized if ip[0] == 0.
     [remark]
-        Inverse of 
+        Inverse of
             rdft(n, 1, a, ip, w);
-        is 
+        is
             rdft(n, -1, a, ip, w);
             for (j = 0; j <= n - 1; j++) {
                 a[j] *= 2.0 / n;
@@ -142,16 +142,16 @@ macro definitions
                             a[k] = C[k], 0<=k<n
         ip[0...*]      :work area for bit reversal (int *)
                         length of ip >= 2+sqrt(n/2)
-                        strictly, 
-                        length of ip >= 
+                        strictly,
+                        length of ip >=
                             2+(1<<(int)(log(n/2+0.5)/log(2))/2).
                         ip[0],ip[1] are pointers of the cos/sin table.
         w[0...n*5/4-1] :cos/sin table (double *)
                         w[],ip[] are initialized if ip[0] == 0.
     [remark]
-        Inverse of 
+        Inverse of
             ddct(n, -1, a, ip, w);
-        is 
+        is
             a[0] *= 0.5;
             ddct(n, 1, a, ip, w);
             for (j = 0; j <= n - 1; j++) {
@@ -189,16 +189,16 @@ macro definitions
                                 a[0] = S[n]
         ip[0...*]      :work area for bit reversal (int *)
                         length of ip >= 2+sqrt(n/2)
-                        strictly, 
-                        length of ip >= 
+                        strictly,
+                        length of ip >=
                             2+(1<<(int)(log(n/2+0.5)/log(2))/2).
                         ip[0],ip[1] are pointers of the cos/sin table.
         w[0...n*5/4-1] :cos/sin table (double *)
                         w[],ip[] are initialized if ip[0] == 0.
     [remark]
-        Inverse of 
+        Inverse of
             ddst(n, -1, a, ip, w);
-        is 
+        is
             a[0] *= 0.5;
             ddst(n, 1, a, ip, w);
             for (j = 0; j <= n - 1; j++) {
@@ -222,18 +222,18 @@ macro definitions
         t[0...n/2]     :work area (double *)
         ip[0...*]      :work area for bit reversal (int *)
                         length of ip >= 2+sqrt(n/4)
-                        strictly, 
-                        length of ip >= 
+                        strictly,
+                        length of ip >=
                             2+(1<<(int)(log(n/4+0.5)/log(2))/2).
                         ip[0],ip[1] are pointers of the cos/sin table.
         w[0...n*5/8-1] :cos/sin table (double *)
                         w[],ip[] are initialized if ip[0] == 0.
     [remark]
-        Inverse of 
+        Inverse of
             a[0] *= 0.5;
             a[n] *= 0.5;
             dfct(n, a, t, ip, w);
-        is 
+        is
             a[0] *= 0.5;
             a[n] *= 0.5;
             dfct(n, a, t, ip, w);
@@ -259,16 +259,16 @@ macro definitions
         t[0...n/2-1]   :work area (double *)
         ip[0...*]      :work area for bit reversal (int *)
                         length of ip >= 2+sqrt(n/4)
-                        strictly, 
-                        length of ip >= 
+                        strictly,
+                        length of ip >=
                             2+(1<<(int)(log(n/4+0.5)/log(2))/2).
                         ip[0],ip[1] are pointers of the cos/sin table.
         w[0...n*5/8-1] :cos/sin table (double *)
                         w[],ip[] are initialized if ip[0] == 0.
     [remark]
-        Inverse of 
+        Inverse of
             dfst(n, a, t, ip, w);
-        is 
+        is
             dfst(n, a, t, ip, w);
             for (j = 1; j <= n - 1; j++) {
                 a[j] *= 2.0 / n;
@@ -318,7 +318,7 @@ template <typename T> void cftx020(T *a);
 template <typename T> void cftf040(T *a);
 template <typename T> void cftfx41(int n, T *a, int nw, T *w);
 
-template <typename T> 
+template <typename T>
 void makewt(int nw, int *ip, T *w)
 {
 	void makeipt(int nw, int *ip);
@@ -410,7 +410,7 @@ void makeipt(int nw, int *ip)
 	}
 }
 
-template <typename T> 
+template <typename T>
 void makect(int nc, int *ip, T *c)
 {
 	int j, nch;
@@ -431,7 +431,7 @@ void makect(int nc, int *ip, T *c)
 	}
 }
 
-template <typename T> 
+template <typename T>
 void cdft(int n, int isgn, T *a, int *ip, T *w)
 {
     int nw;
@@ -452,7 +452,7 @@ void cdft(int n, int isgn, T *a, int *ip, T *w)
     }
 }
 
-template <typename T> 
+template <typename T>
 void rdft(int n, int isgn, T *a, int *ip, T *w)
 {
     int nw, nc;
@@ -501,7 +501,7 @@ void rdft(int n, int isgn, T *a, int *ip, T *w)
     }
 }
 
-template <typename T> 
+template <typename T>
 void ddct(int n, int isgn, T *a, int *ip, T *w)
 {
     int j, nw, nc;
@@ -562,7 +562,7 @@ void ddct(int n, int isgn, T *a, int *ip, T *w)
     }
 }
 
-template <typename T> 
+template <typename T>
 void ddst(int n, int isgn, T *a, int *ip, T *w)
 {
     int j, nw, nc;
@@ -623,7 +623,7 @@ void ddst(int n, int isgn, T *a, int *ip, T *w)
     }
 }
 
-template <typename T> 
+template <typename T>
 void dfct(int n, T *a, T *t, int *ip, T *w)
 {
     int j, k, l, m, mh, nw, nc;
@@ -865,7 +865,7 @@ void cftfsub(int n, T *a, int *ip, int nw, T *w)
     }
 }
 
-template <typename T> 
+template <typename T>
 void cftbsub(int n, T *a, int *ip, int nw, T *w)
 {
     if (n > 8)
@@ -1263,7 +1263,7 @@ void bitrv2(int n, int *ip, T *a)
     }
 }
 
-template <typename T> 
+template <typename T>
 void bitrv2conj(int n, int *ip, T *a)
 {
     int j, j1, k, k1, l, m, nh, nm;
@@ -1626,7 +1626,7 @@ void bitrv2conj(int n, int *ip, T *a)
     }
 }
 
-template <typename T> 
+template <typename T>
 void bitrv216(T *a)
 {
     T x1r, x1i, x2r, x2i, x3r, x3i, x4r, x4i,
@@ -1683,7 +1683,7 @@ void bitrv216(T *a)
     a[29] = x7i;
 }
 
-template <typename T> 
+template <typename T>
 void bitrv216neg(T *a)
 {
     T x1r, x1i, x2r, x2i, x3r, x3i, x4r, x4i,
@@ -1753,7 +1753,7 @@ void bitrv216neg(T *a)
     a[31] = x8i;
 }
 
-template <typename T> 
+template <typename T>
 void bitrv208(T *a)
 {
     T x1r, x1i, x3r, x3i, x4r, x4i, x6r, x6i;
@@ -1776,7 +1776,7 @@ void bitrv208(T *a)
     a[13] = x3i;
 }
 
-template <typename T> 
+template <typename T>
 void bitrv208neg(T *a)
 {
     T x1r, x1i, x2r, x2i, x3r, x3i, x4r, x4i,
@@ -1812,7 +1812,7 @@ void bitrv208neg(T *a)
     a[15] = x4i;
 }
 
-template <typename T> 
+template <typename T>
 void cftf1st(int n, T *a, T *w)
 {
     int j, j0, j1, j2, j3, k, m, mh;
@@ -2019,7 +2019,7 @@ void cftf1st(int n, T *a, T *w)
     a[j3 + 3] = wk3i * x0i - wk3r * x0r;
 }
 
-template <typename T> 
+template <typename T>
 void cftb1st(int n, T *a, T *w)
 {
     int j, j0, j1, j2, j3, k, m, mh;
@@ -2226,7 +2226,7 @@ void cftb1st(int n, T *a, T *w)
     a[j3 + 3] = wk3i * x0i - wk3r * x0r;
 }
 
-template <typename T> 
+template <typename T>
 void cftrec4(int n, T *a, int nw, T *w)
 {
     int isplt, j, k, m;
@@ -2247,7 +2247,7 @@ void cftrec4(int n, T *a, int nw, T *w)
     }
 }
 
-template <typename T> 
+template <typename T>
 int cfttree(int n, int j, int k, T *a, int nw, T *w)
 {
     int i, isplt, m;
@@ -2292,7 +2292,7 @@ int cfttree(int n, int j, int k, T *a, int nw, T *w)
     return isplt;
 }
 
-template <typename T> 
+template <typename T>
 void cftleaf(int n, int isplt, T *a, int nw, T *w)
 {
     if (n == 512)
@@ -2359,7 +2359,7 @@ void cftleaf(int n, int isplt, T *a, int nw, T *w)
     }
 }
 
-template <typename T> 
+template <typename T>
 void cftmdl1(int n, T *a, T *w)
 {
     int j, j0, j1, j2, j3, k, m, mh;
@@ -2470,7 +2470,7 @@ void cftmdl1(int n, T *a, T *w)
     a[j3 + 1] = -wn4r * (x0i - x0r);
 }
 
-template <typename T> 
+template <typename T>
 void cftmdl2(int n, T *a, T *w)
 {
     int j, j0, j1, j2, j3, k, kr, m, mh;
@@ -2605,7 +2605,7 @@ void cftmdl2(int n, T *a, T *w)
     a[j3 + 1] = y0i + y2i;
 }
 
-template <typename T> 
+template <typename T>
 void cftfx41(int n, T *a, int nw, T *w)
 {
     if (n == 128)
@@ -2624,7 +2624,7 @@ void cftfx41(int n, T *a, int nw, T *w)
     }
 }
 
-template <typename T> 
+template <typename T>
 void cftf161(T *a, T *w)
 {
     T wn4r, wk1r, wk1i,
@@ -2783,7 +2783,7 @@ void cftf161(T *a, T *w)
     a[7] = x1i - x3r;
 }
 
-template <typename T> 
+template <typename T>
 void cftf162(T *a, T *w)
 {
     T wn4r, wk1r, wk1i, wk2r, wk2i, wk3r, wk3i,
@@ -2966,7 +2966,7 @@ void cftf162(T *a, T *w)
     a[31] = x1i - x2r;
 }
 
-template <typename T> 
+template <typename T>
 void cftf081(T *a, T *w)
 {
     T wn4r, x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i,
@@ -3028,7 +3028,7 @@ void cftf081(T *a, T *w)
     a[7] = y2i - y6r;
 }
 
-template <typename T> 
+template <typename T>
 void cftf082(T *a, T *w)
 {
     T wn4r, wk1r, wk1i, x0r, x0i, x1r, x1i,
@@ -3100,7 +3100,7 @@ void cftf082(T *a, T *w)
     a[15] = x0i - x1r;
 }
 
-template <typename T> 
+template <typename T>
 void cftf040(T *a)
 {
     T x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
@@ -3123,7 +3123,7 @@ void cftf040(T *a)
     a[7] = x1i - x3r;
 }
 
-template <typename T> 
+template <typename T>
 void cftb040(T *a)
 {
     T x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
@@ -3146,7 +3146,7 @@ void cftb040(T *a)
     a[7] = x1i + x3r;
 }
 
-template <typename T> 
+template <typename T>
 void cftx020(T *a)
 {
     T x0r, x0i;
@@ -3159,7 +3159,7 @@ void cftx020(T *a)
     a[3] = x0i;
 }
 
-template <typename T> 
+template <typename T>
 void rftfsub(int n, T *a, int nc, T *c)
 {
     int j, k, kk, ks, m;
@@ -3185,7 +3185,7 @@ void rftfsub(int n, T *a, int nc, T *c)
     }
 }
 
-template <typename T> 
+template <typename T>
 void rftbsub(int n, T *a, int nc, T *c)
 {
     int j, k, kk, ks, m;
@@ -3211,7 +3211,7 @@ void rftbsub(int n, T *a, int nc, T *c)
     }
 }
 
-template <typename T> 
+template <typename T>
 void dctsub(int n, T *a, int nc, T *c)
 {
     int j, k, kk, ks, m;
@@ -3233,7 +3233,7 @@ void dctsub(int n, T *a, int nc, T *c)
     a[m] *= c[0];
 }
 
-template <typename T> 
+template <typename T>
 void dstsub(int n, T *a, int nc, T *c)
 {
     int j, k, kk, ks, m;

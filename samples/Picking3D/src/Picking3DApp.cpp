@@ -39,9 +39,9 @@ private:
 	TriMeshRef			mTriMesh;		//! The 3D mesh.
 	AxisAlignedBox		mObjectBounds; 	//! The object space bounding box of the mesh.
 	mat4				mTransform;		//! Transformations (translate, rotate, scale) of the mesh.
-										
+
 	//! By caching a 3D model and its shader on the GPU, we can draw it faster.
-	gl::BatchRef		mWireCube;		
+	gl::BatchRef		mWireCube;
 	gl::BatchRef		mWirePlane;
 	gl::BatchRef		mMesh;
 

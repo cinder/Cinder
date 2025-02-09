@@ -72,7 +72,7 @@ void CameraLensShiftTestApp::update()
 
 void CameraLensShiftTestApp::draw()
 {
-	gl::clear(); 
+	gl::clear();
 
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
@@ -85,7 +85,7 @@ void CameraLensShiftTestApp::draw()
 	gl::setMatrices( mOverview.getCamera() );
 
 	render();
-	
+
 	gl::color( Color(0, 1, 1) );
 	gl::drawFrustum( mCamera );
 
@@ -105,7 +105,7 @@ void CameraLensShiftTestApp::draw()
 	gl::popMatrices();
 
 	gl::popViewport();
-	
+
 	//
 	gl::disableDepthWrite();
 	gl::disableDepthRead();
@@ -116,8 +116,8 @@ void CameraLensShiftTestApp::draw()
 
 	// draw info
 	gl::enableAlphaBlending();
-	gl::drawString( 
-		(boost::format("Lens Shift X: %02.2f\nLens Shift Y: %02.2f\n\nUse cursor keys to adjust lens shift,\nuse mouse to control overview camera") 
+	gl::drawString(
+		(boost::format("Lens Shift X: %02.2f\nLens Shift Y: %02.2f\n\nUse cursor keys to adjust lens shift,\nuse mouse to control overview camera")
 			% mCamera.getLensShiftHorizontal() % mCamera.getLensShiftVertical() ).str(),
 		vec2( 10, 10 ), Color::white(), mFont );
 	gl::drawString( "Overview of the scene",

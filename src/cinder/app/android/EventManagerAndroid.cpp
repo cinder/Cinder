@@ -43,13 +43,13 @@ using namespace ci::android;
 enum {
 	ASENSOR_TYPE_GRAVITY 				= 9,
 	ASENSOR_TYPE_ROTATION_VECTOR		= 11,
-	ASENSOR_TYPE_GAME_ROTATION_VECTOR	= 15 
+	ASENSOR_TYPE_GAME_ROTATION_VECTOR	= 15
 };
 
-namespace cinder { namespace app { 
+namespace cinder { namespace app {
 
 // From cinder/app/Platform.cpp
-extern void Platform_destroyStaticInstance();		
+extern void Platform_destroyStaticInstance();
 
 EventManagerAndroid* EventManagerAndroid::sInstance = nullptr;
 
@@ -58,7 +58,7 @@ EventManagerAndroid::EventManagerAndroid( android_app *nativeApp, std::function<
 	: mShouldQuit( false ),
 	  mNativeApp( nativeApp ),
 	  mDeferredMainHasBeenCalled( false ),
-	  mDeferredMainFn( deferredMainFn ), 
+	  mDeferredMainFn( deferredMainFn ),
 	  mCleanupLaunchFn( cleanupLaunchFn ),
 	  mFocused( false ),
 	  mPaused( true ),
@@ -71,7 +71,7 @@ EventManagerAndroid::EventManagerAndroid( android_app *nativeApp, std::function<
 	mMagneticFieldSensor	= std::make_shared<Sensor>();
 	mGyroscopeSensor		= std::make_shared<Sensor>();
 	mLightSensor			= std::make_shared<Sensor>();
-	mProximitySensor		= std::make_shared<Sensor>();	
+	mProximitySensor		= std::make_shared<Sensor>();
 	mGravitySensor			= std::make_shared<Sensor>();
 	mRotationVectorSensor 	= std::make_shared<Sensor>();
 }
@@ -80,9 +80,9 @@ EventManagerAndroid::~EventManagerAndroid()
 {
 }
 
-EventManagerAndroid *EventManagerAndroid::instance() 
-{ 
-	return sInstance; 
+EventManagerAndroid *EventManagerAndroid::instance()
+{
+	return sInstance;
 }
 
 AppImplAndroid *EventManagerAndroid::getAppImplInst()
@@ -95,9 +95,9 @@ void EventManagerAndroid::setAppImplInst( AppImplAndroid* appInst )
 	mAppImplInst = appInst;
 }
 
-android_app *EventManagerAndroid::getNativeApp() 
-{ 
-	return mNativeApp; 
+android_app *EventManagerAndroid::getNativeApp()
+{
+	return mNativeApp;
 }
 
 bool EventManagerAndroid::isAccelerometerAvailable() const
@@ -143,7 +143,7 @@ void EventManagerAndroid::enableMagneticField( SensorCallbackFn updateFn, int32_
 		mMagneticFieldSensor->mCallbackFn = updateFn;
 
 		usec = std::max( (int32_t)ASensor_getMinDelay( mMagneticFieldSensor->mSensor ), usec );
-		ASensorEventQueue_setEventRate( mSensorEventQueue, mMagneticFieldSensor->mSensor, usec );		
+		ASensorEventQueue_setEventRate( mSensorEventQueue, mMagneticFieldSensor->mSensor, usec );
 	}
 }
 
@@ -154,7 +154,7 @@ void EventManagerAndroid::enableGyroscope( SensorCallbackFn updateFn, int32_t us
 		mGyroscopeSensor->mCallbackFn = updateFn;
 
 		usec = std::max( (int32_t)ASensor_getMinDelay( mGyroscopeSensor->mSensor ), usec );
-		ASensorEventQueue_setEventRate( mSensorEventQueue, mGyroscopeSensor->mSensor, usec );		
+		ASensorEventQueue_setEventRate( mSensorEventQueue, mGyroscopeSensor->mSensor, usec );
 	}
 }
 
@@ -165,7 +165,7 @@ void EventManagerAndroid::enableGravity( SensorCallbackFn updateFn, int32_t usec
 		mGravitySensor->mCallbackFn = updateFn;
 
 		usec = std::max( (int32_t)ASensor_getMinDelay( mGravitySensor->mSensor ), usec );
-		ASensorEventQueue_setEventRate( mSensorEventQueue, mGravitySensor->mSensor, usec );		
+		ASensorEventQueue_setEventRate( mSensorEventQueue, mGravitySensor->mSensor, usec );
 	}
 }
 
@@ -176,7 +176,7 @@ void EventManagerAndroid::enableRotationVector( SensorCallbackFn updateFn, int32
 		mRotationVectorSensor->mCallbackFn = updateFn;
 
 		usec = std::max( (int32_t)ASensor_getMinDelay( mRotationVectorSensor->mSensor ), usec );
-		ASensorEventQueue_setEventRate( mSensorEventQueue, mRotationVectorSensor->mSensor, usec );		
+		ASensorEventQueue_setEventRate( mSensorEventQueue, mRotationVectorSensor->mSensor, usec );
 	}
 }
 
@@ -293,7 +293,7 @@ void EventManagerAndroid::appLostFocus()
 
 	if( mActivityLostFocusCallbackFn ) {
 		mActivityLostFocusCallbackFn();
-	}	
+	}
 }
 
 void EventManagerAndroid::appGainedFocus()
@@ -357,9 +357,9 @@ void EventManagerAndroid::appQuit()
 	}
 }
 
-bool EventManagerAndroid::deferredMainHasBeenCalled() const 
-{ 
-	return mDeferredMainHasBeenCalled; 
+bool EventManagerAndroid::deferredMainHasBeenCalled() const
+{
+	return mDeferredMainHasBeenCalled;
 }
 
 void EventManagerAndroid::callDeferredMain()
@@ -375,7 +375,7 @@ void EventManagerAndroid::reinitializeWindowSurface()
 {
 	if( nullptr != mAppImplInst ) {
 		mAppImplInst->reinitializeWindowSurface();
-	}	
+	}
 }
 
 int32_t EventManagerAndroid::NativeHandleInput( android_app *ndkApp, AInputEvent *event )
@@ -495,10 +495,10 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * it will be set to NULL.
 		 */
 		case APP_CMD_TERM_WINDOW: {
-			LOGI( "APP_CMD_TERM_WINDOW" );	
+			LOGI( "APP_CMD_TERM_WINDOW" );
 
-			// NOTE: Do not kill or quit here. This message is sent when 
-			//       the app is APP_CMD_PAUSE is sent. Quitting here will 
+			// NOTE: Do not kill or quit here. This message is sent when
+			//       the app is APP_CMD_PAUSE is sent. Quitting here will
 			//       cause the app to crash when APP_CMD_RESUME is sent.
 		}
 		break;
@@ -508,7 +508,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Please redraw with its new size.
 		 */
 		case APP_CMD_WINDOW_RESIZED: {
-			//LOGI( "APP_CMD_WINDOW_RESIZED" );			
+			//LOGI( "APP_CMD_WINDOW_RESIZED" );
 		}
 		break;
 
@@ -518,7 +518,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * android_app_exec_cmd() in order to avoid transient drawing glitches.
 		 */
 		case APP_CMD_WINDOW_REDRAW_NEEDED: {
-			//LOGI( "APP_CMD_WINDOW_REDRAW_NEEDED" );			
+			//LOGI( "APP_CMD_WINDOW_REDRAW_NEEDED" );
 		}
 		break;
 
@@ -528,7 +528,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * find the new content rect in android_app::contentRect.
 		 */
 		case APP_CMD_CONTENT_RECT_CHANGED: {
-			//LOGI( "APP_CMD_CONTENT_RECT_CHANGED" );			
+			//LOGI( "APP_CMD_CONTENT_RECT_CHANGED" );
 		}
 		break;
 
@@ -539,7 +539,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		case APP_CMD_GAINED_FOCUS: {
 			LOGI( "APP_CMD_GAINED_FOCUS" );
 
-			eventMan->appGainedFocus();		
+			eventMan->appGainedFocus();
 		}
 		break;
 
@@ -558,7 +558,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Command from main thread: the current device configuration has changed.
 		 */
 		case APP_CMD_CONFIG_CHANGED: {
-			LOGI( "APP_CMD_CONFIG_CHANGED" );			
+			LOGI( "APP_CMD_CONFIG_CHANGED" );
 		}
 		break;
 
@@ -567,7 +567,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Try to reduce your memory use.
 		 */
 		case APP_CMD_LOW_MEMORY: {
-			//LOGI( "APP_CMD_LOW_MEMORY" );			
+			//LOGI( "APP_CMD_LOW_MEMORY" );
 		}
 		break;
 
@@ -630,7 +630,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		case APP_CMD_DESTROY: {
 			LOGI( "APP_CMD_DESTROY" );
 			eventMan->appQuit();
-			
+
 			// Destroy any and all static instances
 			ci::app::PlatformAndroid::destroyStaticInstances();
 		}
@@ -663,8 +663,8 @@ void EventManagerAndroid::execute()
 		mRotationVectorSensor->mSensor = ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_ROTATION_VECTOR );
 		mHasGameRotationVector = false;
 	}
-	
-	mSensorEventQueue = ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER, nullptr, nullptr );	
+
+	mSensorEventQueue = ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER, nullptr, nullptr );
 
 	dbg_log_sensor( "mAccelerometerSensor    ", mAccelerometerSensor );
 	dbg_log_sensor( "mMagneticFieldSensor    ", mMagneticFieldSensor );
@@ -693,7 +693,7 @@ dbg_app_log( "Starting Event Loop" );
 			mAppImplInst->sleepUntilNextFrame();
 		}
 
-		
+
 		// Process events
 		{
 			// Read all pending events.
@@ -716,7 +716,7 @@ dbg_app_log( "Starting Event Loop" );
 
 					ASensorEvent sensorEvent;
 					while( ASensorEventQueue_getEvents( mSensorEventQueue, &sensorEvent, 1 ) > 0 ) {
-						//console() << "SensorEvent" << std::endl;	
+						//console() << "SensorEvent" << std::endl;
 
 						switch( sensorEvent.type ) {
 							case ASENSOR_TYPE_ACCELEROMETER: {
@@ -772,7 +772,7 @@ dbg_app_log( "Starting Event Loop" );
 									mRotationVectorSensor->mCallbackFn( n, data );
 								}
 							}
-							break;							
+							break;
 						}
 					}
 				}
@@ -780,7 +780,7 @@ dbg_app_log( "Starting Event Loop" );
 				// Check if we need to exit
 				if( 0 != mNativeApp->destroyRequested ) {
 					mShouldQuit = true;
-				}				
+				}
 			}
 		}
 
@@ -790,7 +790,7 @@ dbg_app_log( "Starting Event Loop" );
 			if( ! mPaused ) {
 				mAppImplInst->updateAndDraw();
 			}
-		}		
+		}
 	}
 dbg_app_log( "Ended Event Loop" );
 

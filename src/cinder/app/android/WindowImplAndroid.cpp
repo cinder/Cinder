@@ -26,7 +26,7 @@
 #include "cinder/app/android/RendererGlAndroid.h"
 #include "cinder/app/RendererGl.h"
 
-namespace cinder { namespace app { 
+namespace cinder { namespace app {
 
 WindowImplAndroid::WindowImplAndroid( ANativeWindow *nativeWindow, const Window::Format &format, RendererRef sharedRenderer, AppImplAndroid *appImpl )
 	: mAppImpl( appImpl ), mNativeWindow( nativeWindow )
@@ -41,7 +41,7 @@ WindowImplAndroid::WindowImplAndroid( ANativeWindow *nativeWindow, const Window:
 	mRenderer->setup( mNativeWindow, sharedRenderer );
 
 	// set WindowRef and its impl pointer to this
-	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );	
+	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 }
 
 WindowImplAndroid::~WindowImplAndroid()
@@ -64,7 +64,7 @@ void WindowImplAndroid::setSize( const ivec2 &size )
 	// Do nothing
 }
 
-ivec2 WindowImplAndroid::getPos() const 
+ivec2 WindowImplAndroid::getPos() const
 {
 	return ivec2( 0, 0 );
 }
@@ -77,7 +77,7 @@ void WindowImplAndroid::setPos( const ivec2 &pos )
 void WindowImplAndroid::close()
 {
 	getAppImpl()->closeWindow( this );
-	// at this point 'this' is invalid so do nothing after this line	
+	// at this point 'this' is invalid so do nothing after this line
 }
 
 void WindowImplAndroid::setTitle( const std::string &title )
@@ -94,7 +94,7 @@ void WindowImplAndroid::show()
 
 const std::vector<TouchEvent::Touch>& WindowImplAndroid::getActiveTouches() const
 {
-	return getAppImpl()->getActiveTouches();	
+	return getAppImpl()->getActiveTouches();
 }
 
 void WindowImplAndroid::setBorderless( bool borderless )
@@ -133,7 +133,7 @@ void WindowImplAndroid::privateClose()
 void WindowImplAndroid::reinitializeWindowSurface( ANativeWindow *nativeWindow )
 {
 	mNativeWindow = nativeWindow;
-	
+
 	RendererGlRef rendererGl = std::dynamic_pointer_cast<RendererGl>( mRenderer );
 	if( rendererGl ) {
 		rendererGl->getImpl()->reinitializeWindowSurface( mNativeWindow );

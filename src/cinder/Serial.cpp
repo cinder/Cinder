@@ -79,7 +79,7 @@ Serial::Impl::Impl( const Serial::Device &device, int baudRate )
 	if( mFd == -1 ) {
 		throw SerialExcOpenFailed();
 	}
-	
+
 	termios options;
 	tcgetattr( mFd, &mSavedOptions );
 	options = mSavedOptions;
@@ -88,7 +88,7 @@ Serial::Impl::Impl( const Serial::Device &device, int baudRate )
 	baudToConstant[1200] = B1200;
 	baudToConstant[2400] = B2400;
 	baudToConstant[4800] = B4800;
-	baudToConstant[9600] = B9600;			
+	baudToConstant[9600] = B9600;
 	baudToConstant[19200] = B19200;
 #if !defined( CINDER_LINUX )
 	baudToConstant[28800] = B28800;
@@ -96,15 +96,15 @@ Serial::Impl::Impl( const Serial::Device &device, int baudRate )
 	baudToConstant[38400] = B38400;
 	baudToConstant[57600] = B57600;
 	baudToConstant[115200] = B115200;
-	baudToConstant[230400] = B230400;	
-	
+	baudToConstant[230400] = B230400;
+
 	int rateConstant = B9600;
 	if( baudToConstant.find( baudRate ) != baudToConstant.end() )
 		rateConstant = baudToConstant[baudRate];
-	
+
 	::cfsetispeed( &options, rateConstant );
 	::cfsetospeed( &options, rateConstant );
-	
+
 	options.c_cflag |= (CLOCAL | CREAD);
 	options.c_cflag &= ~PARENB;
 	options.c_cflag &= ~CSTOPB;
@@ -116,20 +116,20 @@ Serial::Impl::Impl( const Serial::Device &device, int baudRate )
 	if( mDeviceHandle == INVALID_HANDLE_VALUE ) {
 		throw SerialExcOpenFailed();
 	}
-	
+
 	::COMMCONFIG config;
 	::DWORD configSize = sizeof( ::COMMCONFIG );
 	::GetCommConfig( mDeviceHandle, &config, &configSize );
-	
+
 	string settingsStr = "baud=" + toString( baudRate ) + " parity=N data=8 stop=1";
 	if( ! ::BuildCommDCBA( settingsStr.c_str(), &config.dcb ) ) {
-		throw SerialExcOpenFailed();	
-	}	
-	
+		throw SerialExcOpenFailed();
+	}
+
 	if( ! ::SetCommState( mDeviceHandle, &config.dcb ) ) {
 		throw SerialExcOpenFailed();
 	}
-	
+
 	::GetCommTimeouts( mDeviceHandle, &mSavedTimeouts );
 	::COMMTIMEOUTS timeOuts( mSavedTimeouts );
 
@@ -171,7 +171,7 @@ Serial::Device Serial::findDeviceByNameContains( const std::string &searchString
 
 	return Serial::Device();
 }
-	
+
 const std::vector<Serial::Device>& Serial::getDevices( bool forceRefresh )
 {
 	if( ( ! forceRefresh ) && ( sDevicesInited ) )
@@ -199,7 +199,7 @@ const std::vector<Serial::Device>& Serial::getDevices( bool forceRefresh )
 			}
 		}
 	}
-	
+
 	::closedir( dir );
 #elif defined( CINDER_MSW )
 	::HDEVINFO devInfoSet;
@@ -211,7 +211,7 @@ const std::vector<Serial::Device>& Serial::getDevices( bool forceRefresh )
 	devInfoSet = ::SetupDiGetClassDevs( &GUID_SERENUM_BUS_ENUMERATOR, 0, 0, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
 	if( devInfoSet == INVALID_HANDLE_VALUE )
 		throw SerialExcDeviceEnumerationFailed();
-	
+
 	devInterface.cbSize = sizeof( ::SP_DEVICE_INTERFACE_DATA );
 	while( ::SetupDiEnumDeviceInterfaces( devInfoSet, 0, &GUID_SERENUM_BUS_ENUMERATOR, devCount++, &devInterface ) ) {
 		// See how large a buffer we require for the device interface details
@@ -236,7 +236,7 @@ const std::vector<Serial::Device>& Serial::getDevices( bool forceRefresh )
 			sDevices.push_back( Serial::Device( string( friendlyName ), toUtf8( (char16_t*)interfaceDetail->DevicePath ) ) );
 		}
 	}
-	
+
 	::SetupDiDestroyDeviceInfoList(devInfoSet);
 
 #endif
@@ -253,7 +253,7 @@ const Serial::Device& Serial::getDevice() const
 void Serial::writeBytes( const void *data, size_t numBytes )
 {
 	size_t totalBytesWritten = 0;
-	
+
 	while( totalBytesWritten < numBytes ) {
 #if defined( CINDER_MAC ) || defined( CINDER_LINUX )
 		long bytesWritten = ::write( mImpl->mFd, data, numBytes - totalBytesWritten );
@@ -284,7 +284,7 @@ void Serial::readBytes( void *data, size_t numBytes )
 #endif
 		if( bytesRead != -1 )
 			totalBytesRead += bytesRead;
-		
+
 		// yield thread time to the system
 		this_thread::yield();
 	}
@@ -302,7 +302,7 @@ size_t Serial::readAvailableBytes( void *data, size_t maximumBytes )
 
 	if( bytesRead < 0 )
 		bytesRead = 0;
-		
+
 	return (size_t)bytesRead;
 }
 
@@ -352,7 +352,7 @@ void Serial::writeString( const std::string &str )
 size_t Serial::getNumBytesAvailable() const
 {
 	int result;
-	
+
 #if defined( CINDER_MAC ) || defined( CINDER_LINUX )
 	::ioctl( mImpl->mFd, FIONREAD, &result );
 #elif defined( CINDER_MSW )
@@ -363,10 +363,10 @@ size_t Serial::getNumBytesAvailable() const
 	else
 		result = status.cbInQue;
 #endif
-	
+
 	return result;
 }
-	
+
 void Serial::flush( bool input, bool output )
 {
 #if defined( CINDER_MAC ) || defined( CINDER_LINUX )
@@ -379,13 +379,13 @@ void Serial::flush( bool input, bool output )
 		queue = TCOFLUSH;
 	else
 		return;
-	
+
 	::tcflush( mImpl->mFd, queue );
 #elif defined( CINDER_MSW )
 	::DWORD flags = 0;
 	flags |= ( input ) ? PURGE_RXCLEAR : 0;
 	flags |= ( output ) ? PURGE_TXCLEAR : 0;
-	
+
 	if( input || output )
 		::PurgeComm( mImpl->mDeviceHandle, flags );
 #endif

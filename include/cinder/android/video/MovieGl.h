@@ -41,7 +41,7 @@ public:
 	static MovieGlRef		create( const ci::fs::path &path );
 
 	//! Returns whether the movie has loaded and buffered enough to playback without interruption
-	bool					checkPlayable();	
+	bool					checkPlayable();
 
 	//! Returns the width of the movie in pixels
 	int32_t					getWidth() const { return mVideoPlayer->getWidth(); }
@@ -72,7 +72,7 @@ public:
 	void					seekToEnd();
 
 	//! Sets whether the movie is set to loop during playback. If \a palindrome is true, the movie will "ping-pong" back and forth
-	void					setLoop( bool loop = true, bool palindrome = false );	
+	void					setLoop( bool loop = true, bool palindrome = false );
 
 	//! Begins movie playback.
 	void					play();
@@ -81,13 +81,13 @@ public:
 	//! Returns if the movie is playing or not.
 	bool					isPlaying() const;
 	//! Returns whether the movie has completely finished playing
-	bool					isDone() const;	
+	bool					isDone() const;
 
 	const gl::TextureRef	getTexture() { return mVideoPlayer->getTexture(); }
 
 private:
 	MovieGl( const ci::fs::path &path );
-	
+
 	VideoPlayerRef	mVideoPlayer;
 };
 

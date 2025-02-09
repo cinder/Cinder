@@ -38,13 +38,13 @@ void ImageTargetFileQuartz::registerSelf()
 {
 	static bool alreadyRegistered = false;
 	const int32_t PRIORITY = 2;
-	
+
 	if( alreadyRegistered )
 		return;
 	alreadyRegistered = true;
-	
+
 	ImageIoRegistrar::TargetCreationFunc func = ImageTargetFileQuartz::createRef;
-	
+
 	::CFArrayRef destTypes = ::CGImageDestinationCopyTypeIdentifiers();
 	::CFIndex typeCount = ::CFArrayGetCount( destTypes );
 	for( ::CFIndex dt = 0; dt < typeCount; ++dt ) {
@@ -52,7 +52,7 @@ void ImageTargetFileQuartz::registerSelf()
 		if( ! uti )
 			continue;
 		std::string utiStr = cocoa::convertCfString( uti );
-			
+
 
 		::CFDictionaryRef dict = (CFDictionaryRef)UTTypeCopyDeclaration( uti );
 		if( dict ) {
@@ -68,16 +68,16 @@ void ImageTargetFileQuartz::registerSelf()
 						::CFArrayRef extensionsArr = ::CFArrayRef( extensions );
 						CFIndex extCount = ::CFArrayGetCount( extensionsArr );
 						for( CFIndex ext = 0; ext < extCount; ++ext ) {
-							ImageIoRegistrar::registerTargetType( cocoa::convertCfString( (CFStringRef)::CFArrayGetValueAtIndex( extensionsArr, ext ) ), func, PRIORITY, utiStr );						
+							ImageIoRegistrar::registerTargetType( cocoa::convertCfString( (CFStringRef)::CFArrayGetValueAtIndex( extensionsArr, ext ) ), func, PRIORITY, utiStr );
 						}
-					}			
+					}
 				}
 			}
-			
+
 			::CFRelease( dict );
 		}
 	}
-	
+
 	::CFRelease( destTypes );
 }
 
@@ -133,7 +133,7 @@ ImageTargetFileQuartz::ImageTargetFileQuartz( DataTargetRef dataTarget, ImageSou
 	else if( dataTarget->providesUrl() ) {
 		std::shared_ptr<__CFURL> urlRef( (__CFURL*)cocoa::createCfUrl( dataTarget->getUrl() ), cocoa::safeCfRelease );
 		mImageDest = ::CGImageDestinationCreateWithURL( urlRef.get(), uti.get(), 1, NULL );
-	
+
 	}
 	else { // we'll wrap a cinder::OStream in a CGDataConsumer for output
 		OStreamRef *ostreamRef = new OStreamRef( dataTarget->getStream() );
@@ -143,17 +143,17 @@ ImageTargetFileQuartz::ImageTargetFileQuartz( DataTargetRef dataTarget, ImageSou
 		std::shared_ptr<CGDataConsumer> consumer( ::CGDataConsumerCreate( ostreamRef, &callbacks ), ::CGDataConsumerRelease );
 		mImageDest = ::CGImageDestinationCreateWithDataConsumer( consumer.get(), uti.get(), 1, NULL );
 	}
-	
+
 	if( ! mImageDest )
 		throw ImageIoExceptionFailedWrite( "Failed to write CGImageDestinationRef." );
-		
+
 	setupImageDestOptions( options );
 }
 
 void ImageTargetFileQuartz::finalize()
 {
 	ImageTargetCgImage::finalize();
-	
+
 	::CGImageDestinationAddImage( mImageDest, mImageRef, mImageDestOptions.get() );
 	if( ! ::CGImageDestinationFinalize( mImageDest ) ) {
 		::CFRelease( mImageDest );

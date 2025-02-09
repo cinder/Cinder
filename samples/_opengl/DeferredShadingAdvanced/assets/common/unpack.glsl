@@ -28,4 +28,3 @@ vec4 unpackPosition( in vec2 uv, inout float depth )
 	vec4 viewRay		= uProjMatrixInverse * posProj;
 	return vec4( viewRay.xyz * linearDepth, 1.0 );
 }
- 

@@ -41,9 +41,9 @@ static bool sFirstView = true; // records whether a call is the first to initVie
 {
 	mResizeCalled = NO;
 	mHasDrawnSinceLastUpdate = YES; // in order to force an update later
-	
+
 	initSettings();
-	
+
 	bool blankingWindow = sSettings->isSecondaryDisplayBlankingEnabled() && ( ! mIsMainView );
 
 	if( ! blankingWindow ) {
@@ -60,7 +60,7 @@ static bool sFirstView = true; // records whether a call is the first to initVie
 		[self addSubview:mCinderView];
 
 		[mCinderView release]; // addSubview incs the retainCount and the parent assumes ownership
-		
+
 		[self setAnimationTimeInterval:1 / sSettings->getFrameRate()];
 	}
 	else {
@@ -68,7 +68,7 @@ static bool sFirstView = true; // records whether a call is the first to initVie
 		mCinderView = nil;
 		[self setAnimationTimeInterval:-1];
 	}
-	
+
 	// now that we've initialized the window, for impl instantiation
 	getAppImpl();
 }
@@ -76,7 +76,7 @@ static bool sFirstView = true; // records whether a call is the first to initVie
 - (id)initWithFrame:(NSRect)frame isPreview:(BOOL)isPreview
 {
 	self = [super initWithFrame:frame isPreview:isPreview];
-	
+
 	mPreview = isPreview;
 	mCinderView = nil;
 
@@ -104,8 +104,8 @@ static bool sFirstView = true; // records whether a call is the first to initVie
 		[super drawRect:rect]; // draws black by default
 		return;
 	}
-    
-    
+
+
     [mCinderView draw];
 }
 
@@ -130,7 +130,7 @@ static bool sFirstView = true; // records whether a call is the first to initVie
 	mIsMainView = sFirstView;
 	sFirstView = false;
 	[self instantiateView:newFrame];
-	
+
 	mWindowRef = cinder::app::Window::privateCreate__( self, getAppImpl()->mApp );
 	// this needs to be called after instantiateView
 	[getAppImpl() addWindow:self];
@@ -148,7 +148,7 @@ static bool sFirstView = true; // records whether a call is the first to initVie
 - (BOOL)hasConfigureSheet
 {
 	initSettings();
-	
+
     return sSettings->getProvidesMacConfigDialog();
 }
 
@@ -232,7 +232,7 @@ static bool sFirstView = true; // records whether a call is the first to initVie
 {
 	if( ! mDisplay )
 		mDisplay = cinder::app::PlatformCocoa::get()->findFromNsScreen( [[self window] screen] );
-	
+
 	return mDisplay;
 }
 
@@ -346,13 +346,13 @@ static AppImplMacScreenSaver* getAppImpl()
 {
 	if( ! sAppImplInstance ) {
 		initSettings();
-		
+
 		sAppImplInstance = [[AppImplMacScreenSaver alloc] init];
 		sAppImplInstance->mApp = ScreenSaverFactoryMethod( sAppImplInstance, sSettings.get() );
 		sAppImplInstance->mFrameRate = sSettings->getFrameRate();
 		sAppImplInstance->mSetupCalled = NO;
 	}
-	
+
 	return sAppImplInstance;
 }
 
@@ -364,23 +364,23 @@ static AppImplMacScreenSaver* getAppImpl()
 - (AppImplMacScreenSaver*)init
 {
 	self = [super init];
-	
+
 	mApp = NULL;
-	
+
 	return self;
 }
 
 - (void)addWindow:(WindowImplCocoaScreenSaver*)windowImpl
 {
 	[windowImpl retain];
-	mWindows.push_back( windowImpl );	
+	mWindows.push_back( windowImpl );
 }
 
 - (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)sharedRenderer
 {
 	if( ! sharedRenderer )
 		return cinder::app::RendererRef();
-	
+
 	for( const auto &win : mWindows ) {
 		auto ren = win->mWindowRef->getRenderer();
 		if( ren && ( typeid(*ren) == typeid(*sharedRenderer) ) )
@@ -404,7 +404,7 @@ static AppImplMacScreenSaver* getAppImpl()
 {
 	if( index >= mWindows.size() )
 		throw cinder::app::ExcInvalidWindow();
-	
+
 	std::list<WindowImplCocoaScreenSaver*>::iterator iter = mWindows.begin();
 	std::advance( iter, index );
 	return (*iter)->mWindowRef;
@@ -471,7 +471,7 @@ static AppImplMacScreenSaver* getAppImpl()
 			win->mWindowRef->emitResize();
 			win->mResizeCalled = YES;
 		}
-	
+
 		if( win->mCinderView )
 			win->mCinderView.readyToDraw = [win isAnimating];
 	}
@@ -491,7 +491,7 @@ static AppImplMacScreenSaver* getAppImpl()
 		for( auto &win : mWindows )
 			win->mHasDrawnSinceLastUpdate = NO;
 	}
-	
+
 	if( ! callee->mHasDrawnSinceLastUpdate ) {
 		if( callee->mCinderView )
 			[callee setNeedsDisplay:YES];
@@ -508,14 +508,14 @@ static AppImplMacScreenSaver* getAppImpl()
 	// release its Cinder View
 	[win->mCinderView removeFromSuperview];
 	win->mCinderView = nil;
-	
+
 	// if no Windows have CinderViews anymore that means we need to finalCleanup
 	BOOL foundACinderView = NO;
 	for( auto &win : mWindows ) {
 		if( win->mCinderView != nil )
 			foundACinderView = YES;
 	}
-	
+
 	if( ! foundACinderView ) {
 		[self finalCleanup];
 		return;

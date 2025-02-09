@@ -45,12 +45,12 @@
   @public
 	NSTimer*						mAnimationTimer;
 	class cinder::app::AppMac*		mApp;
-	
+
 	BOOL							mNeedsUpdate;
 	BOOL							mQuitOnLastWindowClosed;
 	BOOL							mFrameRateEnabled;
 	float							mFrameRate;
-	
+
 	NSMutableArray*					mWindows;
 	WindowImplBasicCocoa*			mActiveWindow;
 

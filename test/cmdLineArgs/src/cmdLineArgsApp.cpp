@@ -1,4 +1,4 @@
-// Derives window background color from three floating point args, e.g. orange: cmdLineArgs 1.0 0.5 0.25 
+// Derives window background color from three floating point args, e.g. orange: cmdLineArgs 1.0 0.5 0.25
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"

@@ -78,12 +78,12 @@ void WindowTestApp::setup()
 //	getWindow()->getSignalMouseDown().connect( std::bind( &WindowTestApp::mouseDown2, this, std::placeholders::_1 ) ); // This shouldn't build because it has the wrong signature (<bool( MouseEvent )>) - to note, the reference is not the problem, just the return value is different.
 	getWindow()->getSignalMouseDown().connect( std::bind( &WindowTestApp::mouseDown3, this, std::placeholders::_1 ) );
 	getSignalShouldQuit().connect( std::bind( &WindowTestApp::shouldQuit, this ) );
-	
+
 	getWindow()->getSignalMove().connect( std::bind( &WindowTestApp::windowMove, this ) );
 	getWindow()->getSignalDraw().connect( std::bind( &WindowTestApp::windowDraw, this ) );
 	getWindow()->getSignalDisplayChange().connect( std::bind( &WindowTestApp::displayChange, this ) );
 	getWindow()->getSignalClose().connect( std::bind( &WindowTestApp::windowClose, this ) );
-	
+
 	getSignalDidBecomeActive().connect( [] { CI_LOG_V( "App became active." ); } );
 	getSignalWillResignActive().connect( [] { CI_LOG_V( "App will resign active." ); } );
 }
@@ -245,14 +245,14 @@ void WindowTestApp::windowDraw()
 
 	glEnable( GL_LINE_SMOOTH );
 	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-	
+
 	gl::begin( GL_LINE_STRIP );
 	const vector<vec2> &points = getWindow()->getUserData<WindowData>()->mPoints;
 	for( auto pointIter = points.begin(); pointIter != points.end(); ++pointIter ) {
 		gl::vertex( *pointIter /*+ vec2( 0, getElapsedSeconds() )*/ );
 	}
 	gl::end();
-	
+
 	//if( window == mSecondWindow )
 		gl::drawLine( vec2( 50, 50 ), vec2( 250, 250 ) );
 	gl::pushMatrices();

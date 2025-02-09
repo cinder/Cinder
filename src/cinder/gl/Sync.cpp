@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -24,7 +24,7 @@
 
 #include "cinder/gl/Sync.h"
 
-namespace cinder { namespace gl { 
+namespace cinder { namespace gl {
 
 #if ! defined( CINDER_GL_ES ) || defined( CINDER_GL_ES_3 )
 
@@ -35,7 +35,7 @@ SyncRef	Sync::create( GLenum condition, GLbitfield flags )
 
 Sync::Sync( GLenum condition, GLbitfield flags )
 {
-	mSync = glFenceSync( condition, flags );	
+	mSync = glFenceSync( condition, flags );
 }
 
 Sync::~Sync()

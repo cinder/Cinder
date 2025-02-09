@@ -165,7 +165,7 @@ void LevelOfDetailBasicApp::setupBuffers()
 		geom::AttribSet requested	= { geom::Attrib::POSITION, geom::Attrib::NORMAL };
 		auto vboMesh				= gl::VboMesh::create( geom::Teapot().subdivisions( 32 ), requested );
 		mAllTeapotsVbo				= gl::Vbo::create( GL_ARRAY_BUFFER, sizeof( TeapotInstIn ) * NUM_INSTANCES, nullptr, GL_STATIC_DRAW );
-		
+
 		mAllTeapotsVbo->bufferData( sizeof( TeapotInstIn ) * NUM_INSTANCES, mTeapots.data(), GL_STATIC_DRAW );
 
 		geom::BufferLayout instanceDataVboLayout;
@@ -241,7 +241,7 @@ void LevelOfDetailBasicApp::update()
 
 void LevelOfDetailBasicApp::draw()
 {
-	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::clear( Color( 0, 0, 0 ) );
 
 	gl::ScopedMatrices	mtx_;
 	gl::ScopedDepth		depth_( true );

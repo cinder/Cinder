@@ -39,21 +39,21 @@ class IStreamUrlImplCurl : public IStreamUrlImpl {
 	virtual void		seekRelative( off_t relativeOffset );
 	virtual off_t		tell() const;
 	virtual off_t		size() const;
-	
+
 	virtual bool		isEof() const;
 	virtual void		IORead( void *t, size_t size );
 
   private:
 	int					bufferRemaining() const { return mBufferedBytes - mBufferOffset; }
 	void				fillBuffer( int wantBytes ) const;
-	
-	static size_t		writeCallback( char *buffer, size_t size, size_t nitems, void *userp );   
-  
+
+	static size_t		writeCallback( char *buffer, size_t size, size_t nitems, void *userp );
+
  	CURL					*mCurl;
 	CURLM					*mMulti;
-	
+
 	std::string				mUserColonPassword;
-	
+
 	mutable int still_running;				// Is background url fetch still in progress
 	mutable bool			mStartedRead;
 
@@ -61,7 +61,7 @@ class IStreamUrlImplCurl : public IStreamUrlImpl {
 	mutable bool			mSizeCached;
 	mutable long			mResponseCode;
 	mutable char			*mEffectiveUrl;
-	
+
 	mutable uint8_t		*mBuffer;
 	mutable int			mBufferSize;
 	mutable int			mBufferOffset, mBufferedBytes;

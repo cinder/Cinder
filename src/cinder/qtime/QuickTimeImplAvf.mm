@@ -1,16 +1,16 @@
 /*
  Copyright (c) 2014, The Cinder Project, All rights reserved.
- 
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
- 
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
- 
+
  * Redistributions of source code must retain the above copyright notice, this list of conditions and
  the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
  the following disclaimer in the documentation and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -145,19 +145,19 @@ static void* AVPlayerItemStatusContext = &AVPlayerItemStatusContext;
 #endif
 {
 	ci::app::console() << "displayLinkCallback" << std::endl;
-	
+
 	/*
 	 CMTime outputItemTime = kCMTimeInvalid;
-	 
+
 	 // Calculate the nextVsync time which is when the screen will be refreshed next.
 	 CFTimeInterval nextVSync = ([sender timestamp] + [sender duration]);
-	 
+
 	 outputItemTime = [[self videoOutput] itemTimeForHostTime:nextVSync];
-	 
+
 	 if ([[self videoOutput] hasNewPixelBufferForItemTime:outputItemTime]) {
 	 CVPixelBufferRef pixelBuffer = NULL;
 	 pixelBuffer = [[self videoOutput] copyPixelBufferForItemTime:outputItemTime itemTimeForDisplay:NULL];
-	 
+
 	 [[self playerView] displayPixelBuffer:pixelBuffer];
 	 }
 	 */
@@ -177,7 +177,7 @@ namespace cinder {
 }
 
 namespace cinder { namespace qtime {
-	
+
 MovieBase::MovieBase()
 :	mPlayer( nil ),
 	mPlayerItem( nil ),
@@ -194,13 +194,13 @@ MovieBase::~MovieBase()
 {
 	// remove all observers
 	removeObservers();
-	
+
 	// release resources for AVF objects.
 	if( mPlayer ) {
 		[mPlayer cancelPendingPrerolls];
 		[mPlayer release];
 	}
-	
+
 	if( mAsset ) {
 		[mAsset cancelLoading];
 		[mAsset release];
@@ -210,27 +210,27 @@ MovieBase::~MovieBase()
 		[mPlayerVideoOutput release];
 	}
 }
-	
+
 float MovieBase::getPixelAspectRatio() const
 {
 	float pixelAspectRatio = 1.0;
-	
+
 	if( ! mAsset )
 		return pixelAspectRatio;
-	
+
 	NSArray* video_tracks = [mAsset tracksWithMediaType:AVMediaTypeVideo];
 	if( video_tracks ) {
 		CMFormatDescriptionRef format_desc = NULL;
 		NSArray* descriptions_arr = [[video_tracks firstObject] formatDescriptions];
 		if ([descriptions_arr count] > 0)
 			format_desc = (CMFormatDescriptionRef)[descriptions_arr firstObject];
-		
+
 		CGSize size;
 		if (format_desc)
 			size = CMVideoFormatDescriptionGetPresentationDimensions(format_desc, false, false);
 		else
 			size = [[video_tracks firstObject] naturalSize];
-		
+
 		CFDictionaryRef pixelAspectRatioDict = (CFDictionaryRef) CMFormatDescriptionGetExtension(format_desc, kCMFormatDescriptionExtension_PixelAspectRatio);
 		if (pixelAspectRatioDict) {
 			CFNumberRef horizontal = (CFNumberRef) CFDictionaryGetValue(pixelAspectRatioDict, kCMFormatDescriptionKey_PixelAspectRatioHorizontalSpacing);//, AVVideoPixelAspectRatioHorizontalSpacingKey,
@@ -245,14 +245,14 @@ float MovieBase::getPixelAspectRatio() const
 			}
 		}
 	}
-	
+
 	return pixelAspectRatio;
 }
 
 bool MovieBase::checkPlaythroughOk()
 {
 	mPlayThroughOk = [mPlayerItem isPlaybackLikelyToKeepUp];
-	
+
 	return mPlayThroughOk;
 }
 
@@ -260,7 +260,7 @@ int32_t MovieBase::getNumFrames()
 {
 	if( mFrameCount <= 0 )
 		mFrameCount = countFrames();
-	
+
 	return mFrameCount;
 }
 
@@ -268,7 +268,7 @@ bool MovieBase::checkNewFrame()
 {
 	if( ! mPlayer || ! mPlayerVideoOutput )
 		return false;
-	
+
 	if( mPlayerVideoOutput )
 		return [mPlayerVideoOutput hasNewPixelBufferForItemTime:[mPlayer currentTime]];
 	else
@@ -279,7 +279,7 @@ float MovieBase::getCurrentTime() const
 {
 	if( ! mPlayer )
 		return -1.0f;
-	
+
 	return CMTimeGetSeconds([mPlayer currentTime]);
 }
 
@@ -287,7 +287,7 @@ void MovieBase::seekToTime( float seconds )
 {
 	if( ! mPlayer )
 		return;
-	
+
 	CMTime seek_time = CMTimeMakeWithSeconds(seconds, [mPlayer currentTime].timescale);
 	[mPlayer seekToTime:seek_time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
 }
@@ -296,13 +296,13 @@ void MovieBase::seekToFrame( int frame )
 {
 	if( ! mPlayer )
 		return;
-	
+
 	CMTime currentTime = [mPlayer currentTime];
 	CMTime oneFrame = CMTimeMakeWithSeconds(1.0 / mFrameRate, currentTime.timescale);
 	CMTime startTime = kCMTimeZero;
 	CMTime addedFrame = CMTimeMultiply(oneFrame, frame);
 	CMTime added = CMTimeAdd(startTime, addedFrame);
-	
+
 	[mPlayer seekToTime:added toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
 }
 
@@ -310,7 +310,7 @@ void MovieBase::seekToStart()
 {
 	if( ! mPlayer )
 		return;
-	
+
 	[mPlayer seekToTime:kCMTimeZero];
 }
 
@@ -318,7 +318,7 @@ void MovieBase::seekToEnd()
 {
 	if( ! mPlayer || ! mPlayerItem )
 		return;
-	
+
 	if( mPlayingForward ) {
 		[mPlayer seekToTime:[mPlayerItem forwardPlaybackEndTime]];
 	}
@@ -331,11 +331,11 @@ void MovieBase::setActiveSegment( float startTime, float duration )
 {
 	if( ! mPlayer || ! mPlayerItem )
 		return;
-	
+
 	int32_t scale = [mPlayer currentTime].timescale;
 	CMTime cm_start = CMTimeMakeWithSeconds(startTime, scale);
 	CMTime cm_duration = CMTimeMakeWithSeconds(startTime + duration, scale);
-	
+
 	if (mPlayingForward) {
 		[mPlayer seekToTime:cm_start];
 		[mPlayerItem setForwardPlaybackEndTime:cm_duration];
@@ -350,7 +350,7 @@ void MovieBase::resetActiveSegment()
 {
 	if( ! mPlayer || ! mPlayerItem )
 		return;
-	
+
 	if (mPlayingForward) {
 		[mPlayer seekToTime:kCMTimeZero];
 		[mPlayerItem setForwardPlaybackEndTime:[mPlayerItem duration]];
@@ -371,12 +371,12 @@ bool MovieBase::stepForward()
 {
 	if( ! mPlayerItem )
 		return false;
-	
+
 	bool can_step_forwards = [mPlayerItem canStepForward];
 	if( can_step_forwards ) {
 		[mPlayerItem stepByCount:1];
 	}
-	
+
 	return can_step_forwards;
 }
 
@@ -384,13 +384,13 @@ bool MovieBase::stepBackward()
 {
 	if( ! mPlayerItem)
 		return false;
-	
+
 	bool can_step_backwards = [mPlayerItem canStepBackward];
-	
+
 	if (can_step_backwards) {
 		[mPlayerItem stepByCount:-1];
 	}
-	
+
 	return can_step_backwards;
 }
 
@@ -398,9 +398,9 @@ bool MovieBase::setRate( float rate )
 {
 	if( ! mPlayer || ! mPlayerItem )
 		return false;
-	
+
 	bool success;
-	
+
 	if( rate < -1.0f )
 		success = [mPlayerItem canPlayFastReverse];
 	else if( rate < 0.0f )
@@ -409,9 +409,9 @@ bool MovieBase::setRate( float rate )
 		success = [mPlayerItem canPlayFastForward];
 	else
 		success = [mPlayerItem canPlaySlowForward];
-	
+
 	[mPlayer setRate:rate];
-	
+
 	return success;
 }
 
@@ -419,7 +419,7 @@ void MovieBase::setVolume( float volume )
 {
 	if( ! mPlayer )
 		return;
-	
+
 #if defined( CINDER_COCOA_TOUCH )
 	NSArray* audioTracks = [mAsset tracksWithMediaType:AVMediaTypeAudio];
 	NSMutableArray* allAudioParams = [NSMutableArray array];
@@ -432,17 +432,17 @@ void MovieBase::setVolume( float volume )
 	AVMutableAudioMix* volumeMix = [AVMutableAudioMix audioMix];
 	[volumeMix setInputParameters:allAudioParams];
 	[mPlayerItem setAudioMix:volumeMix];
-	
+
 #elif defined( CINDER_COCOA )
 	[mPlayer setVolume:volume];
-	
+
 #endif
 }
 
 float MovieBase::getVolume() const
 {
 	if (!mPlayer) return -1;
-	
+
 #if defined( CINDER_COCOA_TOUCH )
 	AVMutableAudioMix* mix = (AVMutableAudioMix*) [mPlayerItem audioMix];
 	NSArray* inputParams = [mix inputParameters];
@@ -455,7 +455,7 @@ float MovieBase::getVolume() const
 		return -1;
 	else
 		return endVolume;
-	
+
 #elif defined( CINDER_COCOA )
 	return [mPlayer volume];
 #endif
@@ -465,7 +465,7 @@ bool MovieBase::isPlaying() const
 {
 	if( ! mPlayer )
 		return false;
-	
+
 	return [mPlayer rate] != 0;
 }
 
@@ -473,7 +473,7 @@ bool MovieBase::isDone() const
 {
 	if( ! mPlayer )
 		return false;
-	
+
 	CMTime current_time = [mPlayerItem currentTime];
 	CMTime end_time = mPlayingForward ? [mPlayerItem duration] : kCMTimeZero;
 	return ::CMTimeCompare( current_time, end_time ) >= 0;
@@ -485,7 +485,7 @@ void MovieBase::play(bool toggle)
 		mPlaying = true;
 		return;
 	}
-	
+
 	if( toggle ) {
 		isPlaying()? [mPlayer pause]: [mPlayer play];
 	}
@@ -497,10 +497,10 @@ void MovieBase::play(bool toggle)
 void MovieBase::stop()
 {
 	mPlaying = false;
-	
+
 	if( ! mPlayer )
 		return;
-	
+
 	[mPlayer pause];
 }
 
@@ -517,20 +517,20 @@ void MovieBase::init()
 	mDuration = -1;
 	mFrameCount = -1;
 }
-	
+
 void MovieBase::initFromUrl( const Url& url )
 {
 	NSURL* asset_url = [NSURL URLWithString:[NSString stringWithUTF8String:url.c_str()]];
 	if( ! asset_url )
 		throw AvfUrlInvalidExc();
-	
+
 	// Create the AVAsset
 	NSDictionary* asset_options = @{(id)AVURLAssetPreferPreciseDurationAndTimingKey: @(YES)};
 	mAsset = [[AVURLAsset alloc] initWithURL:asset_url options:asset_options];
-	
+
 	mResponder = new MovieResponder( this );
 	mPlayerDelegate = [[MovieDelegate alloc] initWithResponder:mResponder];
-	
+
 	loadAsset();
 }
 
@@ -539,16 +539,16 @@ void MovieBase::initFromPath( const fs::path& filePath )
 	NSURL* asset_url = [NSURL fileURLWithPath:[NSString stringWithUTF8String:filePath.c_str()]];
 	if( ! asset_url )
 		throw AvfPathInvalidExc();
-	
+
 	// Create the AVAsset
 	NSDictionary* asset_options = @{(id)AVURLAssetPreferPreciseDurationAndTimingKey: @(YES)};
 	mAsset = [[AVURLAsset alloc] initWithURL:asset_url options:asset_options];
-	
+
 	mResponder = new MovieResponder(this);
 	mPlayerDelegate = [[MovieDelegate alloc] initWithResponder:mResponder];
-	
+
 	loadAsset();
-	
+
 	// spin-wait until asset loading is completed
 	while( ! mAssetLoaded ) {
 	}
@@ -558,33 +558,33 @@ void MovieBase::initFromLoader( const MovieLoader& loader )
 {
 	if( ! loader.ownsMovie() )
 		return;
-	
+
 	loader.waitForLoaded();
 	mPlayer = loader.transferMovieHandle();
 	mPlayerItem = [mPlayer currentItem];
 	mAsset = reinterpret_cast<AVURLAsset*>([mPlayerItem asset]);
-	
+
 	mResponder = new MovieResponder( this );
 	mPlayerDelegate = [[MovieDelegate alloc] initWithResponder:mResponder];
 
 	// process asset and prepare for playback...
 	processAssetTracks( mAsset );
-	
+
 	// collect asset information
 	mLoaded = true;
 	mDuration = (float) CMTimeGetSeconds([mAsset duration]);
 	mPlayable = [mAsset isPlayable];
 	mProtected = [mAsset hasProtectedContent];
 	mPlayThroughOk = [mPlayerItem isPlaybackLikelyToKeepUp];
-	
+
 	// setup PlayerItemVideoOutput --from which we will obtain direct texture access
 	createPlayerItemOutput( mPlayerItem );
-	
+
 	// without this the player continues to move the playhead past the asset duration time...
 	[mPlayer setActionAtItemEnd:AVPlayerActionAtItemEndPause];
-	
+
 	addObservers();
-	
+
 	allocateVisualContext();
 }
 
@@ -597,40 +597,40 @@ void MovieBase::loadAsset()
 		if( status == AVKeyValueStatusLoaded && ! error ) {
 			processAssetTracks( mAsset );
 		}
-		
+
 		error = nil;
 		status = [mAsset statusOfValueForKey:@"duration" error:&error];
 		if( status == AVKeyValueStatusLoaded && ! error ) {
 			mDuration = (float) CMTimeGetSeconds([mAsset duration]);
 		}
-		
+
 		error = nil;
 		status = [mAsset statusOfValueForKey:@"playable" error:&error];
 		if( status == AVKeyValueStatusLoaded && ! error ) {
 			mPlayable = [mAsset isPlayable];
 		}
-		
+
 		error = nil;
 		status = [mAsset statusOfValueForKey:@"hasProtectedContent" error:&error];
 		if( status == AVKeyValueStatusLoaded && ! error ) {
 			mProtected = [mAsset hasProtectedContent];
 		}
-		
+
 		// Create a new AVPlayerItem and make it our player's current item.
 		mPlayer = [[AVPlayer alloc] init];
 		mPlayerItem = [AVPlayerItem playerItemWithAsset:mAsset];
 		[mPlayer replaceCurrentItemWithPlayerItem:mPlayerItem];
-		
+
 		// setup PlayerItemVideoOutput --from which we will obtain direct texture access
 		createPlayerItemOutput( mPlayerItem );
-		
+
 		// without this the player continues to move the playhead past the asset duration time...
 		[mPlayer setActionAtItemEnd:AVPlayerActionAtItemEndPause];
-		
+
 		addObservers();
-		
+
 		allocateVisualContext();
-	
+
 		mAssetLoaded = true;
 	}];
 }
@@ -641,7 +641,7 @@ void MovieBase::updateFrame()
 		CMTime vTime = [mPlayer currentTime];
 		if( [mPlayerVideoOutput hasNewPixelBufferForItemTime:vTime] ) {
 			releaseFrame();
-			
+
 			CVImageBufferRef buffer = nil;
 			buffer = [mPlayerVideoOutput copyPixelBufferForItemTime:vTime itemTimeForDisplay:nil];
 			if( buffer ) {
@@ -656,7 +656,7 @@ uint32_t MovieBase::countFrames() const
 {
 	if( ! mAsset )
 		return 0;
-	
+
 	CMTime dur = [mAsset duration];
 	CMTime one_frame = ::CMTimeMakeWithSeconds( 1.0 / mFrameRate, dur.timescale );
 	double dur_seconds = ::CMTimeGetSeconds( dur );
@@ -683,7 +683,7 @@ void MovieBase::processAssetTracks( AVAsset* asset )
 		else
 			throw AvfFileInvalidExc();
 	}
-	
+
 	// process audio tracks
 	NSArray* audioTracks = [asset tracksWithMediaType:AVMediaTypeAudio];
 	mHasAudio = [audioTracks count] > 0;
@@ -693,7 +693,7 @@ void MovieBase::processAssetTracks( AVAsset* asset )
 	}
 #elif defined( CINDER_COCOA )
 	// No need for changes on OSX
-	
+
 #endif
 }
 
@@ -715,17 +715,17 @@ void MovieBase::addObservers()
 								selector:@selector(playerItemDidNotReachEndCallback)
 									name:AVPlayerItemFailedToPlayToEndTimeNotification
 								  object:mPlayerItem];
-		
+
 		[notification_center addObserver:mPlayerDelegate
 								selector:@selector(playerItemDidReachEndCallback)
 									name:AVPlayerItemDidPlayToEndTimeNotification
 								  object:mPlayerItem];
-		
+
 		[notification_center addObserver:mPlayerDelegate
 								selector:@selector(playerItemTimeJumpedCallback)
 									name:AVPlayerItemTimeJumpedNotification
 								  object:mPlayerItem];
-		
+
 		[mPlayerItem addObserver:mPlayerDelegate
 					  forKeyPath:@"status"
 						 options:(NSKeyValueObservingOptions)0
@@ -740,28 +740,28 @@ void MovieBase::removeObservers()
 		[notify_center removeObserver:mPlayerDelegate
 								 name:AVPlayerItemFailedToPlayToEndTimeNotification
 							   object:mPlayerItem];
-		
+
 		[notify_center removeObserver:mPlayerDelegate
 								 name:AVPlayerItemDidPlayToEndTimeNotification
 							   object:mPlayerItem];
-		
+
 		[notify_center removeObserver:mPlayerDelegate
 								 name:AVPlayerItemTimeJumpedNotification
 							   object:mPlayerItem];
-		
+
 		[mPlayerItem removeObserver:mPlayerDelegate
 						 forKeyPath:@"status"];
 	}
 }
-	
+
 void MovieBase::playerReady()
 {
 	mSignalReady.emit();
-	
+
 	if( mPlaying )
 		play();
 }
-	
+
 void MovieBase::playerItemEnded()
 {
 	if( mPalindrome ) {
@@ -773,15 +773,15 @@ void MovieBase::playerItemEnded()
 		this->seekToStart();
 		this->play();
 	}
-	
+
 	mSignalEnded.emit();
 }
-	
+
 void MovieBase::playerItemCancelled()
 {
 	mSignalCancelled.emit();
 }
-	
+
 void MovieBase::playerItemJumped()
 {
 	mSignalJumped.emit();
@@ -827,11 +827,11 @@ NSDictionary* MovieSurface::avPlayerItemOutputDictionary() const
 Surface8uRef MovieSurface::getSurface()
 {
 	updateFrame();
-	
+
 	lock();
 	Surface8uRef result = mSurface;
 	unlock();
-	
+
 	return result;
 }
 
@@ -858,7 +858,7 @@ MovieLoader::MovieLoader( const Url &url )
 	NSURL* asset_url = [NSURL URLWithString:[NSString stringWithCString:mUrl.c_str() encoding:[NSString defaultCStringEncoding]]];
 	if( ! asset_url )
 		throw AvfUrlInvalidExc();
-	
+
 	AVPlayerItem* playerItem = [[AVPlayerItem alloc] initWithURL:asset_url];
 	mPlayer = [[AVPlayer alloc] init];
 	[mPlayer replaceCurrentItemWithPlayerItem:playerItem];	// starts the downloading process
@@ -871,12 +871,12 @@ MovieLoader::~MovieLoader()
 		[mPlayer release];
 	}
 }
-	
+
 bool MovieLoader::checkLoaded() const
 {
 	if( ! mLoaded )
 		updateLoadState();
-	
+
 	return mLoaded;
 }
 
@@ -884,7 +884,7 @@ bool MovieLoader::checkPlayable() const
 {
 	if( ! mPlayable )
 		updateLoadState();
-	
+
 	return mPlayable;
 }
 
@@ -892,14 +892,14 @@ bool MovieLoader::checkPlaythroughOk() const
 {
 	if( ! mPlayThroughOK )
 		updateLoadState();
-	
+
 	return mPlayThroughOK;
 }
 
 bool MovieLoader::checkProtection() const
 {
 	updateLoadState();
-	
+
 	return mProtected;
 }
 
@@ -932,7 +932,7 @@ void MovieLoader::updateLoadState() const
 	mLoaded = mPlayable = [playerItem status] == AVPlayerItemStatusReadyToPlay;
 	mPlayThroughOK = [playerItem isPlaybackLikelyToKeepUp];
 	mProtected = [[playerItem asset] hasProtectedContent];
-	
+
 	//NSArray* loaded = [playerItem seekableTimeRanges];  // this value appears to be garbage
 /*	NSArray* loaded = [playerItem loadedTimeRanges];      // this value appears to be garbage
 	for( NSValue* value in loaded ) {
@@ -941,7 +941,7 @@ void MovieLoader::updateLoadState() const
 		float dur = ::CMTimeGetSeconds( range.duration );
 		//mLoaded = (CMTimeCompare([playerItem duration], range.duration) >= 0);
 	}
-	
+
 	AVPlayerItemAccessLog* log = [playerItem accessLog];
 	if( log ) {
 		NSArray* load_events = [log events];

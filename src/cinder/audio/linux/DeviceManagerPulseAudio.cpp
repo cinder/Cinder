@@ -102,7 +102,7 @@ void processSinkInfo( pa_context* context, const pa_sink_info* info, int eol, vo
 		DeviceInfo devInfo = createDeviceInfo<pa_sink_info>( info, DeviceInfo::OUTPUT );
 		stateData->deviceInfos->push_back( devInfo );
 	}
-	
+
 	checkComplete( context, stateData );
 }
 
@@ -122,7 +122,7 @@ void processSourceInfo( pa_context* context, const pa_source_info* info, int eol
 		DeviceInfo devInfo = createDeviceInfo<pa_source_info>( info, DeviceInfo::INPUT );
 		stateData->deviceInfos->push_back( devInfo );
 	}
-	
+
 	checkComplete( context, stateData );
 }
 
@@ -186,7 +186,7 @@ void processContextState( pa_context* context, void* userData )
 		case PA_CONTEXT_FAILED:
 			stateData->mainLoopApi->quit( stateData->mainLoopApi, -1 );
 		break;
-		
+
 		default:
 		break;
 	}
@@ -238,7 +238,7 @@ std::vector<DeviceInfo> getDeviceInfos( DeviceInfo::Usage usage )
 	return result;
 }
 
-std::string getDefaultSinkName() 
+std::string getDefaultSinkName()
 {
 	StateData stateData;
 	stateData.request = StateData::GET_DEFAULT_SINK_NAME;
@@ -273,7 +273,7 @@ const std::vector<DeviceRef>& DeviceManagerPulseAudio::getDevices()
 		parseDevices( DeviceInfo::OUTPUT );
 	}
 
-	return mDevices;	
+	return mDevices;
 }
 
 DeviceRef DeviceManagerPulseAudio::getDefaultOutput()
@@ -285,12 +285,12 @@ DeviceRef DeviceManagerPulseAudio::getDefaultOutput()
 DeviceRef DeviceManagerPulseAudio::getDefaultInput()
 {
 	std::string key = pulse::getDefaultSourceName();
-	return findDeviceByKey( key );	
+	return findDeviceByKey( key );
 }
 
 std::string DeviceManagerPulseAudio::getName( const DeviceRef &device )
 {
-	return getDeviceInfo( device ).mName;	
+	return getDeviceInfo( device ).mName;
 }
 
 size_t DeviceManagerPulseAudio::getNumInputChannels( const DeviceRef &device )
@@ -300,7 +300,7 @@ size_t DeviceManagerPulseAudio::getNumInputChannels( const DeviceRef &device )
 		return 0;
     }
 
-	return devInfo.mNumChannels;	
+	return devInfo.mNumChannels;
 }
 
 size_t DeviceManagerPulseAudio::getNumOutputChannels( const DeviceRef &device )
@@ -310,18 +310,18 @@ size_t DeviceManagerPulseAudio::getNumOutputChannels( const DeviceRef &device )
 		return 0;
     }
 
-	return devInfo.mNumChannels;	
+	return devInfo.mNumChannels;
 }
 
 size_t DeviceManagerPulseAudio::getSampleRate( const DeviceRef &device )
 {
-	return getDeviceInfo( device ).mSampleRate;	
+	return getDeviceInfo( device ).mSampleRate;
 }
 
 size_t DeviceManagerPulseAudio::getFramesPerBlock( const DeviceRef &device )
 {
 	size_t frames = getDeviceInfo( device ).mFramesPerBlock;
-	return frames;	
+	return frames;
 }
 
 void DeviceManagerPulseAudio::setSampleRate( const DeviceRef &device, size_t sampleRate )
@@ -339,7 +339,7 @@ void DeviceManagerPulseAudio::setFramesPerBlock( const DeviceRef &device, size_t
 size_t DeviceManagerPulseAudio::getFramesPerBlockHardware( const DeviceRef &device )
 {
 	// TODO: Fix this - a temp solution for now.
-	return getFramesPerBlock( device );    
+	return getFramesPerBlock( device );
 }
 
 // ----------------------------------------------------------------------------------------------------

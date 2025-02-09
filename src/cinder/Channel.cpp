@@ -36,9 +36,9 @@ class ImageTargetChannel : public ImageTarget {
 	static shared_ptr<ImageTargetChannel<T> > createRef( ChannelT<T> *channel ) { return shared_ptr<ImageTargetChannel<T> >( new ImageTargetChannel<T>( channel ) ); }
 
 	virtual bool hasAlpha() const { return false; }
-	
+
 	virtual void*	getRowPointer( int32_t row ) { return reinterpret_cast<void*>( mChannel->getData( ivec2( 0, row ) ) ); }
-	
+
   protected:
 	ImageTargetChannel( ChannelT<T> *channel )
 		: mChannel( channel )
@@ -49,13 +49,13 @@ class ImageTargetChannel : public ImageTarget {
 			setDataType( ImageIo::UINT16 );
 		else if( std::is_same<T,uint8_t>::value )
 			setDataType( ImageIo::UINT8 );
-		else 
+		else
 			throw; // what is this?
 
-		setColorModel( ImageIo::CM_GRAY );		
+		setColorModel( ImageIo::CM_GRAY );
 		setChannelOrder( ImageIo::Y );
 	}
-	
+
 	ChannelT<T>		*mChannel;
 };
 
@@ -90,7 +90,7 @@ class ImageSourceChannel : public ImageSource {
 	void load( ImageTargetRef target ) {
 		// get a pointer to the ImageSource function appropriate for handling our data configuration
 		ImageSource::RowFunc func = setupRowFunc( target );
-		
+
 		const uint8_t *data = mData;
 		for( int32_t row = 0; row < mHeight; ++row ) {
 			((*this).*func)( target, row, data );
@@ -116,7 +116,7 @@ ChannelT<T>::ChannelT( int32_t width, int32_t height )
 {
 	mRowBytes = mWidth * sizeof(T);
 	mIncrement = 1;
-	
+
 	mDataStore = shared_ptr<T>( new T[mWidth * mHeight], std::default_delete<T[]>() );
 	mData = mDataStore.get();
 }
@@ -162,7 +162,7 @@ ChannelT<T>::ChannelT( const ImageSourceRef &imageSource )
 
 	mDataStore = shared_ptr<T>( new T[mHeight * (mRowBytes/sizeof(T))], std::default_delete<T[]>() );
 	mData = mDataStore.get();
-	
+
 	shared_ptr<ImageTargetChannel<T>> target = ImageTargetChannel<T>::createRef( this );
 	imageSource->load( target );
 }
@@ -177,7 +177,7 @@ ChannelT<T>& ChannelT<T>::operator=( const ChannelT &rhs )
 	mDataStore = shared_ptr<T>( new T[mHeight * mWidth], std::default_delete<T[]>() );
 	mData = mDataStore.get();
 	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
-	
+
 	return *this;
 }
 
@@ -200,7 +200,7 @@ ChannelT<T>& ChannelT<T>::operator=( ChannelT &&rhs )
 template<typename T>
 ChannelT<T>::operator ImageSourceRef() const
 {
-	return shared_ptr<ImageSource>( new ImageSourceChannel( *this ) );	
+	return shared_ptr<ImageSource>( new ImageSourceChannel( *this ) );
 }
 
 template<typename T>
@@ -209,7 +209,7 @@ ChannelT<T> ChannelT<T>::clone( bool copyPixels ) const
 	ChannelT result( getWidth(), getHeight() );
 	if( copyPixels )
 		result.copyFrom( *this, getBounds() );
-	
+
 	return result;
 }
 
@@ -219,7 +219,7 @@ ChannelT<T> ChannelT<T>::clone( const Area &area, bool copyPixels ) const
 	ChannelT result( area.getWidth(), area.getHeight() );
 	if( copyPixels )
 		result.copyFrom( *this, area, -area.getUL() );
-	
+
 	return result;
 }
 
@@ -228,13 +228,13 @@ template<typename T>
 void ChannelT<T>::copyFrom( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &relativeOffset )
 {
 	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcChannel.getBounds(), srcArea, getBounds(), srcArea.getUL() + relativeOffset );
-	
+
 	ptrdiff_t srcRowBytes = srcChannel.getRowBytes();
 	uint8_t srcIncrement = srcChannel.getIncrement();
 	uint8_t increment = mIncrement;
-	
+
 	int32_t width = srcDst.first.getWidth();
-	
+
 	for( int32_t y = 0; y < srcArea.getHeight(); ++y ) {
 		const T *src = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( srcChannel.mData + srcArea.x1 * srcIncrement ) + ( srcArea.y1 + y ) * srcRowBytes );
 		T *dst = reinterpret_cast<T*>( reinterpret_cast<uint8_t*>( mData + srcDst.second.x * mIncrement ) + ( y + srcDst.second.y ) * mRowBytes );
@@ -251,13 +251,13 @@ T ChannelT<T>::areaAverage( const Area &area ) const
 {
 	typename CHANTRAIT<T>::Sum sum = 0;
 	const Area clipped( area.getClipBy( getBounds() ) );
-	
+
 	if( ( clipped.getWidth() <= 0 ) || ( clipped.getHeight() <= 0 ) )
 		return 0;
 
 	uint8_t increment = mIncrement;
 	ptrdiff_t rowBytes = mRowBytes;
-	
+
 	const T *line = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( mData + clipped.x1 * mIncrement ) + clipped.y1 * mRowBytes );
 	for( int32_t y = clipped.y1; y < clipped.y2; ++y ) {
 		const T *d = line;
@@ -265,10 +265,10 @@ T ChannelT<T>::areaAverage( const Area &area ) const
 			sum += *d;
 			d += increment;
 		}
-		
+
 		line = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( line ) + rowBytes );
-	} 
-	
+	}
+
 	return static_cast<T>( sum / ( clipped.getWidth() * clipped.getHeight() ) );
 }
 

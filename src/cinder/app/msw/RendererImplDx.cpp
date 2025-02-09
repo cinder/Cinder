@@ -1,29 +1,29 @@
-// The copyright in this software is being made available under the BSD License, included below. 
-// This software may be subject to other third party and contributor rights, including patent rights, 
+// The copyright in this software is being made available under the BSD License, included below.
+// This software may be subject to other third party and contributor rights, including patent rights,
 // and no such rights are granted under this license.
 //
-// Copyright (c) 2013, Microsoft Open Technologies, Inc. 
+// Copyright (c) 2013, Microsoft Open Technologies, Inc.
 // All rights reserved.
 //
-// Redistribution and use in source and binary forms, with or without modification, 
+// Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
 //
-// - Redistributions of source code must retain the above copyright notice, 
+// - Redistributions of source code must retain the above copyright notice,
 //   this list of conditions and the following disclaimer.
-// - Redistributions in binary form must reproduce the above copyright notice, 
-//   this list of conditions and the following disclaimer in the documentation 
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
 //   and/or other materials provided with the distribution.
-// - Neither the name of Microsoft Open Technologies, Inc. nor the names of its contributors 
-//   may be used to endorse or promote products derived from this software 
+// - Neither the name of Microsoft Open Technologies, Inc. nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
 //   without specific prior written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, 
-// INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
-// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES,
+// INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
@@ -247,7 +247,7 @@ void RendererImplDx::finishToggleFullScreen()
 void RendererImplDx::getPlatformWindowDimensions( Platform::Agile<Windows::UI::Core::CoreWindow> wnd, float* width, float* height) const
 {
 
-#if defined( CINDER_MSW ) 
+#if defined( CINDER_MSW )
 	RECT rect;
 	::GetClientRect(wnd, &rect);
 	*width = static_cast<float>(rect.right - rect.left);
@@ -455,7 +455,7 @@ bool RendererImplDx::initialize( DX_WINDOW_TYPE wnd)
 bool RendererImplDx::initializeInternal( DX_WINDOW_TYPE wnd )
 {
 	mWnd = wnd;
-	
+
 	if( ! createDeviceResources() )
 		return false;
 
@@ -476,7 +476,7 @@ bool RendererImplDx::initializeInternal( DX_WINDOW_TYPE wnd )
 	}
 	else if( D3D_FEATURE_LEVEL_11_0 == mFeatureLevel || D3D_FEATURE_LEVEL_11_1 == mFeatureLevel ) {
 		hr = md3dDevice->CreateVertexShader(Shaders::Dx11::FixedFunctionVS, sizeof(Shaders::Dx11::FixedFunctionVS), NULL, &mFixedColorVertexShader);
-	}				
+	}
 	if(hr != S_OK)
 		return false;
 
@@ -499,7 +499,7 @@ bool RendererImplDx::initializeInternal( DX_WINDOW_TYPE wnd )
 	}
 	else if( D3D_FEATURE_LEVEL_11_0 == mFeatureLevel || D3D_FEATURE_LEVEL_11_1 == mFeatureLevel ) {
 		hr = md3dDevice->CreateInputLayout(layout, sizeof(layout) / sizeof(layout[0]), Shaders::Dx11::FixedFunctionVS, sizeof(Shaders::Dx11::FixedFunctionVS), &mFixedLayout);
-	}		
+	}
 	if(hr != S_OK)
 		return false;
 	mDeviceContext->IASetInputLayout(mFixedLayout);
@@ -507,10 +507,10 @@ bool RendererImplDx::initializeInternal( DX_WINDOW_TYPE wnd )
 	// create shaders
 	bool bShadersSucceeded = false;
 	if( D3D_FEATURE_LEVEL_9_1 == mFeatureLevel ) {
-		bShadersSucceeded = createShadersFeatureLevel_9_1();	
+		bShadersSucceeded = createShadersFeatureLevel_9_1();
 	}
 	else if( D3D_FEATURE_LEVEL_9_3 == mFeatureLevel ) {
-		bShadersSucceeded = createShadersFeatureLevel_9_3();	
+		bShadersSucceeded = createShadersFeatureLevel_9_3();
 	}
 	else if( D3D_FEATURE_LEVEL_10_1 == mFeatureLevel ) {
 		bShadersSucceeded = createShadersFeatureLevel_10_1();
@@ -684,14 +684,14 @@ bool RendererImplDx::createDevice( UINT createDeviceFlags )
 bool RendererImplDx::createDeviceResources()
 {
 	UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-	
+
 #ifdef _DEBUG
     createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
 	bool ok = createDevice( createDeviceFlags );
 	if( ! ok ) {
-		// sometimes we can't use D3D11_CREATE_DEVICE_DEBUG if there is a DirectX SDK/Visual Studio version mismatch 
+		// sometimes we can't use D3D11_CREATE_DEVICE_DEBUG if there is a DirectX SDK/Visual Studio version mismatch
 		createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 		ok = createDevice( createDeviceFlags );
 	}
@@ -718,7 +718,7 @@ bool RendererImplDx::createFramebufferResources()
 		hr = dxgiDevice->GetAdapter(&dxgiAdapter);
 		if( hr != S_OK )
 			return false;
-		
+
  #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
 		IDXGIFactory2 *dxgiFactory;
 		hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory);
@@ -749,7 +749,7 @@ bool RendererImplDx::createFramebufferResources()
 		bool isWin8 = (osver.dwMajorVersion >= 6) && (osver.dwMinorVersion >= 2);
 
 		if( isWin8 ) {
-			swapChainDesc.Scaling = DXGI_SCALING_NONE;			
+			swapChainDesc.Scaling = DXGI_SCALING_NONE;
 		}
 		else {
 			//
@@ -765,7 +765,7 @@ bool RendererImplDx::createFramebufferResources()
 
   #if defined( CINDER_WINRT )
 		hr = dxgiFactory->CreateSwapChainForCoreWindow( md3dDevice, reinterpret_cast<IUnknown*>(mWnd.Get()), &swapChainDesc, nullptr, &mSwapChain );
-  #else 
+  #else
 		hr = dxgiFactory->CreateSwapChainForHwnd( md3dDevice, mWnd, &swapChainDesc, NULL, NULL, &mSwapChain );
   #endif
 #else
@@ -773,7 +773,7 @@ bool RendererImplDx::createFramebufferResources()
 		hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory1), (void**)&dxgiFactory);
 		if( hr != S_OK )
 			return false;
-		
+
 		DXGI_SWAP_CHAIN_DESC swapChainDesc = {0};
 		swapChainDesc.BufferDesc.Width = static_cast<UINT>(width); // Match the size of the window.
 		swapChainDesc.BufferDesc.Height = static_cast<UINT>(height);
@@ -790,7 +790,7 @@ bool RendererImplDx::createFramebufferResources()
 		swapChainDesc.Windowed = TRUE;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 		swapChainDesc.Flags = 0;
-		
+
 		hr = dxgiFactory->CreateSwapChain( md3dDevice, &swapChainDesc, &mSwapChain );
 #endif
 		if( hr != S_OK )

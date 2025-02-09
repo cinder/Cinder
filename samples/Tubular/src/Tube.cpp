@@ -1,4 +1,4 @@
-#include "Tube.h" 
+#include "Tube.h"
 #include "cinder/gl/gl.h"
 
 void addQuadToMesh( TriMesh& mesh, const vec3& P0, const vec3& P1, const vec3& P2, const vec3& P3 )
@@ -15,7 +15,7 @@ void addQuadToMesh( TriMesh& mesh, const vec3& P0, const vec3& P1, const vec3& P
 	mesh.appendTriangle( vert3, vert1, vert2 );
 }
 
-Tube::Tube() 
+Tube::Tube()
 : mNumSegs( 16 ),
   mScale0( 1 ),
   mScale1( 1 )
@@ -25,7 +25,7 @@ Tube::Tube()
 
 Tube::Tube( const Tube& obj )
 : mNumSegs( obj.mNumSegs ),
-  mBSpline( obj.mBSpline ),	
+  mBSpline( obj.mBSpline ),
   mProf( obj.mProf ),
   mScale0( obj.mScale0 ),
   mScale1( obj.mScale1 ),
@@ -35,12 +35,12 @@ Tube::Tube( const Tube& obj )
 {
 }
 
-Tube::Tube( const BSpline3f& bspline, const std::vector<vec3>& prof ) 
+Tube::Tube( const BSpline3f& bspline, const std::vector<vec3>& prof )
 	: mNumSegs( 16 ), mBSpline( bspline ), mProf( prof ), mScale0( 1 ), mScale1( 1 )
 {
 }
 
-Tube& Tube::operator=( const Tube& rhs ) 
+Tube& Tube::operator=( const Tube& rhs )
 {
 	if( &rhs != this ) {
 		mNumSegs	= rhs.mNumSegs;
@@ -63,16 +63,16 @@ void Tube::sampleCurve()
 	float dt = 1.0f/(float)mNumSegs;
 	for( int i = 0; i < mNumSegs; ++i ) {
 		float t = i*dt;
-	
+
 		vec3 P = mBSpline.getPosition( t );
 		mPs.push_back( P );
-		
+
 		vec3 T = mBSpline.getDerivative( t );
 		mTs.push_back( normalize( T ) );
 	}
 }
 
-void Tube::buildPTF() 
+void Tube::buildPTF()
 {
 	mFrames.clear();
 
@@ -96,12 +96,12 @@ void Tube::buildPTF()
 void Tube::buildFrenet()
 {
 	mFrames.clear();
-	
+
 	int n = mPs.size();
 	mFrames.resize( n );
-	
+
 	for( int i = 0; i < n; ++i ) {
-		vec3 p0, p1, p2;		
+		vec3 p0, p1, p2;
 		if( i < (n - 2) ) {
 			p0 = mPs[i];
 			p1 = mPs[i + 1];
@@ -111,26 +111,26 @@ void Tube::buildFrenet()
 			p0 = mPs[i - 1];
 			p1 = mPs[i];
 			p2 = mPs[i + 1];
-		}	
+		}
 		else if( i == (n - 1) ) {
 			p0 = mPs[i - 3];
 			p1 = mPs[i - 2];
 			p2 = mPs[i - 1];
 		}
-		
+
 	    vec3 t = normalize( p1 - p0 );
 		vec3 n = normalize( cross( t, p2 - p0 ) );
 		if( length( n ) == 0.0f ) {
 			int i = fabs( t[0] ) < fabs( t[1] ) ? 0 : 1;
-			if( fabs( t[2] ) < fabs( t[i] ) ) 
+			if( fabs( t[2] ) < fabs( t[i] ) )
 				i = 2;
-				
-			vec3 v( 0.0f, 0.0f, 0.0f ); 
+
+			vec3 v( 0.0f, 0.0f, 0.0f );
 			v[i] = 1.0f;
 			n = normalize( cross( t, v ) );
 		}
 		vec3 b = cross( t, n );
-	
+
 		mat4& m = mFrames[i];
 		m[0] = vec4( b, 0 );
 		m[1] = vec4( n, 0 );
@@ -141,9 +141,9 @@ void Tube::buildFrenet()
 
 void Tube::buildMesh( ci::TriMesh *tubeMesh  )
 {
-	if( ( mPs.size() != mFrames.size() ) || mFrames.size() < 3 || mProf.empty() ) 
+	if( ( mPs.size() != mFrames.size() ) || mFrames.size() < 3 || mProf.empty() )
 		return;
-		
+
 	tubeMesh->clear();
 
 	for( int i = 0; i < mPs.size() - 1; ++i ) {
@@ -202,8 +202,8 @@ void Tube::drawFrames( float lineLength, float lineWidth )
 
 	gl::lineWidth( lineWidth );
 	gl::begin( GL_LINES );
-	for( int i = 0; i < ( mPs.size() - 1 ); ++i ) {	
-	
+	for( int i = 0; i < ( mPs.size() - 1 ); ++i ) {
+
 		vec3 xAxis = vec3( mFrames[i] * vec4( 1, 0, 0, 0 ) );
 		vec3 yAxis = vec3( mFrames[i] * vec4( 0, 1, 0, 0 ) );
 		vec3 zAxis = vec3( mFrames[i] * vec4( 0, 0, 1, 0 ) );
@@ -212,11 +212,11 @@ void Tube::drawFrames( float lineLength, float lineWidth )
 		gl::color( Color( 1, 0.5f, 0 ) );
  		gl::vertex( mPs[i] );
  		gl::vertex( mPs[i] + xAxis * lineLength );
-		
+
 		gl::color( Color( 1, 0, 1 ) );
  		gl::vertex( mPs[i] );
  		gl::vertex( mPs[i] + yAxis * lineLength );
-	
+
 		gl::lineWidth( 2*lineWidth );
 		gl::color( Color( 0, 1, 1 ) );
  		gl::vertex( mPs[i] );
@@ -228,7 +228,7 @@ void Tube::drawFrames( float lineLength, float lineWidth )
 void Tube::drawFrameSlices( float scale )
 {
 	gl::color( ColorA( 1, 1, 1, 0.15f ) );
-	for( int i = 0; i < mFrames.size(); ++i ) {	
+	for( int i = 0; i < mFrames.size(); ++i ) {
 		gl::pushModelView();
 		gl::multModelMatrix( mFrames[i] );
 
@@ -244,12 +244,12 @@ void Tube::drawFrameSlices( float scale )
 	}
 
 	gl::color( ColorA( 1, 1, 1, 0.75f ) );
-	for( int i = 0; i <  mFrames.size(); ++i ) {	
+	for( int i = 0; i <  mFrames.size(); ++i ) {
 		gl::pushModelView();
 		gl::multModelMatrix( mFrames[i] );
-		
+
 		gl::begin( GL_LINES );
-		
+
 		gl::vertex( vec3( -1,  1, 0 )*scale );
 		gl::vertex( vec3(  1,  1, 0 )*scale );
 
@@ -260,8 +260,8 @@ void Tube::drawFrameSlices( float scale )
 		gl::vertex( vec3( -1, -1, 0 )*scale );
 
 		gl::vertex( vec3( -1, -1, 0 )*scale );
-		gl::vertex( vec3( -1,  1, 0 )*scale );			
-		
+		gl::vertex( vec3( -1,  1, 0 )*scale );
+
 		gl::end();
 		gl::popModelView();
 	}
@@ -295,7 +295,7 @@ void makeStarProfile( std::vector<vec3>& prof, float rad )
 	prof.push_back( A + (D-A)*0.6f );
 	prof.push_back( A + (D-A)*0.3f - vec3( 0.75f, 0, 0 ) );
 	prof.push_back( A + (D-A)*0.3f );
-	
+
 	for( int i = 0; i < prof.size(); ++i ) {
 		prof[i] *= rad;
 	}

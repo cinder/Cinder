@@ -44,15 +44,15 @@ class CI_API RendererImpl2dGdi : public RendererImplMsw {
 	virtual void	defaultResize() const;
 	virtual void	swapBuffers() const;
 	virtual void	makeCurrentContext( bool force = false );
-	
+
 	virtual HDC		getDc() const { return ( mDoubleBuffer ) ? mDoubleBufferDc : mPaintDc; }
 	Surface8u		copyWindowContents( const Area &area );
-	
+
  protected:
 	WindowImplMsw	*mWindowImpl;
 	::HDC			mPaintDc;
 	::PAINTSTRUCT	mPaintStruct;
-	
+
 	bool			mDoubleBuffer;
 	bool 			mPaintEvents;
 

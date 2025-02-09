@@ -25,7 +25,7 @@
 #if ! defined( CINDER_GL_ES )
 
 namespace cinder { namespace gl {
-	
+
 PboRef Pbo::create( GLenum target )
 {
 	return PboRef( new Pbo( target ) );
@@ -35,7 +35,7 @@ PboRef Pbo::create( GLenum target, GLsizeiptr allocationSize, const void *data, 
 {
 	return PboRef( new Pbo( target, allocationSize, data, usage ) );
 }
-	
+
 Pbo::Pbo( GLenum target )
 	: BufferObj( target )
 {

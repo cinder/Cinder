@@ -48,7 +48,7 @@ void prepareSettings( HeadlessTestApp::Settings* settings )
 	settings->setWindowSize( ci::vec2( 1920, 1080 ) );
 }
 
-void HeadlessTestApp::saveSnapshot( const fs::path& path ) 
+void HeadlessTestApp::saveSnapshot( const fs::path& path )
 {
 	if( ! path.empty() ) {
 #if defined( SNAPSHOT_FBO )

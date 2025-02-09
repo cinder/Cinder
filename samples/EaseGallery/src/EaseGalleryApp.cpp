@@ -31,7 +31,7 @@ struct EaseBox {
 		text.addLine( name );
 		mLabelTex = gl::Texture::create( text.render( true ) );
 	}
-	
+
 	void draw( float t ) const
 	{
 		// draw box and frame
@@ -41,22 +41,22 @@ struct EaseBox {
 		gl::drawStrokedRect( mDrawRect );
 		gl::color( Color::white() );
 		gl::draw( mLabelTex, mDrawRect.getCenter() - vec2(mLabelTex->getSize()) / 2.0f );
-				
+
 		// draw graph
 		gl::color( ColorA( 0.25f, 0.5f, 1.0f, 0.5f ) );
-		
+
 		gl::begin( GL_LINE_STRIP );
 		for( float x = 0; x < mDrawRect.getWidth(); x += 0.25f ) {
 			float y = 1.0f - mFn( x / mDrawRect.getWidth() );
 			gl::vertex( vec2( x, y * mDrawRect.getHeight() ) + mDrawRect.getUpperLeft() );
 		}
 		gl::end();
-		
+
 		// draw animating circle
 		gl::color( Color( 1, 0.5f, 0.25f ) );
 		gl::drawSolidCircle( mDrawRect.getUpperLeft() + mFn( t ) * mDrawRect.getSize(), 5.0f );
 	}
-	
+
 	std::function<float (float)>	mFn;
 	Rectf							mDrawRect;
 	gl::TextureRef					mLabelTex;
@@ -68,7 +68,7 @@ class EaseGalleryApp : public App {
 	void draw();
 	void resize();
 	void sizeRectangles();
-	
+
 	vector<EaseBox>		mEaseBoxes;
 };
 
@@ -142,7 +142,7 @@ void EaseGalleryApp::resize()
 void EaseGalleryApp::sizeRectangles()
 {
 	const int cellColumns = 4;
-	const int cellRows = 11;	
+	const int cellRows = 11;
 	const vec2 padding( 10, 10 );
 	const vec2 cellSize( ( getWindowWidth() - padding.x ) / cellColumns - padding.x, ( getWindowHeight() - padding.y ) / cellRows - padding.y );
 
@@ -155,7 +155,7 @@ void EaseGalleryApp::sizeRectangles()
 
 void EaseGalleryApp::draw()
 {
-	gl::clear( Color( 0.9f, 0.9f, 0.9f ) ); 
+	gl::clear( Color( 0.9f, 0.9f, 0.9f ) );
 	gl::lineWidth( 4.0f );
 
 	// time cycles every 1 / TWEEN_SPEED seconds, with a 50% pause at the end

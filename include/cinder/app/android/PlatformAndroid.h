@@ -73,7 +73,7 @@ class PlatformAndroid : public Platform {
 	static bool 					isAssetPath( const fs::path &path );
 
  protected:
-	virtual void 					prepareAssetLoading() override;	
+	virtual void 					prepareAssetLoading() override;
 
 	// Empty directories are not copied into the APK, so this will fail on empty directories
 	//virtual fs::path				findAssetPath( const fs::path &relativePath );
@@ -90,7 +90,7 @@ class DisplayAndroid : public Display {
  public:
 
 
- 
+
  protected:
  	friend class PlatformAndroid;
 };

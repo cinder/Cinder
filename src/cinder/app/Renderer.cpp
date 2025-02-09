@@ -37,7 +37,7 @@
 		#import "cinder/app/cocoa/RendererImpl2dMacQuartz.h"
 	#elif defined( CINDER_COCOA_TOUCH )
 		#include "cinder/cocoa/CinderCocoaTouch.h"
-		#import "cinder/app/cocoa/RendererImpl2dCocoaTouchQuartz.h"		
+		#import "cinder/app/cocoa/RendererImpl2dCocoaTouchQuartz.h"
 	#endif
 
 #elif defined( CINDER_MSW_DESKTOP )

@@ -80,7 +80,7 @@ void drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei insta
 {
 	context()->drawArraysInstanced( mode, first, count, instanceCount );
 }
-	
+
 void drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, GLsizei instanceCount )
 {
 	context()->drawElementsInstanced( mode, count, type, indices, instanceCount );
@@ -126,7 +126,7 @@ std::array<vec3, 8> getCubePoints( const vec3 &c, const vec3 &size )
 								   vec3(  c.x - 1.0f * s.x, c.y + 1.0f * s.y, c.z - 1.0f * s.z ) };	// upper back left
 	return points;
 }
-	
+
 void drawCubeImpl( const vec3 &c, const vec3 &size, bool faceColors )
 {
 	GLfloat sx = size.x * 0.5f;
@@ -247,36 +247,36 @@ void drawColorCube( const vec3 &center, const vec3 &size )
 {
 	drawCubeImpl( center, size, true );
 }
-	
+
 void drawStrokedCube( const vec3 &center, const vec3 &size )
 {
 	auto vertices = getCubePoints( center, size );
-	
+
 	static std::array<GLubyte, 24> indices = { 0, 1, 1, 2, 2, 3, 3, 0,		// right side connection
 											   4, 5, 5, 6, 6, 7, 7, 4,		// left side connection
 											   0, 4, 1, 5, 2, 6, 3, 7 };	// right to left connections
-	
+
 	auto ctx = ci::gl::context();
 	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
 	}
-	
+
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
 	gl::VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(vec3) * 8 );
 	gl::VboRef elementVbo = ctx->getDefaultElementVbo( 24 );
 	gl::ScopedBuffer bufferBindScp( defaultVbo );
 	defaultVbo->bufferSubData( 0, sizeof(vec3) * 8, vertices.data() );
-	
+
 	elementVbo->bind();
 	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
 	if( posLoc >= 0 ) {
 		gl::enableVertexAttribArray( posLoc );
 		gl::vertexAttribPointer( posLoc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
 	}
-	
+
 	elementVbo->bufferSubData( 0, 24, indices.data() );
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
@@ -322,7 +322,7 @@ void draw( const TextureRef &texture, const vec2 &dstOffset )
 {
 	if( ! texture )
 		return;
-	
+
 	draw( texture, texture->getBounds(), Rectf( texture->getBounds() ) + dstOffset );
 }
 
@@ -399,7 +399,7 @@ void draw( const std::vector<vec3> &points, bool isClosed )
 		CI_LOG_E( "No GLSL program bound" );
 		return;
 	}
-	
+
 	VboRef arrayVbo = ctx->getDefaultArrayVbo( sizeof(vec3) * points.size() );
 	arrayVbo->bufferSubData( 0, sizeof(vec3) * points.size(), points.data() );
 
@@ -545,7 +545,7 @@ class DefaultVboTarget : public geom::Target {
 		// sometimes a geom::Source will give us an attribute we didn't actually want. In particular, COLOR
 		if( find( mRequestedAttribs.begin(), mRequestedAttribs.end(), attr ) == mRequestedAttribs.end() )
 			return;
-	
+
 		int loc = mGlslProg->getAttribSemanticLocation( attr );
 		if( loc >= 0 ) {
 			size_t totalBytes = count * dims * sizeof(float);
@@ -558,7 +558,7 @@ class DefaultVboTarget : public geom::Target {
 					mTempStorage = unique_ptr<uint8_t[]>( new uint8_t[mTempStorageSizeBytes] );
 				}
 				geom::copyData( dims, strideBytes, sourceData, count, dims, 0, reinterpret_cast<float*>( mTempStorage.get() ) );
-				
+
 				mArrayVbo->bufferSubData( mArrayVboOffset, totalBytes, mTempStorage.get() );
 			}
 			else {
@@ -569,7 +569,7 @@ class DefaultVboTarget : public geom::Target {
 			mContext->vertexAttribPointer( loc, dims, GL_FLOAT, GL_FALSE, 0, (void*)mArrayVboOffset );
 			mArrayVboOffset += totalBytes;
 		}
-		
+
 		mReceivedAttribs.push_back( attr );
 	}
 
@@ -589,10 +589,10 @@ class DefaultVboTarget : public geom::Target {
 	gl::VboRef			mArrayVbo, mElementVbo;
 	const gl::GlslProg*	mGlslProg;
 	size_t				mArrayVboOffset;
-	
-	
+
+
 	GLenum				mIndexType;
-	
+
 	std::unique_ptr<uint8_t[]>	mTempStorage;
 	size_t						mTempStorageSizeBytes;
 };
@@ -829,7 +829,7 @@ void drawCrossImpl( const gl::TextureCubeMapRef &texture, const vector<vec2> &po
 	glsl->uniform( "uCubeMapTex", 0 );
 	if( useLod )
 		glsl->uniform( "uLod", lod );
-	
+
 	auto ctx = gl::context();
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
@@ -964,7 +964,7 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 	ctx->drawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 	ctx->popVao();
 }
-	
+
 void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner, const vec2 &upperLeftTexCoord, const vec2 &lowerRightTexCoord )
 {
 	draw( geom::RoundedRect( r ).cornerRadius( cornerRadius ).cornerSubdivisions( numSegmentsPerCorner ).texCoords( upperLeftTexCoord, lowerRightTexCoord ) );
@@ -1046,11 +1046,11 @@ void drawStrokedRect( const Rectf &rect, float lineWidth )
 	}
 
 	ctx->setDefaultShaderVars();
-	ctx->getDefaultVao()->replacementBindEnd();	
+	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->drawArrays( GL_TRIANGLE_STRIP, 0, 16 );
 	ctx->popVao();
 }
-	
+
 void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner )
 {
 	draw( geom::WireRoundedRect( r, cornerRadius ).cornerSubdivisions( numSegmentsPerCorner ) );
@@ -1080,7 +1080,7 @@ void drawStrokedEllipse( const vec2 &center, float radiusX, float radiusY, int n
 		CI_LOG_E( "No GLSL program bound" );
 		return;
 	}
-	
+
 	if( numSegments <= 0 )
 		numSegments = static_cast<int>(math<double>::floor( std::max( radiusX, radiusY ) * M_PI * 2 ) );
 	if( numSegments < 3 )
@@ -1209,7 +1209,7 @@ void drawSolidEllipse( const vec2 &center, float radiusX, float radiusY, int num
 	}
 	if( numSegments < 2 ) numSegments = 2;
 	size_t numVertices = (numSegments+2)*2;
-	
+
 	size_t worstCaseSize = numVertices * sizeof(float) * ( 2 + 2 + 3 );
 	VboRef defaultVbo = ctx->getDefaultArrayVbo( worstCaseSize );
 	ScopedBuffer vboScp( defaultVbo );
@@ -1287,7 +1287,7 @@ void drawSolidTriangle( const vec2 &pt0, const vec2 &pt1, const vec2 &pt2, const
 {
 	vec2 pts[3] = { pt0, pt1, pt2 };
 	vec2 texs[3] = { texCoord0, texCoord1, texCoord2 };
-	
+
 	drawSolidTriangle( pts, texs );
 }
 
@@ -1444,16 +1444,16 @@ void drawBillboard( const vec3 &pos, const vec2 &scale, float rotationRadians, c
 	ctx->drawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 	ctx->popVao();
 }
-	
+
 void drawFrustum( const Camera &cam )
 {
 	vec3 nearTopLeft, nearTopRight, nearBottomLeft, nearBottomRight;
 	cam.getNearClipCoordinates( &nearTopLeft, &nearTopRight, &nearBottomLeft, &nearBottomRight );
-	
+
 	vec3 farTopLeft, farTopRight, farBottomLeft, farBottomRight;
 	cam.getFarClipCoordinates( &farTopLeft, &farTopRight, &farBottomLeft, &farBottomRight );
 
-	// extract camera position from modelview matrix, so that it will work with any camera	
+	// extract camera position from modelview matrix, so that it will work with any camera
 	//  see: http://www.gamedev.net/topic/397751-how-to-get-camera-position/page__p__3638207#entry3638207
 	mat4 view = cam.getViewMatrix();
 	vec3 eye;
@@ -1475,35 +1475,35 @@ void drawFrustum( const Camera &cam )
 										5, 1, 6, 2, 7, 3, 8, 4,		// draws from far to near corners
 										1, 2, 2, 4, 4, 3, 3, 1,		// draws near rect
 										5, 6, 6, 8, 8, 7, 7, 5};	// draws far rect
-	
+
 	auto ctx = ci::gl::context();
 	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
 	}
-	
+
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
 	gl::VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(vec3)*9 );
 	gl::VboRef elementVbo = ctx->getDefaultElementVbo( 32 );
 	gl::ScopedBuffer bufferBindScp( defaultVbo );
 	defaultVbo->bufferSubData( 0, sizeof(vec3)*9, vertices.data() );
-	
+
 	elementVbo->bind();
 	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
 	if( posLoc >= 0 ) {
 		gl::enableVertexAttribArray( posLoc );
 		gl::vertexAttribPointer( posLoc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
 	}
-	
+
 	elementVbo->bufferSubData( 0, 32, indices.data() );
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
 	ctx->drawElements( GL_LINES, 32, GL_UNSIGNED_BYTE, 0 );
 	ctx->popVao();
 }
-	
+
 void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
 {
 	gl::ScopedColor color( ColorA( 1.0f, 0.0f, 0.0f, 1.0f ) );
@@ -1513,7 +1513,7 @@ void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
 	gl::color( 0.0f, 0.0f, 1.0f, 1.0f );
 	drawVector( vec3( 0.0f ), vec3( 0.0f, 0.0f, 1.0f ) * axisLength, headLength, headRadius );
 }
-	
+
 void drawVector( const vec3& start, const vec3& end, float headLength, float headRadius )
 {
 	vec3 dir = end - start;
@@ -1529,7 +1529,7 @@ namespace {
 void drawStringHelper( const std::string &str, const vec2 &pos, const ColorA &color, Font font, int justification )
 {
 #if ! defined( CINDER_ANDROID )
-	
+
 	if( str.empty() )
 		return;
 

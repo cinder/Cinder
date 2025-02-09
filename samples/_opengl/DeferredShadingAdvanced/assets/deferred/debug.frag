@@ -78,4 +78,3 @@ void main( void )
 	}
 	oColor 		= vec4( color, 1.0 );
 }
- 

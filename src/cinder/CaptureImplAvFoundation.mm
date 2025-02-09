@@ -74,7 +74,7 @@ static BOOL sDevicesEnumerated = false;
 	}
 
 	sDevices.clear();
-	
+
 	NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
 	for( AVCaptureDevice *device in devices ) {
 		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplAvFoundationDevice( device ) ) );
@@ -93,10 +93,10 @@ static BOOL sDevicesEnumerated = false;
 				throw cinder::CaptureExcInitFail();
 			mDevice = [CaptureImplAvFoundation getDevices:NO][0];
 		}
-		
+
 		mDeviceUniqueId = [NSString stringWithUTF8String:mDevice->getUniqueId().c_str()];
 		[mDeviceUniqueId retain];
-		
+
 		mIsCapturing = false;
 		mWidth = width;
 		mHeight = height;
@@ -113,13 +113,13 @@ static BOOL sDevicesEnumerated = false;
 	if( mIsCapturing ) {
 		[self stopCapture];
 	}
-	
+
 	[mDeviceUniqueId release];
-	
+
 	[super dealloc];
 }
 
-- (bool)prepareStartCapture 
+- (bool)prepareStartCapture
 {
 	NSError *error = nil;
 
@@ -133,7 +133,7 @@ static BOOL sDevicesEnumerated = false;
 	else {
 		device = [AVCaptureDevice deviceWithUniqueID:mDeviceUniqueId];
 	}
-	
+
 	if( ! device ) {
 		throw cinder::CaptureExcInitFail();
 	}
@@ -158,14 +158,14 @@ static BOOL sDevicesEnumerated = false;
 	else
 		mSession.sessionPreset = AVCaptureSessionPresetMedium;
 	[mSession commitConfiguration];
-	
+
 	//adjust connection settings
 	/*
 	//Testing indicates that at least the 3GS doesn't support video orientation changes
 	NSArray * connections = output.connections;
 	for( AVCaptureConnection *connection in connections ) {
 		AVCaptureConnection * connection = [connections objectAtIndex:i];
-		
+
 		if( connection.supportsVideoOrientation ) {
 			connection.videoOrientation = AVCaptureVideoOrientationPortrait;
 		}
@@ -188,22 +188,22 @@ static BOOL sDevicesEnumerated = false;
 
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(avCaptureInputPortFormatDescriptionDidChange:) name:AVCaptureInputPortFormatDescriptionDidChangeNotification object:nil];
 
-	// If you wish to cap the frame rate to a known value, such as 15 fps, set 
+	// If you wish to cap the frame rate to a known value, such as 15 fps, set
 	// minFrameDuration.
 	// output.minFrameDuration = CMTimeMake(1, 15);
 	return true;
 }
 
-- (void)startCapture 
+- (void)startCapture
 {
 	if( mIsCapturing )
-		return; 
+		return;
 
 	@synchronized( self ) {
 		if( [self prepareStartCapture] ) {
 			mWorkingPixelBuffer = 0;
 			mHasNewFrame = false;
-		
+
 			mIsCapturing = true;
 			[mSession startRunning];
 		}
@@ -222,14 +222,14 @@ static BOOL sDevicesEnumerated = false;
 			::CVBufferRelease( mWorkingPixelBuffer );
 			mWorkingPixelBuffer = nullptr;
 		}
-		
+
 		[mSession release];
 		mSession = nil;
 
 		mIsCapturing = false;
 		mHasNewFrame = false;
-		
-		mCurrentFrame.reset();		
+
+		mCurrentFrame.reset();
 	}
 }
 
@@ -255,7 +255,7 @@ static BOOL sDevicesEnumerated = false;
 
 // Delegate routine that is called when a sample buffer was written
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
-{ 
+{
 	@synchronized( self ) {
 		if( mIsCapturing ) {
 			// if the last pixel buffer went unclaimed, we'll need to release it
@@ -263,12 +263,12 @@ static BOOL sDevicesEnumerated = false;
 				::CVBufferRelease( mWorkingPixelBuffer );
 				mWorkingPixelBuffer = nullptr;
 			}
-			
+
 			mWorkingPixelBuffer = ::CMSampleBufferGetImageBuffer(sampleBuffer);
 			::CVBufferRetain( mWorkingPixelBuffer );
-			mHasNewFrame = true;			
+			mHasNewFrame = true;
 		}
-	}	
+	}
 }
 
 - (cinder::Surface8uRef)getCurrentFrame
@@ -276,10 +276,10 @@ static BOOL sDevicesEnumerated = false;
 	if( ( ! mIsCapturing ) || ( ! mWorkingPixelBuffer ) ) {
 		return mCurrentFrame;
 	}
-	
+
 	@synchronized( self ) {
 		::CVPixelBufferLockBaseAddress( mWorkingPixelBuffer, 0 );
-		
+
 		uint8_t *data = (uint8_t *)::CVPixelBufferGetBaseAddress( mWorkingPixelBuffer );
 		mExposedFrameBytesPerRow = (int32_t)::CVPixelBufferGetBytesPerRow( mWorkingPixelBuffer );
 		mExposedFrameWidth = (int32_t)::CVPixelBufferGetWidth( mWorkingPixelBuffer );
@@ -291,11 +291,11 @@ static BOOL sDevicesEnumerated = false;
 					delete s;
 					frameDeallocator( captureWorkingPixelBuffer );
 				} );
-		
+
 		// mark the working pixel buffer as empty since we have wrapped it in the current frame
 		mWorkingPixelBuffer = nullptr;
 	}
-	
+
 	return mCurrentFrame;
 }
 

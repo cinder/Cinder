@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "cinder/audio/Context.h" 
+#include "cinder/audio/Context.h"
 
 namespace cinder { namespace audio { namespace linux {
 
@@ -83,6 +83,6 @@ class ContextJack : public Context {
   private:
 	//SLObjectItf mSLEngineObject = nullptr;
 	//SLEngineItf mSLEngineEngine = nullptr;
-};	
+};
 
 } } } // namespace cinder::audio::linux

@@ -10,7 +10,7 @@ using namespace std;
 namespace im = ImGui;
 
 NodeEffectsTest::NodeEffectsTest()
-{	
+{
 	mSubTests = {
 		"one",
 		"force stereo",

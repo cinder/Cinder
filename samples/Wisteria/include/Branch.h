@@ -14,11 +14,11 @@ class Branch {
 
 	void update();
 	void draw( cairo::Context ctx );
-	
+
 	bool isAlive();
 	void createBranch( const vec2 &aOrigin, float baseHue, ColorA flowerColor, int launchDelay );
-	
-	
+
+
 	static void		setWindowSize( int aWindowWidth, int aWindowHeight ) { sWindowWidth = aWindowWidth; sWindowHeight = aWindowHeight; }
 	static float	randomHue();
 
@@ -38,5 +38,5 @@ class Branch {
 	ColorA	mStartColor, mEndColor, mFlowerColor;
 	float	mScale;
 
-	std::vector<Branch> mBranches; 	
+	std::vector<Branch> mBranches;
 };

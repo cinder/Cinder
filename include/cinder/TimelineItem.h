@@ -37,7 +37,7 @@ class CI_API TimelineItem : public std::enable_shared_from_this<TimelineItem>
 	TimelineItem( class Timeline *parent = 0 );
 	TimelineItem( class Timeline *parent, void *target, float startTime, float duration );
 	virtual ~TimelineItem() {}
-	
+
 	//! Returns the item's target pointer
 	void* getTarget() const { return mTarget; }
 
@@ -75,17 +75,17 @@ class CI_API TimelineItem : public std::enable_shared_from_this<TimelineItem>
 	void removeSelf();
 	//! Marks the item as not completed, and if \a unsetStarted, marks the item as not started
 	virtual void reset( bool unsetStarted = false ) { if( unsetStarted ) mHasStarted = false; mComplete = false; }
-	
+
 	//! Returns whether the item has started
-	bool hasStarted() const { return mHasStarted; }			
+	bool hasStarted() const { return mHasStarted; }
 	//! Returns whether the item has completed
 	bool isComplete() { return mComplete; }
-	
+
 	//! Should the item remove itself from the Timeline when it is complete
 	bool	getAutoRemove() const { return mAutoRemove; }
 	//! Sets whether the item will remove itself from the Timeline when it is complete
 	void	setAutoRemove( bool autoRemove = true ) { mAutoRemove = autoRemove; }
-	
+
 	virtual void start( bool reverse ) = 0;
 	virtual void loopStart() {}
 	virtual void update( float relativeTime ) = 0;
@@ -100,9 +100,9 @@ class CI_API TimelineItem : public std::enable_shared_from_this<TimelineItem>
 	virtual TimelineItemRef		cloneReverse() const = 0;
 	//! go to a specific time, generally called by the parent Timeline only. If \a reverse then playhead is interpreted as retreating rather than advancing.
 	void stepTo( float time, bool reverse );
-	
+
 	TimelineItemRef thisRef() { return shared_from_this(); }
-	
+
   protected:
 	void	setDurationDirty() { mDirtyDuration = true; }
 	void	updateDuration() const;
@@ -122,7 +122,7 @@ class CI_API TimelineItem : public std::enable_shared_from_this<TimelineItem>
 	bool	mUseAbsoluteTime;
 	bool	mAutoRemove;
 	int32_t	mLastLoopIteration;
-	
+
 	friend class Timeline;
   private:
 	mutable float	mDuration, mInvDuration;

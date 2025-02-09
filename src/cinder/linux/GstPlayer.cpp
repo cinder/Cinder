@@ -142,7 +142,7 @@ GstBusSyncReply checkBusMessagesSync( GstBus* bus, GstMessage* message, gpointer
 
 	GstData& data = *( static_cast<GstData*>( userData ) );
 
-	switch( GST_MESSAGE_TYPE( message ) ) 
+	switch( GST_MESSAGE_TYPE( message ) )
 	{
 #if defined( CINDER_GST_HAS_GL )
 		case GST_MESSAGE_NEED_CONTEXT: {

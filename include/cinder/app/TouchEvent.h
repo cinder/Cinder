@@ -47,7 +47,7 @@ class CI_API TouchEvent : public Event {
 		//! Returns the x position of the touch measured in points
 		float		getX() const { return mPos.x; }
 		//! Returns the y position of the touch measured in points
-		float		getY() const { return mPos.y; }		
+		float		getY() const { return mPos.y; }
 		//! Returns the position of the touch measured in points
 		vec2		getPos() const { return mPos; }
 		//! Sets the position of the touch measured in points
@@ -55,7 +55,7 @@ class CI_API TouchEvent : public Event {
 		//! Returns the previous x position of the touch measured in points
 		float		getPrevX() const { return mPrevPos.x; }
 		//! Returns the previous y position of the touch measured in points
-		float		getPrevY() const { return mPrevPos.y; }		
+		float		getPrevY() const { return mPrevPos.y; }
 		//! Returns the previous position of the touch measured in points
 		vec2		getPrevPos() const { return mPrevPos; }
 		//! Returns an ID unique for the lifetime of the touch
@@ -64,7 +64,7 @@ class CI_API TouchEvent : public Event {
 		double		getTime() const { return mTime; }
 		//! Returns a pointer to the OS-native object. This is a UITouch* on Cocoa Touch and a TOUCHPOINT* on MSW.
 		const void*	getNative() const { return mNative; }
-		
+
 	  private:
 		vec2		mPos, mPrevPos;
 		uint32_t	mId;
@@ -79,7 +79,7 @@ class CI_API TouchEvent : public Event {
 	TouchEvent( const WindowRef &win, const std::vector<Touch> &touches, void *native = nullptr )
 		: Event( win ), mTouches( touches ), mNative( native )
 	{}
-	
+
 	//! Returns a std::vector of Touch descriptors associated with this event
 	const std::vector<Touch>&	getTouches() const { return mTouches; }
 	//! Returns a std::vector of Touch descriptors associated with this event

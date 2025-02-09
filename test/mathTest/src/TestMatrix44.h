@@ -46,17 +46,17 @@ template <typename T> void TestMatrix44( std::ostream& os )
 				  9, 10, 11, 12,
 				 13, 14, 15, 16 );
 
-		T data[16] = 
+		T data[16] =
 		{
 			(T) 1, (T) 2, (T) 3, (T) 4,
 			(T) 5, (T) 6, (T) 7, (T) 8,
 		    (T) 9, (T)10, (T)11, (T)12,
-			(T)13, (T)14, (T)15, (T)16 
+			(T)13, (T)14, (T)15, (T)16
 		};
 
 		MatT m0( data );
 
-		result = ( c0 == m0 );	
+		result = ( c0 == m0 );
 
 		os << (result ? "passed" : "FAILED") << " : " << "Matrix44( const T *dt );" << "\n";
 	}
@@ -83,7 +83,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	}
 
 
-	// Matrix44( const Vec3<T> &vx, const Vec3<T> &vy, const Vec3<T> &vz ); 
+	// Matrix44( const Vec3<T> &vx, const Vec3<T> &vy, const Vec3<T> &vz );
 	{
 		bool result = false;
 
@@ -100,7 +100,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	}
 
 
-	// Matrix44( const Vec4<T> &vx, const Vec4<T> &vy, const Vec4<T> &vz, const Vec4<T> &vw = Vec4<T>( 0, 0, 0, 1 ) ); 
+	// Matrix44( const Vec4<T> &vx, const Vec4<T> &vy, const Vec4<T> &vz, const Vec4<T> &vw = Vec4<T>( 0, 0, 0, 1 ) );
 	{
 		bool result = false;
 
@@ -109,8 +109,8 @@ template <typename T> void TestMatrix44( std::ostream& os )
 				  9, 10, 11, 12,
 				 13, 14, 15, 16 );
 
-		MatT m0( Vec4<T>(  1,  2,  3,  4 ), 
-			     Vec4<T>(  5,  6,  7,  8 ), 
+		MatT m0( Vec4<T>(  1,  2,  3,  4 ),
+			     Vec4<T>(  5,  6,  7,  8 ),
 			     Vec4<T>(  9, 10, 11, 12 ),
 			     Vec4<T>( 13, 14, 15, 16 ) );
 
@@ -128,19 +128,19 @@ template <typename T> void TestMatrix44( std::ostream& os )
 			 1,  2,  3,  4,
 			 5,  6,  7,  8,
 			 9, 10, 11, 12,
-			13, 14, 15, 16 
+			13, 14, 15, 16
 		);
 
 		Matrix44<float> fmat0(
 			 1,  2,  3,  4,
 			 5,  6,  7,  8,
 			 9, 10, 11, 12,
-			13, 14, 15, 16 
+			13, 14, 15, 16
 		);
 
 		Matrix44<double> dmat1( fmat0 );
 		Matrix44<double> fmat1( dmat0 );
-		
+
 		result = ( dmat0 == dmat1 ) && ( fmat0 == fmat1 );
 
 		os << (result ? "passed" : "FAILED") << " : " << "template< typename FromT > Matrix44( const Matrix44<FromT>& src );" << "\n";
@@ -173,7 +173,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 				 7, 8, 9, 0,
 				 0, 0, 0, 1 );
 
-		Matrix33<T> mat33( 
+		Matrix33<T> mat33(
 			1, 2, 3,
 			4, 5, 6,
 			7, 8, 9
@@ -218,7 +218,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 				 13, 14, 15, 16 );
 
 		T* data = (T*)m0;
-		
+
 		for( int i = 0; i < MatT::DIM_SQ; ++i ) {
 			data[i] *= 2;
 		}
@@ -233,12 +233,12 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		T cdata[16] = 
+		T cdata[16] =
 		{
 			(T) 1, (T) 2, (T) 3, (T) 4,
 			(T) 5, (T) 6, (T) 7, (T) 8,
 			(T) 9, (T)10, (T)11, (T)12,
-			(T)13, (T)14, (T)15, (T)16 
+			(T)13, (T)14, (T)15, (T)16
 		};
 
 		MatT m0(  1,  2,  3,  4,
@@ -305,21 +305,21 @@ template <typename T> void TestMatrix44( std::ostream& os )
 			 1,  2,  3,  4,
 			 5,  6,  7,  8,
 			 9, 10, 11, 12,
-			13, 14, 15, 16 
+			13, 14, 15, 16
 		);
 
 		Matrix44<float> fmat0(
 			 1,  2,  3,  4,
 			 5,  6,  7,  8,
 			 9, 10, 11, 12,
-			13, 14, 15, 16 
+			13, 14, 15, 16
 		);
 
 		Matrix44<double> dmat1 = fmat0;
 		Matrix44<double> fmat1 = dmat0;
-		
+
 		result = ( dmat0 == dmat1 ) && ( fmat0 == fmat1 );
-		
+
 		os << (result ? "passed" : "FAILED") << " : " << "template< typename FromT > Matrix44<T>& operator=( const Matrix44<FromT>& rhs );" << "\n";
 	}
 
@@ -353,7 +353,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 				 7, 8, 9, 0,
 				 0, 0, 0, 1 );
 
-		Matrix33<T> mat33( 
+		Matrix33<T> mat33(
 			1, 2, 3,
 			4, 5, 6,
 			7, 8, 9
@@ -389,7 +389,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 				 (T)1.5e-04, (T)1.5e-04, (T)1.5e-04, (T)1.5e-04,
 				 (T)1.5e-04, (T)1.5e-04, (T)1.5e-04, (T)1.5e-04 );
 
-	
+
 		result = ( false == c0.equalCompare( m0, epsilon ) ) && ( true == c0.equalCompare( m1, epsilon ) );
 
 		os << (result ? "passed" : "FAILED") << " : " << "bool equalCompare( const Matrix44<T>& rhs, T epsilon ) const;" << "\n";
@@ -439,7 +439,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	// Matrix44<T>& operator*=( const Matrix44<T> &rhs );
 	{
 		bool result = false;
-		
+
 		MatT c0(
 			 46,  52,  58,  64,
 			 74,  84,  94, 104,
@@ -471,7 +471,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		os << "   " << "speed test:" << "\n";
 		// Multiply
 		{
-			MatT b; 
+			MatT b;
 			Timer timer;
 			timer.start();
 			for( int i = 0; i < iter; ++i ) {
@@ -483,7 +483,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		{
 			CINDER_ALIGN16_MATRIX44F( align_c0 ) = c0;
 			CINDER_ALIGN16_MATRIX44F( align_m0 ) = m0;
-			CINDER_ALIGN16_MATRIX44F( b ); 
+			CINDER_ALIGN16_MATRIX44F( b );
 
 			Timer timer;
 			timer.start();
@@ -514,7 +514,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 			      5,  6,  7,  8,
 				  9, 10, 11, 12,
 				 13, 14, 15, 16 );
-		
+
 		m0 += m1;
 
 		result = ( c0 == m0 );
@@ -541,7 +541,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 			      5,  6,  7,  8,
 				  9, 10, 11, 12,
 				 13, 14, 15, 16 );
-		
+
 		m0 -= m1;
 
 		result = ( c0 == m0 );
@@ -642,7 +642,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	// const Matrix44<T> operator*( const Matrix44<T> &rhs ) const;
 	{
 		bool result = false;
-		
+
 		MatT c0(
 			 46,  52,  58,  64,
 			 74,  84,  94, 104,
@@ -688,7 +688,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 			      5,  6,  7,  8,
 				  9, 10, 11, 12,
 				 13, 14, 15, 16 );
-		
+
 		result = ( c0 == ( m0 + m1 ) );
 
 		os << (result ? "passed" : "FAILED") << " : " << "const Matrix44<T> operator+( const Matrix44<T> &rhs ) const;" << "\n";
@@ -713,7 +713,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 			      5,  6,  7,  8,
 				  9, 10, 11, 12,
 				 13, 14, 15, 16 );
-		
+
 		result = ( c0 == ( m0 - m1 ) );
 
 		os << (result ? "passed" : "FAILED") << " : " << "const Matrix44<T> operator-( const Matrix44<T> &rhs ) const;" << "\n";
@@ -759,8 +759,8 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		diff.z = fabs( diff.z );
 		diff.z = fabs( diff.w );
 
-		result = ( diff.x <= EPSILON ) && 
-			     ( diff.y <= EPSILON ) && 
+		result = ( diff.x <= EPSILON ) &&
+			     ( diff.y <= EPSILON ) &&
 				 ( diff.z <= EPSILON ) &&
 				 ( diff.w <= EPSILON );
 
@@ -928,7 +928,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 				 ( c0.getColumn( 1 ) == Vec4<T>(  5,  6,  7,  8 ) ) &&
 				 ( c0.getColumn( 2 ) == Vec4<T>(  9, 10, 11, 12 ) ) &&
 				 ( c0.getColumn( 3 ) == Vec4<T>( 13, 14, 15, 16  ) );
-		
+
 		os << (result ? "passed" : "FAILED") << " : " << "Vec4<T> getColumn( int col ) const;" << "\n";
 	}
 
@@ -1329,7 +1329,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 			      5,  6,  7,  8,
 				  9, 10, 11, 12,
 				 13, 14, 15, 16  );
-		
+
 		m0.transpose();
 
 		result = ( c0 == m0 );
@@ -1418,7 +1418,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 				multi = false;
 				break;
 			}
-			eu += da; 
+			eu += da;
 		}
 
 		result = single && multi;
@@ -1454,7 +1454,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		os << "   " << "speed test:" << "\n";
 		iter = 10000000;
 		{
-			MatT b; 
+			MatT b;
 			Timer timer;
 			timer.start();
 			for( int i = 0; i < iter; ++i ) {
@@ -1465,7 +1465,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		}
 		{
 			CINDER_ALIGN16_MATRIX44F( align_m0 ) = m0;
-			CINDER_ALIGN16_MATRIX44F( b ); 
+			CINDER_ALIGN16_MATRIX44F( b );
 			Timer timer;
 			timer.start();
 			for( int i = 0; i < iter; ++i ) {
@@ -1494,8 +1494,8 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		diff.y = fabs( diff.y );
 		diff.z = fabs( diff.z );
 
-		result = ( diff.x <= EPSILON ) && 
-			     ( diff.y <= EPSILON ) && 
+		result = ( diff.x <= EPSILON ) &&
+			     ( diff.y <= EPSILON ) &&
 				 ( diff.z <= EPSILON );
 
 		os << (result ? "passed" : "FAILED") << " : " << "Vec3<T> preMultiply( const Vec3<T> &v ) const;" << "\n";
@@ -1520,9 +1520,9 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		diff.z = fabs( diff.z );
 		diff.w = fabs( diff.w );
 
-		result = ( diff.x <= EPSILON ) && 
-			     ( diff.y <= EPSILON ) && 
-				 ( diff.z <= EPSILON ) && 
+		result = ( diff.x <= EPSILON ) &&
+			     ( diff.y <= EPSILON ) &&
+				 ( diff.z <= EPSILON ) &&
 				 ( diff.w <= EPSILON );
 
 		os << (result ? "passed" : "FAILED") << " : " << "Vec4<T> preMultiply( const Vec4<T> &v ) const;" << "\n";
@@ -1546,8 +1546,8 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		diff.y = fabs( diff.y );
 		diff.z = fabs( diff.z );
 
-		result = ( diff.x <= EPSILON ) && 
-			     ( diff.y <= EPSILON ) && 
+		result = ( diff.x <= EPSILON ) &&
+			     ( diff.y <= EPSILON ) &&
 				 ( diff.z <= EPSILON );
 
 		os << (result ? "passed" : "FAILED") << " : " << "Vec3<T> postMultiply( const Vec3<T> &v ) const;" << "\n";
@@ -1572,8 +1572,8 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		diff.z = fabs( diff.z );
 		diff.w = fabs( diff.w );
 
-		result = ( diff.x <= EPSILON ) && 
-			     ( diff.y <= EPSILON ) && 
+		result = ( diff.x <= EPSILON ) &&
+			     ( diff.y <= EPSILON ) &&
 				 ( diff.z <= EPSILON ) &&
 				 ( diff.w <= EPSILON );
 
@@ -1581,7 +1581,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	}
 
 
-	// void affineInvert(){ *this = affineInverted(); } 
+	// void affineInvert(){ *this = affineInverted(); }
 	{
 		bool result = false;
 		os << "notest" << " : " << "void affineInvert(); " << "\n";
@@ -1603,7 +1603,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 
 		Vec3<T> cv0(
 			(T)-17.780877,
-			(T) 21.685958, 
+			(T) 21.685958,
 			(T) 50.122100
 		);
 
@@ -1617,10 +1617,10 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		Vec3<T> p0( (T)1.25, (T)-4.312, (T)5.2112 );
 		Vec3<T> diff = (cv0 - c0.transformPoint( p0 ));
 
-		result = ( diff.x < EPSILON ) && 
+		result = ( diff.x < EPSILON ) &&
 			     ( diff.y < EPSILON ) &&
 				 ( diff.z < EPSILON );
-		
+
 		os << (result ? "passed" : "FAILED") << " : " << "Vec3<T> transformPoint( const Vec3<T> &rhs ) const;" << "\n";
 	}
 
@@ -1678,8 +1678,8 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		diff.z = fabs( diff.z );
 		diff.w = fabs( diff.w );
 
-		result = ( diff.x <= EPSILON ) && 
-			     ( diff.y <= EPSILON ) && 
+		result = ( diff.x <= EPSILON ) &&
+			     ( diff.y <= EPSILON ) &&
 				 ( diff.z <= EPSILON ) &&
 				 ( diff.w <= EPSILON );
 
@@ -1725,9 +1725,9 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( (T) 1.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000,  
-				 (T) 0.000000000000000, (T) 0.840963470480837, (T)-0.541091897293636, (T) 0.000000000000000,  
-				 (T) 0.000000000000000, (T) 0.541091897293636, (T) 0.840963470480837, (T) 0.000000000000000,  
+		MatT c0( (T) 1.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000,
+				 (T) 0.000000000000000, (T) 0.840963470480837, (T)-0.541091897293636, (T) 0.000000000000000,
+				 (T) 0.000000000000000, (T) 0.541091897293636, (T) 0.840963470480837, (T) 0.000000000000000,
 				 (T) 0.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000, (T) 1.000000000000000, true );
 
 		MatT m0;
@@ -1774,7 +1774,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		result = ( c0 == m0 ) && ( c0 == m1 );
 
 		os << (result ? "passed" : "FAILED") << " : " << "void rotate( const Vec3/4<T> &eulerRadians );" << "\n";
-		
+
 	}
 
 
@@ -1782,9 +1782,9 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( (T) 1.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000,  
-			     (T) 0.000000000000000, (T) 0.840963470480837, (T)-0.541091897293636, (T) 0.000000000000000,  
-				 (T) 0.000000000000000, (T) 0.541091897293636, (T) 0.840963470480837, (T) 0.000000000000000,  
+		MatT c0( (T) 1.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000,
+			     (T) 0.000000000000000, (T) 0.840963470480837, (T)-0.541091897293636, (T) 0.000000000000000,
+				 (T) 0.000000000000000, (T) 0.541091897293636, (T) 0.840963470480837, (T) 0.000000000000000,
 				 (T) 0.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000, (T) 1.000000000000000, true );
 
 		MatT m0;
@@ -1794,7 +1794,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		MatT m1;
 		m1.setToIdentity();
 		m1.rotate( Vec4<T>( 1, 0, 0 ), toRadians( (T)32.758 ) );
-		
+
 		result = ( c0 == m0 ) && ( c0 == m1 );
 
 		os << (result ? "passed" : "FAILED") << " : " << "void rotate( const Vec3/4<T> &from, const Vec3/4<T> &to, const Vec3/4<T> &worldUp );" << "\n";
@@ -1805,14 +1805,14 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 5, 0, 0, 0, 
-			     0, 5, 0, 0, 
-				 0, 0, 5, 0, 
+		MatT c0( 5, 0, 0, 0,
+			     0, 5, 0, 0,
+				 0, 0, 5, 0,
 				 0, 0, 0, 5 );
 
-		MatT m0( 1, 0, 0, 0, 
-			     0, 1, 0, 0, 
-				 0, 0, 1, 0, 
+		MatT m0( 1, 0, 0, 0,
+			     0, 1, 0, 0,
+				 0, 0, 1, 0,
 				 0, 0, 0, 1 );
 
 		m0.scale( 5 );
@@ -1826,14 +1826,14 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 5, 0, 0, 0, 
-			     0, 6, 0, 0, 
-				 0, 0, 1, 0, 
+		MatT c0( 5, 0, 0, 0,
+			     0, 6, 0, 0,
+				 0, 0, 1, 0,
 				 0, 0, 0, 1 );
 
-		MatT m0( 1, 0, 0, 0, 
-			     0, 1, 0, 0, 
-				 0, 0, 1, 0, 
+		MatT m0( 1, 0, 0, 0,
+			     0, 1, 0, 0,
+				 0, 0, 1, 0,
 				 0, 0, 0, 1 );
 
 		m0.scale( Vec2<T>( 5, 6 ) );
@@ -1847,14 +1847,14 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 5, 0, 0, 0, 
-			     0, 6, 0, 0, 
-				 0, 0, 7, 0, 
+		MatT c0( 5, 0, 0, 0,
+			     0, 6, 0, 0,
+				 0, 0, 7, 0,
 				 0, 0, 0, 1 );
 
-		MatT m0( 1, 0, 0, 0, 
-			     0, 1, 0, 0, 
-				 0, 0, 1, 0, 
+		MatT m0( 1, 0, 0, 0,
+			     0, 1, 0, 0,
+				 0, 0, 1, 0,
 				 0, 0, 0, 1 );
 
 		m0.scale( Vec3<T>( 5, 6, 7 ) );
@@ -1869,14 +1869,14 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 5, 0, 0, 0, 
-			     0, 6, 0, 0, 
-				 0, 0, 7, 0, 
+		MatT c0( 5, 0, 0, 0,
+			     0, 6, 0, 0,
+				 0, 0, 7, 0,
 				 0, 0, 0, 8 );
 
-		MatT m0( 1, 0, 0, 0, 
-			     0, 1, 0, 0, 
-				 0, 0, 1, 0, 
+		MatT m0( 1, 0, 0, 0,
+			     0, 1, 0, 0,
+				 0, 0, 1, 0,
 				 0, 0, 0, 1 );
 
 		m0.scale( Vec4<T>( 5, 6, 7, 8 ) );
@@ -1929,9 +1929,9 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 1, 0, 0, 0, 
-			     0, 1, 0, 0, 
-				 0, 0, 1, 0, 
+		MatT c0( 1, 0, 0, 0,
+			     0, 1, 0, 0,
+				 0, 0, 1, 0,
 				 0, 0, 0, 1 );
 
 		result = ( c0 == MatT::identity() );
@@ -1944,9 +1944,9 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 1, 1, 1, 1, 
-			     1, 1, 1, 1, 
-				 1, 1, 1, 1, 
+		MatT c0( 1, 1, 1, 1,
+			     1, 1, 1, 1,
+				 1, 1, 1, 1,
 				 1, 1, 1, 1 );
 
 		result = ( c0 == MatT::one() );
@@ -1959,9 +1959,9 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 0, 0, 0, 0,  
-			     0, 0, 0, 0,  
-				 0, 0, 0, 0,  
+		MatT c0( 0, 0, 0, 0,
+			     0, 0, 0, 0,
+				 0, 0, 0, 0,
 				 0, 0, 0, 0 );
 
 		result = ( c0 == MatT::zero() );
@@ -1974,9 +1974,9 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 1, 0, 0, 0,  
-			     0, 1, 0, 0,  
-				 0, 0, 1, 0,  
+		MatT c0( 1, 0, 0, 0,
+			     0, 1, 0, 0,
+				 0, 0, 1, 0,
 				 1, 2, 3, 1 );
 
 		result = ( c0 == MatT::createTranslation( Vec3<T>( 1, 2, 3 ) ) );
@@ -1989,9 +1989,9 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 1, 0, 0, 0,  
-			     0, 1, 0, 0,  
-				 0, 0, 1, 0,  
+		MatT c0( 1, 0, 0, 0,
+			     0, 1, 0, 0,
+				 0, 0, 1, 0,
 				 1, 2, 3, 1 );
 
 		result = ( c0 == MatT::createTranslation( Vec4<T>( 1, 2, 3, 1 ) ) );
@@ -2004,14 +2004,14 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( (T) 1.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000,  
-			     (T) 0.000000000000000, (T) 0.840963470480837, (T)-0.541091897293636, (T) 0.000000000000000,  
-				 (T) 0.000000000000000, (T) 0.541091897293636, (T) 0.840963470480837, (T) 0.000000000000000,  
+		MatT c0( (T) 1.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000,
+			     (T) 0.000000000000000, (T) 0.840963470480837, (T)-0.541091897293636, (T) 0.000000000000000,
+				 (T) 0.000000000000000, (T) 0.541091897293636, (T) 0.840963470480837, (T) 0.000000000000000,
 				 (T) 0.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000, (T) 1.000000000000000, true );
 
 		MatT m0 = MatT::createRotation( Vec3<T>( 1, 0, 0 ), toRadians( (T)32.758 ) );
 		MatT m1 = MatT::createRotation( Vec4<T>( 1, 0, 0 ), toRadians( (T)32.758 ) );
-		
+
 		result = ( c0 == m0 ) && ( c0 == m1 );
 
 		os << (result ? "passed" : "FAILED") << " : " << "static Matrix44<T> createRotation( const Vec3/4<T> &axis, T radians );" << "\n";
@@ -2022,19 +2022,19 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( (T) 0.707106781186548, (T) 0.000000000000000, (T)-0.707106781186548, (T) 0.000000000000000,  
-			     (T) 0.000000000000000, (T) 1.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000,  
-				 (T) 0.707106781186548, (T) 0.000000000000000, (T) 0.707106781186548, (T) 0.000000000000000,  
+		MatT c0( (T) 0.707106781186548, (T) 0.000000000000000, (T)-0.707106781186548, (T) 0.000000000000000,
+			     (T) 0.000000000000000, (T) 1.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000,
+				 (T) 0.707106781186548, (T) 0.000000000000000, (T) 0.707106781186548, (T) 0.000000000000000,
 				 (T) 0.000000000000000, (T) 0.000000000000000, (T) 0.000000000000000, (T) 1.000000000000000, true );
 
-		MatT m0 = MatT::createRotation( 
-						Vec3<T>( (T)0.00000000000000, (T)0.000000000000000, (T)1.00000000000000 ), 
-						Vec3<T>( (T)0.70710678118654, (T)0.000000000000000, (T)0.70710678118654 ), 
+		MatT m0 = MatT::createRotation(
+						Vec3<T>( (T)0.00000000000000, (T)0.000000000000000, (T)1.00000000000000 ),
+						Vec3<T>( (T)0.70710678118654, (T)0.000000000000000, (T)0.70710678118654 ),
 						Vec3<T>( (T)0.00000000000000, (T)1.000000000000000, (T)0.00000000000000 ) );
 
-		MatT m1 = MatT::createRotation( 
-						Vec4<T>( (T)0.00000000000000, (T)0.000000000000000, (T)1.00000000000000 ), 
-						Vec4<T>( (T)0.70710678118654, (T)0.000000000000000, (T)0.70710678118654 ), 
+		MatT m1 = MatT::createRotation(
+						Vec4<T>( (T)0.00000000000000, (T)0.000000000000000, (T)1.00000000000000 ),
+						Vec4<T>( (T)0.70710678118654, (T)0.000000000000000, (T)0.70710678118654 ),
 						Vec4<T>( (T)0.00000000000000, (T)1.000000000000000, (T)0.00000000000000 ) );
 
 		result = ( c0 == m0 ) && ( c0 == m1 );
@@ -2101,9 +2101,9 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 6, 0, 0, 0,  
-			     0, 6, 0, 0,  
-				 0, 0, 6, 0,  
+		MatT c0( 6, 0, 0, 0,
+			     0, 6, 0, 0,
+				 0, 0, 6, 0,
 				 0, 0, 0, 6 );
 
 		result = ( c0 == MatT::createScale( (T)6 ) );
@@ -2116,9 +2116,9 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 2, 0, 0, 0,  
-			     0, 3, 0, 0,  
-				 0, 0, 1, 0,  
+		MatT c0( 2, 0, 0, 0,
+			     0, 3, 0, 0,
+				 0, 0, 1, 0,
 				 0, 0, 0, 1 );
 
 		result = ( c0 == MatT::createScale( Vec2<T>( 2, 3 ) ) );
@@ -2131,9 +2131,9 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 2, 0, 0, 0,  
-			     0, 3, 0, 0,  
-				 0, 0, 4, 0,  
+		MatT c0( 2, 0, 0, 0,
+			     0, 3, 0, 0,
+				 0, 0, 4, 0,
 				 0, 0, 0, 1 );
 
 		result = ( c0 == MatT::createScale( Vec3<T>( 2, 3, 4 ) ) );
@@ -2146,9 +2146,9 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0( 2, 0, 0, 0,  
-			     0, 3, 0, 0,  
-				 0, 0, 4, 0,  
+		MatT c0( 2, 0, 0, 0,
+			     0, 3, 0, 0,
+				 0, 0, 4, 0,
 				 0, 0, 0, 5 );
 
 		result = ( c0 == MatT::createScale( Vec4<T>( 2, 3, 4, 5 ) ) );
@@ -2161,9 +2161,9 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	{
 		bool result = false;
 
-		MatT c0(  1,  0,  0,  0,  
-			      0,  1,  0,  0,  
-				  0,  0, -1,  0,  
+		MatT c0(  1,  0,  0,  0,
+			      0,  1,  0,  0,
+				  0,  0, -1,  0,
 				  0,  0,  0,  1 );
 
 		MatT m0 = MatT::alignZAxisWithTarget( Vec3<T>( 0, 0, -1 ), Vec3<T>( 0, 1, 0 ) );
@@ -2182,13 +2182,13 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		MatT m0;
 
 		m0.scale( Vec3<T>( 1, 2, 3 ) );
-		m0.translate( Vec3<T>( 10, 30, 45 ) );		
+		m0.translate( Vec3<T>( 10, 30, 45 ) );
 		os << "\n" << m0;
 
 		m0.rotate( Vec3<T>( 0, 0, toRadians( (T)63 ) ) );
 		os << "\n" << m0;
 
-		m0.translate( Vec3<T>( 1, 2, 3 ) );		
+		m0.translate( Vec3<T>( 1, 2, 3 ) );
 		os << "\n" << m0;
 
 		m0.rotate( Vec3<T>( 0, toRadians( (T)15 ), 0 ) );

@@ -11,7 +11,7 @@ struct TestCallbackOrder {
 		if( mState != CLEANUP )
 			cinder::app::console() << "Failed to call cleanup()" << std::endl;
 	}
-	
+
 	void	setState( int state )
 	{
 		if( ( ( state == UPDATE ) || ( state == DRAW ) ) && mDoneDraw )
@@ -23,9 +23,9 @@ struct TestCallbackOrder {
 		if( mState == DRAW )
 			mDoneDraw = true;
 	}
-	
+
 	enum { VIRGIN, SETUP, RESIZE, UPDATE, DRAW, CLEANUP };
-	
+
 	bool	mDoneDraw;
 	int		mState;
 };
@@ -41,7 +41,7 @@ class MyCinderApp : public cinder::app::AppCocoaView {
 	void				update() override;
 	void				draw() override;
 	void				cleanup() override;
-	
+
 	void				mouseUp( ci::app::MouseEvent event ) override;
 	void				mouseDown( ci::app::MouseEvent event ) override;
 	void				mouseDrag( ci::app::MouseEvent event ) override;
@@ -50,9 +50,9 @@ class MyCinderApp : public cinder::app::AppCocoaView {
 	void				touchesMoved( ci::app::TouchEvent event ) override;
 
 	void				keyDown( ci::app::KeyEvent event ) override;
-	
+
 	void				fileDrop( ci::app::FileDropEvent event ) override;
-	
+
 	float				mRadius, mAnimatedRadius;
 	cinder::Colorf		mColor;
 	TestCallbackOrder	testCbo;

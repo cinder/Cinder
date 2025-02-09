@@ -112,7 +112,7 @@ void LogManager::clearLoggers()
 	lock_guard<mutex> lock( mMutex );
 	mLoggers.clear();
 }
-	
+
 void LogManager::resetLogger( const LoggerRef& logger )
 {
 	lock_guard<mutex> lock( mMutex );
@@ -141,7 +141,7 @@ std::vector<LoggerRef> LogManager::getAllLoggers()
 	lock_guard<mutex> lock( mMutex );
 	return mLoggers;
 }
-	
+
 void LogManager::restoreToDefault()
 {
 	clearLoggers();
@@ -153,7 +153,7 @@ void LogManager::restoreToDefault()
 	makeLogger<LoggerConsole>();
 #endif
 }
-	
+
 void LogManager::setLevel( Level level )
 {
 	for( const LoggerRef& logger : log::manager()->getAllLoggers() ) {
@@ -228,7 +228,7 @@ LoggerFile::LoggerFile( const fs::path &filePath, bool appendToExisting )
 {
 	if( mFilePath.empty() )
 		mFilePath = getDefaultLogFilePath();
-	
+
 	setTimestampEnabled();
 }
 
@@ -247,7 +247,7 @@ void LoggerFile::write( const Metadata &meta, const string &text )
 		ensureDirectoryExists();
 		mAppend ? mStream.open( mFilePath.string(), std::ofstream::app ) : mStream.open( mFilePath.string() );
 	}
-	
+
 	writeDefault( mStream, meta, text );
 }
 
@@ -283,15 +283,15 @@ LoggerFileRotating::LoggerFileRotating( const fs::path &folder, const std::strin
 	if( formatStr.empty() ) {
 		return;
 	}
-	
+
 	if( mFolderPath.empty() ) {
 		mFolderPath = getDefaultLogFilePath().parent_path();
 	}
-	
+
 	mAppend = appendToExisting;
 	mYearDay = getCurrentYearDay();
 	setFilePath( mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) ) );
-	
+
 	setTimestampEnabled();
 }
 
@@ -303,11 +303,11 @@ void LoggerFileRotating::write( const Metadata &meta, const string &text )
 	if( mYearDay != getCurrentYearDay() ) {
 		setFilePath( mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) ) );
 		mYearDay = getCurrentYearDay();
-		
+
 		if( mStream.is_open() )
 			mStream.close();
 	}
-	
+
 	LoggerFile::write( meta, text );
 }
 
@@ -329,7 +329,7 @@ void LoggerBreakpoint::write( const Metadata &meta, const string & /*text*/ )
 {
 	if( meta.mLevel < mLevel )
 		return;
-	
+
 	CI_BREAKPOINT();
 }
 
@@ -356,24 +356,24 @@ public:
         if( ( -1 != len ) && ( len < buf.size() ) ) {
             buf[len] = '\0';
         }
-       
+
         std::string exeName = fs::path( (const char *)(&buf[0]) ).filename().string();
         const char* cAppName = exeName.c_str();
 #endif
 		openlog( cAppName, ( LOG_CONS | LOG_PID ), LOG_USER );
 	}
-	
+
 	virtual ~ImplSysLog()
 	{
 		closelog();
 	}
-	
+
 	void write( const Metadata &meta, const std::string &text ) override
 	{
 		int sysLevel = cinderLogLevelToSysLogLevel( meta.mLevel );
 		syslog( sysLevel , "%s %s", meta.toString().c_str(), text.c_str() );
 	};
-	
+
 protected:
 	int cinderLogLevelToSysLogLevel( Level cinderLogLevel )
 	{
@@ -390,7 +390,7 @@ protected:
 		}
 	}
 };
-	
+
 #elif defined( CINDER_MSW_DESKTOP )
 
 // ----------------------------------------------------------------------------------------------------
@@ -404,7 +404,7 @@ public:
 		char filename[MAX_PATH];
 		wchar_t wFilename[MAX_PATH];
 		string stem;
-		
+
 		DWORD size = ::GetModuleFileNameA( NULL, filename, MAX_PATH );
 		if( size ) {
 			fs::path exePath( filename );
@@ -414,34 +414,34 @@ public:
 			<< "] could not determine application name, defaulting to 'CinderApp'" << endl;
 			stem = "CinderApp";
 		}
-		
+
 		::mbstowcs( wFilename, stem.c_str(), stem.size() + 1 );
 		mHLog = ::RegisterEventSourceW( 0, wFilename );
-		
+
 		if( ! mHLog ) {
 			app::Platform::get()->console() << CINDER_CURRENT_FUNCTION << "[" << __LINE__
 			<< "] RegisterEventSourceW() failed with " << GetLastError() << endl;
 		}
 	}
-	
+
 	virtual ~ImplEventLog()
 	{
 		if( mHLog ) {
 			::CloseEventLog( mHLog );
 		}
 	}
-	
+
 	void write( const Metadata& meta, const std::string& text ) override
 	{
 		int eventLevel = cinderLogLevelToEventLogLevel( meta.mLevel );
-	
+
 		std::wstring wMeta = mConverter.from_bytes( meta.toString() );
 		std::wstring wText = mConverter.from_bytes( text );
-	
+
 		LPCTSTR wStrings[2];
 		wStrings[0] = wMeta.c_str();
 		wStrings[1] = wText.c_str();
-	
+
 		// Windows manifests do not allow 0 based event IDs.
 		DWORD eventID = meta.mLevel + 100;
 
@@ -506,7 +506,7 @@ public:
 };
 
 #endif // defined ( CINDER_ANDROID )
-	
+
 // ----------------------------------------------------------------------------------------------------
 // LoggerSystem
 // ----------------------------------------------------------------------------------------------------

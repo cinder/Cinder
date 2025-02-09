@@ -41,7 +41,7 @@ namespace cinder {
 #else
 	class NSBitmapImageRep;
 	class NSString;
-	class NSData;	
+	class NSData;
 #endif
 typedef struct CGContext *CGContextRef;
 typedef struct CGColor *CGColorRef;
@@ -73,13 +73,13 @@ class CI_API SafeNsString {
 	SafeNsString( NSString *str );
 	//! Creates a SafeNsString by converting a std::string.
 	SafeNsString( const std::string &str );
-	
+
 	operator NSString* const() { if( mPtr ) return mPtr.get(); else return 0; }
 	operator std::string() const;
-	
+
   private:
 	static void safeRelease( NSString *ptr );
-	
+
 	std::shared_ptr<NSString>	mPtr;
 };
 
@@ -89,12 +89,12 @@ class CI_API SafeNsData {
 	SafeNsData() {}
 	//! Creates a SafeNsData using an existing cinder::Buffer. The SafeNsData retains a copy of the buffer in order to prevent its deletion
 	SafeNsData( const BufferRef &buffer );
-	
+
 	operator NSData* const() { if( mPtr ) return mPtr.get(); else return 0; }
-	
+
   private:
 	static void safeRelease( const NSData *ptr );
-	
+
 	std::shared_ptr<NSData>	mPtr;
 	const BufferRef			mBuffer;
 };
@@ -104,7 +104,7 @@ class CI_API SafeNsAutoreleasePool {
   public:
 	SafeNsAutoreleasePool();
 	~SafeNsAutoreleasePool();
-	
+
   private:
 	void			*mPool;
 };

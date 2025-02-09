@@ -28,7 +28,7 @@
 namespace cinder { namespace gl {
 
 #if ! defined( CINDER_GL_ES )
-	
+
 typedef std::shared_ptr<class BufferTexture> BufferTextureRef;
 
 //! Represents a Buffer Texture, or GL_TEXTURE_BUFFER.
@@ -38,17 +38,17 @@ class CI_API BufferTexture : private Noncopyable {
 	static BufferTextureRef create( const BufferObjRef &buffer, GLenum internalFormat );
 	//! Creates and returns a shared BufferTexture object according to \a internalFormat, initialized with \a data of size \a numBytes.
 	static BufferTextureRef create( const void *data, size_t numBytes, GLenum internalFormat, GLenum usage = GL_STATIC_DRAW );
-	
+
 	~BufferTexture();
-	
+
 	//! Binds the associated Texture representation of your BufferObj
 	void bindTexture( uint8_t textureUnit = 0 );
 	//! Unbinds the associated Texture representation of your BufferObj
 	void unbindTexture( uint8_t textureUnit = 0 );
-	
+
 	//! Sets the ossociated BufferObj and its internal format
 	void setBuffer( const BufferObjRef &buffer, GLenum internalFormat );
-	
+
 	//! Returns the gl system id for this BufferTexture
 	GLuint				getId() { return mId; }
 	//! Returns the target for the Buffer Texture. \c GL_TEXTURE_BUFFER is the only allowable target.
@@ -59,16 +59,16 @@ class CI_API BufferTexture : private Noncopyable {
 	BufferObjRef&		getBufferObj() { return mBufferObj; }
 	//! Returns the BufferObj associated with this BufferTexture.
 	const BufferObjRef& getBufferObj() const { return mBufferObj; }
-	
+
   private:
 	BufferTexture( const BufferObjRef &buffer, GLenum internalFormat );
-	
+
 	GLenum			mTarget;
 	GLuint			mId;
 	mutable GLenum	mInternalFormat;
 	BufferObjRef	mBufferObj;
 };
-	
+
 #endif
-	
+
 } } // gl // cinder

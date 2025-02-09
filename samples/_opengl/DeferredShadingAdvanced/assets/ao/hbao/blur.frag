@@ -36,4 +36,3 @@ void main( void )
 	oColor.g	= depth;
 	oColor.r	= r / t;
 }
- 

@@ -18,16 +18,16 @@ uniform vec3 Accel; // Particle Acceleration
 uniform float ParticleLifetime; // Particle lifespan
 
 void main() {
-	
+
 	// Update position & velocity for next frame
 	Position = VertexPosition;
 	Velocity = VertexVelocity;
 	StartTime = VertexStartTime;
-	
+
 	if( Time >= StartTime ) {
-		
+
 		float age = Time - StartTime;
-		
+
 		if( age > ParticleLifetime ) {
 			// The particle is past it's lifetime, recycle.
 			Position = vec3(0.0);

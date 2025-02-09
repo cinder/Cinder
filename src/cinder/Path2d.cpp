@@ -601,7 +601,7 @@ Path2d Path2d::roundedRectangle( float x, float y, float width, float height, fl
 {
 	if( approxZero( rx ) || approxZero( ry ) )
 		return rectangle( x, y, width, height );
-	
+
 	Path2d shape;
 	shape.moveTo( x + rx, y );
 	shape.lineTo( x + width - rx, y );
@@ -720,7 +720,7 @@ void Path2d::reverse()
 
 	// Reverse all points.
 	std::reverse( mPoints.begin(), mPoints.end() );
-	
+
 	if( isClosed() && mSegments.size() > 2 ) {
 		std::reverse( mSegments.begin(), mSegments.end() - 1 );
 	}
@@ -1196,7 +1196,7 @@ Path2d Path2d::getSubPath( float startT, float endT ) const
 		switch( mSegments[startSegment] ) {
 			case LINETO: // trim line
 				result.mPoints.push_back( mPoints[firstPoint] + startRelT * ( mPoints[firstPoint+1] - mPoints[firstPoint] ) );
-				result.mPoints.push_back( mPoints[firstPoint] + endRelT * ( mPoints[firstPoint+1] - mPoints[firstPoint] ) ); 
+				result.mPoints.push_back( mPoints[firstPoint] + endRelT * ( mPoints[firstPoint+1] - mPoints[firstPoint] ) );
 				result.mSegments.push_back( LINETO );
 			break;
 			case QUADTO:

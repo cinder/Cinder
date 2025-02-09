@@ -35,7 +35,7 @@ struct CI_API MediaTime {
 
 	MediaTime() : value( 0 ), base( 1 ), epoch( 0 ) {} // zero
 	MediaTime( int64_t value, int32_t base, int64_t epoch = 0 );
-	
+
 	explicit MediaTime( int value ) : value( value ), base( 1 ), epoch( 0 ) {}
 	explicit MediaTime( int64_t value ) : value( value ), base( 1 ), epoch( 0 ) {}
 	explicit MediaTime( double seconds )

@@ -47,7 +47,7 @@ public:
 private:
 	ScopedLock( const ScopedLock& );
 	ScopedLock& operator=( const ScopedLock& );
-	pa_threaded_mainloop* mMainLoop = nullptr;	
+	pa_threaded_mainloop* mMainLoop = nullptr;
 };
 
 //! ScopedPropertyList
@@ -60,11 +60,11 @@ public:
 	pa_proplist* get() const { return mPropertyList; }
 private:
 	ScopedPropertyList( const ScopedPropertyList& );
-	ScopedPropertyList& operator=( const ScopedPropertyList& );	
+	ScopedPropertyList& operator=( const ScopedPropertyList& );
 	pa_proplist* mPropertyList = nullptr;
 };
 
-void waitForOperationCompletion( pa_threaded_mainloop* mainLoop, pa_operation* op ) 
+void waitForOperationCompletion( pa_threaded_mainloop* mainLoop, pa_operation* op )
 {
 	if( ! op ) {
 		return;
@@ -122,10 +122,10 @@ Context::Context()
 		// Wait until context is ready
 		while( true ) {
 			pa_context_state_t state = pa_context_get_state( mPaContext );
-			
+
 			if( ! PA_CONTEXT_IS_GOOD( state ) ) {
 				throw AudioContextExc( "Context connect failed" );
-			}	
+			}
 
 			if( PA_CONTEXT_READY == state ) {
 				break;
@@ -152,10 +152,10 @@ Context::~Context()
 
 	pa_threaded_mainloop_stop( mPaMainLoop );
 	pa_threaded_mainloop_free( mPaMainLoop );
-	mPaMainLoop = nullptr;		
+	mPaMainLoop = nullptr;
 }
 
-std::unique_ptr<Context> Context::create() 
+std::unique_ptr<Context> Context::create()
 {
 	std::unique_ptr<Context> result = std::unique_ptr<Context>( new Context() );
 	return result;
@@ -163,7 +163,7 @@ std::unique_ptr<Context> Context::create()
 
 // TODO: fill out this switch?
 // - also I think userData should just be the Context, or even ci::audio::linux::ContextPulseAudio
-void Context::stateCallback( pa_context* context, void* userData ) 
+void Context::stateCallback( pa_context* context, void* userData )
 {
 	pa_threaded_mainloop* mainLoop = static_cast<pa_threaded_mainloop*>( userData );
 
@@ -173,7 +173,7 @@ void Context::stateCallback( pa_context* context, void* userData )
 		break;
 	}
 
-	pa_threaded_mainloop_signal( mainLoop, 0 );	
+	pa_threaded_mainloop_signal( mainLoop, 0 );
 }
 
 //! Stream
@@ -207,13 +207,13 @@ Stream::~Stream()
 {
 }
 
-void Stream::notifyCallback( pa_stream *stream, void* userData ) 
+void Stream::notifyCallback( pa_stream *stream, void* userData )
 {
 	Stream* thisObj = static_cast<Stream*>( userData );
 	pa_threaded_mainloop_signal( thisObj->mContext->mPaMainLoop, 0 );
 }
 
-void Stream::successCallback( pa_stream *stream, int success, void* userData ) 
+void Stream::successCallback( pa_stream *stream, int success, void* userData )
 {
 	Stream* thisObj = static_cast<Stream*>( userData );
 	pa_threaded_mainloop_signal( thisObj->mContext->mPaMainLoop, 0 );
@@ -242,7 +242,7 @@ OutputStream::OutputStream( Context* context, size_t numChannels, size_t sampleR
 }
 
 OutputStream::~OutputStream()
-{	
+{
 	stop();
 	close();
 }
@@ -272,10 +272,10 @@ void OutputStream::open()
 			std::string errorText = pa_strerror( errorNum );
 			throw AudioContextExc( "Could not create PulseAudio output stream" + errorText );
 		}
-		
+
 		pa_stream_set_state_callback( mPaStream, &Stream::notifyCallback, static_cast<void*>( this ) );
-	
-		// Even though we start the stream corked above, PulseAudio will issue one stream request 
+
+		// Even though we start the stream corked above, PulseAudio will issue one stream request
 		// after setup. OutputDeviceNodePulseAudioImpl::playerCallback() must fulfill the write.
 		pa_stream_set_write_callback( mPaStream, &OutputStream::writeCallback, static_cast<void*>( this ) );
 
@@ -294,7 +294,7 @@ void OutputStream::open()
 
 		int status = pa_stream_connect_playback( mPaStream, mDeviceName.c_str(), &bufferAttr, streamFlags, nullptr, nullptr );
 		if( status ) {
-			throw AudioContextExc( "Could not connect PulseAudio output stream playback" );	
+			throw AudioContextExc( "Could not connect PulseAudio output stream playback" );
 		}
 
 		// Wait for the stream to be ready.
@@ -330,7 +330,7 @@ void OutputStream::close()
 void OutputStream::start( std::function<void(size_t, void*)> sourceFn )
 {
 	pulse::ScopedLock scopedLock( mContext->mPaMainLoop );
-	
+
 	mSourceFn = sourceFn;
 
 	// Ensure the context and stream are ready.
@@ -344,7 +344,7 @@ void OutputStream::start( std::function<void(size_t, void*)> sourceFn )
 
 	// Uncork (resume) the stream.
 	pa_operation* op = pa_stream_cork( mPaStream, 0, &Stream::successCallback, static_cast<void*>( this ) );
-	pulse::waitForOperationCompletion( mContext->mPaMainLoop, op );	
+	pulse::waitForOperationCompletion( mContext->mPaMainLoop, op );
 }
 
 void OutputStream::stop()
@@ -611,7 +611,7 @@ struct OutputDeviceNodePulseAudioImpl {
 	OutputDeviceNodePulseAudioImpl( OutputDeviceNodePulseAudio* parent, const std::shared_ptr<ContextPulseAudio>& context )
 		: mParent( parent ), mCinderContext( context ), mPulseContext( context->getPulseContext() )
 	{
-	}	
+	}
 
 	void initPlayer( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
 	{
@@ -622,8 +622,8 @@ struct OutputDeviceNodePulseAudioImpl {
 		// since pa_stream_writable_size always seems to return 0.
 		const size_t kBufferSizeBytes = 32768;
 		size_t numFrames = ( kBufferSizeBytes / mPulseStream->mBytesPerSample ) + mPulseStream->mFramesPerBlock + 1;
-		const size_t ringBufferSize = numFrames * mPulseStream->mNumChannels;		
-		mRingBuffer.reset( new dsp::RingBuffer( ringBufferSize ) );		
+		const size_t ringBufferSize = numFrames * mPulseStream->mNumChannels;
+		mRingBuffer.reset( new dsp::RingBuffer( ringBufferSize ) );
 	}
 
 	void destroyPlayer()

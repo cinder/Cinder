@@ -84,7 +84,7 @@ class CI_API ChannelRouterNode : public Node {
 	void addInputRoute( const NodeRef &input, size_t inputChannelIndex, size_t outputChannelIndex, size_t numChannels );
 
 	void disconnectAllInputs()									override;
-	
+
   protected:
 	bool supportsInputNumChannels( size_t numChannels ) const	override;
 	bool supportsProcessInPlace() const							override;

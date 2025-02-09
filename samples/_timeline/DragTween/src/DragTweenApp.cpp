@@ -14,7 +14,7 @@ class Circle {
 	Circle( Color color, float radius, vec2 initialPos, vec2 homePos )
 		: mColor( color ), mRadius( radius ), mPos( initialPos ), mHomePos( homePos )
 	{}
-	
+
 	void draw() const {
 		gl::color( ColorA( mColor, 0.75f ) );
 		gl::drawSolidCircle( mPos, mRadius );
@@ -23,12 +23,12 @@ class Circle {
 	void startDrag() {
 		mPos.stop();
 	}
-	
+
 	void dragRelease() {
 		// return to our home position in 1sec, easing using EaseOutBack
 		app::timeline().apply( &mPos, mHomePos, 1.0f, EaseOutBack( 3 ) );
 	}
-	
+
 	Color				mColor;
 	vec2				mHomePos;
 	Anim<vec2>			mPos;
@@ -43,7 +43,7 @@ class DragTweenApp : public App {
 	void mouseDrag( MouseEvent event );
 	void mouseUp( MouseEvent event );
 	void draw();
-	
+
 	vector<Circle>			mCircles;
 	Circle					*mCurrentDragCircle;
 };
@@ -90,7 +90,7 @@ void DragTweenApp::mouseUp( MouseEvent event )
 	// if we were dragging a circle, tell it we're done
 	if( mCurrentDragCircle )
 		mCurrentDragCircle->dragRelease();
-		
+
 	mCurrentDragCircle = 0;
 }
 void DragTweenApp::draw()
@@ -98,7 +98,7 @@ void DragTweenApp::draw()
 	// clear out the window with black
 	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
 	gl::enableAlphaBlending();
-	
+
 	for( vector<Circle>::const_iterator circleIt = mCircles.begin(); circleIt != mCircles.end(); ++circleIt )
 		circleIt->draw();
 }

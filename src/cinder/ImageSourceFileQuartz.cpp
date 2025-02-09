@@ -38,13 +38,13 @@ void ImageSourceFileQuartz::registerSelf()
 {
 	static bool alreadyRegistered = false;
 	static const int32_t SOURCE_PRIORITY = 2;
-	
+
 	if( alreadyRegistered )
 		return;
 	alreadyRegistered = true;
-	
+
 	ImageIoRegistrar::SourceCreationFunc sourceFunc = ImageSourceFileQuartz::createRef;
-	
+
 	CFArrayRef sourceTypes = ::CGImageSourceCopyTypeIdentifiers();
 	CFIndex sourceCount = ::CFArrayGetCount( sourceTypes );
 	for( CFIndex st = 0; st < sourceCount; ++st ) {
@@ -67,16 +67,16 @@ void ImageSourceFileQuartz::registerSelf()
 						for( CFIndex ext = 0; ext < extCount; ++ext ) {
 							ImageIoRegistrar::registerSourceType( cocoa::convertCfString( (CFStringRef)::CFArrayGetValueAtIndex( extensionsArr, ext ) ), sourceFunc, SOURCE_PRIORITY );
 						}
-					}			
+					}
 				}
 			}
-			
+
 			::CFRelease( dict );
 		}
 	}
-	
+
 	::CFRelease( sourceTypes );
-	
+
 	ImageIoRegistrar::registerSourceGeneric( ImageSourceFileQuartz::createRef, SOURCE_PRIORITY );
 }
 
@@ -87,7 +87,7 @@ ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceR
 {
 	std::shared_ptr<CGImageSource> sourceRef;
 	std::shared_ptr<CGImage> imageRef;
-	
+
 	::CFStringRef keys[1] = { kCGImageSourceShouldAllowFloat };
 	::CFBooleanRef values[1] = { kCFBooleanTrue };
 	const std::shared_ptr<__CFDictionary> optionsDict( (__CFDictionary*)CFDictionaryCreate( kCFAllocatorDefault, (const void **)&keys, (const void **)&values, 1, NULL, NULL ), cocoa::safeCfRelease );
@@ -104,17 +104,17 @@ ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceR
 		if( ! urlRef )
 			throw ImageIoException( "Could not create CFURLRef from data source." );
 		sourceRef = std::shared_ptr<CGImageSource>( ::CGImageSourceCreateWithURL( urlRef, optionsDict.get() ), cocoa::safeCfRelease );
-		::CFRelease( urlRef );		
+		::CFRelease( urlRef );
 	}
 	else { // last ditch, we'll use a dataref from the buffer
 		::CFDataRef dataRef = cocoa::createCfDataRef( *dataSourceRef->getBuffer() );
 		if( ! dataRef )
 			throw ImageIoExceptionFailedLoad( "Could not create CFDataRef from data source." );
-		
+
 		sourceRef = std::shared_ptr<CGImageSource>( ::CGImageSourceCreateWithData( dataRef, optionsDict.get() ), cocoa::safeCfRelease );
 		::CFRelease( dataRef );
 	}
-	
+
 	if( sourceRef ) {
 		imageRef = std::shared_ptr<CGImage>( ::CGImageSourceCreateImageAtIndex( sourceRef.get(), options.getIndex(), optionsDict.get() ), CGImageRelease );
 		if( ! imageRef )

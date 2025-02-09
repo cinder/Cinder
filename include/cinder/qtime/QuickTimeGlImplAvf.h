@@ -1,16 +1,16 @@
 /*
  Copyright (c) 2014, The Cinder Project, All rights reserved.
- 
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
- 
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
- 
+
  * Redistributions of source code must retain the above copyright notice, this list of conditions and
  the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
  the following disclaimer in the documentation and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -40,7 +40,7 @@ typedef CVBufferRef CVImageBufferRef;
 #endif
 
 namespace cinder { namespace qtime {
-	
+
 typedef std::shared_ptr<class MovieGl>	MovieGlRef;
 /** \brief QuickTime movie playback as OpenGL textures
  *	Textures are always bound to the \c GL_TEXTURE_RECTANGLE_ARB target
@@ -49,25 +49,25 @@ typedef std::shared_ptr<class MovieGl>	MovieGlRef;
 class MovieGl : public MovieBase {
   public:
 	virtual ~MovieGl();
-	
+
 	static MovieGlRef create( const Url& url ) { return MovieGlRef( new MovieGl( url ) ); }
 	static MovieGlRef create( const fs::path& path ) { return MovieGlRef( new MovieGl( path ) ); }
 	static MovieGlRef create( const MovieLoaderRef &loader ) { return MovieGlRef( new MovieGl( *loader ) ); }
-	
+
 	//! Returns the gl::Texture representing the Movie's current frame, bound to the \c GL_TEXTURE_RECTANGLE_ARB target
 	gl::TextureRef	getTexture();
-	
+
   protected:
 	MovieGl( const Url& url );
 	MovieGl( const fs::path& path );
 	MovieGl( const MovieLoader& loader );
-	
+
 	NSDictionary*	avPlayerItemOutputDictionary() const override;
 	void			allocateVisualContext() override;
 	void			deallocateVisualContext() override;
 	void			newFrame( CVImageBufferRef cvImage ) override;
 	void			releaseFrame() override;
-	
+
 #if defined( CINDER_COCOA_TOUCH )
 	CVOpenGLESTextureCacheRef	mVideoTextureCacheRef;
 	CVOpenGLESTextureRef		mVideoTextureRef;
@@ -75,7 +75,7 @@ class MovieGl : public MovieBase {
 	class TextureCache;
 	std::shared_ptr<TextureCache>		mTextureCache;
 #endif
-	
+
 	gl::TextureRef		mTexture;
 };
 

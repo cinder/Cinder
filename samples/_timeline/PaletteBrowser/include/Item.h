@@ -29,19 +29,19 @@ class Item {
 	void drawText() const;
 	void drawBgBar() const;
 	void drawSwatches() const;
-	
+
 	void setSelected(){ mIsSelected = true; };
 	void setDeselected(){ mIsSelected = false; };
-	
+
 	std::string getTitle() const { return mTitle; };
 	bool getSelected() const { return mIsSelected; };
 	bool isPointIn( const ci::vec2 &pt ) const;
 	bool isBelowTextThreshold() const;
-	
+
 	int mIndex;
 
 	static void	setFonts( const ci::Font &smallFont, const ci::Font &bigFont );
-	
+
   private:
 	// title
 	std::string				mTitle;
@@ -53,18 +53,18 @@ class Item {
 	ci::Anim<float>			mTitleAlpha;
 	ci::Area				mTitleArea;
 	float					mTitleWidth, mTitleHeight;
-	
+
 	// desc
 	std::string				mDesc;
 	ci::gl::Texture2dRef	mDescTex;
 	ci::Anim<ci::vec2>		mDescPos;
 	ci::vec2				mDescStart, mDescDest;
 	ci::Anim<float>			mDescAlpha;
-	
+
 	// swatches
-	ci::Surface			mPalette;	
-	std::vector<Swatch> mSwatches;	
-	
+	ci::Surface			mPalette;
+	std::vector<Swatch> mSwatches;
+
 	// bar
 	ci::vec2			mBarPos;
 	ci::Anim<float>		mBarWidth, mBarHeight;
@@ -72,11 +72,11 @@ class Item {
 	ci::Rectf			mBarRect;
 	ci::Anim<ci::Color> mBarColor;
 	ci::Anim<float>		mBarAlpha;
-	
+
 	ci::Anim<float>		mFadeFloat;
 
 	// TODO: isBeingSelected is a sloppy fix
 	bool				mIsSelected, mIsBeingSelected;
-	
+
 	static ci::Font sSmallFont, sBigFont;	// small and large fonts for Text textures
 };

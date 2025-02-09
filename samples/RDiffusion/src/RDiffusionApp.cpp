@@ -26,20 +26,20 @@ class RDiffusionApp : public App {
 	void	mouseUp( MouseEvent event ) override;
   private:
 	void	resetFBOs();
-			
+
 	int					mCurrentFBO, mOtherFBO;
 	gl::FboRef			mFBOs[2];
 	gl::GlslProgRef		mRDShader;
 	gl::TextureRef		mTexture;
-	
+
 	vec2			mMouse;
 	bool			mMousePressed;
-	
+
 	float			mReactionU;
 	float			mReactionV;
 	float			mReactionK;
 	float			mReactionF;
-	
+
 	static const int		FBO_WIDTH = SIZE, FBO_HEIGHT = SIZE;
 };
 
@@ -77,7 +77,7 @@ void RDiffusionApp::setup()
 	mReactionF = 0.1f;
 
 	mMousePressed = false;
-	
+
 	// Setup the parameters
 	ImGui::Initialize();
 
@@ -85,12 +85,12 @@ void RDiffusionApp::setup()
 	mOtherFBO = 1;
 	mFBOs[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, gl::Fbo::Format().colorTexture().disableDepth() );
 	mFBOs[1] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, gl::Fbo::Format().colorTexture().disableDepth()  );
-	
+
 	mRDShader = gl::GlslProg::create( loadResource( RES_PASS_THRU_VERT ), loadResource( RES_GSRD_FRAG ) );
 	mTexture = gl::Texture::create( loadImage( loadResource( RES_STARTER_IMAGE ) ),
 								    gl::Texture::Format().wrap(GL_REPEAT).magFilter(GL_LINEAR).minFilter(GL_LINEAR) );
 	gl::getStockShader( gl::ShaderDef().texture() )->bind();
-	
+
 	resetFBOs();
 }
 
@@ -112,14 +112,14 @@ void RDiffusionApp::update()
 	for( int i = 0; i < ITERATIONS; i++ ) {
 		mCurrentFBO = ( mCurrentFBO + 1 ) % 2;
 		mOtherFBO   = ( mCurrentFBO + 1 ) % 2;
-		
+
 		gl::ScopedFramebuffer fboBind( mFBOs[ mCurrentFBO ] );
-		
+
 		{
 			gl::ScopedTextureBind tex( mFBOs[ mOtherFBO ]->getColorTexture(), 0 );
 			gl::ScopedTextureBind texSrcBind( mTexture, 1 );
 			gl::ScopedGlslProg shaderBind( mRDShader );
-			
+
 			mRDShader->uniform( "tex", 0 );
 			mRDShader->uniform( "texSrc", 1 );
 			mRDShader->uniform( "width", (float) FBO_WIDTH );
@@ -129,7 +129,7 @@ void RDiffusionApp::update()
 			mRDShader->uniform( "f", mReactionF );
 			gl::drawSolidRect( mFBOs[ mCurrentFBO ]->getBounds() );
 		}
-		
+
 		if( mMousePressed ){
 			gl::ScopedGlslProg shaderBind( gl::getStockShader( gl::ShaderDef().color() ) );
 			gl::ScopedColor col( Color::white() );

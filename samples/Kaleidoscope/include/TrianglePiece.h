@@ -22,19 +22,19 @@ class TrianglePiece {
 	void		setTransitionOut( float _delay );
 	bool		isOut() const;
 	bool		isIn() const;
-	
+
   protected:
 	void		setVisible( bool vis );
 	void		outComplete();
-	
+
 	ci::gl::TextureRef	mTempTex, mDrawTex;
-	
+
 	ci::vec2		mStartPt, mVertices[3], mTexVertices[3];
-	
+
 	float			mRotation;
 	ci::Anim<float> mAlpha;
 	ci::vec2		mScale;
-	
+
 	bool			mVisible, mReadyToDraw;
 	bool			mTransOut;
 };

@@ -64,13 +64,13 @@ class PlatformWinRt : public Platform {
 	void launchWebBrowser( const Url &url ) override;
 
 	void sleep( float milliseconds ) override;
-	
+
 	std::vector<std::string> stackTrace() override;
 
 	void setThreadName( const std::string &name ) override;
 
 	const std::vector<DisplayRef>&	getDisplays() override;
-  
+
   private:
 
 	std::unique_ptr<std::ostream>	mOutputStream;

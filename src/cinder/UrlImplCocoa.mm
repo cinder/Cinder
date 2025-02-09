@@ -32,7 +32,7 @@
 	ci::IStreamUrlImplCocoa		*mImpl;
 	ci::Url						mUrl;
 	std::string					mUser, mPassword;
-	
+
 	uint8_t				*mBuffer;
 	off_t				mBufferSize;
 	off_t				mBufferOffset, mBufferedBytes;
@@ -109,7 +109,7 @@
 			mSize = 0;
 		else
 			mSize = expectedSize;*/
-		
+
 		mSize = 0;
 		mResponseReceived = YES;
 
@@ -171,7 +171,7 @@
 {
 	@synchronized( self ) {
 		off_t roomInBuffer = mBufferSize - mBufferedBytes;
-		off_t size = [data length];	
+		off_t size = [data length];
 		if( (off_t)size > roomInBuffer ) {
 			// not enough space in buffer
 			off_t oldBufferSize = mBufferSize;
@@ -225,7 +225,7 @@
 
 		mStillConnected = NO;
 	}
-	
+
 	throw cinder::UrlLoadExc( (int)mStatusCode, mErrorString );
 }
 
@@ -256,7 +256,7 @@
 			return -1; // need to implement this
 		}
 		else { // moving forward off the end of the buffer - keep buffering til we're in range
-			return -1; // need to implement this		
+			return -1; // need to implement this
 		}
 		return 0;
 	}
@@ -273,8 +273,8 @@
 - (off_t)IoRead:(void*)dest withSize:(size_t)size
 {
 	[self fillBuffer:size];
-	
-	@synchronized( self ) {		
+
+	@synchronized( self ) {
 		// check if theres data in the buffer - if not fillBuffer() either errored or EOF
 		if( [self bufferRemaining] < (off_t)size )
 			return -1;
@@ -282,7 +282,7 @@
 		memcpy( dest, mBuffer + mBufferOffset, size );
 		mBufferOffset += size;
 	}
-	
+
 	return 0;
 }
 
@@ -314,13 +314,13 @@
 	// this MUST be called outside the @synchronized block
 	[self fillBuffer:maxSize];
 
-	@synchronized( self ) {	
+	@synchronized( self ) {
 		off_t remaining = [self bufferRemaining];
 		if( remaining < (off_t)maxSize )
 			maxSize = (size_t)remaining;
-			
+
 		memcpy( dest, mBuffer + mBufferOffset, maxSize );
-		
+
 		mBufferOffset += maxSize;
 	}
 	return maxSize;
@@ -337,7 +337,7 @@ IStreamUrlImplCocoa::IStreamUrlImplCocoa( const std::string &url, const std::str
 	: IStreamUrlImpl( user, password, options )
 {
 	mDelegate = [[IStreamUrlImplCocoaDelegate alloc] initWithImpl:this url:Url(url, true) user:user password:password];
-	
+
 	mThread = [[NSThread alloc] initWithTarget:mDelegate
 									  selector:@selector(threadEntry:)
                                         object:nil];
@@ -353,7 +353,7 @@ IStreamUrlImplCocoa::~IStreamUrlImplCocoa()
 	[mThread release];
 
 	[mDelegate cleanup];
-	[mDelegate release];	
+	[mDelegate release];
 }
 
 bool IStreamUrlImplCocoa::isEof() const

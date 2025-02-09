@@ -34,24 +34,24 @@ bool Ray::calcTriangleIntersection( const vec3 &vert0, const vec3 &vert1, const 
 
 	edge1 = vert1 - vert0;
 	edge2 = vert2 - vert0;
-	
+
 	pvec = cross( getDirection(), edge2 );
 	det = dot( edge1, pvec );
-	
+
 #if 0 // we don't want to backface cull
 	if ( det < epsilon)
 		  return false;
 	tvec = getOrigin() - vert0;
-	
+
 	u = dot( tvec, pvec );
 	if ( ( u < 0.0f ) || ( u > det ) )
 		return false;
-	
+
 	qvec = cross( tvec, edge1 );
 	v = dot( getDirection(), qvec );
 	if ( v < 0.0f || u + v > det )
 		return false;
-	
+
 	*result = dot( edge2, qvec ) / det;
 	return true;
 #else

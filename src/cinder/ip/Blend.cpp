@@ -28,7 +28,7 @@ using namespace std;
 
 namespace cinder { namespace ip {
 
-/*	
+/*
 	   αr = 1 – [(1–αd)×(1–αs)] = αd+αs–(αd×αs)
 	αr×Cr =  [(1–αs)×αd×Cd]+[(1–αd)×αs×Cs]+[αd×αs×B(Cd,Cs)]			Unpremult * Unpremult
 	   Cr = [[(1–αs)×αd×Cd]+[(1–αd)×αs×Cs]+[αd×αs×B(Cd,Cs)]]/αr
@@ -43,7 +43,7 @@ void blendImpl_u8( Surface8u *background, const Surface8u &foreground, const Are
 	const uint8_t sR = foreground.getChannelOrder().getRedOffset();
 	const uint8_t sG = foreground.getChannelOrder().getGreenOffset();
 	const uint8_t sB = foreground.getChannelOrder().getBlueOffset();
-	const uint8_t sA = SRCALPHA ? (foreground.getChannelOrder().getAlphaOffset()) : 0;	
+	const uint8_t sA = SRCALPHA ? (foreground.getChannelOrder().getAlphaOffset()) : 0;
 	const uint8_t srcInc = foreground.getPixelInc();
 	const ptrdiff_t dstRowBytes = background->getRowBytes();
 	const uint8_t dR = background->getChannelOrder().getRedOffset();
@@ -52,7 +52,7 @@ void blendImpl_u8( Surface8u *background, const Surface8u &foreground, const Are
 	const uint8_t dA = DSTALPHA ? (background->getChannelOrder().getAlphaOffset()) : 0;
 	const uint8_t dstInc = background->getPixelInc();
 	const int32_t width = srcArea.getWidth();
-	
+
 	if( ! SRCALPHA ) {// normal blend with no src alpha is a copy
 		ivec2 relativeOffset = absOffset - srcArea.getUL();
 		background->copyFrom( foreground, srcArea, relativeOffset );
@@ -60,7 +60,7 @@ void blendImpl_u8( Surface8u *background, const Surface8u &foreground, const Are
 			ip::fill( &background->getChannelAlpha(), (uint8_t)255 );
 		return;
 	}
-	
+
 	for( int32_t y = 0; y < srcArea.getHeight(); ++y ) {
 		const uint8_t *src = reinterpret_cast<const uint8_t*>( reinterpret_cast<const uint8_t*>( foreground.getData() + srcArea.x1 * 4 ) + ( srcArea.y1 + y ) * srcRowBytes );
 		uint8_t *dst = reinterpret_cast<uint8_t*>( reinterpret_cast<uint8_t*>( background->getData() + absOffset.x * 4 ) + ( y + absOffset.y ) * dstRowBytes );
@@ -70,13 +70,13 @@ void blendImpl_u8( Surface8u *background, const Surface8u &foreground, const Are
 			const uint8_t alphaD = (DSTALPHA) ? dst[dA] : CHANTRAIT<uint8_t>::max();
 			const uint8_t invAlphaD = (DSTALPHA) ? CHANTRAIT<uint8_t>::inverse(dst[dA]) : 0;
 			if( DSTALPHA )
-				dst[dA] = 255 - invAlphaS * invAlphaD / 255;			
+				dst[dA] = 255 - invAlphaS * invAlphaD / 255;
 			if( ( ! DSTALPHA ) || dst[dA] ) {
 				if( ! DSTALPHA && ! SRCPREMULT ) { // none * unpremult -> none
 					dst[dR] = ( invAlphaS * dst[dR] + alphaS * src[sR] ) / 255;
 					dst[dG] = ( invAlphaS * dst[dG] + alphaS * src[sG] ) / 255;
 					dst[dB] = ( invAlphaS * dst[dB] + alphaS * src[sB] ) / 255;
-				}			
+				}
 				else if( ! DSTALPHA && SRCPREMULT ) { // none * premult -> none
 					dst[dR] = invAlphaS * dst[dR] / 255 + src[sR];
 					dst[dG] = invAlphaS * dst[dG] / 255 + src[sG];
@@ -117,16 +117,16 @@ void blendImpl_float( Surface32f *background, const Surface32f &foreground, cons
 	const uint8_t sR = foreground.getChannelOrder().getRedOffset();
 	const uint8_t sG = foreground.getChannelOrder().getGreenOffset();
 	const uint8_t sB = foreground.getChannelOrder().getBlueOffset();
-	const uint8_t sA = SRCALPHA ? (foreground.getChannelOrder().getAlphaOffset()) : 0;	
+	const uint8_t sA = SRCALPHA ? (foreground.getChannelOrder().getAlphaOffset()) : 0;
 	const uint8_t srcInc = foreground.getPixelInc();
 	const ptrdiff_t dstRowBytes = background->getRowBytes();
 	const uint8_t dR = background->getChannelOrder().getRedOffset();
 	const uint8_t dG = background->getChannelOrder().getGreenOffset();
 	const uint8_t dB = background->getChannelOrder().getBlueOffset();
 	const uint8_t dA = DSTALPHA ? (background->getChannelOrder().getAlphaOffset()) : 0;
-	const uint8_t dstInc = background->getPixelInc();	
+	const uint8_t dstInc = background->getPixelInc();
 	const int32_t width = srcArea.getWidth();
-	
+
 	if( ! SRCALPHA ) {// normal blend with no src alpha is a copy
 		ivec2 relativeOffset = absOffset - srcArea.getUL();
 		background->copyFrom( foreground, srcArea, relativeOffset );
@@ -134,7 +134,7 @@ void blendImpl_float( Surface32f *background, const Surface32f &foreground, cons
 			ip::fill( &background->getChannelAlpha(), 1.0f );
 		return;
 	}
-	
+
 	for( int32_t y = 0; y < srcArea.getHeight(); ++y ) {
 		const float *src = reinterpret_cast<const float*>( reinterpret_cast<const uint8_t*>( foreground.getData() + srcArea.x1 * 4 ) + ( srcArea.y1 + y ) * srcRowBytes );
 		float *dst = reinterpret_cast<float*>( reinterpret_cast<uint8_t*>( background->getData() + absOffset.x * 4 ) + ( y + absOffset.y ) * dstRowBytes );
@@ -150,7 +150,7 @@ void blendImpl_float( Surface32f *background, const Surface32f &foreground, cons
 					dst[dR] = invAlphaS * dst[dR] + alphaS * src[sR];
 					dst[dG] = invAlphaS * dst[dG] + alphaS * src[sG];
 					dst[dB] = invAlphaS * dst[dB] + alphaS * src[sB];
-				}			
+				}
 				else if( ! DSTALPHA && SRCPREMULT ) { // none * premult -> none
 					dst[dR] = invAlphaS * dst[dR] + src[sR];
 					dst[dG] = invAlphaS * dst[dG] + src[sG];
@@ -187,7 +187,7 @@ void blendImpl_float( Surface32f *background, const Surface32f &foreground, cons
 
 void blend( Surface8u *background, const Surface8u &foreground, const Area &srcArea, const ivec2 &dstRelativeOffset )
 {
-	pair<Area,ivec2> srcDst = clippedSrcDst( foreground.getBounds(), srcArea, background->getBounds(), srcArea.getUL() + dstRelativeOffset );	
+	pair<Area,ivec2> srcDst = clippedSrcDst( foreground.getBounds(), srcArea, background->getBounds(), srcArea.getUL() + dstRelativeOffset );
 	if( background->hasAlpha() ) {
 		if( background->isPremultiplied() ) {
 			if( foreground.isPremultiplied() )
@@ -206,7 +206,7 @@ void blend( Surface8u *background, const Surface8u &foreground, const Area &srcA
 		if( foreground.isPremultiplied() )
 			blendImpl_u8<false, false, true>( background, foreground, srcDst.first, srcDst.second );
 		else
-			blendImpl_u8<false, false, false>( background, foreground, srcDst.first, srcDst.second );	
+			blendImpl_u8<false, false, false>( background, foreground, srcDst.first, srcDst.second );
 	}
 }
 
@@ -231,7 +231,7 @@ void blend( Surface32f *background, const Surface32f &foreground, const Area &sr
 		if( foreground.isPremultiplied() )
 			blendImpl_float<false, false, true>( background, foreground, srcDst.first, srcDst.second );
 		else
-			blendImpl_float<false, false, false>( background, foreground, srcDst.first, srcDst.second );	
+			blendImpl_float<false, false, false>( background, foreground, srcDst.first, srcDst.second );
 	}
 }
 

@@ -100,7 +100,7 @@ public:
  private:
 	static EventManagerAndroid 	*sInstance;
 	bool 						mShouldQuit;
-	
+
 	android_app 				*mNativeApp;
 
 

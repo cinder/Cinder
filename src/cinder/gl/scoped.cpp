@@ -101,7 +101,7 @@ ScopedColor::ScopedColor( float red, float green, float blue, float alpha )
 	: mCtx( gl::context() )
 {
 	mColor = mCtx->getCurrentColor();
-	mCtx->setCurrentColor( ColorA( red, green, blue, alpha ) );	
+	mCtx->setCurrentColor( ColorA( red, green, blue, alpha ) );
 }
 
 ScopedColor::~ScopedColor()
@@ -180,7 +180,7 @@ ScopedFramebuffer::ScopedFramebuffer( GLenum target, GLuint framebufferId )
 }
 
 ScopedFramebuffer::~ScopedFramebuffer()
-{	
+{
 #if ! defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	mCtx->popFramebuffer( GL_FRAMEBUFFER );
 #else
@@ -198,7 +198,7 @@ ScopedActiveTexture::ScopedActiveTexture( uint8_t textureUnit )
 {
 	mCtx->pushActiveTexture( textureUnit );
 }
-	
+
 ScopedActiveTexture::~ScopedActiveTexture()
 {
 	mCtx->popActiveTexture();
@@ -310,9 +310,9 @@ ScopedScissor::ScopedScissor( int lowerLeftX, int lowerLeftY, int width, int hei
 	: mCtx( gl::context() )
 {
 	mCtx->pushBoolState( GL_SCISSOR_TEST, GL_TRUE );
-	mCtx->pushScissor( std::pair<ivec2, ivec2>( ivec2( lowerLeftX, lowerLeftY ), ivec2( width, height ) ) );		
+	mCtx->pushScissor( std::pair<ivec2, ivec2>( ivec2( lowerLeftX, lowerLeftY ), ivec2( width, height ) ) );
 }
-	
+
 ScopedScissor::~ScopedScissor()
 {
 	mCtx->popBoolState( GL_SCISSOR_TEST );
@@ -375,7 +375,7 @@ ScopedDepth::ScopedDepth( bool enableReadAndWrite )
 	mCtx->pushBoolState( GL_DEPTH_TEST, enableReadAndWrite );
 	mCtx->pushDepthMask( enableReadAndWrite );
 }
-	
+
 ScopedDepth::ScopedDepth( bool enableReadAndWrite, GLenum depthFunc )
 	: mCtx( gl::context() ), mSaveMask( true ), mSaveFunc( true )
 {
@@ -464,7 +464,7 @@ ScopedViewport::ScopedViewport( int lowerLeftX, int lowerLeftY, int width, int h
 {
 	mCtx->pushViewport( { ivec2( lowerLeftX, lowerLeftY ), ivec2( width, height ) } );
 }
-	
+
 ScopedViewport::~ScopedViewport()
 {
 	mCtx->popViewport();
@@ -558,7 +558,7 @@ ScopedDebugGroup::ScopedDebugGroup( GLuint id, const std::string &message )
 }
 ScopedDebugGroup::ScopedDebugGroup( GLenum source, GLuint id, const std::string &message )
 {
-	pushDebugGroup( source, id, message ); 
+	pushDebugGroup( source, id, message );
 }
 ScopedDebugGroup::~ScopedDebugGroup()
 {

@@ -12,7 +12,7 @@ class CompressedTextureApp : public App {
   public:
 	void prepareSettings( Settings *settings ) { settings->setMultiTouchEnabled( false ); }
 	void setup();
-	void mouseDown( MouseEvent event );	
+	void mouseDown( MouseEvent event );
 	void keyDown( KeyEvent event );
 	void draw();
 
@@ -49,7 +49,7 @@ void CompressedTextureApp::setup()
 		mTextures.push_back( make_pair( "Luminance DXT5A/BC4", gl::Texture::createFromDds( loadAsset( "compression_test_lum_dxt5a.dds" ), gl::Texture::Format().swizzleMask( GL_RED, GL_RED, GL_RED, GL_ONE ) ) ) );
 		mTextures.push_back( make_pair( "Luminance+Alpha 3DC/ATI2/BC5", gl::Texture::createFromDds( loadAsset( "compression_test_lum_3dc.dds" ), gl::Texture::Format().swizzleMask( GL_RED, GL_RED, GL_RED, GL_GREEN ) ) ) );
 	}
-	
+
 	if( gl::isExtensionAvailable( "GL_OES_compressed_ETC1_RGB8_texture" ) ) {
 		mTextures.push_back( make_pair( "ETC1", gl::Texture::createFromKtx( loadAsset( "compression_test_etc1.ktx" ), format ) ) );
 	}

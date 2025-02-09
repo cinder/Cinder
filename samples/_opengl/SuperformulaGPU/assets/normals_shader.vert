@@ -29,7 +29,7 @@ float superformulaDeriv( float o, float a, float b, float m, float n1, float n2,
 	float subExpA = n3*m/4*pow(1/b,n3)*sin(m*o/4)*cos(m*o/4)*pow(abs(sin(m*o/4)),n3-2);
 	float subExpB = n2*m/4*pow(1/a,n2)*sin(m*o/4)*cos(m*o/4)*pow(abs(cos(m*o/4)),n2-2);
 	float subExpC = pow(1/a,n2)*pow(abs(cos(m*o/4)),n2) + pow(1/b,n3) * pow(abs(sin(m*o/4)),n3);
-	
+
 	return (1.0f / n1) * (subExpA - subExpB ) * pow( subExpC, 1.0 / n1 - 1.0 );
 }
 
@@ -48,7 +48,7 @@ vec3 superformulaNormal( float theta, float phi, float rTheta, float rPhi )
 	derivP.x = -( cos(theta) * ( cos(phi) * rPhiPrime + rPhi * sin(phi) ) ) / ( rPhi * rPhi * rTheta );
 	derivP.y = -( sin(theta) * ( cos(phi) * rPhiPrime + rPhi * sin(phi) ) ) / ( rPhi * rPhi * rTheta );
 	derivP.z = ( rPhi * cos(phi) - sin(phi) * rPhiPrime ) / ( rPhi * rPhi );
-	
+
 	return cross( normalize(derivT), normalize(derivP) );
 }
 

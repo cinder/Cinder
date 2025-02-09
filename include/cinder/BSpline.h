@@ -124,7 +124,7 @@ class CI_API BSpline {
 	// reallocated and the first d points are replicated.  In either case the
 	// knot array is calculated accordingly.
 	BSpline( const std::vector<VecT> &points, int degree, bool loop, bool open );
-	
+
 	// Open, nonuniform spline.  The knot array must have n-d elements.  The
 	// elements must be nondecreasing.  Each element must be in [0,1].
 	BSpline() : mCtrlPoints( 0 ), mNumCtrlPoints( -1 ) {}

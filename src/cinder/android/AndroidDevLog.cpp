@@ -37,7 +37,7 @@ void dbg_app_log( const std::string& s )
 	std::stringstream ss;
 	ss << s;
 	DBG_APP_LOGI( ss.str().c_str() );
-}	
+}
 
 void dbg_app_warn( const std::string& s )
 {

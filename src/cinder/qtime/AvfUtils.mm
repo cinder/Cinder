@@ -1,16 +1,16 @@
 /*
  Copyright (c) 2015, The Cinder Project, All rights reserved.
- 
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
- 
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
- 
+
  * Redistributions of source code must retain the above copyright notice, this list of conditions and
  the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
  the following disclaimer in the documentation and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -46,10 +46,10 @@ bool setAudioSessionModes()
 	NSError* error = nil;
 	[[AVAudioSession sharedInstance] setMode:AVAudioSessionModeMoviePlayback error:&error];
 	return [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
-	
+
 #else
 	return false;
-	
+
 #endif
 }
 
@@ -57,13 +57,13 @@ bool dictionarySetValue( CFMutableDictionaryRef dict, CFStringRef key, SInt32 va
 {
 	bool         setNumber = false;
     CFNumberRef  number    = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &value);
-	
+
     if( number != NULL ) {
 		CFDictionarySetValue( dict, key, number );
 		CFRelease( number );
 		setNumber = true;
 	}
-	
+
     return setNumber;
 }
 
@@ -84,7 +84,7 @@ bool dictionarySetPixelBufferSize( const unsigned int width, const unsigned int 
 
 	setSize = dictionarySetValue( dict, kCVPixelBufferWidthKey, width );
 	setSize = setSize && dictionarySetValue( dict, kCVPixelBufferHeightKey, height );
-	
+
 	return setSize;
 }
 
@@ -116,18 +116,18 @@ bool dictionarySetPixelBufferOptions( unsigned int width, unsigned int height, b
 			}
 		}
 	}
-	
+
 	return setPixelBufferOptions;
 }
-	
+
 	/*
 CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool alpha )
 {
 	CFMutableDictionaryRef  visualContextOptions = NULL;
     CFMutableDictionaryRef  pixelBufferOptions   = NULL;
-												   
+
 	bool  setPixelBufferOptions = dictionarySetPixelBufferOptions( width, height, alpha, &pixelBufferOptions );
-	
+
 	if( pixelBufferOptions != NULL ) {
 		if( setPixelBufferOptions ) {
 			visualContextOptions = CFDictionaryCreateMutable( kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks );
@@ -135,13 +135,13 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 				CFDictionarySetValue( visualContextOptions, kQTVisualContextPixelBufferAttributesKey, pixelBufferOptions );
 			}
 		}
-			
+
 		CFRelease( pixelBufferOptions );
 	}
-	
+
 	return  visualContextOptions;
 }
-	 
+
 Handle createPointerReferenceHandle( void *data, Size dataSize )
 {
 	Handle dataRef = NULL;
@@ -274,7 +274,7 @@ Handle createPointerDataRefWithExtensions( void *data, size_t dataSize, const st
     return NULL;
 }
 */
-	
+
 void CVPixelBufferDealloc( void* refcon )
 {
 	::CVBufferRelease( (CVPixelBufferRef)(refcon) );
@@ -289,7 +289,7 @@ Surface8uRef convertCvPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 	size_t width = ::CVPixelBufferGetWidth( pixelBufferRef );
 	size_t height = ::CVPixelBufferGetHeight( pixelBufferRef );
 	::CVPixelBufferUnlockBaseAddress(pixelBufferRef, 0);
-	
+
 	SurfaceChannelOrder sco;
 #if defined( CINDER_COCOA_TOUCH )
 	if (type == kCVPixelFormatType_24RGB )
@@ -306,7 +306,7 @@ Surface8uRef convertCvPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 		sco = SurfaceChannelOrder::ABGR;
 	else if (type == kCVPixelFormatType_32RGBA )
 		sco = SurfaceChannelOrder::BGRA;
-	
+
 #elif defined( CINDER_COCOA )
 	if( type == k24RGBPixelFormat )
 		sco = SurfaceChannelOrder::RGB;
@@ -317,7 +317,7 @@ Surface8uRef convertCvPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 	else if( type == k32BGRAPixelFormat )
 		sco = SurfaceChannelOrder::BGRA;
 #endif
-	
+
 	return std::shared_ptr<Surface8u>( new Surface8u( ptr, (int32_t)width, (int32_t)height, rowBytes, sco ),
 		[=]( Surface8u *s ) { delete s; CVPixelBufferDealloc( pixelBufferRef ); } );
 }
@@ -338,9 +338,9 @@ ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, 
 	: ImageTarget(), mPixelBufferRef( 0 )
 {
 	setSize( imageSource->getWidth(), imageSource->getHeight() );
-	
+
 	//http://developer.apple.com/mac/library/qa/qa2006/qa1501.html
-	
+
 	// if we're converting to YCbCr, we'll load all of the data as RGB in terms of ci::ImageIo
 	// but we run color space conversion over it later in the finalize method
 	OSType formatType;
@@ -379,7 +379,7 @@ ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, 
 		setChannelOrder( ImageIo::RGBA );
 		setColorModel( ImageIo::CM_RGB );
 	}
-	
+
 	// TODO: Can we create the buffer from the pool????? Seems like no at first attempt --maybe a pixel buffer attributes mismatch?
 //	CFMutableDictionaryRef attributes = CFDictionaryCreateMutable( kCFAllocatorDefault, 6, nil, nil );
 //	dictionarySetPixelBufferOpenGLCompatibility( attributes );
@@ -391,12 +391,12 @@ ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, 
 	CVReturn status = CVPixelBufferPoolCreatePixelBuffer( kCFAllocatorDefault, pbPool, &mPixelBufferRef );
 	if( kCVReturnSuccess != status )
 		throw ImageIoException();
-	
+
 	if( ::CVPixelBufferLockBaseAddress( mPixelBufferRef, 0 ) != kCVReturnSuccess )
 		throw ImageIoException();
 	mData = reinterpret_cast<uint8_t*>( ::CVPixelBufferGetBaseAddress( mPixelBufferRef ) );
 	mRowBytes = ::CVPixelBufferGetBytesPerRow( mPixelBufferRef );
-std::cout << "Total size: " << ::CVPixelBufferGetDataSize( mPixelBufferRef ) << " Planar: " << (int)::CVPixelBufferIsPlanar( mPixelBufferRef ) << std::endl;	
+std::cout << "Total size: " << ::CVPixelBufferGetDataSize( mPixelBufferRef ) << " Planar: " << (int)::CVPixelBufferIsPlanar( mPixelBufferRef ) << std::endl;
 }
 
 
@@ -404,9 +404,9 @@ ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, 
 	: ImageTarget(), mPixelBufferRef( 0 ), mConvertToYpCbCr( convertToYpCbCr )
 {
 	setSize( imageSource->getWidth(), imageSource->getHeight() );
-	
+
 	//http://developer.apple.com/mac/library/qa/qa2006/qa1501.html
-	
+
 	// if we're converting to YCbCr, we'll load all of the data as RGB in terms of ci::ImageIo
 	// but we run color space conversion over it later in the finalize method
 	OSType formatType;
@@ -446,10 +446,10 @@ ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, 
 		setColorModel( ImageIo::CM_RGB );
 	}
 
-	if( ::CVPixelBufferCreate( kCFAllocatorDefault, imageSource->getWidth(), imageSource->getHeight(), 
+	if( ::CVPixelBufferCreate( kCFAllocatorDefault, imageSource->getWidth(), imageSource->getHeight(),
 				formatType, NULL, &mPixelBufferRef ) != kCVReturnSuccess )
 		throw ImageIoException();
-	
+
 	if( ::CVPixelBufferLockBaseAddress( mPixelBufferRef, 0 ) != kCVReturnSuccess )
 		throw ImageIoException();
 	mData = reinterpret_cast<uint8_t*>( ::CVPixelBufferGetBaseAddress( mPixelBufferRef ) );

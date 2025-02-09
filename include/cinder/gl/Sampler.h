@@ -37,12 +37,12 @@ typedef std::shared_ptr<Sampler>	SamplerRef;
 //! A Sampler represents an OpenGL object that stores the sampling parameters for Texture access from within a shader
 class CI_API Sampler {
   public:
-	
+
 	struct CI_API Format {
 		Format();
 		Format( const Format &rhs ) { copy( rhs ); }
 		Format& operator=(const Format &rhs ) { copy( rhs ); return *this; }
-	
+
 		//! Sets the S and T wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are \c GL_REPEAT, \c GL_CLAMP_TO_EDGE, etc. Default is \c GL_CLAMP_TO_EDGE.
 		Format&	wrap( GLenum wrapS, GLenum wrapT ) { setWrapS( wrapS ); setWrapT( wrapT ); return *this; }
 		//! Sets the wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are \c GL_REPEAT, \c GL_CLAMP_TO_EDGE, etc. Default is \c GL_CLAMP_TO_EDGE.
@@ -91,7 +91,7 @@ class CI_API Sampler {
 		void			setBorderColor( const ColorA &color ) { mBorderColor = color; }
 		//! Returns the texture's border color
 		const ColorA&	getBorderColor() const { return mBorderColor; }
-		
+
 		//! Limits the selection of highest resolution mipmap (lowest mipmap level). Default is \c -1000
 		void			setMinLod( float minLod ) { mMinLod = minLod; }
 		//! Returns the highest resolution mipmap (lowest mipmap level) sampling will select. Default is \c -1000
@@ -105,22 +105,22 @@ class CI_API Sampler {
 		//! Sets the anisotropic filter amount. A value greater than 1.0 "enables" anisotropic filtering. Maximum of Texture::getMaxAnisotropyMax();
 		void    setMaxAnisotropy( float maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; }
 		//! Gets the anisotropic filter amount.
-		float	getMaxAnisotropy() const { return mMaxAnisotropy; } 
-		Format&	maxAnisotropy( float maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; return *this; } 
-		
+		float	getMaxAnisotropy() const { return mMaxAnisotropy; }
+		Format&	maxAnisotropy( float maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; return *this; }
+
 		//! Returns the debugging label associated with the Texture.
 		const std::string&	getLabel() const { return mLabel; }
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		void				setLabel( const std::string &label ) { mLabel = label; }
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
-		
-	protected:	
+
+	protected:
 		void	copy( const Format &rhs );
 
 		GLenum					mWrapS, mWrapT, mWrapR;
 		GLenum					mMinFilter, mMagFilter;
-		GLint					mCompareMode, mCompareFunc;		
+		GLint					mCompareMode, mCompareFunc;
 #if ! defined( CINDER_GL_ES )
 		ColorA					mBorderColor;
 		float					mMinLod, mMaxLod;
@@ -137,15 +137,15 @@ class CI_API Sampler {
 	Sampler( Sampler &&rhs );
 	Sampler( const Sampler &rhs ) = delete;
 	~Sampler();
-	
+
 	Sampler& operator=( Sampler &&rhs );
 	Sampler& operator=( const Sampler &rhs ) = delete;
-	
+
 	static SamplerRef		create() { return std::make_shared<Sampler>(); }
 	static SamplerRef		create( const Format &format ) { return std::make_shared<Sampler>( format ); }
-	
-	
-	const Format&	getFormat() const { return mFormat; }	
+
+
+	const Format&	getFormat() const { return mFormat; }
 
 	//! Sets the wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are \c GL_REPEAT, \c GL_CLAMP_TO_EDGE, etc. Default is \c GL_CLAMP_TO_EDGE.
 	void	setWrap( GLenum wrapS, GLenum wrapT );
@@ -187,7 +187,7 @@ class CI_API Sampler {
 	void			setBorderColor( const ColorA &color );
 	//! Returns the texture's border color
 	const ColorA&	getBorderColor() const { return mFormat.mBorderColor; }
-	
+
 	//! Limits the selection of highest resolution mipmap (lowest mipmap level). Default is \c -1000
 	void			setMinLod( float minLod );
 	//! Returns the highest resolution mipmap (lowest mipmap level) sampling will select. Default is \c -1000
@@ -197,25 +197,25 @@ class CI_API Sampler {
 	//! Returns the highest resolution mipmap (lowest mipmap level) sampling will select. Default is \c 1000
 	float			getMaxLod() const { return mFormat.mMaxLod; }
 #endif
-	
+
 	//! Sets the anisotropic filter amount. A value greater than 1.0 "enables" anisotropic filtering. Maximum of Texture::getMaxAnisotropyMax();
 	void    setMaxAnisotropy( float maxAnisotropy );
 	//! Gets the anisotropic filter amount.
-	float	getMaxAnisotropy() const { return mFormat.mMaxAnisotropy; } 
-	
+	float	getMaxAnisotropy() const { return mFormat.mMaxAnisotropy; }
+
 	//! Returns the debugging label associated with the Texture.
 	const std::string&	getLabel() const { return mFormat.mLabel; }
 	//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 	void				setLabel( const std::string &label );
-	
+
 	//! Returns the Sampler object ID
 	GLuint			getId() const { return mId; }
-	
+
 	//!	Binds the Sampler in the multitexturing unit \c GL_TEXTURE0 + \a textureUnit
 	void 			bind( uint8_t textureUnit = 0 ) const;
 	//!	Unbinds the Sampler currently bound in the multitexturing unit \c GL_TEXTURE0 + \a textureUnit
 	void 			unbind( uint8_t textureUnit = 0 ) const;
-	
+
   protected:
 	void	initParams();
 

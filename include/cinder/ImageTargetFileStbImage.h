@@ -1,6 +1,6 @@
 /*
  Copyright (c) 2015, The Cinder Project, All rights reserved.
- 
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -35,12 +35,12 @@ class ImageTargetFileStbImage : public ImageTarget {
 
 	void*	getRowPointer( int32_t row ) override;
 	void	finalize() override;
-	
+
 	static void		registerSelf();
-	
+
   protected:
 	ImageTargetFileStbImage( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
-	
+
 	uint8_t						mNumComponents;
 	size_t						mRowBytes;
 	std::string					mExtension;

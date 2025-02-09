@@ -73,7 +73,7 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
 	memcpy( host, urlComponents.lpszHostName, urlComponents.dwHostNameLength * sizeof(WCHAR) );
 	host[urlComponents.dwHostNameLength] = 0;
 	memcpy( path, urlComponents.lpszUrlPath, urlComponents.dwUrlPathLength * sizeof(WCHAR) );
-	path[urlComponents.dwUrlPathLength] = 0;	
+	path[urlComponents.dwUrlPathLength] = 0;
 
 	// make sure this a scheme we know about - HTTP(S) or FTP
 	switch( urlComponents.nScheme ) {
@@ -87,7 +87,7 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
 
 	std::u16string wideUser = toUtf16( user );
 	std::u16string widePassword = toUtf16( password );
-    
+
     //check for HTTP and HTTPS here because they both require the same flag in InternetConnect()
 	if( ( urlComponents.nScheme == INTERNET_SCHEME_HTTP ) ||
        ( urlComponents.nScheme == INTERNET_SCHEME_HTTPS ) ) {
@@ -102,7 +102,7 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
 		throw StreamExc();
     //http and https cases broken out incase someone wishes to modify connection based off of type.
     //it is wrong to group http with https.
-    
+
 	unsigned long timeoutMillis = static_cast<unsigned long>( options.getTimeout() * 1000 );
 	::InternetSetOptionW( mConnection.get(), INTERNET_OPTION_RECEIVE_TIMEOUT, &timeoutMillis, sizeof(unsigned long) );
 	::InternetSetOptionW( mConnection.get(), INTERNET_OPTION_CONNECT_TIMEOUT, &timeoutMillis, sizeof(unsigned long) );
@@ -172,7 +172,7 @@ void IStreamUrlImplWinInet::seekRelative( off_t relativeOffset )
 		throw StreamExc(); // need to implement this
 	}
 	else { // moving forward off the end of the buffer - keep buffering til we're in range
-		throw StreamExc(); // need to implement this		
+		throw StreamExc(); // need to implement this
 	}
 }
 
@@ -196,7 +196,7 @@ void IStreamUrlImplWinInet::fillBuffer( int wantBytes ) const
 	// we've already got all the data we need
 	if( bufferDataRemaining() > wantBytes )
 		return;
-	
+
 	// if we want more bytes than will fit in the rest of the buffer, let's make some room
 	if( wantBytes > (int)mBuffer.size() - mBufferedBytes ) {
 		memmove( mBuffer.data(), mBuffer.data() + mBufferOffset, mBufferedBytes - mBufferOffset );
@@ -204,22 +204,22 @@ void IStreamUrlImplWinInet::fillBuffer( int wantBytes ) const
 		mBufferFileOffset += mBufferOffset;
 		mBufferOffset = 0;
 	}
-	
+
 	// now if we've made all the room there is to make, and we still aren't big enough, reallocate
 	if( wantBytes > (int)mBuffer.size() - mBufferedBytes ) {
 		mBuffer.resize( mBufferedBytes + wantBytes );
 	}
-	
+
 	do {
 		::DWORD bytesAvailable, bytesRead;
 		if( ! ::InternetQueryDataAvailable( mRequest.get(), &bytesAvailable, 0, 0 ) )
 			throw StreamExc();
-		
+
 		if( bytesAvailable == 0 ) {
 			mIsFinished = true;
 			break;
 		}
-		
+
 		::DWORD bytesToRead = std::min<int>( bytesAvailable, wantBytes );
 		if( ! ::InternetReadFile( mRequest.get(), mBuffer.data() + mBufferedBytes, bytesToRead, &bytesRead ) )
 			throw StreamExc();

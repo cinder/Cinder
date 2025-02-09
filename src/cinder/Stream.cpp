@@ -38,8 +38,8 @@ using std::memcpy;
 namespace cinder {
 
 #if defined( CINDER_UWP )
-	#pragma warning(push) 
-	#pragma warning(disable:4996) 
+	#pragma warning(push)
+	#pragma warning(disable:4996)
 #endif
 //////////////////////////////////////////////////////////////////////////
 template<typename T>
@@ -247,7 +247,7 @@ off_t IStreamFile::size() const
 		mSizeCached = true;
 		fseek( mFile, static_cast<long>( curOff ), SEEK_SET );
 	}
-	
+
 	return mSize;
 }
 
@@ -262,9 +262,9 @@ void IStreamFile::IORead( void *t, size_t size )
 	if( bytesRead != size ) {
 #if defined( CINDER_ANDROID )
 		throw StreamExc( "(IStreamFile::IORead num bytes read different from requested size" );
-#else		
+#else
 		throw StreamExc();
-#endif	
+#endif
 	}
 }
 
@@ -365,7 +365,7 @@ off_t IStreamAndroidAsset::size() const
 		mSize = afs_flength( mAsset );
 		mSizeCached = true;
 	}
-	
+
 	return mSize;
 }
 
@@ -498,7 +498,7 @@ off_t IoStreamFile::size() const
 		mSizeCached = true;
 		fseek( mFile, static_cast<long>( curOff ), SEEK_SET );
 	}
-	
+
 	return mSize;
 }
 
@@ -578,8 +578,8 @@ size_t IStreamMem::readDataAvailable( void *dest, size_t maxSize )
 		memcpy( dest, mData + mOffset, maxSize );
 		mOffset += maxSize;
 	}
-	
-	return maxSize;	
+
+	return maxSize;
 }
 
 void IStreamMem::seekAbsolute( off_t absoluteOffset )
@@ -670,7 +670,7 @@ IStreamFileRef loadFileStream( const fs::path &path )
 	if( nullptr == f ) {
 		throw StreamExc( "(loadFileStream) couldn't open: " + path.string() );
 	}
-#endif	
+#endif
 
 	if( f ) {
 		IStreamFileRef s = IStreamFile::create( f, true );
@@ -725,7 +725,7 @@ void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size
 	off_t fileSize = is->size();
 	if( fileSize > std::numeric_limits<off_t>::max() )
 		throw StreamExcOutOfMemory();
-	
+
 	*resultData = std::shared_ptr<uint8_t>( (uint8_t*)malloc( static_cast<size_t>( fileSize ) ), free );
 	if( ! (*resultData ) )
 		throw StreamExcOutOfMemory();
@@ -743,7 +743,7 @@ BufferRef loadStreamBuffer( IStreamRef is )
 	off_t fileSize = is->size();
 	if( fileSize > std::numeric_limits<off_t>::max() )
 		throw StreamExcOutOfMemory();
-	
+
 	if( fileSize ) { // sometimes fileSize will be zero for a stream that doesn't know how big it is
 		auto result = std::make_shared<Buffer>( fileSize );
 		is->readDataAvailable( result->getData(), static_cast<size_t>( fileSize ) );
@@ -817,7 +817,7 @@ STREAM_PROTOTYPES(double)
 
 
 #if defined( CINDER_UWP )
-	#pragma warning(pop) 
+	#pragma warning(pop)
 #endif
 
 } // namespace dt

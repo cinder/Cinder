@@ -58,7 +58,7 @@ PlatformCocoa::PlatformCocoa()
 
 	// register default ImageSources and ImageTargets
 	ImageSourceFileQuartz::registerSelf();
-	ImageTargetFileQuartz::registerSelf();	
+	ImageTargetFileQuartz::registerSelf();
 	ImageSourceFileRadiance::registerSelf();
 	ImageSourceFileTinyExr::registerSelf();
 	ImageTargetFileTinyExr::registerSelf();
@@ -183,7 +183,7 @@ fs::path PlatformCocoa::getHomeDirectory() const
 	NSString *home = ::NSHomeDirectory();
 	string result = string( [home cStringUsingEncoding:NSUTF8StringEncoding] );
 	result += "/";
-	return fs::path( result );	
+	return fs::path( result );
 }
 
 fs::path PlatformCocoa::getDefaultExecutablePath() const
@@ -324,7 +324,7 @@ fs::path PlatformCocoa::getSaveFilePath( const fs::path &initialPath, const vect
 	// to be actually in the background when we're fullscreen. Was true of 10.9 and 10.10
 	if( app::AppBase::get() && app::getWindow() && app::getWindow()->isFullScreen() )
 		[[[NSApplication sharedApplication] mainWindow] orderBack:nil];
-	
+
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		return fs::path( [[[cinderSave URL] path] UTF8String] );
 	}
@@ -365,9 +365,9 @@ vector<string> PlatformCocoa::stackTrace()
 		}
 		else
 			result.push_back( std::string( strs[i] ) );
-	}	
+	}
 	free( strs );
-	
+
 	return result;
 }
 
@@ -390,7 +390,7 @@ void PlatformCocoa::removeDisplay( const DisplayRef &display )
 {
 	DisplayRef displayCopy = display;
 	mDisplays.erase( std::remove( mDisplays.begin(), mDisplays.end(), displayCopy ), mDisplays.end() );
-	
+
 	if( app::AppBase::get() )
 		app::AppBase::get()->emitDisplayDisconnected( displayCopy );
 }
@@ -411,7 +411,7 @@ NSScreen* findNsScreenForCgDirectDisplayId( CGDirectDisplayID displayId )
 		if( thisId == displayId )
 			return screen;
 	}
-	
+
 	return nil;
 }
 std::string getDisplayName( CGDirectDisplayID displayId )
@@ -468,13 +468,13 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 		if( display )
 			app::PlatformCocoa::get()->removeDisplay( display ); // this will signal
 		else
-			CI_LOG_W( "Received removed from CGDisplayRegisterReconfigurationCallback() on unknown display" );		
+			CI_LOG_W( "Received removed from CGDisplayRegisterReconfigurationCallback() on unknown display" );
 	}
 	else if( flags & kCGDisplayAddFlag ) {
 		DisplayRef display = app::PlatformCocoa::get()->findFromCgDirectDisplayId( displayId );
 		if( ! display ) {
 			CGRect frame = ::CGDisplayBounds( displayId );
-			
+
 			DisplayMac *newDisplay = new DisplayMac();
 			newDisplay->mDirectDisplayId = displayId;
 			newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
@@ -491,7 +491,7 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 			app::PlatformCocoa::get()->addDisplay( DisplayRef( newDisplay ) ); // this will signal
 		}
 		else
-			CI_LOG_W( "Received add from CGDisplayRegisterReconfigurationCallback() for already known display" );				
+			CI_LOG_W( "Received add from CGDisplayRegisterReconfigurationCallback() for already known display" );
 	}
 	else if( flags & kCGDisplayMovedFlag ) { // needs to be tested after add & remove
 		DisplayRef display = app::PlatformCocoa::get()->findFromCgDirectDisplayId( displayId );
@@ -523,7 +523,7 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 			}
 		}
 		else
-			CI_LOG_W( "Received moved from CGDisplayRegisterReconfigurationCallback() on unknown display" );			
+			CI_LOG_W( "Received moved from CGDisplayRegisterReconfigurationCallback() on unknown display" );
 	}
 }
 
@@ -559,9 +559,9 @@ const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
 			mDisplays.push_back( DisplayRef( newDisplay ) );
 		}
 
-		mDisplaysInitialized = true;	
+		mDisplaysInitialized = true;
 	}
-	
+
 	return mDisplays;
 }
 
@@ -610,7 +610,7 @@ const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
 			size_t firstIndex = ( mDisplays.empty() ) ? 0 : 1;
 			for( size_t i = firstIndex; i < [screens count]; ++i )
 				mDisplays.push_back( DisplayRef( new DisplayCocoaTouch( [screens objectAtIndex:i] ) ) );
-			mDisplaysInitialized = true;				
+			mDisplaysInitialized = true;
 		}
 		else {
 			if( ! cinder::app::AppBase::get() )
@@ -623,7 +623,7 @@ const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
 				mDisplays.push_back( DisplayRef( new DisplayCocoaTouch( [UIScreen mainScreen] ) ) );
 		}
 	}
-	
+
 	return mDisplays;
 }
 
@@ -640,7 +640,7 @@ void DisplayCocoaTouch::setResolution( const ivec2 &resolution )
 			closestIndex = i;
 		}
 	}
-	
+
 	mUiScreen.currentMode = [modes objectAtIndex:closestIndex];
 }
 #endif

@@ -315,7 +315,7 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 				old->decrRef();
 			}
 			while( link != lp.second );
-			
+
 			link->decrRef();
 
 			if( ! continueEmission )
@@ -593,7 +593,7 @@ struct CollectorVector {
 		mResult.push_back( r );
 		return true;
 	}
-	
+
 private:
 	CollectorResult mResult;
 };

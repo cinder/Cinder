@@ -130,7 +130,7 @@ void NvidiaMulticastApp::setup()
 	CI_ASSERT( img0->getDataType() == img1->getDataType() );
 	CI_ASSERT( img0->hasAlpha() == img1->hasAlpha() );
 	mTexture = gl::Texture2d::create( img0->getWidth(), img0->getHeight(), texFmt );
-	
+
 	multicast::enableUploadMask( mGPUs[0] );
 	mTexture->update( ci::Surface{ img0 } );
 	// Replace texture on secondary GPU

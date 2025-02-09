@@ -14,10 +14,10 @@ using std::vector;
 class BSplineApp : public App {
  public:
 	BSplineApp() : mTrackedPoint( -1 ), mDegree( 3 ), mOpen( true ), mLoop( false ) {}
-	
+
 	int		findNearestPt( const vec2 &aPt );
 	void	calcLength();
-	
+
 	void	mouseDown( MouseEvent event ) override;
 	void	mouseUp( MouseEvent event ) override;
 	void	mouseDrag( MouseEvent event ) override;
@@ -97,7 +97,7 @@ int BSplineApp::findNearestPt( const vec2 &aPt )
 {
 	if( mPoints.empty() )
 		return -1;
-	
+
 	int result = 0;
 	float nearestDist = distance( mPoints[0], aPt );
 	for( size_t i = 1; i < mPoints.size(); ++i ) {
@@ -106,7 +106,7 @@ int BSplineApp::findNearestPt( const vec2 &aPt )
 			nearestDist = distance( mPoints[i], aPt );
 		}
 	}
-	
+
 	return result;
 }
 
@@ -135,7 +135,7 @@ void BSplineApp::draw()
 	cairo::Context ctx( cairo::createWindowSurface() );
 	ctx.setSourceRgb( 0.0f, 0.1f, 0.2f );
 	ctx.paint();
-	
+
 	// draw the control points
 	ctx.setSourceRgb( 1.0f, 1.0f, 0.0f );
 	for( size_t p = 0; p < mPoints.size(); ++p ) {
@@ -152,22 +152,22 @@ void BSplineApp::draw()
 		ctx.moveTo( spline.getPosition( 0 ) );
 		for( float t = 0; t < 1.0f; t += 0.001f )
 			ctx.lineTo( spline.getPosition( t ) );
-		
+
 		ctx.stroke();
-		
+
 		// draw points 1/4, 1/2 and 3/4 along the length
 		ctx.setSourceRgb( 0.0f, 0.7f, 1.0f );
 		float totalLength = spline.getLength( 0, 1 );
 		for( float p = 0.25f; p < 0.99f; p += 0.25f ) {
 			ctx.newSubPath();
 			ctx.arc( spline.getPosition( spline.getTime( p * totalLength ) ), 2.5f, 0, 2 * 3.14159f );
-		}		
-		
+		}
+
 		ctx.stroke();
 	}
 
 	// draw the curve by bezier path
-	drawBSpline( ctx );	
+	drawBSpline( ctx );
 }
 
 CINDER_APP( BSplineApp, Renderer2d )

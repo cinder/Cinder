@@ -106,7 +106,7 @@ HWND createDummyWindow()
 
 	if( ! ::RegisterClass( &wc ) ) {											// Attempt To Register The Window Class
 		DWORD err = ::GetLastError();
-		return 0;											
+		return 0;
 	}
 	windowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE | WS_EX_ACCEPTFILES;		// Window Extended Style
 	windowStyle = ( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );
@@ -152,7 +152,7 @@ bool getWglFunctionPointers( PFNWGLCREATECONTEXTATTRIBSARB *resultCreateContextA
 			return false;
 		}
 		::SetPixelFormat( tempDc, pixelFormat, &pfd );
-		auto tempCtx = ::wglCreateContext( tempDc ); 
+		auto tempCtx = ::wglCreateContext( tempDc );
 		::wglMakeCurrent( tempDc, tempCtx );
 
 		cachedCreateContextAttribsFnPtr = (PFNWGLCREATECONTEXTATTRIBSARB) ::wglGetProcAddress( "wglCreateContextAttribsARB" );
@@ -198,7 +198,7 @@ HGLRC createContext( HDC dc, bool coreProfile, bool debug, int majorVersion, int
 		if( multigpu != 0 ) {
 			attribList[8] = WGL_CONTEXT_MULTIGPU_ATTRIB_NV;
 			attribList[9] = multigpu;
-		} 
+		}
 		result = (*wglCreateContextAttribsARBPtr)( dc, 0, attribList );
 		return result;
 	}
@@ -285,11 +285,11 @@ bool initializeGl( HWND /*wnd*/, HDC dc, HGLRC sharedRC, const RendererGl::Optio
 	}
 
 	if( ! ( *resultRc = createContext( dc, options.getCoreProfile(), options.getDebug(), options.getVersion().first, options.getVersion().second, multigpu ) ) ) {
-		return false;								
+		return false;
 	}
 
 	if( ! ::wglMakeCurrent( dc, *resultRc ) ){					// Try To Activate The Rendering Context
-		return false;								
+		return false;
 	}
 
 	gl::Environment::setCore();
@@ -298,7 +298,7 @@ bool initializeGl( HWND /*wnd*/, HDC dc, HGLRC sharedRC, const RendererGl::Optio
 	gladLoadWGL( dc );											// Initialize WGL function pointers
 
 	::wglMakeCurrent( NULL, NULL );
-	
+
 	if( sharedRC )
 		::wglShareLists( sharedRC, *resultRc );
 

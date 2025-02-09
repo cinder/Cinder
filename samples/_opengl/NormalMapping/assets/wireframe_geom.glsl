@@ -33,6 +33,6 @@ void main()
 	vDistance = vec3( 0, 0, area / length( v2 ) );
 	gl_Position = gl_in[2].gl_Position;
 	EmitVertex();
-	
+
 	EndPrimitive();
 }

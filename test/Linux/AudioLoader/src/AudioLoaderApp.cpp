@@ -54,7 +54,7 @@ void AudioLoaderApp::resize()
 	if( mBufferPlayerNode ) {
 		//auto buf = mBufferPlayerNode->getBuffer();
 		mWaveformPlot.load( mBufferPlayerNode->getBuffer(), getWindowBounds() );
-	}	
+	}
 }
 
 void AudioLoaderApp::fileDrop( FileDropEvent event )

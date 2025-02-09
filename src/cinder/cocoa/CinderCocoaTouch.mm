@@ -45,7 +45,7 @@ Surface8uRef convertUiImage( UIImage *uiImage, bool assumeOwnership )
 	CGImageRef imageRef = uiImage.CGImage;
 	if( ! imageRef )
 		return Surface8uRef();
-	
+
 	if( assumeOwnership ) {
 		[uiImage retain];
 		return std::shared_ptr<Surface8u>( new Surface8u( createImageSource( imageRef ) ), [=]( Surface8u *s ) { delete s; [uiImage release]; } );

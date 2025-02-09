@@ -14,12 +14,12 @@ struct Box {
 	Box( Color color, vec2 pos, vec2 size )
 		: mColor( color ), mPos( pos ), mSize( size )
 	{}
-	
+
 	void draw() const {
 		gl::color( mColor );
 		gl::drawSolidRect( Rectf( mPos, mPos + mSize ) );
 	}
-	
+
 	Color	mColor;
 	vec2	mPos, mSize;
 };
@@ -34,10 +34,10 @@ Box boxLerp( const Box &start, const Box &end, float t )
 class CustomLerpApp : public App {
   public:
 	void	setup();
-	void	mouseDown( MouseEvent event );	
+	void	mouseDown( MouseEvent event );
 	Box		randomBox( vec2 center );
 	void	draw();
-	
+
 	Anim<Box>	mBox;
 };
 
@@ -63,7 +63,7 @@ void CustomLerpApp::draw()
 {
 	// clear out the window with black
 	gl::clear( Color( 0.7f, 0.7f, 0.7f ) );
-	
+
 	mBox().draw();
 }
 

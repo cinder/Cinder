@@ -57,7 +57,7 @@ void ImageTargetFileWic::registerSelf()
 {
 	const int32_t PRIORITY = 2;
 	ImageIoRegistrar::TargetCreationFunc func = ImageTargetFileWic::create;
-	
+
 	ImageIoRegistrar::registerTargetType( "png", func, PRIORITY, "png" );
 	getExtensionMap()["png"] = &GUID_ContainerFormatPng;
 	ImageIoRegistrar::registerTargetType( "tif", func, PRIORITY, "tif" ); ImageIoRegistrar::registerTargetType( "tiff", func, PRIORITY, "tif" );
@@ -116,7 +116,7 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 				formatGUID = GUID_WICPixelFormat128bppRGBFloat;
 		}
 	}
-	
+
 	::HRESULT hr = S_OK;
 
 	msw::initializeCom();
@@ -133,19 +133,19 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 	if( ! SUCCEEDED( hr ) )
 		throw ImageIoExceptionFailedWrite( "Could not create WIC Encoder." );
 	mEncoder = msw::makeComShared( encoderP );
-	
-	// create the stream		
+
+	// create the stream
 	IWICStream *pIWICStream = NULL;
 	hr = IWICFactory->CreateStream( &pIWICStream );
 	if( ! SUCCEEDED(hr) )
 		throw ImageIoExceptionFailedWrite( "Could not create WIC stream." );
 	shared_ptr<IWICStream> stream = msw::makeComShared( pIWICStream );
-	
+
 	// initialize the stream based on properties of the cinder::DataSouce
 	if( mDataTarget->providesFilePath() ) {
 #if defined( CINDER_UWP )
 		std::string s = mDataTarget->getFilePath().string();
-		std::wstring filePath =	std::wstring(s.begin(), s.end());                 
+		std::wstring filePath =	std::wstring(s.begin(), s.end());
 #else
 		std::wstring filePath =	mDataTarget->getFilePath().wstring().c_str();
 #endif
@@ -159,7 +159,7 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedWrite( "Could not initialize WIC Stream from IStream." );
 	}
-	
+
 	hr = mEncoder->Initialize( stream.get(), WICBitmapEncoderNoCache );
 	if( ! SUCCEEDED( hr ) )
 		throw ImageIoExceptionFailedWrite( "Could not initialize WIC Encoder." );
@@ -175,33 +175,33 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 	// setup the propertyBag to express quality
 	PROPBAG2 option = { 0 };
     option.pstrName = const_cast<wchar_t*>( L"ImageQuality" );
-    VARIANT varValue;    
+    VARIANT varValue;
     VariantInit(&varValue);
     varValue.vt = VT_R4;
-    varValue.fltVal = options.getQuality();      
+    varValue.fltVal = options.getQuality();
     hr = pPropertybag->Write( 1, &option, &varValue );
 
 	hr = mBitmapFrame->Initialize( pPropertybag );
 	if( ! SUCCEEDED( hr ) )
 		throw ImageIoExceptionFailedWrite( "Could not initialize WIC PROPBAG2." );
-	
+
 	hr = mBitmapFrame->SetSize( mWidth, mHeight );
 	if( ! SUCCEEDED( hr ) )
 		throw ImageIoExceptionFailedWrite( "Could not set WIC Frame size." );
-	
+
 	// ask for our ideal pixel format and then process the one we actually get
 	hr = mBitmapFrame->SetPixelFormat( &formatGUID );
 	if( ! SUCCEEDED( hr ) )
 		throw ImageIoExceptionFailedWrite( "Could not set WIC Frame pixel format." );
-	
+
 	setupPixelFormat( formatGUID );
-	
+
 	mData = shared_ptr<uint8_t>( new uint8_t[mHeight * mRowBytes], std::default_delete<uint8_t[]>() );
 }
 
 void ImageTargetFileWic::setupPixelFormat( const GUID &guid )
 {
-	if( guid == GUID_WICPixelFormat24bppBGR ) {		
+	if( guid == GUID_WICPixelFormat24bppBGR ) {
 		setChannelOrder( ImageIo::BGR ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 );
 	}
 	else if( guid == GUID_WICPixelFormat24bppRGB ) {
@@ -239,7 +239,7 @@ void ImageTargetFileWic::setupPixelFormat( const GUID &guid )
 	}
 	else
 		throw ImageIoException( "Unsupported format." );
-	
+
 	int32_t bitsPerComponent;
 	bool writingAlpha = hasAlpha();
 	bool isFloat = true;
@@ -269,7 +269,7 @@ void* ImageTargetFileWic::getRowPointer( int32_t row )
 void ImageTargetFileWic::finalize()
 {
 	::HRESULT hr = S_OK;
-	
+
 	hr = mBitmapFrame->WritePixels( mHeight, mRowBytes, mHeight * mRowBytes, mData.get() );
 	if( ! SUCCEEDED( hr ) )
 		throw ImageIoExceptionFailedWrite( "Could not write WIC Frame pixels." );

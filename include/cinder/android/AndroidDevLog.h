@@ -36,6 +36,6 @@ void dbg_app_fn_exit( const std::string& s );
  		dbg_app_log( #__FNREF__ " successfully obtained" );	\
  	} else {												\
  		dbg_app_warn( #__FNREF__ " obtain failed" ); 		\
- 	}						
+ 	}
 
-}} // namespace cinder::android 
+}} // namespace cinder::android

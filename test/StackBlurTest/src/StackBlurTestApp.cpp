@@ -17,7 +17,7 @@ class StackBlurTestApp : public App {
 	void draw() override;
 
 	void profile();
-	
+
 	SurfaceT<T>		mSourceImage, mBlurredImage;
 	ChannelT<T>		mSourceChannel, mBlurredChannel;
 	gl::TextureRef	mBlurredTex;
@@ -56,14 +56,14 @@ void StackBlurTestApp::profile()
 	for( int radius = 0; radius < maxRadius; radius += 1 )
 		for( int i = 0; i < iterations; ++i )
 			ip::stackBlur( &mBlurredImage, radius );
-	
+
 	timer.stop();
 	console() << iterations * maxRadius << " iterations in " << timer.getSeconds() << std::endl;
 }
 
 void StackBlurTestApp::draw()
 {
-	gl::clear(); 
+	gl::clear();
 	gl::enableAlphaBlending();
 	gl::draw( mBlurredTex );
 }

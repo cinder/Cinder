@@ -16,13 +16,13 @@ class streamFileTestApp : public App {
 	fs::path	createReadTestFile();
 	template<typename S>
 	void		readTest( fs::path filePath );
-	
+
 	static const int	DATA_SIZE = 32768 * 8;
 };
 
 fs::path streamFileTestApp::createReadTestFile()
 {
-    // unique_path() is not in std::filesystem. 
+    // unique_path() is not in std::filesystem.
 	//fs::path resultPath = fs::unique_path( getAppPath() / "cinder_streamFileTest-%%%%-%%%%-%%%%-%%%%" );
 	char buff[256] = { 0 };
 	snprintf(buff, 255, "cinder_streamFileTest-%llu", (unsigned long long)time(NULL));
@@ -60,7 +60,7 @@ void streamFileTestApp::readTest( fs::path filePath )
 		}
 		console() << "  Passed single byte reads" << std::endl;
 	}
-	
+
 	{
 		shared_ptr<S> s = S::create( fopen( filePath.string().c_str(), "rb" ) );
 		for( size_t d = 0; d < DATA_SIZE; d += 4 ) {

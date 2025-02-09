@@ -61,7 +61,7 @@ Buffer::Buffer( Buffer &&rhs )
 Buffer&	Buffer::operator=( const Buffer &rhs )
 {
 	mDataSize = rhs.mDataSize;
-	
+
 	mData = malloc( mDataSize );
 	memcpy( mData, rhs.mData, mDataSize );
 
@@ -261,17 +261,17 @@ Buffer compressBuffer( const Buffer &buffer, int8_t compressionLevel, bool resiz
 	/*Initial output buffer size needs to be 0.1% larger than source buffer + 12 bytes*/
 	size_t outSize = (size_t)(( buffer.getSize() * 1.001f ) + 12);
 	Buffer outBuffer = Buffer( outSize );
-	
+
 	int err = compress2( (Bytef *)outBuffer.getData(), (uLongf*)&outSize, (Bytef *)buffer.getData(), (uLongf)buffer.getSize(), compressionLevel );
 	if( err != Z_OK ) {
 		//TODO: throw
 	}
-	
+
 	outBuffer.setSize( outSize );
 	if( resizeResult ) {
 		outBuffer.resize( outSize );
 	}
-	
+
 	return outBuffer;
 }
 
@@ -291,28 +291,28 @@ Buffer decompressBuffer( const Buffer &buffer, bool resizeResult, bool useGZip )
 		(void)inflateEnd(&strm);
 		//throw
 	}
-	
+
 	size_t inOffset = 0;
 	const uint32_t chunkSize = 16384;
 	size_t inBufferSize = buffer.getSize();
 	uint8_t * inPtr = (uint8_t *)buffer.getData();
-	
+
 	size_t outBufferSize = chunkSize;
 	size_t outOffset = 0;
 	Buffer outBuffer = Buffer( outBufferSize );
 	uint8_t * outPtr = (uint8_t *)outBuffer.getData();
-	
+
 	do {
 		strm.avail_in = chunkSize;
 		if( inOffset + chunkSize > inBufferSize ) {
 			strm.avail_in = (uInt)(inBufferSize - inOffset);
 		}
-		
+
 		if( strm.avail_in == 0 ) break;
-		
+
 		strm.next_in = &inPtr[inOffset];
 		inOffset += strm.avail_in;
-		
+
 		do {
 			//expand the output buffer if neccessary
 			if( outOffset + chunkSize > outBufferSize ) {
@@ -332,20 +332,20 @@ Buffer decompressBuffer( const Buffer &buffer, bool resizeResult, bool useGZip )
 					(void)inflateEnd(&strm);
 					//throw
 			}
-			
-			outOffset += (chunkSize - strm.avail_out);			
+
+			outOffset += (chunkSize - strm.avail_out);
 		} while( strm.avail_out == 0 );
-		
-		
+
+
 	} while( err != Z_STREAM_END );
-	
+
 	(void)inflateEnd(&strm);
-	
+
 	outBuffer.setSize( outOffset );
 	if( resizeResult ) {
 		outBuffer.resize( outOffset );
 	}
-	
+
 	return outBuffer;
 }
 

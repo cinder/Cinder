@@ -40,7 +40,7 @@ namespace app {
 }
 
 namespace params {
-  
+
 typedef std::shared_ptr<class InterfaceGl>	InterfaceGlRef;
 
 //! Interface for adding params to your window.  Wraps AntTweakBar.
@@ -247,7 +247,7 @@ class CI_API InterfaceGl {
 	std::weak_ptr<app::Window>		mWindow;
 	std::shared_ptr<TwBar>			mBar;
 	int								mTwWindowId;
-	
+
 	std::map<std::string, std::shared_ptr<void> >	mStoredCallbacks; // key = name, value = memory managed pointer
 };
 

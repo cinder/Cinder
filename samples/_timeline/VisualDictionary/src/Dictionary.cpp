@@ -20,7 +20,7 @@ using namespace ci;
 Dictionary::Dictionary( DataSourceRef dataSource )
 {
 	Buffer decompressed = decompressBuffer( Buffer( dataSource ), false, true );
-	
+
 	// read out all the words, which are separated by lines and are already alphabetized
 	IStreamMemRef stream = IStreamMem::create( decompressed.getData(), decompressed.getSize() );
 	while( ! stream->isEof() )
@@ -30,11 +30,11 @@ Dictionary::Dictionary( DataSourceRef dataSource )
 // Functor used to determine whether the prefix of length 'compareLength' of two words are the same
 struct CompareStringPrefix {
 	CompareStringPrefix( int compareLength ) : mCompareLength( compareLength ){}
-	
+
 	bool operator()( string test1, string test2 ) const {
 		return strncmp( test1.c_str(), test2.c_str(), mCompareLength ) < 0;
 	}
-	
+
 	int mCompareLength;
 };
 
@@ -48,17 +48,17 @@ vector<string> Dictionary::getDescendants( const string &word ) const
 	pair<vector<string>::const_iterator, vector<string>::const_iterator> range;
 	range = std::equal_range( mWords.begin(), mWords.end(), word, CompareStringPrefix( word.size() ) );
 
-	// iterate all the words in our range, and add their last letter to our set of 'foundLetters'	
+	// iterate all the words in our range, and add their last letter to our set of 'foundLetters'
 	for( vector<string>::const_iterator wordIt = range.first; wordIt != range.second; ++wordIt ) {
 		if( wordIt->size() > word.size() )
 			foundLetters.insert( (*wordIt)[word.size()] );
 	}
-	
+
 	// now iterate all the foundLetters; each result word will be 'word' + foundLetter
 	// ex: victor + i (victories)
 	for( set<char>::const_iterator letIt = foundLetters.begin(); letIt != foundLetters.end(); ++letIt )
 		result.push_back( word + *letIt );
-	
+
 	return result;
 }
 

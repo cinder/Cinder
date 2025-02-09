@@ -44,7 +44,7 @@ class CI_API Camera {
 	//! Sets the position in world-space from which the Camera is viewing
 	void		setEyePoint( const vec3 &eyePoint );
 
-	//! Returns the vector in world-space which represents "up" - typically vec3( 0, 1, 0 ) 
+	//! Returns the vector in world-space which represents "up" - typically vec3( 0, 1, 0 )
 	vec3		getWorldUp() const { return mWorldUp; }
 	//! Sets the vector in world-space which represents "up" - typically vec3( 0, 1, 0 )
 	void		setWorldUp( const vec3 &worldUp );
@@ -105,7 +105,7 @@ class CI_API Camera {
 	void	getFrustum( float *left, float *top, float *right, float *bottom, float *near, float *far ) const;
 	//! Returns whether the camera represents a perspective projection instead of an orthographic
 	virtual bool isPersp() const = 0;
-	
+
 	//! Returns the Camera's Projection matrix, which converts view-space into clip-space
 	virtual const mat4&	getProjectionMatrix() const { if( ! mProjectionCached ) calcProjection(); return mProjectionMatrix; }
 	//! Returns the Camera's View matrix, which converts world-space into view-space
@@ -162,7 +162,7 @@ class CI_API Camera {
 
 	float	mFov; // vertical field of view in degrees
 	float	mAspectRatio;
-	float	mNearClip;		
+	float	mNearClip;
 	float	mFarClip;
 	float	mPivotDistance;
 
@@ -176,7 +176,7 @@ class CI_API Camera {
 	mutable bool	mModelViewCached;
 	mutable mat4	mInverseModelViewMatrix;
 	mutable bool	mInverseModelViewCached;
-	
+
 	mutable float	mFrustumLeft, mFrustumRight, mFrustumTop, mFrustumBottom;
 };
 
@@ -192,34 +192,34 @@ class CI_API CameraPersp : public Camera {
 
 	//! Configures the camera's projection according to the provided parameters.
 	void	setPerspective( float verticalFovDegrees, float aspectRatio, float nearPlane, float farPlane );
-	
-	/** Returns both the horizontal and vertical lens shift. 
+
+	/** Returns both the horizontal and vertical lens shift.
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
 		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
 	void	getLensShift( float *horizontal, float *vertical ) const { *horizontal = mLensShift.x; *vertical = mLensShift.y; }
-	/** Returns both the horizontal and vertical lens shift. 
+	/** Returns both the horizontal and vertical lens shift.
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
 		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
 	vec2	getLensShift() const { return vec2( mLensShift.x, mLensShift.y ); }
-	/** Sets both the horizontal and vertical lens shift. 
+	/** Sets both the horizontal and vertical lens shift.
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
 		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
 	void	setLensShift( float horizontal, float vertical );
-	/** Sets both the horizontal and vertical lens shift. 
+	/** Sets both the horizontal and vertical lens shift.
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
 		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
 	void	setLensShift( const vec2 &shift ) { setLensShift( shift.x, shift.y ); }
 	//! Returns the horizontal lens shift. A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
 	float	getLensShiftHorizontal() const { return mLensShift.x; }
-	/** Sets the horizontal lens shift. 
+	/** Sets the horizontal lens shift.
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport. */
 	void	setLensShiftHorizontal( float horizontal ) { setLensShift( horizontal, mLensShift.y ); }
 	//! Returns the vertical lens shift. A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport.
 	float	getLensShiftVertical() const { return mLensShift.y; }
-	/** Sets the vertical lens shift. 
+	/** Sets the vertical lens shift.
 		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
 	void	setLensShiftVertical( float vertical ) { setLensShift( mLensShift.x, vertical ); }
-	
+
 	bool	isPersp() const override { return true; }
 
 	//! Returns a Camera whose eyePoint is positioned to exactly frame \a worldSpaceSphere but is equivalent in other parameters (including orientation). Sets the result's pivotDistance to be the distance to \a worldSpaceSphere's center.
@@ -255,27 +255,27 @@ class CI_API CameraOrtho : public Camera {
 //! A Camera used for stereoscopic displays.
 class CI_API CameraStereo : public CameraPersp {
   public:
-	CameraStereo() 
+	CameraStereo()
 		: mConvergence( 1.0f ), mEyeSeparation( 0.05f ), mIsStereo( false ), mIsLeft( true ) {}
 	CameraStereo( int pixelWidth, int pixelHeight, float fov )
-		: CameraPersp( pixelWidth, pixelHeight, fov ), 
+		: CameraPersp( pixelWidth, pixelHeight, fov ),
 		mConvergence( 1.0f ), mEyeSeparation( 0.05f ), mIsStereo( false ), mIsLeft( true ) {} // constructs screen-aligned camera
 	CameraStereo( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane )
-		: CameraPersp( pixelWidth, pixelHeight, fov, nearPlane, farPlane ), 
+		: CameraPersp( pixelWidth, pixelHeight, fov, nearPlane, farPlane ),
 		mConvergence( 1.0f ), mEyeSeparation( 0.05f ), mIsStereo( false ), mIsLeft( true ) {} // constructs screen-aligned camera
 
 	//! Returns the current convergence, which is the distance at which there is no parallax.
 	float			getConvergence() const { return mConvergence; }
 	//! Sets the convergence of the camera, which is the distance at which there is no parallax.
 	void			setConvergence( float distance, bool adjustEyeSeparation = false );
-	
+
 	//! Returns the distance between the camera's for the left and right eyes.
 	float			getEyeSeparation() const { return mEyeSeparation; }
-	//! Sets the distance between the camera's for the left and right eyes. This affects the parallax effect. 
+	//! Sets the distance between the camera's for the left and right eyes. This affects the parallax effect.
 	void			setEyeSeparation( float distance ) { mEyeSeparation = distance; mModelViewCached = false; mProjectionCached = false; }
 	//! Returns the location of the currently enabled eye camera.
 	vec3			getEyePointShifted() const;
-	
+
 	//! Enables the left eye camera.
 	void			enableStereoLeft() { mIsStereo = true; mIsLeft = true; }
 	//! Returns whether the left eye camera is enabled.
@@ -291,7 +291,7 @@ class CI_API CameraStereo : public CameraPersp {
 
 	void getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const override { return getShiftedClipCoordinates( mNearClip, 1.0f, topLeft, topRight, bottomLeft, bottomRight ); }
 	void getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const override { return getShiftedClipCoordinates( mFarClip, mFarClip / mNearClip, topLeft, topRight, bottomLeft, bottomRight ); }
-	
+
 	const mat4&	getProjectionMatrix() const override;
 	const mat4&	getViewMatrix() const override;
 	const mat4&	getInverseViewMatrix() const override;
@@ -307,7 +307,7 @@ class CI_API CameraStereo : public CameraPersp {
 	void	calcProjection() const override;
 
 	void	getShiftedClipCoordinates( float clipDist, float ratio, vec3* topLeft, vec3* topRight, vec3* bottomLeft, vec3* bottomRight ) const;
-	
+
   private:
 	bool			mIsStereo;
 	bool			mIsLeft;

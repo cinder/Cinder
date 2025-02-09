@@ -38,7 +38,7 @@ class WindowImplMsw;
 class RendererImplGlMsw : public RendererImplMsw {
  public:
 	RendererImplGlMsw( class RendererGl *aRenderer );
-	
+
 	bool			initialize( WindowImplMsw *windowImpl, RendererRef sharedRenderer );
 	virtual void	prepareToggleFullScreen();
 	virtual void	finishToggleFullScreen();

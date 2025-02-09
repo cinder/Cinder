@@ -90,11 +90,11 @@ class DisplayLinux : public Display {
 	GLFWmonitor*		getGlfwMonitor() const;
 	std::string			getName() const override;
 
-  protected:	
+  protected:
 	static void	displayReconfiguredCallback( GLFWmonitor* monitor, int event );
 
 	GLFWmonitor* mMonitor;
-	
+
 	friend app::PlatformLinux;
 };
 

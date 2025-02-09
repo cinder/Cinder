@@ -22,4 +22,3 @@ void main( void )
 	oMaterial	= ivec4( uMaterialId, 0, 0, 255 );
 	oNormal		= vec4( pack( normalize( vertex.normal ) ), 0.0, 1.0 );
 }
- 

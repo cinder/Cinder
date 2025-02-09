@@ -34,7 +34,7 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux 
 {
 	mFullScreen = format.isFullScreen();
 	mDisplay = format.getDisplay();
-	
+
 	if( ! mDisplay )
 		mDisplay = Display::getMainDisplay();
 
@@ -51,20 +51,20 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux 
 	::glfwWindowHint( GLFW_CLIENT_API, GLFW_OPENGL_ES_API );
   #if CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_2
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
-	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 2 );	
-	std::cout << "Rendering with OpenGL ES 3.2" << std::endl;		
+	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 2 );
+	std::cout << "Rendering with OpenGL ES 3.2" << std::endl;
   #elif CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_1
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
-	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 1 );	
-	std::cout << "Rendering with OpenGL ES 3.1" << std::endl;	
+	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 1 );
+	std::cout << "Rendering with OpenGL ES 3.1" << std::endl;
   #elif CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 0 );
-	std::cout << "Rendering with OpenGL ES 3.0" << std::endl;	
+	std::cout << "Rendering with OpenGL ES 3.0" << std::endl;
   #elif CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 2 );
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 0 );
-	std::cout << "Rendering with OpenGL ES 2.0" << std::endl;	
+	std::cout << "Rendering with OpenGL ES 2.0" << std::endl;
   #endif
 
 #else // Desktop
@@ -79,7 +79,7 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux 
 		std::cout << "Rendering with OpenGL Core Profile " << majorVersion << "." << minorVersion << std::endl;
 	}
 	else {
-		std::cout << "Rendering with OpenGL " << majorVersion << "." << minorVersion << std::endl;		
+		std::cout << "Rendering with OpenGL " << majorVersion << "." << minorVersion << std::endl;
 	}
 	if( options.getDebug() )
 		::glfwWindowHint( GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE );
@@ -141,7 +141,7 @@ ivec2 WindowImplLinux::getSize() const
 {
 	int xsize, ysize;
 	::glfwGetWindowSize( mGlfwWindow, &xsize, &ysize );
-	return ivec2( xsize, ysize );	
+	return ivec2( xsize, ysize );
 }
 
 void WindowImplLinux::setSize( const ivec2 &size )
@@ -157,7 +157,7 @@ ivec2 WindowImplLinux::getPos() const
 }
 
 void WindowImplLinux::setPos( const ivec2 &pos )
-{	
+{
 	::glfwSetWindowPos( mGlfwWindow, pos.x, pos.y );
 }
 
@@ -189,13 +189,13 @@ const std::vector<TouchEvent::Touch>& WindowImplLinux::getActiveTouches() const
 void WindowImplLinux::setBorderless( bool borderless )
 {
 	CI_LOG_W( "Window::setBorderless() currently unimplemented in GLFW" );
-	// TODO: Find a way to do this w/o recreating 
+	// TODO: Find a way to do this w/o recreating
 }
 
 void WindowImplLinux::setAlwaysOnTop( bool alwaysOnTop )
 {
 	CI_LOG_W( "Window::setAlwaysOnTop() currently unimplemented in GLFW" );
-	// TODO: Find a way to do this w/o recreating 
+	// TODO: Find a way to do this w/o recreating
 }
 
 void WindowImplLinux::keyDown( const KeyEvent &event )

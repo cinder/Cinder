@@ -54,7 +54,7 @@ CI_API fs::path findAncestorFile( const fs::path& start, const fs::path& relativ
 
 //! Launches a path in a web browser
 CI_API void launchWebBrowser( const Url &url );
-	
+
 //! Returns a vector of substrings split by the separator \a separator. <tt>split( "one two three", ' ' ) -> [ "one", "two", "three" ]</tt> If \a compress is \c true, it will consider consecutive separators as one.
 CI_API std::vector<std::string> split( const std::string &str, char separator, bool compress = true );
 //! Returns a vector of substrings split by the characters in \a separators. <tt>split( "one, two, three", " ," ) -> [ "one", "two", "three" ]</tt> If \a compress is \c true, it will consider consecutive separators as one.

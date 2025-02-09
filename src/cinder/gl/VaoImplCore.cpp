@@ -36,7 +36,7 @@ namespace cinder { namespace gl {
 class VaoImplCore : public Vao {
   public:
 	virtual ~VaoImplCore();
-	
+
 	VaoImplCore();
 
 	// Does the actual "work" of binding the VAO; called by Context
@@ -60,7 +60,7 @@ VaoRef createVaoImplCore()
 {
 	return VaoRef( new VaoImplCore );
 }
-	
+
 VaoImplCore::VaoImplCore()
 {
 	glGenVertexArrays( 1, &mId );
@@ -126,7 +126,7 @@ void VaoImplCore::reassignImpl( Context *newContext )
 void VaoImplCore::unbindImpl( Context * /*context*/ )
 {
 	glBindVertexArray( 0 );
-	
+
 	mCtx->invalidateBufferBindingCache( GL_ELEMENT_ARRAY_BUFFER );
 }
 
@@ -174,7 +174,7 @@ void VaoImplCore::vertexAttribDivisorImpl( GLuint index, GLuint divisor )
 	if( gl::env()->supportsInstancedArrays() ) {
 		glVertexAttribDivisor( index, divisor );
 	}
-  #endif	
+  #endif
 #else
 	if( glVertexAttribDivisor )
 		glVertexAttribDivisor( index, divisor );

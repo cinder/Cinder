@@ -7,25 +7,25 @@ using namespace ci;
 using namespace ci::app;
 
 class NormalMappingBasicApp : public App {
-  public:	
+  public:
 	void	setup() override;
 	void	resize() override;
 	void	update() override;
 	void	draw() override;
-	
+
 	CameraPersp			mCam;
 	gl::BatchRef		mBatch;
 	gl::TextureRef		mDiffuseTex, mNormalTex;
 	gl::GlslProgRef		mGlsl;
 	mat4				mCubeRotation;
-	
+
 	vec3				mLightPosWorldSpace;
 };
 
 void NormalMappingBasicApp::setup()
 {
 	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
-	
+
 	mDiffuseTex = gl::Texture::create( loadImage( loadAsset( "diffuseMap.jpg" ) ), gl::Texture::Format().mipmap() );
 	mDiffuseTex->bind();
 	mNormalTex = gl::Texture::create( loadImage( loadAsset( "normalMap.png" ) ), gl::Texture::Format().mipmap() );

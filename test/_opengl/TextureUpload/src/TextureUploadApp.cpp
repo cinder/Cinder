@@ -116,10 +116,10 @@ void TextureUploadApp::setupTexUpdate()
 			return genTexUpdate<T>( false, false );
 		}
 	);
-	
+
 	mTexGenFns.push_back( [=](void)->gl::TextureRef {
 			app::console() << "Update Subregion RGB " << sizeof(T) * 8 << "-bit" << std::endl;
-			SurfaceT<T> srcImg( mImg );			
+			SurfaceT<T> srcImg( mImg );
 			SurfaceT<T> square( 100, 100, false );
 			gl::TextureRef result = gl::Texture::create( mImg2 );
 			square.copyFrom( srcImg, Area( 28, 128, 28 + 100, 128 + 100 ), ivec2( -28, -128 ) );
@@ -134,7 +134,7 @@ void TextureUploadApp::setupTexUpdate()
 
 	mTexGenFns.push_back( [=](void)->gl::TextureRef {
 			app::console() << "Update Subregion Channel " << sizeof(T) * 8 << "-bit" << std::endl;
-			ChannelT<T> srcImg( mImg );			
+			ChannelT<T> srcImg( mImg );
 			ChannelT<T> square( 100, 100 );
 			gl::TextureRef result = gl::Texture::create( ChannelT<T>( mImg2 ) );
 			square.copyFrom( srcImg, Area( 28, 128, 28 + 100, 128 + 100 ), ivec2( -28, -128 ) );
@@ -154,7 +154,7 @@ void TextureUploadApp::setupVoidStar( int64_t maxV )
 {
 	GLenum dataType;
 	if( std::is_same<T,uint8_t>::value )
-		dataType = GL_UNSIGNED_BYTE;	
+		dataType = GL_UNSIGNED_BYTE;
 	else if( std::is_same<T,int16_t>::value )
 		dataType = GL_SHORT;
 	else if( std::is_same<T,int32_t>::value )
@@ -183,8 +183,8 @@ void TextureUploadApp::setupVoidStar( int64_t maxV )
 
 			return result;
 		}
-	);	
-	
+	);
+
 	mTexGenFns.push_back( [=](void)->gl::TextureRef {
 			app::console() << "void* update: " << typeid(T).name() << sizeof(T) * 8 << "-bit" << std::endl;
 			Surface8u temp( mImg );
@@ -199,14 +199,14 @@ void TextureUploadApp::setupVoidStar( int64_t maxV )
 					data[(y*temp2.getWidth()+x)*3 + 2] = color.b / 255.0f * maxV;
 				}
 			}
-			
+
 			gl::TextureRef result = gl::Texture::create( temp );
 			result->update( data.get(), GL_RGB, dataType, 0, temp2.getWidth(), temp2.getHeight() );
 			result->setTopDown( true );
 
 			return result;
 		}
-	);	
+	);
 }
 
 void TextureUploadApp::setup()
@@ -219,7 +219,7 @@ void TextureUploadApp::setup()
 	// 8bit unsigned void*
 	{
 		setupVoidStar<uint8_t>( 255 );
-	}	
+	}
 	// 16bit signed void*
 	{
 		setupVoidStar<int16_t>( 32767 );
@@ -232,7 +232,7 @@ void TextureUploadApp::setup()
 	{
 		setupVoidStar<uint32_t>( 4294967295 );
 	}
-	
+
 	// 8 bit
 	{
 		setupTexConstructor<uint8_t>();
@@ -244,7 +244,7 @@ void TextureUploadApp::setup()
 		setupTexConstructor<uint16_t>();
 		setupTexUpdate<uint16_t>();
 	}
-	
+
 	// 32 bit
 	{
 		setupTexConstructor<uint8_t>();

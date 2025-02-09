@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2012, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -124,7 +124,7 @@ class CI_API Renderer {
 class CI_API Value {
   public:
 	enum Unit { USER, PX, PERCENT, PT, PC, MM, CM, INCH, EM, EX };
-	
+
 	Value() : mValue( 0 ), mUnit( USER ) {}
 	Value( float value, Unit unit = USER ) : mValue( value ), mUnit( unit ) {}
 
@@ -136,7 +136,7 @@ class CI_API Value {
 
 	static Value		parse( const char **sInOut );
 	static Value		parse( const std::string &s );
-	
+
 	Unit		mUnit;
 	float		mValue;
 };
@@ -145,20 +145,20 @@ class CI_API Value {
 class CI_API Paint {
   public:
 	enum { NONE, COLOR, LINEAR_GRADIENT, RADIAL_GRADIENT };
-	
+
 	Paint();
 	Paint( uint8_t type );
 	Paint( const ColorA8u &color );
-	
+
 	static Paint 	parse( const char *value, bool *specified, const Node *parentNode );
-	
+
 	bool			isNone() const { return mType == NONE; }
 	bool			isLinearGradient() const { return mType == LINEAR_GRADIENT; }
 	bool			isRadialGradient() const { return mType == RADIAL_GRADIENT; }
 	const ColorA8u&	getColor( size_t idx = 0 ) const { return mStops[idx].second; }
 	float			getOffset( size_t idx ) const { return mStops[idx].first; }
 	size_t			getNumColors() const { return mStops.size(); }
-	
+
 	// only apply to gradients
 	vec2			getCoords0() const { return mCoords0; } // (x1,y1) on linear, (cx,cy) on radial
 	vec2			getCoords1() const { return mCoords1; } // (x2,y2) on linear, (fx,fy) on radial
@@ -166,10 +166,10 @@ class CI_API Paint {
 	bool			useObjectBoundingBox() const { return mUseObjectBoundingBox; }
 	bool			specifiesTransform() const { return mSpecifiesTransform; }
 	mat3			getTransform() const { return mTransform; }
-	
+
 	uint8_t									mType;
 	std::vector<std::pair<float,ColorA8u> >	mStops;
-	
+
 	vec2				mCoords0, mCoords1;
 	float				mRadius;
 	bool				mUseObjectBoundingBox;
@@ -221,27 +221,27 @@ class CI_API Style {
 	bool			specifiesStrokeWidth() const { return mSpecifiesStrokeWidth; }
 	void			unspecifyStrokeWidth() { mSpecifiesStrokeWidth = false; }
 	float			getStrokeWidth() const { return mStrokeWidth; }
-	void			setStrokeWidth( float strokeWidth ) { mSpecifiesStrokeWidth = true; mStrokeWidth = strokeWidth; }	
+	void			setStrokeWidth( float strokeWidth ) { mSpecifiesStrokeWidth = true; mStrokeWidth = strokeWidth; }
 	static float	getStrokeWidthDefault() { return 1.0f; }
 
 	bool			specifiesFillRule() const { return mSpecifiesFillRule; }
 	void			unspecifyFillRule() { mSpecifiesFillRule = false; }
 	FillRule		getFillRule() const { return mFillRule; }
-	void			setFillRule( FillRule fillRule ) { mSpecifiesFillRule = true; mFillRule = fillRule; }	
+	void			setFillRule( FillRule fillRule ) { mSpecifiesFillRule = true; mFillRule = fillRule; }
 	static FillRule	getFillRuleDefault() { return svg::FILL_RULE_NONZERO; }
 
 	bool			specifiesLineCap() const { return mSpecifiesLineCap; }
 	void			unspecifyLineCap() { mSpecifiesLineCap = false; }
 	LineCap			getLineCap() const { return mLineCap; }
-	void			setLineCap( LineCap lineCap ) { mSpecifiesLineCap = true; mLineCap = lineCap; }	
+	void			setLineCap( LineCap lineCap ) { mSpecifiesLineCap = true; mLineCap = lineCap; }
 	static LineCap	getLineCapDefault() { return svg::LINE_CAP_BUTT; }
 
 	bool			specifiesLineJoin() const { return mSpecifiesLineJoin; }
 	void			unspecifyLineJoin() { mSpecifiesLineJoin = false; }
 	LineJoin		getLineJoin() const { return mLineJoin; }
-	void			setLineJoin( LineJoin lineJoin ) { mSpecifiesLineJoin = true; mLineJoin = lineJoin; }	
+	void			setLineJoin( LineJoin lineJoin ) { mSpecifiesLineJoin = true; mLineJoin = lineJoin; }
 	static LineJoin	getLineJoinDefault() { return svg::LINE_JOIN_MITER; }
-	
+
 	// fonts
 	bool									specifiesFontFamilies() const { return mSpecifiesFontFamilies; }
 	void									unspecifyFontFamilies() { mSpecifiesFontFamilies = false; }
@@ -250,7 +250,7 @@ class CI_API Style {
 	void									setFontFamily( const std::string &family ) { mSpecifiesFontFamilies = true; mFontFamilies.clear(); mFontFamilies.push_back( family ); }
 	void									setFontFamilies( const std::vector<std::string> &families ) { mSpecifiesFontFamilies = true; mFontFamilies = families; }
 	static const std::vector<std::string>&	getFontFamiliesDefault();
-	
+
 	bool			specifiesFontSize() const { return mSpecifiesFontSize; }
 	void			unspecifyFontSize() { mSpecifiesFontSize = false; }
 	Value			getFontSize() const { return mFontSize; }
@@ -267,7 +267,7 @@ class CI_API Style {
 	bool			isVisible() const { return mVisible; }
 	void			setVisible( bool visible ) { mSpecifiesVisible = true; mVisible = visible; }
 	void			unspecifyVisible() { mSpecifiesVisible = false; }
-	
+
 	bool			isDisplayNone() const { return mDisplayNone; }
 	void			setDisplayNone( bool displayNone ) { mDisplayNone = displayNone; }
 
@@ -286,20 +286,20 @@ class CI_API Style {
 	bool			mSpecifiesFill, mSpecifiesStroke;
 	Paint			mFill, mStroke;
 	bool			mSpecifiesStrokeWidth;
-	float			mStrokeWidth;  	
+	float			mStrokeWidth;
 	bool			mSpecifiesFillRule;
 	FillRule		mFillRule;
 	bool			mSpecifiesLineCap;
 	LineCap			mLineCap;
 	bool			mSpecifiesLineJoin;
 	LineJoin		mLineJoin;
-	
+
 	// fonts
 	bool			mSpecifiesFontFamilies, mSpecifiesFontSize, mSpecifiesFontWeight;
 	std::vector<std::string>	mFontFamilies;
 	Value			mFontSize;
 	FontWeight		mFontWeight;
-	
+
 	// visibility
 	bool			mSpecifiesVisible, mVisible, mDisplayNone;
 };
@@ -309,12 +309,12 @@ class CI_API Node {
   public:
 	Node( Node *parent ) : mParent( parent ),  mSpecifiesTransform( false ), mBoundingBoxCached( false ) {}
 	virtual ~Node() {}
-	
+
 	//! Returns the svg::Doc this Node is an element of
 	class Doc*			getDoc() const;
 	//! Returns the immediate parent of this node
 	const Node*			getParent() const { return mParent; }
-	//! Returns the ID of this Node when present. 
+	//! Returns the ID of this Node when present.
 	const std::string&	getId() const { return mId; }
 	//! Returns a DOM-style path to this node.
 	std::string			getDomPath() const;
@@ -327,7 +327,7 @@ class CI_API Node {
 
 	//! Returns whether the point \a pt is inside of the Node's shape.
 	virtual bool	containsPoint( const vec2 & /*pt*/ ) const { return false; }
-	
+
 	//! Renders the node and its descendants.
 	void			render( Renderer &renderer ) const;
 
@@ -397,16 +397,16 @@ class CI_API Node {
 	void			startRender( Renderer &renderer, const Style &style ) const;
 	void			finishRender( Renderer &renderer, const Style &style ) const;
 	virtual void	renderSelf( Renderer &renderer ) const = 0;
-	
+
 	virtual Rectf	calcBoundingBox() const { return Rectf( 0, 0, 0, 0 ); }
 
 	static Paint		parsePaint( const char *value, bool *specified, const Node *parentNode );
 	static mat3			parseTransform( const std::string &value );
 	static bool			parseTransformComponent( const char **c, mat3 *result );
-	
+
 	static std::string	findStyleValue( const std::string &styleString, const std::string &key );
 	void				parseStyle( const std::string &value );
-    
+
   protected:
 	Node			*mParent;
 	std::string		mId;
@@ -415,7 +415,7 @@ class CI_API Node {
 	mat3			mTransform;
 	mutable bool	mBoundingBoxCached;
 	mutable Rectf	mBoundingBox;
-	
+
   private:
   	void			firstStartRender( Renderer &renderer ) const;
 
@@ -427,11 +427,11 @@ class CI_API Node {
 class CI_API Gradient : public Node {
   public:
   	Gradient( Node *parent, const XmlTree &xml );
-	
+
 	class CI_API Stop {
 	  public:
 	  	Stop( const Node *parent, const XmlTree &xml );
-		
+
 		float		mOffset; // normalized 0-1
 		ColorA8u	mColor;
 		float		mOpacity;
@@ -440,7 +440,7 @@ class CI_API Gradient : public Node {
 
 	bool			useObjectBoundingBox() const { return mUseObjectBoundingBox; }
 	bool			specifiesTransform() const { return mSpecifiesTransform; }
-	
+
   protected:
 	virtual void	renderSelf( Renderer & /*renderer*/ ) const {}
 
@@ -459,12 +459,12 @@ class CI_API Gradient : public Node {
 class CI_API LinearGradient : public Gradient {
   public:
 	LinearGradient( Node *parent, const XmlTree &xml );
-	
+
 	Paint		asPaint() const;
-	
+
   protected:
 	void 		parse( const XmlTree &xml );
-	
+
   	virtual bool	isDrawable() const { return false; }
 };
 
@@ -472,9 +472,9 @@ class CI_API LinearGradient : public Gradient {
 class CI_API RadialGradient : public Gradient {
   public:
 	RadialGradient( Node *parent, const XmlTree &xml );
-	
+
 	Paint		asPaint() const;
-	
+
   protected:
 	void 		parse( const XmlTree &xml );
 
@@ -487,7 +487,7 @@ class CI_API Circle : public Node {
   public:
 	Circle( Node *parent ) : Node( parent ) {}
 	Circle( Node *parent, const XmlTree &xml );
-	
+
 	vec2		getCenter() const { return mCenter; }
 	void		setCenter( const vec2 &center ) { mCenter = center; }
 	float		getRadius() const { return mRadius; }
@@ -497,12 +497,12 @@ class CI_API Circle : public Node {
 
 	virtual Shape2d	getShape() const;
 
-  protected:	
+  protected:
 	virtual void	renderSelf( Renderer &renderer ) const;
 	virtual Rectf	calcBoundingBox() const { return Rectf( mCenter.x - mRadius, mCenter.y - mRadius, mCenter.x + mRadius, mCenter.y + mRadius ); }
 
 	vec2		mCenter;
-	float		mRadius;	
+	float		mRadius;
 };
 
 //! SVG Ellipse element: http://www.w3.org/TR/SVG/shapes.html#EllipseElement
@@ -510,7 +510,7 @@ class CI_API Ellipse : public Node {
   public:
 	Ellipse( Node *parent ) : Node( parent ) {}
 	Ellipse( Node *parent, const XmlTree &xml );
-	
+
 	vec2		getCenter() const { return mCenter; }
 	void		setCenter( const vec2 &center ) { mCenter = center; }
 	float		getRadiusX() const { return mRadiusX; }
@@ -525,7 +525,7 @@ class CI_API Ellipse : public Node {
   protected:
 	virtual void	renderSelf( Renderer &renderer ) const;
 	virtual Rectf	calcBoundingBox() const { return Rectf( mCenter.x - mRadiusX, mCenter.y - mRadiusY, mCenter.x + mRadiusX, mCenter.y + mRadiusY ); }
-  
+
 	vec2		mCenter;
 	float		mRadiusX, mRadiusY;
 };
@@ -535,7 +535,7 @@ class CI_API Path : public Node {
   public:
 	Path( Node *parent ) : Node( parent ) {}
 	Path( Node *parent, const XmlTree &xml );
-	
+
 	const Shape2d&		getShape2d() const { return mPath; }
 	void				appendShape2d( Shape2d *appendTo ) const;
 
@@ -547,7 +547,7 @@ class CI_API Path : public Node {
   protected:
 	void	renderSelf( Renderer &renderer ) const override;
 	Rectf	calcBoundingBox() const override { return mPath.calcPreciseBoundingBox(); }
-		
+
 	Shape2d		mPath;
 };
 
@@ -556,16 +556,16 @@ class CI_API Line : public Node {
   public:
 	Line( Node *parent ) : Node( parent ) {}
 	Line( Node *parent, const XmlTree &xml );
-	
+
 	const vec2&	getPoint1() const { return mPoint1; }
 	const vec2&	getPoint2() const { return mPoint2; }
 
 	virtual Shape2d	getShape() const;
-	
+
   protected:
-	virtual void	renderSelf( Renderer &renderer ) const;  
-	virtual Rectf	calcBoundingBox() const { return Rectf( std::min( mPoint1.x, mPoint2.x ), std::min( mPoint1.y, mPoint2.y ), std::max( mPoint1.x, mPoint2.x ), std::max( mPoint1.y, mPoint2.y ) ); }	
-	
+	virtual void	renderSelf( Renderer &renderer ) const;
+	virtual Rectf	calcBoundingBox() const { return Rectf( std::min( mPoint1.x, mPoint2.x ), std::min( mPoint1.y, mPoint2.y ), std::max( mPoint1.x, mPoint2.x ), std::max( mPoint1.y, mPoint2.y ) ); }
+
 	vec2		mPoint1, mPoint2;
 };
 
@@ -574,20 +574,20 @@ class CI_API Rect : public Node {
   public:
 	Rect( Node *parent ) : Node( parent ) {}
 	Rect( Node *parent, const XmlTree &xml );
-	
+
 	const Rectf&	getRect() const { return mRect; }
 	void			setRect( const Rectf &rect ) { mRect = rect; }
 	void			setWidth( float width ) { mRect = Rectf( mRect.x1, mRect.y1, mRect.x1 + width, mRect.y2 ); }
 	void			setHeight( float height ) { mRect = Rectf( mRect.x1, mRect.y1, mRect.x2, mRect.y1 + height ); }
 
-	virtual bool	containsPoint( const vec2 &pt ) const { return mRect.contains( pt ); }	
+	virtual bool	containsPoint( const vec2 &pt ) const { return mRect.contains( pt ); }
 
 	virtual Shape2d	getShape() const;
 
   protected:
 	virtual void	renderSelf( Renderer &renderer ) const;
-	virtual Rectf	calcBoundingBox() const { return mRect; }	
-		
+	virtual Rectf	calcBoundingBox() const { return mRect; }
+
 	Rectf			mRect;
 };
 
@@ -600,14 +600,14 @@ class CI_API Polygon : public Node {
 	const PolyLine2f&	getPolyLine() const { return mPolyLine; }
 	PolyLine2f&			getPolyLine() { return mPolyLine; }
 
-	virtual bool	containsPoint( const vec2 &pt ) const { return mPolyLine.contains( pt ); }		
+	virtual bool	containsPoint( const vec2 &pt ) const { return mPolyLine.contains( pt ); }
 
 	virtual Shape2d	getShape() const;
-		
+
   protected:
-	virtual void	renderSelf( Renderer &renderer ) const;  
+	virtual void	renderSelf( Renderer &renderer ) const;
 	virtual Rectf	calcBoundingBox() const { return Rectf( mPolyLine.getPoints() ); }
-	
+
 	PolyLine2f	mPolyLine;
 };
 
@@ -627,7 +627,7 @@ class CI_API Polyline : public Node {
   protected:
 	virtual void	renderSelf( Renderer &renderer ) const;
 	virtual Rectf	calcBoundingBox() const { return Rectf( mPolyLine.getPoints() ); }
-		
+
 	PolyLine2f	mPolyLine;
 };
 
@@ -635,17 +635,17 @@ class CI_API Polyline : public Node {
 class CI_API Use : public Node {
   public:
 	Use( Node *parent, const XmlTree &xml );
-	
+
 	virtual bool	isDrawable() const { return false; }
-	
+
 	virtual Shape2d	getShape() const{ if( mReferenced ) return mReferenced->getShape(); else return Shape2d(); }
 
   protected:
-	virtual void	renderSelf( Renderer &renderer ) const;  
+	virtual void	renderSelf( Renderer &renderer ) const;
 	virtual Rectf	calcBoundingBox() const { if( mReferenced ) return mReferenced->getBoundingBox(); else return Rectf(0,0,0,0); }
-	
+
 	void parse( const XmlTree &xml );
-	
+
 	const Node		*mReferenced;
 };
 
@@ -662,7 +662,7 @@ class CI_API Image : public Node {
   protected:
 	virtual void	renderSelf( Renderer &renderer ) const;
 	virtual Rectf	calcBoundingBox() const { return mRect; }
-  
+
 	static std::shared_ptr<Surface8u>	parseDataImage( const std::string &data );
 
 	Rectf		mRect;
@@ -695,7 +695,7 @@ class CI_API TextSpan : public Node {
 
 	TextSpan( Node *parent, const XmlTree &xml );
 	TextSpan( Node *parent, const std::string &spanString );
-	
+
 	const std::string&						getString() const { return mString; }
 	void									setString( const std::string &s ) { mString = s; }
 	const std::shared_ptr<Font>				getFont() const;
@@ -718,9 +718,9 @@ class CI_API TextSpan : public Node {
 	mutable std::shared_ptr<Font>	mFont;
 	mutable std::shared_ptr<std::vector<std::pair<uint16_t,vec2> > > mGlyphMeasures;
 	mutable std::shared_ptr<Shape2d>	mShape;
-	
+
 	std::vector<TextSpanRef>		mSpans;
-	
+
 	friend class Text;
 };
 
@@ -730,13 +730,13 @@ class CI_API Text : public Node {
   	Text( Node *parent, const XmlTree &xml );
 
 	vec2 	getTextPen() const;
-	void	setTextPen( const vec2 &textPen ) { mAttributes.setTextPen( textPen ); }  
+	void	setTextPen( const vec2 &textPen ) { mAttributes.setTextPen( textPen ); }
 	float	getRotation() const;
 	Value	getLetterSpacing() const;
-	
+
 	std::vector<TextSpanRef>&		getSpans() { return mSpans; }
 	const std::vector<TextSpanRef>&	getSpans() const { return mSpans; }
-	
+
   protected:
 	virtual void	renderSelf( Renderer &renderer ) const;
 
@@ -774,11 +774,11 @@ class CI_API Group : public Node, private Noncopyable {
 	Node&					getChild( const std::string &id ) { return const_cast<Node&>( const_cast<const Group*>( this )->getChild( id ) ); }
 	//! Returns a reference to the child named \a id. Throws svg::ExcChildNotFound if not found.
 	const Node&				operator/( const std::string &id ) const { return getChild( id ); }
-	
+
 	//! Returns the merged Shape2d for all children of the group
 	virtual Shape2d	getShape() const { return getMergedShape2d(); }
 
-	//! Appends the merged Shape2d for the group to \a appentTo.	
+	//! Appends the merged Shape2d for the group to \a appentTo.
 	void					appendMergedShape2d( Shape2d *appendTo ) const;
 
 	//! Returns a reference to the list of the Group's children.
@@ -825,28 +825,28 @@ class CI_API Doc : public Group {
 	//! Returns the height of the document in pixels
 	int32_t		getHeight() const { return mHeight; }
 	//! Returns the size of the document in pixels
-	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }	
+	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }
 	//! Returns the aspect ratio of the Doc (width / height)
 	float		getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! Returns the bounds of the Doc (0,0,width,height)
 	Area		getBounds() const { return Area( 0, 0, mWidth, mHeight ); }
-	
+
 	//! Returns the document's dots-per-inch. Currently hardcoded to 72.
 	float		getDpi() const { return 72.0f; }
-	
+
 	//! Returns the top-most Node which contains \a pt. Returns NULL if no Node contains the point.
 	Node*		nodeUnderPoint( const vec2 &pt );
-	
+
 	//! Utility function to load an image relative to the document. Caches results.
 	std::shared_ptr<Surface8u>	loadImage( fs::path relativePath );
   private:
   	void 	loadDoc( DataSourceRef source, fs::path filePath );
 
 	virtual void		renderSelf( Renderer &renderer ) const;
-  
+
 	std::shared_ptr<XmlTree>	mXmlTree;
 	std::map<fs::path,std::shared_ptr<Surface8u> >	mImageCache;
-	
+
 	fs::path		mFilePath;
 	Area			mViewBox;
 	int32_t			mWidth, mHeight;

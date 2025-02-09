@@ -24,7 +24,7 @@ class ImageHFApp : public App {
 		kColor, kRed, kGreen, kBlue
 	};
 	void updateData( ColorSwitch whichColor );
- 
+
 	CameraPersp		mCam;
 	CameraUi		mCamUi;
 
@@ -39,7 +39,7 @@ void ImageHFApp::setup()
 {
 	gl::enableAlphaBlending();
 	gl::enableDepthRead();
-	gl::enableDepthWrite();    
+	gl::enableDepthWrite();
 
 	mCamUi = CameraUi( &mCam, getWindow() );
 	mCam.setNearClip( 10 );
@@ -53,14 +53,14 @@ void ImageHFApp::openFile()
 	fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 	if( ! path.empty() ) {
 		mImage = loadImage( path );
-	 
+
 		mWidth = mImage.getWidth();
 		mHeight = mImage.getHeight();
 
 		mVboMesh = gl::VboMesh::create( mWidth * mHeight, GL_POINTS, { gl::VboMesh::Layout().usage(GL_STATIC_DRAW).attrib(geom::POSITION, 3).attrib(geom::COLOR, 3) } );
 		mPointsBatch = gl::Batch::create( mVboMesh, gl::getStockShader( gl::ShaderDef().color() ) );
 
-		updateData( kColor );		
+		updateData( kColor );
 		mCam.lookAt( vec3( mWidth / 2, 50, mHeight / 2 ), vec3( 0 ) );
 	}
 }
@@ -122,8 +122,8 @@ void ImageHFApp::updateData( ImageHFApp::ColorSwitch whichColor )
 				break;
 				case kBlue:
 					height = dot( color, Color( 0, 0, 1 ) );
-					color *= Color( muteColor, muteColor, 1 );					
-				break;            
+					color *= Color( muteColor, muteColor, 1 );
+				break;
 			}
 
 			// the x and the z coordinates correspond to the pixel's x & y

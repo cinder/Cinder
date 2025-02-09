@@ -38,7 +38,7 @@
 namespace cinder { namespace msw {
 
 template <class CharT, class TraitsT = std::char_traits<CharT> >
-class basic_debugbuf : 
+class basic_debugbuf :
     public std::basic_stringbuf<CharT, TraitsT>
 {
 public:
@@ -72,14 +72,14 @@ void basic_debugbuf<wchar_t>::output_debug_string(const wchar_t *text)
 }
 
 template<class CharT, class TraitsT = std::char_traits<CharT> >
-class basic_dostream : 
+class basic_dostream :
     public std::basic_ostream<CharT, TraitsT>
 {
 public:
 
     basic_dostream() : std::basic_ostream<CharT, TraitsT>
                 (new basic_debugbuf<CharT, TraitsT>()) {}
-    ~basic_dostream() 
+    ~basic_dostream()
     {
         delete std::basic_ostream<CharT, TraitsT>::rdbuf();
     }

@@ -42,7 +42,7 @@ void main()
 
 	// modify it using the normal & tangents from the 3D mesh (normal mapping)
 	vec3	vSurfaceNormal = bUseNormalMap ? normalize((vTangent * vMappedNormal.x) + (vBiTangent * vMappedNormal.y) + (vNormal * vMappedNormal.z)) : vNormal;
-  
+
 	// apply each of our light sources
 	vec4	vDiffuseColor	= bUseEmmisiveMap ? texture(uEmmisiveMap, vTexCoord0.st) : vec4(0, 0, 0, 1);
 	vec4	vSpecularColor	= vec4(0, 0, 0, 1);
@@ -52,12 +52,12 @@ void main()
 	for(int i=0; i<uNumOfLights; ++i)
 	{
 		// calculate view space light vectors
-		vec3	vToLight = normalize(uLights[i].position.xyz - vVertex.xyz); 
+		vec3	vToLight = normalize(uLights[i].position.xyz - vVertex.xyz);
 		vec3	vReflect = normalize(-reflect(vToLight, vSurfaceNormal));
 
 		// calculate diffuse term
 		float	fDiffuse = max(dot(vSurfaceNormal, vToLight), 0.0);
-		fDiffuse = clamp(fDiffuse, 0.1, 1.0);  
+		fDiffuse = clamp(fDiffuse, 0.1, 1.0);
 
 		// calculate specular term
 		float	fSpecularPower = 100.0;
@@ -68,12 +68,12 @@ void main()
 		if(bUseDiffuseMap)
 			vDiffuseColor += texture(uDiffuseMap, vTexCoord0.st) * uLights[i].diffuse * fDiffuse;
 		else
-			vDiffuseColor += uLights[i].diffuse * fDiffuse; 
+			vDiffuseColor += uLights[i].diffuse * fDiffuse;
 
 		if(bUseSpecularMap)
 			vSpecularColor += texture(uSpecularMap, vTexCoord0.st) * uLights[i].specular * fSpecular;
 		else
-			vSpecularColor += uLights[i].specular * fSpecular; 
+			vSpecularColor += uLights[i].specular * fSpecular;
 	}
 
 	// output colors to buffer

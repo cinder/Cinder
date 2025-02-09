@@ -57,7 +57,7 @@ Connection& Connection::operator=( const Connection &rhs )
 }
 
 Connection& Connection::operator=( Connection &&rhs )
-{	
+{
 	mDisconnector = move( rhs.mDisconnector );
 	mLink = move( rhs.mLink );
 	mPriority = move( rhs.mPriority );

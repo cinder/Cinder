@@ -20,19 +20,19 @@ class BezierPathIterationApp : public App {
 	void loadSvg( const fs::path &fsPath );
 	void fileDrop( FileDropEvent event ) override;
 	void draw() override;
-	
+
 	struct PathIter {
 		PathIter( const Path2dCalcCache& pathCache, float initialDistance )
 			: mPathCache( pathCache ), mCurrentDistance( initialDistance )
 		{
 			mLastPos = mPathCache.getPosition( mPathCache.calcTimeForDistance( mCurrentDistance ) );
 		}
-		
+
 		const Path2dCalcCache&	mPathCache;
 		vec2					mLastPos;
 		float					mCurrentDistance;
 	};
-	
+
 	vec2						mWindowOffset, mWindowScale;
 	vector<Path2dCalcCache>		mPathCaches;
 	// each path iterator has a reference to its path(cache) and its current position
@@ -56,19 +56,19 @@ void BezierPathIterationApp::loadSvg( const fs::path &fsPath )
 	// make a Path2dCalcCache for each path in the SVG
 	for( auto &path : paths )
 		mPathCaches.emplace_back( path );
-	
+
 	// Fit the SVG to the window
 	gl::setMatricesWindow( getWindowSize() );
 	Rectf svgBounds = shape.calcPreciseBoundingBox();
 	Rectf fitRect = svgBounds.getCenteredFit( Rectf( getWindowBounds() ), false );
 	mWindowOffset = ( getWindowSize() - ivec2(fitRect.getSize()) ) / 2;
 	mWindowScale = fitRect.getSize() / svgBounds.getSize();
-	
+
 	// Generate 2000 PathIters, all assigned to random paths and random points along their respective paths
 	for( int i = 0; i < 2000; ++i ) {
 		const Path2dCalcCache &pathCache = mPathCaches[randInt(mPathCaches.size())];
 		mPathIters.emplace_back( pathCache, randFloat() * pathCache.getLength() );
-	}	
+	}
 }
 
 void BezierPathIterationApp::fileDrop( FileDropEvent event )
@@ -79,7 +79,7 @@ void BezierPathIterationApp::fileDrop( FileDropEvent event )
 void BezierPathIterationApp::draw()
 {
 	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::clear( Color( 0, 0, 0 ) );
 
 	// center and scale the drawing
 	gl::setMatricesWindow( getWindowSize() );
@@ -91,7 +91,7 @@ void BezierPathIterationApp::draw()
 		pathIt.mCurrentDistance += 3.0f; // move 3 units along the path
 		float newTime = pathIt.mPathCache.calcTimeForDistance( pathIt.mCurrentDistance );
 		vec2 pos = pathIt.mPathCache.getPosition( newTime );
-		
+
 		gl::drawLine( pathIt.mLastPos, pos );
 		pathIt.mLastPos = pos;
 	}

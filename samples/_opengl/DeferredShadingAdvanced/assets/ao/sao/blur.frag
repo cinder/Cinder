@@ -22,18 +22,18 @@ void main( void )
 {
 	oColor			= vec4( vec3( 0.0 ), 1.0 );
 	ivec2 ss		= ivec2( gl_FragCoord.xy );
-	
+
 	vec4 v			= texelFetch( uSampler, ss, 0 );
 
 	float k			= v.g;
 	float r			= v.r;
-	
+
 	oColor.g		= k;
 	if ( k == 1.0 ) {
 		oColor.r	= r;
 		return;
 	}
-	
+
 	ivec2 sz		= uAxis * kScale;
 	float t			= kBase + 0.111220;
 	r				*= t;
@@ -49,6 +49,6 @@ void main( void )
 	r				+= calcWeight( ss + sz *  4, k, 0.067458, t );
 	r				+= calcWeight( ss + sz *  5, k, 0.050920, t );
 	r				+= calcWeight( ss + sz *  6, k, 0.036108, t );
-	
+
 	oColor.r		= r / t;
 }

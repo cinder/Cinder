@@ -45,7 +45,7 @@ class SafeUiImage {
   public:
 	SafeUiImage() {}
 	SafeUiImage( UIImage *uiImage, CGImageRef imageRef );
-	
+
 	operator UIImage*() const { if( mObj ) return mObj->first; else return 0; }
 
   private:

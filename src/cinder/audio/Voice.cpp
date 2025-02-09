@@ -127,7 +127,7 @@ BufferRef MixerImpl::loadBuffer( const SourceFileRef &sourceFile )
 		return result;
 	}
 }
-	
+
 void MixerImpl::clearBufferCache()
 {
 	mBufferCache.clear();
@@ -206,7 +206,7 @@ Voice::~Voice()
 {
 	MixerImpl::get()->removeVoice( mBusId );
 }
-	
+
 void Voice::clearBufferCache()
 {
 	MixerImpl::get()->clearBufferCache();

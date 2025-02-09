@@ -27,7 +27,7 @@ class ObjLoaderApp : public App {
 	void	writeObj();
 	void	frameCurrentObject();
 	void	draw() override;
-	
+
 	Arcball			mArcball;
 	CameraUi		mCamUi;
 	CameraPersp		mCam;
@@ -88,7 +88,7 @@ void ObjLoaderApp::loadObj( const DataSourceRef &dataSource )
 		mMesh->recalculateNormals();
 
 	mBatch = gl::Batch::create( *mMesh, mGlsl );
-	
+
 	mBoundingSphere = Sphere::calculateBoundingSphere( mMesh->getPositions<3>(), mMesh->getNumVertices() );
 	mArcball.setSphere( mBoundingSphere );
 }
@@ -127,7 +127,7 @@ void ObjLoaderApp::draw()
 {
 	gl::enableDepthWrite();
 	gl::enableDepthRead();
-	
+
 	gl::clear( Color( 0.0f, 0.1f, 0.2f ) );
 
 	gl::setMatrices( mCam );

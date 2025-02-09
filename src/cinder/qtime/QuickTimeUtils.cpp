@@ -58,13 +58,13 @@ bool dictionarySetValue( CFMutableDictionaryRef dict, CFStringRef key, SInt32 va
 {
 	bool         setNumber = false;
     CFNumberRef  number    = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &value);
-	
+
     if( number != NULL ) {
 		CFDictionarySetValue( dict, key, number );
 		CFRelease( number );
 		setNumber = true;
 	}
-	
+
     return setNumber;
 }
 
@@ -81,7 +81,7 @@ bool dictionarySetPixelBufferSize( const unsigned int width, const unsigned int 
 
 	setSize = dictionarySetValue( dict, kCVPixelBufferWidthKey, width );
 	setSize = setSize && dictionarySetValue( dict, kCVPixelBufferHeightKey, height );
-	
+
 	return setSize;
 }
 
@@ -113,7 +113,7 @@ bool dictionarySetPixelBufferOptions( unsigned int width, unsigned int height, b
 			}
 		}
 	}
-	
+
 	return setPixelBufferOptions;
 }
 
@@ -121,9 +121,9 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 {
 	CFMutableDictionaryRef  visualContextOptions = NULL;
     CFMutableDictionaryRef  pixelBufferOptions   = NULL;
-												   
+
 	bool  setPixelBufferOptions = dictionarySetPixelBufferOptions( width, height, alpha, &pixelBufferOptions );
-	
+
 	if( pixelBufferOptions != NULL ) {
 		if( setPixelBufferOptions ) {
 			visualContextOptions = CFDictionaryCreateMutable( kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks );
@@ -131,10 +131,10 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 				CFDictionarySetValue( visualContextOptions, kQTVisualContextPixelBufferAttributesKey, pixelBufferOptions );
 			}
 		}
-			
+
 		CFRelease( pixelBufferOptions );
 	}
-	
+
 	return  visualContextOptions;
 }
 
@@ -156,7 +156,7 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 	movieProps[moviePropCount].propValueAddress = &boolTrue;
 	movieProps[moviePropCount].propStatus = 0;
 	moviePropCount++;
-	 
+
 	movieProps[moviePropCount].propClass = kQTPropertyClass_NewMovieProperty;
 	movieProps[moviePropCount].propID = kQTNewMoviePropertyID_DontInteractWithUser;
 	movieProps[moviePropCount].propValueSize = sizeof(boolTrue);
@@ -171,7 +171,7 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 	movieProps[moviePropCount].propValueAddress = &visualContext;
 	movieProps[moviePropCount].propStatus = 0;
 	moviePropCount++;
-	 
+
 	movieProps[moviePropCount].propClass = kQTPropertyClass_Context;
 	movieProps[moviePropCount].propID = kQTContextPropertyID_AudioContext;
 	movieProps[moviePropCount].propValueSize = sizeof(audioContext);
@@ -201,7 +201,7 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 	movieProps[moviePropCount].propValueAddress = (void*)&urlCFBase;
 	movieProps[moviePropCount].propStatus = 0;
 	moviePropCount++;
-	 
+
 	OSStatus err;
 	if( (err = ::NewMovieFromProperties( moviePropCount, movieProps, 0, NULL, &result ) ) != noErr ) {
 		throw QuickTimeFileInvalidExc();
@@ -237,7 +237,7 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 	if( (err = ::NewMovieFromProperties( moviePropCount, movieProps, 0, NULL, &result ) ) != noErr ) {
 		throw QuickTimePathInvalidExc();
 	}
-		
+
 	return result;
 }
 
@@ -383,7 +383,7 @@ Handle createPointerDataRefWithExtensions( void *data, size_t dataSize, const st
 /*	QTNewMoviePropertyElement movieProps[10];
 	ItemCount moviePropCount = 0;
 	DataReferenceRecord dataRef = {0};
-	
+
 	moviePropCount = openMovieBaseProperties( movieProps );
 
 	// Store the movie properties in the array
@@ -403,7 +403,7 @@ Handle createPointerDataRefWithExtensions( void *data, size_t dataSize, const st
 	OSErr err = NewMovieFromDataRef( &result, newMovieActive | newMovieAsyncOK, &myResID, dataRefHandle, 'ptr ' );
 	if( err )
 		throw QuickTimeErrorLoadingExc();
-	
+
 	return result;
 }
 
@@ -447,9 +447,9 @@ ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, 
 	: ImageTarget(), mPixelBufferRef( 0 ), mConvertToYpCbCr( convertToYpCbCr )
 {
 	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
-	
+
 	//http://developer.apple.com/mac/library/qa/qa2006/qa1501.html
-	
+
 	// if we're converting to YCbCr, we'll load all of the data as RGB in terms of ci::ImageIo
 	// but we run color space conversion over it later in the finalize method
 	OSType formatType;
@@ -481,10 +481,10 @@ ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, 
 		setColorModel( ImageIo::CM_RGB );
 	}
 
-	if( ::CVPixelBufferCreate( kCFAllocatorDefault, imageSource->getWidth(), imageSource->getHeight(), 
+	if( ::CVPixelBufferCreate( kCFAllocatorDefault, imageSource->getWidth(), imageSource->getHeight(),
 				formatType, NULL, &mPixelBufferRef ) != kCVReturnSuccess )
 		throw ImageIoException();
-	
+
 	if( ::CVPixelBufferLockBaseAddress( mPixelBufferRef, 0 ) != kCVReturnSuccess )
 		throw ImageIoException();
 	mData = reinterpret_cast<uint8_t*>( ::CVPixelBufferGetBaseAddress( mPixelBufferRef ) );
@@ -578,7 +578,7 @@ ImageTargetGWorld::ImageTargetGWorld( ImageSourceRef imageSource )
 	: ImageTarget(), mGWorld( 0 ), mPixMap( 0 )
 {
 	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
-	
+
 	OSType formatType;
 	// for now all we support is 8 bit RGBA
 	setDataType( ImageIo::UINT8 );
@@ -592,7 +592,7 @@ ImageTargetGWorld::ImageTargetGWorld( ImageSourceRef imageSource )
 	boundsRect.bottom = (short)imageSource->getHeight();
 	if( ::QTNewGWorld( &mGWorld, formatType, &boundsRect, NULL, NULL, 0 ) != noErr )
 		throw ImageIoException();
-	
+
 	mPixMap = ::GetGWorldPixMap( mGWorld );
     if( ! ::LockPixels( mPixMap ) ) {
 		::DisposeGWorld( mGWorld );

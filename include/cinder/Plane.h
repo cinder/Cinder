@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2011-15, The Cinder Project, All rights reserved.
  This code is intended for use with the Cinder C++ library: http://libcinder.org
- 
+
  Portions of this code (C) Paul Houx
  All rights reserved.
 
@@ -43,7 +43,7 @@ class CI_API PlaneT {
 	PlaneT( const Vec3T &point, const Vec3T &normal );
 	PlaneT( T a, T b, T c, T d );
 
-	//! Defines a plane using 3 points. 
+	//! Defines a plane using 3 points.
 	void	set( const Vec3T &v1, const Vec3T &v2, const Vec3T &v3 );
 	//! Defines a plane using a normal vector and a point.
 	void	set( const Vec3T &point, const Vec3T &normal );

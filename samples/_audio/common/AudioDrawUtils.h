@@ -46,7 +46,7 @@ class Waveform {
 	ci::gl::VboMeshRef		getMesh() const		{ return mMesh; };
 
     bool loaded() { return mOutline.getPoints().size() > 0; }
-    
+
   private:
     ci::PolyLine2f		mOutline;
 	ci::gl::VboMeshRef	mMesh;
@@ -76,7 +76,7 @@ class WaveformPlot {
 class SpectrumPlot {
   public:
 	SpectrumPlot();
-	
+
 	void setBounds( const ci::Rectf &bounds )	{ mBounds = bounds; }
 	const ci::Rectf& getBounds() const			{ return mBounds; }
 

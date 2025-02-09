@@ -46,18 +46,18 @@ static bool sIsEaglLayer;
 {
 	// This needs to get setup immediately as +layerClass will be called when the view is initialized
 	sIsEaglLayer = renderer->isEaglLayer();
-	
+
 	if( (self = [super initWithFrame:frame]) ) {
 		mApp = app;
 		mRenderer = renderer;
 
 		renderer->setup( cocoa::CgRectToArea( frame ), self, sharedRenderer );
-		
+
 		self.multipleTouchEnabled = mApp->isMultiTouchEnabled();
 	}
 
 	mDelegate = nil;
-	
+
     return self;
 }
 
@@ -74,7 +74,7 @@ static bool sIsEaglLayer;
 - (void)layoutSubviews
 {
 	[super layoutSubviews];
-	
+
 	if( ! mApp->isHighDensityDisplayEnabled() )
 		self.layer.contentsScale = 1.0f;
 
@@ -120,9 +120,9 @@ static bool sIsEaglLayer;
 			}
 		}
 	}
-	
+
 	mTouchIdMap.insert( std::make_pair( touch, candidateId ) );
-	
+
 	return candidateId;
 }
 
@@ -176,7 +176,7 @@ static bool sIsEaglLayer;
 	}
 	else {
 		for( UITouch *touch in touches ) {
-			CGPoint pt = [touch locationInView:self];		
+			CGPoint pt = [touch locationInView:self];
 			int mods = 0;
 			mods |= MouseEvent::LEFT_DOWN;
 			MouseEvent mouseEvent( [mDelegate getWindowRef], MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 );
@@ -191,7 +191,7 @@ static bool sIsEaglLayer;
 		std::vector<TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
-			CGPoint prevPt = [touch previousLocationInView:self];			
+			CGPoint prevPt = [touch previousLocationInView:self];
 			touchList.push_back( TouchEvent::Touch( vec2( pt.x, pt.y ), vec2( prevPt.x, prevPt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
 		}
 		[self updateActiveTouches];
@@ -229,7 +229,7 @@ static bool sIsEaglLayer;
 	}
 	else {
 		for( UITouch *touch in touches ) {
-			CGPoint pt = [touch locationInView:self];		
+			CGPoint pt = [touch locationInView:self];
 			int mods = 0;
 			mods |= MouseEvent::LEFT_DOWN;
 			MouseEvent mouseEvent( [mDelegate getWindowRef], MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 );

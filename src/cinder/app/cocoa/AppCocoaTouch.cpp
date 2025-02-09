@@ -129,9 +129,9 @@ void AppCocoaTouch::enableBatteryMonitoring()
 	[UIDevice currentDevice].batteryMonitoringEnabled = YES;
 	mImpl->mBatteryLevel = [UIDevice currentDevice].batteryLevel;
 	mImpl->mIsUnplugged = [UIDevice currentDevice].batteryState == UIDeviceBatteryStateUnplugged;
-	[[NSNotificationCenter defaultCenter] addObserver:mImpl selector:@selector(batteryLevelChange:) 
+	[[NSNotificationCenter defaultCenter] addObserver:mImpl selector:@selector(batteryLevelChange:)
 		name:UIDeviceBatteryLevelDidChangeNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:mImpl selector:@selector(batteryStateChange:) 
+	[[NSNotificationCenter defaultCenter] addObserver:mImpl selector:@selector(batteryStateChange:)
 		name:UIDeviceBatteryStateDidChangeNotification object:nil];
 }
 

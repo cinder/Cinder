@@ -27,7 +27,7 @@
 #include "cinder/gl/BufferObj.h"
 
 namespace cinder { namespace gl {
-	
+
 typedef std::shared_ptr<class Pbo>			PboRef;
 
 //! Represents an OpenGL Pixel Buffer Object

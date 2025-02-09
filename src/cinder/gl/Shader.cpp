@@ -30,15 +30,15 @@ using namespace std;
 namespace cinder { namespace gl {
 
 ShaderDef::ShaderDef()
-#if defined( CINDER_ANDROID ) 
+#if defined( CINDER_ANDROID )
 	: mTextureMapping( false ), mTextureMappingRectangleArb( false ), mTextureMappingExternalOes( false ), mColor( false ), mLambert(false), mUniformBasedPosAndTexCoord( false )
 #else
 	: mTextureMapping( false ), mTextureMappingRectangleArb( false ), mColor( false ), mLambert( false ), mUniformBasedPosAndTexCoord( false )
-#endif	
+#endif
 {
 	mTextureSwizzleMask[0] = GL_RED;
-	mTextureSwizzleMask[1] = GL_GREEN; 
-	mTextureSwizzleMask[2] = GL_BLUE; 
+	mTextureSwizzleMask[1] = GL_GREEN;
+	mTextureSwizzleMask[2] = GL_BLUE;
 	mTextureSwizzleMask[3] = GL_ALPHA;
 }
 
@@ -94,8 +94,8 @@ ShaderDef& ShaderDef::lambert()
 bool ShaderDef::isTextureSwizzleDefault() const
 {
 	return mTextureSwizzleMask[0] == GL_RED &&
-			mTextureSwizzleMask[1] == GL_GREEN && 
-			mTextureSwizzleMask[2] == GL_BLUE && 
+			mTextureSwizzleMask[1] == GL_GREEN &&
+			mTextureSwizzleMask[2] == GL_BLUE &&
 			mTextureSwizzleMask[3] == GL_ALPHA;
 }
 
@@ -113,7 +113,7 @@ std::string ShaderDef::getTextureSwizzleString() const
 		else
 			result += "a";
 	}
-	
+
 	return result;
 }
 
@@ -136,14 +136,14 @@ bool ShaderDef::operator<( const ShaderDef &rhs ) const
 	else if( rhs.mTextureSwizzleMask[0] != mTextureSwizzleMask[0] )
 		return mTextureSwizzleMask[0] < rhs.mTextureSwizzleMask[0];
 	else if( rhs.mTextureSwizzleMask[1] != mTextureSwizzleMask[1] )
-		return mTextureSwizzleMask[1] < rhs.mTextureSwizzleMask[1];	
+		return mTextureSwizzleMask[1] < rhs.mTextureSwizzleMask[1];
 	else if( rhs.mTextureSwizzleMask[2] != mTextureSwizzleMask[2] )
-		return mTextureSwizzleMask[2] < rhs.mTextureSwizzleMask[2];	
+		return mTextureSwizzleMask[2] < rhs.mTextureSwizzleMask[2];
 	else if( rhs.mTextureSwizzleMask[3] != mTextureSwizzleMask[3] )
-		return mTextureSwizzleMask[3] < rhs.mTextureSwizzleMask[3];	
+		return mTextureSwizzleMask[3] < rhs.mTextureSwizzleMask[3];
 	if( rhs.mLambert != mLambert )
 		return rhs.mLambert;
-	
+
 	return false;
 }
 

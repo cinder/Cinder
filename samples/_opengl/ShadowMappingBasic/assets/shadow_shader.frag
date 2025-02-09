@@ -15,13 +15,13 @@ void main( void )
 	vec3 Normal			= normalize( vNormal );
 	vec3 LightVec		= normalize( uLightPos - vPosition.xyz );
 	float NdotL			= max( dot( vNormal, LightVec ), 0.0 );
-	
+
 	vec3 Diffuse		= vec3( NdotL );
 	vec3 Ambient		= vec3( 0.3 );
-	
+
 	vec4 ShadowCoord	= vShadowCoord / vShadowCoord.w;
 	float Shadow		= 1.0;
-	
+
 	if ( ShadowCoord.z > -1 && ShadowCoord.z < 1 ) {
 		Shadow = textureProj( uShadowMap, ShadowCoord, -0.00005 );
 	}

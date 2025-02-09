@@ -246,7 +246,7 @@ using namespace cinder::app;
 		if ( [win getDisplay] == cinder::Display::getMainDisplay() )
 			return win;
 	}
-	
+
 	return nil;
 }
 
@@ -257,9 +257,9 @@ using namespace cinder::app;
 
 	RendererRef sharedRenderer = [self findSharedRenderer:format.getRenderer()];
 	mWindows.push_back( [[WindowImplCocoaTouch alloc] initWithFormat:format withAppImpl:self sharedRenderer:sharedRenderer] );
-	
+
 	[mWindows.back() finishLoad];
-	
+
 	return mWindows.back()->mWindowRef;
 }
 

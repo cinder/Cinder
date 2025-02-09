@@ -12,7 +12,7 @@ using namespace std;
 class Slider {
     public:
         Slider() = default;
-        Slider( Rectf boundingRect ) 
+        Slider( Rectf boundingRect )
         : mBoundingRect( boundingRect )
         , mSliderRect( Rectf{ mBoundingRect.getUpperLeft(), mBoundingRect.getUpperLeft() + vec2( 25.0f,
         mBoundingRect.getHeight() ) } )
@@ -22,7 +22,7 @@ class Slider {
             mMouseUpConn    = getWindow()->getSignalMouseUp().connect( std::bind( &Slider::mouseUp, this, std::placeholders::_1 ) );
         }
 
-        ~Slider() 
+        ~Slider()
         {
             mMouseDownConn.disconnect();
             mMouseDragConn.disconnect();

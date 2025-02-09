@@ -83,14 +83,14 @@ class GstPlayerTestApp : public App {
 void GstPlayerTestApp::setup()
 {
 	CI_LOG_I( "\n--- TESTING LEVELS START----");
-	
+
 	CI_LOG_V( "verbose" );
 	CI_LOG_D( "debug" );
 	CI_LOG_I( "info" );
 	CI_LOG_W( "warning" );
 	CI_LOG_E( "error" );
 	CI_LOG_F( "fatal" );
-	
+
 	CI_LOG_I( "\n--- TESTING LEVELS END----\n\n");
 
     loadMovieFile( "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4" );
@@ -100,7 +100,7 @@ void GstPlayerTestApp::setup()
     mTimeLastPlayPauseTrigger = mTriggerTimer.getSeconds();
 }
 
-void GstPlayerTestApp::testCurrentCase() 
+void GstPlayerTestApp::testCurrentCase()
 {
     switch( mCurrentTestCase ) {
         case TEST_PLAY_PAUSE:
@@ -220,7 +220,7 @@ void GstPlayerTestApp::newStepFwd()
     CI_LOG_I( "---------- NEW STEP FWD START ----------" );
     CI_LOG_I( "POS BEFORE STEP : " << mMovie->getCurrentTime() );
 
-    // Pause the pipeline in order to get a better feeling of 
+    // Pause the pipeline in order to get a better feeling of
     // the frame-by-frame action.
     if( mMovie->isPlaying() ) mMovie->stop();
 

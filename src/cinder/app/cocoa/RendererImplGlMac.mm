@@ -36,7 +36,7 @@
 
 // This is only here so that we can override isOpaque, which is necessary
 // for the ScreenSaverView to show it
-@interface RendererImplGlMacTransparentView : NSOpenGLView 
+@interface RendererImplGlMacTransparentView : NSOpenGLView
 @end
 
 @implementation RendererImplGlMacTransparentView
@@ -83,12 +83,12 @@
 	}
 
 	[mCinderView addSubview:mView];
-	
+
 	if( retinaEnabled )
 		[mView setWantsBestResolutionOpenGLSurface:YES];
-	
+
 	cinder::gl::Environment::setCore();
-	
+
 	CGLContextObj cglContext = (CGLContextObj)[[mView openGLContext] CGLContextObj];
 	::CGLSetCurrentContext( cglContext );
 	auto platformData = std::shared_ptr<cinder::gl::Context::PlatformData>( new cinder::gl::PlatformDataMac( cglContext ) );
@@ -133,7 +133,7 @@
 }
 
 - (void)flushBuffer
-{	
+{
 	[[NSOpenGLContext currentContext] flushBuffer];
 }
 
@@ -161,7 +161,7 @@
 	return NO;
 }
 
-- (void)dealloc 
+- (void)dealloc
 {
 	[super dealloc];
 }
@@ -176,20 +176,20 @@
 {
 	NSOpenGLPixelFormat *result = nil;
     std::vector<NSOpenGLPixelFormatAttribute> attributes;
-    
+
     attributes.push_back( NSOpenGLPFADoubleBuffer );
-	
+
 	attributes.push_back( NSOpenGLPFAOpenGLProfile );
 	attributes.push_back( NSOpenGLProfileVersion3_2Core );
-	
+
     attributes.push_back( NSOpenGLPFADepthSize );
 	attributes.push_back( (NSOpenGLPixelFormatAttribute) rendererOptions.getDepthBufferDepth() );
-	
+
     if( rendererOptions.getStencil() ) {
 		attributes.push_back( kCGLPFAStencilSize );
 		attributes.push_back( (CGLPixelFormatAttribute) 8 );
 	}
-	
+
 	if( rendererOptions.getMsaa() > 0 ) {
 		attributes.push_back( NSOpenGLPFASampleBuffers );
 		attributes.push_back( (NSOpenGLPixelFormatAttribute) 1 );
@@ -197,9 +197,9 @@
 		attributes.push_back( (NSOpenGLPixelFormatAttribute) rendererOptions.getMsaa() );
 		attributes.push_back( NSOpenGLPFAMultisample );
 	}
-	
+
 	attributes.push_back( (NSOpenGLPixelFormatAttribute) 0 );
-		
+
 	result = [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes.data()];
 
 	assert( result );

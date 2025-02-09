@@ -65,15 +65,15 @@ class CI_API Buffer {
 
 	void*		getData()				{ return mData; }
 	const void* getData() const			{ return mData; }
-	
+
 	void resize( size_t newSize );
-	
+
 	void copyFrom( const void *data, size_t length );
 	//TODO: copy from region of another buffer
-	
+
 	//! Writes a Buffer to a DataTarget
 	void	write( const DataTargetRef &dataTarget );
-	
+
   private:
 	void*	mData;
 	size_t	mAllocatedSize;

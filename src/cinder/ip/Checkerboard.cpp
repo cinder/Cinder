@@ -22,7 +22,7 @@
 
 #include "cinder/ip/Checkerboard.h"
 
-namespace cinder { namespace ip { 
+namespace cinder { namespace ip {
 
 namespace {
 template<typename T>
@@ -54,7 +54,7 @@ void checkerboard_impl( SurfaceT<T> *surface, const Area &area, int32_t tileSize
 		checkerboard_impl( surface, area, tileSize, ColorT<T>( evenColor ), ColorT<T>( oddColor ) );
 		return;
 	}
-	
+
 	const Area clippedArea = area.getClipBy( surface->getBounds() );
 
 	ptrdiff_t rowBytes = surface->getRowBytes();

@@ -36,7 +36,7 @@ void MandelbrotGLSLApp::setup()
 {
 	//! Zoom in on this location in the MandelBrot set.
 	mCenter = vec2( -0.5430f, 0.53398f );
-	
+
 	//! Find other cool locations on: http://www.eddaardvark.co.uk/mandelbrot/webgl.html
 	//mCenter = vec2( -0.74699f, 0.08762f );
 	//mCenter = vec2( -0.922332f, 0.309948f );

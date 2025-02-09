@@ -16,10 +16,10 @@ int maxWidth = 230;
 class LineBreakTestApp : public App {
   public:
 	void setup();
-	void mouseDrag( MouseEvent event );	
+	void mouseDrag( MouseEvent event );
 	void update();
 	void draw();
-}; 
+};
 
 bool lineWidth( const char *s, size_t len, size_t maxLen )
 {
@@ -44,7 +44,7 @@ void print( const char *s, size_t len )
 		lenBeforeBreak = tempLen;
 	}
 	app::console() << "{" << string( s, lenBeforeBreak ) << ( (found)?"!":"" ) << "}" << std::endl;*/
-	
+
 	gl::drawString( string( s, len ), pos, ColorA::white(), font );
 int asc = font.getAscent();
 int desc = font.getDescent();
@@ -68,7 +68,7 @@ void LineBreakTestApp::setup()
 	vector<uint16_t> s16;
 	for( int i = 0; i < strlen( s8 ); ++i )
 		s16.push_back( s8[i] );
-	console() << s8 << std::endl;	
+	console() << s8 << std::endl;
 	vector<uint8_t> utf16Breaks;
 	calcLinebreaksUtf16( &s16[0], s16.size(), &utf16Breaks );
 	for( auto it = utf16Breaks.begin(); it != utf16Breaks.end(); ++it )
@@ -89,7 +89,7 @@ void LineBreakTestApp::draw()
 {
 	// clear out the window with black
 	gl::enableAlphaBlending();
-	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::clear( Color( 0, 0, 0 ) );
 	gl::color( ColorA::white() );
 
 	pos.x = 0;

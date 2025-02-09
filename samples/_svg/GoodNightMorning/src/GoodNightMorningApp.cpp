@@ -29,17 +29,17 @@ class GoodNightMorningApp : public App {
 	void			newMorningTweet();
 	void			newNightTweet();
 
-	
+
 	gl::TextureRef	mForegroundTex, mBackgroundTex;
 	Rectf			mDrawBounds;
 	svg::DocRef		mCityscapeSvg;
 	Font			mHeaderFont, mFont;
-	
+
 	Anim<float>		mMorningTweetPos, mNightTweetPos;
 	Anim<float>		mMorningTweetAlpha, mNightTweetAlpha;
 	gl::TextureRef	mMorningTweetTex, mNightTweetTex;
 	TweenRef<float>	mMorningTween, mNightTween;
-	
+
 	shared_ptr<TweetStream>		mMorningTweets, mNightTweets;
 };
 
@@ -53,14 +53,14 @@ void GoodNightMorningApp::setup()
 	mCityscapeSvg = std::shared_ptr<svg::Doc>( new svg::Doc( loadAsset( "cityscape.svg" ) ) );
 	mFont = Font( loadAsset( "Lato-Bold.ttf" ), 14 );
 	mHeaderFont = Font( loadAsset( "Lato-Light.ttf" ), 14 );
-	
+
 	mMorningTweets = shared_ptr<TweetStream>( new TweetStream( "\"Good morning\"" ) );
 	mNightTweets = shared_ptr<TweetStream>( new TweetStream( "\"Good night\"" ) );
-	
+
 	newMorningTweet();
 	newNightTweet();
-	
-	gl::enableAlphaBlending();	
+
+	gl::enableAlphaBlending();
 }
 
 // Renders the tweet into a gl::Texture, using TextBox for type rendering
@@ -82,7 +82,7 @@ gl::TextureRef GoodNightMorningApp::renderTweet( const Tweet &tweet, float width
 void GoodNightMorningApp::newMorningTweet()
 {
 	if( ! mMorningTweets->hasTweetAvailable() )
-		return;		
+		return;
 	Tweet tweet = mMorningTweets->getNextTweet();
 
 	// Setup tweens for the tweet's position and opacity
@@ -91,14 +91,14 @@ void GoodNightMorningApp::newMorningTweet()
 	mMorningTween = timeline().appendTo( &mMorningTweetPos, -0.3f, 2.0f, EaseInAtan() ).delay( 1 );
 	mMorningTweetAlpha = 1.0f;
 	timeline().apply( &mMorningTweetAlpha, 0.0f, 1.0f ).appendTo( &mMorningTweetPos, -1 );
-	
+
 	mMorningTweetTex = renderTweet( tweet, mDrawBounds.getWidth() * 0.3f, Color::black(), 0.25f );
 }
 
 void GoodNightMorningApp::newNightTweet()
 {
 	if( ! mNightTweets->hasTweetAvailable() )
-		return;		
+		return;
 	Tweet tweet = mNightTweets->getNextTweet();
 
 	// Setup tweens for the tweet's position and opacity
@@ -107,7 +107,7 @@ void GoodNightMorningApp::newNightTweet()
 	mNightTween = timeline().appendTo( &mNightTweetPos, 1.0f, 2.0f, EaseInAtan() ).delay( 1 );
 	mNightTweetAlpha = 1.0f;
 	timeline().apply( &mNightTweetAlpha, 0.0f, 1.0f ).appendTo( &mNightTweetPos, -1 );
-	
+
 	mNightTweetTex = renderTweet( tweet, mDrawBounds.getWidth() * 0.3f, Color::white(), 0.1f );
 }
 
@@ -134,7 +134,7 @@ void GoodNightMorningApp::resize()
 	Rectf svgBounds = mCityscapeSvg->getBounds(); // get the native bounds of the SVG
 	// fit the SVG proportionally into the window
 	mDrawBounds = svgBounds.getCenteredFit( getWindowBounds(), true );
-	
+
 	// Our SVG has two root groups, "Foreground" and "Background". Tweets are rendered between these two layers
 	// Render each group into its own texture
 	mForegroundTex = renderSvgGroupToTexture( *mCityscapeSvg, "Foreground", mDrawBounds, true );
@@ -155,8 +155,8 @@ void GoodNightMorningApp::drawTweets()
 void GoodNightMorningApp::draw()
 {
 	// clear out the window with dark gray
-	gl::clear( Color( 0.1f, 0.1f, 0.1f ) ); 
-	
+	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
+
 	if( mBackgroundTex )
 		gl::draw( mBackgroundTex, mDrawBounds );
 	drawTweets();

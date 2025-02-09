@@ -30,12 +30,12 @@ AccordionItem::AccordionItem( Timeline &timeline, float x, float y, float height
 	std::string normalFont( "Arial" );
 	std::string boldFont( "ArialBold" );
 #endif
-	
+
 	mAnimEase = EaseOutAtan(25);
 	mAnimDuration = 0.7f;
-	
+
 	mTextAlpha = 0.0f;
-	
+
 	TextLayout layout;
 	layout.clear( ColorA( 0.6f, 0.6f, 0.6f, 0.0f ) );
 	layout.setFont( Font( boldFont, 26 ) );
@@ -45,7 +45,7 @@ AccordionItem::AccordionItem( Timeline &timeline, float x, float y, float height
 	layout.addLine( mSubtitle );
 	layout.setBorder(11, 6);
 	mText = gl::Texture::create( layout.render( true ) );
-	
+
 	update();
 }
 
@@ -58,7 +58,7 @@ void AccordionItem::animTo( float newX, float newWidth, bool revealText )
 {
 	mTimeline.apply( &mX, newX, mAnimDuration, mAnimEase );
 	mTimeline.apply( &mWidth, newWidth, mAnimDuration, mAnimEase );
-	
+
 	if (revealText)
 		mTimeline.apply( &mTextAlpha, 1.0f, mAnimDuration*0.3f, EaseNone() );
 	else
@@ -69,7 +69,7 @@ void AccordionItem::update()
 {
 	// sample area of image texture to render
 	mImageArea = Area(quickRound(mX), quickRound(mY), quickRound(mX + mWidth), quickRound(mY + mHeight));
-	
+
 	// rectangle to render text texture
 	mTextRect = Rectf(quickRound(mX), quickRound(mY), quickRound( mX + math<float>::min( mWidth, mText->getWidth() ) ), quickRound( mY + math<float>::min( mHeight, mText->getHeight() ) ) );
 	// sample area of text texture to render

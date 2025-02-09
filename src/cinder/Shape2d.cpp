@@ -202,7 +202,7 @@ Rectf Shape2d::calcBoundingBox() const
 	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt ) {
 		result.include( contIt->mPoints );
 	}
-	
+
 	return result;
 }
 
@@ -222,7 +222,7 @@ Rectf Shape2d::calcPreciseBoundingBox() const
 	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt ) {
 		result.include( contIt->calcPreciseBoundingBox() );
 	}
-	
+
 	return result;
 }
 
@@ -268,17 +268,17 @@ bool Shape2d::contains( const vec2 &pt, bool evenOddFill ) const
 	int onCurveCount = 0;
 	for( auto &cont : mContours )
 		w += cont.calcWinding( pt, &onCurveCount );
-	
+
 	if( evenOddFill )
 		w &= 1;
 	if( w )
 		return true;
-		
+
 	if( onCurveCount <= 1 )
 		return onCurveCount > 0;
 	if( (onCurveCount & 1) || evenOddFill )
 		return (onCurveCount & 1) > 0;
-	
+
 	return false;
 }
 

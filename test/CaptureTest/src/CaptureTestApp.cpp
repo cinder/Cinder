@@ -12,12 +12,12 @@ using namespace std;
 static const int WIDTH = 640, HEIGHT = 480;
 
 class CaptureTestApp : public App {
- public:	
+ public:
 	void setup();
 	void keyDown( KeyEvent event );
 	void update();
 	void draw();
-	
+
  private:
 	vector<CaptureRef>		mCaptures;
 	vector<gl::TextureRef>	mTextures;
@@ -26,7 +26,7 @@ class CaptureTestApp : public App {
 };
 
 void CaptureTestApp::setup()
-{	
+{
 	// list out the devices
 	vector<Capture::DeviceRef> devices( Capture::getDevices() );
 	for( vector<Capture::DeviceRef>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
@@ -36,7 +36,7 @@ void CaptureTestApp::setup()
 			if( device->checkAvailable() ) {
 				mCaptures.push_back( Capture::create( WIDTH, HEIGHT, device ) );
 				mCaptures.back()->start();
-			
+
 				// placeholder text
 				mTextures.push_back( gl::TextureRef() );
 
@@ -99,17 +99,17 @@ void CaptureTestApp::draw()
 	if( mCaptures.empty() )
 		return;
 
-	float width = getWindowWidth() / mCaptures.size();	
+	float width = getWindowWidth() / mCaptures.size();
 	float height = width / ( WIDTH / (float)HEIGHT );
 	float x = 0, y = ( getWindowHeight() - height ) / 2.0f;
-	for( vector<CaptureRef>::iterator cIt = mCaptures.begin(); cIt != mCaptures.end(); ++cIt ) {	
+	for( vector<CaptureRef>::iterator cIt = mCaptures.begin(); cIt != mCaptures.end(); ++cIt ) {
 		// draw the latest frame
 		gl::color( Color::white() );
 		if( mTextures[cIt-mCaptures.begin()] )
 			gl::draw( mTextures[cIt-mCaptures.begin()], Rectf( x, y, x + width, y + height ) );
-			
+
 		// draw the name
-		gl::color( Color::black() );	
+		gl::color( Color::black() );
 		gl::draw( mNameTextures[cIt-mCaptures.begin()], vec2( x + 10 + 1, y + 10 + 1 ) );
 		gl::color( Color( 0.5, 0.75, 1 ) );
 		gl::draw( mNameTextures[cIt-mCaptures.begin()], vec2( x + 10, y + 10 ) );

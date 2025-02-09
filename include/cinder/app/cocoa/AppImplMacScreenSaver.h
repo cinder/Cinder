@@ -71,7 +71,7 @@
 	cinder::app::WindowRef				mWindowRef;
 	cinder::DisplayRef					mDisplay;
 
-	BOOL								mPreview;	
+	BOOL								mPreview;
 	BOOL								mResizeCalled;
 	BOOL								mIsMainView;
 	BOOL								mHasDrawnSinceLastUpdate;

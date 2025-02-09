@@ -37,16 +37,16 @@ class IStreamUrlImplWinInet : public IStreamUrlImpl {
 	virtual void		seekRelative( off_t relativeOffset );
 	virtual off_t		tell() const;
 	virtual off_t		size() const;
-	
+
 	virtual bool		isEof() const;
 	virtual void		IORead( void *t, size_t size );
 
   private:
 	int					bufferDataRemaining() const { return mBufferedBytes - mBufferOffset; }
-	void				fillBuffer( int wantBytes ) const; 
-  
+	void				fillBuffer( int wantBytes ) const;
+
 	std::shared_ptr<void>		mSession, mConnection, mRequest;
-	
+
 	mutable bool			mIsFinished;
 	mutable std::vector<uint8_t> mBuffer;
 	mutable int				mBufferOffset, mBufferedBytes;

@@ -16,13 +16,13 @@ TEST_CASE( "MediaTime" )
 		MediaTime oneOverTwo( 1, 2 );
 		MediaTime twoOverOne( 2, 1 );
 		MediaTime oneOverTwoEpoch1( 1, 2, 1 );
-		
+
 		// >
 		REQUIRE( oneOverOne > oneOverTwo );
 		REQUIRE( twoOverOne > oneOverOne );
 		REQUIRE( twoOverOne > oneOverTwo );
 		REQUIRE( oneOverTwoEpoch1 > twoOverOne );
-		
+
 		// <
 		REQUIRE( oneOverTwo < oneOverOne );
 		REQUIRE( oneOverOne < twoOverOne );
@@ -49,11 +49,11 @@ TEST_CASE( "MediaTime" )
 
 		// ==
 		REQUIRE( oneOverOne == oneOverOne );
-		REQUIRE( oneOverOne == twoOverTwo );		
+		REQUIRE( oneOverOne == twoOverTwo );
 
 		// !=
 		REQUIRE( oneOverOne != oneOverTwo );
-		REQUIRE( oneOverTwo != oneOverTwoEpoch1 );		
+		REQUIRE( oneOverTwo != oneOverTwoEpoch1 );
 	}
 
 	SECTION( "Operations" )
@@ -70,14 +70,14 @@ TEST_CASE( "MediaTime" )
 		MediaTime oneOverFourEpoch1( 1, 4, 1 );
 		MediaTime oneOverTwoBigBase( 500000, 1000000 );
 		MediaTime oneOverFourBigBase( 500000, 2000000 );
-		
+
 		// -
 		REQUIRE( oneOverOne - zero == oneOverOne );
 		REQUIRE( oneOverOne - oneOverOne == zero );
 		REQUIRE( twoOverTwo - oneOverOne == zero );
 		REQUIRE( twoOverOne - oneOverOne == oneOverOne );
 		REQUIRE( oneOverOne - twoOverOne == -oneOverOne ); // negative
-		
+
 		// +
 		REQUIRE( zero + zero == zero );
 		REQUIRE( zero + oneOverOne == oneOverOne );
@@ -106,7 +106,7 @@ TEST_CASE( "MediaTime" )
 		REQUIRE( oneOverOneEpoch1 / 2 == oneOverTwoEpoch1 );
 		REQUIRE( (oneOverTwoBigBase / oneOverFourBigBase).getSeconds() == Approx( 2.0f ) );
 		REQUIRE( (oneOverTwoBigBase / oneOverFourBigBase).base == MediaTime::DEFAULT_TIME_BASE );
-		
+
 		// unary -
 		REQUIRE( -oneOverOne == MediaTime( -1, 1 ) );
 
@@ -137,14 +137,14 @@ TEST_CASE( "MediaTime" )
 			oneOverTwoTemp /= twoOverOne;
 			REQUIRE( oneOverTwoTemp == oneOverFour );
 		}
-		
+
 		// suffix
 		{
 			REQUIRE( MediaTime( 2 ) == 2_sec );
 			REQUIRE( MediaTime( 0 ) == 0_sec );
 			REQUIRE( (2.5_sec).getSeconds() == Approx(2.5) );
 		}
-		
+
 		// simplify
 		{
 			auto twoOverTwo = MediaTime( 2, 2 );

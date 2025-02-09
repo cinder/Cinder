@@ -1,8 +1,8 @@
 /*
  Copyright (c) 2010, The Cinder Project
  All rights reserved.
- 
- This code is designed for use with the Cinder C++ library, http://libcinder.org 
+
+ This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Portions Copyright (c) 2010, The Barbarian Group
  All rights reserved.

@@ -53,7 +53,7 @@ class AppAndroid : public AppBase {
 	  	bool 	mKeepScreenOn = false;
 
 		friend AppAndroid;
-	};	
+	};
 
     typedef std::function<void ( Settings *settings )>	SettingsFn;
 
@@ -77,7 +77,7 @@ class AppAndroid : public AppBase {
 	//! Returns the  \t InterfaceOrientation for the device \t Window.
 	InterfaceOrientation	getOrientation() const;
 	//! Returns the current \t InterfaceOrientation for the active \t Window.
-	//InterfaceOrientation	getWindowOrientation() const;	
+	//InterfaceOrientation	getWindowOrientation() const;
 
 	void		hideCursor() override;
 	void		showCursor() override;
@@ -108,7 +108,7 @@ class AppAndroid : public AppBase {
 };
 
 template<typename AppT>
-void AppAndroid::deferredMain( const RendererRef &defaultRenderer, const char *title, android_app *nativeApp, const SettingsFn &settingsFn ) 
+void AppAndroid::deferredMain( const RendererRef &defaultRenderer, const char *title, android_app *nativeApp, const SettingsFn &settingsFn )
 {
 	AppBase::prepareLaunch();
 
@@ -117,7 +117,7 @@ void AppAndroid::deferredMain( const RendererRef &defaultRenderer, const char *t
 
 	if( settingsFn )
 		settingsFn( &settings );
-	
+
 	if( settings.getShouldQuit() )
 		return;
 

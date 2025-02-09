@@ -12,12 +12,12 @@ class imageProcessingApp : public App {
 	void setup();
 	template<typename T>
 	void setupFlipVertical();
-	
-	void mouseDown( MouseEvent event );	
+
+	void mouseDown( MouseEvent event );
 	void draw();
-	
+
 	gl::TextureRef		mCurTex;
-	
+
 	size_t										mCurFnIdx;
 	vector<function<gl::TextureRef(void)>>		mTexGenFns;
 };
@@ -91,7 +91,7 @@ void imageProcessingApp::setup()
 
 	// 32 BIT FLIP VERTICAL
 	setupFlipVertical<float>();
-	
+
 	mCurFnIdx = 0;
 	mCurTex = mTexGenFns[mCurFnIdx]();
 }
@@ -105,7 +105,7 @@ void imageProcessingApp::mouseDown( MouseEvent event )
 void imageProcessingApp::draw()
 {
 	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::clear( Color( 0, 0, 0 ) );
 
 	gl::draw( mCurTex );
 }

@@ -13,10 +13,10 @@ class GeomSourceModsApp : public App {
 	void update() override;
 	void mouseDown( MouseEvent ) override;
 	void draw() override;
-	
+
 	size_t								mVisualTestIndex;
 	vector<function<gl::BatchRef()>>	mVisualTestSetups;
-	
+
 	CameraPersp				mCam;
 	gl::BatchRef			mBatch;
 	mat4					mRotation;
@@ -56,7 +56,7 @@ void test( const geom::SourceMods &sourceMods )
 {
 	if( sourceMods.getSource() == sourceMods.getSourceStorage().get() )
 		std::cout << "Cloned ";
-	
+
 	TriMesh tm( sourceMods );
 	std::cout << tm.calcBoundingBox().getMax().x - tm.calcBoundingBox().getExtents().x;
 	std::cout << std::endl;
@@ -120,14 +120,14 @@ gl::BatchRef visualTest8()
 {
 	geom::Circle circle2( geom::Circle().center( vec2( 1 ) ) );
 	geom::SourceMods result = geom::Circle().center( vec2( 0 ) ).subdivisions( 50 ) >> geom::Constant( geom::COLOR, vec3( Color( CM_HSV, randFloat(), 1, 1 ) ) );
-	
+
 	for( float a = 0; a < 1.0f; a += 0.05f ) {
 		vec3 color = vec3( Color( CM_HSV, randFloat(), 1, 1 ) );
 		result.append(
 			geom::Circle().center( vec2( cos(a * M_PI*2), sin(a * M_PI*2) ) * 2.5f ).radius( 0.3f ).subdivisions( int( 3 + a * 20 ) )
 			>> geom::Constant( geom::COLOR, color ) );
 	}
-	
+
 	return gl::Batch::create( result, gl::getStockShader( gl::ShaderDef().color() ) );
 }
 
@@ -135,7 +135,7 @@ gl::BatchRef visualTest8()
 gl::BatchRef visualTest9()
 {
 	TriMesh tm = geom::Sphere();
-	
+
 	return gl::Batch::create( &tm & &tm >> geom::Translate( 0, 1, 0 ), gl::getStockShader( gl::ShaderDef().lambert().color() ) );
 }
 
@@ -143,13 +143,13 @@ gl::BatchRef visualTest9()
 gl::BatchRef visualTest10()
 {
 	geom::SourceMods combination;
-	
+
 	for( float a = 0; a < 1.0f; a += 0.025f ) {
 		vec3 color = vec3( Color( CM_HSV, a, 1, 1 ) );
 		combination &= geom::Circle().center( vec2( cos(a * M_PI*2), sin(a * M_PI*2) ) * 2.5f ).radius( 0.17f ).subdivisions( 7 )
 						>> geom::Constant( geom::COLOR, color );
 	}
-	
+
 	return gl::Batch::create( combination, gl::getStockShader( gl::ShaderDef().color() ) );
 }
 
@@ -179,18 +179,18 @@ void GeomSourceModsApp::setup()
 	test( makeCubeRef() >> translate1 ); // 1
 	// this should not create a clone since the result of makeCubeRef() is a pointer
 	test( makeCubePtr() >> translate1 ); // 1
-	
+
 	auto chain0 = makeCube() >> translate1; // 1
 	// this should create a clone
 	test( chain0 >> translate1 >> translate2 ); // 1+1+2=4
 	test( chain0 >> translate1 >> translate2 >> translate3 ); // 1+1+2+3=7
-	
+
 	test( makeChain() ); // 1
 	test( makeChain() >> translate1 ); // 2
 
 	test( makeChain2() ); // 1
 	test( makeChain2() >> translate1 ); // 2
-	
+
 	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 	gl::enableDepthWrite();

@@ -48,7 +48,7 @@ class ImageSourcePng : public ImageSource {
   protected:
 	ImageSourcePng( DataSourceRef dataSourceRef, ImageSource::Options options );
 	bool loadHeader();
-	
+
 	std::shared_ptr<ci_png_info>	mCiInfoPtr;
 	png_struct_def					*mPngPtr;
 	png_info						*mInfoPtr;

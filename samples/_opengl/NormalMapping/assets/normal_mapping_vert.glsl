@@ -16,15 +16,15 @@ out vec3		vBiTangent;
 out vec2		vTexCoord0;
 
 void main()
-{	
+{
 	// calculate view space position (required for lighting)
-	vVertex = ciModelView * ciPosition; 
+	vVertex = ciModelView * ciPosition;
 
 	// calculate view space normal (required for lighting & normal mapping)
 	vNormal = normalize(ciNormalMatrix * ciNormal);
 
 	// calculate tangent and construct the bitangent (required for normal mapping)
-	vTangent = normalize(ciNormalMatrix * ciTangent); 
+	vTangent = normalize(ciNormalMatrix * ciTangent);
 	vBiTangent = normalize(cross(vNormal, vTangent));
 
 	// pass texture coordinates

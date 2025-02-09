@@ -83,7 +83,7 @@ void ParticleSphereGPUApp::setup()
 		float x = radius * sin( inclination * i ) * cos( azimuth * i );
 		float y = radius * cos( inclination * i );
 		float z = radius * sin( inclination * i ) * sin( azimuth * i );
-		
+
 		auto &p = particles.at( i );
 		p.pos = center + vec3( x, y, z );
 		p.home = p.pos;
@@ -91,7 +91,7 @@ void ParticleSphereGPUApp::setup()
 		p.damping = Rand::randFloat( 0.965f, 0.985f );
 		p.color = Color( CM_HSV, lmap<float>( i, 0.0f, particles.size(), 0.0f, 0.66f ), 1.0f, 1.0f );
 	}
-	
+
 	// Create particle buffers on GPU and copy data into the first buffer.
 	// Mark as static since we only write from the CPU once.
 	mParticleBuffer[mSourceIndex] = gl::Vbo::create( GL_ARRAY_BUFFER, particles.size() * sizeof(Particle), particles.data(), GL_STATIC_DRAW );
@@ -101,7 +101,7 @@ void ParticleSphereGPUApp::setup()
 	{	// Describe the particle layout for OpenGL.
 		mAttributes[i] = gl::Vao::create();
 		gl::ScopedVao vao( mAttributes[i] );
-		
+
 		// Define attributes as offsets into the bound particle buffer
 		gl::ScopedBuffer buffer( mParticleBuffer[i] );
 		gl::enableVertexAttribArray( 0 );
@@ -115,10 +115,10 @@ void ParticleSphereGPUApp::setup()
 		gl::vertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, home) );
 		gl::vertexAttribPointer( 4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, damping) );
 	}
-	
+
 	// Load our update program.
 	// Match up our attribute locations with the description we gave.
-	
+
 #if defined( CINDER_GL_ES_3 )
 	mRenderProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "draw_es3.vert" ) )
 									   .fragment( loadAsset( "draw_es3.frag" ) ) );

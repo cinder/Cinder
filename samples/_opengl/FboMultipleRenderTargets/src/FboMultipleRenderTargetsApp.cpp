@@ -19,7 +19,7 @@ class FboMultipleRenderTargetsApp : public App {
 
   private:
 	void			renderSceneToFbo();
-	
+
 	gl::FboRef			mFbo;
 	gl::GlslProgRef		mGlslMultipleOuts;
 	mat4				mRotation;
@@ -41,7 +41,7 @@ void FboMultipleRenderTargetsApp::setup()
 #endif
 
 	gl::enableDepthRead();
-	gl::enableDepthWrite();	
+	gl::enableDepthWrite();
 
 	mRotation = mat4( 1 );
 }

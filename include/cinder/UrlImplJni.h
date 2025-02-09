@@ -37,13 +37,13 @@ class IStreamUrlImplJni : public IStreamUrlImpl {
 	virtual void		seekRelative( off_t relativeOffset );
 	virtual off_t		tell() const;
 	virtual off_t		size() const;
-	
+
 	virtual bool		isEof() const;
 	virtual void		IORead( void *t, size_t size );
 
 private:
 	ci::BufferRef 		mData;
-	off_t 				mOffset;	
+	off_t 				mOffset;
 };
 
 } // namespace cinder

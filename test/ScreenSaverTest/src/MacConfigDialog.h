@@ -17,7 +17,7 @@ namespace cinder { namespace app {
 	IBOutlet NSButton 	*okButton;
 	IBOutlet NSButton 	*cancelButton;
 	IBOutlet NSButton	*drawCinderLogoButton;
-	
+
 	Configuration					*config;
 	cinder::app::AppScreenSaver		*app;
 }

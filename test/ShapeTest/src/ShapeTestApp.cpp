@@ -125,7 +125,7 @@ void ShapeTestApp::drawDebugShape( const Shape2d &s, float radius ) const
 					gl::color( 0, 1, 1 );
 					gl::drawSolidCircle( p.getPoint(firstPoint+0), radius, 3 );
 					gl::color( 1, 0, 1 );
-					gl::drawSolidCircle( p.getPoint(firstPoint+1), radius ); 
+					gl::drawSolidCircle( p.getPoint(firstPoint+1), radius );
 					gl::color( 1, 0, 1 );
 					gl::drawSolidCircle( p.getPoint(firstPoint+2), radius );
 					gl::color( 0, 1, 1 );
@@ -135,7 +135,7 @@ void ShapeTestApp::drawDebugShape( const Shape2d &s, float radius ) const
 					gl::color( 1, 0.5, 0.25f, 0.5f );
 					gl::drawSolidCircle( p.getPoint(firstPoint+0), radius );
 					gl::color( 0.25, 0.5, 1.0f );
-					gl::drawStrokedRect( Rectf( p.getPoint(firstPoint+1) - vec2( radius ), p.getPoint(firstPoint+1) + vec2( radius ) ) ); 
+					gl::drawStrokedRect( Rectf( p.getPoint(firstPoint+1) - vec2( radius ), p.getPoint(firstPoint+1) + vec2( radius ) ) );
 					gl::color( 1, 0.5, 0.25f, 0.5f );
 					gl::drawSolidCircle( p.getPoint(firstPoint+2), radius );
 				break;
@@ -151,7 +151,7 @@ void ShapeTestApp::drawDebugShape( const Shape2d &s, float radius ) const
 				default:
 					;//throw Path2dExc();
 			}
-			
+
 			firstPoint += Path2d::sSegmentTypePointCounts[p.getSegmentType(s)];
 		}
 	}

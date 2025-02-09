@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -54,7 +54,7 @@
 		typedef void*		EGLContext;
 		typedef void*		EGLDisplay;
 		typedef void*		EGLSurface;
-		typedef void*		EGLConfig;	
+		typedef void*		EGLConfig;
 	#elif defined( CINDER_HEADLESS_GL_OSMESA )
 		typedef struct osmesa_context	*OSMesaContext;
 	#else
@@ -73,7 +73,7 @@ typedef std::shared_ptr<Context>		ContextRef;
 class CI_API Environment {
   public:
 	virtual void			initializeFunctionPointers() = 0;
-	
+
 	ContextRef				createSharedContext( const Context *sharedContext );
 	//! NULL for \a context deactivates the current context
 	void					makeContextCurrent( const Context *context );
@@ -93,7 +93,7 @@ class CI_API Environment {
 	virtual void			allocateTexStorage1d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, bool immutable, GLint texImageDataType ) = 0;
 	virtual void			allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType ) = 0;
 	virtual void			allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable ) = 0;
-	virtual void			allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) = 0;	
+	virtual void			allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) = 0;
 
 	virtual void			objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) = 0;
 
@@ -101,7 +101,7 @@ class CI_API Environment {
 	virtual std::string		generateFragmentShader( const ShaderDef &shader ) = 0;
 	virtual GlslProgRef		buildShader( const ShaderDef &shader ) = 0;
 
-#if ! defined( CINDER_GL_ES )	
+#if ! defined( CINDER_GL_ES )
 	static void				setCore();
 #else
 	static void				setEs();
@@ -114,7 +114,7 @@ struct PlatformDataIos : public Context::PlatformData {
 	PlatformDataIos( EAGLContext *eaglContext )
 		: mEaglContext( eaglContext )
 	{}
-	
+
 	EAGLContext		*mEaglContext;
 };
 
@@ -123,7 +123,7 @@ struct PlatformDataMac : public Context::PlatformData {
 	PlatformDataMac( CGLContextObj cglContext )
 		: mCglContext( cglContext )
 	{}
-	
+
 	CGLContextObj		mCglContext;
 };
 

@@ -20,4 +20,3 @@ layout (std140) uniform Materials
 };
 
 uniform isampler2D uSamplerMaterial;
- 

@@ -42,7 +42,7 @@ class AppImplAndroid {
  		TrackedTouch( int aId = -1, float aX = 0.0f, float aY = 0.0f, double aCurrentTime = 0.0 );
  		virtual ~TrackedTouch() {}
  		void update( float aX, float aY, double aCurrentTime );
- 	}; 	
+ 	};
 
 	AppImplAndroid( AppAndroid *aApp, const AppAndroid::Settings &settings );
 	virtual ~AppImplAndroid();
@@ -87,8 +87,8 @@ public:
 	void				hideCursor();
 	void				showCursor();
 	ivec2				getMousePos() const;
-		
-	static fs::path		getAppPath();	
+
+	static fs::path		getAppPath();
 	fs::path			getOpenFilePath( const fs::path &initialPath, std::vector<std::string> extensions );
 	fs::path			getSaveFilePath( const fs::path &initialPath, std::vector<std::string> extensions );
 	fs::path			getFolderPath( const fs::path &initialPath );
@@ -116,7 +116,7 @@ public:
  	ivec2 							mMouseTouchPos = ivec2( 0, 0 );
 
 	AppAndroid			*mApp;
-	android_app			*mNativeApp; 
+	android_app			*mNativeApp;
 
 	WindowRef			mActiveWindow;
 	bool				mSetupHasBeenCalled;
@@ -127,7 +127,7 @@ public:
 	bool			    mFrameRateEnabled;
 	float				mFrameRate;
 	double				mNextFrameTime;
-	bool			    mQuitOnLastWindowClosed;	
+	bool			    mQuitOnLastWindowClosed;
 
 	std::list<class WindowImplAndroid*>	mWindows;
 	WindowRef 							mForegroundWindow;

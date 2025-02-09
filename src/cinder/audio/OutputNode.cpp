@@ -72,7 +72,7 @@ bool OutputNode::checkNotClipping()
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -127,7 +127,7 @@ void OutputDeviceNode::deviceParamsDidChange()
 }
 
 size_t OutputDeviceNode::getOutputSampleRate()
-{ 
+{
 	return getDevice()->getSampleRate();
 }
 

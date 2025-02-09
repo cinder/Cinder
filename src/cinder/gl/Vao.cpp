@@ -24,17 +24,17 @@
 		VaoImplEs for OpenGL ES 2
 		VaoImplCore for desktop OpenGL, both Core and Compatibility profile with approriate extensions
 		VaoImplSoftware for implementations without a native VAO class
-	
+
 	We don't support the old fixed function data (ie glVertexPointer() and friends).
-	
+
 	ci::gl::VAO caches the following state:
 		* ELEMENT_ARRAY_BUFFER_BINDING
 		* VERTEX_ATTRIB_ARRAY_BUFFER_BINDING per attribute
 		* All individual attribute data
-	
+
 	The full list is in Table 6.4 of the OpenGL 3.2 Core Profile spec,
 		http://www.opengl.org/registry/doc/glspec32.core.20090803.pdf
-	
+
 	Note that ARRAY_BUFFER_BINDING is NOT cached
 */
 
@@ -113,7 +113,7 @@ void Vao::replacementBindBegin()
 	mReplacementBindPrevious = mLayout;
 	mLayout.clear();
 	bind();
-	// a fresh VAO would 
+	// a fresh VAO would
 	mCtx->bindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 }
 
@@ -161,8 +161,8 @@ void Vao::setLabel( const std::string &label )
 #elif defined( CINDER_HAS_KHR_DEBUG )
 	env()->objectLabel( GL_VERTEX_ARRAY, mId, (GLsizei)label.size(), label.c_str() );
 #endif
-	
-/*	
+
+/*
 #if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
 	env()->objectLabel( GL_VERTEX_ARRAY_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
 #elif ! defined( CINDER_GL_ANGLE )
@@ -290,7 +290,7 @@ std::ostream& operator<<( std::ostream &os, const Vao &rhs )
 	if( ! rhs.mLabel.empty() )
 		os << "  Label: " << rhs.mLabel << std::endl;
 	os << "  " << rhs.getLayout();
-	
+
 	return os;
 }
 

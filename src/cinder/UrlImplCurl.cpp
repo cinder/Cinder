@@ -53,7 +53,7 @@ CurlLib::CurlLib()
 
 CurlLib::~CurlLib()
 {
-	curl_global_cleanup();	
+	curl_global_cleanup();
 }
 
 CurlLib* CurlLib::instance()
@@ -72,11 +72,11 @@ CurlLib* CurlLib::instance()
 IStreamUrlImplCurl::IStreamUrlImplCurl( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
 	: IStreamUrlImpl( user, password, options ), still_running( 1 ), mSizeCached( false ), mBufferFileOffset( 0 ), mStartedRead( false ),
 	mEffectiveUrl( 0 ), mResponseCode( 0 )
-{	
+{
 	if( ! CurlLib::instance() ) {
 		throw StreamExc(); // for some reason the CurlLib isn't initialized
 	}
-	
+
 	mMulti = curl_multi_init();
 
 	mCurl = curl_easy_init();
@@ -91,7 +91,7 @@ IStreamUrlImplCurl::IStreamUrlImplCurl( const std::string &url, const std::strin
 		curl_easy_setopt( mCurl, CURLOPT_USERPWD, mUserColonPassword.c_str() );
 		curl_easy_setopt( mCurl, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
 	}
-		
+
 	curl_multi_add_handle( mMulti, mCurl );
 
 	// we fill the buffer just to get things rolling
@@ -165,7 +165,7 @@ void IStreamUrlImplCurl::seekRelative( off_t relativeOffset )
 		throw StreamExc(); // need to implement this
 	}
 	else { // moving forward off the end of the buffer - keep buffering til we're in range
-		throw StreamExc(); // need to implement this		
+		throw StreamExc(); // need to implement this
 	}
 }
 
@@ -187,7 +187,7 @@ off_t IStreamUrlImplCurl::size() const
 	if( mSizeCached )
 		return mSize;
 	else {
-		if( still_running ) {			
+		if( still_running ) {
 			double tempSize = 0;
 			CURLcode result = curl_easy_getinfo( mCurl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &tempSize );
 			if( ( result == CURLE_OK ) && ( tempSize > 0 ) ) {
@@ -197,7 +197,7 @@ off_t IStreamUrlImplCurl::size() const
 			else
 				mSize = 0;
 		}
-		else { // transfer is done, so use CURLINFO_SIZE_DOWNLOAD 
+		else { // transfer is done, so use CURLINFO_SIZE_DOWNLOAD
 			double tempSize = 0;
 			CURLcode result = curl_easy_getinfo( mCurl, CURLINFO_SIZE_DOWNLOAD, &tempSize );
 			if( ( result == CURLE_OK ) && ( tempSize > 0 ) ) {
@@ -205,7 +205,7 @@ off_t IStreamUrlImplCurl::size() const
 				mSizeCached = true;
 			}
 			else
-				mSize = 0;			
+				mSize = 0;
 		}
 		return mSize;
 	}
@@ -216,13 +216,13 @@ void IStreamUrlImplCurl::fillBuffer( int wantBytes ) const
 	// first make sure we've started reading, and do so if not
 	if( ! mStartedRead ) {
 		while( curl_multi_perform( mMulti, &still_running ) == CURLM_CALL_MULTI_PERFORM );
-		if( ( bufferRemaining() == 0 ) && ( ! still_running ) ) {			
+		if( ( bufferRemaining() == 0 ) && ( ! still_running ) ) {
 			throw StreamExc();
 		}
-		
+
 		mStartedRead = true;
 	}
-	
+
     // only attempt to fill buffer if transactions still running and buffer
     // doesnt exceed required size already
     if( ( ! still_running ) || ( bufferRemaining() >= wantBytes ) )
@@ -271,7 +271,7 @@ void IStreamUrlImplCurl::fillBuffer( int wantBytes ) const
 			throw StreamExc( std::string( errorStr ) );
 		}
 
-		int rc; 
+		int rc;
 		if( -1 == maxfd ) {
 			struct timeval wait = { 0, 100 * 1000 };
 			rc = select( 0, nullptr, nullptr, nullptr, &wait );
@@ -279,7 +279,7 @@ void IStreamUrlImplCurl::fillBuffer( int wantBytes ) const
 		else {
 			rc = select( maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout );
 		}
-		
+
 		switch( rc ) {
 			// error
 			case -1:
@@ -303,7 +303,7 @@ void IStreamUrlImplCurl::fillBuffer( int wantBytes ) const
 void IStreamUrlImplCurl::IORead( void *dest, size_t size )
 {
 	fillBuffer( size );
-	
+
 	// check if theres data in the buffer - if not fillBuffer() either errored or EOF
 	if( bufferRemaining() < (off_t)size )
 		throw StreamExc();
@@ -315,12 +315,12 @@ void IStreamUrlImplCurl::IORead( void *dest, size_t size )
 size_t IStreamUrlImplCurl::readDataAvailable( void *dest, size_t maxSize )
 {
 	fillBuffer( maxSize );
-	
+
 	if( bufferRemaining() < (off_t)maxSize )
 		maxSize = bufferRemaining();
-		
+
 	memcpy( dest, mBuffer + mBufferOffset, maxSize );
-	
+
 	mBufferOffset += maxSize;
 	return maxSize;
 }
@@ -333,7 +333,7 @@ size_t IStreamUrlImplCurl::readDataAvailable( void *dest, size_t maxSize )
 	if( ! mResponseCode ) {
 		curl_easy_getinfo( mCurl, CURLINFO_RESPONSE_CODE, &mResponseCode );
 	}
-	
+
 	return mResponseCode;
 }
 
@@ -343,9 +343,9 @@ std::string	IStreamUrlImplCurl::getEffectiveUrl() const
 		fillBuffer( 1 );
 
 	if( ! mEffectiveUrl ) {
-		curl_easy_getinfo( mCurl, CURLINFO_EFFECTIVE_URL, &mEffectiveUrl ); 
+		curl_easy_getinfo( mCurl, CURLINFO_EFFECTIVE_URL, &mEffectiveUrl );
 	}
-	
+
 	return std::string( mEffectiveUrl );
 }*/
 

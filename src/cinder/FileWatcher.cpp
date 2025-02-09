@@ -46,7 +46,7 @@ class Watch : public std::enable_shared_from_this<Watch>, private Noncopyable {
 	void checkCurrent();
 	//! Remove any watches for \a filePath. If it is the last file associated with this Watch, discard
 	void unwatch( const fs::path &filePath );
-	//! Emit the signal callback. 
+	//! Emit the signal callback.
 	void emitCallback();
 	//! Enables or disables a Watch
 	void setEnabled( bool enable, const fs::path &filePath );
@@ -65,7 +65,7 @@ class Watch : public std::enable_shared_from_this<Watch>, private Noncopyable {
 		WatchItem( const fs::path& path, const fs::file_time_type& timeStamp, bool enabled )
 			: mFilePath( path ), mTimeStamp( timeStamp ), mEnabled( enabled ), mErrors( 0 )
 		{}
-		
+
 		fs::path			mFilePath;
 		fs::file_time_type	mTimeStamp;
 		bool				mEnabled;
@@ -123,7 +123,7 @@ void debugPrintWatches( const std::list<std::unique_ptr<Watch>>&watchList )
 
 	app::console() << str << std::endl;
 }
-    
+
 // Used for elapsed seconds without app context
 double getElapsedSeconds()
 {
@@ -181,7 +181,7 @@ void Watch::checkCurrent()
 		catch( fs::filesystem_error & ) {
 			/*
 			++item.mErrors;
-			
+
 			if( item.mErrors > 3 ) {
 				// TODO check to see what's wrong with the file.  Perhaps deleted?
 			}
@@ -190,14 +190,14 @@ void Watch::checkCurrent()
 	}
 }
 
-void Watch::unwatch( const fs::path &filePath ) 
+void Watch::unwatch( const fs::path &filePath )
 {
 	mWatchItems.erase( remove_if( mWatchItems.begin(), mWatchItems.end(),
 		[&filePath]( const WatchItem &item ) {
 			return item.mFilePath == filePath;
 		} ),
 		mWatchItems.end() );
-	
+
 	if( mWatchItems.empty() )
 		markDiscarded();
 }
@@ -215,13 +215,13 @@ void Watch::setEnabled( bool enable, const fs::path &filePath )
 	}
 }
 
-void Watch::emitCallback() 
+void Watch::emitCallback()
 {
 	WatchEvent event( mModifiedFilePaths );
 
 	mSignalChanged.emit( event );
 	setNeedsCallback( false );
-} 
+}
 
 // ----------------------------------------------------------------------------------------------------
 // FileWatcher
@@ -264,13 +264,13 @@ void FileWatcher::setConnectToAppUpdateEnabled( bool enable )
 
 	if( ! mConnectToAppUpdateEnabled && mConnectionAppUpdate.isConnected() )
 		mConnectionAppUpdate.disconnect();
-	
+
 	if( mConnectToAppUpdateEnabled && ! mConnectionAppUpdate.isConnected() && app::AppBase::get() )
 		connectAppUpdate();
 }
 
 signals::Connection FileWatcher::watch( const fs::path &filePath, const function<void ( const WatchEvent& )> &callback )
-{ 
+{
 	vector<fs::path> filePaths = { filePath };
 	return watch( filePaths, Options(), callback );
 }
@@ -282,7 +282,7 @@ signals::Connection FileWatcher::watch( const fs::path &filePath, const Options 
 }
 
 signals::Connection FileWatcher::watch( const vector<fs::path> &filePaths, const function<void ( const WatchEvent& )> &callback )
-{ 
+{
 	return watch( filePaths, Options(), callback );
 }
 
@@ -308,7 +308,7 @@ void FileWatcher::unwatch( const fs::path &filePath )
 	auto fullPath = findFullFilePath( filePath );
 
 	lock_guard<recursive_mutex> lock( mMutex );
-	
+
 	for( auto it = mWatchList.begin(); it != mWatchList.end(); /* */ ) {
 		const auto &watch = *it;
 		watch->unwatch( fullPath );
@@ -388,7 +388,7 @@ void FileWatcher::threadEntry()
 
             for( auto it = mWatchList.begin(); it != mWatchList.end(); /* */ ) {
                 const auto &watch = *it;
-                
+
                 // erase discarded
                 if( watch->isDiscarded() ) {
                     it = mWatchList.erase( it );
@@ -397,17 +397,17 @@ void FileWatcher::threadEntry()
                 // check if Watch's target has been modified and needs a callback, if not already marked.
                 if( ! watch->needsCallback() ) {
                     watch->checkCurrent();
-                    
+
                     // If the Watch needs a callback, move it to the front of the list
                     if( watch->needsCallback() && it != mWatchList.begin() ) {
                         mWatchList.splice( mWatchList.begin(), mWatchList, it );
                     }
                 }
-                
+
                 ++it;
             }
         }
-			
+
 		this_thread::sleep_for( chrono::duration<double>( mThreadUpdateInterval ) );
 	}
 }
@@ -417,7 +417,7 @@ void FileWatcher::update()
 	LOG_UPDATE( "elapsed seconds: " << getElapsedSeconds() );
 
 	// Note: if threadEntry sleeps less than an app frame, it can cause multiple updates() to be skipped.
-	
+
 	// try-lock so we don't block the main thread, if we fail to acquire the mutex then we skip this update
 	unique_lock<recursive_mutex> lock( mMutex, std::try_to_lock );
     if( ! lock.owns_lock() ) {
@@ -425,14 +425,14 @@ void FileWatcher::update()
     }
 
 	LOG_UPDATE( "\t - checking watches, elapsed seconds: " << getElapsedSeconds() );
-	
+
 	// Watches are sorted so that all that need a callback are in the beginning.
 	// So break when we hit the first one that doesn't need a callback
 	for( const auto &watch : mWatchList ) {
-		
+
 		if( ! watch->needsCallback() )
 			break;
-		
+
 		watch->emitCallback();
 	}
 }

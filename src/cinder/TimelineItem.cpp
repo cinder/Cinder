@@ -66,7 +66,7 @@ void TimelineItem::stepTo( float newTime, bool reverse )
 		mHasReverseStarted = true;
 		mHasStarted = false;
 		start( true );
-	}	
+	}
 	else if( newTime >= mStartTime ) {
 		float relTime;
 		if( mPingPong ) {
@@ -79,7 +79,7 @@ void TimelineItem::stepTo( float newTime, bool reverse )
 		}
 		else
 			relTime = math<float>::min( absTime * mInvDuration, 1 );
-		
+
 		if( ( ! mHasStarted ) && ( ! reverse ) ) {
 			mHasStarted = true;
 			mHasReverseStarted = false;
@@ -87,7 +87,7 @@ void TimelineItem::stepTo( float newTime, bool reverse )
 			loopStart();
 			start( false );
 		}
-		
+
 		float time = ( mUseAbsoluteTime ) ? absTime : relTime;
 
 		// accommodate a tween with a duration <= 0
@@ -151,7 +151,7 @@ void TimelineItem::setDuration( float duration )
 float TimelineItem::loopTime( float absTime )
 {
 	float result = absTime;
-	
+
 	if( mPingPong ) {
 		result = math<float>::fmod( result * mInvDuration, 2 ); // varies from 0-2
 		if( result <= 1 )

@@ -44,7 +44,7 @@
 #define CI_BREAK() { __debugbreak(); }
 //#define CI_BREAK() { __asm int 3; }
 #else
-#define CI_BREAK() 
+#define CI_BREAK()
 #endif
 
 namespace cinder { namespace app {
@@ -56,7 +56,7 @@ void checkGlStatus();
 RendererImplGlAngle::RendererImplGlAngle( RendererGl *renderer )
 	: mRenderer( renderer )
 {
-	
+
 }
 
 #if defined( CINDER_MSW_DESKTOP )
@@ -103,7 +103,7 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 #else
 	const EGLint displayAttributes[] = {
 		EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
-		EGL_ANGLE_DISPLAY_ALLOW_RENDER_TO_BACK_BUFFER, EGL_TRUE, 
+		EGL_ANGLE_DISPLAY_ALLOW_RENDER_TO_BACK_BUFFER, EGL_TRUE,
 		EGL_NONE,
 	};
 
@@ -154,7 +154,7 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 
 	mSurface = eglCreateWindowSurface( mDisplay, config, reinterpret_cast<IInspectable*>(surfaceCreationProperties), NULL );
 #endif
- 
+
 	auto err = eglGetError();
 	if( err != EGL_SUCCESS )
 		return false;

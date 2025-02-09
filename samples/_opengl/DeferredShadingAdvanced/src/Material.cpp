@@ -3,8 +3,8 @@
 using namespace ci;
 
 Material::Material()
-: mColorAmbient( ColorAf::gray( 0.2f ) ), mColorDiffuse( ColorAf::gray( 0.8f ) ), 
-mColorEmission( ColorAf::black() ), mColorSpecular( ColorAf::black() ), 
+: mColorAmbient( ColorAf::gray( 0.2f ) ), mColorDiffuse( ColorAf::gray( 0.8f ) ),
+mColorEmission( ColorAf::black() ), mColorSpecular( ColorAf::black() ),
 mShininess( 0.0f ), mPad0( 0 ), mPad1( 0 ), mPad2( 0 )
 {
 }

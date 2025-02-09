@@ -20,7 +20,7 @@ using namespace cinder::app;
 {
     [super dealloc];
 }
-	
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 #if defined( USE_RENDERER2D )
@@ -36,8 +36,8 @@ using namespace cinder::app;
 	mApp = new MyCinderApp;
 	mApp->setupCinderView( cinderView );
 	mApp->launch();
-	
-	colorWell.color = [NSColor colorWithCalibratedRed:mApp->mColor.r green:mApp->mColor.g blue:mApp->mColor.b alpha:1.0f]; 
+
+	colorWell.color = [NSColor colorWithCalibratedRed:mApp->mColor.r green:mApp->mColor.g blue:mApp->mColor.b alpha:1.0f];
 }
 
 - (IBAction)subdivisionSliderChanged:(id)sender

@@ -51,12 +51,12 @@ bool Sphere::intersects( const Ray &ray ) const
 
 		if( t > EPSILON_VALUE ) {
 			return true;
-		} 
+		}
 
 		t = (-b + e) / denom;    // larger root
 		if( t > EPSILON_VALUE ) {
 			return true;
-		} 
+		}
 	}
 
 	return false;
@@ -82,13 +82,13 @@ int Sphere::intersect( const Ray &ray, float *intersection ) const
 		if( t > EPSILON_VALUE ) {
 			*intersection = t;
 			return 1;
-		} 
+		}
 
 		t = (-b + e) / denom;    // larger root
 		if( t > EPSILON_VALUE ) {
 			*intersection = t;
 			return 1;
-		} 
+		}
 	}
 
 	return 0;
@@ -146,12 +146,12 @@ vec3 Sphere::closestPoint( const Ray &ray ) const
 		if( t > EPSILON_VALUE )
 			return ray.calcPosition( t );
 	}
-	
+
 	// doesn't intersect; closest point on line
 	t = dot( -diff, normalize(ray.getDirection()) );
 	vec3 onRay = ray.calcPosition( t );
 	return mCenter + normalize( onRay - mCenter ) * mRadius;
-	
+
 //	return ray.getDirection() * dot( ray.getDirection(), (mCenter - ray.getOrigin() ) );
 }
 
@@ -164,7 +164,7 @@ Sphere Sphere::calculateBoundingSphere( const vec3 *points, size_t numPoints )
 {
 	if( ! numPoints )
 		return Sphere( vec3( 0 ), 0 );
-	
+
 	// compute minimal and maximal bounds
 	vec3 min(points[0]), max(points[0]);
 	for( size_t i = 1; i < numPoints; ++i ) {
@@ -195,7 +195,7 @@ Sphere Sphere::calculateBoundingSphere( const vec3 *points, size_t numPoints )
 void Sphere::calcProjection( float focalLength, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const
 {
 	vec3 o( -mCenter.x, mCenter.y, mCenter.z );
-	
+
     float r2 = mRadius * mRadius;
 	float z2 = o.z * o.z;
 	float l2 = dot( o, o );
@@ -205,7 +205,7 @@ void Sphere::calcProjection( float focalLength, vec2 *outCenter, vec2 *outAxisA,
 	if( fabs( z2 - l2 ) > 0.00001f ) {
 		if( outAxisA )
 			*outAxisA = focalLength * sqrtf( -r2*(r2-l2)/((l2-z2)*(r2-z2)*(r2-z2)) ) * vec2( o.x, o.y );
-			
+
 		if( outAxisB )
 			*outAxisB = focalLength * sqrtf( fabs(-r2*(r2-l2)/((l2-z2)*(r2-z2)*(r2-l2))) ) * vec2( -o.y, o.x );
 	}
@@ -227,7 +227,7 @@ void Sphere::calcProjection( float focalLength, vec2 screenSizePixels, vec2 *out
 		result *= windowSize;
 		return result;
 	};
-	
+
 	vec2 center, axisA, axisB;
 	calcProjection( focalLength, &center, &axisA, &axisB );
 	if( outCenter )
@@ -241,11 +241,11 @@ void Sphere::calcProjection( float focalLength, vec2 screenSizePixels, vec2 *out
 float Sphere::calcProjectedArea( float focalLength, vec2 screenSizePixels ) const
 {
 	vec3 o( mCenter );
-	
+
     float r2 = mRadius * mRadius;
 	float z2 = o.z * o.z;
 	float l2 = dot( o, o );
-	
+
 	float area = -float( M_PI ) * focalLength * focalLength * r2 * sqrt( fabs((l2-r2)/(r2-z2)) ) / (r2-z2);
 	float aspectRatio = screenSizePixels.x / screenSizePixels.y;
 	return area * screenSizePixels.x * screenSizePixels.y * 0.25f / aspectRatio;

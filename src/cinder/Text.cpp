@@ -117,7 +117,7 @@ TextManager* TextManager::instance()
 {
 	if( ! TextManager::sInstance )
 		TextManager::sInstance = new TextManager;
-		
+
 	return TextManager::sInstance;
 }
 
@@ -204,13 +204,13 @@ void Line::calcExtents()
 		::CFAttributedStringRef runStr = cocoa::createCfAttributedString( runIt->mText, runIt->mFont, runIt->mColor );
 		::CFAttributedStringReplaceAttributedString( attrStr, ::CFRangeMake( ::CFAttributedStringGetLength( attrStr ), 0 ), runStr );
 		::CFRelease( runStr );
-	}	
+	}
 	// all done - coalesce
-	::CFAttributedStringEndEditing( attrStr );			
-	
+	::CFAttributedStringEndEditing( attrStr );
+
 	mCTLineRef = ::CTLineCreateWithAttributedString( attrStr );
 	::CFRelease( attrStr );
-	
+
 	CGFloat ascentCG, descentCG, leadingCG;
 	mWidth = ::CTLineGetTypographicBounds( mCTLineRef, &ascentCG, &descentCG, &leadingCG );
 	mAscent = ascentCG;
@@ -225,12 +225,12 @@ void Line::calcExtents()
 		Gdiplus::RectF sizeRect;
 		const Gdiplus::Font *font = runIt->mFont.getGdiplusFont();
 		TextManager::instance()->getGraphics()->MeasureString( (wchar_t*)&runIt->mWideText[0], -1, font, Gdiplus::PointF( 0, 0 ), &format, &sizeRect );
-		
+
 		runIt->mWidth = sizeRect.Width;
 		runIt->mAscent = runIt->mFont.getAscent();
 		runIt->mDescent = runIt->mFont.getDescent();
 		runIt->mLeading = runIt->mFont.getLeading();
-		
+
 		mWidth += sizeRect.Width;
 		mAscent = std::max( runIt->mFont.getAscent(), mAscent );
 		mDescent = std::max( runIt->mFont.getDescent(), mDescent );
@@ -241,7 +241,7 @@ void Line::calcExtents()
 	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
 	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
 		FT_Face face = runIt->mFont.getFreetypeFace();
-		
+
 		int width = 0;
 		for(string::iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt)
 		{
@@ -342,7 +342,7 @@ void draw_bitmap( FT_Int x, FT_Int y, FT_Bitmap* bitmap, const ColorA8u& color, 
 		 	if( i < 0 || j < 0 || i >= dstSize.x || j >= dstSize.y ) {
 				continue;
 			}
-			
+
 			size_t index = j*dstRowBytes + i*dstPixelInc;
 			uint8_t *data = dstData + index;
 			int dr = *(data + 0);
@@ -381,7 +381,7 @@ void Line::render( Surface &surface, float currentY, float xBorder, float maxWid
 		currentX = maxWidth - (mWidth + 1.0f) - xBorder;
   #else
 		currentX = maxWidth - mWidth - xBorder;
-  #endif		
+  #endif
 	}
 
 	for( vector<Run>::const_iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
@@ -418,7 +418,7 @@ TextLayout::TextLayout()
 {
 	// force any globals we need to be initialized, particularly GDI+ on Windows
 	TextManager::instance();
-	
+
 	mCurrentFont = Font::getDefault();
 	mCurrentColor = ColorA( 1, 1, 1, 0 );
 	mBackgroundColor = ColorA( 0, 0, 0, 0 );
@@ -441,7 +441,7 @@ void TextLayout::addLine( const string &line )
 	shared_ptr<Line> newLine( new Line() );
 	newLine->addRun( Run( line, mCurrentFont, mCurrentColor ) );
 	newLine->mJustification = Line::LEFT;
-	newLine->mLeadingOffset = mCurrentLeadingOffset;	
+	newLine->mLeadingOffset = mCurrentLeadingOffset;
 	mLines.push_back( newLine );
 }
 
@@ -500,7 +500,7 @@ void TextLayout::setColor( const ColorA &color )
 Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 {
 	Surface result;
-	
+
 	// determine the extents for all the lines and the result surface
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	float totalHeight = (float)mVerticalBorder;
@@ -576,7 +576,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	// high quality text rendering
 	offscreenGraphics->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
 	// fill the surface with the background color
-	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(mBackgroundColor.a * 255), (BYTE)(mBackgroundColor.r * 255), 
+	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(mBackgroundColor.a * 255), (BYTE)(mBackgroundColor.r * 255),
 			(BYTE)(mBackgroundColor.g * 255), (BYTE)(mBackgroundColor.b * 255) ) );
 
 	// walk the lines and render them, advancing our Y offset along the way
@@ -611,7 +611,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	float currentY = (float)mVerticalBorder;
 	for( deque<shared_ptr<Line>>::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
 		float adjCurrentY = currentY + (*lineIt)->mAscent + (*lineIt)->mLeadingOffset;
-		(*lineIt)->render( result, adjCurrentY, (float)mHorizontalBorder, (float)pixelWidth );	
+		(*lineIt)->render( result, adjCurrentY, (float)mHorizontalBorder, (float)pixelWidth );
 		currentY += (*lineIt)->mHeight;
 	}
 
@@ -634,7 +634,7 @@ Surface renderStringPow2( const string &str, const Font &font, const ColorA &col
 
 		::CGContextSelectFont( cgContext, font.getName().c_str(), font.getSize(), kCGEncodingMacRoman );
 		::CGContextSetTextDrawingMode( cgContext, kCGTextInvisible );
-		
+
 		::CGPoint startPoint = ::CGContextGetTextPosition( cgContext );
 		::CGContextShowText( cgContext, str.c_str(), str.length() );
 		::CGPoint endPoint = ::CGContextGetTextPosition( cgContext );
@@ -651,12 +651,12 @@ Surface renderStringPow2( const string &str, const Font &font, const ColorA &col
 	::CGContextSetRGBFillColor( cgContext, color.r, color.g, color.b, color.a );
 	::CGContextSetTextPosition( cgContext, 0, font.getDescent() + 1 );
 	::CGContextShowText( cgContext, str.c_str(), str.length() );
-	
+
 	if( baselineOffset )
 		*baselineOffset = font.getAscent() - pixelSize.y;
 	if( actualSize )
 		*actualSize = pixelSize;
-	
+
 	::CGContextRelease( cgContext );
 	return result;
 }
@@ -666,7 +666,7 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 	Line line;
 	line.addRun( Run( str, font, color ) );
 	line.mJustification = Line::LEFT;
-	line.mLeadingOffset = 0;	
+	line.mLeadingOffset = 0;
 	line.calcExtents();
 
 	float totalWidth = line.mWidth;
@@ -704,7 +704,7 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 	// high quality text rendering
 	offscreenGraphics->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
 	// fill the surface with the background color
-	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(0), (BYTE)(0), 
+	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(0), (BYTE)(0),
 			(BYTE)(0), (BYTE)(0) ) );
 
 	// walk the lines and render them, advancing our Y offset along the way
@@ -721,8 +721,8 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 	ip::fill( &result, ColorA( 0, 0, 0, 0 ) );
 
 	float currentY = line.mAscent + line.mLeadingOffset;
-	line.render( result, currentY, (float)0, (float)pixelWidth );	
-#endif	
+	line.render( result, currentY, (float)0, (float)pixelWidth );
+#endif
 
 	if( baselineOffset )
 		*baselineOffset = line.mDescent;
@@ -761,7 +761,7 @@ void TextBox::createLines() const
 		range.length = ::CTTypesetterSuggestLineBreak( typeSetter, range.location, maxWidth );
 		CTLineRef line = ::CTTypesetterCreateLine( typeSetter, range );
 		double lineWidth = ::CTLineGetTypographicBounds( line, &ascent, &descent, &leading );
-		
+
 		lineOffset.x = ::CTLineGetPenOffsetForFlush( line, flush, maxWidth );
 		lineOffset.y += ascent;
 		mLines.push_back( make_pair( shared_ptr<__CTLine>( (__CTLine*)line, ::CFRelease ), lineOffset ) );
@@ -773,7 +773,7 @@ void TextBox::createLines() const
 
 	::CFRelease( attrStr );
 	::CFRelease( typeSetter );
-  
+
 	mInvalid = false;
 }
 
@@ -793,11 +793,11 @@ vector<pair<uint16_t,vec2> > TextBox::measureGlyphs() const
 			CGGlyph glyphBuffer[glyphCount];
 			::CTRunGetPositions( runRef, range, points );
 			::CTRunGetGlyphs( runRef, range, glyphBuffer );
-			for( size_t t = 0; t < glyphCount; ++t )			
+			for( size_t t = 0; t < glyphCount; ++t )
 				result.push_back( make_pair( glyphBuffer[t], vec2( points[t].x, points[t].y ) + lineIt->second ) );
 		}
 	}
-	
+
 	return result;
 }
 
@@ -810,31 +810,31 @@ vec2 TextBox::measure() const
 Surface	TextBox::render( vec2 offset )
 {
 	createLines();
-	
+
 	float sizeX = ( mSize.x <= 0 ) ? mCalculatedSize.x : mSize.x;
 	float sizeY = ( mSize.y <= 0 ) ? mCalculatedSize.y : mSize.y;
 	sizeX = math<float>::ceil( sizeX );
 	sizeY = math<float>::ceil( sizeY );
-	
+
 	Surface result( (int)sizeX, (int)sizeY, true );
 	ip::fill( &result, mBackgroundColor );
 	::CGContextRef cgContext = cocoa::createCgBitmapContext( result );
 	if( ! cgContext )
 		return result;
-	
+
 	::CGContextSetTextMatrix( cgContext, CGAffineTransformIdentity );
-	
+
 	for( vector<pair<shared_ptr<const __CTLine>,vec2> >::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
 		::CGContextSetTextPosition( cgContext, lineIt->second.x + offset.x, sizeY - lineIt->second.y + offset.y );
 		::CTLineDraw( lineIt->first.get(), cgContext );
 	}
 	CGContextFlush( cgContext );
     CGContextRelease( cgContext );
-    
+
 	if( ! mPremultiplied )
 		ip::unpremultiply( &result );
 	else
-		result.setPremultiplied( true );	
+		result.setPremultiplied( true );
 
 	return result;
 }
@@ -924,9 +924,9 @@ vector<pair<uint16_t,vec2> > TextBox::measureGlyphs() const
 	int *dx = NULL;
 
 	::SelectObject( Font::getGlobalDc(), mFont.getHfont() );
-	
+
 	vector<string> mLines = calculateLineBreaks();
-	
+
 	float curY = 0;
 	for( vector<string>::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
 		std::u16string wideText = toUtf16( *lineIt );
@@ -968,7 +968,7 @@ vector<pair<uint16_t,vec2> > TextBox::measureGlyphs() const
 				return vector<pair<uint16_t,vec2> >(); // failure
 			}
 		}
-		
+
 		int xPos = 0;
 		for( unsigned int i = 0; i < gcpResults.nGlyphs; i++ ) {
 			result.push_back( std::make_pair( glyphIndices[i], vec2( xPos, curY ) ) );
@@ -989,7 +989,7 @@ vector<pair<uint16_t,vec2> > TextBox::measureGlyphs() const
 Surface	TextBox::render( vec2 offset )
 {
 	calculate();
-	
+
 	float sizeX = ( mSize.x <= 0 ) ? mCalculatedSize.x : mSize.x;
 	float sizeY = ( mSize.y <= 0 ) ? mCalculatedSize.y : mSize.y;
 	sizeX = math<float>::ceil( sizeX );
@@ -1005,7 +1005,7 @@ Surface	TextBox::render( vec2 offset )
 	// high quality text rendering
 	offscreenGraphics->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
 	// fill the surface with the background color
-	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(mBackgroundColor.a * 255), (BYTE)(mBackgroundColor.r * 255), 
+	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(mBackgroundColor.a * 255), (BYTE)(mBackgroundColor.r * 255),
 			(BYTE)(mBackgroundColor.g * 255), (BYTE)(mBackgroundColor.b * 255) ) );
 	const Gdiplus::Font *font = mFont.getGdiplusFont();
 	ColorA8u nativeColor( mColor );
@@ -1016,7 +1016,7 @@ Surface	TextBox::render( vec2 offset )
 	format.SetAlignment( align  ); format.SetLineAlignment( align );
 	Gdiplus::SolidBrush brush( Gdiplus::Color( nativeColor.a, nativeColor.r, nativeColor.g, nativeColor.b ) );
 	offscreenGraphics->DrawString( (wchar_t*)&mWideText[0], -1, font, Gdiplus::RectF( offset.x, offset.y, sizeX, sizeY ), &format, &brush );
-	
+
 	::GdiFlush();
 
 	delete offscreenBitmap;
@@ -1029,14 +1029,14 @@ Surface	TextBox::render( vec2 offset )
 
 void TextBox::calculate() const
 {
-	if( ! mInvalid ) {	
+	if( ! mInvalid ) {
 		return;
 	}
 
 	if( mText.empty() ) {
 		mCalculatedSize = vec2();
 		return;
-	}	
+	}
 
 	mCalculatedSize = vec2();
 	FT_Face face = mFont.getFreetypeFace();
@@ -1069,7 +1069,7 @@ vector<string> TextBox::calculateLineBreaks( const std::map<Font::Glyph, Font::G
 		mutable vector<string> *mStrings;
 	};
 	struct LineMeasure {
-		LineMeasure( int maxWidth, const Font &font, const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics = nullptr ) 
+		LineMeasure( int maxWidth, const Font &font, const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics = nullptr )
 			: mMaxWidth( maxWidth ), mFont( font.getFreetypeFace() ), mCachedGlyphMerics( cachedGlyphMetrics ) {}
 		bool operator()( const char *line, size_t len ) const {
 			if( mMaxWidth >= MAX_SIZE ) {
@@ -1085,7 +1085,7 @@ vector<string> TextBox::calculateLineBreaks( const std::map<Font::Glyph, Font::G
 				FT_UInt glyphIndex = FT_Get_Char_Index( mFont, ch );
 				if( nullptr != mCachedGlyphMerics ) {
 					auto iter = mCachedGlyphMerics->find( glyphIndex );
-					advance = iter->second.advance;		
+					advance = iter->second.advance;
 				}
 				else  {
 					FT_Load_Glyph( mFont, glyphIndex, FT_LOAD_DEFAULT );
@@ -1107,7 +1107,7 @@ vector<string> TextBox::calculateLineBreaks( const std::map<Font::Glyph, Font::G
 		FT_Face												mFont;
 		const std::map<Font::Glyph, Font::GlyphMetrics>* 	mCachedGlyphMerics;
 	};
-	std::function<void(const char *,size_t)> lineFn = LineProcessor( &result );		
+	std::function<void(const char *,size_t)> lineFn = LineProcessor( &result );
 	lineBreakUtf8( mText.c_str(), LineMeasure( ( mSize.x > 0 ) ? mSize.x : MAX_SIZE, mFont, cachedGlyphMetrics ), lineFn );
 
 	return result;
@@ -1146,7 +1146,7 @@ vector<pair<uint32_t,vec2>> TextBox::measureGlyphs( const std::map<Font::Glyph, 
 			result.push_back( std::make_pair( (uint32_t)glyphIndex, vec2( xPos, curY ) ) );
 
 			pen.x += advance.x;
-			pen.y += advance.y;	
+			pen.y += advance.y;
 		}
 
 		curY += mFont.getAscent() + mFont.getDescent();
@@ -1168,7 +1168,7 @@ Surface TextBox::render( vec2 offset )
 
 		float fullWidth = measure.getBaseline().x + measure.getWidth();
 		mCalculatedSize.x = std::max( mCalculatedSize.x, fullWidth );
-		mCalculatedSize.y += measure.getHeight();		
+		mCalculatedSize.y += measure.getHeight();
 	}
 
 	float sizeX = ( mSize.x <= 0 ) ? mCalculatedSize.x : mSize.x;
@@ -1177,17 +1177,17 @@ Surface TextBox::render( vec2 offset )
 	sizeY = math<float>::ceil( sizeY );
 	sizeX += offset.x;
 	sizeY += offset.y;
-	sizeY += 1.0f;	
+	sizeY += 1.0f;
 
-	// Give Android a bit of padding on the right	
-#if defined( CINDER_ANDROID )	
+	// Give Android a bit of padding on the right
+#if defined( CINDER_ANDROID )
 	sizeX += 3.0f;
 #endif
 
 	Surface result( (int)sizeX, (int)sizeY, true );
 	ip::fill( &result, mBackgroundColor );
 
-	uint8_t*	dstData = result.getData(); 
+	uint8_t*	dstData = result.getData();
 	size_t 		dstPixelInc = result.getPixelInc();
 	size_t 		dstRowBytes = result.getRowBytes();
 	ivec2 		dstSize = result.getSize();
@@ -1204,12 +1204,12 @@ Surface TextBox::render( vec2 offset )
 			penX = dstSize.x - (measure.getWidth() + offset.x + 3.0f);
 		}
 		else if( TextBox::CENTER == mAlign ) {
-			penX = 0.5f*(dstSize.x - measure.getWidth());		
+			penX = 0.5f*(dstSize.x - measure.getWidth());
 		}
 
 		FT_Vector pen = { (int)(penX*64.0f), (int)(penY*64.0f) };
 
-		std::u32string utf32Chars = ci::toUtf32( text );		
+		std::u32string utf32Chars = ci::toUtf32( text );
 		for( const auto& ch : utf32Chars ) {
 			FT_Set_Transform( face, nullptr, &pen );
 
@@ -1223,7 +1223,7 @@ Surface TextBox::render( vec2 offset )
 			}
 
 			pen.x += slot->advance.x;
-			pen.y += slot->advance.y;	
+			pen.y += slot->advance.y;
 		}
 
 		curY += measure.getHeight();
@@ -1233,7 +1233,7 @@ Surface TextBox::render( vec2 offset )
 		ip::unpremultiply( &result );
 	}
 	else {
-		result.setPremultiplied( true );		
+		result.setPremultiplied( true );
 	}
 
 	return result;

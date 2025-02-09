@@ -2,7 +2,7 @@
 
 
 * [X] check all cases:
-* 
+*
 * [X] version, no defines
 * [X] no version, no defines case
 * [X] version, with defines case
@@ -17,11 +17,11 @@
 * [X] no version, no defines, with include, comment at top
 * [X] version, defines, include
 * [X] original more complicated shader
-* 
+*
 * [X] test that the source-string-number is correct here, should go up to 2
 
 * variations:
-* 
+*
 * [X] versions 150 and 330+ handle #lines differently
 * [X] check #version 300 es that it is parsed correctly
 

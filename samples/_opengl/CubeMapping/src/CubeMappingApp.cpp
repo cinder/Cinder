@@ -1,6 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/FileWatcher.h"	
+#include "cinder/FileWatcher.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Log.h"
 #include "cinder/gl/gl.h"
@@ -55,10 +55,10 @@ void CubeMappingApp::setup()
 	// note: look in env_map.frag to optionally try out refraction instead of reflection.
 	fs::path envMapVert = "env_map.vert";
 	fs::path envMapFrag = "env_map.frag";
-	vector<fs::path> teapotShaders = { "env_map.vert", "env_map.frag" }; 
+	vector<fs::path> teapotShaders = { "env_map.vert", "env_map.frag" };
 	FileWatcher::instance().watch( teapotShaders, [this, teapotShaders]( const WatchEvent &event ) {
 		try {
-			auto glsl = gl::GlslProg::create( loadAsset( teapotShaders[0] ), loadAsset( teapotShaders[1] ) ); 
+			auto glsl = gl::GlslProg::create( loadAsset( teapotShaders[0] ), loadAsset( teapotShaders[1] ) );
 			mTeapotBatch = gl::Batch::create( geom::Teapot().subdivisions( 7 ), glsl );
 			mTeapotBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
 
@@ -78,9 +78,9 @@ void CubeMappingApp::setup()
 		CI_LOG_EXCEPTION( "Shader Failed (sky_box)", e );
 	}
 #endif
-	
+
 	gl::enableDepthRead();
-	gl::enableDepthWrite();	
+	gl::enableDepthWrite();
 }
 
 void CubeMappingApp::resize()
@@ -92,7 +92,7 @@ void CubeMappingApp::update()
 {
 	// move the camera semi-randomly around based on time
 	mCam.lookAt( vec3( 8 * sin( getElapsedSeconds() / 1 + 10 ), 7 * sin( getElapsedSeconds() / 2 ), 8 * cos( getElapsedSeconds() / 4 + 11 ) ), vec3( 0 ) );
-	
+
 	// rotate the object (teapot) a bit each frame
 	mObjectRotation *= rotate( 0.04f, normalize( vec3( 0.1f, 1, 0.1f ) ) );
 }
@@ -113,7 +113,7 @@ void CubeMappingApp::draw()
 
 		mTeapotBatch->draw();
 	}
-	
+
 	// draw sky box
 	{
 		gl::ScopedModelMatrix modelScope;

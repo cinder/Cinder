@@ -46,9 +46,9 @@ class CI_API Triangulator {
 	//! Constructs using a PolyLine2f.
 	Triangulator( const PolyLine2f &polyLine );
 
-	//! Adds a Shape2d to the tesselation. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space	
+	//! Adds a Shape2d to the tesselation. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space
 	void		addShape( const Shape2d &path, float approximationScale = 1.0f );
-	//! Adds a Path2d to the tesselation. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space	
+	//! Adds a Path2d to the tesselation. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space
 	void		addPath( const Path2d &path, float approximationScale = 1.0f );
 	//! Adds a PolyLine2f to the tesselation.
 	void		addPolyLine( const PolyLine2f &polyLine );
@@ -59,13 +59,13 @@ class CI_API Triangulator {
 	TriMesh		calcMesh( Winding winding = WINDING_ODD );
 	//! Performs the tesselation, returning a TriMesh2d
 	TriMeshRef	createMesh( Winding winding = WINDING_ODD );
-	
+
 	class CI_API Exception : public cinder::Exception {
 	};
-	
-  protected:	
+
+  protected:
 	void			allocate();
-	
+
 	int									mAllocated;
 	std::shared_ptr<TESStesselator>		mTess;
 };

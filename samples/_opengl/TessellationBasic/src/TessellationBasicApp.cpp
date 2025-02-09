@@ -50,7 +50,7 @@ void TessellationShaderApp::setup()
 	fs::path glDir = "es31a";
 	mRadius = 400.0f;
 #endif
-	
+
 	try {
 		mGlsl = gl::GlslProg::create( gl::GlslProg::Format()
 									 .vertex( loadAsset( glDir / "0_vert.glsl" ) )
@@ -73,7 +73,7 @@ void TessellationShaderApp::setup()
 	mBatch->vertex( vec2( 0 , 1 ) );
 	mBatch->color( 0.0f, 0.0f, 1.0f );
 	mBatch->vertex( vec2( -1, -1 ) );
-	
+
 	gl::patchParameteri( GL_PATCH_VERTICES, 3 );
 }
 
@@ -107,15 +107,15 @@ void TessellationShaderApp::draw()
 #if ! defined( CINDER_GL_ES )
 	gl::enableWireframe();
 #endif
-	
+
 	gl::setMatricesWindow( getWindowSize() );
 	gl::translate( getWindowCenter() );
-	
+
 	gl::ScopedGlslProg glslProg( mGlsl );
 	mGlsl->uniform( "uTessLevelInner", (float)mTessLevelInner );
 	mGlsl->uniform( "uTessLevelOuter", (float)mTessLevelOuter );
-	mGlsl->uniform( "uRadius", mRadius );	
-	
+	mGlsl->uniform( "uRadius", mRadius );
+
 	mBatch->draw();
 
 #if ! defined( CINDER_GL_ES )

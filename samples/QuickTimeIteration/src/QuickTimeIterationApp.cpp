@@ -55,7 +55,7 @@ void QTimeIterApp::keyDown( KeyEvent event )
 		if( ! moviePath.empty() )
 			loadMovieFile( moviePath );
 	}
-	
+
 	// these keys only make sense if there is an active movie
 	if( mMovie ) {
 		if( event.getCode() == KeyEvent::KEY_LEFT ) {
@@ -101,7 +101,7 @@ void QTimeIterApp::loadMovieFile( const fs::path &moviePath )
 	}
 	catch( ci::Exception &exc ) {
 		console() << "Exception caught trying to load the movie from path: " << moviePath << ", what: " << exc.what() << std::endl;
-	}	
+	}
 }
 
 void QTimeIterApp::fileDrop( FileDropEvent event )
@@ -122,7 +122,7 @@ void QTimeIterApp::draw()
 
 	if( ( ! mMovie ) || ( ! mSurface ) )
 		return;
-		
+
 	// We are using OpenGL to draw the frames here, so we'll make a texture out of the surface
 	gl::draw( gl::Texture::create( *mSurface ) );
 }

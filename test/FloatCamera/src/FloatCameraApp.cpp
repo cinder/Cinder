@@ -15,7 +15,7 @@ class FloatCameraApp : public App {
     void mouseDrag( MouseEvent event ) override;
 	void update() override;
 	void draw() override;
-    
+
     CameraPersp mCam;
     CameraUi mCamUi;
     gl::BatchRef mCube;
@@ -26,12 +26,12 @@ void FloatCameraApp::setup()
 {
     gl::enableDepthRead();
     gl::enableDepthWrite();
-    
+
     mCam = CameraPersp( getWindowWidth(), getWindowHeight(), 60, 0.1, 1000.0f );
     mCam.lookAt( vec3(0, 0, 5), vec3(0) );
-    
+
     mCamUi = CameraUi( &mCam );
-    
+
     mCube = gl::Batch::create( geom::Cube(), gl::getStockShader( gl::ShaderDef().color().lambert() ) );
 }
 

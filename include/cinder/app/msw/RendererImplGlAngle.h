@@ -44,7 +44,7 @@ class RendererImplGlAngle : public RendererImplMsw {
  public:
 	RendererImplGlAngle( class RendererGl *renderer );
 
-#if defined( CINDER_MSW_DESKTOP )	
+#if defined( CINDER_MSW_DESKTOP )
 	bool	initialize( WindowImplMsw *windowImpl, RendererRef sharedRenderer );
 #elif defined( CINDER_UWP )
 	bool	initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
@@ -58,7 +58,7 @@ class RendererImplGlAngle : public RendererImplMsw {
 
  protected:
 	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc );
-	
+
 	class RendererGl	*mRenderer;
 	gl::ContextRef		mCinderContext;
 

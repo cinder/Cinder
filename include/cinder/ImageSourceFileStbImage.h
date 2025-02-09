@@ -1,6 +1,6 @@
 /*
  Copyright (c) 2015, The Cinder Project, All rights reserved.
- 
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -43,7 +43,7 @@ class ImageSourceFileStbImage : public ImageSource {
 
   protected:
 	ImageSourceFileStbImage( DataSourceRef dataSourceRef, ImageSource::Options options );
-	
+
 	uint8_t		*mData8u;
 	float		*mData32f;
 	size_t		mRowBytes;

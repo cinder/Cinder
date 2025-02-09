@@ -188,7 +188,7 @@ namespace ImGui {
 	{
 		if( mOpened ) ImGui::EndMainMenuBar();
 	}
-	
+
 	ScopedMenuBar::ScopedMenuBar() : mOpened{ ImGui::BeginMenuBar() } { }
 	ScopedMenuBar::~ScopedMenuBar()
 	{
@@ -326,7 +326,7 @@ namespace ImGui {
 	bool ListBox( const char* label, int* currIndex, const std::vector<std::string>& values, int height_in_items )
 	{
 		if( values.empty() ) return false;
-		
+
 		bool changed = false;
 		if( ImGui::ListBoxHeader( label, (int)values.size(), height_in_items ) ) {
 			for( int i = 0; i < (int)values.size(); ++i ) {
@@ -452,9 +452,9 @@ static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window ) {
 		return;
 
 	ImGui_ImplOpenGL3_NewFrame();
-	
+
 	ImGuiIO& io = ImGui::GetIO();
-	IM_ASSERT( io.Fonts->IsBuilt() ); // Font atlas needs to be built, call renderer _NewFrame() function e.g. ImGui_ImplOpenGL3_NewFrame() 
+	IM_ASSERT( io.Fonts->IsBuilt() ); // Font atlas needs to be built, call renderer _NewFrame() function e.g. ImGui_ImplOpenGL3_NewFrame()
 
 	// Setup display size
 	io.DisplaySize = window->toPixels( window->getSize() );
@@ -555,10 +555,10 @@ bool ImGui::Initialize( const ImGui::Options& options )
 
 	IMGUI_CHECKVERSION();
 	auto context = ImGui::CreateContext();
-	
+
 	ImGuiIO& io = ImGui::GetIO();
 	if( options.isKeyboardEnabled() ) io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-	if( options.isGamepadEnabled() ) io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls	
+	if( options.isGamepadEnabled() ) io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
 	ci::app::WindowRef window = options.getWindow();
 	io.DisplaySize = ci::vec2( window->toPixels( window->getSize() ) );
 	io.DeltaTime = 1.0f / 60.0f;
@@ -578,13 +578,13 @@ bool ImGui::Initialize( const ImGui::Options& options )
 #else
 	ImGui_ImplOpenGL3_Init();
 #endif
-	
+
 	ImGui_ImplCinder_Init( window, options );
 	if( options.isAutoRenderEnabled() ) {
 		ImGui_ImplCinder_NewFrameGuard( window );
 		sTriggerNewFrame = true;
 	}
-	
+
 	sAppConnections += ci::app::App::get()->getSignalCleanup().connect( [context]() {
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplCinder_Shutdown();

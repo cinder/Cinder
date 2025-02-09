@@ -74,7 +74,7 @@ bool exists( const ci::fs::path& path )
 	return ci::fs::exists( path ) || ci::app::android::AssetFileSystem_exists( path );
 }
 
-std::string strReplaceAllCopy( const std::string& source, const std::string& search, const std::string& replace) 
+std::string strReplaceAllCopy( const std::string& source, const std::string& search, const std::string& replace)
 {
     std::string result = source;
     size_t pos = 0;

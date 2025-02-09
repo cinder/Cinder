@@ -32,7 +32,7 @@ void grayscale( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface )
 
 	int8_t srcPixelInc = srcSurface.getPixelInc();
 	uint8_t srcRedOffset = srcSurface.getRedOffset(), srcGreenOffset = srcSurface.getGreenOffset(), srcBlueOffset = srcSurface.getBlueOffset();
-	uint8_t dstRedOffset = dstSurface->getRedOffset(), dstGreenOffset = dstSurface->getGreenOffset(), dstBlueOffset = dstSurface->getBlueOffset();	
+	uint8_t dstRedOffset = dstSurface->getRedOffset(), dstGreenOffset = dstSurface->getGreenOffset(), dstBlueOffset = dstSurface->getBlueOffset();
 	int8_t dstPixelInc = dstSurface->getPixelInc();
 	for( int32_t y = 0; y < area.getHeight(); ++y ) {
 		T *dstPtr = dstSurface->getData( ivec2( area.getX1(), y ) );
@@ -90,7 +90,7 @@ void grayscale( const Surface8u &srcSurface, Channel8u *dstChannel )
 
 #define grayscale_PROTOTYPES(T)\
 	template CI_API void grayscale( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface );
-	
+
 template CI_API void grayscale( const SurfaceT<float> &srcSurface, ChannelT<float> *dstChannel );
 
 // These should match CHANNEL_TYPES

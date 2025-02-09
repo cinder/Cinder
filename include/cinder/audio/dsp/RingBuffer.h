@@ -179,8 +179,8 @@ class RingBufferT {
 
 		return writeIndex + mAllocatedSize - readIndex;
 	}
-	
-	
+
+
 	T						*mData;
 	size_t					mAllocatedSize;
 	std::atomic<size_t>		mWriteIndex, mReadIndex;

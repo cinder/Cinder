@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2015, The Cinder Project, All rights reserved.
- 
- Portions Copyright (c) 2013, Microsoft Open Technologies, Inc. 
+
+ Portions Copyright (c) 2013, Microsoft Open Technologies, Inc.
  All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
@@ -66,8 +66,8 @@ void AppWinRt::initialize( AppWinRt::Settings *settings, ::Platform::Array<::Pla
 void AppWinRt::executeLaunch( const std::function<AppWinRt*()> &appFactoryFn )
 {
 	sAppFactoryFn = appFactoryFn;
-	auto cinderFrameworkViewSource = ref new CinderFrameworkViewSource(); 
-	CoreApplication::Run( cinderFrameworkViewSource ); 
+	auto cinderFrameworkViewSource = ref new CinderFrameworkViewSource();
+	CoreApplication::Run( cinderFrameworkViewSource );
 }
 
 AppWinRt* AppWinRt::create()
@@ -191,12 +191,12 @@ void AppWinRt::windowSizeChange( Windows::UI::Core::CoreWindow^ sender )
 	findWindowForCoreWindow( sender )->sizeChanged();
 }
 
-void AppWinRt::handlePointerDown( CoreWindow^ sender, PointerEventArgs^ args ) 
+void AppWinRt::handlePointerDown( CoreWindow^ sender, PointerEventArgs^ args )
 {
 	findWindowForCoreWindow( sender )->handlePointerDown( args );
 }
 
-void AppWinRt::handlePointerMoved( CoreWindow^ sender, PointerEventArgs^ args ) 
+void AppWinRt::handlePointerMoved( CoreWindow^ sender, PointerEventArgs^ args )
 {
 	findWindowForCoreWindow( sender )->handlePointerMoved( args );
 }

@@ -13,7 +13,7 @@ class BasicAppMultiWindow : public App {
   public:
 	void setup();
 	void createNewWindow();
-	
+
 	void mouseDrag( MouseEvent event );
 	void keyDown( KeyEvent event );
 	void draw();
@@ -25,7 +25,7 @@ class WindowData {
 	WindowData()
 		: mColor( Color( CM_HSV, randFloat(), 0.8f, 0.8f ) ) // a random color
 	{}
-  
+
 	Color			mColor;
 	list<vec2>		mPoints; // the points drawn into this window
 };
@@ -34,7 +34,7 @@ void BasicAppMultiWindow::setup()
 {
 	// for the default window we need to provide an instance of WindowData
 	getWindow()->setUserData( new WindowData );
-	
+
 	createNewWindow();
 }
 
@@ -42,7 +42,7 @@ void BasicAppMultiWindow::createNewWindow()
 {
 	app::WindowRef newWindow = createWindow( Window::Format().size( 400, 400 ) );
 	newWindow->setUserData( new WindowData );
-	
+
 	// for demonstration purposes, we'll connect a lambda unique to this window which fires on close
 	int uniqueId = getNumWindows();
 	newWindow->getSignalClose().connect(
@@ -53,7 +53,7 @@ void BasicAppMultiWindow::createNewWindow()
 void BasicAppMultiWindow::mouseDrag( MouseEvent event )
 {
 	WindowData *data = getWindow()->getUserData<WindowData>();
-	
+
 	// add this point to the list
 	data->mPoints.push_back( event.getPos() );
 }
@@ -72,7 +72,7 @@ void BasicAppMultiWindow::draw()
 
 	WindowData *data = getWindow()->getUserData<WindowData>();
 
-	gl::color( data->mColor );	
+	gl::color( data->mColor );
 	gl::begin( GL_LINE_STRIP );
 	for( auto pointIter = data->mPoints.begin(); pointIter != data->mPoints.end(); ++pointIter ) {
 		gl::vertex( *pointIter );

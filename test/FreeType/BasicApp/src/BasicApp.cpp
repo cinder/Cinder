@@ -59,7 +59,7 @@ void BasicApp::keyDown( KeyEvent event )
 void BasicApp::draw()
 {
 	// Clear the contents of the window. This call will clear
-	// both the color and depth buffers. 
+	// both the color and depth buffers.
 	gl::clear( Color::gray( 0.1f ) );
 
 	// Set the current draw color to orange by setting values for

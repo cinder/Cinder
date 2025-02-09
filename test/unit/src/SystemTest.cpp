@@ -12,7 +12,7 @@ TEST_CASE("System", "[noisy]")
 	console() << "System information:" << std::endl;
 #if ! defined( CINDER_LINUX )
     // Currently none of these utility functions are implemented on linux
-    
+
   #if ! defined( CINDER_WINRT )
     #if ! defined( CINDER_MSW )
 	console() << " OS Version " << System::getOsMajorVersion() << "." << System::getOsMinorVersion() << "." << System::getOsBugFixVersion() << std::endl;

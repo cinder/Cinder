@@ -21,7 +21,7 @@ using namespace ci::app;
 using namespace std;
 
 class FlickrTestMTApp : public App {
-  public:		
+  public:
 	~FlickrTestMTApp();
 
 	void setup() override;
@@ -71,11 +71,11 @@ void FlickrTestMTApp::loadImagesThreadFn( gl::ContextRef context )
 			auto urlSource = loadUrl( urls.back() );
 			auto imageSource = loadImage( urlSource );
 			auto tex = gl::Texture::create( imageSource );
-			
+
 			// we need to wait on a fence before alerting the primary thread that the Texture is ready
 			auto fence = gl::Sync::create();
 			fence->clientWaitSync();
-			
+
 			mImages->pushFront( tex );
 			urls.pop_back();
 		}
@@ -90,13 +90,13 @@ void FlickrTestMTApp::update()
 	double timeSinceLastImage = getElapsedSeconds() - mLastTime;
 	if( ( timeSinceLastImage > 2.5 ) && mImages->isNotEmpty() ) {
 		mLastTexture = mTexture; // the "last" texture is now the current text
-		
+
 		mImages->popBack( &mTexture );
-		
+
 		mLastTime = getElapsedSeconds();
 		// blend from 0 to 1 over 1.5sec
 		timeline().apply( &mFade, 0.0f, 1.0f, 1.5f );
-	}	
+	}
 }
 
 void FlickrTestMTApp::draw()

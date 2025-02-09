@@ -57,7 +57,7 @@ Area findNonTransparentArea( const SurfaceT<T> &surface, const Area &unclippedBo
 	if( ! surface.hasAlpha() ) {
 		return surface.getBounds();
 	}
-	
+
 	int32_t topLine, bottomLine;
 	int32_t leftColumn, rightColumn;
 	// find the top and bottom lines

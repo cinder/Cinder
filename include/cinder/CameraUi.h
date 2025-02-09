@@ -37,7 +37,7 @@ class CI_API CameraUi {
 	CameraUi( CameraPersp *camera, const app::WindowRef &window = nullptr, int signalPriority = 0 );
 	CameraUi( const CameraUi &rhs );
 	~CameraUi();
-	
+
 	CameraUi& operator=( const CameraUi &rhs );
 
 	//! Connects to mouseDown, mouseDrag, mouseWheel and resize signals of \a window, with optional priority \a signalPriority
@@ -55,7 +55,7 @@ class CI_API CameraUi {
 
 	//! Signal emitted whenever the user modifies the camera
 	signals::Signal<void()>&	getSignalCameraChange();
-	
+
 	void mouseDown( app::MouseEvent &event );
 	void mouseUp( app::MouseEvent &event );
 	void mouseWheel( app::MouseEvent &event );
@@ -78,24 +78,24 @@ class CI_API CameraUi {
 	void	setMouseWheelMultiplier( float multiplier ) { mMouseWheelMultiplier = multiplier; }
 	//! Returns the multiplier on mouse wheel zooming. Default is \c 1.2.
 	float	getMouseWheelMultiplier() const { return mMouseWheelMultiplier; }
-	
+
 	//! Sets the minimum allowable pivot distance. Default is \c 1.0. If the user dollies closer than \a minPivotDistance the pivotDistance remains \a minPivotDistance.
 	void	setMinimumPivotDistance( float minPivotDistance ) { mMinimumPivotDistance = minPivotDistance; }
 	//! Returns the minimum allowable pivot distance. Default is \c 1.0.
 	float	getMinimumPivotDistance() const { return mMinimumPivotDistance; }
-	
+
  private:
 	enum	{ ACTION_NONE, ACTION_ZOOM, ACTION_PAN, ACTION_TUMBLE };
 
 	ivec2	getWindowSize() const;
- 
+
 	vec2				mInitialMousePos;
 	CameraPersp			mInitialCam;
 	CameraPersp			*mCamera;
 	float				mInitialPivotDistance;
 	float				mMouseWheelMultiplier, mMinimumPivotDistance;
 	int					mLastAction;
-	
+
 	ivec2					mWindowSize; // used when mWindow is null
 	app::WindowRef			mWindow;
 	bool					mEnabled;

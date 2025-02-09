@@ -16,10 +16,10 @@ class TessellationBezierApp : public App {
 	void mouseDrag( MouseEvent event ) override;
 	void mouseUp( MouseEvent event ) override;
 	void draw() override;
-	
+
 	int		mSelectedIndex;
 	vec2	mVertices[NUM_POINTS];
-	
+
 	gl::GlslProgRef		mGlslProg;
 	gl::VboMeshRef		mBezierControlMesh;
 	gl::BatchRef		mBezierBatch;
@@ -48,11 +48,11 @@ void TessellationBezierApp::setup()
 															.tessellationEval( loadAsset( glDir / "bezier.tese" ) )
 															.fragment( loadAsset( glDir / "bezier.frag" ) ) );
 	mGlslProg->uniform( "uSubdivisions", SUBDIVISIONS );
-															
+
 	// a VertBatch would be fine for a simple mesh like ours but for more vertices we'd want to use a technique like this.
 	mBezierControlMesh = gl::VboMesh::create( NUM_POINTS, GL_PATCHES, { gl::VboMesh::Layout().attrib( geom::POSITION, 2 ) } );
 	mBezierControlMesh->bufferAttrib( geom::POSITION, sizeof(vec2) * NUM_POINTS, &mVertices[0] );
-	
+
 	mBezierBatch = gl::Batch::create( mBezierControlMesh, mGlslProg );
 }
 
@@ -76,7 +76,7 @@ void TessellationBezierApp::mouseDrag( MouseEvent event )
 	if( mSelectedIndex > -1 ) {
 		mVertices[mSelectedIndex] = event.getPos();
 		// update the points of our mesh
-		mBezierControlMesh->bufferAttrib( geom::POSITION, sizeof(vec2) * NUM_POINTS, &mVertices[0] );		
+		mBezierControlMesh->bufferAttrib( geom::POSITION, sizeof(vec2) * NUM_POINTS, &mVertices[0] );
 	}
 }
 
@@ -107,7 +107,7 @@ void TessellationBezierApp::draw()
 	gl::color( 1, 0.5f, 0.25f );
 	gl::patchParameteri( GL_PATCH_VERTICES, 4 );
 	mBezierBatch->draw();
-	
+
 	for( size_t i = 0; i < NUM_POINTS; ++i ) {
 		if( mSelectedIndex == i )
 			gl::color( 1, 1, 0 );

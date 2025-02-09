@@ -46,7 +46,7 @@ void premultiply( SurfaceT<T> *surface )
 		for( int32_t x = 0; x < clippedArea.getWidth(); ++x ) {
 			// The basic formula for unpremultiplication is to divide by the alpha
 			T alpha = dstPtr[alphaOffset];
-			
+
 			dstPtr[redOffset] = CHANTRAIT<T>::premultiply( dstPtr[redOffset], alpha );
 			dstPtr[greenOffset] = CHANTRAIT<T>::premultiply( dstPtr[greenOffset], alpha );
 			dstPtr[blueOffset] = CHANTRAIT<T>::premultiply( dstPtr[blueOffset], alpha );
@@ -82,7 +82,7 @@ void unpremultiply<uint8_t>( SurfaceT<uint8_t> *surface )
 			}
 			dstPtr += pixelInc;
 		}
-	}	
+	}
 }
 
 template<>
@@ -110,11 +110,11 @@ void unpremultiply<float>( SurfaceT<float> *surface )
 			}
 			dstPtr += pixelInc;
 		}
-	}	
+	}
 }
 
 template CI_API void premultiply( SurfaceT<uint8_t> *Surface );
 template CI_API void premultiply( SurfaceT<uint16_t> *Surface );
-template CI_API void premultiply( SurfaceT<float> *Surface );	
+template CI_API void premultiply( SurfaceT<float> *Surface );
 
 } } // namespace cinder::ip

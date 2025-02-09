@@ -13,7 +13,7 @@
 ci::app::AppIPhone *gApp;
 
 int main(int argc, char *argv[])
-{    
+{
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	gApp = new TestApp;
     int retVal = UIApplicationMain(argc, argv, nil, nil);

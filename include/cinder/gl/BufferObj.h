@@ -35,9 +35,9 @@ typedef std::shared_ptr<class BufferObj>	BufferObjRef;
 class CI_API BufferObj {
   public:
 	~BufferObj();
-	
+
 	static BufferObjRef create( GLenum target, GLsizeiptr allocationSize, const void *data, GLenum usage );
-	
+
 	//! Binds to the associated target.
 	void		bind() const;
 	//! Binds to an arbitrary target \a target.
@@ -45,7 +45,7 @@ class CI_API BufferObj {
 	//! Unbinds from the associated target.
 	void		unbind() const;
 
-	//! Analogous to glBufferData()	
+	//! Analogous to glBufferData()
 	void		bufferData( GLsizeiptr size, const GLvoid *data, GLenum usage );
 	//! Analogous to glBufferSubData()
 	void		bufferSubData( GLintptr offset, GLsizeiptr size, const GLvoid *data );
@@ -57,7 +57,7 @@ class CI_API BufferObj {
 	void		copyData( GLsizeiptr size, const GLvoid *data );
 	//! Reallocates the buffer if its size is smaller than \a minimumSize. This destroys the contents of the buffer if it must be reallocated.
 	void		ensureMinimumSize( GLsizeiptr minimumSize );
-	
+
 #if defined( CINDER_GL_HAS_MAP_BUFFER )
 	//! Analogous to glMapBuffer(). \a access must be \c GL_READ_ONLY, \c GL_WRITE_ONLY, or \c GL_READ_WRITE. On iOS ES 2 only \c GL_WRITE_ONLY_OES is valid.
 	void*				map( GLenum access ) const;
@@ -69,7 +69,7 @@ class CI_API BufferObj {
 	//! Invalidates the Buffer's existing contents and maps it for writing. Preferable to mapWriteOnly() when invalidation is acceptable. Abstracts glMapBuffer() vs. glMapBufferRange() with appropriate write-only parameters for the platform.
 	void*				mapReplace();
 #endif
-	
+
 #if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 	//! Analogous to glMapBufferRange(). On iOS ES 2 only \c GL_WRITE_ONLY_OES is valid.
 	void*				mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield access ) const;
@@ -78,13 +78,13 @@ class CI_API BufferObj {
 #if defined( CINDER_GL_HAS_MAP_BUFFER ) || defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 	void				unmap() const;
 #endif
-	
+
 	GLuint				getId() const { return mId; }
 	size_t				getSize() const;
-	
+
 	GLenum				getTarget() const { return mTarget; }
 	void				setTarget( GLenum target );
-	
+
 	GLenum				getUsage() const;
 	void				setUsage( GLenum usage );
 
@@ -95,7 +95,7 @@ class CI_API BufferObj {
 	const std::string&	getLabel() const { return mLabel; }
 	//! Sets the debugging label associated with the Buffer. Calls glObjectLabel() when available.
 	void				setLabel( const std::string &label );
-	
+
 	//! Analogous to glBufferStorage .
 	void				bufferStorage( GLsizeiptr size, const void* data, GLbitfield flags ) const;
 	//! Analogous to glNamedBufferStorage.
@@ -103,16 +103,16 @@ class CI_API BufferObj {
   protected:
 	BufferObj( GLenum target );
 	BufferObj( GLenum target, GLsizeiptr allocationSize, const void *data, GLenum usage );
-	
+
 	GLuint				mId;
 	GLsizeiptr			mSize;
 	GLenum				mTarget;
 	GLenum				mUsage;
 	std::string			mLabel; // debug label
-	
+
 	friend CI_API std::ostream& operator<<( std::ostream &os, const BufferObj &rhs );
 };
 
 CI_API std::ostream& operator<<( std::ostream &os, const BufferObj &rhs );
-	
+
 } }

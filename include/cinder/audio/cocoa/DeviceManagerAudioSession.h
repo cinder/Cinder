@@ -66,7 +66,7 @@ class DeviceManagerAudioSession : public DeviceManager {
  private:
 	const DeviceRef&				getRemoteIODevice();
 	std::string						getSessionCategory();
-	
+
 	void							activateSession();
 
 	DeviceRef mRemoteIODevice;

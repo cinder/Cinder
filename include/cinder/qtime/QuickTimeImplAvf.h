@@ -1,16 +1,16 @@
 /*
  Copyright (c) 2014, The Cinder Project, All rights reserved.
- 
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
- 
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
- 
+
  * Redistributions of source code must retain the above copyright notice, this list of conditions and
  the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
  the following disclaimer in the documentation and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -56,7 +56,7 @@ typedef CVBufferRef CVImageBufferRef;
 	class NSArray;
 	class NSError;
 	class NSDictionary;
-	// -- 
+	// --
 	class MovieDelegate;
 #endif
 
@@ -65,25 +65,25 @@ namespace cinder { namespace qtime {
 class MovieResponder;
 class MovieLoader;
 typedef std::shared_ptr<MovieLoader> MovieLoaderRef;
-	
+
 class MovieBase {
   public:
 	virtual		~MovieBase();
-	
+
 	//! Returns the width of the movie in pixels
 	int32_t		getWidth() const { return mWidth; }
 	//! Returns the height of the movie in pixels
 	int32_t		getHeight() const { return mHeight; }
 	//! Returns the size of the movie in pixels
-	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }	
+	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }
 	//! Returns the movie's aspect ratio, the ratio of its width to its height
 	float		getAspectRatio() const { return static_cast<float>(mWidth) / static_cast<float>(mHeight); }
 	//! the Area defining the Movie's bounds in pixels: [0,0]-[width,height]
 	Area		getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
-	
+
 	//! Returns the movie's pixel aspect ratio. Returns 1.0 if the movie does not contain an explicit pixel aspect ratio.
 	float		getPixelAspectRatio() const;
-	
+
 	//! Returns whether the movie has loaded and buffered enough to playback without interruption
 	bool		checkPlaythroughOk();
 	//! Returns whether the movie is in a loaded state, implying its structures are ready for reading but it may not be ready for playback
@@ -149,33 +149,33 @@ class MovieBase {
 	void		play( bool toggle = false );
 	//! Stops playback
 	void		stop();
-	
+
 	//! Returns the native AvFoundation Player data structure
 	AVPlayer*	getPlayerHandle() const { return mPlayer; }
-	
+
 	signals::Signal<void()>&	getNewFrameSignal() { return mSignalNewFrame; }
 	signals::Signal<void()>&	getReadySignal() { return mSignalReady; }
 	signals::Signal<void()>&	getCancelledSignal() { return mSignalCancelled; }
 	signals::Signal<void()>&	getEndedSignal() { return mSignalEnded; }
 	signals::Signal<void()>&	getJumpedSignal() { return mSignalJumped; }
 	signals::Signal<void()>&	getOutputWasFlushedSignal() { return mSignalOutputWasFlushed; }
-	
+
  protected:
 	MovieBase();
 	void init();
 	void initFromUrl( const Url& url );
 	void initFromPath( const fs::path& filePath );
 	void initFromLoader( const MovieLoader& loader );
-	
+
 	void loadAsset();
 	void updateFrame();
 	uint32_t countFrames() const;
 	void processAssetTracks( AVAsset* asset );
 	void createPlayerItemOutput( const AVPlayerItem* playerItem );
-	
+
 	void lock() { mMutex.lock(); }
 	void unlock() { mMutex.unlock(); }
-	
+
 	void removeObservers();
 	void addObservers();
 
@@ -184,7 +184,7 @@ class MovieBase {
 	virtual void deallocateVisualContext() = 0;
 	virtual void newFrame( CVImageBufferRef cvImage ) = 0;
 	virtual void releaseFrame() = 0;
-			
+
 	int32_t						mWidth, mHeight;
 	int32_t						mFrameCount;
 	float						mFrameRate;
@@ -194,14 +194,14 @@ class MovieBase {
 	bool						mPlayingForward, mLoop, mPalindrome;
 	bool						mHasAudio, mHasVideo;
 	bool						mPlaying;	// required to auto-start the movie
-	
+
 	AVPlayer*					mPlayer;
 	AVPlayerItem*				mPlayerItem;
 	AVURLAsset*					mAsset;
 	AVPlayerItemVideoOutput*	mPlayerVideoOutput;
 
 	std::mutex					mMutex;
-	
+
 	signals::Signal<void()>		mSignalNewFrame, mSignalReady, mSignalCancelled, mSignalEnded, mSignalJumped, mSignalOutputWasFlushed;
 
 	// internal callbacks used from NSObject delegate
@@ -210,7 +210,7 @@ class MovieBase {
 	void playerItemCancelled();
 	void playerItemJumped();
 	void outputWasFlushed( AVPlayerItemOutput* output );
-	
+
 	friend class MovieResponder;
 	MovieResponder* mResponder;
 	MovieDelegate* mPlayerDelegate;
@@ -233,7 +233,7 @@ class MovieSurface : public MovieBase {
 	MovieSurface( const Url& url );
 	MovieSurface( const fs::path& path );
 	MovieSurface( const MovieLoader& loader );
-	
+
 	NSDictionary*	avPlayerItemOutputDictionary() const override;
 	void			allocateVisualContext() override { /* no-op */ }
 	void			deallocateVisualContext() override { /* no-op */ }
@@ -247,26 +247,26 @@ class MovieResponder {
   public:
 	MovieResponder(MovieBase* parent = 0) : mParent(parent) {}
 	~MovieResponder() {}
-	
+
 	void playerReadyCallback() { mParent->playerReady(); }
 	void playerItemDidReachEndCallback() { mParent->playerItemEnded(); }
 	void playerItemDidNotReachEndCallback() { mParent->playerItemCancelled(); }
 	void playerItemTimeJumpedCallback() { mParent->playerItemJumped(); }
 	void outputSequenceWasFlushedCallback(AVPlayerItemOutput* output) { mParent->outputWasFlushed(output); }
-	
+
   private:
 	MovieBase* const mParent;
 };
-	
+
 
 class MovieLoader {
   public:
 	MovieLoader() {}
 	MovieLoader( const Url &url );
 	~MovieLoader();
-	
+
 	static MovieLoaderRef	create( const Url &url ) { return std::shared_ptr<MovieLoader>( new MovieLoader( url ) ); }
-	
+
 	//! Returns whether the movie is in a loaded state, implying its structures are ready for reading but it may not be ready for playback
 	bool	checkLoaded() const;
 	//! Returns whether the movie is playable, implying the movie is fully formed and can be played but media data is still downloading
@@ -275,29 +275,29 @@ class MovieLoader {
 	bool	checkPlaythroughOk() const;
 	//! Returns whether the movie has content protection applied to it
 	bool	checkProtection() const;
-	
+
 	//! Waits until the movie is in a loaded state, which implies its structures are ready for reading but it is not ready for playback
 	void	waitForLoaded() const;
 	//! Waits until the movie is in a playable state, implying the movie is fully formed and can be played but media data is still downloading
 	void	waitForPlayable() const;
 	//! Waits until the movie is ready for playthrough, implying media data is still downloading, but all data is expected to arrive before it is needed
 	void	waitForPlayThroughOk() const;
-	
+
 	//! Returns whether the object is considered to own the movie asset (and thus will destroy it upon deletion)
 	bool	ownsMovie() const { return mOwnsMovie; }
-	
+
 	//! Returns the original Url that the MovieLoader is loading
 	const Url&		getUrl() const { return mUrl; }
-	
+
 	//! Returns the native QuickTime Movie data structure but still maintains ownership of it
 	const AVPlayer*	getMovieHandle() const { return mPlayer; }
-	
+
 	//! Returns the native QuickTime Movie and marks itself as no longer the owner. In general you should not call this.
 	AVPlayer*		transferMovieHandle() const { mOwnsMovie = false; return mPlayer; }
-	
+
   protected:
 	void	updateLoadState() const;
-	
+
 	AVPlayer*		mPlayer;
 	Url				mUrl;
 	mutable bool	mLoaded, mBufferFull, mBufferEmpty, mPlayable, mProtected, mPlayThroughOK, mOwnsMovie;
@@ -318,9 +318,9 @@ class AvfUrlInvalidExc : public AvfExc {
 };
 
 class AvfErrorLoadingExc : public AvfExc {
-};	
+};
 
 class AvfTextureErrorExc : public AvfExc {
-};	
-	
+};
+
 } } // namespace cinder::qtime

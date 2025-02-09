@@ -29,7 +29,7 @@ class VboMeshApp : public App {
   private:
 	gl::VboMeshRef	mVboMesh;
 	gl::TextureRef	mTexture;
-	
+
 	CameraPersp		mCamera;
 	CameraUi		mCamUi;
 };
@@ -49,7 +49,7 @@ void VboMeshApp::setup()
 	mVboMesh = gl::VboMesh::create( plane, bufferLayout );
 
 	mTexture = gl::Texture::create( loadImage( loadResource( RES_IMAGE ) ), gl::Texture::Format().loadTopDown() );
-	
+
 	mCamUi = CameraUi( &mCamera, getWindow() );
 }
 

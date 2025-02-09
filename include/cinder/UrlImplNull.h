@@ -29,7 +29,7 @@ namespace cinder {
 
 class IStreamUrlImplNull : public IStreamUrlImpl {
   public:
-	IStreamUrlImplNull( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options ) 
+	IStreamUrlImplNull( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
 		: IStreamUrlImpl( user, password, options ) {}
 	virtual ~IStreamUrlImplNull() {}
 
@@ -38,13 +38,13 @@ class IStreamUrlImplNull : public IStreamUrlImpl {
 	virtual void		seekRelative( off_t relativeOffset ) {}
 	virtual off_t		tell() const { return -1; }
 	virtual off_t		size() const { return -1; }
-	
+
 	virtual bool		isEof() const { return true; }
 	virtual void		IORead( void *t, size_t size ) {}
 
 private:
 	ci::BufferRef 		mData;
-	off_t 				mOffset;	
+	off_t 				mOffset;
 };
 
 } // namespace cinder

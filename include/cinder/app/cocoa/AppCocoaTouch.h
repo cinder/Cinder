@@ -50,7 +50,7 @@ class AppCocoaTouch : public AppBase {
 		void		setStatusBarEnabled( bool enable = true ) { mStatusBarEnabled = enable; }
 		//! Returns whether the system status bar is visible initially. Default is \c false.
 		bool		isStatusBarEnabled() const { return mStatusBarEnabled; }
-		
+
 	  private:
 		bool		mStatusBarEnabled;
 	};
@@ -67,7 +67,7 @@ class AppCocoaTouch : public AppBase {
 	signals::Signal<void()>&	getSignalMemoryWarning() { return mSignalMemoryWarning; }
 	void 						emitMemoryWarning();
 
-	//! Returns the signal emitted when an orientation change may occur, allowing the user to specify which orientations are permitted (any connection can forbid a given orientation).  The connected std::function must return an \t InterfaceOrientation bitmask. 
+	//! Returns the signal emitted when an orientation change may occur, allowing the user to specify which orientations are permitted (any connection can forbid a given orientation).  The connected std::function must return an \t InterfaceOrientation bitmask.
 	EventSignalSupportedOrientations&	getSignalSupportedOrientations() { return mSignalSupportedOrientations; }
 	//! Emits a signal to ask the user what orientations are supported.
 	uint32_t							emitSupportedOrientations();
@@ -180,7 +180,7 @@ class AppCocoaTouch : public AppBase {
 	bool	isStatusBarVisible() const;
 	//! Hides the system status bar
 	void	hideStatusBar( StatusBarAnimation animation = StatusBarAnimation::NONE );
-	
+
 	float	getFrameRate() const override;
 	void	setFrameRate( float frameRate ) override;
 	//! Overidden to always return \a true on mobile
@@ -212,7 +212,7 @@ class AppCocoaTouch : public AppBase {
 
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );
-		
+
 	static AppCocoaTouch	*sInstance;
 	AppImplCocoaTouch		*mImpl;
 

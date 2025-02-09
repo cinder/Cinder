@@ -81,13 +81,13 @@ static GWorldPtr sDefaultGWorld;
 void startQuickTime()
 {
 	static bool initialized = false;
-	
+
 	if( initialized )
 		return;
-		
-#if defined( CINDER_MSW )	
+
+#if defined( CINDER_MSW )
 	::InitializeQTML( 0L );
-#endif	
+#endif
 	::EnterMovies();
 	initialized = true;
 
@@ -107,7 +107,7 @@ float MovieBase::getPixelAspectRatio() const
 		Media media = ::GetTrackMedia(track);
 		if( media ) {
 			ImageDescriptionHandle idh;
-			SampleDescriptionHandle sdh = (SampleDescriptionHandle)::NewHandle( 0 );			
+			SampleDescriptionHandle sdh = (SampleDescriptionHandle)::NewHandle( 0 );
 			::GetMediaSampleDescription( media, 1, sdh );
 			idh = (ImageDescriptionHandle)sdh;
 			long count = 0;
@@ -116,7 +116,7 @@ float MovieBase::getPixelAspectRatio() const
 				PixelAspectRatioImageDescriptionExtension ext;
 				::GetImageDescriptionExtension( idh, NULL, 'pasp', 1 );
 				::ICMImageDescriptionGetProperty( idh, kQTPropertyClass_ImageDescription, kICMImageDescriptionPropertyID_PixelAspectRatio, sizeof(ext), &ext, NULL );
-			
+
 				aspectRatio = ext.hSpacing / (float)ext.vSpacing;
 			}
 
@@ -127,12 +127,12 @@ float MovieBase::getPixelAspectRatio() const
 	return aspectRatio;
 }
 
-	
+
 // We shouldn't call an abstract virtual from the constructor (specifically getObj()), so we have a two-phase construction, an empty constructor and this
 void MovieBase::initFromLoader( const MovieLoader &loader )
 {
 	startQuickTime();
-	
+
 	loader.waitForLoaded();
 	getObj()->mMovie = loader.transferMovieHandle();
 
@@ -177,7 +177,7 @@ void MovieBase::initFromDataSource( DataSourceRef dataSourceRef, const std::stri
 }
 
 void MovieBase::init()
-{	
+{
 	getObj()->mLoaded = false;
 	getObj()->mPlayable = false;
 	getObj()->mFrameCount = -1;
@@ -188,7 +188,7 @@ void MovieBase::init()
 	getObj()->mFFTNumChannels = getObj()->mFFTNumBandLevels = 0;
 	getObj()->mVisualContext = 0;
 
-	::Rect bounds;	
+	::Rect bounds;
 	::GetMovieNaturalBoundsRect( getObj()->mMovie, &bounds );
 	getObj()->mWidth = bounds.right - bounds.left;
 	getObj()->mHeight = bounds.bottom - bounds.top;
@@ -248,7 +248,7 @@ bool MovieBase::checkPlayable()
 	return getObj()->mPlayable;
 }
 
-//! \see http://developer.apple.com/mac/library/qa/qa2001/qa1262.html Technical Q&A QA1262	
+//! \see http://developer.apple.com/mac/library/qa/qa2001/qa1262.html Technical Q&A QA1262
 float MovieBase::getFramerate() const
 {
 	int32_t ct = getNumFrames();
@@ -263,7 +263,7 @@ int32_t	MovieBase::getNumFrames() const
 	if( getObj()->mFrameCount < 0 ) {
 		getObj()->mFrameCount = countFrames( getObj()->mMovie );
 	}
-	
+
 	return getObj()->mFrameCount;
 }
 
@@ -290,7 +290,7 @@ bool MovieBase::hasAlpha() const
 			}
 		}
 	}
-	
+
 	return false;
 }
 
@@ -320,7 +320,7 @@ void MovieBase::seekToFrame( int frame )
 {
 	long        frameCount = 0;
 	TimeValue   curMovieTime = 0, lastGoodTime = 0;
-	
+
 	OSType types[] = { VisualMediaCharacteristic };
 	while( ( frameCount < frame ) && ( curMovieTime >= 0 ) ) {
 		::GetMovieNextInterestingTime( getObj()->mMovie, nextTimeStep, 1, types, curMovieTime, fixed1, &curMovieTime, NULL );
@@ -351,9 +351,9 @@ void MovieBase::setActiveSegment( float startTime, float duration )
 		timeBase = ::GetMovieTimeBase( getObj()->mMovie );
 		oldFlags = flags = ::GetTimeBaseFlags( timeBase );
 		flags &= ~loopTimeBase;
-		flags &= ~palindromeLoopTimeBase;		
+		flags &= ~palindromeLoopTimeBase;
 		::SetTimeBaseFlags( timeBase, flags );
-		
+
 		::SetMovieActiveSegment( getObj()->mMovie, ::TimeValue( startTime * ::GetMovieTimeScale( getObj()->mMovie ) ), ::TimeValue( duration * ::GetMovieTimeScale( getObj()->mMovie ) ) );
 		::SetMovieTimeValue( getObj()->mMovie, ::TimeValue( startTime * ::GetMovieTimeScale( getObj()->mMovie ) ) );
 
@@ -366,16 +366,16 @@ void MovieBase::resetActiveSegment()
 {
 	getObj()->lock();
 		::SetMovieActiveSegment( getObj()->mMovie, -1, -1 );
-	getObj()->unlock();		
+	getObj()->unlock();
 }
-	
-int32_t MovieBase::countFrames( ::Movie theMovie ) 
-{  
+
+int32_t MovieBase::countFrames( ::Movie theMovie )
+{
 	long        frameCount = 0;
 	TimeValue   curMovieTime = 0;
 
-	OSType types[] = { VisualMediaCharacteristic }; 
-	
+	OSType types[] = { VisualMediaCharacteristic };
+
 	while( curMovieTime >= 0 ) {
 		::GetMovieNextInterestingTime( theMovie, nextTimeStep, 1, types, curMovieTime, fixed1, &curMovieTime, NULL );
 		frameCount++;
@@ -398,20 +398,20 @@ void MovieBase::setLoop( bool aLoop, bool aPalindrome )
 	if( getObj()->mLoop ) {
 		if( getObj()->mPalindrome ) {
 			flags |= loopTimeBase;
-			flags |= palindromeLoopTimeBase;		
+			flags |= palindromeLoopTimeBase;
 			::SetMoviePlayHints( getObj()->mMovie, hintsLoop, hintsLoop );
 			::SetMoviePlayHints( getObj()->mMovie, hintsPalindrome, hintsPalindrome );
 		}
 		else {
 			flags |= loopTimeBase;
-			flags &= ~palindromeLoopTimeBase;		
+			flags &= ~palindromeLoopTimeBase;
 			::SetMoviePlayHints( getObj()->mMovie, hintsLoop, hintsLoop );
 			::SetMoviePlayHints( getObj()->mMovie, 0, hintsPalindrome );
 		}
 	}
 	else {
 		flags &= ~loopTimeBase;
-		flags &= ~palindromeLoopTimeBase;		
+		flags &= ~palindromeLoopTimeBase;
 		::SetMoviePlayHints( getObj()->mMovie, 0, hintsLoop | hintsPalindrome );
 	}
 
@@ -430,28 +430,28 @@ TimeValue MovieBase::getStartTimeOfFirstSample() const
 void MovieBase::stepForward()
 {
 	TimeValue curMovieTime;
-	
+
 	TimeValue oldTime = ::GetMovieTime( getObj()->mMovie, NULL );
 	OSType types[] = { VisualMediaCharacteristic/*, AudioMediaCharacteristic*/ };
 	::GetMovieNextInterestingTime( getObj()->mMovie, nextTimeStep, 1, types, oldTime, fixed1, &curMovieTime, NULL );
 	if( curMovieTime != -1 ) { // hit the end
 		::SetMovieTimeValue( getObj()->mMovie, curMovieTime );
 	}
-	
+
 	::MoviesTask( getObj()->mMovie, 0 );
 }
 
 void MovieBase::stepBackward()
 {
 	TimeValue curMovieTime;
-	
+
 	TimeValue oldTime = ::GetMovieTime( getObj()->mMovie, NULL );
 	OSType types[] = { VisualMediaCharacteristic/*, AudioMediaCharacteristic*/ };
 	::GetMovieNextInterestingTime( getObj()->mMovie, nextTimeStep, 1, types, oldTime, FixMul(Long2Fix(-1), fixed1), &curMovieTime, NULL );
 	if( curMovieTime != -1 ) { // hit the end
 		::SetMovieTimeValue( getObj()->mMovie, curMovieTime );
 	}
-	
+
 	::MoviesTask( getObj()->mMovie, 0 );
 }
 
@@ -463,10 +463,10 @@ void MovieBase::setRate( float rate )
 bool MovieBase::checkNewFrame()
 {
 	bool result;
-	
+
 	getObj()->lock();
 		if( (QTVisualContextRef)getObj()->mVisualContext ) {
-			::MoviesTask( getObj()->mMovie, 0 );	
+			::MoviesTask( getObj()->mMovie, 0 );
 			::QTVisualContextTask( (QTVisualContextRef)getObj()->mVisualContext );
 			result = ::QTVisualContextIsNewImageAvailable( (QTVisualContextRef)getObj()->mVisualContext, nil );
 		}
@@ -474,7 +474,7 @@ bool MovieBase::checkNewFrame()
 			result = false;
 		}
 	getObj()->unlock();
-	
+
 	return result;
 }
 
@@ -485,9 +485,9 @@ void MovieBase::updateFrame()
 	::MoviesTask( getObj()->mMovie, 0 );
 	if( (QTVisualContextRef)getObj()->mVisualContext ) {
 		::QTVisualContextTask( (QTVisualContextRef)getObj()->mVisualContext );
-		if( ::QTVisualContextIsNewImageAvailable( (QTVisualContextRef)getObj()->mVisualContext, nil ) ) {		
+		if( ::QTVisualContextIsNewImageAvailable( (QTVisualContextRef)getObj()->mVisualContext, nil ) ) {
 			getObj()->releaseFrame();
-			
+
 			CVImageBufferRef newImageRef = NULL;
 			long tv = ::GetMovieTime( getObj()->mMovie, NULL );
 			OSStatus err = ::QTVisualContextCopyImageForTime( (QTVisualContextRef)getObj()->mVisualContext, kCFAllocatorDefault, NULL, &newImageRef );
@@ -495,7 +495,7 @@ void MovieBase::updateFrame()
 				getObj()->newFrame( newImageRef );
 
 			if( getObj()->mNewFrameCallback && newImageRef ) {
-				
+
 				/*CVAttachmentMode mode;
 				CFDictionaryRef attachments = CVBufferGetAttachments( newImageRef, kCVAttachmentMode_ShouldPropagate );
 				NSLog( @"attach: %@", attachments );
@@ -533,7 +533,7 @@ void MovieBase::setupFft( FourCharCode code, uint32_t bandNum, uint8_t channelNu
 	// free an existing FFTData
 	if( getObj()->mFFTData )
 		free( (void*)getObj()->mFFTData );
-	
+
 	// these values all imply failure
 	getObj()->mFFTData = NULL;
 	getObj()->mFFTNumBandLevels = 0;
@@ -547,13 +547,13 @@ void MovieBase::setupFft( FourCharCode code, uint32_t bandNum, uint8_t channelNu
 	}
 	else {
 		getObj()->mFFTData = (QTAudioFrequencyLevels*) malloc( sizeof(QTAudioFrequencyLevels) + sizeof(Float32) * ( channelNum * bandNum - 1 ) );
-		
+
 		if( getObj()->mFFTData == NULL ) {
 			throw QuickTimeExcFft();
 		}
 
 		getObj()->mFFTNumBandLevels = bandNum;
-		getObj()->mFFTNumChannels = channelNum;		
+		getObj()->mFFTNumChannels = channelNum;
 		getObj()->mFFTData->numChannels = getObj()->mFFTNumChannels;
 		getObj()->mFFTData->numFrequencyBands = getObj()->mFFTNumBandLevels;
 	}
@@ -576,7 +576,7 @@ void MovieBase::setupMultiChannelFft( uint32_t bandNum )
     UInt32 size = 0;
     UInt32 numChannels = 0;
     OSStatus err;
-	
+
 	err = QTGetMoviePropertyInfo( getObj()->mMovie, kQTPropertyClass_Audio, kQTAudioPropertyID_DeviceChannelLayout, NULL, &size, NULL );
 
     throw QuickTimeExcFft();
@@ -585,7 +585,7 @@ void MovieBase::setupMultiChannelFft( uint32_t bandNum )
     layout = (AudioChannelLayout*)calloc(1, size);
     if( NULL == layout ) {
 	    throw QuickTimeExcFft();
-    } 
+    }
 
     // get the device layout from the movie
     err = QTGetMovieProperty( getObj()->mMovie, kQTPropertyClass_Audio, kQTAudioPropertyID_DeviceChannelLayout, size, layout, NULL );
@@ -597,7 +597,7 @@ void MovieBase::setupMultiChannelFft( uint32_t bandNum )
                    kAudioChannelLayoutTag_UseChannelDescriptions) ?
                    layout->mNumberChannelDescriptions :
                    AudioChannelLayoutTag_GetNumberOfChannels(layout->mChannelLayoutTag);
-    free( layout );	
+    free( layout );
 
 	setupFft( kQTAudioMeter_DeviceMix, bandNum, (uint8_t)numChannels );
 }
@@ -611,7 +611,7 @@ uint32_t MovieBase::getNumFftChannels() const
 {
 	return getObj()->mFFTNumChannels;
 }
-	
+
 float* MovieBase::getFftData() const
 {
 	if( getObj()->mFFTData != NULL ) {
@@ -619,7 +619,7 @@ float* MovieBase::getFftData() const
 		if( err ) {
 			throw QuickTimeExcFft();
 		}
-		
+
 		return getObj()->mFFTData->level;
 	}
 	else {
@@ -724,11 +724,11 @@ void MovieSurface::Obj::releaseFrame()
 SurfaceRef MovieSurface::getSurface()
 {
 	updateFrame();
-	
+
 	mObj->lock();
 		SurfaceRef result = mObj->mSurface;
 	mObj->unlock();
-	
+
 	return result;
 }
 
@@ -795,14 +795,14 @@ void MovieLoader::updateLoadState() const
 	mObj->mPlayable = ( state >= kMovieLoadStatePlayable );
 	mObj->mPlaythroughOK = ( state >= kMovieLoadStatePlaythroughOK );
 }
-	
+
 MovieLoader::Obj::Obj( const Url &url )
 	: mUrl( url )
 {
 	startQuickTime();
 
 	mMovie = openMovieFromUrl( url );
-	
+
 	mLoaded = mPlayable = mPlaythroughOK = false;
 	mOwnsMovie = true;
 };
@@ -816,7 +816,7 @@ MovieLoader::Obj::~Obj()
 int32_t getQuickTimeVersion()
 {
 	SInt32 result = 0;
-	
+
 #if defined( CINDER_MSW )
 	if( InitializeQTML( 0L ) == noErr ) {
 #endif
@@ -825,7 +825,7 @@ int32_t getQuickTimeVersion()
 		error = ::Gestalt( gestaltQuickTime, &result );
 		if( error != noErr )
 			return 0;
-#if defined( CINDER_MSW )				
+#if defined( CINDER_MSW )
 		TerminateQTML();
 	}
 	else // error means QuickTime is unavailable
@@ -839,14 +839,14 @@ std::string getQuickTimeVersionString()
 	int32_t v = getQuickTimeVersion();
 	if( ! v ) // 0 implies not installed, so return empty string
 		return std::string();
-	
+
 	// 0x05020000 -> 5.0.2   5: bits 31 to 24    0: bits 23 to 20    2: 19 to 16
 	int a = ( v & 0xFF000000 ) >> 24;
 	int b = ( ( v & 0x00F00000 ) >> 20 );
 	int c = ( ( v & 0x000F0000 ) >> 16 );
 	std::stringstream ss;
 	ss << a << "." << b;
-	if( c ) 
+	if( c )
 		ss << "." << c;
 	return ss.str();
 }

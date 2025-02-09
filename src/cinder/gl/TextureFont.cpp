@@ -44,7 +44,7 @@
 	#undef min
 	#undef max
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	#include "cinder/linux/FreeTypeUtil.h" 
+	#include "cinder/linux/FreeTypeUtil.h"
 #endif
 #include "cinder/Unicode.h"
 
@@ -75,7 +75,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 	glyphExtents.y = ceil( glyphExtents.y );
 
 	int glyphsWide = floor( mFormat.getTextureWidth() / (glyphExtents.x+3) );
-	int glyphsTall = floor( mFormat.getTextureHeight() / (glyphExtents.y+5) );	
+	int glyphsTall = floor( mFormat.getTextureHeight() / (glyphExtents.y+5) );
 	uint8_t curGlyphIndex = 0, curTextureIndex = 0;
 	vec2 curOffset;
 	CGGlyph renderGlyphs[glyphsWide*glyphsTall];
@@ -108,7 +108,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 		++glyphIt;
 		if( ( ++curGlyphIndex == glyphsWide * glyphsTall ) || ( glyphIt == glyphs.end() ) ) {
 			::CGContextShowGlyphsAtPositions( cgContext, renderGlyphs, renderPositions, curGlyphIndex );
-			
+
 			// pass premultiply and mipmapping preferences to Texture::Format
 			if( ! mFormat.getPremultiply() )
 				ip::unpremultiply( &surface );
@@ -140,7 +140,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), dataFormat, mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
 			mTextures.back()->setTopDown( true );
 
-			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );			
+			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );
 			curOffset = vec2();
 			curGlyphIndex = 0;
 			++curTextureIndex;
@@ -231,7 +231,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 		return;
 
 	int glyphsWide = mFormat.getTextureWidth() / glyphExtents.x;
-	int glyphsTall = mFormat.getTextureHeight() / glyphExtents.y;	
+	int glyphsTall = mFormat.getTextureHeight() / glyphExtents.y;
 	uint8_t curGlyphIndex = 0, curTextureIndex = 0;
 	ivec2 curOffset = ivec2( 0, 0 );
 
@@ -290,7 +290,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 			tempSurface.getChannelAlpha().copyFrom( channel, channel.getBounds() );
 			if( ! format.getPremultiply() )
 				ip::unpremultiply( &tempSurface );
-			
+
 			gl::Texture::Format textureFormat = gl::Texture::Format();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
 
@@ -313,7 +313,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 #endif
 			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), textureFormat.getInternalFormat(), mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
 			mTextures.back()->setTopDown( true );
-			ip::fill<uint8_t>( &channel, 0 );			
+			ip::fill<uint8_t>( &channel, 0 );
 			curOffset = ivec2( 0, 0 );
 			curGlyphIndex = 0;
 			++curTextureIndex;
@@ -358,7 +358,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 	glyphExtents.y = ceil( glyphExtents.y );
 
 	int glyphsWide = floor( mFormat.getTextureWidth() / (glyphExtents.x+3) );
-	int glyphsTall = floor( mFormat.getTextureHeight() / (glyphExtents.y+5) );	
+	int glyphsTall = floor( mFormat.getTextureHeight() / (glyphExtents.y+5) );
 	uint8_t curGlyphIndex = 0, curTextureIndex = 0;
 	vec2 curOffset;
 	std::vector<FT_UInt> renderGlyphs( glyphsWide*glyphsTall );
@@ -369,7 +369,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 	ivec2 surfaceSize		= surface.getSize();
 	uint8_t* surfaceData   	= surface.getData();
 	size_t surfacePixelInc 	= surface.getPixelInc();
-	size_t surfaceRowBytes 	= surface.getRowBytes();	
+	size_t surfaceRowBytes 	= surface.getRowBytes();
 
 	std::unique_ptr<uint8_t[]> lumAlphaData( new uint8_t[mFormat.getTextureWidth()*mFormat.getTextureHeight()*2] );
 
@@ -399,7 +399,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 				ivec2 drawOffset = ivec2( slot->bitmap_left, surfaceSize.y - slot->bitmap_top );
 				ci::linux::ftutil::DrawBitmap( drawOffset, &(slot->bitmap), white, surfaceData, surfacePixelInc, surfaceRowBytes, surfaceSize );
 
-				
+
 				FT_Load_Glyph( face, glyphIndex, FT_LOAD_DEFAULT );
 				Font::GlyphMetrics glyphMetrics;
 				glyphMetrics.advance = ivec2( slot->advance.x, slot->advance.y );
@@ -439,7 +439,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), dataFormat, mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
 			mTextures.back()->setTopDown( true );
 
-			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );			
+			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );
 			curOffset = vec2();
 			curGlyphIndex = 0;
 			++curTextureIndex;
@@ -487,14 +487,14 @@ void TextureFont::drawGlyphs( const vector<pair<Font::Glyph,vec2> > &glyphMeasur
 #endif
 		if( options.getPixelSnap() )
 			baseline = vec2( floor( baseline.x ), floor( baseline.y ) );
-			
+
 		for( vector<pair<Font::Glyph,vec2> >::const_iterator glyphIt = glyphMeasures.begin(); glyphIt != glyphMeasures.end(); ++glyphIt ) {
 			unordered_map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphIt->first );
 			if( (glyphInfoIt == mGlyphMap.end()) || (mGlyphMap[glyphIt->first].mTextureIndex != texIdx) )
 				continue;
-				
+
 			const GlyphInfo &glyphInfo = glyphInfoIt->second;
-			
+
 			Rectf destRect( glyphInfo.mTexCoords );
 			Rectf srcCoords = curTex->getAreaTexCoords( glyphInfo.mTexCoords );
 			destRect -= destRect.getUpperLeft();
@@ -503,8 +503,8 @@ void TextureFont::drawGlyphs( const vector<pair<Font::Glyph,vec2> > &glyphMeasur
 			destRect += vec2( floor( glyphInfo.mOriginOffset.x + 0.5f ), floor( glyphInfo.mOriginOffset.y ) ) * scale;
 			destRect += vec2( baseline.x, baseline.y - mFont.getAscent() * scale );
 			if( options.getPixelSnap() )
-				destRect -= vec2( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) );				
-			
+				destRect -= vec2( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) );
+
 			verts.push_back( destRect.getX2() ); verts.push_back( destRect.getY1() );
 			verts.push_back( destRect.getX1() ); verts.push_back( destRect.getY1() );
 			verts.push_back( destRect.getX2() ); verts.push_back( destRect.getY2() );
@@ -514,7 +514,7 @@ void TextureFont::drawGlyphs( const vector<pair<Font::Glyph,vec2> > &glyphMeasur
 			texCoords.push_back( srcCoords.getX1() ); texCoords.push_back( srcCoords.getY1() );
 			texCoords.push_back( srcCoords.getX2() ); texCoords.push_back( srcCoords.getY2() );
 			texCoords.push_back( srcCoords.getX1() ); texCoords.push_back( srcCoords.getY2() );
-			
+
 			if( ! colors.empty() ) {
 				for( int i = 0; i < 4; ++i )
 					vertColors.push_back( colors[glyphIt-glyphMeasures.begin()] );
@@ -524,10 +524,10 @@ void TextureFont::drawGlyphs( const vector<pair<Font::Glyph,vec2> > &glyphMeasur
 			indices.push_back( curIdx + 2 ); indices.push_back( curIdx + 1 ); indices.push_back( curIdx + 3 );
 			curIdx += 4;
 		}
-		
+
 		if( curIdx == 0 )
 			continue;
-		
+
 		curTex->bind();
 		auto ctx = gl::context();
 		size_t dataSize = (verts.size() + texCoords.size()) * sizeof(float) + vertColors.size() * sizeof(ColorA8u);
@@ -560,7 +560,7 @@ void TextureFont::drawGlyphs( const vector<pair<Font::Glyph,vec2> > &glyphMeasur
 				enableVertexAttribArray( colorLoc );
 				vertexAttribPointer( colorLoc, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)dataOffset );
 				defaultArrayVbo->bufferSubData( dataOffset, vertColors.size() * sizeof(ColorA8u), vertColors.data() );
-				dataOffset += vertColors.size() * sizeof(ColorA8u);				
+				dataOffset += vertColors.size() * sizeof(ColorA8u);
 			}
 		}
 
@@ -609,7 +609,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<Font::Glyph,vec2> > &g
 			unordered_map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphIt->first );
 			if( (glyphInfoIt == mGlyphMap.end()) || (mGlyphMap[glyphIt->first].mTextureIndex != texIdx) )
 				continue;
-				
+
 			const GlyphInfo &glyphInfo = glyphInfoIt->second;
 			Rectf srcTexCoords = curTex->getAreaTexCoords( glyphInfo.mTexCoords );
 			Rectf destRect( glyphInfo.mTexCoords );
@@ -619,7 +619,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<Font::Glyph,vec2> > &g
 			destRect += vec2( floor( glyphInfo.mOriginOffset.x + 0.5f ), floor( glyphInfo.mOriginOffset.y ) ) * scale;
 			destRect += vec2( offset.x, offset.y );
 			if( options.getPixelSnap() )
-				destRect -= vec2( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) );				
+				destRect -= vec2( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) );
 
 			// clip
 			Rectf clipped( destRect );
@@ -631,10 +631,10 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<Font::Glyph,vec2> > &g
 				clipped.y1 = std::max( destRect.y1, clip.y1 );
 				clipped.y2 = std::min( destRect.y2, clip.y2 );
 			}
-			
+
 			if( clipped.x1 >= clipped.x2 || clipped.y1 >= clipped.y2 )
 				continue;
-			
+
 			vec2 coordScale( 1 / (float)destRect.getWidth() / curTex->getWidth() * glyphInfo.mTexCoords.getWidth(),
 				1 / (float)destRect.getHeight() / curTex->getHeight() * glyphInfo.mTexCoords.getHeight() );
 			srcTexCoords.x1 = srcTexCoords.x1 + ( clipped.x1 - destRect.x1 ) * coordScale.x;
@@ -656,15 +656,15 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<Font::Glyph,vec2> > &g
 				for( int i = 0; i < 4; ++i )
 					vertColors.push_back( colors[glyphIt-glyphMeasures.begin()] );
 			}
-			
+
 			indices.push_back( curIdx + 0 ); indices.push_back( curIdx + 1 ); indices.push_back( curIdx + 2 );
 			indices.push_back( curIdx + 2 ); indices.push_back( curIdx + 1 ); indices.push_back( curIdx + 3 );
 			curIdx += 4;
 		}
-		
+
 		if( curIdx == 0 )
 			continue;
-		
+
 		curTex->bind();
 		auto ctx = gl::context();
 		size_t dataSize = (verts.size() + texCoords.size()) * sizeof(float) + vertColors.size() * sizeof(ColorA8u);
@@ -697,7 +697,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<Font::Glyph,vec2> > &g
 				enableVertexAttribArray( colorLoc );
 				vertexAttribPointer( colorLoc, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)dataOffset );
 				defaultArrayVbo->bufferSubData( dataOffset, vertColors.size() * sizeof(ColorA8u), vertColors.data() );
-				dataOffset += vertColors.size() * sizeof(ColorA8u);				
+				dataOffset += vertColors.size() * sizeof(ColorA8u);
 			}
 		}
 
@@ -715,7 +715,7 @@ void TextureFont::drawString( const std::string &str, const vec2 &baseline, cons
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
 #else
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();
-#endif	
+#endif
 	drawGlyphs( glyphMeasures, baseline, options );
 }
 
@@ -726,8 +726,8 @@ void TextureFont::drawString( const std::string &str, const Rectf &fitRect, cons
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
 #else
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();
-#endif	
-	drawGlyphs( glyphMeasures, fitRect, fitRect.getUpperLeft() + offset, options );	
+#endif
+	drawGlyphs( glyphMeasures, fitRect, fitRect.getUpperLeft() + offset, options );
 }
 
 void TextureFont::drawStringWrapped( const std::string &str, const Rectf &fitRect, const vec2 &offset, const DrawOptions &options )
@@ -737,7 +737,7 @@ void TextureFont::drawStringWrapped( const std::string &str, const Rectf &fitRec
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
 #else
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();
-#endif	
+#endif
 	drawGlyphs( glyphMeasures, fitRect.getUpperLeft() + offset, options );
 }
 
@@ -753,7 +753,7 @@ vec2 TextureFont::measureString( const std::string &str, const DrawOptions &opti
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
 #else
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();
-#endif	
+#endif
 	if( ! glyphMeasures.empty() ) {
 		vec2 result = glyphMeasures.back().second;
 		unordered_map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphMeasures.back().first );

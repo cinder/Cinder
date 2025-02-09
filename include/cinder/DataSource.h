@@ -22,7 +22,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once 
+#pragma once
 
 #include "cinder/Cinder.h"
 #include "cinder/Url.h"
@@ -34,11 +34,11 @@ namespace cinder {
 
 typedef std::shared_ptr<class DataSource>	DataSourceRef;
 
-class CI_API DataSource { 
+class CI_API DataSource {
   public:
 	virtual bool	isFilePath() = 0;
 	virtual bool	isUrl() = 0;
-	
+
 	const fs::path&		getFilePath();
 	const Url&			getUrl();
 	const fs::path&		getFilePathHint();
@@ -48,14 +48,14 @@ class CI_API DataSource {
 
   protected:
 	DataSource( const fs::path &aFilePath, const Url &aUrl )
-		: mFilePath( aFilePath ), mUrl( aUrl ) 
+		: mFilePath( aFilePath ), mUrl( aUrl )
 	{}
 	virtual ~DataSource() {}
-	
+
 	virtual	void	createBuffer() = 0;
-	
+
 	void	setFilePathHint( const fs::path &aFilePathHint );
-	
+
 	BufferRef			mBuffer;
 	fs::path			mFilePath;
 	fs::path			mFilePathHint;
@@ -76,10 +76,10 @@ class CI_API DataSourcePath : public DataSource {
 
   protected:
 	explicit DataSourcePath( const fs::path &path );
-	
+
 	virtual	void	createBuffer();
-	
-	IStreamFileRef	mStream;	
+
+	IStreamFileRef	mStream;
 };
 
 
@@ -98,9 +98,9 @@ class DataSourceAndroidAsset : public DataSource {
 
   protected:
 	explicit DataSourceAndroidAsset( const fs::path &path );
-	
+
 	virtual	void	createBuffer();
-	
+
 	IStreamAndroidAssetRef	mStream;
 };
 #endif
@@ -124,7 +124,7 @@ class CI_API DataSourceUrl : public DataSource {
 
   protected:
 	DataSourceUrl( const Url &Url, const UrlOptions &options );
-	
+
 	virtual	void	createBuffer();
 
 	UrlOptions		mOptions;
@@ -145,12 +145,12 @@ class CI_API DataSourceBuffer : public DataSource {
 	virtual bool	isUrl() { return false; }
 
 	virtual IStreamRef	createStream();
-	
+
   protected:
 	DataSourceBuffer( const BufferRef &buffer );
-	
+
 	virtual	void	createBuffer();
-	
+
 	IStreamMemRef	mStream;
 };
 

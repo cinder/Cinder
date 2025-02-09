@@ -276,7 +276,7 @@ T RectT<T>::distance( const Vec2T &pt ) const
 	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
 	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
 	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
-	
+
 	if( squaredDistance > 0 )
 		return math<T>::sqrt( squaredDistance );
 	else
@@ -291,7 +291,7 @@ T RectT<T>::distanceSquared( const Vec2T &pt ) const
 	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
 	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
 	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
-	
+
 	return squaredDistance;
 }
 
@@ -333,8 +333,8 @@ template<typename T>
 Area RectT<T>::getInteriorArea() const
 {
 	RectT<T> canon = canonicalized();
-	
-	return Area( static_cast<int32_t>( ceil( canon.x1 ) ), static_cast<int32_t>( ceil( canon.y1 ) ), 
+
+	return Area( static_cast<int32_t>( ceil( canon.x1 ) ), static_cast<int32_t>( ceil( canon.y1 ) ),
 		static_cast<int32_t>( floor( canon.x2 ) ) + 1, static_cast<int32_t>( floor( canon.y2 ) ) + 1 );
 }
 
@@ -343,7 +343,7 @@ RectT<T> RectT<T>::getCenteredFit( const RectT<T> &other, bool expand ) const
 {
 	RectT<T> result = *this;
 	result.offset( other.getCenter() - result.getCenter() );
-	
+
 	bool isInside = ( ( result.getWidth() < other.getWidth() ) && ( result.getHeight() < other.getHeight() ) );
 	if( expand || ( ! isInside ) ) { // need to do some scaling
 		T aspectAspect = result.getAspectRatio() / other.getAspectRatio();
@@ -356,16 +356,16 @@ RectT<T> RectT<T>::getCenteredFit( const RectT<T> &other, bool expand ) const
 			result.scaleCentered( scaleBy );
 		}
 	}
-	
+
 	return result;
 }
-	
+
 template<typename T>
 RectT<T> RectT<T>::getCenteredFill( const RectT<T> &other, bool contract ) const
 {
 	RectT<T> result = *this;
 	result.offset( other.getCenter() - result.getCenter() );
-	
+
 	bool otherIsInside = ( ( result.getWidth() > other.getWidth() ) && ( result.getHeight() > other.getHeight() ) );
 	if( contract || ( ! otherIsInside ) ) { // need to do some scaling
 		T aspectAspect = result.getAspectRatio() / other.getAspectRatio();
@@ -378,7 +378,7 @@ RectT<T> RectT<T>::getCenteredFill( const RectT<T> &other, bool contract ) const
 			result.scaleCentered( scaleBy );
 		}
 	}
-	
+
 	return result;
 }
 
@@ -408,7 +408,7 @@ vec2 RectMapping::map( const vec2 &srcPoint ) const
 {
 	float x = ( srcPoint.x - mSrcRect.getX1() ) / mSrcRect.getWidth() * mDstRect.getWidth() + mDstRect.getX1();
 	float y = ( srcPoint.y - mSrcRect.getY1() ) / mSrcRect.getHeight() * mDstRect.getHeight() + mDstRect.getY1();
-	
+
 	return vec2( x, y );
 }
 
@@ -416,7 +416,7 @@ Rectf RectMapping::map( const Rectf &srcRect ) const
 {
 	vec2 ul = map( vec2( srcRect.x1, srcRect.y1 ) );
 	vec2 lr = map( vec2( srcRect.x2, srcRect.y2 ) );
-	
+
 	return Rectf( ul.x, ul.y, lr.x, lr.y );
 }
 
@@ -436,10 +436,10 @@ void getClippedScaledRects( const Area &srcSurfaceBounds, const Rectf &srcRect, 
 	// the discretization is done to minimize the area
 	*resultDstArea = newDstRect.getInteriorArea();
 	resultDstArea->clipBy( dstSurfaceBounds );
-	
+
 	// now map the discretized, clipped destination back once more to get the final source
 	*resultSrcRect = RectMapping( Rectf( dstArea ), srcRect ).map( Rectf( *resultDstArea ) );
-	
+
 	// this is not kosher, but sometimes we need to fudge things on the src to keep it in bounds
 	resultSrcRect->clipBy( Rectf( srcSurfaceBounds ) );
 }

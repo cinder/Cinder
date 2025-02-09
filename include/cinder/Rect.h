@@ -52,7 +52,7 @@ class CI_API RectT {
 
 	void		canonicalize(); // return rect w/ properly ordered coordinates
 	RectT		canonicalized() const; // return rect w/ properly ordered coordinates
-	
+
 	void		clipBy( const RectT &clip );
 	RectT		getClipBy( const RectT &clip ) const;
 	Area		getInteriorArea() const;
@@ -113,7 +113,7 @@ class CI_API RectT {
 	RectT		getCenteredFit( const RectT &other, bool expand ) const;
 	/** \return Scaled copy with the same aspect ratio centered relative to and scaled so it completely fills \a other. If \a contract then the rectangle is contracted if it is larger than \a other */
 	RectT		getCenteredFill( const RectT &other, bool contract ) const;
-	
+
 	/** Expands the Rect to include \a point in its interior **/
 	void		include( const Vec2T &point );
 	/** Expands the Rect to include all points in \a points in its interior **/
@@ -132,17 +132,17 @@ class CI_API RectT {
 	RectT<T>&		operator+=( const Vec2T &o ) { offset( o ); return *this; }
 	RectT<T>&		operator-=( const Vec2T &o ) { offset( -o ); return *this; }
 	RectT<T>&		operator*=( T s ) { scale( s ); return *this; }
-	RectT<T>&		operator/=( T s ) { scale( ((T)1) / s ); return *this; }	
+	RectT<T>&		operator/=( T s ) { scale( ((T)1) / s ); return *this; }
 
 	//! Constructs a rectangle with all values initialized to zero.
 	static	RectT zero()			{ return RectT( 0, 0, 0, 0 ); }
 
 	T			x1, y1, x2, y2;
-	
+
 	friend CI_API std::ostream& operator<<( std::ostream &o, const RectT &rect )
 	{
 		return o << "(" << rect.x1 << ", " << rect.y1 << ")-(" << rect.x2 << ", " << rect.y2 << ")";
-	}	
+	}
 
 };
 
@@ -158,10 +158,10 @@ class CI_API RectMapping {
 	RectMapping( const Rectf &aSrcRect, const Rectf &aDstRect )
 		: mSrcRect( aSrcRect ), mDstRect( aDstRect ) {}
 	RectMapping( const Rectf &aSrcRect, const Rectf &aDstRect, bool preserveSrcAspect );
-		
+
 	vec2	map( const vec2 &srcPoint ) const;
 	Rectf	map( const Rectf &srcRect ) const;
-	
+
  private:
 	Rectf	mSrcRect, mDstRect;
 };

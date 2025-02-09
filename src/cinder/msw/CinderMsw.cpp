@@ -35,11 +35,11 @@ Surface8uRef convertHBitmap( HBITMAP hbitmap )
 {
 	// create a temporary DC
 	HDC hdc = ::CreateCompatibleDC( 0 );
-	
+
 	// determine the dimensions first
 	BITMAP bm;
 	::GetObject( hbitmap, sizeof(BITMAP), &bm );
-	
+
 	BITMAPINFO bmi;
 	memset( &bmi, 0, sizeof(BITMAPINFO) );
 	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -64,10 +64,10 @@ Surface8uRef convertHBitmap( HBITMAP hbitmap )
 	Surface8u *newSurface = new Surface8u( data, width, height, width * 4, SurfaceChannelOrder::BGRX );
 	Surface8uRef result( newSurface, [=] ( Surface8u *s ) { ::GlobalFree( (HGLOBAL)data ); delete s; } );
 	// have the Surface's destructor call this to call ::GlobalFree
-	
+
 	if( ::GetDIBits( hdc, hbitmap, 0, height, result->getData(), &bmi, DIB_RGB_COLORS ) == 0 )
 		throw Exception( "Invalid HBITMAP" );
-	
+
 	::ReleaseDC( NULL, hdc );
 
 	return result;
@@ -86,7 +86,7 @@ void ComDelete( void *p )
 // ComOStream
 
 HRESULT STDMETHODCALLTYPE ComOStream::QueryInterface(REFIID iid, void ** ppvObject)
-{ 
+{
     if (iid == __uuidof(IUnknown)
         || iid == __uuidof(IStream)
         || iid == __uuidof(ISequentialStream))
@@ -96,18 +96,18 @@ HRESULT STDMETHODCALLTYPE ComOStream::QueryInterface(REFIID iid, void ** ppvObje
         return S_OK;
     }
     else
-        return E_NOINTERFACE; 
+        return E_NOINTERFACE;
 }
 
-ULONG STDMETHODCALLTYPE ComOStream::AddRef() 
-{ 
-    return (ULONG)InterlockedIncrement(&_refcount); 
+ULONG STDMETHODCALLTYPE ComOStream::AddRef()
+{
+    return (ULONG)InterlockedIncrement(&_refcount);
 }
 
-ULONG STDMETHODCALLTYPE ComOStream::Release() 
+ULONG STDMETHODCALLTYPE ComOStream::Release()
 {
     ULONG res = (ULONG) InterlockedDecrement(&_refcount);
-    if (res == 0) 
+    if (res == 0)
         delete this;
     return res;
 }
@@ -120,7 +120,7 @@ HRESULT STDMETHODCALLTYPE ComOStream::Write( void const* pv, ULONG cb, ULONG* pc
 }
 
 HRESULT STDMETHODCALLTYPE ComOStream::Seek( LARGE_INTEGER liDistanceToMove, DWORD dwOrigin, ULARGE_INTEGER* lpNewFilePointer )
-{ 
+{
 	switch( dwOrigin ) {
 		case STREAM_SEEK_SET:
 			mOStream->seekAbsolute( (off_t)liDistanceToMove.QuadPart );
@@ -131,7 +131,7 @@ HRESULT STDMETHODCALLTYPE ComOStream::Seek( LARGE_INTEGER liDistanceToMove, DWOR
 		case STREAM_SEEK_END:
 			mOStream->seekAbsolute( (off_t)(-liDistanceToMove.QuadPart) );
 		break;
-		default:   
+		default:
 			return STG_E_INVALIDFUNCTION;
 		break;
 	}
@@ -179,7 +179,7 @@ std::string toUtf8String( const std::wstring &wideString )
 // ComIStream
 
 HRESULT STDMETHODCALLTYPE ComIStream::QueryInterface(REFIID iid, void ** ppvObject)
-{ 
+{
 	if (iid == __uuidof(IUnknown)
 		|| iid == __uuidof(IStream)
 		|| iid == __uuidof(ISequentialStream))
@@ -189,18 +189,18 @@ HRESULT STDMETHODCALLTYPE ComIStream::QueryInterface(REFIID iid, void ** ppvObje
 		return S_OK;
 	}
 	else
-		return E_NOINTERFACE; 
+		return E_NOINTERFACE;
 }
 
-ULONG STDMETHODCALLTYPE ComIStream::AddRef() 
-{ 
-	return (ULONG)InterlockedIncrement(&_refcount); 
+ULONG STDMETHODCALLTYPE ComIStream::AddRef()
+{
+	return (ULONG)InterlockedIncrement(&_refcount);
 }
 
-ULONG STDMETHODCALLTYPE ComIStream::Release() 
+ULONG STDMETHODCALLTYPE ComIStream::Release()
 {
 	ULONG res = (ULONG) InterlockedDecrement(&_refcount);
-	if (res == 0) 
+	if (res == 0)
 		delete this;
 	return res;
 }
@@ -221,7 +221,7 @@ HRESULT STDMETHODCALLTYPE ComIStream::Read( void* pv, ULONG cb, ULONG* pcbRead )
 }
 
 HRESULT STDMETHODCALLTYPE ComIStream::Seek( LARGE_INTEGER liDistanceToMove, DWORD dwOrigin, ULARGE_INTEGER* lpNewFilePointer )
-{ 
+{
 	switch( dwOrigin ) {
 	case STREAM_SEEK_SET:
 		mIStream->seekAbsolute( (off_t)liDistanceToMove.QuadPart );
@@ -232,7 +232,7 @@ HRESULT STDMETHODCALLTYPE ComIStream::Seek( LARGE_INTEGER liDistanceToMove, DWOR
 	case STREAM_SEEK_END:
 		mIStream->seekAbsolute( (off_t)( - liDistanceToMove.QuadPart ) );
 		break;
-	default:   
+	default:
 		return STG_E_INVALIDFUNCTION;
 		break;
 	}

@@ -49,14 +49,14 @@ jmethodID 	VideoPlayer::Java::setVolume			= nullptr;
 jmethodID 	VideoPlayer::Java::isPlaying			= nullptr;
 jmethodID 	VideoPlayer::Java::isDone				= nullptr;
 jmethodID 	VideoPlayer::Java::play					= nullptr;
-jmethodID 	VideoPlayer::Java::stop					= nullptr; 
-jmethodID 	VideoPlayer::Java::pause				= nullptr; 
+jmethodID 	VideoPlayer::Java::stop					= nullptr;
+jmethodID 	VideoPlayer::Java::pause				= nullptr;
 
 VideoPlayer::VideoPlayer( jobject obj )
 {
 	if(nullptr == obj) {
 		dbg_app_log("c'tor: Mark 2");
-		throw std::runtime_error( "parameter 'obj' is null (" + std::string( __PRETTY_FUNCTION__ ) + ")" );		
+		throw std::runtime_error( "parameter 'obj' is null (" + std::string( __PRETTY_FUNCTION__ ) + ")" );
 	}
 
 	mJavaObject = JniHelper::Get()->TrackedNewGlobalRef( obj );
@@ -71,7 +71,7 @@ VideoPlayer::VideoPlayer( jobject obj )
 	texFmt.minFilter( GL_LINEAR );
 	texFmt.magFilter( GL_LINEAR );
 	texFmt.wrap( GL_CLAMP_TO_EDGE );
-	mCurrentTexture = gl::Texture2d::create( width, height, texFmt );	
+	mCurrentTexture = gl::Texture2d::create( width, height, texFmt );
 
 	{
 		std::stringstream ss;
@@ -89,7 +89,7 @@ VideoPlayer::~VideoPlayer()
 
 VideoPlayerRef VideoPlayer::create( const ci::Url& url )
 {
-	jstring jstrUrl = JniHelper::Get()->NewStringUTF( url.str() );	
+	jstring jstrUrl = JniHelper::Get()->NewStringUTF( url.str() );
 	jobject obj = JniHelper::Get()->CallStaticObjectMethod( Java::ClassObject, Java::createFromUrl, jstrUrl );
 	JniHelper::Get()->DeleteLocalRef( jstrUrl );
 
@@ -99,7 +99,7 @@ VideoPlayerRef VideoPlayer::create( const ci::Url& url )
 
 VideoPlayerRef VideoPlayer::create( const ci::fs::path& path )
 {
-	jstring jstrPath = JniHelper::Get()->NewStringUTF( path.string() );	
+	jstring jstrPath = JniHelper::Get()->NewStringUTF( path.string() );
 	jobject obj = JniHelper::Get()->CallStaticObjectMethod( Java::ClassObject, Java::createFromFilePath, jstrPath );
 	JniHelper::Get()->DeleteLocalRef( jstrPath );
 
@@ -144,8 +144,8 @@ void VideoPlayer::cacheJni()
 				Java::isPlaying				= JniHelper::Get()->GetMethodId( Java::ClassObject, "isPlaying", "()Z" );
 				Java::isDone				= JniHelper::Get()->GetMethodId( Java::ClassObject, "isDone", "()Z" );
 				Java::play					= JniHelper::Get()->GetMethodId( Java::ClassObject, "play", "()V" );
-				Java::stop					= JniHelper::Get()->GetMethodId( Java::ClassObject, "stop", "()V" ); 
-				Java::pause					= JniHelper::Get()->GetMethodId( Java::ClassObject, "pause", "()V" ); 
+				Java::stop					= JniHelper::Get()->GetMethodId( Java::ClassObject, "stop", "()V" );
+				Java::pause					= JniHelper::Get()->GetMethodId( Java::ClassObject, "pause", "()V" );
 				jni_obtained_check( VideoPlayer::Java::createFromUrl );
 				jni_obtained_check( VideoPlayer::Java::createFromFilePath );
 				jni_obtained_check( VideoPlayer::Java::destroy );
@@ -176,7 +176,7 @@ void VideoPlayer::cacheJni()
 
 void VideoPlayer::destroyJni()
 {
-	if( JniHelper::Get()->AttachCurrentThread() ) {	
+	if( JniHelper::Get()->AttachCurrentThread() ) {
 		JniHelper::Get()->DeleteGlobalRef( Java::ClassObject  );
 		Java::ClassObject			= nullptr;
 		Java::createFromUrl			= nullptr;

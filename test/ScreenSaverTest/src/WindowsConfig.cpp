@@ -12,7 +12,7 @@ void loadConfig( Configuration *config )
 	HKEY key;
 	LONG result = ::RegOpenKeyEx( HKEY_CURRENT_USER, REGISTRY_PATH, 0, KEY_READ, &key );
 	if( result != ERROR_SUCCESS )
-		return;	
+		return;
 
 	DWORD dwLen = sizeof(DWORD);
 	DWORD dwDrawLogo;
@@ -59,12 +59,12 @@ BOOL mswDoConfigureDialog( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 						tempConfig.mDrawCinderLogo = ::IsDlgButtonChecked( hDlg, ID_DRAW_CINDER_LOGO ) == 1;
 						saveConfig( tempConfig );
 					}
-					::EndDialog( hDlg, command );					
+					::EndDialog( hDlg, command );
 					return TRUE;
 			}
 		}
 		break;
 	}
-	
+
 	return FALSE;
 }

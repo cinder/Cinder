@@ -89,7 +89,7 @@ void AppImplMswScreenSaver::run()
 	// initial resize
 	for( auto winIt = mWindows.begin(); winIt != mWindows.end(); ++winIt )
 		(*winIt)->getWindow()->emitResize();
-	
+
 	::SetTimer( mWindows.back()->mWnd, TIMER_ID, (UINT)(1000 / mFrameRate), NULL );
 }
 
@@ -107,7 +107,7 @@ WindowRef AppImplMswScreenSaver::getWindowIndex( size_t index ) const
 {
 	if( index >= mWindows.size() )
 		return cinder::app::WindowRef();
-	
+
 	auto iter = mWindows.begin();
 	std::advance( iter, index );
 	return (*iter)->mWindowRef;

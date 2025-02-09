@@ -18,7 +18,7 @@ void main( void )
 	vec4 position		= unpackPosition( uv );
 	position			= uProjView * uViewMatrixInverse * position;
 	vec3 shadowCoord 	= ( position.xyz / position.w ) * 0.5 + 0.5;
-	
+
 	float v 			= 1.0;
 	float e				= 0.0625;
 	if ( position.w > 1.0 ) {

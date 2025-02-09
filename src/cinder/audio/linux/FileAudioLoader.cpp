@@ -23,7 +23,7 @@
 
 #include "cinder/audio/linux/FileAudioLoader.h"
 #include "cinder/audio/dsp/Converter.h"
-#include "cinder/audio/Exception.h" 
+#include "cinder/audio/Exception.h"
 #include "cinder/audio/SampleType.h"
 
 #include <mpg123.h>
@@ -186,7 +186,7 @@ FileType determineFileType( const std::string &extension, const ci::IStreamRef& 
 						result = FileType::MP3;
 					}
 				}
-			}		
+			}
 			mpg123_delete( handle );
 		}
 	}
@@ -212,7 +212,7 @@ FileType determineFileType( const std::string &extension, const ci::IStreamRef& 
 
 	stream->seekAbsolute( 0 );
 
-	return result;	
+	return result;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -291,12 +291,12 @@ FileLoaderMpg123::FileLoaderMpg123( SourceFileAudioLoader* cinderParent, const c
 
 		if( MPG123_OK != mpg123_param( mHandle, MPG123_ADD_FLAGS, MPG123_FORCE_FLOAT, 0 ) ) {
 			mpg123_delete( mHandle );
-			throw AudioFileExc( "Could not force float output" );					
+			throw AudioFileExc( "Could not force float output" );
 		}
 
 		if( MPG123_OK != mpg123_open_handle( mHandle, mStream.get() ) ) {
 			mpg123_delete( mHandle );
-			throw AudioFileExc( "Could not determine MP3 format: failed to open handle" );		
+			throw AudioFileExc( "Could not determine MP3 format: failed to open handle" );
 		}
 
 		long rate = 0;
@@ -305,7 +305,7 @@ FileLoaderMpg123::FileLoaderMpg123( SourceFileAudioLoader* cinderParent, const c
 		if( MPG123_OK != mpg123_getformat( mHandle, &rate, &channels, &encodings ) ) {
 			mpg123_delete( mHandle );
 			throw AudioFileExc( "Could not determine MP3 format: failed to get rate, channel and encoding" );
-		}		
+		}
 
 		mSampleRate = rate;
 		mNumChannels = channels;
@@ -333,7 +333,7 @@ FileLoaderMpg123::FileLoaderMpg123( SourceFileAudioLoader* cinderParent, const c
 			case MPG123_ENC_FLOAT_64	: std::cout << "MPG123_ENC_FLOAT_64" << std::endl; break;
 			case MPG123_ENC_ANY			: std::cout << "MPG123_ENC_ANY" << std::endl; break;
 		}
-		*/		
+		*/
 	}
 
 	mBytesPerSample = sizeof( float );
@@ -593,12 +593,12 @@ size_t SourceFileAudioLoader::performRead( Buffer *buffer, size_t bufferFrameOff
 			float *readChannel = mReadBuffer.getChannel( ch );
 			float *resultChannel = buffer->getChannel( ch );
 			std::memcpy( resultChannel + readCount, readChannel, numFramesRead * sizeof( float ) );
-		}		
+		}
 
 		readCount += numFramesRead;
 	}
-	
-//std::cout << "readCount: " << readCount << std::endl;	
+
+//std::cout << "readCount: " << readCount << std::endl;
 	return static_cast<size_t>( readCount );
 }
 

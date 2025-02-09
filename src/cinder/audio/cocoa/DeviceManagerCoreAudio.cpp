@@ -106,7 +106,7 @@ PropT getAudioObjectProperty( ::AudioObjectID objectId, ::AudioObjectPropertyAdd
 {
 	PropT result;
 	UInt32 resultSize = sizeof( result );
-	
+
 	OSStatus status = ::AudioObjectGetPropertyData( objectId, &propertyAddress, qualifierDataSize, qualifierData, &resultSize, &result );
 	CI_VERIFY( status == noErr );
 

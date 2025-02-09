@@ -75,7 +75,7 @@ namespace {
 void pushGlState()
 {
 	auto ctx = gl::context();
-	
+
 	ctx->pushGlslProg();
 	ctx->pushViewport();
 	ctx->pushScissor();
@@ -98,7 +98,7 @@ void pushGlState()
 void popGlState()
 {
 	auto ctx = gl::context();
-	
+
 	ctx->popBoolState( GL_CULL_FACE, true );
 	ctx->popBoolState( GL_BLEND, true );
 	ctx->popBoolState( GL_DEPTH_TEST, true );
@@ -116,17 +116,17 @@ void popGlState()
 	ctx->popScissor( true );
 	ctx->popViewport( true );
 	ctx->popGlslProg( true );
-	
+
 	ctx->restoreInvalidatedVao();
 	ctx->restoreInvalidatedBufferBinding( GL_ARRAY_BUFFER );
-	ctx->restoreInvalidatedBufferBinding( GL_ELEMENT_ARRAY_BUFFER );	
+	ctx->restoreInvalidatedBufferBinding( GL_ELEMENT_ARRAY_BUFFER );
 }
 } // anonymous namespace
 
 void mouseDown( int twWindowId, app::MouseEvent &event )
 {
 	pushGlState();
-	
+
 	TwSetCurrentWindow( twWindowId );
 
 	TwMouseButtonID button;
@@ -137,7 +137,7 @@ void mouseDown( int twWindowId, app::MouseEvent &event )
 	else
 		button = TW_MOUSE_MIDDLE;
 	event.setHandled( TwMouseButton( TW_MOUSE_PRESSED, button ) != 0 );
-	
+
 	popGlState();
 }
 
@@ -145,7 +145,7 @@ void mouseUp( int twWindowId, app::MouseEvent &event )
 {
 	auto oldCtx = gl::context();
 	pushGlState();
-	
+
 	TwSetCurrentWindow( twWindowId );
 
 	TwMouseButtonID button;
@@ -156,10 +156,10 @@ void mouseUp( int twWindowId, app::MouseEvent &event )
 	else
 		button = TW_MOUSE_MIDDLE;
 	event.setHandled( TwMouseButton( TW_MOUSE_RELEASED, button ) != 0 );
-	
+
 	// The button handler may have tweaked the current GL context, in which case, let's force it back to what it was
 	oldCtx->makeCurrent( true );
-	
+
 	popGlState();
 }
 
@@ -179,14 +179,14 @@ void mouseWheel( int twWindowId, app::MouseEvent &event )
 void mouseMove( weak_ptr<app::Window> winWeak, int twWindowId, app::MouseEvent &event )
 {
 	pushGlState();
-	
+
 	TwSetCurrentWindow( twWindowId );
 
 	auto win = winWeak.lock();
 	if( win ) {
 		event.setHandled( TwMouseMotion( win->toPixels( event.getX() ), win->toPixels( event.getY() ) ) != 0 );
 	}
-	
+
 	popGlState();
 }
 
@@ -221,7 +221,7 @@ void resize( weak_ptr<app::Window> winWeak, int twWindowId )
 	auto win = winWeak.lock();
 	if( win )
 		TwWindowSize( win->toPixels( win->getWidth() ), win->toPixels( win->getHeight() ) );
-		
+
 	popGlState();
 }
 
@@ -243,10 +243,10 @@ class AntMgr {
 #else
 		if( ! TwInit( TW_OPENGL_CORE, NULL ) ) {
 			throw Exception();
-		}		
+		}
 #endif
 	}
-	
+
 	~AntMgr() {
 		TwTerminate();
 	}
@@ -350,9 +350,9 @@ void InterfaceGl::init( app::WindowRef window, const std::string &title, const i
 	gl::context()->restoreInvalidatedVao();
 	gl::context()->restoreInvalidatedBufferBinding( GL_ARRAY_BUFFER );
 	gl::context()->restoreInvalidatedBufferBinding( GL_ELEMENT_ARRAY_BUFFER );
-	
+
 	TwSetCurrentWindow( mTwWindowId );
-		
+
 	mWindow = window;
 
 	mBar = std::shared_ptr<TwBar>( TwNewBar( title.c_str() ), std::bind( tweakBarDeleter, mTwWindowId, std::placeholders::_1 ) );
@@ -360,8 +360,8 @@ void InterfaceGl::init( app::WindowRef window, const std::string &title, const i
 	char optionsStr[1024];
 	sprintf( optionsStr, "`%s` size='%d %d' color='%d %d %d' alpha=%d", title.c_str(), size.x, size.y, (int)(color.r * 255), (int)(color.g * 255), (int)(color.b * 255), (int)(color.a * 255) );
 	TwDefine( optionsStr );
-	
-	TwCopyStdStringToClientFunc( implStdStringToClient );	
+
+	TwCopyStdStringToClientFunc( implStdStringToClient );
 
 	window->getSignalMouseDown().connect( std::bind( mouseDown, mTwWindowId, std::placeholders::_1 ) );
 	window->getSignalMouseUp().connect( std::bind( mouseUp, mTwWindowId, std::placeholders::_1 ) );
@@ -386,7 +386,7 @@ void InterfaceGl::draw()
 void InterfaceGl::show( bool visible )
 {
 	TwSetCurrentWindow( mTwWindowId );
-	
+
 	int32_t visibleInt = ( visible ) ? 1 : 0;
 	TwSetParam( mBar.get(), NULL, "visible", TW_PARAM_INT32, 1, &visibleInt );
 }
@@ -399,16 +399,16 @@ void InterfaceGl::hide()
 bool InterfaceGl::isVisible() const
 {
 	TwSetCurrentWindow( mTwWindowId );
-	
+
 	int32_t visibleInt;
 	TwGetParam( mBar.get(), NULL, "visible", TW_PARAM_INT32, 1, &visibleInt );
 	return visibleInt != 0;
 }
-	
+
 void InterfaceGl::maximize( bool maximized )
 {
 	TwSetCurrentWindow( mTwWindowId );
-	
+
 	int32_t maximizedInt = ( maximized ) ? 0 : 1;
 	TwSetParam( mBar.get(), NULL, "iconified", TW_PARAM_INT32, 1, &maximizedInt );
 }
@@ -421,7 +421,7 @@ void InterfaceGl::minimize()
 bool InterfaceGl::isMaximized() const
 {
 	TwSetCurrentWindow( mTwWindowId );
-	
+
 	int32_t maximizedInt;
 	TwGetParam( mBar.get(), NULL, "iconified", TW_PARAM_INT32, 1, &maximizedInt );
 	return maximizedInt == 0;
@@ -501,7 +501,7 @@ void InterfaceGl::OptionsBase::setStep( float stepVal )
 void InterfaceGl::OptionsBase::setPrecision( int precVal )
 {
 	assert( mParent );
-	
+
 	string optionsStr = "precision=" + to_string( precVal );
 	mParent->setOptions( getName(), optionsStr );
 
@@ -594,7 +594,7 @@ void InterfaceGl::OptionsBase::reAddOptions()
 void InterfaceGl::implAddParamDeprecated( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly )
 {
 	TwSetCurrentWindow( mTwWindowId );
-		
+
 	if( readOnly )
 		TwAddVarRO( mBar.get(), name.c_str(), (TwType)type, param, optionsStr.c_str() );
 	else
@@ -604,42 +604,42 @@ void InterfaceGl::implAddParamDeprecated( const std::string &name, void *param, 
 void InterfaceGl::addParam( const std::string &name, bool *param, const std::string &optionsStr, bool readOnly )
 {
 	implAddParamDeprecated( name, param, TW_TYPE_BOOLCPP, optionsStr, readOnly );
-} 
+}
 
 void InterfaceGl::addParam( const std::string &name, float *param, const std::string &optionsStr, bool readOnly )
 {
 	implAddParamDeprecated( name, param, TW_TYPE_FLOAT, optionsStr, readOnly );
-} 
+}
 
 void InterfaceGl::addParam( const std::string &name, double *param, const std::string &optionsStr, bool readOnly )
 {
 	implAddParamDeprecated( name, param, TW_TYPE_DOUBLE, optionsStr, readOnly );
-} 
+}
 
 void InterfaceGl::addParam( const std::string &name, int32_t *param, const std::string &optionsStr, bool readOnly )
 {
 	implAddParamDeprecated( name, param, TW_TYPE_INT32, optionsStr, readOnly );
-} 
+}
 
 void InterfaceGl::addParam( const std::string &name, vec3 *param, const std::string &optionsStr, bool readOnly )
 {
 	implAddParamDeprecated( name, param, TW_TYPE_DIR3F, optionsStr, readOnly );
-} 
+}
 
 void InterfaceGl::addParam( const std::string &name, quat *param, const std::string &optionsStr, bool readOnly )
 {
 	implAddParamDeprecated( name, param, TW_TYPE_QUAT4F, optionsStr, readOnly );
-} 
+}
 
 void InterfaceGl::addParam( const std::string &name, Color *param, const std::string &optionsStr, bool readOnly )
 {
 	implAddParamDeprecated( name, param, TW_TYPE_COLOR3F, optionsStr, readOnly );
-} 
+}
 
 void InterfaceGl::addParam( const std::string &name, ColorA *param, const std::string &optionsStr, bool readOnly )
 {
 	implAddParamDeprecated( name, param, TW_TYPE_COLOR4F, optionsStr, readOnly );
-} 
+}
 
 void InterfaceGl::addParam( const std::string &name, std::string *param, const std::string &optionsStr, bool readOnly )
 {
@@ -703,21 +703,21 @@ InterfaceGl::Options<int> InterfaceGl::addParam( const std::string &name, const 
 void InterfaceGl::addSeparator( const std::string &name, const std::string &optionsStr )
 {
 	TwSetCurrentWindow( mTwWindowId );
-	
+
 	TwAddSeparator( mBar.get(), name.c_str(), optionsStr.c_str() );
 }
 
 void InterfaceGl::addText( const std::string &name, const std::string &optionsStr )
 {
 	TwSetCurrentWindow( mTwWindowId );
-	
+
 	TwAddButton( mBar.get(), name.c_str(), NULL, NULL, optionsStr.c_str() );
 }
 
 void InterfaceGl::addButton( const std::string &name, const std::function<void ()> &callback, const std::string &optionsStr )
 {
 	TwSetCurrentWindow( mTwWindowId );
-	
+
 	auto callbackPtr = std::make_shared<std::function<void ()>>( callback );
 	mStoredCallbacks.insert( make_pair( name, callbackPtr ) );
 
@@ -743,7 +743,7 @@ void InterfaceGl::clear()
 void InterfaceGl::setOptions( const std::string &name, const std::string &optionsStr )
 {
 	TwSetCurrentWindow( mTwWindowId );
-	
+
 	std::string target = "`" + (std::string)TwGetBarName( mBar.get() ) + "`";
 	if( ! name.empty() )
 		target += "/`" + name + "`";

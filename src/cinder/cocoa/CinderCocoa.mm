@@ -217,13 +217,13 @@ CFAttributedStringRef createCfAttributedString( const std::string &str, const Fo
 		font.getCtFontRef(),
 		cgColor
 	};
-	
+
 	// Create our attributes
 	CFDictionaryRef attributes = ::CFDictionaryCreate(kCFAllocatorDefault, (const void**)&keys, (const void**)&values, sizeof(keys)/sizeof(keys[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
 	assert( attributes != NULL );
 
 	CGColorRelease( cgColor );
-	
+
 	// Create the attributed string
 	CFStringRef strRef = CFStringCreateWithCString( kCFAllocatorDefault, str.c_str(), kCFStringEncodingUTF8 );
 	if( ! strRef ) { // failure
@@ -231,10 +231,10 @@ CFAttributedStringRef createCfAttributedString( const std::string &str, const Fo
 		return NULL;
 	}
 	CFAttributedStringRef attrString = ::CFAttributedStringCreate( kCFAllocatorDefault, strRef, attributes );
-	
+
 	CFRelease( strRef );
 	CFRelease( attributes );
-	
+
 	return attrString;
 }
 
@@ -253,13 +253,13 @@ CFAttributedStringRef createCfAttributedString( const std::string &str, const Fo
 		cgColor,
 		ligaturesRef
 	};
-	
+
 	// Create our attributes
 	CFDictionaryRef attributes = ::CFDictionaryCreate(kCFAllocatorDefault, (const void**)&keys, (const void**)&values, sizeof(keys)/sizeof(keys[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
 	assert( attributes != NULL );
 
 	CGColorRelease( cgColor );
-	
+
 	// Create the attributed string
 	CFStringRef strRef = ::CFStringCreateWithCString( kCFAllocatorDefault, str.c_str(), kCFStringEncodingUTF8 );
 	if( ! strRef ) { // failure
@@ -268,11 +268,11 @@ CFAttributedStringRef createCfAttributedString( const std::string &str, const Fo
 		return NULL;
 	}
 	CFAttributedStringRef attrString = ::CFAttributedStringCreate( kCFAllocatorDefault, strRef, attributes );
-	
+
 	::CFRelease( strRef );
 	::CFRelease( attributes );
 	::CFRelease( ligaturesRef );
-	
+
 	return attrString;
 }
 
@@ -407,7 +407,7 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Opti
 {
 	::CGImageRetain( imageRef );
 	mImageRef = shared_ptr<CGImage>( imageRef, ::CGImageRelease );
-	
+
 	setSize( (int32_t)::CGImageGetWidth( mImageRef.get() ), (int32_t)::CGImageGetHeight( mImageRef.get() ) );
 	size_t bpc = ::CGImageGetBitsPerComponent( mImageRef.get() );
 	size_t bpp = ::CGImageGetBitsPerPixel( mImageRef.get() );
@@ -472,14 +472,14 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Opti
 					break;
 					case kCGImageAlphaOnly:
 						setColorModel( ImageSource::CM_GRAY );
-						setChannelOrder( ImageIo::Y );							
+						setChannelOrder( ImageIo::Y );
 					break;
 				}
 			break;
 			case kCGColorSpaceModelIndexed: {
 				setColorModel( ImageIo::CM_RGB );
 				setChannelOrder( ImageIo::RGB );
-				
+
 				mIsIndexed = true;
 				size_t clutSize = ::CGColorSpaceGetColorTableCount( colorSpace );
 				uint8_t colorTable[256*3];
@@ -499,17 +499,17 @@ void ImageSourceCgImage::load( ImageTargetRef target )
 {
 	int32_t rowBytes = (int32_t)::CGImageGetBytesPerRow( mImageRef.get() );
 	const std::shared_ptr<__CFData> pixels( (__CFData*)::CGDataProviderCopyData( ::CGImageGetDataProvider( mImageRef.get() ) ), safeCfRelease );
-	
+
 	if( ! pixels )
 		throw ImageIoExceptionFailedLoad( "Core Graphics failure copying data." );
-	
+
 	// get a pointer to the ImageSource function appropriate for handling our data configuration
 	ImageSource::RowFunc func = setupRowFunc( target );
-	
+
 	unique_ptr<Color8u[]> tempRowBuffer;
 	if( mIsIndexed || mIs16BitPacked )
 		tempRowBuffer = unique_ptr<Color8u[]>( new Color8u[mWidth] );
-	
+
 	const uint8_t *data = ::CFDataGetBytePtr( pixels.get() );
 	for( int32_t row = 0; row < mHeight; ++row ) {
 		// if this is indexed fill in our temporary row buffer with the colors pulled from the palette
@@ -560,12 +560,12 @@ ImageTargetCgImage::ImageTargetCgImage( ImageSourceRef imageSource, ImageTarget:
 		case ImageIo::UINT16: mBitsPerComponent = 16; isFloat = false; setDataType( ImageIo::UINT16 ); mBitmapInfo = kCGBitmapByteOrder16Little; break;
 		default: mBitsPerComponent = 32; isFloat = true; mBitmapInfo = kCGBitmapByteOrder32Little | kCGBitmapFloatComponents; setDataType( ImageIo::FLOAT32 );
 	}
-	
+
 	if( options.isColorModelDefault() )
 		setColorModel( ( imageSource->getColorModel() == ImageIo::CM_GRAY ) ? ImageIo::CM_GRAY : ImageIo::CM_RGB );
 	else
 		setColorModel( ( options.getColorModel() == ImageIo::CM_GRAY ) ? ImageIo::CM_GRAY : ImageIo::CM_RGB );
-	
+
 	uint8_t numChannels;
 	switch( mColorModel ) {
 		case ImageIo::CM_GRAY:
@@ -575,7 +575,7 @@ ImageTargetCgImage::ImageTargetCgImage( ImageSourceRef imageSource, ImageTarget:
 	}
 	mBitsPerPixel = numChannels * mBitsPerComponent;
 	mRowBytes = mWidth * ( numChannels * mBitsPerComponent ) / 8;
-	
+
 	if( writingAlpha ) {
 		mBitmapInfo |= ( imageSource->isPremultiplied() ) ? kCGImageAlphaPremultipliedLast : kCGImageAlphaLast;
 		if( mColorModel == CM_GRAY )
@@ -587,11 +587,11 @@ ImageTargetCgImage::ImageTargetCgImage( ImageSourceRef imageSource, ImageTarget:
 		if( mColorModel == CM_GRAY )
 			setChannelOrder( ImageIo::Y );
 		else {
-			setChannelOrder( ImageIo::RGB );		
+			setChannelOrder( ImageIo::RGB );
 			mBitmapInfo |= kCGImageAlphaNone;
 		}
 	}
-	
+
 	mDataRef = ::CFDataCreateMutable( kCFAllocatorDefault, mHeight * mRowBytes );
 	::CFDataIncreaseLength( mDataRef, mHeight * mRowBytes );
 	mDataPtr = ::CFDataGetMutableBytePtr( mDataRef );

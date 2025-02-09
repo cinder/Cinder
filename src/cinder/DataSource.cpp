@@ -129,11 +129,11 @@ DataSourceRef loadFile( const fs::path &path )
 	}
 	else {
 		DataSourceRef result = DataSourcePath::create( path );
-		return result;		
+		return result;
 	}
-#else 
+#else
 	return DataSourcePath::create( path );
-#endif	
+#endif
 }
 
 

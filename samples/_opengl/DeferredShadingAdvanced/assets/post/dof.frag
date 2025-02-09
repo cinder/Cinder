@@ -77,4 +77,3 @@ void main( void )
 
 	oColor = vec4( sum / influence, 1.0 );
 }
- 

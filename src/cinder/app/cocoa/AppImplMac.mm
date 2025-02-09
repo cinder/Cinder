@@ -38,7 +38,7 @@ using namespace cinder::app;
 // This seems to be missing for unknown reasons
 @interface NSApplication(MissingFunction)
 - (void)setAppleMenu:(NSMenu *)menu;
-@end 
+@end
 
 // CinderWindow - necessary to enable a borderless window to receive keyboard events
 @interface CinderWindow : NSWindow {
@@ -65,7 +65,7 @@ using namespace cinder::app;
 @synthesize displaySleepAssertionID = mDisplaySleepAssertionID;
 
 - (AppImplMac *)init:(AppMac *)app settings:(const AppMac::Settings &)settings
-{	
+{
 	self = [super init];
 
 	// This needs to be called before creating any windows, as it internally constructs the shared NSApplication
@@ -74,12 +74,12 @@ using namespace cinder::app;
 	NSMenu *mainMenu = [[NSMenu alloc] init];
 	[NSApp setMainMenu:mainMenu];
 	[mainMenu release];
-	
+
 	self.windows = [NSMutableArray array];
-	
+
 	const std::string& applicationName = settings.getTitle();
 	[self setApplicationMenu:[NSString stringWithUTF8String: applicationName.c_str()]];
-	
+
 	mApp = app;
 	mNeedsUpdate = YES;
 	mQuitOnLastWindowClosed = settings.isQuitOnLastWindowCloseEnabled(); // TODO: consider storing this in AppBase. it is also needed by AppMsw's impl
@@ -96,7 +96,7 @@ using namespace cinder::app;
 		if( format.isFullScreen() )
 			[winImpl setFullScreen:YES options:&format.getFullScreenOptions()];
 	}
-	
+
 	mFrameRate = settings.getFrameRate();
 	mFrameRateEnabled = settings.isFrameRateEnabled();
 
@@ -116,14 +116,14 @@ using namespace cinder::app;
 	}
 
 	mApp->privateSetup__();
-	
+
 	// call initial window resize signals
 	for( WindowImplBasicCocoa* winIt in mWindows ) {
 		[winIt->mCinderView makeCurrentContext];
 		[self setActiveWindow:winIt];
 		winIt->mWindowRef->emitResize();
 	}
-	
+
 	// when available, make the first window the active window
 	[self setActiveWindow:[mWindows firstObject]];
 	[self startAnimationTimer];
@@ -133,14 +133,14 @@ using namespace cinder::app;
 {
 	if( mAnimationTimer && [mAnimationTimer isValid] )
 		[mAnimationTimer invalidate];
-	
+
 	float interval = ( mFrameRateEnabled ) ? 1.0f / mFrameRate : 0.001;
 	mAnimationTimer = [NSTimer	 timerWithTimeInterval:interval
 												target:self
 											  selector:@selector(timerFired:)
 											  userInfo:nil
 											   repeats:YES];
-	
+
 	[[NSRunLoop currentRunLoop] addTimer:mAnimationTimer forMode:NSDefaultRunLoopMode];
 	[[NSRunLoop currentRunLoop] addTimer:mAnimationTimer forMode:NSEventTrackingRunLoopMode];
 }
@@ -159,7 +159,7 @@ using namespace cinder::app;
 		for( WindowImplBasicCocoa* winIt in mWindows ) {
 			[winIt->mCinderView setReadyToDraw:YES];
 		}
-		
+
 		// walk all windows and draw them
 		for( WindowImplBasicCocoa* winIt in mWindows ) {
 			[winIt->mCinderView draw];
@@ -181,7 +181,7 @@ using namespace cinder::app;
 
 	// mark the window as readyToDraw, now that we've resized it
 	[winImpl->mCinderView setReadyToDraw:YES];
-		
+
 	return winImpl->mWindowRef;
 }
 
@@ -193,7 +193,7 @@ using namespace cinder::app;
 		if( typeid(renderer) == typeid(match) )
 			return renderer;
 	}
-	
+
 	return RendererRef();
 }
 
@@ -224,7 +224,7 @@ using namespace cinder::app;
 {
 	if( index >= [mWindows count] )
 		throw ExcInvalidWindow();
-	
+
 	WindowImplBasicCocoa *winImpl = [mWindows objectAtIndex:index];
 	return winImpl->mWindowRef;
 }
@@ -468,7 +468,7 @@ using namespace cinder::app;
 		// ???: necessary? won't this be set in resize?
 		NSRect bounds = [mCinderView bounds];
 		mSize.x = static_cast<int>( bounds.size.width );
-		mSize.y = static_cast<int>( bounds.size.height );	
+		mSize.y = static_cast<int>( bounds.size.height );
 	}
 	else {
 		[mWin becomeKeyWindow];
@@ -599,7 +599,7 @@ using namespace cinder::app;
 	if( ! mHidden ) {
 		[mWin orderOut:self];
 		mHidden = YES;
-	}	
+	}
 }
 
 - (void)show
@@ -658,7 +658,7 @@ using namespace cinder::app;
 			}
 		}
 	}
-	
+
 	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
 		mWindowRef->emitMove();
 	}
@@ -675,7 +675,7 @@ using namespace cinder::app;
 	[mAppImpl setActiveWindow:self];
 	// emit the signal before we start destroying stuff
 	mWindowRef->emitClose();
-	
+
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[mAppImpl releaseWindow:self];
 }
@@ -692,7 +692,7 @@ using namespace cinder::app;
 	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
 		[mAppImpl setActiveWindow:self];
 		mWindowRef->emitResize();
-		
+
 		// If the resize happened from top left, also signal that the Window moved.
 		if( prevPos != mPos )
 			mWindowRef->emitMove();
@@ -843,7 +843,7 @@ using namespace cinder::app;
 
 	NSRect winRect = NSMakeRect( offsetX, offsetY, winFormat.getSize().x, winFormat.getSize().y );
 	unsigned int styleMask;
-	
+
 	if( winImpl->mBorderless )
 		styleMask = ( winImpl->mResizable ) ? ( NSBorderlessWindowMask | NSResizableWindowMask ) : ( NSBorderlessWindowMask );
 	else if( winImpl->mResizable )
@@ -875,7 +875,7 @@ using namespace cinder::app;
 
 	// for some renderers, ok really just GL, we want an existing renderer so we can steal its context to share with. If this comes back with NULL that's fine - we're first
 	app::RendererRef sharedRenderer = [appImpl findSharedRenderer:winFormat.getRenderer()];
-	
+
 	app::RendererRef renderer = winFormat.getRenderer();
 	NSRect viewFrame = NSMakeRect( 0, 0, winImpl->mSize.x, winImpl->mSize.y );
 	winImpl->mCinderView = [[CinderViewMac alloc] initWithFrame:viewFrame renderer:renderer sharedRenderer:sharedRenderer

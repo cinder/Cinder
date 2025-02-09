@@ -40,7 +40,7 @@ AppAndroid::AppAndroid()
 
 	enablePowerManagement( settings->isPowerManagementEnabled() ); // TODO: consider moving to common method
 
-	mImpl.reset( new AppImplAndroid( this, *settings ) );	
+	mImpl.reset( new AppImplAndroid( this, *settings ) );
 }
 
 AppAndroid::~AppAndroid()

@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2015, The Cinder Project, All rights reserved.
- 
- Portions Copyright (c) 2013, Microsoft Open Technologies, Inc. 
+
+ Portions Copyright (c) 2013, Microsoft Open Technologies, Inc.
  All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org

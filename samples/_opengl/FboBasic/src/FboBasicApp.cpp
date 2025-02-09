@@ -18,7 +18,7 @@ class FboBasicApp : public App {
 
   private:
 	void			renderSceneToFbo();
-	
+
 	gl::FboRef			mFbo;
 	mat4				mRotation;
 	static const int	FBO_WIDTH = 256, FBO_HEIGHT = 256;
@@ -55,7 +55,7 @@ void FboBasicApp::renderSceneToFbo()
 
 	// set the modelview matrix to reflect our current rotation
 	gl::setModelMatrix( mRotation );
-	
+
 	// render the color cube
 	gl::ScopedGlslProg shaderScp( gl::getStockShader( gl::ShaderDef().color() ) );
 	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
@@ -67,7 +67,7 @@ void FboBasicApp::update()
 {
 	// Rotate the torus by .06 radians around an arbitrary axis
 	mRotation *= rotate( 0.06f, normalize( vec3( 0.16666f, 0.333333f, 0.666666f ) ) );
-	
+
 	// render into our FBO
 	renderSceneToFbo();
 }

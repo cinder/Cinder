@@ -232,8 +232,8 @@ void StereoscopicRenderingApp::update()
 		d = glm::distance( mCamera.getPivotPoint(), mCamera.getEyePoint() );
 		f = math<float>::min( 5.0f, d * 0.5f );
 
-		// The setConvergence() method will not change the eye separation distance, 
-		// which may cause the parallax effect to become uncomfortably big. 
+		// The setConvergence() method will not change the eye separation distance,
+		// which may cause the parallax effect to become uncomfortably big.
 		mCamera.setConvergence( f );
 		mCamera.setEyeSeparation( 0.05f );
 		break;

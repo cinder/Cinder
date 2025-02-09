@@ -32,15 +32,15 @@ BufferObjRef BufferObj::create( GLenum target, GLsizeiptr allocationSize, const 
 {
 	return BufferObjRef( new BufferObj( target, allocationSize, data, usage ) );
 }
-	
+
 BufferObj::BufferObj( GLenum target )
 	: mId( 0 ), mSize( 0 ), mTarget( target ),
 #if defined( CINDER_GL_ES )
   #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	mUsage( GL_DYNAMIC_DRAW )
-  #else	
+  #else
 	mUsage( 0 ) /* GL ES default buffer usage is undefined(?) */
-  #endif	
+  #endif
 #else
 	mUsage( GL_READ_WRITE )
 #endif
@@ -75,17 +75,17 @@ BufferObj::BufferObj( GLenum target, GLsizeiptr allocationSize, const void *data
 		ScopedBuffer bufferBind( mTarget, mId );
 		glBufferData( mTarget, mSize, data, mUsage );
 	}
-	
+
 	gl::context()->bufferCreated( this );
 }
 
 BufferObj::~BufferObj()
-{	
+{
 	auto ctx = gl::context();
 	if( ctx )
 		ctx->bufferDeleted( this );
-		
-	glDeleteBuffers( 1, &mId );		
+
+	glDeleteBuffers( 1, &mId );
 }
 
 void BufferObj::bind() const
@@ -105,7 +105,7 @@ void BufferObj::bufferData( GLsizeiptr size, const GLvoid *data, GLenum usage )
 	mUsage = usage;
 	glBufferData( mTarget, mSize, data, usage );
 }
-	
+
 void BufferObj::bufferSubData( GLintptr offset, GLsizeiptr size, const GLvoid *data )
 {
 	ScopedBuffer bufferBind( mTarget, mId );
@@ -123,7 +123,7 @@ void BufferObj::getBufferSubData( GLintptr offset, GLsizeiptr size, GLvoid *data
 void BufferObj::copyData( GLsizeiptr size, const GLvoid *data )
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-	
+
 	if( size <= mSize )
 		glBufferSubData( mTarget, 0, size, data );
 	else { // need to reallocate due to inadequate size
@@ -201,12 +201,12 @@ size_t BufferObj::getSize() const
 {
 	return mSize;
 }
-	
+
 void BufferObj::setTarget( GLenum target )
 {
 	mTarget = target;
 }
-	
+
 GLenum BufferObj::getUsage() const
 {
 	return mUsage;
@@ -216,7 +216,7 @@ void BufferObj::setUsage( GLenum usage )
 {
 	mUsage = usage;
 }
-	
+
 void BufferObj::unbind() const
 {
 	context()->bindBuffer( mTarget, 0 );

@@ -37,9 +37,9 @@ namespace cinder {
 //  be chosen.
 template<typename T>
 glm::tmat4x4<T,glm::defaultp> firstFrame(
-	const glm::tvec3<T,glm::defaultp> &firstPoint, 
+	const glm::tvec3<T,glm::defaultp> &firstPoint,
 	const glm::tvec3<T,glm::defaultp> &secondPoint,
-	const glm::tvec3<T,glm::defaultp> &thirdPoint 
+	const glm::tvec3<T,glm::defaultp> &thirdPoint
 )
 {
     glm::tvec3<T,glm::defaultp> t = normalize( secondPoint - firstPoint );
@@ -67,16 +67,16 @@ glm::tmat4x4<T,glm::defaultp> firstFrame(
 
 //  nextFrame - Compute the next reference frame along a curve.
 //
-//  This function returns the transformation matrix to the next reference 
+//  This function returns the transformation matrix to the next reference
 //  frame defined by the previously computed transformation matrix and the
 //  new point and tangent vector along the curve.
 template<typename T>
-glm::tmat4x4<T,glm::defaultp> nextFrame( 
-	const glm::tmat4x4<T,glm::defaultp> &prevMatrix, 
-	const glm::tvec3<T,glm::defaultp> &prevPoint, 
+glm::tmat4x4<T,glm::defaultp> nextFrame(
+	const glm::tmat4x4<T,glm::defaultp> &prevMatrix,
+	const glm::tvec3<T,glm::defaultp> &prevPoint,
 	const glm::tvec3<T,glm::defaultp> &curPoint,
 	glm::tvec3<T,glm::defaultp> prevTangent,
-	glm::tvec3<T,glm::defaultp> curTangent 
+	glm::tvec3<T,glm::defaultp> curTangent
 )
 {
     glm::tvec3<T,glm::defaultp> axis( 0 );	// Rotation axis.
@@ -110,14 +110,14 @@ glm::tmat4x4<T,glm::defaultp> nextFrame(
 
 //  lastFrame - Compute the last reference frame along a curve.
 //
-//  This function returns the transformation matrix to the last reference 
+//  This function returns the transformation matrix to the last reference
 //  frame defined by the previously computed transformation matrix and the
 //  last point along the curve.
 template<typename T>
-glm::tmat4x4<T,glm::defaultp> lastFrame( 
-	const glm::tmat4x4<T,glm::defaultp> &prevMatrix, 
-	const glm::tvec3<T,glm::defaultp> &prevPoint, 
-	const glm::tvec3<T,glm::defaultp> &lastPoint 
+glm::tmat4x4<T,glm::defaultp> lastFrame(
+	const glm::tmat4x4<T,glm::defaultp> &prevMatrix,
+	const glm::tvec3<T,glm::defaultp> &prevPoint,
+	const glm::tvec3<T,glm::defaultp> &lastPoint
 )
 {
     return glm::translate( lastPoint - prevPoint ) * prevMatrix;
@@ -141,7 +141,7 @@ glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir )
     if( length2( upDir ) == 0 )
 		upDir = vec3( 0, 1, 0 );
 
-    // Check for degeneracies.  If the upDir and targetDir are parallel 
+    // Check for degeneracies.  If the upDir and targetDir are parallel
     // or opposite, then compute a new, arbitrary up direction that is
     // not parallel or opposite to the targetDir.
     if( length2( cross( upDir, targetDir ) ) == 0 ) {
@@ -166,8 +166,8 @@ glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir )
 							row[1].x,  row[1].y,  row[1].z,  0,
 							row[2].x,  row[2].y,  row[2].z,  0,
 					        0,         0,         0,		 1 };
-	
-    
+
+
     return glm::make_mat4( v );
 }
 

@@ -1,6 +1,6 @@
 /*
  Copyright (c) 2015, The Cinder Project, All rights reserved.
- 
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -34,7 +34,7 @@ void ImageTargetFileStbImage::registerSelf()
 {
 	static bool alreadyRegistered = false;
 	const int32_t PRIORITY = 3;
-	
+
 	if( alreadyRegistered )
 		return;
 	alreadyRegistered = true;
@@ -60,7 +60,7 @@ ImageTargetFileStbImage::ImageTargetFileStbImage( DataTargetRef dataTarget, Imag
 
 	setSize( imageSource->getWidth(), imageSource->getHeight() );
 	ImageIo::ColorModel cm = options.isColorModelDefault() ? imageSource->getColorModel() : options.getColorModel();
-	
+
 	switch( cm ) {
 		case ImageIo::ColorModel::CM_RGB:
 			mNumComponents = ( imageSource->hasAlpha() ) ? 4 : 3;
@@ -89,7 +89,7 @@ ImageTargetFileStbImage::ImageTargetFileStbImage( DataTargetRef dataTarget, Imag
 	if( mDataTarget->providesFilePath() ) {
 		mFilePath = dataTarget->getFilePath();
 	}
-	
+
 	mData = std::unique_ptr<uint8_t[]>( new uint8_t[mHeight * mRowBytes] );
 }
 

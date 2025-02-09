@@ -41,7 +41,7 @@ class CI_API TextureFont {
 	  public:
 		Format() : mTextureWidth( 1024 ), mTextureHeight( 1024 ), mPremultiply( false ), mMipmapping( false )
 		{}
-		
+
 		//! Sets the width of the textures created internally for glyphs. Default \c 1024
 		Format&		textureWidth( int32_t textureWidth ) { mTextureWidth = textureWidth; return *this; }
 		//! Returns the width of the textures created internally for glyphs. Default \c 1024
@@ -50,17 +50,17 @@ class CI_API TextureFont {
 		Format&		textureHeight( int32_t textureHeight ) { mTextureHeight = textureHeight; return *this; }
 		//! Sets the height of the textures created internally for glyphs. Default \c 1024
 		int32_t		getTextureHeight() const { return mTextureHeight; }
-		
+
 		//! Sets whether the TextureFont render premultiplied output. Default \c false
 		Format&		premultiply( bool premult = true ) { mPremultiply = premult; return *this; }
 		//! Returns whether the TextureFont renders premultiplied output. Default \c false
 		bool		getPremultiply() const { return mPremultiply; }
-		
+
 		//! Enables or disables mipmapping. Default is disabled.
 		Format&		enableMipmapping( bool enable = true ) { mMipmapping = enable; return *this; }
 		//! Returns whether the TextureFont texture has mipmapping enabled
 		bool		hasMipmapping() const { return mMipmapping; }
-		
+
 	  protected:
 		int32_t		mTextureWidth, mTextureHeight;
 		bool		mPremultiply;
@@ -71,17 +71,17 @@ class CI_API TextureFont {
 		DrawOptions() : mClipHorizontal( true ), mClipVertical( true ), mPixelSnap( true ), mLigate( false ), mScale( 1 ) {}
 
 		//! Returns whether the output clips horizontally
-		bool			getClipHorizontal() const { return mClipHorizontal; }		
+		bool			getClipHorizontal() const { return mClipHorizontal; }
 		//! Sets whether the output clips horizontally
 		DrawOptions&	clipHorizontal( bool clipH = true ) { mClipHorizontal = clipH; return *this; }
 
 		//! Returns whether the output clips vertically
-		bool			getClipVertical() const { return mClipVertical; }		
+		bool			getClipVertical() const { return mClipVertical; }
 		//! Sets whether the output clips vertically
 		DrawOptions&	clipVertical( bool clipV = true ) { mClipVertical = clipV; return *this; }
 
 		//! Returns whether the output glyphs are snapped to pixel boundaries. This sharpens static text but prevents subpixel animation
-		bool			getPixelSnap() const { return mPixelSnap; }		
+		bool			getPixelSnap() const { return mPixelSnap; }
 		//! Sets whether the output glyphs are snapped to pixel boundaries. This sharpens static text but prevents subpixel animation
 		DrawOptions&	pixelSnap( bool pixelSnap = true ) { mPixelSnap = pixelSnap; return *this; }
 
@@ -109,7 +109,7 @@ class CI_API TextureFont {
 	//! Creates a new TextureFontRef with font \a font, ensuring that glyphs necessary to render \a supportedChars are renderable, and format \a format
 	static TextureFontRef		create( const Font &font, const Format &format = Format(), const std::string &supportedChars = TextureFont::defaultChars() )
 	{ return TextureFontRef( new TextureFont( font, supportedChars, format ) ); }
-	
+
 	//! Draws string \a str at baseline \a baseline with DrawOptions \a options
 	void	drawString( const std::string &str, const vec2 &baseline, const DrawOptions &options = DrawOptions() );
 	//! Draws string \a str fit inside \a fitRect vertically, with internal offset \a offset and DrawOptions \a options
@@ -125,7 +125,7 @@ class CI_API TextureFont {
 	vec2	measureString( const std::string &str, const DrawOptions &options = DrawOptions() ) const;
 	//! Returns the size in pixels necessary to render the word-wrapped string \a str fit inside \a fitRect with DrawOptions \a options. Mac & iOS only.
 	vec2	measureStringWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
-    
+
 	//! Returns a vector of glyph/placement pairs representing \a str, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching.
 	std::vector<std::pair<Font::Glyph,vec2> >		getGlyphPlacements( const std::string &str, const DrawOptions &options = DrawOptions() ) const;
 	//! Returns a vector of glyph/placement pairs representing \a str fit inside \a fitRect, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching.
@@ -147,7 +147,7 @@ class CI_API TextureFont {
 	//! Returns the default set of characters for a TextureFont, suitable for most English text, including some common ligatures and accented vowels.
 	//! \c "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphridséáèà"
 	static std::string		defaultChars() { return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphrids\303\251\303\241\303\250\303\240"; }
-	
+
 	struct CI_API GlyphInfo {
 		uint8_t		mTextureIndex;
 		Area		mTexCoords;
@@ -171,7 +171,7 @@ class CI_API TextureFont {
 	std::map<Font::Glyph, Font::GlyphMetrics>  mCachedGlyphMetrics;
 	const std::map<Font::Glyph, Font::GlyphMetrics>* getCachedGlyphMetrics() const
 	{ return mCachedGlyphMetrics.empty() ? nullptr : &mCachedGlyphMetrics; }
-#endif	
+#endif
 };
 
 } } // namespace cinder::gl

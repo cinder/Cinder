@@ -210,7 +210,7 @@ void LevelOfDetailIndirectApp::runTransformFeedback( int lod )
 
 	setFrustumCullingUniforms( mUpdateGlsl );
 	mUpdateGlsl->uniform( "uCurrentLod", float( lod ) );
-	
+
 #if TECHNIQUE == ATOMIC_COUNTER
 	// clear the instance count field of indirect buffer
 	IndirectDrawCommand reset = mIndirectDrawCommands[lod];
@@ -266,7 +266,7 @@ void LevelOfDetailIndirectApp::update()
 
 void LevelOfDetailIndirectApp::draw()
 {
-	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::clear( Color( 0, 0, 0 ) );
 
 	gl::ScopedMatrices	mtx_;
 	gl::ScopedDepth		depth_( true );
@@ -312,7 +312,7 @@ void LevelOfDetailIndirectApp::draw()
 				layoutR.addRightLine( string( "LOD" + to_string( i ) + ": " + to_string( mIndirectDrawCommands[i].instanceCount ) ) );
 		else
 			layoutR.addRightLine( "Instance count not available on the CPU, turn on read back to see" );
-		
+
 		auto texL = gl::Texture::create( layoutL.render( true ) );
 		gl::draw( texL, vec2( 16, 10 ) );
 

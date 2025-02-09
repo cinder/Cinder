@@ -189,13 +189,13 @@ void CameraUi::mouseDrag( const vec2 &mousePos, bool leftDown, bool middleDown, 
 		action = ACTION_TUMBLE;
 	else
 		return;
-	
+
 	if( action != mLastAction ) {
 		mInitialCam = *mCamera;
 		mInitialPivotDistance = mCamera->getPivotDistance();
 		mInitialMousePos = mousePos;
 	}
-	
+
 	mLastAction = action;
 
 	if( action == ACTION_ZOOM ) { // zooming
@@ -219,7 +219,7 @@ void CameraUi::mouseDrag( const vec2 &mousePos, bool leftDown, bool middleDown, 
 		float deltaY = ( mousePos.y - mInitialMousePos.y ) / 100.0f;
 		vec3 mW = normalize( mInitialCam.getViewDirection() );
 		bool invertMotion = ( mInitialCam.getOrientation() * mInitialCam.getWorldUp() ).y < 0.0f;
-		
+
 		vec3 mU = normalize( cross( mInitialCam.getWorldUp(), mW ) );
 
 		if( invertMotion ) {
@@ -233,7 +233,7 @@ void CameraUi::mouseDrag( const vec2 &mousePos, bool leftDown, bool middleDown, 
 		mCamera->setEyePoint( mInitialCam.getEyePoint() + mInitialCam.getViewDirection() * mInitialPivotDistance + rotatedVec );
 		mCamera->setOrientation( glm::angleAxis( deltaX, mInitialCam.getWorldUp() ) * glm::angleAxis( deltaY, mU ) * mInitialCam.getOrientation() );
 	}
-	
+
 	mSignalCameraChange.emit();
 }
 
@@ -241,7 +241,7 @@ void CameraUi::mouseWheel( float increment )
 {
 	if( ! mCamera || ! mEnabled )
 		return;
-	
+
 	// some mice issue mouseWheel events during middle-clicks; filter that out
 	if( mLastAction != ACTION_NONE )
 		return;
@@ -254,7 +254,7 @@ void CameraUi::mouseWheel( float increment )
 	vec3 newEye = mCamera->getEyePoint() + mCamera->getViewDirection() * ( mCamera->getPivotDistance() * ( 1 - multiplier ) );
 	mCamera->setEyePoint( newEye );
 	mCamera->setPivotDistance( std::max<float>( mCamera->getPivotDistance() * multiplier, mMinimumPivotDistance ) );
-	
+
 	mSignalCameraChange.emit();
 }
 

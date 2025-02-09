@@ -27,22 +27,22 @@ class Flower {
 			ctx.arc( outsideCircleCenter, mPetalOutsideRadius, petalAngle + M_PI / 2 + M_PI, petalAngle + M_PI / 2 );
 			ctx.arc( insideCircleCenter, mPetalInsideRadius, petalAngle + M_PI / 2, petalAngle + M_PI / 2 + M_PI );
 			ctx.closePath();
-		}		
+		}
 	}
-	
+
 	void draw( cairo::Context &ctx ) const
 	{
 		// draw the solid petals
 		ctx.setSource( mColor );
 		makePath( ctx );
 		ctx.fill();
-		
+
 		// draw the petal outlines
 		ctx.setSource( mColor * 0.8f );
 		makePath( ctx );
 		ctx.stroke();
 	};
-	
+
   private:
 	vec2		mLoc;
 	float		mRadius, mPetalOutsideRadius, mPetalInsideRadius;
@@ -56,12 +56,12 @@ class CairoBasicApp : public App {
 	void keyDown( KeyEvent event );
 	void renderScene( cairo::Context &ctx );
 	void draw();
-	
+
 	vector<Flower>		mFlowers;
 };
 
 void CairoBasicApp::mouseDown( MouseEvent event )
-{	
+{
 	// create a new flower
 	float radius = randFloat( 60, 90 );
 	int numPetals = randInt( 6, 50 );
@@ -89,11 +89,11 @@ void CairoBasicApp::keyDown( KeyEvent event )
 	else if( event.getChar() == 'p' ) {
 		cairo::Context ctx( cairo::SurfacePs( getHomeDirectory() / "CairoBasicShot.ps", getWindowWidth(), getWindowHeight() ) );
 		renderScene( ctx );
-	}	
+	}
 	else if( event.getChar() == 'd' ) {
 		cairo::Context ctx( cairo::SurfacePdf( getHomeDirectory() / "CairoBasicShot.pdf", getWindowWidth(), getWindowHeight() ) );
 		renderScene( ctx );
-	}	
+	}
 }
 
 void CairoBasicApp::renderScene( cairo::Context &ctx )
@@ -101,10 +101,10 @@ void CairoBasicApp::renderScene( cairo::Context &ctx )
 	// clear the context with our radial gradient
 	cairo::GradientRadial radialGrad( getWindowCenter(), 0, getWindowCenter(), getWindowWidth() );
 	radialGrad.addColorStop( 0, Color( 1, 1, 1 ) );
-	radialGrad.addColorStop( 1, Color( 0.6, 0.6, 0.6 ) );	
-	ctx.setSource( radialGrad );	
+	radialGrad.addColorStop( 1, Color( 0.6, 0.6, 0.6 ) );
+	ctx.setSource( radialGrad );
 	ctx.paint();
-	
+
 	for( vector<Flower>::const_iterator flIt = mFlowers.begin(); flIt != mFlowers.end(); ++flIt )
 		flIt->draw( ctx );
 }
@@ -112,7 +112,7 @@ void CairoBasicApp::renderScene( cairo::Context &ctx )
 void CairoBasicApp::draw()
 {
 	// render the scene straight to the window
-	cairo::Context ctx( cairo::createWindowSurface() );	
+	cairo::Context ctx( cairo::createWindowSurface() );
 	renderScene( ctx );
 }
 

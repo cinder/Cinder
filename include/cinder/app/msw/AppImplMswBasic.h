@@ -43,7 +43,7 @@ class AppImplMswBasic : public AppImplMsw {
 	void	run();
 
 	AppMsw*	getApp() { return mApp; }
-	
+
 	void	quit() override;
 
 	void	setFrameRate( float frameRate ) override;
@@ -53,7 +53,7 @@ class AppImplMswBasic : public AppImplMsw {
 	size_t		getNumWindows() const;
 	WindowRef	getWindowIndex( size_t index );
 	WindowRef	getForegroundWindow() const;
-	
+
 	void		setupBlankingWindows( DisplayRef fullScreenDisplay );
 	void		destroyBlankingWindows();
 
@@ -66,7 +66,7 @@ class AppImplMswBasic : public AppImplMsw {
 	RendererRef		findSharedRenderer( const RendererRef &searchRenderer );
 	void			closeWindow( class WindowImplMsw *windowImpl ) override;
 	void			setForegroundWindow( WindowRef window ) override;
-	
+
 	AppMsw*	mApp;
 	HINSTANCE		mInstance;
 	double			mNextFrameTime;

@@ -13,7 +13,7 @@ class MotionBasicApp : public App {
 	virtual void	setup();
 	virtual void	update();
 	virtual void	draw();
-	
+
 	mat4			mModelMatrix;
 	CameraPersp		mCam;
 	Anim<Color>		mBackgroundColor;
@@ -22,7 +22,7 @@ class MotionBasicApp : public App {
 void MotionBasicApp::setup()
 {
 	CI_LOG_V( "gyro available: " << MotionManager::isGyroAvailable() );
-	
+
 	MotionManager::enable( 60.0f/*, MotionManager::SensorMode::Accelerometer*/ );
 
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );

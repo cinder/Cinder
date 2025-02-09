@@ -71,7 +71,7 @@ inline Measure MeasureString( const std::string& utf8, FT_Face face, bool tightF
 	int yMax = 0;
 	bool hasInitial = false;
 
-//ci::app::console() << "MeasureString::face: " << (uint32_t)face << std::endl;	
+//ci::app::console() << "MeasureString::face: " << (uint32_t)face << std::endl;
 
 	std::u32string utf32 = ci::toUtf32( utf8 );
 	for( const auto ch : utf32 ) {
@@ -81,8 +81,8 @@ inline Measure MeasureString( const std::string& utf8, FT_Face face, bool tightF
 		FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
 		if( error ) {
 			ci::app::console() << "Failed loading glyph: " << (uint8_t)ch << std::endl;
-		 	continue;  
-		} 
+		 	continue;
+		}
 
 		FT_GlyphSlot slot = face->glyph;
 		int glyphPixWidth  = (int)((slot->metrics.width / 64.0f) + 0.5f);
@@ -126,16 +126,16 @@ inline Measure MeasureString( const std::string& utf8, FT_Face face, bool tightF
 	ivec2 baseline = ivec2( baselineX, baselineY );
 
 	return Measure( size, baseline );
-} 
+}
 
-inline void DrawBitmap( 
+inline void DrawBitmap(
 	const ivec2&		offset,
-	FT_Bitmap*			bitmap, 
-	const ci::ColorA8u&	color, 
-	uint8_t*			dstData, 
-	size_t 				dstPixelInc, 
-	size_t 				dstRowBytes, 
-	const ivec2& 		dstSize 
+	FT_Bitmap*			bitmap,
+	const ci::ColorA8u&	color,
+	uint8_t*			dstData,
+	size_t 				dstPixelInc,
+	size_t 				dstRowBytes,
+	const ivec2& 		dstSize
 )
 {
 	FT_Int i, j, p, q;
@@ -147,7 +147,7 @@ inline void DrawBitmap(
 		 	if( i < 0 || j < 0 || i >= dstSize.x || j >= dstSize.y ) {
 				continue;
 			}
-			
+
 			size_t index = j*dstRowBytes + i*dstPixelInc;
 			uint8_t *data = dstData + index;
 			int dr = *(data + 0);
@@ -209,9 +209,9 @@ inline ci::SurfaceRef RenderString( const std::string& utf8, FT_Face face, bool 
 	return result;
 }
 
-inline std::string GetFontName( FT_Face face, const std::string &subName = "" ) 
+inline std::string GetFontName( FT_Face face, const std::string &subName = "" )
 {
-	std::string fontName;	
+	std::string fontName;
 	FT_SfntName sn;
 	if( FT_Err_Ok == FT_Get_Sfnt_Name( face, TT_NAME_ID_FULL_NAME, &sn ) ) {
 		// Possible Unicode name, just use filename for now

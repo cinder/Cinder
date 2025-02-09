@@ -30,7 +30,7 @@
 	#import "cinder/app/cocoa/AppImplMacScreenSaver.h"
 	#include "cinder/app/cocoa/PlatformCocoa.h"
 	#include "cinder/ImageSourceFileQuartz.h"
-	#include "cinder/ImageTargetFileQuartz.h"	
+	#include "cinder/ImageTargetFileQuartz.h"
 #elif defined( CINDER_MSW )
 	#include "cinder/app/msw/AppImplMswScreenSaver.h"
 #endif
@@ -51,14 +51,14 @@ AppScreenSaver::AppScreenSaver()
 	AppBase::sInstance = sInstance = this;
 	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
 	CI_ASSERT( settings );
-	
+
 	auto platform = dynamic_cast<PlatformCocoa *>( Platform::get() );
 	CI_ASSERT_MSG( platform, "expected global Platform object to be of type PlatformCocoa" );
 
 	platform->setBundle( getBundle() );
-	
+
 	ImageSourceFileQuartz::registerSelf();
-	ImageTargetFileQuartz::registerSelf();	
+	ImageTargetFileQuartz::registerSelf();
 }
 
 #elif defined( CINDER_MSW )

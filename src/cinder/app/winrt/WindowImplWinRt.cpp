@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2015, The Cinder Project, All rights reserved.
- 
- Portions Copyright (c) 2013, Microsoft Open Technologies, Inc. 
+
+ Portions Copyright (c) 2013, Microsoft Open Technologies, Inc.
  All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
@@ -66,7 +66,7 @@ namespace cinder { namespace app {
 	mRenderer->setup( mWnd, nullptr );
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl );
-	
+
 	completeCreation();
 }*/
 
@@ -133,7 +133,7 @@ void WindowImplWinRt::setPos( const ivec2 &windowPos )
 	clientArea.right = windowPos.x + 1; clientArea.bottom = windowPos.y + 1; // we don't actually care about the lower-right
 	::AdjustWindowRectEx( &clientArea, mWindowStyle, FALSE, mWindowExStyle );
 	::SetWindowPos( mWnd, HWND_TOP, clientArea.left, clientArea.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER );
-	
+
 	POINT upperLeft;
 	upperLeft.x = upperLeft.y = 0;
 	::ClientToScreen( mWnd, &upperLeft );
@@ -230,22 +230,22 @@ unsigned int prepPointerEventModifiers(PointerEventArgs^ args)
 	return result;
 }
 
-void WindowImplWinRt::handlePointerDown( PointerEventArgs^ args ) 
+void WindowImplWinRt::handlePointerDown( PointerEventArgs^ args )
 {
 	mIsMultiTouchEnabled ? handleTouchDown( args ) : handleMouseDown( args );
 }
 
-void WindowImplWinRt::handlePointerMoved( PointerEventArgs^ args ) 
+void WindowImplWinRt::handlePointerMoved( PointerEventArgs^ args )
 {
 	mIsMultiTouchEnabled ? handleTouchMoved( args ) : handleMouseMoved( args );
 }
 
-void WindowImplWinRt::handlePointerUp( PointerEventArgs^ args ) 
+void WindowImplWinRt::handlePointerUp( PointerEventArgs^ args )
 {
 	mIsMultiTouchEnabled ? handleTouchUp( args ) : handleMouseUp( args );
 }
 
-void WindowImplWinRt::handleTouchDown( PointerEventArgs^ args ) 
+void WindowImplWinRt::handleTouchDown( PointerEventArgs^ args )
 {
 	PointerPoint^ p = args->CurrentPoint;
 	vector<TouchEvent::Touch> touches;
@@ -264,24 +264,24 @@ void WindowImplWinRt::handleTouchDown( PointerEventArgs^ args )
 	getWindow()->emitTouchesBegan( &event );
 }
 
-void WindowImplWinRt::handleMouseDown( PointerEventArgs^ args ) 
+void WindowImplWinRt::handleMouseDown( PointerEventArgs^ args )
 {
 	PointerPoint^ p = args->CurrentPoint;
-	mIsDragging = true;		
+	mIsDragging = true;
 	float x = getScaledDPIValue(p->Position.X);
 	float y = getScaledDPIValue(p->Position.Y);
 	MouseEvent event( getWindow(), prepPointerEventModifiers( args ), static_cast<int>(x), static_cast<int>(y), prepPointerEventModifiers( args ), 0.0f, 0L);
 	getWindow()->emitMouseDown( &event );
 }
 
-void WindowImplWinRt::handleTouchMoved( PointerEventArgs^ args ) 
+void WindowImplWinRt::handleTouchMoved( PointerEventArgs^ args )
 {
 	PointerPoint^ p = args->CurrentPoint;
 	vector<TouchEvent::Touch> touches;
 	float x = getScaledDPIValue( p->Position.X );
 	float y = getScaledDPIValue( p->Position.Y );
 	auto id = mTouchIds[p->PointerId];
-	
+
 	if( mMultiTouchPrev.find(id) != mMultiTouchPrev.end() ) {
 		mMultiTouchPrev[id] = vec2(x, y);
 		TouchEvent::Touch e( vec2(x, y ), mMultiTouchPrev[id], id, app::getElapsedSeconds(), nullptr );
@@ -325,7 +325,7 @@ void WindowImplWinRt::handleMouseUp( PointerEventArgs^ args )
 	PointerPoint^ p = args->CurrentPoint;
 	float x = getScaledDPIValue( p->Position.X );
 	float y = getScaledDPIValue( p->Position.Y );
-	mIsDragging = false;		
+	mIsDragging = false;
 	MouseEvent event( getWindow(), prepPointerEventModifiers( args ), static_cast<int>(x), static_cast<int>(y), prepPointerEventModifiers( args ), 0.0f, 0L );
 	getWindow()->emitMouseUp( &event );
 }
@@ -336,7 +336,7 @@ unsigned int WindowImplWinRt::prepKeyEventModifiers() const
 	if( mControlKeyPressed ) result |= KeyEvent::CTRL_DOWN;
 	if( mShiftKeyPressed ) result |= KeyEvent::SHIFT_DOWN;
 	if( mAltKeyPressed ) result |= KeyEvent::ALT_DOWN;
-	//if( ( ::GetKeyState( VK_LMENU ) & 0x8000 ) || ( ::GetKeyState( VK_RMENU ) & 0x8000 ) ) result |= KeyEvent::ALT_DOWN;	
+	//if( ( ::GetKeyState( VK_LMENU ) & 0x8000 ) || ( ::GetKeyState( VK_RMENU ) & 0x8000 ) ) result |= KeyEvent::ALT_DOWN;
 	//if( ( ::GetKeyState( VK_LWIN ) < 0 ) || ( ::GetKeyState( VK_RWIN ) < 0 ) ) result |= KeyEvent::META_DOWN;
 	return result;
 }

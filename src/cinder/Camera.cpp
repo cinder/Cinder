@@ -194,7 +194,7 @@ void Camera::calcViewMatrix() const
 	mW = - normalize( mViewDirection );
 	mU = glm::rotate( mOrientation, glm::vec3( 1, 0, 0 ) );
 	mV = glm::rotate( mOrientation, glm::vec3( 0, 1, 0 ) );
-	
+
 	vec3 d( - dot( mEyePoint, mU ), - dot( mEyePoint, mV ), - dot( mEyePoint, mW ) );
 
 	mat4 &m = mViewMatrix;
@@ -391,7 +391,7 @@ CameraOrtho::CameraOrtho( float left, float right, float bottom, float top, floa
 	mFrustumBottom	= bottom;
 	mNearClip		= nearPlane;
 	mFarClip		= farPlane;
-	
+
 	mProjectionCached = false;
 	mModelViewCached = true;
 	mInverseModelViewCached = true;
@@ -469,71 +469,71 @@ Ray CameraOrtho::calcRay( float uPos, float vPos, float imagePlaneAspectRatio ) 
 ////////////////////////////////////////////////////////////////////////////////////////
 // CameraStereo
 vec3 CameraStereo::getEyePointShifted() const
-{	
+{
 	if( ! mIsStereo )
 		return mEyePoint;
-	
+
 	if( mIsLeft )
 		return mEyePoint - glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) * ( 0.5f * mEyeSeparation );
-	else 
+	else
 		return mEyePoint + glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) * ( 0.5f * mEyeSeparation );
 }
 
 void CameraStereo::setConvergence( float distance, bool adjustEyeSeparation )
-{ 
+{
 	mConvergence = distance; mProjectionCached = false;
 
 	if( adjustEyeSeparation )
 		mEyeSeparation = mConvergence / 30.0f;
 }
-	
-const mat4& CameraStereo::getProjectionMatrix() const 
+
+const mat4& CameraStereo::getProjectionMatrix() const
 {
 	if( ! mProjectionCached )
-		calcProjection(); 
+		calcProjection();
 
 	if( ! mIsStereo )
-		return mProjectionMatrix; 
+		return mProjectionMatrix;
 	else if( mIsLeft )
-		return mProjectionMatrixLeft; 
+		return mProjectionMatrixLeft;
 	else
-		return mProjectionMatrixRight; 
+		return mProjectionMatrixRight;
 }
-	
-const mat4& CameraStereo::getViewMatrix() const 
+
+const mat4& CameraStereo::getViewMatrix() const
 {
 	if( ! mModelViewCached )
-		calcViewMatrix(); 
+		calcViewMatrix();
 
 	if( ! mIsStereo )
-		return mViewMatrix; 
+		return mViewMatrix;
 	else if( mIsLeft )
-		return mViewMatrixLeft; 
+		return mViewMatrixLeft;
 	else
-		return mViewMatrixRight; 
+		return mViewMatrixRight;
 }
-	
-const mat4& CameraStereo::getInverseViewMatrix() const 
+
+const mat4& CameraStereo::getInverseViewMatrix() const
 {
 	if( ! mInverseModelViewCached )
 		calcInverseView();
 
 	if( ! mIsStereo )
-		return mInverseModelViewMatrix; 
+		return mInverseModelViewMatrix;
 	else if( mIsLeft )
-		return mInverseModelViewMatrixLeft; 
+		return mInverseModelViewMatrixLeft;
 	else
-		return mInverseModelViewMatrixRight; 
+		return mInverseModelViewMatrixRight;
 }
 
 void CameraStereo::calcViewMatrix() const
 {
 	// calculate default matrix first
 	CameraPersp::calcViewMatrix();
-	
+
 	mViewMatrixLeft = mViewMatrix;
 	mViewMatrixRight = mViewMatrix;
-	
+
 	// calculate left matrix
 	vec3 eye = mEyePoint - glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) * ( 0.5f * mEyeSeparation );
 	vec3 d = vec3( - dot( eye, mU ), - dot( eye, mV ), - dot( eye, mW ) );
@@ -564,23 +564,23 @@ void CameraStereo::calcProjection() const
 {
 	// calculate default matrices first
 	CameraPersp::calcProjection();
-	
+
 	mProjectionMatrixLeft = mProjectionMatrix;
 	mInverseProjectionMatrixLeft = mInverseProjectionMatrix;
-	
+
 	mProjectionMatrixRight = mProjectionMatrix;
 	mInverseProjectionMatrixRight = mInverseProjectionMatrix;
 
 	// calculate left matrices
 	mInverseProjectionMatrixLeft[2][0] =  ( mFrustumRight + mFrustumLeft + mEyeSeparation * (mNearClip / mConvergence) ) / ( mFrustumRight - mFrustumLeft );
 
-	mInverseProjectionMatrixLeft[3][0] =  ( mFrustumRight + mFrustumLeft + mEyeSeparation * (mNearClip / mConvergence) ) / ( 2.0f * mNearClip );	
+	mInverseProjectionMatrixLeft[3][0] =  ( mFrustumRight + mFrustumLeft + mEyeSeparation * (mNearClip / mConvergence) ) / ( 2.0f * mNearClip );
 
 	// calculate right matrices
 	mProjectionMatrixRight[2][0] =  ( mFrustumRight + mFrustumLeft - mEyeSeparation * (mNearClip / mConvergence) ) / ( mFrustumRight - mFrustumLeft );
 
 	mProjectionMatrixRight[3][0] =  ( mFrustumRight + mFrustumLeft - mEyeSeparation * (mNearClip / mConvergence) ) / ( 2.0f * mNearClip );
-	
+
 	mProjectionCached = true;
 }
 

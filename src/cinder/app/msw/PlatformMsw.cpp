@@ -294,14 +294,14 @@ std::ostream& PlatformMsw::console()
 
 	if( ! mOutputStream )
 		mOutputStream.reset( new cinder::msw::dostream );
-	
+
 	return *mOutputStream;
 }
 
 map<string,string> PlatformMsw::getEnvironmentVariables()
 {
 	map<string,string> result;
-	
+
 	WCHAR* env = ::GetEnvironmentStrings();
 	if( ! env )
 		return result;
@@ -333,7 +333,7 @@ fs::path PlatformMsw::expandPath( const fs::path &path )
 {
 	wchar_t buffer[MAX_PATH];
 	::PathCanonicalize( buffer, path.wstring().c_str() );
-	return fs::path( buffer ); 
+	return fs::path( buffer );
 }
 
 fs::path PlatformMsw::getDocumentsDirectory() const
@@ -444,8 +444,8 @@ void setThreadNameHelper( const std::string &name )
 	 } THREADNAME_INFO;
 #pragma pack(pop)
 
-#pragma warning(push)  
-#pragma warning(disable: 6320 6322)  
+#pragma warning(push)
+#pragma warning(disable: 6320 6322)
 	__try {
 		THREADNAME_INFO info;
 		info.dwType = 0x1000;
@@ -454,10 +454,10 @@ void setThreadNameHelper( const std::string &name )
 		info.dwFlags = 0;
 
 		::RaiseException( 0x406D1388 /* MS_VC_EXCEPTION */, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info );
-	}  
+	}
 	__except (EXCEPTION_EXECUTE_HANDLER) {
-	}  
-#pragma warning(pop)  
+	}
+#pragma warning(pop)
 }
 }
 
@@ -539,12 +539,12 @@ std::string DisplayMsw::getName() const
 BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC /*hdc*/, LPRECT rect, LPARAM lParam )
 {
 	vector<DisplayRef> *displaysVector = reinterpret_cast<vector<DisplayRef>*>( lParam );
-	
+
 	DisplayMsw *newDisplay = new DisplayMsw();
 	newDisplay->mArea = Area( rect->left, rect->top, rect->right, rect->bottom );
 	newDisplay->mMonitor = hMonitor;
 	newDisplay->mBitsPerPixel = getMonitorBitsPerPixel( hMonitor );
-	
+
 	newDisplay->mContentScale = 1.0f; // default value
 	// dynamic function resoluion for ::GetDpiForMonitor()
 	if( sShcoreDll != (HMODULE)INVALID_HANDLE_VALUE ) {
@@ -571,7 +571,7 @@ const std::vector<DisplayRef>& app::PlatformMsw::getDisplays()
 			if( ! sShcoreDll )
 				sShcoreDll = (HMODULE)INVALID_HANDLE_VALUE;
 		}
-		
+
 		if( sShcoreDll ) {
 			typedef HRESULT(WINAPI* SetProcessDpiAwarenessFn)( DWORD /*PROCESS_DPI_AWARNESS*/ value );
 			SetProcessDpiAwarenessFn setProcessDpiAwarenessFnPtr = nullptr;
@@ -581,11 +581,11 @@ const std::vector<DisplayRef>& app::PlatformMsw::getDisplays()
 		}
 
 		::EnumDisplayMonitors( NULL, NULL, DisplayMsw::enumMonitorProc, (LPARAM)&mDisplays );
-	
+
 		// ensure that the primary display is sDisplay[0]
 		const POINT ptZero = { 0, 0 };
 		HMONITOR primMon = MonitorFromPoint( ptZero, MONITOR_DEFAULTTOPRIMARY );
-	
+
 		size_t m;
 		for( m = 0; m < mDisplays.size(); ++m )
 			if( dynamic_pointer_cast<DisplayMsw>( mDisplays[m] )->mMonitor == primMon )
@@ -615,7 +615,7 @@ void app::PlatformMsw::refreshDisplays( vector<DisplayRef> *connectedDisplays, v
 		DisplayMsw *newDisplay = reinterpret_cast<DisplayMsw*>( newDisplayIt->get() );
 		// find the old display with the same mMonitor
 		bool found = false;
-		for( auto displayIt = mDisplays.begin(); displayIt != mDisplays.end(); ++displayIt ) {	
+		for( auto displayIt = mDisplays.begin(); displayIt != mDisplays.end(); ++displayIt ) {
 			DisplayMsw *oldDisplay = reinterpret_cast<DisplayMsw*>( displayIt->get() );
 			if( oldDisplay->mMonitor == newDisplay->mMonitor ) {
 				// found this display; see if anything changed
@@ -635,7 +635,7 @@ void app::PlatformMsw::refreshDisplays( vector<DisplayRef> *connectedDisplays, v
 	}
 
 	// deal with any displays which have been disconnected
-	for( auto displayIt = mDisplays.begin(); displayIt != mDisplays.end(); ) {	
+	for( auto displayIt = mDisplays.begin(); displayIt != mDisplays.end(); ) {
 		if( ! reinterpret_cast<DisplayMsw*>( displayIt->get() )->mVisitedFlag ) {
 			disconnectedDisplays->push_back( *displayIt );
 			displayIt = mDisplays.erase( displayIt );

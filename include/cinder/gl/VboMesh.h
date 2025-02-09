@@ -38,7 +38,7 @@ namespace cinder { namespace gl {
 
 class VboMesh;
 typedef std::shared_ptr<VboMesh> VboMeshRef;
-	
+
 class CI_API VboMesh {
   public:
 	class CI_API Layout {
@@ -74,7 +74,7 @@ class CI_API VboMesh {
 
 		friend VboMesh;
 	};
-  
+
 	//! Creates a VboMesh which represents the geom::Source \a source. Layout is derived from the contents of \a source.
 	static VboMeshRef	create( const geom::Source &source );
 	//! Creates a VboMesh which represents the geom::Source \a source using \a layout.
@@ -121,7 +121,7 @@ class CI_API VboMesh {
 	//! Returns the vector of pairs of (BufferLayout,VboRef) for the vertex data of the mesh
 	const std::vector<std::pair<geom::BufferLayout,VboRef>>&	getVertexArrayLayoutVbos() const { return mVertexArrayVbos; }
 	//! Adds a new VBO (paired with its geom::BufferLayout) to the VboMesh
-	void												appendVbo( const geom::BufferLayout &layout, const VboRef &vbo );	
+	void												appendVbo( const geom::BufferLayout &layout, const VboRef &vbo );
 
 	//! Returns a pair<geom::BufferLayout,VboRef>* that corresponds to \a attrib. Returns nullptr if not found
 	std::pair<geom::BufferLayout,VboRef>*		findAttrib( geom::Attrib attr );
@@ -141,7 +141,7 @@ class CI_API VboMesh {
 		void		unmap();
 
 		~MappedAttribBase();
-		
+
 		MappedAttribBase( const MappedAttribBase &rhs )
 			: mMapping( rhs.mMapping ), mPtr( rhs.mPtr ), mStride( rhs.mStride )
 		{
@@ -156,7 +156,7 @@ class CI_API VboMesh {
 			mStride = rhs.mStride;
 			return *this;
 		}
-		
+
 		MappedAttribBase( MappedAttribBase &&rhs )
 		{
 			mMapping = rhs.mMapping;
@@ -164,7 +164,7 @@ class CI_API VboMesh {
 			mPtr = rhs.mPtr;
 			mStride = rhs.mStride;
 		}
-		
+
 		MappedAttribBase& operator=( MappedAttribBase &&rhs )
 		{
 			mMapping = rhs.mMapping;
@@ -173,40 +173,40 @@ class CI_API VboMesh {
 			mStride = rhs.mStride;
 			return *this;
 		}
-	
+
 	  protected:
 		MappedAttribBase( VboMesh *mesh, const VboRef &vbo, void *ptr, size_t stride )
 			: mMapping( new Mapping( mesh, vbo ) ), mPtr( ptr ), mStride( stride )
 		{}
-		
+
 		struct Mapping {
 			Mapping( VboMesh *mesh, const VboRef &vbo )
 				: mMesh( mesh ), mVbo( vbo ), mRefCount( 1 ), mMapped( true )
 			{}
-				
+
 			void		refCountInc() { ++mRefCount; }
 			//! Returns \c true if this was the last reference
 			bool		refCountDec() { --mRefCount; return mRefCount == 0; }
-			
+
 			void		unmap();
 			bool		isMapped() const { return mMapped; }
-	
+
 		  private:
   			Mapping( const Mapping &rhs );
 			Mapping& operator=( const Mapping &rhs );
 
-		  public:		
+		  public:
 			VboMesh		*mMesh;
 			bool		mMapped;
 			VboRef		mVbo;
 			uint32_t	mRefCount;
 		};
-		
+
 		friend class VboMesh;
-		
+
 		void		*mPtr;
 		Mapping		*mMapping;
-		size_t		mStride;	
+		size_t		mStride;
 	};
 
 	template<typename T>
@@ -220,7 +220,7 @@ class CI_API VboMesh {
 
 		T&			operator[]( size_t i )			{ return *(reinterpret_cast<T*>( ((uint8_t*)mPtr) + mStride * i )); }
 		const T&	operator[]( size_t i ) const	{ return *(reinterpret_cast<T*>( ((uint8_t*)mPtr) + mStride * i )); }
-		
+
 		// pre-increment
 		MappedAttrib	operator++() { mPtr = ((uint8_t*)mPtr) + mStride; return *this; }
 		// post-increment
@@ -230,14 +230,14 @@ class CI_API VboMesh {
 		MappedAttrib( VboMesh *mesh, const VboRef &vbo, void *ptr, size_t stride )
 			: MappedAttribBase( mesh, vbo, ptr, stride )
 		{}
-		
+
 		friend class VboMesh;
 	};
 
 	//! Must call unmap() on the result. Throws ExcMissingAttrib if the VboMesh doesn't contain \a attr.
-	MappedAttrib<float>		mapAttrib1f( geom::Attrib attr, bool orphanExisting = true );	
+	MappedAttrib<float>		mapAttrib1f( geom::Attrib attr, bool orphanExisting = true );
 	//! Must call unmap() on the result. Throws ExcMissingAttrib if the VboMesh doesn't contain \a attr.
-	MappedAttrib<vec2>		mapAttrib2f( geom::Attrib attr, bool orphanExisting = true );	
+	MappedAttrib<vec2>		mapAttrib2f( geom::Attrib attr, bool orphanExisting = true );
 	//! Must call unmap() on the result. Throws ExcMissingAttrib if the VboMesh doesn't contain \a attr.
 	MappedAttrib<vec3>		mapAttrib3f( geom::Attrib attr, bool orphanExisting = true );
 	//! Must call unmap() on the result. Throws ExcMissingAttrib if the VboMesh doesn't contain \a attr.
@@ -258,10 +258,10 @@ class CI_API VboMesh {
 #if ! defined( CINDER_GL_ES )
 	//! Returns a geom::Source which references 'this'. Inefficient - primarily useful for debugging. The returned geom::SourceRef should not outlive 'this' (not a shared_ptr).
 	geom::SourceRef	createSource() const;
-	
+
 	//! Copies indices to \a dest. Requires \a dest to provide storage for getNumIndices() indices. Inefficient - primarily useful for debugging.
 	void		downloadIndices( uint32_t *dest ) const;
-	
+
 	//! Echos all vertex data in range [\a startIndex, \a endIndex) to \a os. Inefficient - primarily useful for debugging.
 	void		echoVertexRange( std::ostream &os, size_t startIndex, size_t endIndex );
 	//! Echos all vertex data for the indices in range [\a startIndex, \a endIndex) to \a os. No-op for non-indexed geometry. Inefficient - primarily useful for debugging.
@@ -289,14 +289,14 @@ class CI_API VboMesh {
 
 	std::map<VboRef,MappedVboInfo>		mMappedVbos;
 #endif
-	
+
 	uint32_t			mNumVertices, mNumIndices;
 	GLenum				mGlPrimitive;
 	GLenum				mIndexType;
 
 	std::vector<std::pair<geom::BufferLayout,VboRef>>	mVertexArrayVbos;
 	VboRef												mIndices;
-	
+
 	friend class VboMeshGeomTarget;
 	friend class Batch;
 };

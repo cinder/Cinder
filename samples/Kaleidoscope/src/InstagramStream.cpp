@@ -92,7 +92,7 @@ InstagramStream::~InstagramStream()
 
 // Non-autenticated queries
 // X	search for recent images of a certain tag
-// X	get popular images	
+// X	get popular images
 // _	search for users with by user id							https://api.instagram.com/v1/users/search?q=userId&client_id=xxx
 // _	get info about a user										https://api.instagram.com/v1/users/1574083/?client_id=xxx
 // _	see who a user follows										https://api.instagram.com/v1/users/1574083/follows?client_id=xxx
@@ -112,10 +112,10 @@ void InstagramStream::serviceGrams(string url)
 {
 	ThreadSetup threadSetup;
 	std::string nextQueryString = url;
-	
+
 	JsonTree searchResults;
 	JsonTree::ConstIter resultIt = searchResults.end();
-	
+
 	// This function loops until the app quits. Each iteration a pulls out the next result from the Twitter API query.
 	// When it reaches the last result of the current query it issues a new one, based on the "refresh_url" property
 	// of the current query.
@@ -128,37 +128,37 @@ void InstagramStream::serviceGrams(string url)
 			try {
 				queryResult = queryInstagram( nextQueryString );
 				// the next query will be the "refresh_url" of this one.
-				
+
 				try {
 					nextQueryString = queryResult["pagination"].getChild("next_url").getValue();
 				}
 				catch( ci::Exception &exc ) {
 					// ignoring pagination exception..
 				}
-				
+
 				searchResults = queryResult.getChild("data");
 				resultIt = searchResults.begin();
 				mIsConnected = true;
 			}
-			catch( ci::Exception &exc ) {				
+			catch( ci::Exception &exc ) {
 				CI_LOG_W( "exception caught, what: " << exc.what() );
 				console() << queryResult << endl;
 				console() << nextQueryString << endl;
-				
+
 				// check if it's a 420 error
 				if(queryResult.getChild("meta").getChild("code").getValue() == "420"){
 					console() << "420 error" << endl;
 					mIsConnected = false;
 				}
-				
+
 				ci::sleep( 1000 ); // try again in 1 second
 			}
 		}
 		if( resultIt != searchResults.end() ) {
 			try {
-				
+
 				string userName = (*resultIt)["user"]["username"].getValue();
-				
+
 				// get the URL and load this instagram image
 				string imageUrl = (*resultIt)["images"]["standard_resolution"]["url"].getValue();
 				Surface image( loadImage( loadUrl( imageUrl ) ) );

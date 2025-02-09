@@ -13,7 +13,7 @@ class GeometryShaderIntroApp : public App {
 	void setup();
 	void mouseDrag( MouseEvent event );
 	void draw();
-	
+
 	gl::VertBatchRef	mBatch;
 	gl::GlslProgRef		mGlsl;
 	int					mNumSides;
@@ -46,7 +46,7 @@ void GeometryShaderIntroApp::mouseDrag( MouseEvent event )
 {
 	mNumSides = (((float)event.getX() / getWindowWidth()) * 30) + 3;
 	mNumSides = constrain( mNumSides, 2, 64 );
-	
+
 	mRadius = ((float)event.getY() / getWindowHeight()) * ( getWindowWidth() / 2.0f );
 	mRadius = constrain( mRadius, 1.0f, getWindowWidth() / 2.0f );
 }
@@ -54,13 +54,13 @@ void GeometryShaderIntroApp::mouseDrag( MouseEvent event )
 void GeometryShaderIntroApp::draw()
 {
 	gl::clear();
-	
+
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
 	gl::translate( getWindowCenter() );
 
 	gl::ScopedGlslProg glslProg( mGlsl );
 	mGlsl->uniform( "uNumSides", mNumSides );
-	mGlsl->uniform( "uRadius", mRadius );	
+	mGlsl->uniform( "uRadius", mRadius );
 	mBatch->draw();
 }
 

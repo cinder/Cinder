@@ -19,4 +19,3 @@ layout (std140) uniform Lights
 {
 	Light uLights[ NUM_LIGHTS ];
 };
- 

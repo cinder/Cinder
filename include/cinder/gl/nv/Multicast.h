@@ -20,7 +20,7 @@ namespace cinder {
 				class CI_API Device final {
 				public:
 					explicit Device( GLuint index ) : mIndex{ index }, mMask{ 1u << index } { }
-					
+
 					Device( const Device& other ) = default;
 					Device( Device&& other ) = default;
 					Device& operator=( const Device& other ) = default;
@@ -60,11 +60,11 @@ namespace cinder {
 				//! Signal other device to wait for this GPU to finish its work. (For multiple target devices, use the bitfield method.)
 				CI_API void signalWaitSync( const Device& source, const Device& target );
 
-				//! Buffer subdata only on the target (masked) devices. 
+				//! Buffer subdata only on the target (masked) devices.
 				CI_API void bufferSubData( const std::shared_ptr<BufferObj>& buffer, GLsizeiptr size, const void* data, GLbitfield targetMask );
 				//! Buffer subdata only on the target device. (For multiple target devices, use the bitfield method.)
 				CI_API void bufferSubData( const std::shared_ptr<BufferObj>& buffer, GLsizeiptr size, const void* data, const Device& targetDevice );
-				
+
 				//! Copy image subdata from the source device index onto the target (masked) devices.
 				CI_API void copyImageSubData( const std::shared_ptr<TextureBase>& source, const std::shared_ptr<TextureBase>& destination, GLuint sourceDeviceIndex, GLbitfield destinationMask );
 				//! Copy image subdata from the source device index onto the target device. (For multiple target devices, use the bitfield method.)
@@ -74,7 +74,7 @@ namespace cinder {
 				CI_API void scissor( GLuint deviceIndex, const glm::ivec2& position, const glm::ivec2& size );
 				//! Specify a multicast scissor per device.
 				CI_API void scissor( const Device& device, const glm::ivec2& position, const glm::ivec2& size );
-				
+
 				//! Specify a multicast viewport per device index.
 				CI_API void viewport( GLuint deviceIndex, const glm::ivec2& position, const glm::ivec2& size );
 				//! Specify a multicast viewport per device.

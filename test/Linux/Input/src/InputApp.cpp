@@ -5,7 +5,7 @@
 using namespace ci;
 using namespace ci::app;
 
-//! \class InputApp 
+//! \class InputApp
 //!
 //!
 class InputApp : public App {
@@ -20,7 +20,7 @@ class InputApp : public App {
 
 void InputApp::keyDown( KeyEvent event )
 {
-	if( event.getChar() > 0 ) { 
+	if( event.getChar() > 0 ) {
 		std::cout << "keyDown: " << event.getCode() << " : " << event.getChar();
 		std::cout << " " << "SHIFT:" << ( event.isShiftDown()   ? "1" : "0" );
 		std::cout << " " <<  "CTRL:" << ( event.isControlDown() ? "1" : "0" );

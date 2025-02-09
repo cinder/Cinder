@@ -40,10 +40,10 @@ class CI_API FileDropEvent : public Event {
 	FileDropEvent( WindowRef win, int aX, int aY, const std::vector<fs::path> &aFiles )
 		: Event( win ), mX( aX ), mY( aY ), mFiles( aFiles )
 	{}
-	
+
 	//! Returns the X coordinate measured in points of the mouse during the event
 	int			getX() const { return mX; }
-	//! Returns the Y coordinate measured in points of the mouse during the event	
+	//! Returns the Y coordinate measured in points of the mouse during the event
 	int			getY() const { return mY; }
 	//! Returns the coordinates measured in points of the mouse during the event
 	glm::ivec2	getPos() const { return ivec2( mX, mY ); }
@@ -52,7 +52,7 @@ class CI_API FileDropEvent : public Event {
 	const std::vector<fs::path>&	getFiles() const { return mFiles; }
 	//! Returns the number of files dropped during the event
 	size_t							getNumFiles() const { return mFiles.size(); }
-	//! Returns the path for file number \a index. 
+	//! Returns the path for file number \a index.
 	const fs::path&					getFile( size_t index ) const { return mFiles.at(index); }
 
   private:

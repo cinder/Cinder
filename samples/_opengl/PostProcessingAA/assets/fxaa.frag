@@ -58,7 +58,7 @@ void main( void )
 	FxaaFloat4 Console360ConstDir = FxaaFloat4(1.0, -1.0, 0.25, -0.25);
 
 	oColor = FxaaPixelShader(uv, ConsolePosPos, uTexture, uTexture, uTexture, fxaaQualityRcpFrame,
-		ConsoleRcpFrameOpt, ConsoleRcpFrameOpt2, Console360RcpFrameOpt2, 
-		QualitySubpix, QualityEdgeThreshold, QualityEdgeThresholdMin, 
+		ConsoleRcpFrameOpt, ConsoleRcpFrameOpt2, Console360RcpFrameOpt2,
+		QualitySubpix, QualityEdgeThreshold, QualityEdgeThresholdMin,
 		ConsoleEdgeSharpness, ConsoleEdgeThreshold, ConsoleEdgeThresholdMin, Console360ConstDir);
 }

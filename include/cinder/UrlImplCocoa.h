@@ -46,7 +46,7 @@ class IStreamUrlImplCocoa : public IStreamUrlImpl {
 	virtual void		seekRelative( off_t relativeOffset );
 	virtual off_t		tell() const;
 	virtual off_t		size() const;
-	
+
 	virtual bool		isEof() const;
 	virtual void		IORead( void *t, size_t size );
 
@@ -54,7 +54,7 @@ class IStreamUrlImplCocoa : public IStreamUrlImpl {
 	void				fillBuffer( int wantBytes ) const;
 
 	NSThread						*mThread;
-	IStreamUrlImplCocoaDelegate		*mDelegate;	
+	IStreamUrlImplCocoaDelegate		*mDelegate;
 };
 
 } // namespace cinder

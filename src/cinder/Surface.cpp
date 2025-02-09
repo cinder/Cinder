@@ -50,12 +50,12 @@ class ImageTargetSurface : public ImageTarget {
 	static std::shared_ptr<ImageTargetSurface<T> > createRef( SurfaceT<T> *surface ) { return std::shared_ptr<ImageTargetSurface<T> >( new ImageTargetSurface<T>( surface ) ); }
 
 	virtual bool hasAlpha() const;
-	
+
 	virtual void*	getRowPointer( int32_t row );
-	
+
   protected:
 	ImageTargetSurface( SurfaceT<T> *surface );
-	
+
 	SurfaceT<T>		*mSurface;
 };
 
@@ -289,8 +289,8 @@ void SurfaceT<T>::loadImageAsync(const fs::path path, SurfaceT &surface, const S
 	  // Task-based continuation.
     auto c2 = loadImageTask.then([path, &surface,constraints,alpha](task<ImageSourceRef> previousTask)
     {
-        // We do expect to get here because task-based continuations 
-        // are scheduled even when the antecedent task throws. 
+        // We do expect to get here because task-based continuations
+        // are scheduled even when the antecedent task throws.
         try
         {
 			surface = SurfaceT(previousTask.get(),constraints, alpha);
@@ -298,7 +298,7 @@ void SurfaceT<T>::loadImageAsync(const fs::path path, SurfaceT &surface, const S
         catch (const ImageIoExceptionFailedLoad&)
         {
 			auto copyTask = winrt::copyFileToTempDirAsync(path);
-			copyTask.then([path, &surface,constraints,alpha](StorageFile^ file) 
+			copyTask.then([path, &surface,constraints,alpha](StorageFile^ file)
 			{
 				fs::path temp = fs::path( msw::toUtf8String( file->Path->Data() ) );
 				surface = SurfaceT(loadImage(fs::path(temp)),constraints, alpha);
@@ -318,12 +318,12 @@ SurfaceT<T>& SurfaceT<T>::operator=( const SurfaceT<T> &rhs )
 	mRowBytes = rhs.mRowBytes;
 	mPremultiplied = rhs.mPremultiplied;
 	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes], std::default_delete<T[]>() );
-	
+
 	mData = mDataStore.get();
 	initChannels();
-	
+
 	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
-	
+
 	return *this;
 }
 
@@ -335,13 +335,13 @@ SurfaceT<T>& SurfaceT<T>::operator=( SurfaceT<T> &&rhs )
 	mChannelOrder = rhs.mChannelOrder;
 	mRowBytes = rhs.mRowBytes;
 	mPremultiplied = rhs.mPremultiplied;
-	mDataStore = rhs.mDataStore;	
+	mDataStore = rhs.mDataStore;
 	mData = rhs.mData;
 	rhs.mDataStore = nullptr;
 	rhs.mData = nullptr;
-	
+
 	initChannels();
-	
+
 	return *this;
 }
 
@@ -363,7 +363,7 @@ SurfaceT<T> SurfaceT<T>::clone( bool copyPixels ) const
 	SurfaceT result( getWidth(), getHeight(), hasAlpha(), getChannelOrder() );
 	if( copyPixels )
 		result.copyFrom( *this, getBounds() );
-	
+
 	return result;
 }
 
@@ -373,7 +373,7 @@ SurfaceT<T> SurfaceT<T>::clone( const Area &area, bool copyPixels ) const
 	SurfaceT result( area.getWidth(), area.getHeight(), hasAlpha(), getChannelOrder() );
 	if( copyPixels )
 		result.copyFrom( *this, area, -area.getUL() );
-	
+
 	return result;
 }
 
@@ -385,15 +385,15 @@ void SurfaceT<T>::init( ImageSourceRef imageSource, const SurfaceConstraints &co
 
 	mChannelOrder = constraints.getChannelOrder( alpha );
 	mRowBytes = constraints.getRowBytes( mWidth, mChannelOrder, sizeof(T) );
-	
+
 	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes], std::default_delete<T[]>() );
 	mData = mDataStore.get();
 
 	mPremultiplied = imageSource->isPremultiplied();
-	
+
 	std::shared_ptr<ImageTargetSurface<T> > target = ImageTargetSurface<T>::createRef( this );
 	imageSource->load( target );
-	
+
 	initChannels();
 	// if the image doesn't have alpha but we do, set the alpha to 1.0
 	if( alpha && ( ! imageSource->hasAlpha() ) )
@@ -404,7 +404,7 @@ template<typename T>
 void SurfaceT<T>::copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &relativeOffset )
 {
 	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcSurface.getBounds(), srcArea, getBounds(), srcArea.getUL() + relativeOffset );
-	
+
 	if( getChannelOrder() == srcSurface.getChannelOrder() )
 		copyRawSameChannelOrder( srcSurface, srcDst.first, srcDst.second );
 	else if( hasAlpha() && srcSurface.hasAlpha() )
@@ -524,7 +524,7 @@ ColorT<T> SurfaceT<T>::areaAverage( const Area &area ) const
 {
 	typename CHANTRAIT<T>::Sum redSum = 0, greenSum = 0, blueSum = 0;
 	const Area clipped( area.getClipBy( getBounds() ) );
-	
+
 	if( ( clipped.getWidth() <= 0 ) || ( clipped.getHeight() <= 0 ) )
 		return ColorT<T>( 0, 0, 0 );
 
@@ -536,13 +536,13 @@ ColorT<T> SurfaceT<T>::areaAverage( const Area &area ) const
 		for( int32_t x = clipped.x1; x < clipped.x2; ++x ) {
 			redSum += d[red];
 			greenSum += d[green];
-			blueSum += d[blue];						
+			blueSum += d[blue];
 			d += inc;
 		}
-		
+
 		line = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( line ) + getRowBytes() );
-	} 
-	
+	}
+
 	return ColorT<T>( (T)(redSum / ( clipped.getWidth() * clipped.getHeight() )), (T)(greenSum / ( clipped.getWidth() * clipped.getHeight() )), (T)(blueSum / ( clipped.getWidth() * clipped.getHeight() )) );
 }
 
@@ -558,11 +558,11 @@ ImageTargetSurface<T>::ImageTargetSurface( SurfaceT<T> *aSurface )
 		setDataType( ImageIo::UINT16 );
 	else if( std::is_same<T,uint8_t>::value )
 		setDataType( ImageIo::UINT8 );
-	else 
+	else
 		throw; // what is this?
 
 	setColorModel( ImageIo::CM_RGB );
-	
+
 	// set the target's ChannelT order based on the SurfaceT's
 	switch ( mSurface->getChannelOrder().getCode() ) {
 		case SurfaceChannelOrder::RGBA:

@@ -10,7 +10,7 @@ using namespace std;
 
 #if defined( CINDER_ANDROID )
     #define USE_HW_TEXTURE
-#endif    
+#endif
 
 class CaptureBasicApp : public App {
   public:

@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2011, The Cinder Project, All rights reserved.
  This code is intended for use with the Cinder C++ library: http://libcinder.org
- 
+
  Portions of this code (C) Paul Houx
  All rights reserved.
 
@@ -49,7 +49,7 @@ template<typename T>
 void PlaneT<T>::set( const Vec3T &v1, const Vec3T &v2, const Vec3T &v3 )
 {
 	Vec3T normal = cross( v2 - v1, v3 - v1 );
-	
+
 	if( length2( normal ) == 0 ) {
 		// error! invalid parameters
 		throw PlaneExc();

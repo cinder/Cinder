@@ -26,7 +26,7 @@
 #if ! defined( CINDER_GL_ES_2 )
 
 namespace cinder { namespace gl {
-	
+
 UboRef Ubo::create()
 {
 	return UboRef( new Ubo() );
@@ -36,7 +36,7 @@ UboRef Ubo::create( GLsizeiptr allocationSize, const void *data, GLenum usage )
 {
 	return UboRef( new Ubo( allocationSize, data, usage ) );
 }
-	
+
 Ubo::Ubo()
 	: BufferObj( GL_UNIFORM_BUFFER )
 {

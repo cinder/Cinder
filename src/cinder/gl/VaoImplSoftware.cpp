@@ -34,7 +34,7 @@ namespace cinder { namespace gl {
 class VaoImplSoftware : public Vao {
   public:
 	virtual ~VaoImplSoftware();
-	
+
 	VaoImplSoftware();
 
 	// Does the actual "work" of binding the VAO; called by Context
@@ -44,7 +44,7 @@ class VaoImplSoftware : public Vao {
 	void	disableVertexAttribArrayImpl( GLuint index ) override;
 	void	vertexAttribPointerImpl( GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer ) override;
 	void	vertexAttribIPointerImpl( GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer ) override;
-	void	vertexAttribDivisorImpl( GLuint index, GLuint divisor ) override;	
+	void	vertexAttribDivisorImpl( GLuint index, GLuint divisor ) override;
 	void	reflectBindBufferImpl( GLenum target, GLuint buffer ) override;
 
 	void	reassignContext( Context *newContext ) override;
@@ -62,7 +62,7 @@ VaoRef createVaoImplSoftware()
 {
 	return VaoRef( new VaoImplSoftware );
 }
-	
+
 VaoImplSoftware::VaoImplSoftware()
 {
 	mId = (GLuint)++sIdCounter; // is this adequate? 4billion VAO allocations seems remote; the ID is not really necessary except for debugging
@@ -120,7 +120,7 @@ void VaoImplSoftware::unbindImpl( Context * /*context*/ )
 			glDisableVertexAttribArray( attribIt->first );
 		}
 	}
-	
+
 	mCtx->invalidateBufferBindingCache( GL_ELEMENT_ARRAY_BUFFER );
 }
 
@@ -136,7 +136,7 @@ void VaoImplSoftware::vertexAttribIPointerImpl( GLuint index, GLint size, GLenum
 	mLayout.vertexAttribIPointer( index, size, type, stride, pointer );
 
 #if ( ! defined( CINDER_GL_ES ) ) || ( defined( CINDER_GL_ES ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 ) )
-	glVertexAttribIPointer( index, size, type, stride, pointer );	
+	glVertexAttribIPointer( index, size, type, stride, pointer );
 #endif
 }
 

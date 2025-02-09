@@ -34,11 +34,11 @@ namespace cinder { namespace app {
 
 class GlfwCallbacks {
 public:
-	
+
 	static std::map<GLFWwindow*, std::pair<AppImplLinux*,WindowRef>> sWindowMapping;
 	static KeyEvent sKeyEvent;
 	static bool sCapsLockDown, sNumLockDown, sScrollLockDown;
-		
+
 	static void registerWindowEvents( GLFWwindow *glfwWindow, AppImplLinux* cinderAppImpl, const WindowRef& cinderWindow ) {
 		sWindowMapping[glfwWindow] = std::make_pair( cinderAppImpl, cinderWindow );
 
@@ -189,7 +189,7 @@ public:
 			cinderAppImpl->setWindow( cinderWindow );
 
 			int32_t nativeKeyCode = KeyEvent::translateNativeKeyCode( key );
-			
+
 			if( glfwGetKey( glfwWindow, GLFW_KEY_CAPS_LOCK ) )
 				sCapsLockDown = ! sCapsLockDown;
 			if( glfwGetKey( glfwWindow, GLFW_KEY_NUM_LOCK ) )
@@ -271,10 +271,10 @@ public:
 			if( 0 != initiator ) {
 				MouseEvent event( getWindow(), initiator, (int)mouseX, (int)mouseY, modifiers, 0.0f, 0 );
 				if( GLFW_PRESS == action ) {
-					cinderWindow->emitMouseDown( &event );	
+					cinderWindow->emitMouseDown( &event );
 				}
 				else if( GLFW_RELEASE == action ) {
-					cinderWindow->emitMouseUp( &event );	
+					cinderWindow->emitMouseUp( &event );
 				}
 			}
 		}
@@ -294,7 +294,7 @@ public:
 
 			float wheelDelta = xoffset + yoffset;
 			MouseEvent event( getWindow(), 0, (int)mouseX, (int)mouseY, modifiers, wheelDelta , 0 );
-			cinderWindow->emitMouseWheel( &event );	
+			cinderWindow->emitMouseWheel( &event );
 		}
 	}
 
@@ -335,7 +335,7 @@ AppImplLinux::AppImplLinux( AppLinux *aApp, const AppLinux::Settings &settings )
 	mFrameRate = settings.getFrameRate();
 	mFrameRateEnabled = settings.isFrameRateEnabled();
 	mQuitOnLastWindowClosed = settings.isQuitOnLastWindowCloseEnabled();
-	
+
 	auto formats = settings.getWindowFormats();
 	if( formats.empty() ) {
 		formats.push_back( settings.getDefaultWindowFormat() );
@@ -409,14 +409,14 @@ void AppImplLinux::run()
 
 	// issue initial app activation event
 	mApp->emitDidBecomeActive();
-	
+
 	// isse initial resize revent
 	for( auto &window : mWindows ) {
 		window->resize();
 	}
 
 	// initialize our next frame time
-	mNextFrameTime = getElapsedSeconds();	
+	mNextFrameTime = getElapsedSeconds();
 
 	while( ! mShouldQuit ) {
 		// update and draw
@@ -430,7 +430,7 @@ void AppImplLinux::run()
 		glfwPollEvents();
 
 		// Sleep until the next frame
-		sleepUntilNextFrame();	
+		sleepUntilNextFrame();
 
 		// Check if a window should be closed / destroyed or if we should exit.
 		auto shouldCloseWindow = [ this ] ( WindowImplLinux* window ) {
@@ -491,14 +491,14 @@ WindowRef AppImplLinux::createWindow( Window::Format format )
 void AppImplLinux::quit()
 {
 	for( auto &window : mWindows ) {
-		::glfwSetWindowShouldClose( window->getNative(), true );	
+		::glfwSetWindowShouldClose( window->getNative(), true );
 	}
 	mShouldQuit = true;
 }
 
-float AppImplLinux::getFrameRate() const 
-{ 
-	return mFrameRate; 
+float AppImplLinux::getFrameRate() const
+{
+	return mFrameRate;
 }
 
 void AppImplLinux::setFrameRate( float frameRate )
@@ -518,14 +518,14 @@ bool AppImplLinux::isFrameRateEnabled() const
 	return mFrameRateEnabled;
 }
 
-WindowRef AppImplLinux::getWindow() const 
-{ 
-	return mActiveWindow; 
+WindowRef AppImplLinux::getWindow() const
+{
+	return mActiveWindow;
 }
 
-void AppImplLinux::setWindow( WindowRef window ) 
-{ 
-	mActiveWindow = window; 
+void AppImplLinux::setWindow( WindowRef window )
+{
+	mActiveWindow = window;
 }
 
 size_t AppImplLinux::getNumWindows() const
@@ -538,7 +538,7 @@ WindowRef AppImplLinux::getWindowIndex( size_t index ) const
 	if( index >= mWindows.size() ) {
 		return cinder::app::WindowRef();
 	}
-	
+
 	auto winIt = mWindows.begin();
 	std::advance( winIt, index );
 	return (*winIt)->mWindowRef;
@@ -566,7 +566,7 @@ void AppImplLinux::showCursor()
 
 ivec2 AppImplLinux::getMousePos() const
 {
-	return mActiveWindow->getImpl()->getMousePos();	
+	return mActiveWindow->getImpl()->getMousePos();
 }
 
 void AppImplLinux::registerWindowEvents( WindowImplLinux* window )

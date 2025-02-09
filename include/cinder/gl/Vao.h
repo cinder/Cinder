@@ -39,10 +39,10 @@ typedef std::shared_ptr<class Vao> VaoRef;
 class CI_API Vao : public std::enable_shared_from_this<Vao> {
   public:
 	struct Layout;
-	
+
 	static VaoRef		create();
 	virtual ~Vao();
-	
+
 	void	bind();
 	void	unbind() const;
 
@@ -64,17 +64,17 @@ class CI_API Vao : public std::enable_shared_from_this<Vao> {
 
 	struct VertexAttrib {
 		typedef enum { FLOAT, INTEGER } PointerType;
-	
+
 		VertexAttrib()
 			: mEnabled( false ), mSize( 0 ), mType( GL_FLOAT ), mNormalized( false ), mStride( 0 ), mPointer( 0 ), mArrayBufferBinding( 0 ), mDivisor( 0 ), mPointerType( FLOAT )
 		{}
-		
+
 		VertexAttrib( GLint size, GLenum type, GLboolean normalized, GLsizei stride, PointerType pointerType, const GLvoid* pointer, GLuint arrayBufferBinding, GLuint divisor = 0 )
 			: mEnabled( false ), mSize( size ), mType( type ), mNormalized( normalized ), mStride( stride ), mPointerType( pointerType ), mPointer( pointer ), mArrayBufferBinding( arrayBufferBinding ), mDivisor( divisor )
 		{}
-		
+
 		void		setDivisor( GLuint divisor ) { mDivisor = divisor; }
-		
+
 		bool			mEnabled;
 		GLint			mSize;
 		GLenum			mType;
@@ -89,7 +89,7 @@ class CI_API Vao : public std::enable_shared_from_this<Vao> {
 	//! Represent a software-only mirror of the state a VAO records. Can be used directly for efficient swapping (primarily by the gl:: convenience functions)
 	struct Layout {
 		Layout();
-		
+
 		//! The equivalent of glBindBuffer( \a target, \a binding )
 		void	bindBuffer( GLenum target, GLuint buffer );
 		//! Returns whether the vertex attribute array at \a index is enabled or not
@@ -124,7 +124,7 @@ class CI_API Vao : public std::enable_shared_from_this<Vao> {
 
 		friend class Vao;
 	};
-	
+
   protected:
 	Vao();
 
@@ -162,5 +162,5 @@ class CI_API Vao : public std::enable_shared_from_this<Vao> {
 CI_API std::ostream& operator<<( std::ostream &lhs, const Vao &rhs );
 // Convenience method for dumping Vao::Layout contents to a std::ostream
 CI_API std::ostream& operator<<( std::ostream &lhs, const Vao::Layout &rhs );
-	
+
 } }

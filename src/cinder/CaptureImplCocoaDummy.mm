@@ -34,21 +34,21 @@ using namespace std;
 	if( ! sInitialized ) {
 		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplCocoaDummyDevice( "Front", "front", true ) ) );
 		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplCocoaDummyDevice( "Rear", "rear", false ) ) );
-		
+
 		sInitialized = true;
 	}
-	
+
 	return sDevices;
 }
 
 - (id)initWithDevice:(const cinder::Capture::DeviceRef)device width:(int)width height:(int)height
 {
 	self = [super init];
-	
+
 	mDevice = device;
 	mSurface = cinder::Surface8u::create( width, height, false );
 	cinder::ip::fill( mSurface.get(), cinder::Color8u( 0, 0, 0 ) );
-	
+
 	return self;
 }
 

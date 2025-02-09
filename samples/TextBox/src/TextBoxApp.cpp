@@ -20,7 +20,7 @@ class TextBoxApp : public App {
 	void draw() override;
 
 	void render();
-	
+
 	string				mText;
 	gl::TextureRef		mTextTexture;
 	vec2				mSize;
@@ -45,7 +45,7 @@ void TextBoxApp::keyDown( KeyEvent event )
 	if( event.getCharUtf32() ) {
 		std::u32string strUtf32( 1, event.getCharUtf32() );
 		std::string str = ci::toUtf8( strUtf32 );
-		
+
 		mText += str;
 		render();
 	}
@@ -76,7 +76,7 @@ void TextBoxApp::draw()
 	gl::setMatricesWindow( getWindowSize() );
 	gl::enableAlphaBlending();
 	gl::clear( Color( 0, 0, 0 ) );
-	
+
 	if( mTextTexture )
 		gl::draw( mTextTexture );
 }

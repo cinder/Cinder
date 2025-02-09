@@ -55,19 +55,19 @@ void generateRandom( vector<gl::GlslProgRef> *v, size_t ct )
 			.vertex(	CI_GLSL( 150,
 				uniform mat4	ciModelViewProjection;
 				in vec4			ciPosition;
-				
+
 				void main( void ) {
 					gl_Position	= ciModelViewProjection * ciPosition;
 				}
 			 ) )
 			.fragment(	CI_GLSL( 150,
 				out vec3	oColor;
-				
+
 				void main( void ) {
 					oColor = vec3( 1, 1, 1 );
 				}
 			) ) );
-			
+
 #else
 			.vertex(	"void main(void) { gl_Position = vec4( 1, 1, 1, 1 ); }")
 			.fragment( "void main( void ) { gl_FragColor = vec4( 1, 1, 1, 1 ); }" )
@@ -109,14 +109,14 @@ void processObjects( vector<T> *v, const F &f, int defaultSize )
 	assert( f().size() == defaultSize );
 
 	// Create some random T's, then delete a random number, then create a number
-	// and verify tracking thinks we have the same #	
+	// and verify tracking thinks we have the same #
 	generateRandom( v, randInt( 10 ) );
 	assert( v->size() == f().size() - defaultSize );
-	
+
 	generateRandom( v, randInt( 10 ) );
 	eraseRandom( v, randInt( 10 ) );
 	assert( v->size() == f().size() - defaultSize );
-	
+
 	// echo all remaining T's to the console
 	for( const auto &t : f() )
 		console() << *t << std::endl;
@@ -146,7 +146,7 @@ void ObjectTrackingApp::setup()
 
 void ObjectTrackingApp::draw()
 {
-	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::clear( Color( 0, 0, 0 ) );
 }
 
 CINDER_APP( ObjectTrackingApp, RendererGl( RendererGl::Options().objectTracking() ) )

@@ -81,7 +81,7 @@ std::shared_ptr<System> System::instance()
 	if( ! sInstance ) {
 		sInstance = std::shared_ptr<System>( new System );
 	}
-	
+
 	return sInstance;
 }
 
@@ -89,7 +89,7 @@ System::System()
 {
 	for( size_t b = 0; b < TOTAL_CACHE_TYPES; ++b )
 		mCachedValues[b] = false;
-		
+
 #if defined( CINDER_MSW_DESKTOP ) && ! defined( _WIN64 )
 	int p[4];
 	cpuidwrap( p, 1 );
@@ -101,7 +101,7 @@ System::System()
 
 #if defined( CINDER_COCOA )
 
-template<typename T>  
+template<typename T>
 static T getSysCtlValue( const std::string &key )
 {
 	size_t len = 0;
@@ -111,7 +111,7 @@ static T getSysCtlValue( const std::string &key )
 		return T(0);
 	else if( sizeof(T) != len )
 		throw SystemExcFailedQuery();
-	
+
 	T val;
 	error = sysctlbyname( key.c_str(), &val, &len, NULL, 0 );
 	if( error )
@@ -134,7 +134,7 @@ typedef struct _LOGICALPROCESSORDATA
    int nMNC;
    int nCPUCoresperProcessor;
    int nThreadsperCPUCore;
-   int nProcId; 
+   int nProcId;
    int nCoreId;
    bool CmpLegacy;
    bool HTT;
@@ -183,12 +183,12 @@ void cpuid( int whichlp, PLOGICALPROCESSORDATA p )
       cpuidwrap( CPUInfo, i );
       // Interpret CPU feature information.
       if(i == 1) {
-         // Some of the bits of LocalApicId represent the CPU core 
-         // within a processor and other bits represent the processor ID. 
+         // Some of the bits of LocalApicId represent the CPU core
+         // within a processor and other bits represent the processor ID.
          p->nLocalApicId = (CPUInfo[1] >> 24) & 0xff;
-         p->HTT = (CPUInfo[3] >> 28) & 0x1; 
+         p->HTT = (CPUInfo[3] >> 28) & 0x1;
          // recalculate later after 0x80000008
-         p->nLogicalProcessorCount = (CPUInfo[1] >> 16) & 0x0FF; 
+         p->nLogicalProcessorCount = (CPUInfo[1] >> 16) & 0x0FF;
       }
    }
 
@@ -196,7 +196,7 @@ void cpuid( int whichlp, PLOGICALPROCESSORDATA p )
    // gets the number of valid extended IDs.
    cpuidwrap( CPUInfo, 0x80000000 );
    p->nLargestExtendedFunctionNumber = CPUInfo[0];
- 
+
    // Get the information associated with each extended ID.
    for (i=0x80000000; i<=p->nLargestExtendedFunctionNumber; ++i)
    {
@@ -210,7 +210,7 @@ void cpuid( int whichlp, PLOGICALPROCESSORDATA p )
    // MNC
    // A value of zero for ApicIdCoreIdSize indicates that MNC is derived by this
    // legacy formula: MNC = NC + 1
-   // A non-zero value of ApicIdCoreIdSize means that MNC is 2^ApicIdCoreIdSize  
+   // A non-zero value of ApicIdCoreIdSize means that MNC is 2^ApicIdCoreIdSize
 
    if (p->nApicIdCoreIdSize)
    {
@@ -222,20 +222,20 @@ void cpuid( int whichlp, PLOGICALPROCESSORDATA p )
    {
       p->nMNC = p->nNC + 1;
    }
-   // If HTT==0, then LogicalProcessorCount is reserved, and the CPU contains 
+   // If HTT==0, then LogicalProcessorCount is reserved, and the CPU contains
    // one CPU core and the CPU core is single-threaded.
    // If HTT==1 and CmpLegacy==1, LogicalProcessorCount represents the number of
    // CPU cores per processor, where each CPU core is single-threaded.  If HTT==1
    // and CmpLegacy==0, then LogicalProcessorCount is the number of threads per
    // processor, which is the number of cores times the number of threads per core.
    // The number of cores is NC+1.
-    
+
    p->nCPUCoresperProcessor = p->nNC + 1;
    p->nThreadsperCPUCore = ( p->HTT==0 ? 1 :
-                              ( p->CmpLegacy==1 ? 1 : 
-                                p->nLogicalProcessorCount / p->nCPUCoresperProcessor 
+                              ( p->CmpLegacy==1 ? 1 :
+                                p->nLogicalProcessorCount / p->nCPUCoresperProcessor
                               )
-                           ); 
+                           );
 
    // Calculate a mask for the core IDs
    mask = 1;
@@ -256,7 +256,7 @@ void cpuid( int whichlp, PLOGICALPROCESSORDATA p )
 bool System::hasSse2()
 {
 	if( ! instance()->mCachedValues[HAS_SSE2] ) {
-#if defined( CINDER_COCOA )	
+#if defined( CINDER_COCOA )
 		instance()->mHasSSE2 = ( getSysCtlValue<int>( "hw.optional.sse2" ) == 1 );
 #elif defined( _WIN64 )
 		instance()->mHasSSE2 = true;
@@ -269,14 +269,14 @@ bool System::hasSse2()
 #endif
 		instance()->mCachedValues[HAS_SSE2] = true;
 	}
-	
+
 	return instance()->mHasSSE2;
 }
 
 bool System::hasSse3()
 {
 	if( ! instance()->mCachedValues[HAS_SSE3] ) {
-#if defined( CINDER_COCOA )	
+#if defined( CINDER_COCOA )
 		instance()->mHasSSE3 = ( getSysCtlValue<int>( "hw.optional.sse3" ) == 1 );
 #elif defined( _WIN64 )
 		instance()->mHasSSE3 = true;
@@ -289,14 +289,14 @@ bool System::hasSse3()
 #endif
 		instance()->mCachedValues[HAS_SSE3] = true;
 	}
-	
+
 	return instance()->mHasSSE3;
 }
 
 bool System::hasSse4_1()
 {
 	if( ! instance()->mCachedValues[HAS_SSE4_1] ) {
-#if defined( CINDER_COCOA )	
+#if defined( CINDER_COCOA )
 		instance()->mHasSSE4_1 = ( getSysCtlValue<int>( "hw.optional.sse4_1" ) == 1 );
 #elif defined( _WIN64 )
 		instance()->mHasSSE4_1 = true; // TODO: this is not being tested
@@ -307,14 +307,14 @@ bool System::hasSse4_1()
 #endif
 		instance()->mCachedValues[HAS_SSE4_1] = true;
 	}
-	
+
 	return instance()->mHasSSE4_1;
 }
 
 bool System::hasSse4_2()
 {
 	if( ! instance()->mCachedValues[HAS_SSE4_2] ) {
-#if defined( CINDER_COCOA )	
+#if defined( CINDER_COCOA )
 		instance()->mHasSSE4_2 = ( getSysCtlValue<int>( "hw.optional.sse4_2" ) == 1 );
 #elif defined( _WIN64 )
 		instance()->mHasSSE4_2 = true; // TODO: this is not being tested
@@ -322,17 +322,17 @@ bool System::hasSse4_2()
 		instance()->mHasSSE4_2 = ( instance()->mCPUID_ECX & ( 1 << 20 ) ) != 0;
 #else
 		throw Exception( "Not implemented" );
-#endif		
+#endif
 		instance()->mCachedValues[HAS_SSE4_2] = true;
 	}
-	
+
 	return instance()->mHasSSE4_2;
 }
 
 bool System::hasArm()
 {
 	if( ! instance()->mCachedValues[HAS_ARM] ) {
-#if defined( CINDER_UWP )	
+#if defined( CINDER_UWP )
 		SYSTEM_INFO info;
 		::GetNativeSystemInfo(&info);
 		instance()->mHasArm = info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM;
@@ -349,7 +349,7 @@ bool System::hasArm()
 bool System::hasX86_64()
 {
 	if( ! instance()->mCachedValues[HAS_X86_64] ) {
-#if defined( CINDER_COCOA )	
+#if defined( CINDER_COCOA )
 		instance()->mHasX86_64 = ( getSysCtlValue<int>( "hw.optional.x86_64" ) == 1 );
 #elif defined( _WIN64 )
 		instance()->mHasX86_64 = true;
@@ -361,18 +361,18 @@ bool System::hasX86_64()
 		instance()->mHasX86_64 = info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;
 #else
 		throw Exception( "Not implemented" );
-#endif		
+#endif
 
 		instance()->mCachedValues[HAS_X86_64] = true;
 	}
-	
+
 	return instance()->mHasX86_64;
 }
 
 int System::getNumCpus()
 {
 	if( ! instance()->mCachedValues[PHYSICAL_CPUS] ) {
-#if defined( CINDER_COCOA )	
+#if defined( CINDER_COCOA )
 		instance()->mPhysicalCPUs = getSysCtlValue<int>( "hw.packages" );
 #elif defined( CINDER_UWP ) || defined( _WIN64 )
 		SYSTEM_INFO info;
@@ -383,7 +383,7 @@ int System::getNumCpus()
 		const int MAX_NUMBER_OF_PHYSICAL_PROCESSORS = 8;
 		const int MAX_NUMBER_OF_IOAPICS = 16;
 		int PhysProcIds[MAX_NUMBER_OF_PHYSICAL_PROCESSORS+MAX_NUMBER_OF_IOAPICS];
-		LOGICALPROCESSORDATA LogicalProcessorMap[MAX_NUMBER_OF_LOGICAL_PROCESSORS]; 
+		LOGICALPROCESSORDATA LogicalProcessorMap[MAX_NUMBER_OF_LOGICAL_PROCESSORS];
 		memset( (void *) &LogicalProcessorMap, 0, sizeof( LogicalProcessorMap ) );
 		memset( (void *) &PhysProcIds, 0, sizeof( PhysProcIds ) );
 
@@ -401,25 +401,25 @@ int System::getNumCpus()
 			PhysProcIds[LogicalProcessorMap[i].nProcId]++;
 		instance()->mPhysicalCPUs = 0;
 		for( int i = 0; i < (MAX_NUMBER_OF_PHYSICAL_PROCESSORS+MAX_NUMBER_OF_IOAPICS); i++ )
-			if( PhysProcIds[i] ) 
-				instance()->mPhysicalCPUs++;  
-		
+			if( PhysProcIds[i] )
+				instance()->mPhysicalCPUs++;
+
 		// unlock from a particular logical processor
 		::SetProcessAffinityMask( GetCurrentProcess(), processAffinityMask );
 #else
 		throw Exception( "Not implemented" );
-#endif		
+#endif
 
 		instance()->mCachedValues[PHYSICAL_CPUS] = true;
 	}
-	
+
 	return instance()->mPhysicalCPUs;
 }
 
 int System::getNumCores()
 {
 	if( ! instance()->mCachedValues[LOGICAL_CPUS] ) {
-#if defined( CINDER_COCOA )	
+#if defined( CINDER_COCOA )
 		instance()->mLogicalCPUs = getSysCtlValue<int>( "hw.logicalcpu" );
 #elif defined( CINDER_UWP ) || defined( _WIN64 )
 		SYSTEM_INFO info;
@@ -435,7 +435,7 @@ int System::getNumCores()
 #endif
 		instance()->mCachedValues[LOGICAL_CPUS] = true;
 	}
-	
+
 	return instance()->mLogicalCPUs;
 }
 
@@ -459,7 +459,7 @@ int System::getOsMajorVersion()
 #endif
 		instance()->mCachedValues[OS_MAJOR] = true;
 	}
-	
+
 	return instance()->mOSMajorVersion;
 }
 
@@ -483,7 +483,7 @@ int System::getOsMinorVersion()
 #endif
 		instance()->mCachedValues[OS_MINOR] = true;
 	}
-	
+
 	return instance()->mOSMinorVersion;
 }
 
@@ -510,14 +510,14 @@ int System::getOsBugFixVersion()
 #endif
 		instance()->mCachedValues[OS_BUGFIX] = true;
 	}
-	
+
 	return instance()->mOSBugFixVersion;
 }
 
 bool System::hasMultiTouch()
 {
 	if( ! instance()->mCachedValues[MULTI_TOUCH] ) {
-#if defined( CINDER_MAC ) // Mac OS X doesn't really support touch yet (well, we don't yet)	
+#if defined( CINDER_MAC ) // Mac OS X doesn't really support touch yet (well, we don't yet)
 	#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 		instance()->mHasMultiTouch = getOsMajorVersion() > 10 || getOsMinorVersion() >= 6;
 	#else
@@ -527,7 +527,7 @@ bool System::hasMultiTouch()
 		instance()->mHasMultiTouch = true;
 #elif defined( CINDER_MSW_DESKTOP )
 		int value = ::GetSystemMetrics( 94/*SM_DIGITIZER*/ );
-		instance()->mHasMultiTouch = (value & 0x00000080/*NID_READY*/ ) && 
+		instance()->mHasMultiTouch = (value & 0x00000080/*NID_READY*/ ) &&
 				( (value & 0x00000040/*NID_MULTI_INPUT*/ ) || (value & 0x00000001/*NID_INTEGRATED_TOUCH*/ ) );
 #elif defined( CINDER_UWP )
 		auto pointerDevices = PointerDevice::GetPointerDevices();
@@ -537,14 +537,14 @@ bool System::hasMultiTouch()
 			}
 		});
 #elif defined( CINDER_ANDROID )
-		// @TODO Check to make sure all variants of Android device support multiTouch 
+		// @TODO Check to make sure all variants of Android device support multiTouch
 		instance()->mHasMultiTouch = true;
 #else
 		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[MULTI_TOUCH] = true;
 	}
-	
+
 	return instance()->mHasMultiTouch;
 }
 
@@ -574,7 +574,7 @@ int32_t System::getMaxMultiTouchPoints()
 #endif
 		instance()->mCachedValues[MAX_MULTI_TOUCH_POINTS] = true;
 	}
-	
+
 	return instance()->mMaxMultiTouchPoints;
 }
 
@@ -652,7 +652,7 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 		std::string subnetMask;
 		if( n->IPInformation && n->IPInformation->PrefixLength )
 			subnetMask = PlatformStringToString( n->IPInformation->PrefixLength->ToString() );
-		
+
 		adapters.push_back( System::NetworkAdapter( PlatformStringToString(n->CanonicalName), PlatformStringToString(n->DisplayName), subnetMask ) );
 	});
 #else
@@ -707,12 +707,12 @@ std::string System::getIpAddress()
 	}
 #endif
 
-	std::string result = "127.0.0.1";	
+	std::string result = "127.0.0.1";
 	for( vector<System::NetworkAdapter>::const_iterator adaptIt = adapters.begin(); adaptIt != adapters.end(); ++adaptIt ) {
 		if( (adaptIt->getIpAddress() != "127.0.0.1") && (adaptIt->getIpAddress() != "0.0.0.0") )
 			result = adaptIt->getIpAddress();
 	}
-	
+
 	return result;
 }
 #endif
@@ -723,7 +723,7 @@ bool System::isDeviceIphone()
 	if( ! instance()->mCachedValues[IS_IPHONE] ) {
 		instance()->mCachedValues[IS_IPHONE] = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone;
 	}
-	
+
 	return instance()->mCachedValues[IS_IPHONE];
 }
 
@@ -732,8 +732,8 @@ bool System::isDeviceIpad()
 	if( ! instance()->mCachedValues[IS_IPAD] ) {
 		instance()->mCachedValues[IS_IPAD] = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
 	}
-	
-	return instance()->mCachedValues[IS_IPAD]; 
+
+	return instance()->mCachedValues[IS_IPAD];
 }
 #endif
 

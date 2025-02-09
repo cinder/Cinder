@@ -1,4 +1,4 @@
-#version 310 es 
+#version 310 es
 
 in vec3 vColor;
 out vec4 outColor;

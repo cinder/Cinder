@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2018, The Cinder Project
  All rights reserved.
- 
+
  Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
  This code is designed for use with the Cinder C++ library, http://libcinder.org
@@ -36,21 +36,21 @@
 using namespace std;
 
 namespace cinder {
-	
-JsonTree::ParseOptions::ParseOptions() 
+
+JsonTree::ParseOptions::ParseOptions()
 	: mIgnoreErrors( false ), mAllowComments( true )
 {
 }
-	
-JsonTree::ParseOptions& JsonTree::ParseOptions::ignoreErrors( bool ignore ) 
-{ 
-	mIgnoreErrors = ignore; 
-	return *this; 
+
+JsonTree::ParseOptions& JsonTree::ParseOptions::ignoreErrors( bool ignore )
+{
+	mIgnoreErrors = ignore;
+	return *this;
 }
-	
-bool JsonTree::ParseOptions::getIgnoreErrors() const 
-{ 
-	return mIgnoreErrors; 
+
+bool JsonTree::ParseOptions::getIgnoreErrors() const
+{
+	return mIgnoreErrors;
 }
 
 JsonTree::ParseOptions& JsonTree::ParseOptions::allowComments( bool allow )
@@ -88,9 +88,9 @@ bool JsonTree::WriteOptions::getCreateDocument() const
 
 bool JsonTree::WriteOptions::getIndented() const
 {
-	return mIndented;	
+	return mIndented;
 }
-		
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 JsonTree::JsonTree()
@@ -129,7 +129,7 @@ JsonTree& JsonTree::operator=( const JsonTree &jsonTree )
 }
 
 JsonTree::JsonTree( DataSourceRef dataSource, ParseOptions parseOptions )
-{    
+{
 	string jsonString = loadString( dataSource );
 	Json::Value value = deserializeNative( jsonString, parseOptions );
 	init( "", value, true, NODE_OBJECT );
@@ -151,17 +151,17 @@ JsonTree::JsonTree( const std::string &key, const Json::Value &value )
 {
 	init( key, value, true, NODE_VALUE );
 }
-    
+
 JsonTree::JsonTree( const string &key, bool value )
 {
     init( key, Json::Value( value ), false, NODE_VALUE, VALUE_BOOL );
 }
-    
+
 JsonTree::JsonTree( const string &key, double value )
 {
     init( key, Json::Value( value ), false, NODE_VALUE, VALUE_DOUBLE );
 }
-    
+
 JsonTree::JsonTree( const string &key, float value )
 {
     init( key, Json::Value( (double)value ), false, NODE_VALUE, VALUE_DOUBLE );
@@ -191,7 +191,7 @@ JsonTree::JsonTree( const string &key, int64_t value )
 {
 	init( key, Json::Value( static_cast<Json::Value::Int64>( value ) ), true, NODE_VALUE, VALUE_INT );
 }
-	
+
 JsonTree::JsonTree( const string &key, uint64_t value )
 {
 	init( key, Json::Value( static_cast<Json::Value::UInt64>( value ) ), true, NODE_VALUE, VALUE_UINT );
@@ -209,7 +209,7 @@ JsonTree JsonTree::makeObject( const std::string &key )
 {
 	JsonTree result;
 	result.mNodeType = NODE_OBJECT;
-	result.mKey = key;	
+	result.mKey = key;
 	return result;
 }
 
@@ -246,25 +246,25 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
 				mValueType = VALUE_BOOL;
 			}
 		}
-		else if ( value.isInt() ) { 
+		else if ( value.isInt() ) {
 			mValue = toString( value.asLargestInt() );
 			if ( setType ) {
 				mValueType = VALUE_INT;
 			}
 		}
-		else if ( value.isString() ) { 
+		else if ( value.isString() ) {
 			mValue = toString( value.asString() );
 			if ( setType ) {
 				mValueType = VALUE_STRING;
 			}
 		}
-		else if ( value.isUInt() ) { 
+		else if ( value.isUInt() ) {
 			mValue = toString( value.asLargestUInt() );
 			if ( setType ) {
 				mValueType = VALUE_UINT;
 			}
 		}
-		else if ( value.isDouble() ) { // jsoncpp defines isDouble() to include integral types, so this must follow isInt() && isUint() 
+		else if ( value.isDouble() ) { // jsoncpp defines isDouble() to include integral types, so this must follow isInt() && isUint()
 			mValue = toString( value.asDouble() );
 			if ( setType ) {
 				mValueType = VALUE_DOUBLE;
@@ -295,7 +295,7 @@ Json::Value JsonTree::deserializeNative( const string &jsonString, ParseOptions 
 	}
 	return value;
 }
-	
+
 void JsonTree::clear()
 {
 	mChildren.clear();
@@ -331,7 +331,7 @@ void JsonTree::removeChild( size_t index )
 		throw ExcChildNotFound( *this, toString( index ) );
 	}
 }
-	
+
 JsonTree::Iter JsonTree::removeChild( JsonTree::Iter pos )
 {
 	try {
@@ -353,7 +353,7 @@ void JsonTree::replaceChild( size_t index, const JsonTree &newChild )
 		throw ExcChildNotFound( *this, toString( index ) );
 	}
 }
-	
+
 void JsonTree::replaceChild( JsonTree::Iter pos, const JsonTree &newChild )
 {
 	try {
@@ -386,27 +386,27 @@ const JsonTree&	JsonTree::operator[]( size_t index ) const
 	return getChild( index );
 }
 
-JsonTree::Iter JsonTree::begin() 
-{ 
-	return mChildren.begin(); 
-}
-
-JsonTree::ConstIter JsonTree::begin() const 
-{ 
+JsonTree::Iter JsonTree::begin()
+{
 	return mChildren.begin();
 }
 
-JsonTree::Iter JsonTree::end() 
-{ 
+JsonTree::ConstIter JsonTree::begin() const
+{
+	return mChildren.begin();
+}
+
+JsonTree::Iter JsonTree::end()
+{
 	return mChildren.end();
 }
 
-JsonTree::ConstIter JsonTree::end() const 
-{ 
-	return mChildren.end(); 
+JsonTree::ConstIter JsonTree::end() const
+{
+	return mChildren.end();
 }
 
-JsonTree& JsonTree::getChild( const std::string &relativePath, bool caseSensitive, char separator ) 
+JsonTree& JsonTree::getChild( const std::string &relativePath, bool caseSensitive, char separator )
 {
 	JsonTree *child = getNodePtr( relativePath, caseSensitive, separator );
 	if ( child ) {
@@ -416,7 +416,7 @@ JsonTree& JsonTree::getChild( const std::string &relativePath, bool caseSensitiv
 	}
 }
 
-const JsonTree& JsonTree::getChild( const std::string &relativePath, bool caseSensitive, char separator ) const 
+const JsonTree& JsonTree::getChild( const std::string &relativePath, bool caseSensitive, char separator ) const
 {
 	JsonTree *child = getNodePtr( relativePath, caseSensitive, separator );
 	if ( child ) {
@@ -426,7 +426,7 @@ const JsonTree& JsonTree::getChild( const std::string &relativePath, bool caseSe
 	}
 }
 
-JsonTree& JsonTree::getChild( size_t index ) 
+JsonTree& JsonTree::getChild( size_t index )
 {
 	JsonTree *child = getNodePtr( toString( index ), false, '.' );
 	if ( child ) {
@@ -436,7 +436,7 @@ JsonTree& JsonTree::getChild( size_t index )
 	}
 }
 
-const JsonTree& JsonTree::getChild( size_t index ) const 
+const JsonTree& JsonTree::getChild( size_t index ) const
 {
 	JsonTree *child = getNodePtr( toString( index ), false, '.' );
 	if ( child ) {
@@ -447,8 +447,8 @@ const JsonTree& JsonTree::getChild( size_t index ) const
 }
 
 const JsonTree::Container& JsonTree::getChildren() const
-{ 
-	return mChildren; 
+{
+	return mChildren;
 }
 
 bool JsonTree::hasChild( const string &relativePath, bool caseSensitive, char separator ) const
@@ -461,28 +461,28 @@ bool JsonTree::hasChildren() const
 	return mChildren.size() > 0;
 }
 
-JsonTree& JsonTree::getParent() 
-{ 
-	return *mParent; 
-}
-const JsonTree& JsonTree::getParent() const 
-{ 
+JsonTree& JsonTree::getParent()
+{
 	return *mParent;
 }
-bool JsonTree::hasParent() const 
-{ 
-	return mParent != 0; 
+const JsonTree& JsonTree::getParent() const
+{
+	return *mParent;
 }
-    
-const string& JsonTree::getKey() const 
-{ 
+bool JsonTree::hasParent() const
+{
+	return mParent != 0;
+}
+
+const string& JsonTree::getKey() const
+{
     return mKey;
 }
 
 string JsonTree::getPath( char separator ) const
 {
     string result;
-    
+
     const JsonTree *node = this;
 	bool prevWasArrayIndex = false;
     while( node != 0 ) {
@@ -523,7 +523,7 @@ JsonTree* JsonTree::getNodePtr( const string &relativePath, bool caseSensitive, 
 
     // Start search from this node
 	JsonTree *curNode = const_cast<JsonTree*>( this );
-    
+
     // Split address at dot and iterate tokens
 	vector<string> pathComponents = split( path, separator );
 	for( vector<string>::const_iterator pathIt = pathComponents.begin(); pathIt != pathComponents.end(); ++pathIt ) {
@@ -540,10 +540,10 @@ JsonTree* JsonTree::getNodePtr( const string &relativePath, bool caseSensitive, 
 					break;
 				}
 			}
-		} else {	
+		} else {
             // Iterate children
             node = curNode->getChildren().begin();
-            while( node != curNode->getChildren().end() ) {  
+            while( node != curNode->getChildren().end() ) {
                 // Compare child's key to path component
                 bool keysMatch = false;
                 string key1 = node->getKey();
@@ -553,19 +553,19 @@ JsonTree* JsonTree::getNodePtr( const string &relativePath, bool caseSensitive, 
                 } else if ( !caseSensitive && ( ci::asciiCaseEqual( key1, key2 ) ) ) {
                     keysMatch = true;
                 }
-                
+
                 // Break if found, advance node if not
                 if( keysMatch ) {
                     break;
                 } else {
                     ++node;
                 }
-                
+
             }
-            
+
 		}
 
-        // Return null pointer if we're out of nodes to search, 
+        // Return null pointer if we're out of nodes to search,
         // otherwise assign node and continue to search its children
 		if( node == curNode->getChildren().end() ) {
             return 0;
@@ -587,7 +587,7 @@ bool JsonTree::isIndex( const string &key )
 	errno = 0;
 	unsigned long val = strtoul( to_convert, &p, 10 );
     if( val > 0L ) {
-        // Prevents "unused variable" warning 
+        // Prevents "unused variable" warning
     }
 	return !( errno != 0 || to_convert == p || *p != 0 );
 }
@@ -603,7 +603,7 @@ Json::Value JsonTree::createNativeDoc( WriteOptions writeOptions ) const
     switch( mNodeType ) {
 		case NODE_ARRAY: {
 			uint32_t i = 0;
-			
+
 			// Add children to array as objects
 			for ( ConstIter childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt, i++ ) {
 				value[ i ] = childIt->createNativeDoc();
@@ -639,9 +639,9 @@ Json::Value JsonTree::createNativeDoc( WriteOptions writeOptions ) const
 		default:
         break;
     }
-    
+
 	// Return JsonCpp object
-    if ( writeOptions.getCreateDocument() && !value.isNull() ) { 
+    if ( writeOptions.getCreateDocument() && !value.isNull() ) {
         Json::Value doc( Json::objectValue );
         doc[ mKey ] = value;
         return doc;
@@ -651,14 +651,14 @@ Json::Value JsonTree::createNativeDoc( WriteOptions writeOptions ) const
 }
 
 string JsonTree::serialize() const
-{	
+{
     stringstream ss;
     ss << *this;
     return ss.str();
 }
 
 string JsonTree::serializeNative( const Json::Value & value )
-{	
+{
 	try {
 		Json::StyledWriter writer;
 		return writer.write( value );
@@ -678,7 +678,7 @@ void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions 
 	string jsonString = "";
 
 	try {
-		
+
 		// Create JsonCpp data to send to parser
 		Json::Value value = createNativeDoc( writeOptions );
 
@@ -698,7 +698,7 @@ void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions 
 	// Save data to file
 	OStreamRef os = target->getStream();
 	os->writeData( jsonString.c_str(), jsonString.length() );
-	
+
 }
 
 string JsonTree::replaceAll( const string& text, const string& search, const string& replace ) const

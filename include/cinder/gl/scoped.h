@@ -53,7 +53,7 @@ struct CI_API ScopedBuffer : public Noncopyable {
 	ScopedBuffer( const BufferObjRef &bufferObj );
 	ScopedBuffer( GLenum target, GLuint id );
 	~ScopedBuffer();
-	
+
   private:
 	Context		*mCtx;
 	GLenum		mTarget;
@@ -88,7 +88,7 @@ struct CI_API ScopedBlend : private Noncopyable {
 	//! Parallels glBlendFuncSeparate(), and implicitly enables blending
 	ScopedBlend( GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
 	~ScopedBlend();
-	
+
   private:
 	Context		*mCtx;
 	bool		mSaveFactors; // whether we should also set the blend factors rather than just the blend state
@@ -131,7 +131,7 @@ struct CI_API ScopedFramebuffer : private Noncopyable {
 	//! Prefer the FboRef variant when possible. This does not allow gl::Fbo to mark itself as needing multisample resolution.
 	ScopedFramebuffer( GLenum target, GLuint framebufferId );
 	~ScopedFramebuffer();
-	
+
   private:
 	Context		*mCtx;
 	GLenum		mTarget;
@@ -141,7 +141,7 @@ struct CI_API ScopedActiveTexture : private Noncopyable {
 	//! Sets the currently active texture through glActiveTexture. Expects values relative to \c 0, \em not GL_TEXTURE0
 	ScopedActiveTexture( uint8_t textureUnit );
 	~ScopedActiveTexture();
-	
+
   private:
 	Context		*mCtx;
 };
@@ -166,7 +166,7 @@ struct CI_API ScopedTextureBind : private Noncopyable {
 	//! \endcond
 
 	~ScopedTextureBind();
-	
+
   private:
 	Context		*mCtx;
 	GLenum		mTarget;
@@ -179,17 +179,17 @@ struct CI_API ScopedSamplerBind : private Noncopyable {
 	ScopedSamplerBind( const Sampler &sampler, uint8_t textureUnit = 0 );
 	ScopedSamplerBind( const SamplerRef &sampler, uint8_t textureUnit = 0 );
 	~ScopedSamplerBind();
-	
+
   private:
 	Context		*mCtx;
 	uint8_t		mTextureUnit;
 };
 #endif // defined( CINDER_GL_HAS_SAMPLERS )
-	
+
 struct CI_API ScopedScissor : private Noncopyable {
 	//! Implicitly enables scissor test
 	ScopedScissor( const ivec2 &lowerLeftPosition, const ivec2 &dimension );
-	//! Implicitly enables scissor test	
+	//! Implicitly enables scissor test
 	ScopedScissor( int lowerLeftX, int lowerLeftY, int width, int height );
 	~ScopedScissor();
 
@@ -255,7 +255,7 @@ struct CI_API ScopedFaceCulling : private Noncopyable {
 	//! Enables or disables polygon culling based on \a cull and specifies a mode, either \c GL_BACK or GL_FRONT
 	ScopedFaceCulling( bool cull, GLenum cullFace );
 	~ScopedFaceCulling();
-	
+
   private:
 	Context		*mCtx;
 	bool		mSaveFace;
@@ -270,7 +270,7 @@ struct CI_API ScopedLogicOp : private Noncopyable {
 	//! Enables or disables logical operation based on \a enable and specifies a mode, \c GL_CLEAR, \c GL_SET, \c GL_COPY, \c GL_COPY_INVERTED, \c GL_NOOP, \c GL_INVERT, \c GL_AND, \c GL_NAND, \c GL_OR, \c GL_NOR, \c GL_XOR, \c GL_EQUIV, \c GL_AND_REVERSE, \c GL_AND_INVERTED, \c GL_OR_REVERSE, or \c GL_OR_INVERTED.
 	ScopedLogicOp( bool enable, GLenum mode );
 	~ScopedLogicOp();
-	
+
 private:
 	Context		*mCtx;
 	bool		mSaveMode;
@@ -285,7 +285,7 @@ struct CI_API ScopedDepth : private Noncopyable {
 	//! Enables or disables depth comparisons and writing to the depth buffer, and specifies a depth comparison function, either \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL and \c GL_ALWAYS.
 	ScopedDepth( bool enableReadAndWrite, GLenum depthFunc );
 	~ScopedDepth();
-	
+
   private:
 	Context		*mCtx;
 	bool		mSaveMask;
@@ -322,7 +322,7 @@ struct CI_API ScopedRenderbuffer : private Noncopyable {
 	ScopedRenderbuffer( const RenderbufferRef &renderBuffer );
 	ScopedRenderbuffer( GLenum target, GLuint id );
 	~ScopedRenderbuffer();
-	
+
   private:
 	Context		*mCtx;
 };
@@ -331,7 +331,7 @@ struct CI_API ScopedRenderbuffer : private Noncopyable {
 struct CI_API ScopedLineWidth : private Noncopyable {
 	ScopedLineWidth( float width );
 	~ScopedLineWidth();
-	
+
   private:
 	Context		*mCtx;
 };
@@ -343,7 +343,7 @@ struct CI_API ScopedPolygonMode : private Noncopyable {
 	//! Values for \a mode may be \c GL_POINT, \c GL_LINE or \c GL_FILL.
 	ScopedPolygonMode( GLenum mode );
 	~ScopedPolygonMode();
-	
+
   private:
 	Context		*mCtx;
 };
@@ -355,7 +355,7 @@ struct CI_API ScopedFrontFace : private Noncopyable {
 	//! Values for \a mode may be \c GL_CW or \c GL_CCW
 	ScopedFrontFace( GLenum mode );
 	~ScopedFrontFace();
-	
+
   private:
 	Context		*mCtx;
 };

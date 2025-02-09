@@ -15,7 +15,7 @@ class ImageFileBasicApp : public App {
 	void keyDown( KeyEvent event ) override;
 	void fileDrop( FileDropEvent event ) override;
 	void draw() override;
-	
+
 	gl::TextureRef		mTexture;
 };
 
@@ -62,7 +62,7 @@ void ImageFileBasicApp::draw()
 {
 	gl::clear( Color( 0.5f, 0.5f, 0.5f ) );
 	gl::enableAlphaBlending();
-	
+
 	if( mTexture ) {
 		Rectf destRect = Rectf( mTexture->getBounds() ).getCenteredFit( getWindowBounds(), true ).scaledCentered( 0.85f );
 		gl::draw( mTexture, destRect );

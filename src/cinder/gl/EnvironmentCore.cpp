@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2013, The Cinder Project
  All rights reserved.
- 
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -58,7 +58,7 @@ class EnvironmentCore : public Environment {
 	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType ) override;
 	void	allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable ) override;
 	void	allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
-	
+
 	std::string		generateVertexShader( const ShaderDef &shader ) override;
 	std::string		generateFragmentShader( const ShaderDef &shader ) override;
 	GlslProgRef		buildShader( const ShaderDef &shader ) override;
@@ -82,7 +82,7 @@ void EnvironmentCore::initializeFunctionPointers()
 }
 
 bool EnvironmentCore::isExtensionAvailable( const std::string &extName ) const
-{	
+{
 	static bool sInitialized = false;
 	static std::set<std::string> sExtensions;
 	if( ! sInitialized ) {
@@ -95,13 +95,13 @@ bool EnvironmentCore::isExtensionAvailable( const std::string &extName ) const
 			std::transform( s.begin(), s.end(), s.begin(), static_cast<int(*)(int)>( tolower ) );
 			sExtensions.insert( s );
 		}
-		
+
 		sInitialized = true;
 	}
 
 	// convert to lower case
 	std::string extension = extName;
-	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>( tolower ) );	
+	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>( tolower ) );
 	return sExtensions.count( extension ) > 0;
 }
 
@@ -189,7 +189,7 @@ void EnvironmentCore::allocateTexStorage3d( GLenum target, GLsizei levels, GLenu
 		GLenum dataFormat, dataType;
 		TextureBase::getInternalFormatInfo( internalFormat, &dataFormat, &dataType );
 		glTexImage3D( target, 0, internalFormat, width, height, depth, 0, dataFormat, dataType, nullptr );
-	}	
+	}
 }
 
 void EnvironmentCore::allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable )
@@ -206,9 +206,9 @@ void EnvironmentCore::allocateTexStorageCubeMap( GLsizei levels, GLenum internal
 }
 
 std::string	EnvironmentCore::generateVertexShader( const ShaderDef &shader )
-{	
+{
 	std::string s;
-	
+
 	s +=		"#version 150\n"
 				"\n"
 				"uniform mat4 ciModelViewProjection;\n"
@@ -227,7 +227,7 @@ std::string	EnvironmentCore::generateVertexShader( const ShaderDef &shader )
 			s+=	"uniform vec2 uTexCoordOffset, uTexCoordScale;\n";
 		}
 	}
-	
+
 	if( shader.mTextureMapping ) {
 		s +=	"in vec2 ciTexCoord0;\n"
 				"out highp vec2 TexCoord;\n"
@@ -266,16 +266,16 @@ std::string	EnvironmentCore::generateVertexShader( const ShaderDef &shader )
 		s +=	"	Normal = ciNormalMatrix * ciNormal;\n"
 				;
 	}
-	
+
 	s +=		"}";
-	
+
 	return s;
 }
 
 std::string	EnvironmentCore::generateFragmentShader( const ShaderDef &shader )
 {
 	std::string s;
-	
+
 	s+=			"#version 150\n"
 				"\n"
 				"out vec4 oColor;\n"
@@ -307,7 +307,7 @@ std::string	EnvironmentCore::generateFragmentShader( const ShaderDef &shader )
 				"	float lambert = max( 0.0, dot( N, L ) );\n"
 				;
 	}
-	
+
 	s += "	oColor = vec4( 1 )";
 
 	if( shader.mTextureMapping ) {
@@ -323,9 +323,9 @@ std::string	EnvironmentCore::generateFragmentShader( const ShaderDef &shader )
 		s +=	" * vec4( vec3( lambert ), 1.0 )";
 
 	s +=	";\n";
-	
+
 	s +=	"}";
-	
+
 	return s;
 }
 
@@ -338,7 +338,7 @@ GlslProgRef	EnvironmentCore::buildShader( const ShaderDef &shader )
 												.preprocess( false );
 	if( shader.mTextureMapping )
 		fmt.attribLocation( "ciTexCoord0", 1 );
-	return GlslProg::create( fmt );		
+	return GlslProg::create( fmt );
 }
 
 } } // namespace cinder::gl

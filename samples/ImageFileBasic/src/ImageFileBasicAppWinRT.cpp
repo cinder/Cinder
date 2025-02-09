@@ -22,7 +22,7 @@ class ImageFileBasicApp : public App {
 	void setup();
 	void keyDown( KeyEvent event );
 	void draw();
-	dx::Texture		mTexture;	
+	dx::Texture		mTexture;
 
 
 };
@@ -31,7 +31,7 @@ class ImageFileBasicApp : public App {
 void ImageFileBasicApp::setup()
 {
 	try {
-		/* On WinRT it is required that use use the async version of getOpenFilePath() 
+		/* On WinRT it is required that use use the async version of getOpenFilePath()
 		   since Windows 8 Store Apps only have an async version of the Open File dialog.
 		   You will need to provide a callback function or lamba that will receive the fs::path to
 		   the selected file.
@@ -43,10 +43,10 @@ void ImageFileBasicApp::setup()
 
 		getOpenFilePath( "", extensions, [this](fs::path path){
 			if( ! path.empty() ) {
-				/*	Windows 8 Store Apps file access is highly sandboxed. In order to open 
-					a file outside of your Application's directory (such as the Pictures Directory), 
+				/*	Windows 8 Store Apps file access is highly sandboxed. In order to open
+					a file outside of your Application's directory (such as the Pictures Directory),
 					you will need to use the loadImageAsync()  method. If necessary, it will copy
-					the selected image into the Apps temp directory, load the image into the texture, 
+					the selected image into the Apps temp directory, load the image into the texture,
 					and then delete the temporary copy of the image.
 				*/
 
@@ -63,7 +63,7 @@ void ImageFileBasicApp::setup()
 					this->mTexture = dx::Texture( loadImage( path ) );
 				*/
 
-				/*	FYI: This is how you would load an image outside of the Application folder into a Surface 
+				/*	FYI: This is how you would load an image outside of the Application folder into a Surface
 					Surface::loadImageAsync(path, this->mSurface);
 				*/
 			}
@@ -93,8 +93,8 @@ void ImageFileBasicApp::draw()
 {
 	dx::clear( Color( 0.5f, 0.5f, 0.5f ) );
 	dx::enableAlphaBlending();
-	
-	/*	Note: Since textures may be loaded asynchronously in WinRT, it is very important to test if 
+
+	/*	Note: Since textures may be loaded asynchronously in WinRT, it is very important to test if
 		your texture is not empty before trying to use it!
 	*/
 	if( mTexture )
