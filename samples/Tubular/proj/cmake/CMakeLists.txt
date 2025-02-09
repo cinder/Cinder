@@ -12,4 +12,5 @@ ci_make_app(
 	SOURCES     ${APP_PATH}/src/TubularApp.cpp ${APP_PATH}/src/Tube.cpp
 	INCLUDES    ${APP_PATH}/include
 	CINDER_PATH ${CINDER_PATH}
+    FOLDER      "cinder/samples"
 )

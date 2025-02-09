@@ -1,7 +1,7 @@
 include( CMakeParseArguments )
 
 function( ci_make_app )
-	set( oneValueArgs APP_NAME CINDER_PATH ASSETS_PATH )
+	set( oneValueArgs APP_NAME CINDER_PATH ASSETS_PATH FOLDER )
 	set( multiValueArgs SOURCES INCLUDES LIBRARIES RESOURCES BLOCKS )
 
 	cmake_parse_arguments( ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
@@ -65,6 +65,7 @@ function( ci_make_app )
 	ci_log_v( "CINDER_LIB_DIRECTORY: ${CINDER_LIB_DIRECTORY}" )
 	ci_log_v( "CINDER BLOCKS: ${ARG_BLOCKS}" )
 	ci_log_v( "ASSETS_PATH: ${ARG_ASSETS_PATH}" )
+	ci_log_v( "FOLDER: ${ARG_FOLDER}" )
 
 	# This ensures that the application will link with the correct version of Cinder
 	# based on the current build type without the need to remove the entire build folder
@@ -138,6 +139,10 @@ function( ci_make_app )
 	if( MSVC )
 		# Ignore Specific Default Libraries for Debug build
 		set_target_properties( ${ARG_APP_NAME} PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
+	endif()
+    
+	if (ARG_FOLDER)
+		set_target_properties( ${ARG_APP_NAME} PROPERTIES FOLDER "${ARG_FOLDER}" )
 	endif()
 
 	# Blocks are first searched relative to the sample's CMakeLists.txt file, then within cinder's blocks folder

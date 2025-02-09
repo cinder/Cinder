@@ -13,4 +13,5 @@ ci_make_app(
 			${APP_PATH}/src/StereoAutoFocuser.cpp
 	INCLUDES	${APP_PATH}/include
 	CINDER_PATH ${CINDER_PATH}
+    FOLDER      "cinder/samples"
 )
