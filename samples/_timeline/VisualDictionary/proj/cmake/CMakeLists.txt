@@ -8,7 +8,15 @@ get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
+list( APPEND SOURCES
+		${APP_PATH}/src/VisualDictionaryApp.cpp
+		${APP_PATH}/src/CenterState.cpp
+		${APP_PATH}/src/Dictionary.cpp
+		${APP_PATH}/src/WordNode.cpp
+	)
+
 ci_make_app(
-	SOURCES     ${APP_PATH}/src/VisualDictionaryApp.cpp
+	SOURCES     ${SOURCES}
 	CINDER_PATH ${CINDER_PATH}
+	INCLUDES    ${APP_PATH}/include
 )
