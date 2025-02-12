@@ -49,6 +49,37 @@ Please make sure your code conforms to the following general guidelines. If some
 * The contents of an `if`, `for`, or `while` statement should always be on a new line. This not only makes it easier to read but also prevents some ambiguities that come up in some debugging situations, where you can't tell if you've jumped into the body of the statement or not. 
 * `else` statements should be placed on a new line for vertical readability.
 
+#### Avoiding Accidental Mistakes
+
+* Always use braces when nesting if/else statements to avoid dangling else (the else branch belongs to the innermost if statement).
+
+```cpp
+if ( var1 ) {
+	if ( var2 ) {
+		someMethod( var1 );
+	} 
+	else {
+		someOtherMethod( var1 );
+	}
+}
+```
+
+* Do not use logic as control flow. For instance: `var1 && someMethod( var1 );` Please use if statements for that purpose.
+
+```cpp
+if( var1 ) {
+	someMethod( var1 );
+}
+```
+* Avoid writing boolean expressions without specifying the operator precedences. For instance, add parentheses to make it explicit that && operators have precedence over || operators.
+
+```cpp
+if ( var1 || (var2 && var3) ) {
+	someMethod( var1 );
+}
+```
+
+
 #### Types
 
 * Adhere to const correctness wherever possible. See [this][const_correctness_1] and [this][const_correctness_2] for explanation.
