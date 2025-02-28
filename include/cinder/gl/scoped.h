@@ -384,6 +384,34 @@ class ScopedStencilMask : private Noncopyable {
 	Context *mCtx;
 };
 
+//! Scopes the front and/or back stencil buffer operation
+class ScopedStencilOp : private Noncopyable {
+public:
+	//!
+	ScopedStencilOp(GLenum sfail, GLenum dpfail, GLenum dppass);
+	//! 
+	ScopedStencilOp(GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass);
+	~ScopedStencilOp();
+
+private:
+	Context* mCtx;
+	GLenum mFace;
+};
+
+//! Scopes the front and/or back stencil buffer function
+class ScopedStencilFunc : private Noncopyable {
+public:
+	//!
+	ScopedStencilFunc(GLenum func, GLint ref, GLuint mask);
+	//! 
+	ScopedStencilFunc(GLenum face, GLenum func, GLint ref, GLuint mask);
+	~ScopedStencilFunc();
+
+private:
+	Context* mCtx;
+	GLenum mFace;
+};
+
 #if defined( CINDER_GL_HAS_KHR_DEBUG )
 
 //! Scopes debug group message
