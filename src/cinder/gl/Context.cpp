@@ -93,6 +93,14 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	// initial state for stencil mask is all bits enabled
 	mStencilMaskStack.emplace_back( 0xFF, 0xFF );
 
+	// initial state for stencil op is GL_KEEP, GL_KEEP, GL_KEEP
+	mStencilOpFrontStack.emplace_back(GL_KEEP, GL_KEEP, GL_KEEP);
+	mStencilOpBackStack.emplace_back(GL_KEEP, GL_KEEP, GL_KEEP);
+
+	// initial state for stencil func is GL_ALWAYS, 0, 0xFF
+	mStencilFuncFrontStack.emplace_back(GL_ALWAYS, 0, 0xFF);
+	mStencilFuncBackStack.emplace_back(GL_ALWAYS, 0, 0xFF);
+
 	// initial state for depth mask is enabled
 	mBoolStateStack[GL_DEPTH_WRITEMASK] = vector<GLboolean>();
 	mBoolStateStack[GL_DEPTH_WRITEMASK].push_back( GL_TRUE );
