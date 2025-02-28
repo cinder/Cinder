@@ -546,6 +546,42 @@ ScopedStencilMask::~ScopedStencilMask()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedStencilOp
+ScopedStencilOp::ScopedStencilOp( GLenum sfail, GLenum dpfail, GLenum dppass )
+	: ScopedStencilOp( GL_FRONT_AND_BACK, sfail, dpfail, dppass )
+{
+}
+
+ScopedStencilOp::ScopedStencilOp( GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass )
+	: mCtx( gl::context() ), mFace( face )
+{
+	mCtx->pushStencilOpSeparate( mFace, sfail, dpfail, dppass );
+}
+
+ScopedStencilOp::~ScopedStencilOp()
+{
+	mCtx->popStencilOpSeparate( mFace );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedStencilFunc
+ScopedStencilFunc::ScopedStencilFunc( GLenum func, GLint ref, GLuint mask )
+	: ScopedStencilFunc( GL_FRONT_AND_BACK, func, ref, mask )
+{
+}
+
+ScopedStencilFunc::ScopedStencilFunc( GLenum face, GLenum func, GLint ref, GLuint mask )
+	: mCtx( gl::context() ), mFace( face )
+{
+	mCtx->pushStencilFuncSeparate( mFace, func, ref, mask );
+}
+
+ScopedStencilFunc::~ScopedStencilFunc()
+{
+	mCtx->popStencilFuncSeparate( mFace );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedDebugGroup
 #if defined( CINDER_GL_HAS_KHR_DEBUG )
 ScopedDebugGroup::ScopedDebugGroup( const std::string &message )

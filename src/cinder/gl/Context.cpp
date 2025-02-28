@@ -571,6 +571,248 @@ glm::u8vec2 Context::getStencilMask()
 	return mStencilMaskStack.back();
 }
 
+void Context::stencilOp(GLenum stencilFail, GLenum depthFail, GLenum depthPass)
+{
+	stencilOpSeparate( GL_FRONT_AND_BACK, stencilFail, depthFail, depthPass );
+}
+
+void Context::stencilOpSeparate(GLenum face, GLenum stencilFail, GLenum depthFail, GLenum depthPass)
+{
+	switch (face)
+	{
+	case GL_FRONT:
+		if (setStackState(mStencilOpFrontStack, StencilOp{ stencilFail, depthFail, depthPass }))
+			glStencilOpSeparate(GL_FRONT, stencilFail, depthFail, depthPass);
+		break;
+	case GL_BACK:
+		if (setStackState(mStencilOpBackStack, StencilOp{ stencilFail, depthFail, depthPass }))
+			glStencilOpSeparate(GL_BACK, stencilFail, depthFail, depthPass);
+		break;
+	default:
+		if (setStackState(mStencilOpFrontStack, StencilOp{ stencilFail, depthFail, depthPass }))
+			glStencilOpSeparate(GL_FRONT, stencilFail, depthFail, depthPass);
+		if (setStackState(mStencilOpBackStack, StencilOp{ stencilFail, depthFail, depthPass }))
+			glStencilOpSeparate(GL_BACK, stencilFail, depthFail, depthPass);
+		break;
+	}
+}
+
+void Context::pushStencilOp(GLenum stencilFail, GLenum depthFail, GLenum depthPass)
+{
+	pushStencilOpSeparate( GL_FRONT_AND_BACK, stencilFail, depthFail, depthPass );
+}
+
+void Context::pushStencilOpSeparate(GLenum face, GLenum stencilFail, GLenum depthFail, GLenum depthPass)
+{
+	switch (face)
+	{
+	case GL_FRONT:
+		if (pushStackState(mStencilOpFrontStack, StencilOp{ stencilFail, depthFail, depthPass }))
+			glStencilOpSeparate(GL_FRONT, stencilFail, depthFail, depthPass);
+		break;
+	case GL_BACK:
+		if (pushStackState(mStencilOpBackStack, StencilOp{ stencilFail, depthFail, depthPass }))
+			glStencilOpSeparate(GL_BACK, stencilFail, depthFail, depthPass);
+		break;
+	default:
+		if (pushStackState(mStencilOpFrontStack, StencilOp{ stencilFail, depthFail, depthPass }))
+			glStencilOpSeparate(GL_FRONT, stencilFail, depthFail, depthPass);
+		if (pushStackState(mStencilOpBackStack, StencilOp{ stencilFail, depthFail, depthPass }))
+			glStencilOpSeparate(GL_BACK, stencilFail, depthFail, depthPass);
+		break;
+	}
+}
+
+void Context::popStencilOp(bool forceRestore)
+{
+	popStencilOpSeparate(GL_FRONT, forceRestore);
+	popStencilOpSeparate(GL_BACK, forceRestore);
+}
+
+void Context::popStencilOpSeparate(GLenum face, bool forceRestore)
+{
+	switch (face)
+	{
+	case GL_FRONT:
+		if (mStencilOpFrontStack.empty())
+			CI_LOG_E("Stencil operation stack underflow");
+		else if (popStackState(mStencilOpFrontStack) || forceRestore) {
+			const auto op = getStencilOp();
+			glStencilOpSeparate(GL_FRONT, op.first.stencilFail, op.first.depthFail, op.first.depthPass);
+		}
+		break;
+	case GL_BACK:
+		if (mStencilOpBackStack.empty())
+			CI_LOG_E("Stencil operation stack underflow");
+		else if (popStackState(mStencilOpBackStack) || forceRestore) {
+			const auto op = getStencilOp();
+			glStencilOpSeparate(GL_BACK, op.second.stencilFail, op.second.depthFail, op.second.depthPass);
+		}
+		break;
+	default:
+		if (mStencilOpFrontStack.empty() || mStencilOpBackStack.empty())
+			CI_LOG_E("Stencil operation stack underflow");
+		else {
+			if (popStackState(mStencilOpFrontStack) || forceRestore) {
+				const auto op = getStencilOp();
+				glStencilOpSeparate(GL_FRONT, op.first.stencilFail, op.first.depthFail, op.first.depthPass);
+			}
+			if (popStackState(mStencilOpBackStack) || forceRestore) {
+				const auto op = getStencilOp();
+				glStencilOpSeparate(GL_BACK, op.second.stencilFail, op.second.depthFail, op.second.depthPass);
+			}
+		}
+		break;
+	}
+}
+
+std::pair<Context::StencilOp, Context::StencilOp> Context::getStencilOp()
+{
+	if (mStencilOpFrontStack.empty()) {
+		GLint queriedInt[3];
+		glGetIntegerv(GL_STENCIL_FAIL, queriedInt);
+		glGetIntegerv(GL_STENCIL_PASS_DEPTH_FAIL, queriedInt + 1);
+		glGetIntegerv(GL_STENCIL_PASS_DEPTH_PASS, queriedInt + 2);
+		// push twice in anticipation of later pop
+		mStencilOpFrontStack.emplace_back(queriedInt[0], queriedInt[1], queriedInt[2]);
+		mStencilOpFrontStack.emplace_back(queriedInt[0], queriedInt[1], queriedInt[2]);
+	}
+
+	if (mStencilOpBackStack.empty()) {
+		GLint queriedInt[3];
+		glGetIntegerv(GL_STENCIL_BACK_FAIL, queriedInt);
+		glGetIntegerv(GL_STENCIL_BACK_PASS_DEPTH_FAIL, queriedInt + 1);
+		glGetIntegerv(GL_STENCIL_BACK_PASS_DEPTH_PASS, queriedInt + 2);
+		// push twice in anticipation of later pop
+		mStencilOpBackStack.emplace_back(queriedInt[0], queriedInt[1], queriedInt[2]);
+		mStencilOpBackStack.emplace_back(queriedInt[0], queriedInt[1], queriedInt[2]);
+	}
+
+	return std::make_pair(mStencilOpFrontStack.back(), mStencilOpBackStack.back());
+}
+
+void Context::stencilFunc(GLenum func, GLint ref, GLuint mask)
+{
+	stencilFuncSeparate(GL_FRONT, func, ref, mask);
+	stencilFuncSeparate(GL_BACK, func, ref, mask);
+}
+
+void Context::stencilFuncSeparate(GLenum face, GLenum func, GLint ref, GLuint mask)
+{
+	switch (face)
+	{
+	case GL_FRONT:
+		if (setStackState(mStencilFuncFrontStack, StencilFunc{ func, ref, mask }))
+			glStencilFuncSeparate(GL_FRONT, func, ref, mask);
+		break;
+	case GL_BACK:
+		if (setStackState(mStencilFuncBackStack, StencilFunc{ func, ref, mask }))
+			glStencilFuncSeparate(GL_BACK, func, ref, mask);
+		break;
+	default:
+		if (setStackState(mStencilFuncFrontStack, StencilFunc{ func, ref, mask }))
+			glStencilFuncSeparate(GL_FRONT, func, ref, mask);
+		if (setStackState(mStencilFuncBackStack, StencilFunc{ func, ref, mask }))
+			glStencilFuncSeparate(GL_BACK, func, ref, mask);
+		break;
+	}
+}
+
+void Context::pushStencilFunc(GLenum func, GLint ref, GLuint mask)
+{
+	pushStencilFuncSeparate(GL_FRONT, func, ref, mask);
+	pushStencilFuncSeparate(GL_BACK, func, ref, mask);
+}
+
+void Context::pushStencilFuncSeparate(GLenum face, GLenum func, GLint ref, GLuint mask)
+{
+	switch (face)
+	{
+	case GL_FRONT:
+		if (pushStackState(mStencilFuncFrontStack, StencilFunc{ func, ref, mask }))
+			glStencilFuncSeparate(GL_FRONT, func, ref, mask);
+		break;
+	case GL_BACK:
+		if (pushStackState(mStencilFuncBackStack, StencilFunc{ func, ref, mask }))
+			glStencilFuncSeparate(GL_BACK, func, ref, mask);
+		break;
+	default:
+		if (pushStackState(mStencilFuncFrontStack, StencilFunc{ func, ref, mask }))
+			glStencilFuncSeparate(GL_FRONT, func, ref, mask);
+		if (pushStackState(mStencilFuncBackStack, StencilFunc{ func, ref, mask }))
+			glStencilFuncSeparate(GL_BACK, func, ref, mask);
+		break;
+	}
+}
+
+void Context::popStencilFunc(bool forceRestore)
+{
+	popStencilFuncSeparate(GL_FRONT, forceRestore);
+	popStencilFuncSeparate(GL_BACK, forceRestore);
+}
+
+void Context::popStencilFuncSeparate(GLenum face, bool forceRestore)
+{
+	switch (face)
+	{
+	case GL_FRONT:
+		if (mStencilFuncFrontStack.empty())
+			CI_LOG_E("Stencil function stack underflow");
+		else if (popStackState(mStencilFuncFrontStack) || forceRestore) {
+			const auto func = getStencilFunc();
+			glStencilFuncSeparate(GL_FRONT, func.first.func, func.first.ref, func.first.mask);
+		}
+		break;
+	case GL_BACK:
+		if (mStencilFuncBackStack.empty())
+			CI_LOG_E("Stencil function stack underflow");
+		else if (popStackState(mStencilFuncBackStack) || forceRestore) {
+			const auto func = getStencilFunc();
+			glStencilFuncSeparate(GL_BACK, func.second.func, func.second.ref, func.second.mask);
+		}
+		break;
+	default:
+		if (mStencilFuncFrontStack.empty() || mStencilFuncBackStack.empty())
+			CI_LOG_E("Stencil function stack underflow");
+		else {
+			if (popStackState(mStencilFuncFrontStack) || forceRestore) {
+				const auto func = getStencilFunc();
+				glStencilFuncSeparate(GL_FRONT, func.first.func, func.first.ref, func.first.mask);
+			}
+			if (popStackState(mStencilFuncBackStack) || forceRestore) {
+				const auto func = getStencilFunc();
+				glStencilFuncSeparate(GL_BACK, func.second.func, func.second.ref, func.second.mask);
+			}
+		}
+		break;
+	}
+}
+
+std::pair<Context::StencilFunc, Context::StencilFunc> Context::getStencilFunc()
+{
+	if (mStencilFuncFrontStack.empty()) {
+		GLint queriedInt[3];
+		glGetIntegerv(GL_STENCIL_FUNC, queriedInt);
+		glGetIntegerv(GL_STENCIL_REF, queriedInt + 1);
+		glGetIntegerv(GL_STENCIL_VALUE_MASK, queriedInt + 2);
+		// push twice in anticipation of later pop
+		mStencilFuncFrontStack.emplace_back(queriedInt[0], queriedInt[1], queriedInt[2]);
+		mStencilFuncFrontStack.emplace_back(queriedInt[0], queriedInt[1], queriedInt[2]);
+	}
+
+	if (mStencilFuncBackStack.empty()) {
+		GLint queriedInt[3];
+		glGetIntegerv(GL_STENCIL_BACK_FUNC, queriedInt);
+		glGetIntegerv(GL_STENCIL_BACK_REF, queriedInt + 1);
+		glGetIntegerv(GL_STENCIL_BACK_VALUE_MASK, queriedInt + 2);
+		// push twice in anticipation of later pop
+		mStencilFuncBackStack.emplace_back(queriedInt[0], queriedInt[1], queriedInt[2]);
+		mStencilFuncBackStack.emplace_back(queriedInt[0], queriedInt[1], queriedInt[2]);
+	}
+
+	return std::make_pair(mStencilFuncFrontStack.back(), mStencilFuncBackStack.back());
+}
+
 //////////////////////////////////////////////////////////////////
 // LogicOp
 #if ! defined( CINDER_GL_ES )
