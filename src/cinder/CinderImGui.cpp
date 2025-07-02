@@ -366,6 +366,7 @@ static void ImGui_ImplCinder_MouseUp( ci::app::MouseEvent& event )
 	io.MouseDown[0] = false;
 	io.MouseDown[1] = false;
 	io.MouseDown[2] = false;
+	event.setHandled( io.WantCaptureMouse );
 }
 static void ImGui_ImplCinder_MouseWheel( ci::app::MouseEvent& event )
 {
