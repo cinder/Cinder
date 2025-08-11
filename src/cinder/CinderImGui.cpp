@@ -557,7 +557,10 @@ bool ImGui::Initialize( const ImGui::Options& options )
 	auto context = ImGui::CreateContext();
 	
 	ImGuiIO& io = ImGui::GetIO();
-	if( options.isKeyboardEnabled() ) io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+	if( options.isKeyboardEnabled() ) {
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+		io.ConfigFlags |= ImGuiConfigFlags_NavNoCaptureKeyboard; // Don't capture keyboard when navigation is active
+	}
 	if( options.isGamepadEnabled() ) io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls	
 	ci::app::WindowRef window = options.getWindow();
 	io.DisplaySize = ci::vec2( window->toPixels( window->getSize() ) );
