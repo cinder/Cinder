@@ -123,9 +123,9 @@ class CI_API Connection {
 	Connection();
 	Connection( const std::shared_ptr<detail::Disconnector> &disconnector, detail::SignalLinkBase *link, int priority );
 	Connection( const Connection &other );
-	Connection( Connection &&other );
+	Connection( Connection &&other ) noexcept;
 	Connection& operator=( const Connection &rhs );
-	Connection& operator=( Connection &&rhs );
+	Connection& operator=( Connection &&rhs ) noexcept;
 
 	//! Disconnects this Connection from the callback chain. \a return true if a disconnection was made, false otherwise.
 	bool disconnect();
@@ -150,9 +150,9 @@ class CI_API ScopedConnection : public Connection, private Noncopyable {
   public:
 	ScopedConnection();
 	~ScopedConnection();
-	ScopedConnection( ScopedConnection &&other );
-	ScopedConnection( Connection &&other );
-	ScopedConnection& operator=( ScopedConnection &&rhs );
+	ScopedConnection( ScopedConnection &&other ) noexcept;
+	ScopedConnection( Connection &&other ) noexcept;
+	ScopedConnection& operator=( ScopedConnection &&rhs ) noexcept;
 };
 
 // ----------------------------------------------------------------------------------------------------
