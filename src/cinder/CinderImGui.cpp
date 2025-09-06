@@ -323,12 +323,12 @@ namespace ImGui {
 		return changed;
 	}
 
-	bool ListBox( const char* label, int* currIndex, const std::vector<std::string>& values, int height_in_items )
+	bool ListBox( const char* label, int* currIndex, const std::vector<std::string>& values, const ImVec2& size )
 	{
 		if( values.empty() ) return false;
 		
 		bool changed = false;
-		if( ImGui::ListBoxHeader( label, (int)values.size(), height_in_items ) ) {
+		if( ImGui::BeginListBox( label, size ) ) {
 			for( int i = 0; i < (int)values.size(); ++i ) {
 				ImGui::PushID( (void*)(intptr_t)i );
 				bool selected = ( *currIndex == i );
@@ -339,7 +339,7 @@ namespace ImGui {
 				if( selected ) ImGui::SetItemDefaultFocus();
 				ImGui::PopID();
 			}
-			ImGui::ListBoxFooter();
+			ImGui::EndListBox();
 		}
 		return changed;
 	}
