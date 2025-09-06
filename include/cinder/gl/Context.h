@@ -76,6 +76,44 @@ class CI_API Context {
 #endif
 	};
 
+	struct CI_API StencilOp
+	{
+		StencilOp() = default;
+		StencilOp(GLenum stencilFail, GLenum depthFail, GLenum depthPass) : stencilFail(stencilFail), depthFail(depthFail), depthPass(depthPass) {}
+
+		bool operator==(const StencilOp& rhs) const
+		{
+			return stencilFail == rhs.stencilFail && depthFail == rhs.depthFail && depthPass == rhs.depthPass;
+		}
+		bool operator!=(const StencilOp& rhs) const
+		{
+			return !(*this == rhs);
+		}
+
+		GLenum stencilFail;
+		GLenum depthFail;
+		GLenum depthPass;
+	};
+
+	struct CI_API StencilFunc
+	{
+		StencilFunc() = default;
+		StencilFunc(GLenum func, GLint ref, GLuint mask) : func(func), ref(ref), mask(mask) {}
+
+		bool operator==(const StencilFunc& rhs) const
+		{
+			return func == rhs.func && ref == rhs.ref && mask == rhs.mask;
+		}
+		bool operator!=(const StencilFunc& rhs) const
+		{
+			return !(*this == rhs);
+		}
+
+		GLenum func;
+		GLint ref;
+		GLuint mask;
+	};
+
 	//! Creates a new OpenGL context, sharing resources and pixel format with sharedContext. This (essentially) must be done from the primary thread on MSW. ANGLE doesn't support multithreaded use. Destroys the platform Context on destruction.
 	static ContextRef	create( const Context *sharedContext );	
 	//! Creates based on an existing platform-specific GL context. \a platformContext is CGLContextObj on Mac OS X, EAGLContext on iOS, HGLRC on MSW. \a platformContext is an HDC on MSW and ignored elsewhere. Does not assume ownership of the platform's context.
@@ -192,6 +230,36 @@ class CI_API Context {
 	void					popStencilMask( bool forceRestore = false );
 	//! Returns the current stencil mask, which controls the front and back writing of individual bits in the stencil planes (front and back). 
 	glm::u8vec2				getStencilMask();
+
+	//! Set the current stencil operation, which controls the front and back stencil test actions.
+	void					stencilOp( GLenum stencilFail, GLenum depthFail, GLenum depthPass );
+	//! Set the current stencil operation, which controls the front or back stencil test actions.
+	void					stencilOpSeparate( GLenum face, GLenum stencilFail, GLenum depthFail, GLenum depthPass );
+	//! Push the current stencil operation, which controls the front and back stencil test actions.
+	void					pushStencilOp( GLenum stencilFail, GLenum depthFail, GLenum depthPass );
+	//! Push the current stencil operation, which controls the front or back stencil test actions.
+	void					pushStencilOpSeparate( GLenum face, GLenum stencilFail, GLenum depthFail, GLenum depthPass );
+	//! Pops the current stencil operation, which controls the front and back stencil test actions.
+	void					popStencilOp( bool forceRestore = false );
+	//! Pops the current stencil operation, which controls the front or back stencil test actions.
+	void					popStencilOpSeparate( GLenum face, bool forceRestore = false );
+	//! Returns the current stencil operation, which controls the front and back stencil test actions.
+	std::pair<StencilOp,StencilOp>	getStencilOp();
+
+	//! Set the current stencil function, which controls the front and back stencil test actions.
+	void 					stencilFunc( GLenum func, GLint ref, GLuint mask );
+	//! Set the current stencil function, which controls the front or back stencil test actions.
+	void 					stencilFuncSeparate( GLenum face, GLenum func, GLint ref, GLuint mask );
+	//! Push the current stencil function, which controls the front and back stencil test actions.
+	void 					pushStencilFunc( GLenum func, GLint ref, GLuint mask );
+	//! Push the current stencil function, which controls the front or back stencil test actions.
+	void 					pushStencilFuncSeparate( GLenum face, GLenum func, GLint ref, GLuint mask );
+	//! Pops the current stencil function, which controls the front and back stencil test actions.
+	void 					popStencilFunc( bool forceRestore = false );
+	//! Pops the current stencil function, which controls the front or back stencil test actions.
+	void 					popStencilFuncSeparate( GLenum face, bool forceRestore = false );
+	//! Returns the current stencil function, which controls the front and back stencil test actions.
+	std::pair<StencilFunc,StencilFunc>	getStencilFunc();
 	
 #if ! defined( CINDER_GL_ES )
 	//! Analogous to glLogicOp( \a mode ). Valid arguments are \c GL_CLEAR, \c GL_SET, \c GL_COPY, \c GL_COPY_INVERTED, \c GL_NOOP, \c GL_INVERT, \c GL_AND, \c GL_NAND, \c GL_OR, \c GL_NOR, \c GL_XOR, \c GL_EQUIV, \c GL_AND_REVERSE, \c GL_AND_INVERTED, \c GL_OR_REVERSE, or \c GL_OR_INVERTED.
@@ -559,6 +627,10 @@ class CI_API Context {
 
 	std::vector<glm::bvec4>		mColorMaskStack;
 	std::vector<glm::u8vec2>	mStencilMaskStack;
+	std::vector<StencilOp>		mStencilOpFrontStack;
+	std::vector<StencilOp>		mStencilOpBackStack;
+	std::vector<StencilFunc>	mStencilFuncFrontStack;
+	std::vector<StencilFunc>	mStencilFuncBackStack;
 
 #if ! defined( CINDER_GL_ES )
 	std::vector<GLenum>			mLogicOpStack;
