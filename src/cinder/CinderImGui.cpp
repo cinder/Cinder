@@ -374,6 +374,7 @@ static void ImGui_ImplCinder_MouseUp( ci::app::MouseEvent& event )
 	io.KeyShift = event.isShiftDown();
 	io.KeyAlt = event.isAltDown();
 	io.KeySuper = event.isMetaDown();
+	event.setHandled( io.WantCaptureMouse );
 }
 static void ImGui_ImplCinder_MouseWheel( ci::app::MouseEvent& event )
 {
