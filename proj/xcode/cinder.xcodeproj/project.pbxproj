@@ -255,6 +255,7 @@
 		00B729E8115DAC2B00CD71B9 /* Timer.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B729E7115DAC2B00CD71B9 /* Timer.h */; };
 		00B8C3931AD582400007ADAA /* Blur.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B8C3921AD582400007ADAA /* Blur.cpp */; };
 		00B8C3981AEB4F240007ADAA /* CameraUi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B8C3971AEB4F240007ADAA /* CameraUi.cpp */; };
+		06CBD5FAE61F47CC8CB7C5A6 /* CanvasUi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 585C940D97494FD6B1641420 /* CanvasUi.cpp */; };
 		00BC898B10D2BE9400D6DC59 /* DataTarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BC898A10D2BE9400D6DC59 /* DataTarget.cpp */; };
 		00BC898D10D2BEA200D6DC59 /* DataTarget.h in Headers */ = {isa = PBXBuildFile; fileRef = 00BC898C10D2BEA200D6DC59 /* DataTarget.h */; };
 		00BC89F210D2EA2200D6DC59 /* ImageTargetFileQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 00BC89F110D2EA2200D6DC59 /* ImageTargetFileQuartz.h */; };
@@ -283,6 +284,7 @@
 		00F601C819F6C9DD00C83781 /* Ubo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00F601C719F6C9DD00C83781 /* Ubo.cpp */; };
 		00F601CC19F6CA2D00C83781 /* Ubo.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F601CB19F6CA2D00C83781 /* Ubo.h */; };
 		00FF554D1AEADF9C0085071E /* CameraUi.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FF554C1AEADF9C0085071E /* CameraUi.h */; };
+		03B0993BC7DC49A18700235B /* CanvasUi.h in Headers */ = {isa = PBXBuildFile; fileRef = CCEA2460CD2F4C1C93972D5F /* CanvasUi.h */; };
 		00FFAED119DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00FFAED019DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp */; };
 		00FFAED519DB5D330002CA8E /* ImageSourceFileRadiance.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FFAED419DB5D330002CA8E /* ImageSourceFileRadiance.h */; };
 		1116CC4D1A5F154000023856 /* Platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1116CC4A1A5F154000023856 /* Platform.cpp */; };
@@ -1859,6 +1861,7 @@
 		00B8C3921AD582400007ADAA /* Blur.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Blur.cpp; path = ip/Blur.cpp; sourceTree = "<group>"; };
 		00B8C3961AD582DE0007ADAA /* Blur.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Blur.h; path = ip/Blur.h; sourceTree = "<group>"; };
 		00B8C3971AEB4F240007ADAA /* CameraUi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraUi.cpp; sourceTree = "<group>"; };
+		585C940D97494FD6B1641420 /* CanvasUi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CanvasUi.cpp; sourceTree = "<group>"; };
 		00BC898A10D2BE9400D6DC59 /* DataTarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataTarget.cpp; sourceTree = "<group>"; };
 		00BC898C10D2BEA200D6DC59 /* DataTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataTarget.h; sourceTree = "<group>"; };
 		00BC89F110D2EA2200D6DC59 /* ImageTargetFileQuartz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageTargetFileQuartz.h; sourceTree = "<group>"; };
@@ -1889,6 +1892,7 @@
 		00F601C719F6C9DD00C83781 /* Ubo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ubo.cpp; path = gl/Ubo.cpp; sourceTree = "<group>"; };
 		00F601CB19F6CA2D00C83781 /* Ubo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ubo.h; path = gl/Ubo.h; sourceTree = "<group>"; };
 		00FF554C1AEADF9C0085071E /* CameraUi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraUi.h; sourceTree = "<group>"; };
+		CCEA2460CD2F4C1C93972D5F /* CanvasUi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CanvasUi.h; sourceTree = "<group>"; };
 		00FFAED019DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSourceFileRadiance.cpp; sourceTree = "<group>"; };
 		00FFAED419DB5D330002CA8E /* ImageSourceFileRadiance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSourceFileRadiance.h; sourceTree = "<group>"; };
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -2684,6 +2688,7 @@
 				277C2CEE1366632B00178A29 /* Matrix44.h */,
 				003CE482242A983C007BE072 /* MediaTime.h */,
 				00FF554C1AEADF9C0085071E /* CameraUi.h */,
+				CCEA2460CD2F4C1C93972D5F /* CanvasUi.h */,
 				002DFD530FA5602900E45AE0 /* ObjLoader.h */,
 				00CFE37B113B85F60091E310 /* Path2d.h */,
 				00D2F1150F8D825C00A7189A /* Perlin.h */,
@@ -2741,6 +2746,7 @@
 				C70E1A01106AA39D00E63577 /* Buffer.cpp */,
 				00241ABC0E830DD5004D34EB /* Camera.cpp */,
 				00B8C3971AEB4F240007ADAA /* CameraUi.cpp */,
+				585C940D97494FD6B1641420 /* CanvasUi.cpp */,
 				007438400EA7924F005DD3E6 /* Capture.cpp */,
 				008CE83C0E94672E00644A05 /* Channel.cpp */,
 				111A5EF0191F722E005C3166 /* CinderAssert.cpp */,
@@ -4016,6 +4022,7 @@
 				B322C4A11DC7DC7100D2E661 /* zutil.h in Headers */,
 				27C1FE781BD0AE3400AF387F /* QuickTimeImplLegacy.h in Headers */,
 				27C1FE791BD0AE3400AF387F /* CameraUi.h in Headers */,
+				03B0993BC7DC49A18700235B /* CanvasUi.h in Headers */,
 				27C1FE7A1BD0AE3400AF387F /* Threshold.h in Headers */,
 				27C1FE7B1BD0AE3400AF387F /* Vbo.h in Headers */,
 				B322C48C1DC7DC7100D2E661 /* inftrees.h in Headers */,
@@ -4327,6 +4334,7 @@
 				B3EA40051DD0EEA900E34348 /* svmm.h in Headers */,
 				B3EA3F7E1DD0EEA900E34348 /* ftimage.h in Headers */,
 				27C1FFF41BD16D4800AF387F /* CameraUi.h in Headers */,
+				03B0993BC7DC49A18700235B /* CanvasUi.h in Headers */,
 				27C1FFF51BD16D4800AF387F /* Plane.h in Headers */,
 				27C1FFF61BD16D4800AF387F /* QuickTime.h in Headers */,
 				27C1FFF71BD16D4800AF387F /* Json.h in Headers */,
@@ -4641,6 +4649,7 @@
 				B3EA3FDF1DD0EEA900E34348 /* ftstream.h in Headers */,
 				277C2CF21366632B00178A29 /* Matrix44.h in Headers */,
 				00FF554D1AEADF9C0085071E /* CameraUi.h in Headers */,
+				03B0993BC7DC49A18700235B /* CanvasUi.h in Headers */,
 				111A5EF3191F7251005C3166 /* CinderAssert.h in Headers */,
 				B3EA3FBB1DD0EEA900E34348 /* ftwinfnt.h in Headers */,
 				005C0CE914CBB3DB00A12CD2 /* Base64.h in Headers */,
@@ -4805,6 +4814,7 @@
 				27C1001E1BD16D4800AF387F /* Ubo.cpp in Sources */,
 				27C1001F1BD16D4800AF387F /* Rand.cpp in Sources */,
 				27C100201BD16D4800AF387F /* CameraUi.cpp in Sources */,
+				06CBD5FAE61F47CC8CB7C5A6 /* CanvasUi.cpp in Sources */,
 				27C100211BD16D4800AF387F /* DelayNode.cpp in Sources */,
 				27C100221BD16D4800AF387F /* KeyEvent.cpp in Sources */,
 				27C100231BD16D4800AF387F /* Stream.cpp in Sources */,
@@ -5058,6 +5068,7 @@
 				27C1FEC81BD0AE3400AF387F /* Ubo.cpp in Sources */,
 				27C1FEC91BD0AE3400AF387F /* Rand.cpp in Sources */,
 				27C1FECA1BD0AE3400AF387F /* CameraUi.cpp in Sources */,
+				06CBD5FAE61F47CC8CB7C5A6 /* CanvasUi.cpp in Sources */,
 				27C1FECB1BD0AE3400AF387F /* DelayNode.cpp in Sources */,
 				27C1FECC1BD0AE3400AF387F /* KeyEvent.cpp in Sources */,
 				27C1FECD1BD0AE3400AF387F /* Stream.cpp in Sources */,
@@ -5487,6 +5498,7 @@
 				0003F4141992D64100647C8B /* Vao.cpp in Sources */,
 				11FD37E41A8EDB9E002B6EA9 /* Signals.cpp in Sources */,
 				00B8C3981AEB4F240007ADAA /* CameraUi.cpp in Sources */,
+				06CBD5FAE61F47CC8CB7C5A6 /* CanvasUi.cpp in Sources */,
 				B3EA40C81DD0F04700E34348 /* autofit.c in Sources */,
 				0055BE991AD099DE00813C09 /* Checkerboard.cpp in Sources */,
 				00A1140D1355369A00081873 /* priorityq.c in Sources */,
