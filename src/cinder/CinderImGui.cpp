@@ -14,7 +14,6 @@
 
 static bool sInitialized = false;
 static bool sTriggerNewFrame = false;
-static std::vector<int> sAccelKeys;
 static ci::signals::ConnectionList sAppConnections;
 static std::unordered_map<ci::app::WindowRef, ci::signals::ConnectionList> sWindowConnections;
 
@@ -326,9 +325,9 @@ namespace ImGui {
 	bool ListBox( const char* label, int* currIndex, const std::vector<std::string>& values, int height_in_items )
 	{
 		if( values.empty() ) return false;
-		
+
 		bool changed = false;
-		if( ImGui::ListBoxHeader( label, (int)values.size(), height_in_items ) ) {
+		if( ImGui::BeginListBox( label, ImVec2(0, height_in_items * ImGui::GetTextLineHeightWithSpacing()) ) ) {
 			for( int i = 0; i < (int)values.size(); ++i ) {
 				ImGui::PushID( (void*)(intptr_t)i );
 				bool selected = ( *currIndex == i );
@@ -339,14 +338,14 @@ namespace ImGui {
 				if( selected ) ImGui::SetItemDefaultFocus();
 				ImGui::PopID();
 			}
-			ImGui::ListBoxFooter();
+			ImGui::EndListBox();
 		}
 		return changed;
 	}
 
 	void Image( const ci::gl::Texture2dRef& texture, const ci::vec2& size, const ci::vec2& uv0, const ci::vec2& uv1, const ci::vec4& tint_col, const ci::vec4& border_col )
 	{
-		Image( (void*)(intptr_t)texture->getId(), size, uv0, uv1, tint_col, border_col );
+		Image( (ImTextureID)(intptr_t)texture->getId(), size, uv0, uv1, tint_col, border_col );
 	}
 }
 
@@ -355,58 +354,112 @@ static void ImGui_ImplCinder_MouseDown( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
 	io.MousePos = event.getWindow()->toPixels( event.getPos() );
-	io.MouseDown[0] = event.isLeftDown();
-	io.MouseDown[1] = event.isRightDown();
-	io.MouseDown[2] = event.isMiddleDown();
-	io.KeyCtrl = event.isControlDown();
-	io.KeyShift = event.isShiftDown();
-	io.KeyAlt = event.isAltDown();
-	io.KeySuper = event.isMetaDown();
+	if( event.isLeft() )
+		io.AddMouseButtonEvent( 0, true );
+	if( event.isRight() )
+		io.AddMouseButtonEvent( 1, true );
+	if( event.isMiddle() )
+		io.AddMouseButtonEvent( 2, true );
+	io.AddKeyEvent( ImGuiMod_Ctrl, event.isControlDown() );
+	io.AddKeyEvent( ImGuiMod_Shift, event.isShiftDown() );
+	io.AddKeyEvent( ImGuiMod_Alt, event.isAltDown() );
+	io.AddKeyEvent( ImGuiMod_Super, event.isMetaDown() );
 	event.setHandled( io.WantCaptureMouse );
 }
 static void ImGui_ImplCinder_MouseUp( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.MouseDown[0] = false;
-	io.MouseDown[1] = false;
-	io.MouseDown[2] = false;
-	io.KeyCtrl = event.isControlDown();
-	io.KeyShift = event.isShiftDown();
-	io.KeyAlt = event.isAltDown();
-	io.KeySuper = event.isMetaDown();
+	if( event.isLeft() )
+		io.AddMouseButtonEvent( 0, false );
+	if( event.isRight() )
+		io.AddMouseButtonEvent( 1, false );
+	if( event.isMiddle() )
+		io.AddMouseButtonEvent( 2, false );
+	io.AddKeyEvent( ImGuiMod_Ctrl, event.isControlDown() );
+	io.AddKeyEvent( ImGuiMod_Shift, event.isShiftDown() );
+	io.AddKeyEvent( ImGuiMod_Alt, event.isAltDown() );
+	io.AddKeyEvent( ImGuiMod_Super, event.isMetaDown() );
 	event.setHandled( io.WantCaptureMouse );
 }
 static void ImGui_ImplCinder_MouseWheel( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.MouseWheel += event.getWheelIncrement();
-	io.KeyCtrl = event.isControlDown();
-	io.KeyShift = event.isShiftDown();
-	io.KeyAlt = event.isAltDown();
-	io.KeySuper = event.isMetaDown();
+	io.AddMouseWheelEvent( 0.0f, event.getWheelIncrement() );
+	io.AddKeyEvent( ImGuiMod_Ctrl, event.isControlDown() );
+	io.AddKeyEvent( ImGuiMod_Shift, event.isShiftDown() );
+	io.AddKeyEvent( ImGuiMod_Alt, event.isAltDown() );
+	io.AddKeyEvent( ImGuiMod_Super, event.isMetaDown() );
 	event.setHandled( io.WantCaptureMouse );
 }
 
 static void ImGui_ImplCinder_MouseMove( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.MousePos = event.getWindow()->toPixels( event.getPos() );
-	io.KeyCtrl = event.isControlDown();
-	io.KeyShift = event.isShiftDown();
-	io.KeyAlt = event.isAltDown();
-	io.KeySuper = event.isMetaDown();
+	io.AddMousePosEvent( event.getWindow()->toPixels( event.getPos() ).x, event.getWindow()->toPixels( event.getPos() ).y );
+	io.AddKeyEvent( ImGuiMod_Ctrl, event.isControlDown() );
+	io.AddKeyEvent( ImGuiMod_Shift, event.isShiftDown() );
+	io.AddKeyEvent( ImGuiMod_Alt, event.isAltDown() );
+	io.AddKeyEvent( ImGuiMod_Super, event.isMetaDown() );
 	event.setHandled( io.WantCaptureMouse );
 }
 //! sets the right mouseDrag IO values in imgui
 static void ImGui_ImplCinder_MouseDrag( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.MousePos = event.getWindow()->toPixels( event.getPos() );
-	io.KeyCtrl = event.isControlDown();
-	io.KeyShift = event.isShiftDown();
-	io.KeyAlt = event.isAltDown();
-	io.KeySuper = event.isMetaDown();
+	io.AddMousePosEvent( event.getWindow()->toPixels( event.getPos() ).x, event.getWindow()->toPixels( event.getPos() ).y );
+	io.AddKeyEvent( ImGuiMod_Ctrl, event.isControlDown() );
+	io.AddKeyEvent( ImGuiMod_Shift, event.isShiftDown() );
+	io.AddKeyEvent( ImGuiMod_Alt, event.isAltDown() );
+	io.AddKeyEvent( ImGuiMod_Super, event.isMetaDown() );
 	event.setHandled( io.WantCaptureMouse );
+}
+
+static ImGuiKey CinderKeyToImGuiKey( int cinderKey )
+{
+	switch( cinderKey ) {
+		case ci::app::KeyEvent::KEY_TAB: return ImGuiKey_Tab;
+		case ci::app::KeyEvent::KEY_LEFT: return ImGuiKey_LeftArrow;
+		case ci::app::KeyEvent::KEY_RIGHT: return ImGuiKey_RightArrow;
+		case ci::app::KeyEvent::KEY_UP: return ImGuiKey_UpArrow;
+		case ci::app::KeyEvent::KEY_DOWN: return ImGuiKey_DownArrow;
+		case ci::app::KeyEvent::KEY_PAGEUP: return ImGuiKey_PageUp;
+		case ci::app::KeyEvent::KEY_PAGEDOWN: return ImGuiKey_PageDown;
+		case ci::app::KeyEvent::KEY_HOME: return ImGuiKey_Home;
+		case ci::app::KeyEvent::KEY_END: return ImGuiKey_End;
+		case ci::app::KeyEvent::KEY_INSERT: return ImGuiKey_Insert;
+		case ci::app::KeyEvent::KEY_DELETE: return ImGuiKey_Delete;
+		case ci::app::KeyEvent::KEY_BACKSPACE: return ImGuiKey_Backspace;
+		case ci::app::KeyEvent::KEY_SPACE: return ImGuiKey_Space;
+		case ci::app::KeyEvent::KEY_RETURN: return ImGuiKey_Enter;
+		case ci::app::KeyEvent::KEY_ESCAPE: return ImGuiKey_Escape;
+		case ci::app::KeyEvent::KEY_a: return ImGuiKey_A;
+		case ci::app::KeyEvent::KEY_b: return ImGuiKey_B;
+		case ci::app::KeyEvent::KEY_c: return ImGuiKey_C;
+		case ci::app::KeyEvent::KEY_d: return ImGuiKey_D;
+		case ci::app::KeyEvent::KEY_e: return ImGuiKey_E;
+		case ci::app::KeyEvent::KEY_f: return ImGuiKey_F;
+		case ci::app::KeyEvent::KEY_g: return ImGuiKey_G;
+		case ci::app::KeyEvent::KEY_h: return ImGuiKey_H;
+		case ci::app::KeyEvent::KEY_i: return ImGuiKey_I;
+		case ci::app::KeyEvent::KEY_j: return ImGuiKey_J;
+		case ci::app::KeyEvent::KEY_k: return ImGuiKey_K;
+		case ci::app::KeyEvent::KEY_l: return ImGuiKey_L;
+		case ci::app::KeyEvent::KEY_m: return ImGuiKey_M;
+		case ci::app::KeyEvent::KEY_n: return ImGuiKey_N;
+		case ci::app::KeyEvent::KEY_o: return ImGuiKey_O;
+		case ci::app::KeyEvent::KEY_p: return ImGuiKey_P;
+		case ci::app::KeyEvent::KEY_q: return ImGuiKey_Q;
+		case ci::app::KeyEvent::KEY_r: return ImGuiKey_R;
+		case ci::app::KeyEvent::KEY_s: return ImGuiKey_S;
+		case ci::app::KeyEvent::KEY_t: return ImGuiKey_T;
+		case ci::app::KeyEvent::KEY_u: return ImGuiKey_U;
+		case ci::app::KeyEvent::KEY_v: return ImGuiKey_V;
+		case ci::app::KeyEvent::KEY_w: return ImGuiKey_W;
+		case ci::app::KeyEvent::KEY_x: return ImGuiKey_X;
+		case ci::app::KeyEvent::KEY_y: return ImGuiKey_Y;
+		case ci::app::KeyEvent::KEY_z: return ImGuiKey_Z;
+		default: return ImGuiKey_None;
+	}
 }
 
 static void ImGui_ImplCinder_KeyDown( ci::app::KeyEvent& event )
@@ -419,22 +472,18 @@ static void ImGui_ImplCinder_KeyDown( ci::app::KeyEvent& event )
 	uint32_t character = event.getCharUtf32();
 #endif
 
-	io.KeysDown[event.getCode()] = true;
+	ImGuiKey key = CinderKeyToImGuiKey( event.getCode() );
+	if( key != ImGuiKey_None )
+		io.AddKeyEvent( key, true );
 
 	if( !event.isAccelDown() && character > 0 && character <= 255 ) {
 		io.AddInputCharacter( (char)character );
 	}
-	else if( event.getCode() != ci::app::KeyEvent::KEY_LMETA
-		&& event.getCode() != ci::app::KeyEvent::KEY_RMETA
-		&& event.isAccelDown()
-		&& find( sAccelKeys.begin(), sAccelKeys.end(), event.getCode() ) == sAccelKeys.end() ) {
-		sAccelKeys.push_back( event.getCode() );
-	}
 
-	io.KeyCtrl = event.isControlDown();
-	io.KeyShift = event.isShiftDown();
-	io.KeyAlt = event.isAltDown();
-	io.KeySuper = event.isMetaDown();
+	io.AddKeyEvent( ImGuiMod_Ctrl, event.isControlDown() );
+	io.AddKeyEvent( ImGuiMod_Shift, event.isShiftDown() );
+	io.AddKeyEvent( ImGuiMod_Alt, event.isAltDown() );
+	io.AddKeyEvent( ImGuiMod_Super, event.isMetaDown() );
 
 	event.setHandled( io.WantCaptureKeyboard );
 }
@@ -443,17 +492,14 @@ static void ImGui_ImplCinder_KeyUp( ci::app::KeyEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
 
-	io.KeysDown[event.getCode()] = false;
+	ImGuiKey key = CinderKeyToImGuiKey( event.getCode() );
+	if( key != ImGuiKey_None )
+		io.AddKeyEvent( key, false );
 
-	for( auto key : sAccelKeys ) {
-		io.KeysDown[key] = false;
-	}
-	sAccelKeys.clear();
-
-	io.KeyCtrl = event.isControlDown();
-	io.KeyShift = event.isShiftDown();
-	io.KeyAlt = event.isAltDown();
-	io.KeySuper = event.isMetaDown();
+	io.AddKeyEvent( ImGuiMod_Ctrl, event.isControlDown() );
+	io.AddKeyEvent( ImGuiMod_Shift, event.isShiftDown() );
+	io.AddKeyEvent( ImGuiMod_Alt, event.isAltDown() );
+	io.AddKeyEvent( ImGuiMod_Super, event.isMetaDown() );
 
 	event.setHandled( io.WantCaptureKeyboard );
 }
@@ -473,9 +519,8 @@ static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window ) {
 		return;
 
 	ImGui_ImplOpenGL3_NewFrame();
-	
-	ImGuiIO& io = ImGui::GetIO();
-	IM_ASSERT( io.Fonts->IsBuilt() ); // Font atlas needs to be built, call renderer _NewFrame() function e.g. ImGui_ImplOpenGL3_NewFrame() 
+
+	ImGuiIO& io = ImGui::GetIO(); 
 
 	// Setup display size
 	io.DisplaySize = window->toPixels( window->getSize() );
@@ -503,27 +548,6 @@ static bool ImGui_ImplCinder_Init( const ci::app::WindowRef& window, const ImGui
 	// Setup back-end capabilities flags
 	ImGuiIO& io = ImGui::GetIO();
 	io.BackendPlatformName = "imgui_impl_cinder";
-
-	// Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
-	io.KeyMap[ImGuiKey_Tab] = ci::app::KeyEvent::KEY_TAB;
-	io.KeyMap[ImGuiKey_LeftArrow] = ci::app::KeyEvent::KEY_LEFT;
-	io.KeyMap[ImGuiKey_RightArrow] = ci::app::KeyEvent::KEY_RIGHT;
-	io.KeyMap[ImGuiKey_UpArrow] = ci::app::KeyEvent::KEY_UP;
-	io.KeyMap[ImGuiKey_DownArrow] = ci::app::KeyEvent::KEY_DOWN;
-	io.KeyMap[ImGuiKey_Home] = ci::app::KeyEvent::KEY_HOME;
-	io.KeyMap[ImGuiKey_End] = ci::app::KeyEvent::KEY_END;
-	io.KeyMap[ImGuiKey_Delete] = ci::app::KeyEvent::KEY_DELETE;
-	io.KeyMap[ImGuiKey_Backspace] = ci::app::KeyEvent::KEY_BACKSPACE;
-	io.KeyMap[ImGuiKey_Enter] = ci::app::KeyEvent::KEY_RETURN;
-	io.KeyMap[ImGuiKey_Escape] = ci::app::KeyEvent::KEY_ESCAPE;
-	io.KeyMap[ImGuiKey_A] = ci::app::KeyEvent::KEY_a;
-	io.KeyMap[ImGuiKey_C] = ci::app::KeyEvent::KEY_c;
-	io.KeyMap[ImGuiKey_V] = ci::app::KeyEvent::KEY_v;
-	io.KeyMap[ImGuiKey_X] = ci::app::KeyEvent::KEY_x;
-	io.KeyMap[ImGuiKey_Y] = ci::app::KeyEvent::KEY_y;
-	io.KeyMap[ImGuiKey_Z] = ci::app::KeyEvent::KEY_z;
-	io.KeyMap[ImGuiKey_Insert] = ci::app::KeyEvent::KEY_INSERT;
-	io.KeyMap[ImGuiKey_Space] = ci::app::KeyEvent::KEY_SPACE;
 
 	ImGuiStyle& imGuiStyle = ImGui::GetStyle();
 	imGuiStyle = options.getStyle();
@@ -602,7 +626,7 @@ bool ImGui::Initialize( const ImGui::Options& options )
 #else
 	ImGui_ImplOpenGL3_Init();
 #endif
-	
+
 	ImGui_ImplCinder_Init( window, options );
 	if( options.isAutoRenderEnabled() ) {
 		ImGui_ImplCinder_NewFrameGuard( window );
