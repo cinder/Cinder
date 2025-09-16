@@ -66,6 +66,8 @@ void ImGuiApp::setup()
         .window(getWindow())
         .enableKeyboard(true)
     );
+    ImGui::GetStyle().ScaleAllSizes( getWindowContentScale() );
+    ImGui::GetStyle().FontScaleMain = getWindowContentScale();
 
     // Create a simple test texture
     createSampleTexture();
@@ -100,6 +102,9 @@ void ImGuiApp::draw()
 {
     gl::clear(Color(0.1f, 0.1f, 0.1f));
 
+    gl::color( 1, 1, 1 );
+    gl::drawSolidCircle( vec2( getWindowCenter() ), (float)std::max( getWindowWidth(), getWindowHeight() ) / 2 );
+    
     // Show ImGui demo window
     if (mShowDemoWindow) {
         ImGui::ShowDemoWindow(&mShowDemoWindow);
@@ -212,5 +217,5 @@ void ImGuiApp::cleanup()
 CINDER_APP(ImGuiApp, RendererGl, [](App::Settings *settings) {
     settings->setWindowSize(1200, 800);
     settings->setTitle("ImGui v1.92.2b Test - CinderImGui Extensions");
-    settings->setHighDensityDisplayEnabled(true);
+    settings->setHighDensityDisplayEnabled( false ); // to make this 'true' on macOS set the NSHighResolutionCapable Info.plist property to YES
 })

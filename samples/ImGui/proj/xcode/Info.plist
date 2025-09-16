@@ -22,6 +22,8 @@
 	<string>1.0</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
+	<key>NSHighResolutionCapable</key>
+	<false/>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>
