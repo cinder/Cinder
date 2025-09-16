@@ -173,7 +173,13 @@ void ImGuiApp::drawCinderExtensions()
     if (ImGui::CollapsingHeader("Cinder Color Types", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::Text("These functions work directly with Cinder color types:");
 
+        ImGui::ColorEdit3("ColorEdit3 (ci::Colorf)", &mColorf);
         ImGui::ColorEdit4("ColorEdit4 (ci::ColorAf)", &mColorAf);
+
+        ImGui::Spacing();
+
+        ImGui::Text("ColorPicker with triangle selector:");
+        ImGui::ColorPicker4("ColorPicker4 (Triangle)", &mColorAf, ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_DisplayRGB);
 
         ImGui::Separator();
     }
