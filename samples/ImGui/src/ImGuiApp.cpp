@@ -5,6 +5,7 @@
 #include "cinder/Surface.h"
 #include "cinder/CinderImGui.h"
 #include "cinder/Log.h"
+#include "cinder/ip/Checkerboard.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -16,15 +17,19 @@ public:
     void update() override;
     void draw() override;
     void cleanup() override;
+    void keyDown( KeyEvent event ) override;
 
 private:
     void createSampleTexture();
     void drawCinderExtensions();
+    void drawImGuiDrawingDemo();
 
     // Demo window states
+    bool mDrawGui = true;  // Toggle for ImGui rendering
     bool mShowDemoWindow = true;
     bool mShowTestWindow = true;
     bool mShowExtensions = true;
+    bool mShowDrawingDemo = true;
 
     // Basic test controls (from original)
     float mFloatValue = 0.5f;
@@ -77,20 +82,11 @@ void ImGuiApp::setup()
 
 void ImGuiApp::createSampleTexture()
 {
-    // Create simple checker pattern texture
+    // Use Cinder's ip::Checkerboard instead of custom code
     const int size = 128;
     Surface8u surface(size, size, false);
-    auto iter = surface.getIter();
-    while (iter.line()) {
-        while (iter.pixel()) {
-            int x = iter.x() / 16;
-            int y = iter.y() / 16;
-            uint8_t color = ((x + y) % 2) ? 200 : 50;
-            iter.r() = color;
-            iter.g() = color;
-            iter.b() = color;
-        }
-    }
+    ip::checkerboard(&surface, Area(0, 0, size, size), 16,
+                     Color8u(200, 200, 200), Color8u(50, 50, 50));
     mTexture = gl::Texture2d::create(surface);
 }
 
@@ -102,16 +98,32 @@ void ImGuiApp::draw()
 {
     gl::clear(Color(0.1f, 0.1f, 0.1f));
 
-    gl::color( 1, 1, 1 );
-    gl::drawSolidCircle( vec2( getWindowCenter() ), (float)std::max( getWindowWidth(), getWindowHeight() ) / 2 );
-    
+    // Draw a background circle using GL when GUI is disabled to show the app is still responsive
+    if (!mDrawGui) {
+        gl::color(0.2f, 0.2f, 0.3f);
+        gl::drawSolidCircle(vec2(getWindowCenter()), (float)std::max(getWindowWidth(), getWindowHeight()) / 2.0f);
+
+        // Draw text to show GUI is disabled
+        gl::color(1.0f, 1.0f, 1.0f);
+        return;
+    }
+
+    // Use ImGui's drawing functions instead of gl::drawSolidCircle
+    // This draws to a background draw list that renders behind all windows
+    ImDrawList* backgroundDrawList = ImGui::GetBackgroundDrawList();
+
+    // Draw a large white circle behind everything
+    ImVec2 center(getWindowCenter().x, getWindowCenter().y);
+    float radius = (float)std::max(getWindowWidth(), getWindowHeight()) / 2.0f;
+    backgroundDrawList->AddCircleFilled(center, radius, IM_COL32(255, 255, 255, 255), 64);
+
     // Show ImGui demo window
     if (mShowDemoWindow) {
         ImGui::ShowDemoWindow(&mShowDemoWindow);
     }
 
     // Basic test window (original functionality)
-    if (mShowTestWindow) {
+    if (mDrawGui && mShowTestWindow) {
         ImGui::Begin("Basic ImGui Test", &mShowTestWindow);
 
         ImGui::Text("ImGui %s with Cinder", IMGUI_VERSION);
@@ -119,6 +131,7 @@ void ImGuiApp::draw()
 
         ImGui::Checkbox("Show Demo Window", &mShowDemoWindow);
         ImGui::Checkbox("Show CinderImGui Extensions", &mShowExtensions);
+        ImGui::Checkbox("Show ImGui Drawing Demo", &mShowDrawingDemo);
         ImGui::Separator();
 
         // Basic Controls
@@ -136,8 +149,13 @@ void ImGuiApp::draw()
     }
 
     // CinderImGui Extensions Demo
-    if (mShowExtensions) {
+    if (mDrawGui && mShowExtensions) {
         drawCinderExtensions();
+    }
+
+    // ImGui Drawing Demo
+    if (mDrawGui && mShowDrawingDemo) {
+        drawImGuiDrawingDemo();
     }
 }
 
@@ -213,6 +231,129 @@ void ImGuiApp::drawCinderExtensions()
     }
 
     ImGui::End();
+}
+
+void ImGuiApp::drawImGuiDrawingDemo()
+{
+    ImGui::Begin("ImGui Drawing Demo", &mShowDrawingDemo);
+
+    ImGui::Text("ImGui DrawList API Examples");
+    ImGui::Separator();
+
+    // Get the draw list for this window
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+    // Get current cursor position for drawing
+    ImVec2 p = ImGui::GetCursorScreenPos();
+    float width = ImGui::GetContentRegionAvail().x;
+    float height = 300.0f;
+
+    // Reserve space for drawing
+    ImGui::Dummy(ImVec2(width, height));
+
+    // Draw a border around the drawing area
+    drawList->AddRect(p, ImVec2(p.x + width, p.y + height), IM_COL32(255, 255, 255, 128));
+
+    // Draw various shapes
+    float x = p.x + 20;
+    float y = p.y + 20;
+
+    // Circle
+    drawList->AddCircleFilled(ImVec2(x + 30, y + 30), 25.0f, IM_COL32(255, 100, 100, 255));
+    drawList->AddCircle(ImVec2(x + 30, y + 30), 25.0f, IM_COL32(255, 255, 255, 255), 32, 2.0f);
+
+    // Rectangle
+    drawList->AddRectFilled(ImVec2(x + 80, y + 10), ImVec2(x + 130, y + 50), IM_COL32(100, 255, 100, 255));
+    drawList->AddRect(ImVec2(x + 80, y + 10), ImVec2(x + 130, y + 50), IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
+
+    // Triangle
+    drawList->AddTriangleFilled(
+        ImVec2(x + 180, y + 50),
+        ImVec2(x + 160, y + 10),
+        ImVec2(x + 200, y + 10),
+        IM_COL32(100, 100, 255, 255)
+    );
+    drawList->AddTriangle(
+        ImVec2(x + 180, y + 50),
+        ImVec2(x + 160, y + 10),
+        ImVec2(x + 200, y + 10),
+        IM_COL32(255, 255, 255, 255), 2.0f
+    );
+
+    // Line
+    drawList->AddLine(ImVec2(x + 230, y + 10), ImVec2(x + 280, y + 50), IM_COL32(255, 255, 100, 255), 3.0f);
+
+    // Polyline (zigzag)
+    ImVec2 points[] = {
+        ImVec2(x + 310, y + 30),
+        ImVec2(x + 330, y + 10),
+        ImVec2(x + 350, y + 30),
+        ImVec2(x + 370, y + 10),
+        ImVec2(x + 390, y + 30)
+    };
+    drawList->AddPolyline(points, 5, IM_COL32(255, 150, 50, 255), 0, 2.0f);
+
+    // Bezier curve
+    y += 80;
+    drawList->AddBezierCubic(
+        ImVec2(x + 10, y + 10),
+        ImVec2(x + 50, y - 20),
+        ImVec2(x + 100, y + 40),
+        ImVec2(x + 140, y + 10),
+        IM_COL32(200, 100, 255, 255), 2.0f, 20
+    );
+
+    // Gradient rectangle
+    drawList->AddRectFilledMultiColor(
+        ImVec2(x + 180, y - 10),
+        ImVec2(x + 280, y + 30),
+        IM_COL32(255, 0, 0, 255),
+        IM_COL32(0, 255, 0, 255),
+        IM_COL32(0, 0, 255, 255),
+        IM_COL32(255, 255, 0, 255)
+    );
+
+    // Text
+    y += 60;
+    drawList->AddText(ImVec2(x, y), IM_COL32(255, 255, 255, 255), "ImGui DrawList Text");
+
+    // Rounded rectangle
+    drawList->AddRectFilled(
+        ImVec2(x + 180, y - 10),
+        ImVec2(x + 280, y + 20),
+        IM_COL32(100, 200, 100, 255),
+        10.0f
+    );
+
+    // N-gon (hexagon)
+    y += 50;
+    drawList->AddNgonFilled(ImVec2(x + 50, y + 30), 25.0f, IM_COL32(200, 200, 100, 255), 6);
+    drawList->AddNgon(ImVec2(x + 50, y + 30), 25.0f, IM_COL32(255, 255, 255, 255), 6, 2.0f);
+
+    // Filled convex polygon (pentagon)
+    ImVec2 pentagon[] = {
+        ImVec2(x + 150, y),
+        ImVec2(x + 180, y + 15),
+        ImVec2(x + 170, y + 45),
+        ImVec2(x + 130, y + 45),
+        ImVec2(x + 120, y + 15)
+    };
+    drawList->AddConvexPolyFilled(pentagon, 5, IM_COL32(150, 100, 200, 255));
+
+    ImGui::Separator();
+    ImGui::Text("Background circle is drawn using ImGui::GetBackgroundDrawList()");
+    ImGui::Text("All shapes above are drawn using ImGui::GetWindowDrawList()");
+
+    ImGui::End();
+}
+
+void ImGuiApp::keyDown( KeyEvent event )
+{
+    // Toggle GUI rendering with Cmd+G (Mac) or Ctrl+G (Windows/Linux)
+    if( event.getChar() == 'g' && event.isAccelDown() ) {
+        mDrawGui = !mDrawGui;
+        CI_LOG_I("ImGui rendering: " << (mDrawGui ? "ENABLED" : "DISABLED"));
+    }
 }
 
 void ImGuiApp::cleanup()
