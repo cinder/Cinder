@@ -565,7 +565,13 @@ static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window ) {
 static void ImGui_ImplCinder_PostDraw()
 {
 	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
+	ImDrawData* drawData = ImGui::GetDrawData();
+
+	// Only call OpenGL render if there's actually something to draw
+	if( drawData && drawData->CmdListsCount > 0 ) {
+		ImGui_ImplOpenGL3_RenderDrawData( drawData );
+	}
+
 	sTriggerNewFrame = true;
 }
 
