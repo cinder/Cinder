@@ -416,6 +416,24 @@ static void ImGui_ImplCinder_MouseDrag( ci::app::MouseEvent& event )
 
 static ImGuiKey CinderKeyToImGuiKey( int cinderKey )
 {
+	// Handle letter keys with range check
+	if( cinderKey >= ci::app::KeyEvent::KEY_a && cinderKey <= ci::app::KeyEvent::KEY_z ) {
+		return (ImGuiKey)(ImGuiKey_A + (cinderKey - ci::app::KeyEvent::KEY_a));
+	}
+	// Handle number keys with range check
+	else if( cinderKey >= ci::app::KeyEvent::KEY_0 && cinderKey <= ci::app::KeyEvent::KEY_9 ) {
+		return (ImGuiKey)(ImGuiKey_0 + (cinderKey - ci::app::KeyEvent::KEY_0));
+	}
+	// Handle function keys with range check
+	else if( cinderKey >= ci::app::KeyEvent::KEY_F1 && cinderKey <= ci::app::KeyEvent::KEY_F15 ) {
+		return (ImGuiKey)(ImGuiKey_F1 + (cinderKey - ci::app::KeyEvent::KEY_F1));
+	}
+	// Handle numpad digits with range check
+	else if( cinderKey >= ci::app::KeyEvent::KEY_KP0 && cinderKey <= ci::app::KeyEvent::KEY_KP9 ) {
+		return (ImGuiKey)(ImGuiKey_Keypad0 + (cinderKey - ci::app::KeyEvent::KEY_KP0));
+	}
+
+	// Handle remaining keys with switch
 	switch( cinderKey ) {
 		case ci::app::KeyEvent::KEY_TAB: return ImGuiKey_Tab;
 		case ci::app::KeyEvent::KEY_LEFT: return ImGuiKey_LeftArrow;
@@ -432,32 +450,40 @@ static ImGuiKey CinderKeyToImGuiKey( int cinderKey )
 		case ci::app::KeyEvent::KEY_SPACE: return ImGuiKey_Space;
 		case ci::app::KeyEvent::KEY_RETURN: return ImGuiKey_Enter;
 		case ci::app::KeyEvent::KEY_ESCAPE: return ImGuiKey_Escape;
-		case ci::app::KeyEvent::KEY_a: return ImGuiKey_A;
-		case ci::app::KeyEvent::KEY_b: return ImGuiKey_B;
-		case ci::app::KeyEvent::KEY_c: return ImGuiKey_C;
-		case ci::app::KeyEvent::KEY_d: return ImGuiKey_D;
-		case ci::app::KeyEvent::KEY_e: return ImGuiKey_E;
-		case ci::app::KeyEvent::KEY_f: return ImGuiKey_F;
-		case ci::app::KeyEvent::KEY_g: return ImGuiKey_G;
-		case ci::app::KeyEvent::KEY_h: return ImGuiKey_H;
-		case ci::app::KeyEvent::KEY_i: return ImGuiKey_I;
-		case ci::app::KeyEvent::KEY_j: return ImGuiKey_J;
-		case ci::app::KeyEvent::KEY_k: return ImGuiKey_K;
-		case ci::app::KeyEvent::KEY_l: return ImGuiKey_L;
-		case ci::app::KeyEvent::KEY_m: return ImGuiKey_M;
-		case ci::app::KeyEvent::KEY_n: return ImGuiKey_N;
-		case ci::app::KeyEvent::KEY_o: return ImGuiKey_O;
-		case ci::app::KeyEvent::KEY_p: return ImGuiKey_P;
-		case ci::app::KeyEvent::KEY_q: return ImGuiKey_Q;
-		case ci::app::KeyEvent::KEY_r: return ImGuiKey_R;
-		case ci::app::KeyEvent::KEY_s: return ImGuiKey_S;
-		case ci::app::KeyEvent::KEY_t: return ImGuiKey_T;
-		case ci::app::KeyEvent::KEY_u: return ImGuiKey_U;
-		case ci::app::KeyEvent::KEY_v: return ImGuiKey_V;
-		case ci::app::KeyEvent::KEY_w: return ImGuiKey_W;
-		case ci::app::KeyEvent::KEY_x: return ImGuiKey_X;
-		case ci::app::KeyEvent::KEY_y: return ImGuiKey_Y;
-		case ci::app::KeyEvent::KEY_z: return ImGuiKey_Z;
+		case ci::app::KeyEvent::KEY_QUOTE: return ImGuiKey_Apostrophe;
+		case ci::app::KeyEvent::KEY_COMMA: return ImGuiKey_Comma;
+		case ci::app::KeyEvent::KEY_MINUS: return ImGuiKey_Minus;
+		case ci::app::KeyEvent::KEY_PERIOD: return ImGuiKey_Period;
+		case ci::app::KeyEvent::KEY_SLASH: return ImGuiKey_Slash;
+		case ci::app::KeyEvent::KEY_SEMICOLON: return ImGuiKey_Semicolon;
+		case ci::app::KeyEvent::KEY_EQUALS: return ImGuiKey_Equal;
+		case ci::app::KeyEvent::KEY_LEFTBRACKET: return ImGuiKey_LeftBracket;
+		case ci::app::KeyEvent::KEY_BACKSLASH: return ImGuiKey_Backslash;
+		case ci::app::KeyEvent::KEY_RIGHTBRACKET: return ImGuiKey_RightBracket;
+		case ci::app::KeyEvent::KEY_BACKQUOTE: return ImGuiKey_GraveAccent;
+		case ci::app::KeyEvent::KEY_KP_PERIOD: return ImGuiKey_KeypadDecimal;
+		case ci::app::KeyEvent::KEY_KP_DIVIDE: return ImGuiKey_KeypadDivide;
+		case ci::app::KeyEvent::KEY_KP_MULTIPLY: return ImGuiKey_KeypadMultiply;
+		case ci::app::KeyEvent::KEY_KP_MINUS: return ImGuiKey_KeypadSubtract;
+		case ci::app::KeyEvent::KEY_KP_PLUS: return ImGuiKey_KeypadAdd;
+		case ci::app::KeyEvent::KEY_KP_ENTER: return ImGuiKey_KeypadEnter;
+		case ci::app::KeyEvent::KEY_KP_EQUALS: return ImGuiKey_KeypadEqual;
+		case ci::app::KeyEvent::KEY_LSHIFT: return ImGuiKey_LeftShift;
+		case ci::app::KeyEvent::KEY_LCTRL: return ImGuiKey_LeftCtrl;
+		case ci::app::KeyEvent::KEY_LALT: return ImGuiKey_LeftAlt;
+		case ci::app::KeyEvent::KEY_LSUPER: return ImGuiKey_LeftSuper;
+		case ci::app::KeyEvent::KEY_RSHIFT: return ImGuiKey_RightShift;
+		case ci::app::KeyEvent::KEY_RCTRL: return ImGuiKey_RightCtrl;
+		case ci::app::KeyEvent::KEY_RALT: return ImGuiKey_RightAlt;
+		case ci::app::KeyEvent::KEY_RSUPER: return ImGuiKey_RightSuper;
+		case ci::app::KeyEvent::KEY_LMETA: return ImGuiKey_LeftSuper;
+		case ci::app::KeyEvent::KEY_RMETA: return ImGuiKey_RightSuper;
+		case ci::app::KeyEvent::KEY_MENU: return ImGuiKey_Menu;
+		case ci::app::KeyEvent::KEY_CAPSLOCK: return ImGuiKey_CapsLock;
+		case ci::app::KeyEvent::KEY_SCROLLOCK: return ImGuiKey_ScrollLock;  // Note: Cinder has typo SCROLLOCK
+		case ci::app::KeyEvent::KEY_NUMLOCK: return ImGuiKey_NumLock;
+		case ci::app::KeyEvent::KEY_PRINT: return ImGuiKey_PrintScreen;
+		case ci::app::KeyEvent::KEY_PAUSE: return ImGuiKey_Pause;
 		default: return ImGuiKey_None;
 	}
 }
