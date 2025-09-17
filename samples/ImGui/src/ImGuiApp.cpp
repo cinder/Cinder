@@ -96,7 +96,8 @@ void ImGuiApp::draw()
 	// Draw a background circle using GL when GUI is disabled to show the app is still responsive
 	if( ! mDrawGui ) {
 		gl::color( 0.2f, 0.2f, 0.3f );
-		gl::drawSolidCircle( vec2( getWindowCenter() ), (float)std::max( getWindowWidth(), getWindowHeight() ) / 2.0f );
+        float radius = (float)std::max( getWindowWidth(), getWindowHeight() ) / 2.0f;
+		gl::drawSolidCircle( toPixels( vec2( getWindowCenter() ) ), toPixels( radius ) );
 
 		// Draw text to show GUI is disabled
 		gl::color( 1.0f, 1.0f, 1.0f );
@@ -108,9 +109,9 @@ void ImGuiApp::draw()
 	ImDrawList* backgroundDrawList = ImGui::GetBackgroundDrawList();
 
 	// Draw a large white circle behind everything
-	ImVec2 center( getWindowCenter().x, getWindowCenter().y );
+	ImVec2 center( toPixels( getWindowCenter().x ), toPixels( getWindowCenter().y ) );
 	float  radius = (float)std::max( getWindowWidth(), getWindowHeight() ) / 2.0f;
-	backgroundDrawList->AddCircleFilled( center, radius, IM_COL32( 255, 255, 255, 255 ), 64 );
+	backgroundDrawList->AddCircleFilled( center, toPixels( radius ), IM_COL32( 255, 255, 255, 255 ), 64 );
 
 	// Show ImGui demo window
 	if( mShowDemoWindow ) {
@@ -202,7 +203,7 @@ void ImGuiApp::drawCinderExtensions()
 		ImGui::Text( "Image() function with ci::gl::Texture2dRef:" );
 
 		if( mTexture ) {
-			ImGui::SliderFloat2( "Display Size", &mTextureSize.x, 32.0f, 256.0f );
+			ImGui::SliderFloat2( "Display Size (px)", &mTextureSize.x, 32.0f, 256.0f );
 			ImGui::DragFloat2( "UV Start", &mUV0.x, 0.01f, -1.0f, 2.0f );
 			ImGui::DragFloat2( "UV End", &mUV1.x, 0.01f, -1.0f, 2.0f );
 			ImGui::ColorEdit4( "Tint Color", &mTint.x );
