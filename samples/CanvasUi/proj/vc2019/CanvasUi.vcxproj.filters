@@ -17,15 +17,15 @@
     <ClCompile Include="..\src\CanvasUiApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\CanvasUiApp.cpp">
+    <ClCompile Include="..\..\src\CanvasUiApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClInclude Include="..\include\Resources.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

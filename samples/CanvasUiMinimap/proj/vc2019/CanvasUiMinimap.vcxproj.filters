@@ -14,12 +14,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\CanvasUiMinimapApp.cpp">
+    <ClCompile Include="..\..\src\CanvasUiMinimapApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\Resources.h">
+    <ClInclude Include="..\..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
