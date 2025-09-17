@@ -27,11 +27,11 @@ class CanvasUiMinimapApp : public App {
 
 	gl::FboRef mSceneFbo;
 
-	static constexpr int GRID_X = 32;
-	static constexpr int GRID_Y = 18;
+	static constexpr int GRID_X = 16;
+	static constexpr int GRID_Y = 9;
 	static constexpr int SCENE_WIDTH = 1920;
 	static constexpr int SCENE_HEIGHT = 1080;
-	static constexpr float CUBE_SIZE = 30;
+	static constexpr float CUBE_SIZE = 60;
 	static constexpr int MINIMAP_WIDTH = 192;
 	static constexpr int MINIMAP_HEIGHT = 108;
 	static constexpr int MINIMAP_MARGIN = 20;
