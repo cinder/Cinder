@@ -1,25 +1,25 @@
 /*
-Copyright (c) 2024, The Cinder Project - All rights reserved.
-Simple 2D Canvas UI with web browser-like controls and bounded/unbounded modes.
+ Copyright (c) 2025, The Cinder Project, All rights reserved.
+ Portions copyright Paul Houx.
 
-This code is intended for use with the Cinder C++ library: http://libcinder.org
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that
-the following conditions are met:
+ Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+ the following conditions are met:
 
-   * Redistributions of source code must retain the above copyright notice, this list of conditions and
-   the following disclaimer.
-   * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-   the following disclaimer in the documentation and/or other materials provided with the distribution.
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
+	the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
-WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
-TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "cinder/CanvasUi.h"
@@ -27,7 +27,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/Log.h"
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
-#include <cstdio>
 
 namespace cinder {
 
@@ -51,10 +50,6 @@ CanvasUi::CanvasUi()
 
 	mHotkeysReset.emplace_back( KeyEvent::KEY_0, modifier );
 	mHotkeysReset.emplace_back( KeyEvent::KEY_KP0, modifier );
-	
-	// Debug output to show what hotkeys are registered
-	std::printf("CanvasUi initialized with modifier: 0x%x (CTRL_DOWN=0x%x, ACCEL_DOWN=0x%x)\n", 
-	           modifier, KeyEvent::CTRL_DOWN, KeyEvent::ACCEL_DOWN);
 
 	// Set default pan mouse buttons: Alt+Left, Middle, or Right mouse
 	mPanMouseButtons.emplace_back( app::MouseEvent::LEFT_DOWN, app::MouseEvent::ALT_DOWN );
@@ -174,7 +169,7 @@ void CanvasUi::panToViewportPos( const vec2& posViewport, bool disableAnimation 
 void CanvasUi::panToContentPos( const vec2& posContent, bool disableAnimation )
 {
 	// Convert content coordinates to the position needed to center that content in the viewport
-	vec2 viewportCenter = mViewport.getSize() * 0.5f; 
+	vec2 viewportCenter = mViewport.getSize() * 0.5f;
 	vec2 newPositionViewport = viewportCenter - posContent * mZoom;
 
 	panToViewportPos( newPositionViewport, disableAnimation );
@@ -199,7 +194,7 @@ void CanvasUi::zoomBy( float factor, const vec2& anchorWindow, bool disableAnima
 	// Convert provided window anchor to viewport-local coordinates
 	vec2 anchorViewport = anchorWindow - mViewport.getUpperLeft();
 
-	if( mAnimationEnabled && !disableAnimation ) {
+	if( mAnimationEnabled && ! disableAnimation ) {
 		// Use animation system
 		startZoomAnimation( factor, anchorViewport );
 	}
@@ -518,7 +513,6 @@ void CanvasUi::updateViewportSize()
 			if( ! mHasCustomViewport ) {
 				Rectf oldViewport = mViewport;
 				mViewport = Rectf( 0, 0, (float)newSize.x, (float)newSize.y );
-
 			}
 
 			// Enforce zoom constraint after viewport change
@@ -627,24 +621,16 @@ void CanvasUi::keyDown( app::KeyEvent& event )
 	if( ! mKeyboardEnabled )
 		return;
 
-	// Debug output to see what keys are being pressed
-	std::printf("CanvasUi::keyDown - Key: %d, Modifiers: 0x%x, CTRL_DOWN=0x%x, ACCEL_DOWN=0x%x\n", 
-	           event.getCode(), event.getModifiers(), 
-	           app::KeyEvent::CTRL_DOWN, app::KeyEvent::ACCEL_DOWN);
-
 	// Check hotkeys using the new system
 	if( matchesHotkey( event, mHotkeysZoomIn ) ) {
-		std::printf("Zoom in hotkey matched!\n");
 		zoomIn();
 		event.setHandled();
 	}
 	else if( matchesHotkey( event, mHotkeysZoomOut ) ) {
-		std::printf("Zoom out hotkey matched!\n");
 		zoomOut();
 		event.setHandled();
 	}
 	else if( matchesHotkey( event, mHotkeysReset ) ) {
-		std::printf("Reset hotkey matched!\n");
 		if( isBounded() )
 			fitAll();
 		event.setHandled();
