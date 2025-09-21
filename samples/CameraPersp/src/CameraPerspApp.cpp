@@ -73,7 +73,12 @@ void CameraPerspApp::setup()
 	mObjectFbo	= gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format.depthTexture() );
 	
 	try {
+#if defined( CINDER_LINUX )
+		// On Linux, resources aren't embedded in the binary, so load as an asset instead
+		mCubeMap = gl::TextureCubeMap::create( loadImage( loadAsset( "../../data/environment_maps/humus_sf.jpg" ) ), gl::TextureCubeMap::Format().mipmap() );
+#else
 		mCubeMap = gl::TextureCubeMap::create( loadImage( loadResource( RES_ENV_MAP ) ), gl::TextureCubeMap::Format().mipmap() );
+#endif
 		mObjectGlsl = gl::GlslProg::create( loadAsset( "objectshader.vert" ), loadAsset( "objectshader.frag" ) );
 	} catch ( std::exception& e ) {
 		console() << e.what() << endl;
