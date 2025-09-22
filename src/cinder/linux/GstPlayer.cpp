@@ -593,7 +593,7 @@ void GstPlayer::constructPipeline()
 {
 	if( mGstData.pipeline ) return;
 
-	mGstData.pipeline	= gst_element_factory_make( "playbin", "playbinsink" );
+	mGstData.pipeline	= gst_element_factory_make( "playbin3", "playbinsink" );
 	if( ! mGstData.pipeline ) {
 		// Not much we can do without at least playbin...
 		CI_LOG_E( "Failed to create playbin pipeline!" );
@@ -614,17 +614,16 @@ void GstPlayer::constructPipeline()
 		gst_base_sink_set_sync( GST_BASE_SINK( mGstData.appSink ), true );
 		gst_base_sink_set_max_lateness( GST_BASE_SINK( mGstData.appSink ), 20 * GST_MSECOND );
 
-		GstAppSinkCallbacks				appSinkCallbacks;
-		appSinkCallbacks.eos			= onGstEos;
-		appSinkCallbacks.new_preroll	= onGstPreroll;
-		appSinkCallbacks.new_sample		= onGstSample;
+		gst_app_sink_set_emit_signals( GST_APP_SINK( mGstData.appSink ), true );
+		g_signal_connect( GST_APP_SINK( mGstData.appSink ), "new-preroll", G_CALLBACK( onGstPreroll ), this );
+		g_signal_connect( GST_APP_SINK( mGstData.appSink ), "new-sample", G_CALLBACK( onGstSample ), this );
+		g_signal_connect( GST_APP_SINK( mGstData.appSink ), "eos", G_CALLBACK( onGstEos ), this );
 
 		std::string capsDescr = "video/x-raw(memory:GLMemory), format=RGBA";
 		if( ! sUseGstGl ) {
 			capsDescr = "video/x-raw, format=RGBA";
 		}
 
-		gst_app_sink_set_callbacks( GST_APP_SINK( mGstData.appSink ), &appSinkCallbacks, this, 0 );
 		GstCaps* caps = gst_caps_from_string( capsDescr.c_str() );
 		gst_app_sink_set_caps( GST_APP_SINK( mGstData.appSink ), caps );
 		gst_caps_unref( caps );
