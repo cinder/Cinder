@@ -1,6 +1,6 @@
 /* cairo - a vector graphics library with display and print output
  *
- * Copyright © 2006, 2007 Mozilla Corporation
+ * Copyright Â© 2006, 2007 Mozilla Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it either under the terms of the GNU Lesser General Public
@@ -66,12 +66,9 @@ cairo_quartz_surface_get_cg_context (cairo_surface_t *surface);
 cairo_public cairo_font_face_t *
 cairo_quartz_font_face_create_for_cgfont (CGFontRef font);
 
-#ifndef __LP64__
-cairo_public cairo_font_face_t *
-cairo_quartz_font_face_create_for_atsu_font_id (ATSUFontID font_id);
-#endif
+cairo_public cairo_font_face_t* cairo_quartz_font_face_create_for_atsu_font_id( ATSUFontID font_id );
 
-#endif /* CAIRO_HAS_QUARTZ_FONT */
+	#endif /* CAIRO_HAS_QUARTZ_FONT */
 
 CAIRO_END_DECLS
 
