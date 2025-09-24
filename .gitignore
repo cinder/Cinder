@@ -76,3 +76,9 @@ imgui.ini
 
 # VS code artifacts
 .vscode
+
+
+# AI
+.claude/
+AGENTS.md
+GEMINI.md
