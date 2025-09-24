@@ -27,7 +27,7 @@ if( CMAKE_SYSTEM_NAME STREQUAL "Linux" )
     )
 
     ci_make_app(
-        SOURCES     ${APP_PATH}/src/GoodNightMorningApp.cpp ${APP_PATH}/src/TweetStream.cpp ${CAIRO_SOURCES}
+        SOURCES     ${APP_PATH}/src/GoodNightMorningApp.cpp ${APP_PATH}/src/MastadonHashtagStream.cpp ${CAIRO_SOURCES}
         INCLUDES    ${CAIRO_INCLUDES}
         LIBRARIES   ${CAIRO_LIBRARIES}
         CINDER_PATH ${CINDER_PATH}
@@ -40,7 +40,7 @@ if( CMAKE_SYSTEM_NAME STREQUAL "Linux" )
 else()
     # Use standard CinderBlock for other platforms
     ci_make_app(
-        SOURCES     ${APP_PATH}/src/GoodNightMorningApp.cpp ${APP_PATH}/src/TweetStream.cpp
+        SOURCES     ${APP_PATH}/src/GoodNightMorningApp.cpp ${APP_PATH}/src/MastadonHashtagStream.cpp
         BLOCKS      Cairo
         CINDER_PATH ${CINDER_PATH}
     )
