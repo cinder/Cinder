@@ -93,11 +93,13 @@ typedef struct _cairo_scaled_font cairo_scaled_font_t;
 /*struct _cairo_glyph;
 typedef struct _cairo_glyph cairo_glyph_t;*/
 
+#if ! defined( CINDER_LINUX ) && ! defined( CINDER_MAC )
 struct _cairo_text_extents;
 typedef struct _cairo_text_extents cairo_text_extents_t;
 
 struct _cairo_font_extents;
 typedef struct _cairo_font_extents cairo_font_extents_t;
+#endif
 
 namespace cinder { namespace cairo {
 /////////////////////////////////////////////////////////////////////////////
