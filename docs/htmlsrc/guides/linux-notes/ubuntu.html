@@ -42,11 +42,6 @@
 		<pre><code>sudo update-alternatives --config c++</code></pre>
 		</p>
 
-		<h4 id="cairo">Cairo</h4>
-		<p>To work with Cairo samples and blocks, install the Cairo development packages:</p>
-		<pre><code>sudo apt install libcairo2-dev</code></pre>
-		<p>This provides system Cairo libraries that Cinder's Cairo integration will use on Linux for better package management and reduced binary size.</p>
-
 		<h3 id="library-dependencies">Full Cinder Dependencies</h3>
 <pre><code>sudo apt install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev \
 zlib1g-dev libfontconfig1-dev libcurl4-gnutls-dev \
@@ -54,6 +49,12 @@ libmpg123-dev libsndfile1 libsndfile1-dev libpulse-dev libasound2-dev \
 libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-libav \
 gstreamer1.0-alsa gstreamer1.0-pulseaudio gstreamer1.0-plugins-bad
 </code></pre>
+
+		<h4 id="cairo">Cairo</h4>
+		<p>To work with the Cairo samples and CinderBlock, install the Cairo development packages:</p>
+		<pre><code>sudo apt install libcairo2-dev</code></pre>
+		</p>
+
 
 		<h1 id="building-cinder">Building Cinder</h1>
 		<h3 id="fetching-and-building-cinder">Fetching and Building Cinder</h3>
@@ -84,11 +85,7 @@ make</code></pre>
 		<pre><code>cmake .. -DCINDER_DISABLE_AUDIO=true -DCINDER_DISABLE_VIDEO=true -DCINDER_DISABLE_ANTTWEAKBAR=true</code></pre>
 		<p>The required apt packages for such a build can be installed with:</p>
 		<pre><code>sudo apt install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev \
-<<<<<<< HEAD
-zlib1g-dev libfontconfig1-dev libcurl4-gnutls-dev</code></pre>
-=======
-zlib1g-dev libfontconfig1-dev libcurl4-gnutls-dev libcairo2-dev</code></pre>
->>>>>>> 386f6c62d (Update Ubuntu Linux docs to 22.04+ with optional Cairo support)
+		zlib1g-dev libfontconfig1-dev libcurl4-gnutls-dev</code></pre>
 		<h3 id="audio-packages">Audio packages</h3>
 		<p>The apt packages required for Cinder audio support can be installed with:</p>
 		<pre><code>sudo apt install libmpg123-dev libsndfile1 libsndfile1-dev libpulse-dev libasound2-dev</code></pre>
