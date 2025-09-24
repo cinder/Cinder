@@ -40,6 +40,19 @@
 	#include <ApplicationServices/ApplicationServices.h>
 #endif
 
+#if defined(CINDER_LINUX)
+	#include <cairo/cairo.h>
+	#include <cairo/cairo-svg.h>
+	#include <cairo/cairo-pdf.h>
+	#include <cairo/cairo-ps.h>
+#elif defined(CINDER_MAC)
+	#include "macosx/cairo.h"
+	#include "macosx/cairo-svg.h"
+	#include "macosx/cairo-pdf.h"
+	#include "macosx/cairo-ps.h"
+	#include "macosx/cairo-quartz.h"
+#endif
+
 #include <string>
 #include <vector>
 #include <iomanip>
