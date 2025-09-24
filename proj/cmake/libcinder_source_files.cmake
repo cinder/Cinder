@@ -14,6 +14,7 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Buffer.cpp
 	${CINDER_SRC_DIR}/cinder/Camera.cpp
 	${CINDER_SRC_DIR}/cinder/CameraUi.cpp
+	${CINDER_SRC_DIR}/cinder/CanvasUi.cpp
 	${CINDER_SRC_DIR}/cinder/Channel.cpp
 	${CINDER_SRC_DIR}/cinder/CinderAssert.cpp
 	${CINDER_SRC_DIR}/cinder/CinderMath.cpp

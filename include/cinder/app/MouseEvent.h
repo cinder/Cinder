@@ -46,6 +46,8 @@ class CI_API MouseEvent : public Event {
 	const ivec2&	getPos() const			{ return mPos; }
 	//! Sets the coordinates of the mouse event, measured in points
 	void		setPos( const ivec2 &pos )	{ mPos = pos; }
+	//! Returns the button that initiated this event. Value will be LEFT_DOWN, RIGHT_DOWN, or MIDDLE_DOWN
+	int			getInitiator() const		{ return mInitiator; }
 	//! Returns whether the initiator for the event was the left mouse button
 	bool		isLeft() const				{ return ( mInitiator & LEFT_DOWN ) ? true : false; }
 	//! Returns whether the initiator for the event was the right mouse button
@@ -71,6 +73,7 @@ class CI_API MouseEvent : public Event {
 	//! Returns the number of detents the user has wheeled through. Positive values correspond to wheel-up and negative to wheel-down.
 	float		getWheelIncrement() const	{ return mWheelIncrement; }
 	
+	unsigned int	getModifiers() const { return mModifiers; }
 	//! Returns the platform-native modifier mask
 	uint32_t	getNativeModifiers() const	{ return mNativeModifiers; }
 
