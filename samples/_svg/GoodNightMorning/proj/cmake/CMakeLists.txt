@@ -8,7 +8,40 @@ get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
-ci_make_app(
-	SOURCES     ${APP_PATH}/src/GoodNightMorningApp.cpp
-	CINDER_PATH ${CINDER_PATH}
-)
+# Linux-specific Cairo handling
+if( CMAKE_SYSTEM_NAME STREQUAL "Linux" )
+    # Add our custom FindCairo module to the module path
+    list(APPEND CMAKE_MODULE_PATH "${CINDER_PATH}/proj/cmake/modules")
+
+    # Find system Cairo
+    find_package( Cairo REQUIRED )
+
+    # Include Cairo headers and Cinder Cairo wrapper
+    set( CAIRO_SOURCES
+        ${CINDER_PATH}/blocks/Cairo/src/Cairo.cpp
+    )
+
+    set( CAIRO_INCLUDES
+        ${CINDER_PATH}/blocks/Cairo/include
+        ${CAIRO_INCLUDE_DIRS}
+    )
+
+    ci_make_app(
+        SOURCES     ${APP_PATH}/src/GoodNightMorningApp.cpp ${APP_PATH}/src/TweetStream.cpp ${CAIRO_SOURCES}
+        INCLUDES    ${CAIRO_INCLUDES}
+        LIBRARIES   ${CAIRO_LIBRARIES}
+        CINDER_PATH ${CINDER_PATH}
+    )
+
+    # Link Cairo libraries and set include directories
+    target_link_libraries( ${PROJECT_NAME} PRIVATE ${CAIRO_LIBRARIES} )
+    target_include_directories( ${PROJECT_NAME} PRIVATE ${CAIRO_INCLUDE_DIRS} )
+
+else()
+    # Use standard CinderBlock for other platforms
+    ci_make_app(
+        SOURCES     ${APP_PATH}/src/GoodNightMorningApp.cpp ${APP_PATH}/src/TweetStream.cpp
+        BLOCKS      Cairo
+        CINDER_PATH ${CINDER_PATH}
+    )
+endif()

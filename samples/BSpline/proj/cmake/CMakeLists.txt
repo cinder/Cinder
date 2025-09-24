@@ -1,7 +1,9 @@
+# CMakeLists.txt for BSpline sample with Cairo support on Linux
+
 cmake_minimum_required( VERSION 3.10 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
-project( Wisteria )
+project( BSpline )
 
 get_filename_component( CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../.." ABSOLUTE )
 get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
@@ -27,11 +29,8 @@ if( CMAKE_SYSTEM_NAME STREQUAL "Linux" )
     )
 
     ci_make_app(
-        SOURCES     ${APP_PATH}/src/WisteriaApp.cpp
-                    ${APP_PATH}/src/Branch.cpp
-                    ${CAIRO_SOURCES}
-        INCLUDES    ${APP_PATH}/include
-                    ${CAIRO_INCLUDES}
+        SOURCES     ${APP_PATH}/src/BSplineApp.cpp ${CAIRO_SOURCES}
+        INCLUDES    ${CAIRO_INCLUDES}
         LIBRARIES   ${CAIRO_LIBRARIES}
         CINDER_PATH ${CINDER_PATH}
     )
@@ -43,9 +42,7 @@ if( CMAKE_SYSTEM_NAME STREQUAL "Linux" )
 else()
     # Use standard CinderBlock for other platforms
     ci_make_app(
-        SOURCES     ${APP_PATH}/src/WisteriaApp.cpp
-                    ${APP_PATH}/src/Branch.cpp
-        INCLUDES    ${APP_PATH}/include
+        SOURCES     ${APP_PATH}/src/BSplineApp.cpp
         BLOCKS      Cairo
         CINDER_PATH ${CINDER_PATH}
     )
