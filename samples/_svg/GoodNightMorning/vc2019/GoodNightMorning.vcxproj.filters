@@ -39,7 +39,7 @@
     <ClInclude Include="..\..\..\..\blocks\Cairo\src\Cairo.h">
       <Filter>Blocks\Cairo\src</Filter>
     </ClInclude>
-    <ClCompile Include="..\src\TweetStream.cpp">
+    <ClCompile Include="..\src\MastadonHashtagStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,7 +47,7 @@
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\TweetStream.h">
+    <ClInclude Include="..\src\MastadonHashtagStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

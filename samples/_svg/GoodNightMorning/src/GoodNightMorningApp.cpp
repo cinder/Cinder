@@ -7,10 +7,11 @@
 #include "cinder/Timeline.h"
 #include "cinder/ip/Fill.h"
 #include "cinder/ip/Blend.h"
+#include "cinder/ip/Resize.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/gl.h"
 
-#include "TweetStream.h"
+#include "MastadonHashtagStream.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -39,24 +40,21 @@ class GoodNightMorningApp : public App {
 	Anim<float>		mMorningTweetAlpha, mNightTweetAlpha;
 	gl::TextureRef	mMorningTweetTex, mNightTweetTex;
 	TweenRef<float>	mMorningTween, mNightTween;
-	
-	shared_ptr<TweetStream>		mMorningTweets, mNightTweets;
-};
 
-void GoodNightMorningApp::prepareSettings( Settings *settings )
-{
-	settings->setWindowSize( 890, 500 );
-}
+	shared_ptr<MastadonHashtagStream> mMorningTweets, mNightTweets;
+};
 
 void GoodNightMorningApp::setup()
 {
-	mCityscapeSvg = std::shared_ptr<svg::Doc>( new svg::Doc( loadAsset( "cityscape.svg" ) ) );
+    setWindowSize( 1280, 720 );
+
+    mCityscapeSvg = std::shared_ptr<svg::Doc>( new svg::Doc( loadAsset( "cityscape.svg" ) ) );
 	mFont = Font( loadAsset( "Lato-Bold.ttf" ), 14 );
 	mHeaderFont = Font( loadAsset( "Lato-Light.ttf" ), 14 );
-	
-	mMorningTweets = shared_ptr<TweetStream>( new TweetStream( "\"Good morning\"" ) );
-	mNightTweets = shared_ptr<TweetStream>( new TweetStream( "\"Good night\"" ) );
-	
+
+	mMorningTweets = shared_ptr<MastadonHashtagStream>( new MastadonHashtagStream( "goodmorning" ) );
+	mNightTweets = shared_ptr<MastadonHashtagStream>( new MastadonHashtagStream( "goodnight" ) );
+
 	newMorningTweet();
 	newNightTweet();
 	
@@ -66,16 +64,35 @@ void GoodNightMorningApp::setup()
 // Renders the tweet into a gl::Texture, using TextBox for type rendering
 gl::TextureRef GoodNightMorningApp::renderTweet( const Tweet &tweet, float width, const Color &textColor, float backgroundAlpha )
 {
+	const int avatarSize = 32;
+	const int avatarPadding = 6;
+	const int textOffset = avatarSize + avatarPadding;
+
+	// Truncate long messages with ellipsis
+	string	  message = tweet.getPhrase();
+	const int maxMessageLength = 140; // Limit like old Twitter
+	if( message.length() > maxMessageLength ) {
+		message = message.substr( 0, maxMessageLength - 3 ) + "...";
+	}
+
 	TextBox header = TextBox().font( mHeaderFont ).color( textColor ).text( "@" + tweet.getUser() );
 	Surface headerSurface = header.render();
-	TextBox phrase = TextBox().size( vec2( width - 48 - 4, TextBox::GROW ) ).font( mFont ).color( textColor ).text( tweet.getPhrase() );
+	TextBox phrase = TextBox().size( vec2( width - textOffset - 4, TextBox::GROW ) ).font( mFont ).color( textColor ).text( message );
 	Surface textSurface = phrase.render();
-	Surface result( textSurface.getWidth() + 56, std::max( headerSurface.getHeight() + textSurface.getHeight() + 10, 56 ), true );
+
+	int		resultHeight = std::max( headerSurface.getHeight() + textSurface.getHeight() + 10, avatarSize + 8 );
+	Surface result( textSurface.getWidth() + textOffset + 8, resultHeight, true );
 	ip::fill( &result, ColorA( 1, 1, 1, backgroundAlpha ) );
-	if( tweet.getIcon() )
-		result.copyFrom( *tweet.getIcon(), tweet.getIcon()->getBounds(), ivec2( 4, 4 ) );
+
+	// Draw avatar as a small square on the left
+	if( tweet.getIcon() ) {
+		Surface resizedAvatar = ip::resizeCopy( *tweet.getIcon(), tweet.getIcon()->getBounds(), ivec2( avatarSize, avatarSize ) );
+		result.copyFrom( resizedAvatar, resizedAvatar.getBounds(), ivec2( 4, 4 ) );
+	}
+
+	// Position text to the right of the avatar
 	ip::blend( &result, headerSurface, headerSurface.getBounds(), ivec2( result.getWidth() - 4 - headerSurface.getWidth(), textSurface.getHeight() + 6 ) );
-	ip::blend( &result, textSurface, textSurface.getBounds(), ivec2( 56, 4 ) );
+	ip::blend( &result, textSurface, textSurface.getBounds(), ivec2( textOffset, 4 ) );
 	return gl::Texture::create( result );
 }
 
