@@ -933,6 +933,7 @@
     <ClCompile Include="..\..\src\imgui\imgui_freetype.cpp" />
     <ClCompile Include="..\..\src\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\..\src\imgui\imgui_stdlib.cpp" />
+    <ClCompile Include="..\..\src\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\..\src\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\..\src\jsoncpp\jsoncpp.cpp" />
     <ClCompile Include="..\..\src\libtess2\bucketalloc.c" />

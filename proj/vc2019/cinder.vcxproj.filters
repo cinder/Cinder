@@ -1083,6 +1083,9 @@
     <ClCompile Include="..\..\src\cinder\MediaTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\imgui\imgui_tables.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\AntTweakBar\AntPerfTimer.h">
