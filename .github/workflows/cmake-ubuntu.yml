@@ -37,8 +37,33 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Configure VM
-      run: sh ${{github.workspace}}/tools/linux/scripts/trusty-install-deps.sh
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install \
+          libxcursor-dev \
+          libxrandr-dev \
+          libxinerama-dev \
+          libxi-dev \
+          libgl1-mesa-dev \
+          libgles2-mesa-dev \
+          zlib1g-dev \
+          libfontconfig1-dev \
+          libsndfile1 \
+          libsndfile1-dev \
+          libpulse-dev \
+          libasound2-dev \
+          libcurl4-gnutls-dev \
+          libunwind-dev \
+          libgstreamer1.0-dev \
+          libgstreamer-plugins-bad1.0-dev \
+          libgstreamer-plugins-base1.0-dev \
+          gstreamer1.0-libav \
+          gstreamer1.0-alsa \
+          gstreamer1.0-pulseaudio \
+          gstreamer1.0-plugins-bad \
+          libboost-filesystem-dev \
+          libmpg123-dev
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=${{matrix.cxx}} -DCMAKE_C_COMPILER=${{matrix.cc}} -DCINDER_BUILD_TESTS=1
