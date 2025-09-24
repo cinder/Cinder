@@ -7,7 +7,7 @@ using std::vector;
 #include "cinder/ip/Fill.h"
 #include "cinder/Rand.h"
 #include "cinder/Utilities.h"
-#if defined( CINDER_LINUX )
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
 	#include "cinder/gl/gl.h"
 	#include "cinder/gl/Texture.h"
 	#include "cinder/app/RendererGl.h"
@@ -116,8 +116,8 @@ void CairoBasicApp::renderScene( cairo::Context &ctx )
 
 void CairoBasicApp::draw()
 {
-#if defined( CINDER_LINUX )
-	// On Linux, render to an image surface and then draw to window
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
+	// On Linux/Mac, render to an image surface and then draw to window
 	cairo::SurfaceImage surface( getWindowWidth(), getWindowHeight(), true );
 	cairo::Context ctx( surface );
 	renderScene( ctx );
@@ -133,7 +133,7 @@ void CairoBasicApp::draw()
 #endif
 }
 
-#if defined( CINDER_LINUX )
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
 CINDER_APP( CairoBasicApp, RendererGl )
 #else
 CINDER_APP( CairoBasicApp, Renderer2d )
