@@ -40,6 +40,19 @@
 	#include <ApplicationServices/ApplicationServices.h>
 #endif
 
+#if defined(CINDER_LINUX)
+	#include <cairo/cairo.h>
+	#include <cairo/cairo-svg.h>
+	#include <cairo/cairo-pdf.h>
+	#include <cairo/cairo-ps.h>
+#elif defined(CINDER_MAC)
+	#include "macosx/cairo.h"
+	#include "macosx/cairo-svg.h"
+	#include "macosx/cairo-pdf.h"
+	#include "macosx/cairo-ps.h"
+	#include "macosx/cairo-quartz.h"
+#endif
+
 #include <string>
 #include <vector>
 #include <iomanip>
@@ -80,11 +93,13 @@ typedef struct _cairo_scaled_font cairo_scaled_font_t;
 /*struct _cairo_glyph;
 typedef struct _cairo_glyph cairo_glyph_t;*/
 
+#if ! defined( CINDER_LINUX ) && ! defined( CINDER_MAC )
 struct _cairo_text_extents;
 typedef struct _cairo_text_extents cairo_text_extents_t;
 
 struct _cairo_font_extents;
 typedef struct _cairo_font_extents cairo_font_extents_t;
+#endif
 
 namespace cinder { namespace cairo {
 /////////////////////////////////////////////////////////////////////////////

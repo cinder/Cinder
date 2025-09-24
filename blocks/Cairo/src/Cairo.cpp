@@ -351,7 +351,7 @@ SurfaceEps::SurfaceEps( const fs::path &filePath, double widthInPoints, double h
 	: SurfaceBase( (int32_t)widthInPoints, (int32_t)heightInPoints )
 {
 	mCairoSurface = cairo_ps_surface_create( filePath.string().c_str(), widthInPoints, heightInPoints ); 
-	cairo_ps_surface_set_eps( mCairoSurface, TRUE );
+	cairo_ps_surface_set_eps( mCairoSurface, 1 );
 	cairo_ps_surface_restrict_to_level( mCairoSurface, ( enableLevel3 ) ? CAIRO_PS_LEVEL_3 : CAIRO_PS_LEVEL_2 );
 }
 
@@ -1750,6 +1750,10 @@ void Context::setFont( const cinder::Font &font )
 	cairo_font_face_t *cairoFont = cairo_quartz_font_face_create_for_cgfont( font.getCgFontRef() );
 #elif defined( CINDER_MSW )
 	cairo_font_face_t *cairoFont = cairo_win32_font_face_create_for_logfontw( const_cast<LOGFONTW*>( (const LOGFONTW*)font.getLogfont() ) );
+#elif defined( CINDER_LINUX )
+	cairo_select_font_face( mCairo, font.getName().c_str(), CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL );
+	cairo_font_face_t *cairoFont = cairo_get_font_face( mCairo );
+	cairo_font_face_reference( cairoFont );
 #endif
 	cairo_set_font_face( mCairo, cairoFont );
 	cairo_set_font_size( mCairo, font.getSize() );
@@ -2061,7 +2065,7 @@ class SvgRendererCairo : public svg::Renderer {
 			fontMatrix *= rotationMatrix;
 			mCtx.setFontMatrix( fontMatrix );
 			TextBox tbox = TextBox().font( *font ).text( span.getString() );
-			std::vector<std::pair<uint16_t,vec2> > glyphs = tbox.measureGlyphs();
+			auto glyphs = tbox.measureGlyphs();
 			vec2 curPoint = mCtx.getCurrentPoint();
 			for( size_t g = 0; g < glyphs.size(); ++g ) {
 				mCtx.save();

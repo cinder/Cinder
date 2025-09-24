@@ -4,6 +4,10 @@
 #include "cinder/cairo/Cairo.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
+	#include "cinder/gl/gl.h"
+	#include "cinder/gl/Texture.h"
+#endif
 
 #include <vector>
 
@@ -132,7 +136,13 @@ void BSplineApp::drawBSpline( cairo::Context &ctx )
 void BSplineApp::draw()
 {
 	// clear to the background color
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
+	// On Linux/Mac, render to an image surface and then draw to window
+	cairo::SurfaceImage surface( getWindowWidth(), getWindowHeight(), true );
+	cairo::Context ctx( surface );
+#else
 	cairo::Context ctx( cairo::createWindowSurface() );
+#endif
 	ctx.setSourceRgb( 0.0f, 0.1f, 0.2f );
 	ctx.paint();
 	
@@ -167,7 +177,18 @@ void BSplineApp::draw()
 	}
 
 	// draw the curve by bezier path
-	drawBSpline( ctx );	
+	drawBSpline( ctx );
+
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
+	// Convert to Cinder surface and draw to window
+	Surface8u cinderSurface = surface.getSurface();
+	auto tex = gl::Texture2d::create( cinderSurface );
+	gl::draw( tex );
+#endif
 }
 
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
+CINDER_APP( BSplineApp, RendererGl )
+#else
 CINDER_APP( BSplineApp, Renderer2d )
+#endif

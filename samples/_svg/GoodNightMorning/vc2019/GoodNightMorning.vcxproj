@@ -203,12 +203,12 @@
   <ItemGroup>
     <ClCompile Include="..\src\GoodNightMorningApp.cpp" />
     <ClCompile Include="..\..\..\..\blocks\Cairo\src\Cairo.cpp" />
-    <ClCompile Include="..\src\TweetStream.cpp" />
+    <ClCompile Include="..\src\MastadonHashtagStream.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\..\blocks\Cairo\src\Cairo.h" />
-    <ClInclude Include="..\src\TweetStream.h" />
+    <ClInclude Include="..\src\MastadonHashtagStream.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

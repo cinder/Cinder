@@ -7,6 +7,11 @@ using std::vector;
 #include "cinder/ip/Fill.h"
 #include "cinder/Rand.h"
 #include "cinder/Utilities.h"
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
+	#include "cinder/gl/gl.h"
+	#include "cinder/gl/Texture.h"
+	#include "cinder/app/RendererGl.h"
+#endif
 
 using namespace ci;
 using namespace ci::app;
@@ -89,7 +94,7 @@ void CairoBasicApp::keyDown( KeyEvent event )
 	else if( event.getChar() == 'p' ) {
 		cairo::Context ctx( cairo::SurfacePs( getHomeDirectory() / "CairoBasicShot.ps", getWindowWidth(), getWindowHeight() ) );
 		renderScene( ctx );
-	}	
+	}
 	else if( event.getChar() == 'd' ) {
 		cairo::Context ctx( cairo::SurfacePdf( getHomeDirectory() / "CairoBasicShot.pdf", getWindowWidth(), getWindowHeight() ) );
 		renderScene( ctx );
@@ -111,9 +116,25 @@ void CairoBasicApp::renderScene( cairo::Context &ctx )
 
 void CairoBasicApp::draw()
 {
-	// render the scene straight to the window
-	cairo::Context ctx( cairo::createWindowSurface() );	
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
+	// On Linux/Mac, render to an image surface and then draw to window
+	cairo::SurfaceImage surface( getWindowWidth(), getWindowHeight(), true );
+	cairo::Context ctx( surface );
 	renderScene( ctx );
+
+	// Convert to Cinder surface and draw to window
+	Surface8u cinderSurface = surface.getSurface();
+	auto tex = gl::Texture2d::create( cinderSurface );
+	gl::draw( tex );
+#else
+	// render the scene straight to the window
+	cairo::Context ctx( cairo::createWindowSurface() );
+	renderScene( ctx );
+#endif
 }
 
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
+CINDER_APP( CairoBasicApp, RendererGl )
+#else
 CINDER_APP( CairoBasicApp, Renderer2d )
+#endif
