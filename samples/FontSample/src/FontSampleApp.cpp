@@ -3,7 +3,7 @@
 #include "cinder/Font.h"
 #include "cinder/Utilities.h"
 #include "cinder/ImageIo.h"
-#if defined( CINDER_LINUX )
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
 	#include "cinder/gl/gl.h"
 	#include "cinder/gl/Texture.h"
 	#include "cinder/app/RendererGl.h"
@@ -146,8 +146,8 @@ void fontSampleApp::drawCharacterVerbose( cairo::Context &ctx, vec2 where )
 
 void fontSampleApp::draw()
 {
-#if defined( CINDER_LINUX )
-	// On Linux, render to an image surface and then draw to window
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
+	// On Linux/Mac, render to an image surface and then draw to window
 	cairo::SurfaceImage surface( getWindowWidth(), getWindowHeight(), true );
 	cairo::Context ctx( surface );
 #else
@@ -180,7 +180,7 @@ void fontSampleApp::draw()
 	ctx.fill();
 #endif
 
-#if defined( CINDER_LINUX )
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
 	// Convert to Cinder surface and draw to window
 	Surface8u cinderSurface = surface.getSurface();
 	auto tex = gl::Texture2d::create( cinderSurface );
@@ -189,7 +189,7 @@ void fontSampleApp::draw()
 }
 
 
-#if defined( CINDER_LINUX )
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC )
 CINDER_APP( fontSampleApp, RendererGl )
 #else
 CINDER_APP( fontSampleApp, Renderer2d )
