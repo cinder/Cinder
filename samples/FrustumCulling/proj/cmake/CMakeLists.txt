@@ -12,4 +12,5 @@ ci_make_app(
 	SOURCES		${APP_PATH}/src/FrustumCullingApp.cpp
 			${APP_PATH}/src/CullableObject.cpp
 	CINDER_PATH ${CINDER_PATH}
+    FOLDER      "cinder/samples"
 )

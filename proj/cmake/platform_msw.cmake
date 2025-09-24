@@ -2,6 +2,17 @@ cmake_minimum_required( VERSION 3.10 FATAL_ERROR )
 
 set( CINDER_PLATFORM "MSW" )
 
+list( APPEND HDR_SET_MSW
+	${CINDER_INC_DIR}/cinder/CaptureImplDirectShow.h
+	${CINDER_INC_DIR}/cinder/msw/CinderMsw.h
+	${CINDER_INC_DIR}/cinder/msw/CinderMswGdiPlus.h
+	${CINDER_INC_DIR}/cinder/msw/StackWalker.h
+	${CINDER_INC_DIR}/cinder/ImageSourceFileWic.h
+	${CINDER_INC_DIR}/cinder/ImageTargetFileWic.h
+	${CINDER_INC_DIR}/cinder/UrlImplWinInet.h
+	${CINDER_INC_DIR}/glad/glad_wgl.h
+)
+
 list( APPEND SRC_SET_MSW
 	${CINDER_SRC_DIR}/cinder/CaptureImplDirectShow.cpp
 	${CINDER_SRC_DIR}/videoInput/videoInput.cpp
@@ -17,6 +28,22 @@ list( APPEND SRC_SET_MSW
 if( NOT CINDER_DISABLE_ANTTWEAKBAR )
 	list( APPEND SRC_SET_MSW ${CINDER_SRC_DIR}/AntTweakBar/TwDirect3D11.cpp )
 endif()
+
+list( APPEND HDR_SET_APP_MSW
+	# TODO: should these two files be added to "cinder\\app" group?
+	${CINDER_INC_DIR}/cinder/app/AppScreenSaver.h
+	#${CINDER_INC_DIR}/cinder/app/RendererDx.h
+
+	${CINDER_INC_DIR}/cinder/app/msw/AppImplMsw.h
+	${CINDER_INC_DIR}/cinder/app/msw/AppImplMswBasic.h
+	${CINDER_INC_DIR}/cinder/app/msw/AppImplMswScreenSaver.h
+	${CINDER_INC_DIR}/cinder/app/msw/AppMsw.h
+	${CINDER_INC_DIR}/cinder/app/msw/PlatformMsw.h
+	${CINDER_INC_DIR}/cinder/app/msw/RendererImpl2dGdi.h
+	#${CINDER_INC_DIR}/cinder/app/msw/RendererImplDx.h
+	#${CINDER_INC_DIR}/cinder/app/msw/RendererImplGlAngle.h
+	${CINDER_INC_DIR}/cinder/app/msw/RendererImplGlMsw.h
+)
 
 list( APPEND SRC_SET_APP_MSW
 	# TODO: should these two files be added to "cinder\\app" group?
@@ -35,11 +62,23 @@ list( APPEND SRC_SET_APP_MSW
 )
 
 if( NOT CINDER_DISABLE_AUDIO )
+	list( APPEND HDR_SET_AUDIO_MSW
+		${CINDER_INC_DIR}/cinder/audio/msw/ContextWasapi.h
+		${CINDER_INC_DIR}/cinder/audio/msw/DeviceManagerWasapi.h
+		${CINDER_INC_DIR}/cinder/audio/msw/FileMediaFoundation.h
+		${CINDER_INC_DIR}/cinder/audio/msw/MswUtil.h
+	)
+    
 	list( APPEND SRC_SET_AUDIO_MSW
 		${CINDER_SRC_DIR}/cinder/audio/msw/ContextWasapi.cpp
 		${CINDER_SRC_DIR}/cinder/audio/msw/DeviceManagerWasapi.cpp
 		${CINDER_SRC_DIR}/cinder/audio/msw/FileMediaFoundation.cpp
 		${CINDER_SRC_DIR}/cinder/audio/msw/MswUtil.cpp
+	)
+
+	list( APPEND HDR_SET_CINDER_AUDIO_DSP
+		${CINDER_INC_DIR}/cinder/audio/dsp/ooura/fftsg.h
+		${CINDER_INC_DIR}/cinder/audio/dsp/ConverterR8brain.h
 	)
 
 	list( APPEND SRC_SET_CINDER_AUDIO_DSP
@@ -89,17 +128,26 @@ if( NOT CINDER_DISABLE_VIDEO )
 endif()
 
 list( APPEND CINDER_SRC_FILES
+	${HDR_SET_MSW}
+	${HDR_SET_APP_MSW}
+	${HDR_SET_AUDIO_MSW}
+	${HDR_SET_CINDER_AUDIO_DSP}
 	${SRC_SET_MSW}
 	${SRC_SET_APP_MSW}
 	${SRC_SET_AUDIO_MSW}
 	${SRC_SET_CINDER_AUDIO_DSP}
 )
 
-source_group( "cinder\\msw"			FILES ${SRC_SET_MSW} )
-source_group( "cinder\\app\\msw"	FILES ${SRC_SET_APP_MSW} )
-source_group( "cinder\\audio\\msw"	FILES ${SRC_SET_AUDIO_MSW} )
-source_group( "cinder\\audio\\dsp"	FILES ${SRC_SET_CINDER_AUDIO_DSP} )
-source_group( "cinder\\video\\msw"	FILES ${SRC_SET_VIDEO_MSW} )
+source_group( "Header Files\\cinder\\msw"			FILES ${HDR_SET_MSW} )
+source_group( "Header Files\\cinder\\app\\msw"		FILES ${HDR_SET_APP_MSW} )
+source_group( "Header Files\\cinder\\audio\\msw"	FILES ${HDR_SET_AUDIO_MSW} )
+source_group( "Header Files\\cinder\\audio\\dsp"	FILES ${HDR_SET_CINDER_AUDIO_DSP} )
+source_group( "Header Files\\cinder\\video\\msw"	FILES ${HDR_SET_VIDEO_MSW} )
+source_group( "Source Files\\cinder\\msw"			FILES ${SRC_SET_MSW} )
+source_group( "Source Files\\cinder\\app\\msw"		FILES ${SRC_SET_APP_MSW} )
+source_group( "Source Files\\cinder\\audio\\msw"	FILES ${SRC_SET_AUDIO_MSW} )
+source_group( "Source Files\\cinder\\audio\\dsp"	FILES ${SRC_SET_CINDER_AUDIO_DSP} )
+source_group( "Source Files\\cinder\\video\\msw"	FILES ${SRC_SET_VIDEO_MSW} )
 
 list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
 	${CINDER_INC_DIR}/msw/zlib

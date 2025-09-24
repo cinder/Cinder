@@ -54,4 +54,6 @@ if( NOT TARGET Box2D )
 	add_library( Box2D ${BOX2D_SOURCES} )
 
 	target_include_directories( Box2D PUBLIC "${BOX2D_SOURCE_PATH}" )
+    
+    set_target_properties( Box2D PROPERTIES FOLDER "cinder/blocks" )
 endif()
