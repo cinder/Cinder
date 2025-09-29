@@ -110,13 +110,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\InstagramStream.cpp" />
     <ClCompile Include="..\src\InstascopeApp.cpp" />
     <ClCompile Include="..\src\TextRibbon.cpp" />
     <ClCompile Include="..\src\TrianglePiece.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\InstagramStream.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\include\TextRibbon.h" />
     <ClInclude Include="..\include\TrianglePiece.h" />

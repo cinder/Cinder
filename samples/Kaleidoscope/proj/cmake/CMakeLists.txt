@@ -10,7 +10,6 @@ include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
 ci_make_app(
 	SOURCES		${APP_PATH}/src/InstascopeApp.cpp
-			${APP_PATH}/src/InstagramStream.cpp
 			${APP_PATH}/src/TextRibbon.cpp
 			${APP_PATH}/src/TrianglePiece.cpp
 	INCLUDES	${APP_PATH}/include

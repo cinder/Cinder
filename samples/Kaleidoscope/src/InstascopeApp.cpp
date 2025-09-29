@@ -5,10 +5,18 @@
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
 #include "cinder/Utilities.h"
+#include "cinder/ConcurrentCircularBuffer.h"
+#include "cinder/Log.h"
+#include "cinder/Url.h"
 
 #include "TrianglePiece.h"
-#include "InstagramStream.h"
 #include "TextRibbon.h"
+
+#include <atomic>
+#include <chrono>
+#include <memory>
+#include <thread>
+#include <utility>
 
 using namespace ci;
 using namespace ci::app;
@@ -16,14 +24,78 @@ using namespace std;
 
 static const int MIRROR_DUR = 5;	// Duration of the mirror/kaleidoscope animation
 static const int STILL_DUR = 5;		// Duration of the still image
-static const string TAG = "";		// Instagram tag to search for
+static const string TAG = "";		// Legacy tag label retained for ribbon formatting
 
-// Instagram Client Id - DO NOT USE THIS ONE!!! 
-// Replace with your own client ID after registering your
-// instagram application here http://instagram.com/developer/register/
-static const string CLIENT_ID = "def20410b5134f7d9b828668775aee4a";	 
+// Picsum recommends requesting a reasonably sized image; 1024px keeps visual
+// fidelity for the 612px window while leaving room for kaleidoscope sampling.
+static const int kIdealImageWidth = 1024;
 
 static const bool PREMULT = false;
+
+namespace {
+
+struct Photo {
+	Photo() = default;
+	Photo( ci::Surface surf, std::string creditValue )
+		: surface( std::move( surf ) ), credit( std::move( creditValue ) ), valid( surface.getData() != nullptr ) {}
+
+	bool isValid() const { return valid; }
+
+	ci::Surface	 surface;
+	std::string	 credit;
+	bool		 valid = false;
+};
+
+class PhotoFetcher {
+  public:
+	PhotoFetcher( int width, size_t capacity = 4 )
+		: mBuffer( capacity ), mWidth( width ), mCanceled( false )
+	{
+		mThread = std::thread( [this] { worker(); } );
+	}
+
+	~PhotoFetcher()
+	{
+		mCanceled = true;
+		mBuffer.cancel();
+		if( mThread.joinable() )
+			mThread.join();
+	}
+
+	bool hasPhoto() const { return mBuffer.isNotEmpty(); }
+
+	void pop( ci::Surface *outSurface )
+	{
+		mBuffer.popBack( outSurface );
+	}
+
+  private:
+	void worker()
+	{
+		ci::Rand rand;
+		while( ! mCanceled ) {
+			try {
+				auto seed = rand.nextUint();
+				std::string urlString = "https://picsum.photos/" + ci::toString( mWidth ) + "?random=" + ci::toString( seed );
+				ci::Surface surface( loadImage( loadUrl( ci::Url( urlString ) ) ) );
+				if( surface.getData() ) {
+					mBuffer.pushFront( surface );
+				}
+			}
+			catch( const std::exception &exc ) {
+				CI_LOG_W( "Failed to fetch random image: " << exc.what() );
+				std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+			}
+		}
+	}
+
+	ci::ConcurrentCircularBuffer<ci::Surface> mBuffer;
+	std::thread	 mThread;
+	std::atomic<bool> mCanceled;
+	int			 mWidth;
+};
+
+} // namespace
 
 class InstascopeApp : public App {
   private:
@@ -53,9 +125,8 @@ class InstascopeApp : public App {
 	vector<TrianglePiece>		mTriPieces;				// stores alll of the kaleidoscope mirror pieces
 	Anim<vec2>					mSamplePt;				// location of the piece of the image that is being sampled for the kaleidoscope
 	int							mPhase;					// current phase of the app (0 or 1)
-	Instagram					mCurInstagram;			// current instagram info
-	
-	shared_ptr<InstagramStream> mInstaStream;			// stream and loader for instagram data
+	Photo						mCurPhoto;				// current image info
+	std::unique_ptr<PhotoFetcher> mPhotoFetcher;	// picsum image prefetcher
 	bool						mLoadingTexture;		// If the texture image is currently loading
 	bool						mTextureLoaded;			// If the new texture has finished loading
 	float						mSampleSize;			// Size of the image sample to grab for the kaleidoscope		   
@@ -84,14 +155,7 @@ void InstascopeApp::setup()
 	mPhaseChangeCalled = false;
 	
 	mTextRibbon = new TextRibbon();
-	
-	// Popular images stream
-	mInstaStream = make_shared<InstagramStream>( CLIENT_ID );
-	// Image stream of a particular tag
-	// mInstaStream = make_shared<InstagramStream>( TAG, CLIENT_ID );
-	// Image stream in a particular area
-	// mInstaStream = make_shared<InstagramStream>( vec2(40.720467,-74.00603), 5000, CLIENT_ID );
-
+	mPhotoFetcher = make_unique<PhotoFetcher>( kIdealImageWidth );
 	continueCycle();
 }
 
@@ -104,7 +168,9 @@ void InstascopeApp::continueCycle()
 	mPhaseChangeCalled = false;		// it has net been told to change phases yet. It should only do that once shit is loaded
 	defineMirrorGrid();				// redefine the kaleidoscope grid
 	mTextureLoaded = false;			// This will trigger checking if an image has loaded in the update function
-	newInstagram();					// grab the next instagram item
+	mLoadingTexture = false;
+	mCurPhoto = Photo();
+	newInstagram();					// request the next photo
 }
 
 // Creates the grid of kaleidoscope mirrored triangles
@@ -154,8 +220,16 @@ void InstascopeApp::defineMirrorGrid()
 
 void InstascopeApp::newInstagram()
 {
-	if( mInstaStream->hasInstagramAvailable() )
-		mCurInstagram = mInstaStream->getNextInstagram();
+	if( ! mPhotoFetcher )
+		return;
+
+	if( mPhotoFetcher->hasPhoto() ) {
+		ci::Surface surface;
+		mPhotoFetcher->pop( &surface );
+		if( surface.getData() ) {
+			mCurPhoto = Photo( std::move( surface ), "picsum.photos" );
+		}
+	}
 }
 
 void InstascopeApp::changePhase( int newPhase )
@@ -187,19 +261,28 @@ void InstascopeApp::changePhase( int newPhase )
 
 void InstascopeApp::checkImageLoaded()
 {
-	mLoadingTexture = true;
-	mTextureLoaded = false;
-	
-	gl::TextureRef tex = gl::Texture::create( mCurInstagram.getImage() );
-	if( ! mCurInstagram.getImage().getData() )
+	if( ! mCurPhoto.isValid() )
 		return;
 	
-	// THE IMAGE HAS BEEN LOADED 
+	if( mTextureLoaded )
+		return;
+
+	if( mLoadingTexture )
+		return;
+
+	mLoadingTexture = true;
+	try {
+		gl::TextureRef tex = gl::Texture::create( mCurPhoto.surface );
+		if( tex ) {
+			mNewTex = tex;
+			mMirrorTexture = mNewTex;
+			mTextureLoaded = true;
+		}
+	}
+	catch( const std::exception &exc ) {
+		CI_LOG_W( "Failed to create texture from photo: " << exc.what() );
+	}
 	mLoadingTexture = false;
-	mTextureLoaded = true;
-	
-	mNewTex = tex;
-	mMirrorTexture = mNewTex;
 }
 
 void InstascopeApp::transitionMirrorIn( vector<TrianglePiece> *vec )
@@ -248,8 +331,8 @@ void InstascopeApp::resetSample()
 
 void InstascopeApp::update()
 {
-	// if mCurInstagram is undefined, then don't do anything else since there's nothing else to do
-	if( mCurInstagram.isNull() ) {
+	// if no photo is ready yet, keep waiting for the fetcher
+	if( ! mCurPhoto.isValid() ) {
 		newInstagram();
 		return;
 	}
@@ -319,7 +402,7 @@ void InstascopeApp::mirrorIn()
 {
 	// redefine the bg texture
 	mBgTexture = mNewTex;
-	mTextRibbon->update( TAG, mCurInstagram.getUser() );
+	mTextRibbon->update( TAG, mCurPhoto.credit );
 }
 
 void InstascopeApp::draw()

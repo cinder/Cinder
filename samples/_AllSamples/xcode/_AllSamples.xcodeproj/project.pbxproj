@@ -108,6 +108,17 @@
 				0039FB43115AD34700BA0BAD /* PBXTargetDependency */,
 				00125BAF1249B10500080A0D /* PBXTargetDependency */,
 				00A11A42135A28CA00081873 /* PBXTargetDependency */,
+				F5DC8B13F94E48D1AC787704 /* PBXTargetDependency */,
+				1BC02BC319F9434EAFA32361 /* PBXTargetDependency */,
+				2902E9729DA94F7AA421A3F2 /* PBXTargetDependency */,
+				1AB42BE46D4E4EA1A3056CF4 /* PBXTargetDependency */,
+				CFDBBD5C8541458BB8706C04 /* PBXTargetDependency */,
+				ED17B7C97CE8404E81646E22 /* PBXTargetDependency */,
+				CC3181207D05400685A6B6B9 /* PBXTargetDependency */,
+				77BB5460651444FE862A776D /* PBXTargetDependency */,
+				C0ABED14B35149589A96FC64 /* PBXTargetDependency */,
+				6A69466C90BD4C828662119C /* PBXTargetDependency */,
+				40C8D1B35C444CC88CCFEFA4 /* PBXTargetDependency */,
 			);
 			name = Samples;
 			productName = Samples;
@@ -117,17 +128,17 @@
 /* Begin PBXContainerItemProxy section */
 		0005C95910068030004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0005C95510068030004D82BC /* basicApp.xcodeproj */;
+			containerPortal = 0005C95510068030004D82BC /* BasicApp.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = basicApp;
+			remoteInfo = BasicApp;
 		};
 		0005C9701006813C004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0005C95510068030004D82BC /* basicApp.xcodeproj */;
+			containerPortal = 0005C95510068030004D82BC /* BasicApp.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = basicApp;
+			remoteInfo = BasicApp;
 		};
 		0005C9B3100681D2004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -138,10 +149,10 @@
 		};
 		0005C9D7100681EA004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0005C9D0100681E9004D82BC /* fontSample.xcodeproj */;
+			containerPortal = 0005C9D0100681E9004D82BC /* FontSample.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = fontSample;
+			remoteInfo = FontSample;
 		};
 		0005CA0610068206004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -166,10 +177,10 @@
 		};
 		0005CA7E10068268004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0005C9D0100681E9004D82BC /* fontSample.xcodeproj */;
+			containerPortal = 0005C9D0100681E9004D82BC /* FontSample.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = fontSample;
+			remoteInfo = FontSample;
 		};
 		0005CA8810068268004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -229,10 +240,10 @@
 		};
 		00239C5319ABF67100B652B4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */;
+			containerPortal = 00239C4F19ABF67000B652B4 /* FboBasic.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = FBOBasic;
+			remoteInfo = FboBasic;
 		};
 		00239C5A19ABF78A00B652B4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -278,10 +289,10 @@
 		};
 		00239C6E19ABF8B900B652B4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */;
+			containerPortal = 00239C4F19ABF67000B652B4 /* FboBasic.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = FBOBasic;
+			remoteInfo = FboBasic;
 		};
 		00239C7019ABF8B900B652B4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1452,18 +1463,172 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = ShadowMapping;
 		};
+		CA67F08D4B8B4BC2977042E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F923FEF06559439BA8594DEF /* CameraPersp.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = CameraPersp;
+		};
+		146038DB90D3434D83E97258 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F923FEF06559439BA8594DEF /* CameraPersp.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = CameraPersp;
+		};
+		1F7FB14026584A64B3B22F68 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4C0DC342895E44D18BDD23BA /* CanvasUi.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = CanvasUi;
+		};
+		A5E09D84E8E5497BBB75F5EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4C0DC342895E44D18BDD23BA /* CanvasUi.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = CanvasUi;
+		};
+		740995C9DBF249A4BA909A7C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7575F7BE825E431598EFDA34 /* CanvasUiMinimap.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = CanvasUiMinimap;
+		};
+		EA001BC5B60E49FE9063C2CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7575F7BE825E431598EFDA34 /* CanvasUiMinimap.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = CanvasUiMinimap;
+		};
+		B0960A38EDE941139B7612B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1B1101FC730148839D6EAA80 /* CaptureCube.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = CaptureCube;
+		};
+		6620DF4B915048A6A8ED4086 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1B1101FC730148839D6EAA80 /* CaptureCube.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = CaptureCube;
+		};
+		28802349B34F49C18C35E3D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5B59889A2EA14A42874C0B73 /* Extrude.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = Extrude;
+		};
+		5385450E4B4942C794D6C54E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5B59889A2EA14A42874C0B73 /* Extrude.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = Extrude;
+		};
+		ECD8AC0B90F844349377B2E5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 98F72E7F93DC485C8B13EDE6 /* ImGui.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ImGui;
+		};
+		F4D29B79978F4CA0BD0EA9E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 98F72E7F93DC485C8B13EDE6 /* ImGui.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ImGui;
+		};
+		D1743AF8DB3946998D3B1439 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8EE13F249D60447BB7656320 /* Logging.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = Logging;
+		};
+		1B71A233015745C5977CA372 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8EE13F249D60447BB7656320 /* Logging.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = Logging;
+		};
+		4488215CF32744D787B0AB53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6E5CD3E0E56492CBC78A06E /* MultiTouchBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C756CC2112085F5700922E67;
+			remoteInfo = MultiTouch;
+		};
+		010D6DE757014198A23B0E90 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6E5CD3E0E56492CBC78A06E /* MultiTouchBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = MultiTouch;
+		};
+		FE68954222F3413F8D7EF107 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 33A0D7BEE78541E19889A5F4 /* MovieWriter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = MovieWriter;
+		};
+		5B7211C305694CE3885E50E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 33A0D7BEE78541E19889A5F4 /* MovieWriter.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = MovieWriter;
+		};
+		BE5B7DABB9E64CC1A276DBD4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 65D471CB6EF24C30BD5146CB /* SerialCommunication.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = SerialCommunication;
+		};
+		4C7094F91BC54FFF846BE738 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 65D471CB6EF24C30BD5146CB /* SerialCommunication.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = SerialCommunication;
+		};
+		FBEDE83CE3DD402FBA6F7A6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2F27D64A6B4F419184DDF41C /* BasicTween.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = BasicTween;
+		};
+		D11A7D3A902F4B96B1F837E1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2F27D64A6B4F419184DDF41C /* BasicTween.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = BasicTween;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0005C95510068030004D82BC /* basicApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = basicApp.xcodeproj; path = ../../basicApp/xcode/basicApp.xcodeproj; sourceTree = SOURCE_ROOT; };
+		0005C95510068030004D82BC /* BasicApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BasicApp.xcodeproj; path = ../../BasicApp/xcode/BasicApp.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9AB100681D2004D82BC /* Earthquake.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Earthquake.xcodeproj; path = ../../Earthquake/xcode/Earthquake.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0005C9D0100681E9004D82BC /* fontSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = fontSample.xcodeproj; path = ../../fontSample/xcode/fontSample.xcodeproj; sourceTree = SOURCE_ROOT; };
+		0005C9D0100681E9004D82BC /* FontSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FontSample.xcodeproj; path = ../../FontSample/xcode/FontSample.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9FF10068206004D82BC /* perlinTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = perlinTest.xcodeproj; path = ../../perlinTest/xcode/perlinTest.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005CA2F10068222004D82BC /* SaveImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SaveImage.xcodeproj; path = ../../SaveImage/xcode/SaveImage.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005CA531006823B004D82BC /* TextTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextTest.xcodeproj; path = ../../TextTest/xcode/TextTest.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Picking3D.xcodeproj; path = ../../Picking3D/xcode/Picking3D.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00236D981130E4C7006C991F /* CairoBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CairoBasic.xcodeproj; path = ../../CairoBasic/xcode/CairoBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
-		00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic.xcodeproj; path = ../../_opengl/FBOBasic/xcode/FBOBasic.xcodeproj; sourceTree = "<group>"; };
+		00239C4F19ABF67000B652B4 /* FboBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FboBasic.xcodeproj; path = ../../_opengl/FboBasic/xcode/FboBasic.xcodeproj; sourceTree = "<group>"; };
 		00239C5619ABF78A00B652B4 /* MotionBlurVelocityBuffer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MotionBlurVelocityBuffer.xcodeproj; path = ../../_opengl/MotionBlurVelocityBuffer/xcode/MotionBlurVelocityBuffer.xcodeproj; sourceTree = "<group>"; };
 		00239C5C19ABF7C800B652B4 /* ParticleSphereCPU.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParticleSphereCPU.xcodeproj; path = ../../_opengl/ParticleSphereCPU/xcode/ParticleSphereCPU.xcodeproj; sourceTree = "<group>"; };
 		00239C6219ABF7D100B652B4 /* ParticleSphereGPU.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParticleSphereGPU.xcodeproj; path = ../../_opengl/ParticleSphereGPU/xcode/ParticleSphereGPU.xcodeproj; sourceTree = "<group>"; };
@@ -1552,6 +1717,17 @@
 		1175443A193596BE0075AF60 /* VoiceBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoiceBasic.xcodeproj; path = ../../_audio/VoiceBasic/xcode/VoiceBasic.xcodeproj; sourceTree = "<group>"; };
 		11754440193596CF0075AF60 /* VoiceBasicProcessing.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoiceBasicProcessing.xcodeproj; path = ../../_audio/VoiceBasicProcessing/xcode/VoiceBasicProcessing.xcodeproj; sourceTree = "<group>"; };
 		B05F581819AC4852001558CB /* ShadowMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ShadowMapping.xcodeproj; path = ../../_opengl/ShadowMapping/xcode/ShadowMapping.xcodeproj; sourceTree = "<group>"; };
+		F923FEF06559439BA8594DEF /* CameraPersp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CameraPersp.xcodeproj; path = ../../CameraPersp/xcode/CameraPersp.xcodeproj; sourceTree = "<group>"; };
+		4C0DC342895E44D18BDD23BA /* CanvasUi.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CanvasUi.xcodeproj; path = ../../CanvasUi/proj/xcode/CanvasUi.xcodeproj; sourceTree = "<group>"; };
+		7575F7BE825E431598EFDA34 /* CanvasUiMinimap.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CanvasUiMinimap.xcodeproj; path = ../../CanvasUiMinimap/proj/xcode/CanvasUiMinimap.xcodeproj; sourceTree = "<group>"; };
+		1B1101FC730148839D6EAA80 /* CaptureCube.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CaptureCube.xcodeproj; path = ../../CaptureCube/xcode/CaptureCube.xcodeproj; sourceTree = "<group>"; };
+		5B59889A2EA14A42874C0B73 /* Extrude.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Extrude.xcodeproj; path = ../../Extrude/xcode/Extrude.xcodeproj; sourceTree = "<group>"; };
+		98F72E7F93DC485C8B13EDE6 /* ImGui.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImGui.xcodeproj; path = ../../ImGui/proj/xcode/ImGui.xcodeproj; sourceTree = "<group>"; };
+		8EE13F249D60447BB7656320 /* Logging.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Logging.xcodeproj; path = ../../Logging/xcode/Logging.xcodeproj; sourceTree = "<group>"; };
+		C6E5CD3E0E56492CBC78A06E /* MultiTouchBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MultiTouchBasic.xcodeproj; path = ../../MultiTouchBasic/xcode/MultiTouchBasic.xcodeproj; sourceTree = "<group>"; };
+		33A0D7BEE78541E19889A5F4 /* MovieWriter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MovieWriter.xcodeproj; path = ../../QuickTimeAvfWriter/xcode/MovieWriter.xcodeproj; sourceTree = "<group>"; };
+		65D471CB6EF24C30BD5146CB /* SerialCommunication.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SerialCommunication.xcodeproj; path = ../../SerialCommunication/xcode/SerialCommunication.xcodeproj; sourceTree = "<group>"; };
+		2F27D64A6B4F419184DDF41C /* BasicTween.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BasicTween.xcodeproj; path = ../../_timeline/BasicTween/xcode/BasicTween.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -1564,7 +1740,7 @@
 				009F6E0E14C0FDD20036C292 /* _timeline */,
 				00BFB1C31D4EB65E00EE4CA7 /* ArcballDemo.xcodeproj */,
 				00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */,
-				0005C95510068030004D82BC /* basicApp.xcodeproj */,
+				0005C95510068030004D82BC /* BasicApp.xcodeproj */,
 				00B44A9A1E5676A8009FC466 /* BezierPath.xcodeproj */,
 				00D4948719889EED00A44E4C /* BezierPathIteration.xcodeproj */,
 				00B44AA01E5676D1009FC466 /* BSpline.xcodeproj */,
@@ -1575,7 +1751,7 @@
 				00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */,
 				00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */,
 				00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */,
-				0005C9D0100681E9004D82BC /* fontSample.xcodeproj */,
+				0005C9D0100681E9004D82BC /* FontSample.xcodeproj */,
 				00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */,
 				006D72BE1995325D008149E2 /* Geometry.xcodeproj */,
 				00F0AAC41FC4BB3000F9EBBE /* HighDensityDisplay.xcodeproj */,
@@ -1605,6 +1781,17 @@
 				00886B7B164DD1A9005B1855 /* Tubular.xcodeproj */,
 				00AE0FE7113DF18C005AFB58 /* VoronoiGpu.xcodeproj */,
 				00886BA9164DD242005B1855 /* Wisteria.xcodeproj */,
+				F923FEF06559439BA8594DEF /* CameraPersp.xcodeproj */,
+				4C0DC342895E44D18BDD23BA /* CanvasUi.xcodeproj */,
+				7575F7BE825E431598EFDA34 /* CanvasUiMinimap.xcodeproj */,
+				1B1101FC730148839D6EAA80 /* CaptureCube.xcodeproj */,
+				5B59889A2EA14A42874C0B73 /* Extrude.xcodeproj */,
+				98F72E7F93DC485C8B13EDE6 /* ImGui.xcodeproj */,
+				8EE13F249D60447BB7656320 /* Logging.xcodeproj */,
+				C6E5CD3E0E56492CBC78A06E /* MultiTouchBasic.xcodeproj */,
+				33A0D7BEE78541E19889A5F4 /* MovieWriter.xcodeproj */,
+				65D471CB6EF24C30BD5146CB /* SerialCommunication.xcodeproj */,
+				2F27D64A6B4F419184DDF41C /* BasicTween.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1930,7 +2117,7 @@
 				006D7163199528E1008149E2 /* ImmediateMode.xcodeproj */,
 				006D715D199528DB008149E2 /* HighDynamicRange.xcodeproj */,
 				006D7157199528D5008149E2 /* GeometryShaderBasic.xcodeproj */,
-				00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */,
+				00239C4F19ABF67000B652B4 /* FboBasic.xcodeproj */,
 				006D7151199528CC008149E2 /* DynamicCubeMapping.xcodeproj */,
 				006D714B199528C4008149E2 /* CubeMapping.xcodeproj */,
 				006D7145199528BA008149E2 /* Cube.xcodeproj */,
@@ -2458,6 +2645,94 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		3CF10447517B40F3B760BC54 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				524A52BFD6B34CCCA61ECF58 /* CameraPersp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		49B9B2F1D3ED4D4290A5626C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7C319FD07FBA43EF84CEA732 /* CanvasUi.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2A76D1EC83A64E8B96D1D5DC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7D43F2CC2BFA4559BB24375B /* CanvasUiMinimap.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4DAF869113EE458FAE6E105F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E5DE25E960894FD7A1DDE94C /* CaptureCube.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BDC13080B3D249BABC1E9701 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C917BBB5472142F6950F104E /* Extrude.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		50B48D4F45CB46AF9F792A74 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E845506038FC421D9608210B /* ImGui.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8254212A940E411294E10D8E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				495E513F073846F4BB70B1D5 /* Logging.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4A225C70DDFB48978E408C7E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BE65351EF6114A9E9B4F16B5 /* MultiTouch.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		08BBC22912C04B0797E9A1E1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2C280763477D44E89FDE3F06 /* MovieWriter.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B241B17283E04EBB9F6BEE5C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B89EBC7CD727438B88DD2FD5 /* SerialCommunication.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B8A9B7132AAA48408E9F2C0E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8310C53F41E24F5098AB6761 /* BasicTween.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXProject section */
@@ -2489,7 +2764,7 @@
 				},
 				{
 					ProductGroup = 0005C95610068030004D82BC /* Products */;
-					ProjectRef = 0005C95510068030004D82BC /* basicApp.xcodeproj */;
+					ProjectRef = 0005C95510068030004D82BC /* BasicApp.xcodeproj */;
 				},
 				{
 					ProductGroup = 009F6E1014C0FDE90036C292 /* Products */;
@@ -2585,7 +2860,7 @@
 				},
 				{
 					ProductGroup = 00239C5019ABF67000B652B4 /* Products */;
-					ProjectRef = 00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */;
+					ProjectRef = 00239C4F19ABF67000B652B4 /* FboBasic.xcodeproj */;
 				},
 				{
 					ProductGroup = 004307EE1BBCE1C100B72510 /* Products */;
@@ -2597,7 +2872,7 @@
 				},
 				{
 					ProductGroup = 0005C9D1100681E9004D82BC /* Products */;
-					ProjectRef = 0005C9D0100681E9004D82BC /* fontSample.xcodeproj */;
+					ProjectRef = 0005C9D0100681E9004D82BC /* FontSample.xcodeproj */;
 				},
 				{
 					ProductGroup = 00712F311627A439005FC5A0 /* Products */;
@@ -2862,6 +3137,50 @@
 				{
 					ProductGroup = 00886BAA164DD242005B1855 /* Products */;
 					ProjectRef = 00886BA9164DD242005B1855 /* Wisteria.xcodeproj */;
+				},
+				{
+					ProductGroup = 3CF10447517B40F3B760BC54 /* Products */;
+					ProjectRef = F923FEF06559439BA8594DEF /* CameraPersp.xcodeproj */;
+				},
+				{
+					ProductGroup = 49B9B2F1D3ED4D4290A5626C /* Products */;
+					ProjectRef = 4C0DC342895E44D18BDD23BA /* CanvasUi.xcodeproj */;
+				},
+				{
+					ProductGroup = 2A76D1EC83A64E8B96D1D5DC /* Products */;
+					ProjectRef = 7575F7BE825E431598EFDA34 /* CanvasUiMinimap.xcodeproj */;
+				},
+				{
+					ProductGroup = 4DAF869113EE458FAE6E105F /* Products */;
+					ProjectRef = 1B1101FC730148839D6EAA80 /* CaptureCube.xcodeproj */;
+				},
+				{
+					ProductGroup = BDC13080B3D249BABC1E9701 /* Products */;
+					ProjectRef = 5B59889A2EA14A42874C0B73 /* Extrude.xcodeproj */;
+				},
+				{
+					ProductGroup = 50B48D4F45CB46AF9F792A74 /* Products */;
+					ProjectRef = 98F72E7F93DC485C8B13EDE6 /* ImGui.xcodeproj */;
+				},
+				{
+					ProductGroup = 8254212A940E411294E10D8E /* Products */;
+					ProjectRef = 8EE13F249D60447BB7656320 /* Logging.xcodeproj */;
+				},
+				{
+					ProductGroup = 4A225C70DDFB48978E408C7E /* Products */;
+					ProjectRef = C6E5CD3E0E56492CBC78A06E /* MultiTouchBasic.xcodeproj */;
+				},
+				{
+					ProductGroup = 08BBC22912C04B0797E9A1E1 /* Products */;
+					ProjectRef = 33A0D7BEE78541E19889A5F4 /* MovieWriter.xcodeproj */;
+				},
+				{
+					ProductGroup = B241B17283E04EBB9F6BEE5C /* Products */;
+					ProjectRef = 65D471CB6EF24C30BD5146CB /* SerialCommunication.xcodeproj */;
+				},
+				{
+					ProductGroup = B8A9B7132AAA48408E9F2C0E /* Products */;
+					ProjectRef = 2F27D64A6B4F419184DDF41C /* BasicTween.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -3544,17 +3863,94 @@
 			remoteRef = B05F581C19AC4852001558CB /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		524A52BFD6B34CCCA61ECF58 /* CameraPersp.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = CameraPersp.app;
+			remoteRef = CA67F08D4B8B4BC2977042E0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7C319FD07FBA43EF84CEA732 /* CanvasUi.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = CanvasUi.app;
+			remoteRef = 1F7FB14026584A64B3B22F68 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7D43F2CC2BFA4559BB24375B /* CanvasUiMinimap.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = CanvasUiMinimap.app;
+			remoteRef = 740995C9DBF249A4BA909A7C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E5DE25E960894FD7A1DDE94C /* CaptureCube.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = CaptureCube.app;
+			remoteRef = B0960A38EDE941139B7612B2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C917BBB5472142F6950F104E /* Extrude.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Extrude.app;
+			remoteRef = 28802349B34F49C18C35E3D3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E845506038FC421D9608210B /* ImGui.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ImGui.app;
+			remoteRef = ECD8AC0B90F844349377B2E5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		495E513F073846F4BB70B1D5 /* Logging.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Logging.app;
+			remoteRef = D1743AF8DB3946998D3B1439 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BE65351EF6114A9E9B4F16B5 /* MultiTouch.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MultiTouch.app;
+			remoteRef = 4488215CF32744D787B0AB53 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2C280763477D44E89FDE3F06 /* MovieWriter.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MovieWriter.app;
+			remoteRef = FE68954222F3413F8D7EF107 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B89EBC7CD727438B88DD2FD5 /* SerialCommunication.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = SerialCommunication.app;
+			remoteRef = BE5B7DABB9E64CC1A276DBD4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8310C53F41E24F5098AB6761 /* BasicTween.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = BasicTween.app;
+			remoteRef = FBEDE83CE3DD402FBA6F7A6E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXTargetDependency section */
 		0005C9711006813C004D82BC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = basicApp;
+			name = BasicApp;
 			targetProxy = 0005C9701006813C004D82BC /* PBXContainerItemProxy */;
 		};
 		0005CA7F10068268004D82BC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = fontSample;
+			name = FontSample;
 			targetProxy = 0005CA7E10068268004D82BC /* PBXContainerItemProxy */;
 		};
 		0005CA8910068268004D82BC /* PBXTargetDependency */ = {
@@ -3604,7 +4000,7 @@
 		};
 		00239C6F19ABF8B900B652B4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = FBOBasic;
+			name = FboBasic;
 			targetProxy = 00239C6E19ABF8B900B652B4 /* PBXContainerItemProxy */;
 		};
 		00239C7119ABF8B900B652B4 /* PBXTargetDependency */ = {
@@ -4021,6 +4417,61 @@
 			isa = PBXTargetDependency;
 			name = ShadowMapping;
 			targetProxy = B05F58FF19AC495C001558CB /* PBXContainerItemProxy */;
+		};
+		F5DC8B13F94E48D1AC787704 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CameraPersp;
+			targetProxy = 146038DB90D3434D83E97258 /* PBXContainerItemProxy */;
+		};
+		1BC02BC319F9434EAFA32361 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CanvasUi;
+			targetProxy = A5E09D84E8E5497BBB75F5EA /* PBXContainerItemProxy */;
+		};
+		2902E9729DA94F7AA421A3F2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CanvasUiMinimap;
+			targetProxy = EA001BC5B60E49FE9063C2CB /* PBXContainerItemProxy */;
+		};
+		1AB42BE46D4E4EA1A3056CF4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CaptureCube;
+			targetProxy = 6620DF4B915048A6A8ED4086 /* PBXContainerItemProxy */;
+		};
+		CFDBBD5C8541458BB8706C04 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Extrude;
+			targetProxy = 5385450E4B4942C794D6C54E /* PBXContainerItemProxy */;
+		};
+		ED17B7C97CE8404E81646E22 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ImGui;
+			targetProxy = F4D29B79978F4CA0BD0EA9E0 /* PBXContainerItemProxy */;
+		};
+		CC3181207D05400685A6B6B9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Logging;
+			targetProxy = 1B71A233015745C5977CA372 /* PBXContainerItemProxy */;
+		};
+		77BB5460651444FE862A776D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MultiTouch;
+			targetProxy = 010D6DE757014198A23B0E90 /* PBXContainerItemProxy */;
+		};
+		C0ABED14B35149589A96FC64 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MovieWriter;
+			targetProxy = 5B7211C305694CE3885E50E7 /* PBXContainerItemProxy */;
+		};
+		6A69466C90BD4C828662119C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SerialCommunication;
+			targetProxy = 4C7094F91BC54FFF846BE738 /* PBXContainerItemProxy */;
+		};
+		40C8D1B35C444CC88CCFEFA4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = BasicTween;
+			targetProxy = D11A7D3A902F4B96B1F837E1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

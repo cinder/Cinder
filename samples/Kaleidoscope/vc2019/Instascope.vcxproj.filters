@@ -18,9 +18,6 @@
     <ClCompile Include="..\src\InstascopeApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\InstagramStream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\TextRibbon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -30,9 +27,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\InstagramStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\TextRibbon.h">
