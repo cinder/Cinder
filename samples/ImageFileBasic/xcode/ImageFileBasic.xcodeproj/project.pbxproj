@@ -274,7 +274,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = x86_64;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -293,7 +293,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = x86_64;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
