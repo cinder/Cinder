@@ -26,6 +26,7 @@
 #include "cinder/Export.h"
 #include "cinder/audio/Buffer.h"
 
+#include <cstdint>
 #include <memory>
 #include <algorithm>
 

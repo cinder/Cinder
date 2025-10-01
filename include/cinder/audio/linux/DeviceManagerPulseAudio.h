@@ -24,6 +24,7 @@
 #pragma once
 
 #include "cinder/audio/Device.h"
+#include <cstdint>
 
 namespace cinder { namespace audio { namespace linux {
 
