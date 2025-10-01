@@ -375,21 +375,6 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 			return link;
 		}
 
-		bool deactivate( const CallbackFn &callback )
-		{
-			if( callback == mCallbackFn ) {
-				mCallbackFn = nullptr;	// deactivate static head
-				return true;
-			}
-
-			for( SignalLink *link = this->mNext ? this->mNext : this; link != this; link = link->mNext ) {
-				if( callback == link->function ) {
-					link->unlink();		// deactivate and unlink sibling
-					return true;
-				}
-			}
-			return false;
-		}
 
 		bool removeSibling( SignalLinkBase *sibling ) override
 		{
