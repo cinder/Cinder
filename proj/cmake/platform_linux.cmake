@@ -45,6 +45,7 @@ endif()
 
 if( NOT CINDER_DISABLE_VIDEO )
 	list( APPEND SRC_SET_CINDER_VIDEO_LINUX
+		${CINDER_SRC_DIR}/cinder/CaptureImplGStreamer.cpp
 		${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp
 		${CINDER_SRC_DIR}/cinder/linux/Movie.cpp
 	)
