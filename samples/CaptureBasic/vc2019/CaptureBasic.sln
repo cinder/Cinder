@@ -6,16 +6,19 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CaptureBasic", "CaptureBasi
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Win32 = Debug|Win32
-		Release|Win32 = Release|Win32
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{829C0320-5FAE-497F-A99F-5924866F5058}.Debug|Win32.ActiveCfg = Debug|Win32
-		{829C0320-5FAE-497F-A99F-5924866F5058}.Debug|Win32.Build.0 = Debug|Win32
-		{829C0320-5FAE-497F-A99F-5924866F5058}.Release|Win32.ActiveCfg = Release|Win32
-		{829C0320-5FAE-497F-A99F-5924866F5058}.Release|Win32.Build.0 = Release|Win32
+		{829C0320-5FAE-497F-A99F-5924866F5058}.Debug|x64.ActiveCfg = Debug|x64
+		{829C0320-5FAE-497F-A99F-5924866F5058}.Debug|x64.Build.0 = Debug|x64
+		{829C0320-5FAE-497F-A99F-5924866F5058}.Release|x64.ActiveCfg = Release|x64
+		{829C0320-5FAE-497F-A99F-5924866F5058}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C984259D-E807-41FD-9200-CC1AE9BD93BE}
 	EndGlobalSection
 EndGlobal
