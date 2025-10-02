@@ -26,6 +26,8 @@
 #include "cinder/Capture.h"
 #import <AVFoundation/AVFoundation.h>
 #include <vector>
+#include <memory>
+#include <set>
 
 namespace cinder {
 
@@ -34,11 +36,12 @@ class CaptureImplAvFoundationDevice : public Capture::Device {
 	CaptureImplAvFoundationDevice( AVCaptureDevice *device );
 	~CaptureImplAvFoundationDevice();
 	
-	bool						checkAvailable() const;
-	bool						isConnected() const;
-	Capture::DeviceIdentifier	getUniqueId() const { return mUniqueId; }
+	bool						checkAvailable() const override;
+	bool						isConnected() const override;
+	Capture::DeviceIdentifier	getUniqueId() const override { return mUniqueId; }
 	bool						isFrontFacing() const { return mFrontFacing; }
-	void*						getNative() const { return mNativeDevice; }
+	void*						getNative() const override { return mNativeDevice; }
+	std::vector<Capture::Mode>	getModes() const override;
   private:
 	Capture::DeviceIdentifier	mUniqueId;
 	AVCaptureDevice				*mNativeDevice;
@@ -61,11 +64,13 @@ class CaptureImplAvFoundationDevice : public Capture::Device {
 	int32_t							mExposedFrameBytesPerRow;
 	int32_t							mExposedFrameHeight;
 	int32_t							mExposedFrameWidth;
+	std::unique_ptr<cinder::Capture::Mode> mSelectedMode;
 }
 
 + (const std::vector<cinder::Capture::DeviceRef>&)getDevices:(BOOL)forceRefresh;
 
 - (id)initWithDevice:(const cinder::Capture::DeviceRef)device width:(int)width height:(int)height;
+- (id)initWithDevice:(const cinder::Capture::DeviceRef)device mode:(const cinder::Capture::Mode&)mode;
 - (bool)prepareStartCapture;
 - (void)startCapture;
 - (void)stopCapture;
