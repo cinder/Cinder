@@ -419,11 +419,7 @@ void CaptureTestApp::setupCapture( Capture::DeviceRef device )
 void CaptureTestApp::printDevices()
 {
 	for( const auto& device : Capture::getDevices() ) {
-		CI_LOG_I( "Device: " << device->getName() << " "
-#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
-				  << ( device->isFrontFacing() ? "Front" : "Rear" ) << "-facing"
-#endif
-		);
+		CI_LOG_I( "Device: " << device->getName() << " " );
 	}
 }
 
