@@ -25,6 +25,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/Surface.h"
 #include "cinder/Exception.h"
+#include "cinder/MediaTime.h"
 
 #if defined( CINDER_ANDROID )
   #include "cinder/gl/Texture.h"
@@ -46,6 +47,10 @@
 	namespace cinder {
 		class CaptureImplDirectShow;
 	}
+#elif defined( CINDER_LINUX )
+	namespace cinder {
+		class CaptureImplGStreamer;
+	}
 #elif defined( CINDER_ANDROID )
 	namespace cinder {
 		class CaptureImplJni;
@@ -60,11 +65,14 @@ typedef std::shared_ptr<class Capture>	CaptureRef;
 
 class CI_API Capture {
   public:
+	class Mode;
 	class Device;
 	typedef std::shared_ptr<Device> DeviceRef;
 
 	//! Creates a new Capture requesting (but not promising) a resolution of \a width x \a height pixels.
 	static CaptureRef	create( int32_t width, int32_t height, const DeviceRef device = DeviceRef() ) { return CaptureRef( new Capture( width, height, device ) ); }
+	//! Creates a new Capture using a specific Mode supported by the Device. The Mode must be from the Device's getModes() list.
+	static CaptureRef	create( const DeviceRef& device, const Mode& mode ) { return CaptureRef( new Capture( device, mode ) ); }
 
 	~Capture();
 
@@ -106,11 +114,83 @@ class CI_API Capture {
 	//! Finds the first device whose name contains the string \a nameFragment
 	static DeviceRef findDeviceByNameContains( const std::string &nameFragment );
 
-#if defined( CINDER_COCOA ) || defined( CINDER_ANDROID )
+#if defined( CINDER_COCOA ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	typedef std::string DeviceIdentifier;
 #else
 	typedef int DeviceIdentifier;
 #endif
+
+	//! Represents a specific capture mode with resolution, framerate, codec and pixel format
+	class CI_API Mode {
+	public:
+		enum class Codec {
+			Uncompressed,   // Raw uncompressed data
+			JPEG,          // Motion JPEG
+			H264,          // H.264/AVC
+			HEVC,          // H.265/HEVC
+			Unknown
+		};
+
+		enum class PixelFormat {
+			// RGB formats
+			RGB24,         // 24-bit RGB
+			BGR24,         // 24-bit BGR
+			ARGB32,        // 32-bit ARGB
+			BGRA32,        // 32-bit BGRA
+
+			// YUV formats
+			YUV420P,       // Planar 4:2:0 YUV
+			NV12,          // Semi-planar 4:2:0 YUV
+			YUY2,          // Packed 4:2:2 YUV
+			UYVY,          // Packed 4:2:2 YUV (U first)
+			I420,          // Same as YUV420P but explicit
+			YV12,          // YUV 4:2:0 with swapped U/V planes
+
+			Unknown
+		};
+
+		// Construction
+		Mode( int32_t width, int32_t height, const MediaTime& frameRate, Codec codec, PixelFormat pixelFormat, const std::string& description = "" );
+		Mode();  // Default constructor
+
+		// Core properties
+		const ivec2&        getSize() const { return mSize; }
+		int32_t             getWidth() const { return mSize.x; }
+		int32_t             getHeight() const { return mSize.y; }
+		const MediaTime&    getFrameRate() const { return mFrameRate; }
+		float               getFrameRateFloat() const { return static_cast<float>( 1.0 / mFrameRate.getSeconds() ); }
+		Codec               getCodec() const { return mCodec; }
+		PixelFormat         getPixelFormat() const { return mPixelFormat; }
+		const std::string&  getDescription() const { return mDescription; }
+
+		// Utility
+		float               getAspectRatio() const { return mSize.x / static_cast<float>( mSize.y ); }
+		int32_t             getPixelCount() const { return mSize.x * mSize.y; }
+		bool                isRGBFormat() const;
+		bool                isYUVFormat() const;
+		bool                isCompressed() const { return mCodec != Codec::Uncompressed; }
+
+		// Human-readable representation
+		std::string         getCodecString() const;
+		std::string         getPixelFormatString() const;
+
+		// Comparison
+		bool operator==( const Mode& other ) const;
+		bool operator!=( const Mode& other ) const { return !( *this == other ); }
+		bool operator<( const Mode& other ) const;
+
+		// Platform-specific data access
+		const std::string& getPlatformData() const { return mPlatformData; }
+		void setPlatformData( const std::string& data ) { mPlatformData = data; }
+
+	private:
+		ivec2       mSize;
+		MediaTime   mFrameRate;
+		Codec       mCodec;
+		PixelFormat mPixelFormat;
+		std::string mDescription;
+		std::string mPlatformData;
+	};
 
 	// This is an abstract base class for implementing platform specific devices
 	class CI_API Device {
@@ -132,6 +212,9 @@ class CI_API Capture {
 		//! Returns whether device is front-facing. False implies rear-facing.
 		virtual bool		isFrontFacing() const = 0;
 #endif
+		//! Returns supported capture modes for this device
+		virtual std::vector<Mode> getModes() const = 0;
+
 	 protected:
 		Device() {}
 		std::string		mName;
@@ -139,6 +222,7 @@ class CI_API Capture {
 		
  protected:
  	Capture( int32_t width, int32_t height, const DeviceRef device );
+ 	Capture( const DeviceRef& device, const Mode& mode );
 
 #if defined( CINDER_MAC ) || defined( CINDER_COCOA_TOUCH_DEVICE )
 	CaptureImplAvFoundation			*mImpl;
@@ -146,18 +230,31 @@ class CI_API Capture {
 	CaptureImplCocoaDummy			*mImpl;
 #elif defined( CINDER_MSW )
 	CaptureImplDirectShow			*mImpl;
+#elif defined( CINDER_LINUX )
+	CaptureImplGStreamer			*mImpl;
 #elif defined( CINDER_ANDROID )
 	CaptureImplJni					*mImpl;		
 #endif
 };
 
 class CI_API CaptureExc : public Exception {
+  public:
+	CaptureExc() {}
+	CaptureExc( const std::string &description ) : Exception( description ) {}
 };
 
 class CI_API CaptureExcInitFail : public CaptureExc {
+  public:
+	CaptureExcInitFail() {}
+	CaptureExcInitFail( const std::string &description ) : CaptureExc( description ) {}
 };
 
 class CI_API CaptureExcInvalidChannelOrder : public CaptureExc {
 };
+
+// Stream operators for Mode - enables Cinder's toString() to work
+CI_API std::ostream& operator<<( std::ostream& os, const Capture::Mode& mode );
+CI_API std::ostream& operator<<( std::ostream& os, const Capture::Mode::Codec& codec );
+CI_API std::ostream& operator<<( std::ostream& os, const Capture::Mode::PixelFormat& format );
 
 } //namespace cinder
