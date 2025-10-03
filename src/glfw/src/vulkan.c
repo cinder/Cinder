@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.2 - www.glfw.org
+// GLFW 3.4 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2006-2018 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -31,45 +31,64 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define _GLFW_FIND_LOADER    1
+#define _GLFW_REQUIRE_LOADER 2
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWbool _glfwInitVulkan(void)
+GLFWbool _glfwInitVulkan(int mode)
 {
     VkResult err;
     VkExtensionProperties* ep;
+    PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties;
     uint32_t i, count;
-
-#if !defined(_GLFW_VULKAN_STATIC)
-#if defined(_GLFW_WIN32)
-    const char* name = "vulkan-1.dll";
-#else
-    const char* name = "libvulkan.so.1";
-#endif
 
     if (_glfw.vk.available)
         return GLFW_TRUE;
 
-    _glfw.vk.handle = _glfw_dlopen(name);
-    if (!_glfw.vk.handle)
-        return GLFW_FALSE;
-
-    _glfw.vk.GetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)
-        _glfw_dlsym(_glfw.vk.handle, "vkGetInstanceProcAddr");
-    if (!_glfw.vk.GetInstanceProcAddr)
+    if (_glfw.hints.init.vulkanLoader)
+        _glfw.vk.GetInstanceProcAddr = _glfw.hints.init.vulkanLoader;
+    else
     {
-        _glfwInputError(GLFW_API_UNAVAILABLE,
-                        "Vulkan: Loader does not export vkGetInstanceProcAddr");
+#if defined(_GLFW_VULKAN_LIBRARY)
+        _glfw.vk.handle = _glfwPlatformLoadModule(_GLFW_VULKAN_LIBRARY);
+#elif defined(_GLFW_WIN32)
+        _glfw.vk.handle = _glfwPlatformLoadModule("vulkan-1.dll");
+#elif defined(_GLFW_COCOA)
+        _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.1.dylib");
+        if (!_glfw.vk.handle)
+            _glfw.vk.handle = _glfwLoadLocalVulkanLoaderCocoa();
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
+        _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so");
+#else
+        _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so.1");
+#endif
+        if (!_glfw.vk.handle)
+        {
+            if (mode == _GLFW_REQUIRE_LOADER)
+                _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: Loader not found");
 
-        _glfwTerminateVulkan();
-        return GLFW_FALSE;
+            return GLFW_FALSE;
+        }
+
+        _glfw.vk.GetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)
+            _glfwPlatformGetModuleSymbol(_glfw.vk.handle, "vkGetInstanceProcAddr");
+        if (!_glfw.vk.GetInstanceProcAddr)
+        {
+            _glfwInputError(GLFW_API_UNAVAILABLE,
+                            "Vulkan: Loader does not export vkGetInstanceProcAddr");
+
+            _glfwTerminateVulkan();
+            return GLFW_FALSE;
+        }
     }
 
-    _glfw.vk.EnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)
+    vkEnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)
         vkGetInstanceProcAddr(NULL, "vkEnumerateInstanceExtensionProperties");
-    if (!_glfw.vk.EnumerateInstanceExtensionProperties)
+    if (!vkEnumerateInstanceExtensionProperties)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "Vulkan: Failed to retrieve vkEnumerateInstanceExtensionProperties");
@@ -77,29 +96,32 @@ GLFWbool _glfwInitVulkan(void)
         _glfwTerminateVulkan();
         return GLFW_FALSE;
     }
-#endif // _GLFW_VULKAN_STATIC
 
     err = vkEnumerateInstanceExtensionProperties(NULL, &count, NULL);
     if (err)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Vulkan: Failed to query instance extension count: %s",
-                        _glfwGetVulkanResultString(err));
+        // NOTE: This happens on systems with a loader but without any Vulkan ICD
+        if (mode == _GLFW_REQUIRE_LOADER)
+        {
+            _glfwInputError(GLFW_API_UNAVAILABLE,
+                            "Vulkan: Failed to query instance extension count: %s",
+                            _glfwGetVulkanResultString(err));
+        }
 
         _glfwTerminateVulkan();
         return GLFW_FALSE;
     }
 
-    ep = calloc(count, sizeof(VkExtensionProperties));
+    ep = _glfw_calloc(count, sizeof(VkExtensionProperties));
 
     err = vkEnumerateInstanceExtensionProperties(NULL, &count, ep);
     if (err)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
+        _glfwInputError(GLFW_API_UNAVAILABLE,
                         "Vulkan: Failed to query instance extensions: %s",
                         _glfwGetVulkanResultString(err));
 
-        free(ep);
+        _glfw_free(ep);
         _glfwTerminateVulkan();
         return GLFW_FALSE;
     }
@@ -108,41 +130,33 @@ GLFWbool _glfwInitVulkan(void)
     {
         if (strcmp(ep[i].extensionName, "VK_KHR_surface") == 0)
             _glfw.vk.KHR_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_win32_surface") == 0)
+        else if (strcmp(ep[i].extensionName, "VK_KHR_win32_surface") == 0)
             _glfw.vk.KHR_win32_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_xlib_surface") == 0)
+        else if (strcmp(ep[i].extensionName, "VK_MVK_macos_surface") == 0)
+            _glfw.vk.MVK_macos_surface = GLFW_TRUE;
+        else if (strcmp(ep[i].extensionName, "VK_EXT_metal_surface") == 0)
+            _glfw.vk.EXT_metal_surface = GLFW_TRUE;
+        else if (strcmp(ep[i].extensionName, "VK_KHR_xlib_surface") == 0)
             _glfw.vk.KHR_xlib_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_xcb_surface") == 0)
+        else if (strcmp(ep[i].extensionName, "VK_KHR_xcb_surface") == 0)
             _glfw.vk.KHR_xcb_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_wayland_surface") == 0)
+        else if (strcmp(ep[i].extensionName, "VK_KHR_wayland_surface") == 0)
             _glfw.vk.KHR_wayland_surface = GLFW_TRUE;
-        if (strcmp(ep[i].extensionName, "VK_KHR_mir_surface") == 0)
-            _glfw.vk.KHR_mir_surface = GLFW_TRUE;
     }
 
-    free(ep);
+    _glfw_free(ep);
 
     _glfw.vk.available = GLFW_TRUE;
 
-    if (_glfw.vk.KHR_surface)
-    {
-        _glfw.vk.extensions =
-            _glfwPlatformGetRequiredInstanceExtensions(&_glfw.vk.extensionCount);
-    }
+    _glfw.platform.getRequiredInstanceExtensions(_glfw.vk.extensions);
 
     return GLFW_TRUE;
 }
 
 void _glfwTerminateVulkan(void)
 {
-    uint32_t i;
-
-    for (i = 0;  i < _glfw.vk.extensionCount;  i++)
-        free(_glfw.vk.extensions[i]);
-    free(_glfw.vk.extensions);
-
     if (_glfw.vk.handle)
-        _glfw_dlclose(_glfw.vk.handle);
+        _glfwPlatformFreeModule(_glfw.vk.handle);
 }
 
 const char* _glfwGetVulkanResultString(VkResult result)
@@ -208,22 +222,24 @@ const char* _glfwGetVulkanResultString(VkResult result)
 GLFWAPI int glfwVulkanSupported(void)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
-    return _glfwInitVulkan();
+    return _glfwInitVulkan(_GLFW_FIND_LOADER);
 }
 
 GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count)
 {
+    assert(count != NULL);
+
     *count = 0;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-    if (!_glfwInitVulkan())
-    {
-        _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: API not available");
+    if (!_glfwInitVulkan(_GLFW_REQUIRE_LOADER))
         return NULL;
-    }
 
-    *count = _glfw.vk.extensionCount;
+    if (!_glfw.vk.extensions[0])
+        return NULL;
+
+    *count = 2;
     return (const char**) _glfw.vk.extensions;
 }
 
@@ -231,18 +247,23 @@ GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance,
                                               const char* procname)
 {
     GLFWvkproc proc;
+    assert(procname != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-    if (!_glfwInitVulkan())
-    {
-        _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: API not available");
+    if (!_glfwInitVulkan(_GLFW_REQUIRE_LOADER))
         return NULL;
-    }
+
+    // NOTE: Vulkan 1.0 and 1.1 vkGetInstanceProcAddr cannot return itself
+    if (strcmp(procname, "vkGetInstanceProcAddr") == 0)
+        return (GLFWvkproc) vkGetInstanceProcAddr;
 
     proc = (GLFWvkproc) vkGetInstanceProcAddr(instance, procname);
     if (!proc)
-        proc = (GLFWvkproc) _glfw_dlsym(_glfw.vk.handle, procname);
+    {
+        if (_glfw.vk.handle)
+            proc = (GLFWvkproc) _glfwPlatformGetModuleSymbol(_glfw.vk.handle, procname);
+    }
 
     return proc;
 }
@@ -251,24 +272,24 @@ GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance,
                                                      VkPhysicalDevice device,
                                                      uint32_t queuefamily)
 {
+    assert(instance != VK_NULL_HANDLE);
+    assert(device != VK_NULL_HANDLE);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
 
-    if (!_glfwInitVulkan())
-    {
-        _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: API not available");
+    if (!_glfwInitVulkan(_GLFW_REQUIRE_LOADER))
         return GLFW_FALSE;
-    }
 
-    if (!_glfw.vk.extensions)
+    if (!_glfw.vk.extensions[0])
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "Vulkan: Window surface creation extensions not found");
         return GLFW_FALSE;
     }
 
-    return _glfwPlatformGetPhysicalDevicePresentationSupport(instance,
-                                                             device,
-                                                             queuefamily);
+    return _glfw.platform.getPhysicalDevicePresentationSupport(instance,
+                                                               device,
+                                                               queuefamily);
 }
 
 GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
@@ -277,6 +298,7 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
                                          VkSurfaceKHR* surface)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(instance != VK_NULL_HANDLE);
     assert(window != NULL);
     assert(surface != NULL);
 
@@ -284,19 +306,23 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
 
     _GLFW_REQUIRE_INIT_OR_RETURN(VK_ERROR_INITIALIZATION_FAILED);
 
-    if (!_glfwInitVulkan())
-    {
-        _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: API not available");
+    if (!_glfwInitVulkan(_GLFW_REQUIRE_LOADER))
         return VK_ERROR_INITIALIZATION_FAILED;
-    }
 
-    if (!_glfw.vk.extensions)
+    if (!_glfw.vk.extensions[0])
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "Vulkan: Window surface creation extensions not found");
         return VK_ERROR_EXTENSION_NOT_PRESENT;
     }
 
-    return _glfwPlatformCreateWindowSurface(instance, window, allocator, surface);
+    if (window->context.client != GLFW_NO_API)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "Vulkan: Window surface creation requires the window to have the client API set to GLFW_NO_API");
+        return VK_ERROR_NATIVE_WINDOW_IN_USE_KHR;
+    }
+
+    return _glfw.platform.createWindowSurface(instance, window, allocator, surface);
 }
 
