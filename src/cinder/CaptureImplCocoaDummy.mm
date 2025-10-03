@@ -96,3 +96,21 @@ using namespace std;
 }
 
 @end
+
+// C++ implementation
+namespace cinder {
+
+std::vector<Capture::Mode> CaptureImplCocoaDummyDevice::getModes() const
+{
+	std::vector<Capture::Mode> modes;
+
+	// Return some dummy modes for testing
+	MediaTime frameRate( 1, 30 ); // 30 fps
+	modes.emplace_back( 320, 240, frameRate, Capture::Mode::Codec::Uncompressed, Capture::Mode::PixelFormat::RGB24, "Dummy Low" );
+	modes.emplace_back( 640, 480, frameRate, Capture::Mode::Codec::Uncompressed, Capture::Mode::PixelFormat::RGB24, "Dummy Medium" );
+	modes.emplace_back( 1280, 720, frameRate, Capture::Mode::Codec::Uncompressed, Capture::Mode::PixelFormat::RGB24, "Dummy HD" );
+
+	return modes;
+}
+
+} // namespace cinder

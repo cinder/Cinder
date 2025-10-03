@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{829C0320-5FAE-497F-A99F-5924866F5058}</ProjectGuid>
-    <RootNamespace>CaptureBasic</RootNamespace>
+    <RootNamespace>CaptureTest</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -110,7 +110,7 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\CaptureBasicApp.cpp" />
+    <ClCompile Include="..\src\CaptureTestApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />

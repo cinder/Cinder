@@ -432,9 +432,6 @@
     <ClCompile Include="..\..\src\AntTweakBar\TwPrecomp.cpp">
       <Filter>Source Files\AntTweakBar</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\videoInput\videoInput.cpp">
-      <Filter>Source Files\videoInput</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\cinder\UrlImplWinInet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

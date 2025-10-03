@@ -5,9 +5,9 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -40,23 +40,29 @@ namespace cinder { namespace msw {
 CI_API Surface8uRef convertHBitmap( HBITMAP hbitmap );
 
 //! Converts a UTF-8 string into a wide string (wstring). Note that wstring is not a good cross-platform choice and this is here for interop with Windows APIs.
-CI_API std::wstring toWideString( const std::string &utf8String );
+CI_API std::wstring toWideString( const std::string& utf8String );
 //! Converts a wide string to a UTF-8 string. Note that wstring is not a good cross-platform choice and this is here for interop with Windows APIs.
-CI_API std::string toUtf8String( const std::wstring &wideString );
+CI_API std::string toUtf8String( const std::wstring& wideString );
 
 //! Converts a Win32 POINTFX fixed point point to a cinder::vec2
-#if ! defined ( CINDER_UWP )
-CI_API inline vec2 toVec2( const ::POINTFX &p )
-{ return vec2( ( (p.x.value << 16) | p.x.fract ) / 65535.0f, ( (p.y.value << 16) | p.y.fract ) / 65535.0f ); }
+#if ! defined( CINDER_UWP )
+CI_API inline vec2 toVec2( const ::POINTFX& p )
+{
+	return vec2( ( ( p.x.value << 16 ) | p.x.fract ) / 65535.0f, ( ( p.y.value << 16 ) | p.y.fract ) / 65535.0f );
+}
 #endif
 
 //! A free function designed to interact with makeComShared, calls Release() on a com-managed object
-CI_API void ComDelete( void *p );
+CI_API void ComDelete( void* p );
 
 //! Functor version that calls Release() on a com-managed object
 struct CI_API ComDeleter {
-	template <typename T>
-	void operator()( T *p )	{ if( p ) p->Release(); }
+	template<typename T>
+	void operator()( T* p )
+	{
+		if( p )
+			p->Release();
+	}
 };
 
 template<typename T>
@@ -64,30 +70,101 @@ using ManagedComRef = std::shared_ptr<T>;
 
 //! Creates a shared_ptr whose deleter will properly decrement the reference count of a COM object
 template<typename T>
-ManagedComRef<T> makeComShared( T *p )		{ return ManagedComRef<T>( p, &ComDelete ); }
+ManagedComRef<T> makeComShared( T* p )
+{
+	return ManagedComRef<T>( p, &ComDelete );
+}
 
 template<typename T>
 using ManagedComPtr = std::unique_ptr<T, ComDeleter>;
 
 //! Creates a unique_ptr whose deleter will properly decrement the reference count of a COM object
 template<typename T>
-ManagedComPtr<T> makeComUnique( T *p )		{ return ManagedComPtr<T>( p ); }
+ManagedComPtr<T> makeComUnique( T* p )
+{
+	return ManagedComPtr<T>( p );
+}
+
+//! A traditional COM smart pointer similar to ATL's CComPtr that manages reference counting automatically
+/*! This class provides automatic AddRef/Release management for COM interfaces, similar to ATL's CComPtr.
+	Unlike ManagedComPtr (which uses unique_ptr semantics), ComPtr uses traditional COM reference
+	counting where multiple instances can share ownership of the same COM object.
+	Use ComPtr when you need standard COM interface pointer management without ATL dependency. */
+template<typename T>
+class CI_API ComPtr {
+  public:
+	ComPtr()
+		: ptr( nullptr )
+	{
+	}
+	ComPtr( T* p )
+		: ptr( p )
+	{
+		if( ptr )
+			ptr->AddRef();
+	}
+	ComPtr( const ComPtr& other )
+		: ptr( other.ptr )
+	{
+		if( ptr )
+			ptr->AddRef();
+	}
+	~ComPtr()
+	{
+		if( ptr )
+			ptr->Release();
+	}
+
+	ComPtr& operator=( T* p )
+	{
+		if( ptr != p ) {
+			if( ptr )
+				ptr->Release();
+			ptr = p;
+			if( ptr )
+				ptr->AddRef();
+		}
+		return *this;
+	}
+
+	ComPtr& operator=( const ComPtr& other ) { return *this = other.ptr; }
+
+	T*	get() const { return ptr; }
+	T** operator&() { return &ptr; }
+	T*	operator->() const { return ptr; }
+		operator bool() const { return ptr != nullptr; }
+
+	void reset( T* p = nullptr )
+	{
+		if( ptr != p ) {
+			if( ptr )
+				ptr->Release();
+			ptr = p;
+		}
+	}
+
+  private:
+	T* ptr;
+};
 
 //! Wraps a cinder::OStream with a COM ::IStream
-class CI_API ComOStream : public ::IStream
-{
+class CI_API ComOStream : public ::IStream {
   public:
-	ComOStream( cinder::OStreamRef aOStream ) : mOStream( aOStream ), _refcount( 1 ) {}
+	ComOStream( cinder::OStreamRef aOStream )
+		: mOStream( aOStream )
+		, _refcount( 1 )
+	{
+	}
 
-    virtual HRESULT STDMETHODCALLTYPE QueryInterface( REFIID iid, void ** ppvObject );
-    virtual ULONG STDMETHODCALLTYPE AddRef();
-    virtual ULONG STDMETHODCALLTYPE Release(); 
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface( REFIID iid, void** ppvObject );
+	virtual ULONG STDMETHODCALLTYPE	  AddRef();
+	virtual ULONG STDMETHODCALLTYPE	  Release();
 
-  // ISequentialStream Interface
+	// ISequentialStream Interface
   public:
 	virtual HRESULT STDMETHODCALLTYPE Read( void* /*pv*/, ULONG /*cb*/, ULONG* /*pcbRead*/ ) { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE Write( void const* pv, ULONG cb, ULONG* pcbWritten );
-  // IStream Interface
+	// IStream Interface
   public:
 	virtual HRESULT STDMETHODCALLTYPE SetSize( ULARGE_INTEGER ) { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE CopyTo( ::IStream*, ULARGE_INTEGER, ULARGE_INTEGER*, ULARGE_INTEGER* ) { return E_NOTIMPL; }
@@ -95,47 +172,50 @@ class CI_API ComOStream : public ::IStream
 	virtual HRESULT STDMETHODCALLTYPE Revert() { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE LockRegion( ULARGE_INTEGER, ULARGE_INTEGER, DWORD ) { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE UnlockRegion( ULARGE_INTEGER, ULARGE_INTEGER, DWORD ) { return E_NOTIMPL; }
-	virtual HRESULT STDMETHODCALLTYPE Clone(IStream **) { return E_NOTIMPL; }
+	virtual HRESULT STDMETHODCALLTYPE Clone( IStream** ) { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE Seek( LARGE_INTEGER liDistanceToMove, DWORD dwOrigin, ULARGE_INTEGER* lpNewFilePointer );
-	virtual HRESULT STDMETHODCALLTYPE Stat( STATSTG* /*pStatstg*/, DWORD /*grfStatFlag*/) { return E_NOTIMPL; }
+	virtual HRESULT STDMETHODCALLTYPE Stat( STATSTG* /*pStatstg*/, DWORD /*grfStatFlag*/ ) { return E_NOTIMPL; }
 
   private:
-	cinder::OStreamRef	mOStream;
-	LONG			_refcount;
+	cinder::OStreamRef mOStream;
+	LONG			   _refcount;
 };
 
 //! Wraps a cinder::IStream with a COM ::IStream
-class CI_API ComIStream : public ::IStream
-{
-public:
-	ComIStream( cinder::IStreamRef aIStream ) : mIStream( aIStream ), _refcount( 1 ) {}
+class CI_API ComIStream : public ::IStream {
+  public:
+	ComIStream( cinder::IStreamRef aIStream )
+		: mIStream( aIStream )
+		, _refcount( 1 )
+	{
+	}
 
-	virtual HRESULT STDMETHODCALLTYPE QueryInterface( REFIID iid, void ** ppvObject );
-	virtual ULONG STDMETHODCALLTYPE AddRef();
-	virtual ULONG STDMETHODCALLTYPE Release(); 
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface( REFIID iid, void** ppvObject );
+	virtual ULONG STDMETHODCALLTYPE	  AddRef();
+	virtual ULONG STDMETHODCALLTYPE	  Release();
 
 	// ISequentialStream Interface
-public:
+  public:
 	virtual HRESULT STDMETHODCALLTYPE Read( void* pv, ULONG cb, ULONG* pcbRead );
 	virtual HRESULT STDMETHODCALLTYPE Write( void const* /*pv*/, ULONG /*cb*/, ULONG* /*pcbWritten*/ ) { return E_NOTIMPL; }
 	// IStream Interface
-public:
+  public:
 	virtual HRESULT STDMETHODCALLTYPE SetSize( ULARGE_INTEGER ) { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE CopyTo( ::IStream*, ULARGE_INTEGER, ULARGE_INTEGER*, ULARGE_INTEGER* ) { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE Commit( DWORD ) { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE Revert() { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE LockRegion( ULARGE_INTEGER, ULARGE_INTEGER, DWORD ) { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE UnlockRegion( ULARGE_INTEGER, ULARGE_INTEGER, DWORD ) { return E_NOTIMPL; }
-	virtual HRESULT STDMETHODCALLTYPE Clone(IStream **) { return E_NOTIMPL; }
+	virtual HRESULT STDMETHODCALLTYPE Clone( IStream** ) { return E_NOTIMPL; }
 	virtual HRESULT STDMETHODCALLTYPE Seek( LARGE_INTEGER liDistanceToMove, DWORD dwOrigin, ULARGE_INTEGER* lpNewFilePointer );
-	virtual HRESULT STDMETHODCALLTYPE Stat( STATSTG* pStatstg, DWORD grfStatFlag);
+	virtual HRESULT STDMETHODCALLTYPE Stat( STATSTG* pStatstg, DWORD grfStatFlag );
 
-private:
-	cinder::IStreamRef	mIStream;
-	LONG			_refcount;
+  private:
+	cinder::IStreamRef mIStream;
+	LONG			   _refcount;
 };
 
 //! Initializes COM on this thread. Uses thread local storage to prevent multiple initializations per thread
 CI_API void initializeCom( DWORD params = COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE );
 
-} } // namespace cinder::msw
+}} // namespace cinder::msw

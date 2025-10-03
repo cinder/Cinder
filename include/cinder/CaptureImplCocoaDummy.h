@@ -45,6 +45,7 @@ class CaptureImplCocoaDummyDevice : public Capture::Device {
 	Capture::DeviceIdentifier	getUniqueId() const { return mUniqueId; }
 	bool						isFrontFacing() const { return mFrontFacing; }
 	void*						getNative() const { return NULL; }
+	std::vector<Capture::Mode>	getModes() const override;
   private:
 	Capture::DeviceIdentifier	mUniqueId;
 	bool						mFrontFacing;
