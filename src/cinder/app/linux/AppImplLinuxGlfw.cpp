@@ -317,7 +317,10 @@ public:
 			files.push_back( paths[i] );
 		}
 
-		vec2 dropPoint = { 0, 0 }; // note: doesn't appear to be any way to get the drop position.
+		// Get the cursor position at the time of the drop
+		double xpos, ypos;
+		::glfwGetCursorPos( glfwWindow, &xpos, &ypos );
+		vec2 dropPoint = { static_cast<float>(xpos), static_cast<float>(ypos) };
 		FileDropEvent dropEvent( getWindow(), dropPoint.x, dropPoint.y, files );
 		getWindow()->emitFileDrop( &dropEvent );
 	}
