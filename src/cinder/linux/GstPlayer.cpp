@@ -10,6 +10,9 @@
 	#if ! defined( CINDER_LINUX_EGL_ONLY )
 		// These files will include a glfw_config.h that's custom to Cinder.
 		#include "glad/glad.h"
+		#define GLFW_EXPOSE_NATIVE_X11
+		#define GLFW_EXPOSE_NATIVE_GLX
+		#define GLFW_EXPOSE_NATIVE_EGL
 		#include "glfw/glfw3.h"
 		#include "glfw/glfw3native.h"
 	#endif
