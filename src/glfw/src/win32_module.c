@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.2 OS X - www.glfw.org
+// GLFW 3.4 Win32 - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2021 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -24,37 +24,28 @@
 //
 //========================================================================
 
-#ifndef _glfw3_nsgl_context_h_
-#define _glfw3_nsgl_context_h_
+#include "internal.h"
 
-#define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextNSGL nsgl
-#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryNSGL nsgl
+#if defined(GLFW_BUILD_WIN32_MODULE)
 
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
-// NSGL-specific per-context data
-//
-typedef struct _GLFWcontextNSGL
+void* _glfwPlatformLoadModule(const char* path)
 {
-    id           pixelFormat;
-    id	         object;
+    return LoadLibraryA(path);
+}
 
-} _GLFWcontextNSGL;
-
-// NSGL-specific global data
-//
-typedef struct _GLFWlibraryNSGL
+void _glfwPlatformFreeModule(void* module)
 {
-    // dlopen handle for OpenGL.framework (for glfwGetProcAddress)
-    CFBundleRef     framework;
+    FreeLibrary((HMODULE) module);
+}
 
-} _GLFWlibraryNSGL;
+GLFWproc _glfwPlatformGetModuleSymbol(void* module, const char* name)
+{
+    return (GLFWproc) GetProcAddress((HMODULE) module, name);
+}
 
+#endif // GLFW_BUILD_WIN32_MODULE
 
-GLFWbool _glfwInitNSGL(void);
-void _glfwTerminateNSGL(void);
-GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
-                                const _GLFWctxconfig* ctxconfig,
-                                const _GLFWfbconfig* fbconfig);
-void _glfwDestroyContextNSGL(_GLFWwindow* window);
-
-#endif // _glfw3_nsgl_context_h_
