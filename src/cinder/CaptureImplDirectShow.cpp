@@ -483,6 +483,7 @@ struct DeviceContext {
 	ComPtr<ICaptureGraphBuilder2> captureBuilder;
 	ComPtr<IGraphBuilder>		  graphBuilder;
 	ComPtr<IMediaControl>		  mediaControl;
+	ComPtr<IMediaEvent>			  mediaEvent;
 	ComPtr<IBaseFilter>			  sourceFilter;
 	ComPtr<IBaseFilter>			  grabberFilter;
 	ComPtr<ISampleGrabber>		  sampleGrabber;
@@ -793,7 +794,49 @@ void CaptureImplDirectShow::stop()
 
 bool CaptureImplDirectShow::isCapturing()
 {
+	if( ! mIsCapturing )
+		return false;
+
+	// Check for device disconnection events
+	checkDeviceEvents();
+
 	return mIsCapturing;
+}
+
+void CaptureImplDirectShow::checkDeviceEvents()
+{
+	DeviceContext* deviceContext = static_cast<DeviceContext*>( mDeviceContext );
+	if( ! deviceContext || ! deviceContext->mediaEvent )
+		return;
+
+	long	 eventCode;
+	LONG_PTR param1, param2;
+
+	// Check for events without blocking (timeout = 0)
+	// Process all queued events to keep the queue from filling up
+	while( SUCCEEDED( deviceContext->mediaEvent->GetEvent( &eventCode, &param1, &param2, 0 ) ) ) {
+		// Handle critical events that should stop capture
+		switch( eventCode ) {
+			case EC_DEVICE_LOST:
+				// param2 == 0 means device was removed, param2 == 1 means device was added
+				if( param2 == 0 )
+					mIsCapturing = false;
+				break;
+			case EC_ERRORABORT:
+				// Critical error - abort capture
+				mIsCapturing = false;
+				break;
+			case EC_USERABORT:
+				// User-initiated abort (e.g., video window closed)
+				mIsCapturing = false;
+				break;
+			default:
+				break;
+		}
+
+		// Free the event parameters
+		deviceContext->mediaEvent->FreeEventParams( eventCode, param1, param2 );
+	}
 }
 
 bool CaptureImplDirectShow::checkNewFrame() const
@@ -818,9 +861,7 @@ Surface8uRef CaptureImplDirectShow::getSurface() const
 			int			   rowBytes = mWidth * 3;
 
 			for( int y = 0; y < mHeight; y++ ) {
-				memcpy( dst + y * rowBytes,
-						src + ( mHeight - 1 - y ) * rowBytes,
-						rowBytes );
+				memcpy( dst + y * rowBytes, src + ( mHeight - 1 - y ) * rowBytes, rowBytes );
 			}
 
 			mNewFrameAvailable.store( false, std::memory_order_release );
@@ -875,6 +916,12 @@ bool createCaptureGraph( DeviceContext* deviceContext )
 
 	// Get the media control interface
 	hr = deviceContext->graphBuilder->QueryInterface( IID_IMediaControl, reinterpret_cast<void**>( &deviceContext->mediaControl ) );
+	if( FAILED( hr ) ) {
+		return false;
+	}
+
+	// Get the media event interface for device disconnection detection
+	hr = deviceContext->graphBuilder->QueryInterface( IID_IMediaEvent, reinterpret_cast<void**>( &deviceContext->mediaEvent ) );
 	if( FAILED( hr ) ) {
 		return false;
 	}
