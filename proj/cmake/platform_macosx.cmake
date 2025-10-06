@@ -2,6 +2,11 @@ cmake_minimum_required( VERSION 3.10 FATAL_ERROR )
 
 set( CINDER_PLATFORM "Cocoa" )
 
+# Build universal binaries for macOS (arm64 + x86_64) to match Xcode default behavior
+if( NOT CMAKE_OSX_ARCHITECTURES )
+	set( CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "macOS architectures" FORCE )
+endif()
+
 # append mac specific source files
 list( APPEND SRC_SET_COCOA
 	${CINDER_SRC_DIR}/cinder/CaptureImplAvFoundation.mm

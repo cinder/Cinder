@@ -397,6 +397,7 @@ if( NOT CINDER_FREETYPE_USE_SYSTEM )
 		${CINDER_SRC_DIR}/freetype/base/fttype1.c
 		${CINDER_SRC_DIR}/freetype/base/ftwinfnt.c
 		${CINDER_SRC_DIR}/freetype/raster/raster.c
+		${CINDER_SRC_DIR}/freetype/raster/rastpic.c
 		${CINDER_SRC_DIR}/freetype/smooth/smooth.c
 		${CINDER_SRC_DIR}/freetype/autofit/autofit.c
 		${CINDER_SRC_DIR}/freetype/bzip2/ftbzip2.c

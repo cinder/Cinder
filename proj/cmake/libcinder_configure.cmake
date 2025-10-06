@@ -7,6 +7,7 @@ set( CINDER_INC_DIR		"${CINDER_PATH}/include" )
 
 if( NOT CINDER_MSW )
 	add_definitions( -Wfatal-errors )
+	add_definitions( -DHAVE_UNISTD_H )
 endif()
 
 list( APPEND CMAKE_MODULE_PATH ${CINDER_CMAKE_DIR} ${CMAKE_CURRENT_LIST_DIR}/modules )
