@@ -95,6 +95,9 @@ class CaptureImplDirectShow {
 	mutable std::atomic<bool> mNewFrameAvailable;
 	mutable CRITICAL_SECTION  mCriticalSection;
 
+	// Device connection monitoring
+	void checkDeviceEvents();
+
 	// Direct DirectShow setup methods
 	bool setupDeviceDirect( int deviceId, int width, int height );
 };
