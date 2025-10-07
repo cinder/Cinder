@@ -1083,6 +1083,9 @@
     <ClCompile Include="..\..\src\imgui\imgui_tables.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\cinder\CanvasUi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\AntTweakBar\AntPerfTimer.h">
@@ -2274,6 +2277,9 @@
       <Filter>Header Files\gl\nv</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\MediaTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\CanvasUi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
