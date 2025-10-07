@@ -105,17 +105,17 @@ namespace ImGui {
 	//! used here for initialization, or in App::update() only if the this window is still open.
 	CI_API bool Initialize( const Options& options = Options() );
 
-	CI_API bool DragFloat2( const char* label, glm::vec2* v2, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* format = "%.3f", float power = 1.0f );
-	CI_API bool DragFloat3( const char* label, glm::vec3* v2, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* format = "%.3f", float power = 1.0f );
-	CI_API bool DragFloat4( const char* label, glm::vec4* v2, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* format = "%.3f", float power = 1.0f );
+	CI_API bool DragFloat2( const char* label, glm::vec2* v2, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* format = "%.3f", ImGuiSliderFlags flags = 0 );
+	CI_API bool DragFloat3( const char* label, glm::vec3* v2, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* format = "%.3f", ImGuiSliderFlags flags = 0 );
+	CI_API bool DragFloat4( const char* label, glm::vec4* v2, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* format = "%.3f", ImGuiSliderFlags flags = 0 );
 
 	CI_API bool DragInt2( const char* label, glm::ivec2* v2, float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* format = "%.3f" );
 	CI_API bool DragInt3( const char* label, glm::ivec3* v2, float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* format = "%.3f" );
 	CI_API bool DragInt4( const char* label, glm::ivec4* v2, float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* format = "%.3f" );
 
-	CI_API bool SliderFloat2( const char* label, glm::vec2* v2, float v_min, float v_max, const char* format = "%.3f", float power = 1.0f );
-	CI_API bool SliderFloat3( const char* label, glm::vec3* v2, float v_min, float v_max, const char* format = "%.3f", float power = 1.0f );
-	CI_API bool SliderFloat4( const char* label, glm::vec4* v2, float v_min, float v_max, const char* format = "%.3f", float power = 1.0f );
+	CI_API bool SliderFloat2( const char* label, glm::vec2* v2, float v_min, float v_max, const char* format = "%.3f", ImGuiSliderFlags flags = 0 );
+	CI_API bool SliderFloat3( const char* label, glm::vec3* v2, float v_min, float v_max, const char* format = "%.3f", ImGuiSliderFlags flags = 0 );
+	CI_API bool SliderFloat4( const char* label, glm::vec4* v2, float v_min, float v_max, const char* format = "%.3f", ImGuiSliderFlags flags = 0 );
 
 	CI_API bool SliderInt2( const char* label, glm::ivec2* v2, int v_min, int v_max, const char* format = "%.3f" );
 	CI_API bool SliderInt3( const char* label, glm::ivec3* v2, int v_min, int v_max, const char* format = "%.3f" );

@@ -234,19 +234,19 @@ ScopedTreeNode::~ScopedTreeNode()
 		ImGui::TreePop();
 }
 
-bool DragFloat2( const char* label, glm::vec2* v2, float v_speed, float v_min, float v_max, const char* format, float power )
+bool DragFloat2( const char* label, glm::vec2* v2, float v_speed, float v_min, float v_max, const char* format, ImGuiSliderFlags flags )
 {
-	return DragFloat2( label, glm::value_ptr( *v2 ), v_speed, v_min, v_max, format, power );
+	return DragFloat2( label, glm::value_ptr( *v2 ), v_speed, v_min, v_max, format, flags );
 }
 
-bool DragFloat3( const char* label, glm::vec3* v3, float v_speed, float v_min, float v_max, const char* format, float power )
+bool DragFloat3( const char* label, glm::vec3* v3, float v_speed, float v_min, float v_max, const char* format, ImGuiSliderFlags flags )
 {
-	return DragFloat3( label, glm::value_ptr( *v3 ), v_speed, v_min, v_max, format, power );
+	return DragFloat3( label, glm::value_ptr( *v3 ), v_speed, v_min, v_max, format, flags );
 }
 
-bool DragFloat4( const char* label, glm::vec4* v4, float v_speed, float v_min, float v_max, const char* format, float power )
+bool DragFloat4( const char* label, glm::vec4* v4, float v_speed, float v_min, float v_max, const char* format, ImGuiSliderFlags flags )
 {
-	return DragFloat4( label, glm::value_ptr( *v4 ), v_speed, v_min, v_max, format, power );
+	return DragFloat4( label, glm::value_ptr( *v4 ), v_speed, v_min, v_max, format, flags );
 }
 
 bool DragInt2( const char* label, glm::ivec2* v2, float v_speed, int v_min, int v_max, const char* format )
@@ -264,19 +264,19 @@ bool DragInt4( const char* label, glm::ivec4* v4, float v_speed, int v_min, int 
 	return DragInt4( label, glm::value_ptr( *v4 ), v_speed, v_min, v_max, format );
 }
 
-bool SliderFloat2( const char* label, glm::vec2* v2, float v_min, float v_max, const char* format, float power )
+bool SliderFloat2( const char* label, glm::vec2* v2, float v_min, float v_max, const char* format, ImGuiSliderFlags flags )
 {
-	return SliderFloat2( label, glm::value_ptr( *v2 ), v_min, v_max, format, power );
+	return SliderFloat2( label, glm::value_ptr( *v2 ), v_min, v_max, format, flags );
 }
 
-bool SliderFloat3( const char* label, glm::vec3* v3, float v_min, float v_max, const char* format, float power )
+bool SliderFloat3( const char* label, glm::vec3* v3, float v_min, float v_max, const char* format, ImGuiSliderFlags flags )
 {
-	return SliderFloat3( label, glm::value_ptr( *v3 ), v_min, v_max, format, power );
+	return SliderFloat3( label, glm::value_ptr( *v3 ), v_min, v_max, format, flags );
 }
 
-bool SliderFloat4( const char* label, glm::vec4* v4, float v_min, float v_max, const char* format, float power )
+bool SliderFloat4( const char* label, glm::vec4* v4, float v_min, float v_max, const char* format, ImGuiSliderFlags flags )
 {
-	return SliderFloat4( label, glm::value_ptr( *v4 ), v_min, v_max, format, power );
+	return SliderFloat4( label, glm::value_ptr( *v4 ), v_min, v_max, format, flags );
 }
 
 bool SliderInt2( const char* label, glm::ivec2* v2, int v_min, int v_max, const char* format )
