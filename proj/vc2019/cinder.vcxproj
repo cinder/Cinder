@@ -628,7 +628,14 @@
     <ClCompile Include="..\..\src\cinder\app\msw\AppMsw.cpp" />
     <ClCompile Include="..\..\src\cinder\app\msw\PlatformMsw.cpp" />
     <ClCompile Include="..\..\src\cinder\app\msw\RendererImpl2dGdi.cpp" />
-    <ClCompile Include="..\..\src\cinder\app\msw\RendererImplGlAngle.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\msw\RendererImplGlAngle.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\src\cinder\app\msw\RendererImplGlMsw.cpp" />
     <ClCompile Include="..\..\src\cinder\app\Platform.cpp" />
     <ClCompile Include="..\..\src\cinder\app\RendererGl.cpp" />
@@ -823,7 +830,7 @@
     <ClCompile Include="..\..\src\cinder\Matrix.cpp" />
     <ClCompile Include="..\..\src\cinder\MediaTime.cpp" />
     <ClCompile Include="..\..\src\cinder\ObjLoader.cpp" />
-    <ClCompile Include="..\..\src\cinder\Path2D.cpp" />
+    <ClCompile Include="..\..\src\cinder\Path2d.cpp" />
     <ClCompile Include="..\..\src\cinder\Perlin.cpp" />
     <ClCompile Include="..\..\src\cinder\Plane.cpp" />
     <ClCompile Include="..\..\src\cinder\PolyLine.cpp" />
