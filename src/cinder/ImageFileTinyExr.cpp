@@ -24,6 +24,9 @@
 #include "cinder/ImageFileTinyExr.h"
 #include "cinder/Log.h"
 
+#define TINYEXR_USE_MINIZ 0  // Use zlib instead of miniz
+#include <zlib.h>  // Required when TINYEXR_USE_MINIZ is 0
+#define TINYEXR_IMPLEMENTATION
 #include "tinyexr/tinyexr.h"
 
 using namespace std;
@@ -59,39 +62,61 @@ ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageS
 	if( status != TINYEXR_SUCCESS )
 		throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR version" ) );
 
-	if( version.multipart || version.non_image )
-		throw ImageIoExceptionFailedLoadTinyExr( string( "Multipart or DeepImage EXR's are not supported yet" ) );
+	if( version.multipart )
+		throw ImageIoExceptionFailedLoadTinyExr( "Multi-part EXR not supported" );
+	if( version.non_image )
+		throw ImageIoExceptionFailedLoadTinyExr( "Deep image EXR not supported" );
+	if( version.tiled )
+		throw ImageIoExceptionFailedLoadTinyExr( "Tiled EXR not supported" );
 
 	if( dataSource->isFilePath() ) {
 		const string filename = dataSource->getFilePath().string();
 
-		const char *error;
+		const char *error = nullptr;
 		status = ParseEXRHeaderFromFile( mExrHeader.get(), &version, filename.c_str(), &error );
-		if( status != TINYEXR_SUCCESS )
-			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR header; Error message: " ) + error );
+		if( status != TINYEXR_SUCCESS ) {
+			string errorMsg = error ? string( "Failed to parse OpenEXR header; Error message: " ) + error : "Failed to parse OpenEXR header";
+			if( error )
+				FreeEXRErrorMessage( error );
+			throw ImageIoExceptionFailedLoadTinyExr( errorMsg );
+		}
 
 		status = LoadEXRImageFromFile( mExrImage.get(), mExrHeader.get(), filename.c_str(), &error );
-		if( status != TINYEXR_SUCCESS )
-			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR file; Error message: " ) + error );
+		if( status != TINYEXR_SUCCESS ) {
+			string errorMsg = error ? string( "Failed to parse OpenEXR file; Error message: " ) + error : "Failed to parse OpenEXR file";
+			if( error )
+				FreeEXRErrorMessage( error );
+			throw ImageIoExceptionFailedLoadTinyExr( errorMsg );
+		}
 	}
 	else {
-		const auto memory = static_cast<const unsigned char *>( dataSource->getBuffer()->getData() );
+		const auto buffer = dataSource->getBuffer();
+		const auto memory = static_cast<const unsigned char *>( buffer->getData() );
+		const size_t size = buffer->getSize();
 
-		const char *error;
-		status = ParseEXRHeaderFromMemory( mExrHeader.get(), &version, memory, &error );
-		if( status != TINYEXR_SUCCESS )
-			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR header; Error message: " ) + error );
-		
-		status = LoadEXRImageFromMemory( mExrImage.get(), mExrHeader.get(), memory, &error );
-		if( status != TINYEXR_SUCCESS )
-			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR file; Error message: " ) + error );
+		const char *error = nullptr;
+		status = ParseEXRHeaderFromMemory( mExrHeader.get(), &version, memory, size, &error );
+		if( status != TINYEXR_SUCCESS ) {
+			string errorMsg = error ? string( "Failed to parse OpenEXR header; Error message: " ) + error : "Failed to parse OpenEXR header";
+			if( error )
+				FreeEXRErrorMessage( error );
+			throw ImageIoExceptionFailedLoadTinyExr( errorMsg );
+		}
+
+		status = LoadEXRImageFromMemory( mExrImage.get(), mExrHeader.get(), memory, size, &error );
+		if( status != TINYEXR_SUCCESS ) {
+			string errorMsg = error ? string( "Failed to parse OpenEXR file; Error message: " ) + error : "Failed to parse OpenEXR file";
+			if( error )
+				FreeEXRErrorMessage( error );
+			throw ImageIoExceptionFailedLoadTinyExr( errorMsg );
+		}
 	}
 
 	// verify that the channels are all the same size; currently we don't support variably sized channels
 	const int pixelType = mExrHeader->pixel_types[0];
 	for( int c = 1; c < mExrHeader->num_channels; ++c ) {
 		if( pixelType != mExrHeader->pixel_types[c] )
-			throw ImageIoExceptionFailedLoadTinyExr( "TinyExr: heterogneous channel data types not supported" );
+			throw ImageIoExceptionFailedLoadTinyExr( "Mixed channel data types not supported (all channels must be HALF or all FLOAT)" );
 	}
 
 	switch( pixelType ) {
@@ -101,8 +126,11 @@ ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageS
 		case TINYEXR_PIXELTYPE_FLOAT:
 			setDataType( ImageIo::FLOAT32 );
 			break;
+		case TINYEXR_PIXELTYPE_UINT:
+			throw ImageIoExceptionFailedLoadTinyExr( "UINT pixel type not supported" );
+			break;
 		default:
-			throw ImageIoExceptionFailedLoadTinyExr( "TinyExr: Unknown data type" );
+			throw ImageIoExceptionFailedLoadTinyExr( "Unsupported pixel type" );
 			break;
 	}
 
@@ -126,7 +154,7 @@ ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageS
 			setChannelOrder( ImageIo::ChannelOrder::RGBA );
 			break;
 		default:
-			throw ImageIoExceptionFailedLoadTinyExr( "TinyExr: Unsupported number of channels (" + to_string( mExrImage->num_channels ) + ")" );
+			throw ImageIoExceptionFailedLoadTinyExr( "Unsupported channel count (" + to_string( mExrImage->num_channels ) + "); expected 1-4 channels" );
 	}
 }
 
@@ -173,7 +201,7 @@ void ImageSourceFileTinyExr::load( ImageTargetRef target )
 				for( int32_t col = 0; col < mWidth; col++ ) {
 					rowData.at( col * numChannels + 0 ) = static_cast<const uint16_t *>( gray )[row * mWidth + col];
 					if( alpha )
-						rowData.at( col * numChannels + 1 ) = static_cast<const float *>( alpha )[row * mWidth + col];
+						rowData.at( col * numChannels + 1 ) = static_cast<const uint16_t *>( alpha )[row * mWidth + col];
 				}
 
 				( ( *this ).*rowFunc )( target, row, rowData.data() );
@@ -322,13 +350,18 @@ void ImageTargetFileTinyExr::finalize()
 	}
 	exrHeader.pixel_types = pixelTypes;
 	exrHeader.requested_pixel_types = requested_pixel_types;
-	exrHeader.compression_type = TINYEXR_COMPRESSIONTYPE_NONE; // TODO add option to enable compression
+	// Use ZIP compression by default for better file sizes while maintaining good performance
+	exrHeader.compression_type = TINYEXR_COMPRESSIONTYPE_ZIP;
 
-	const char *error;
+	const char *error = nullptr;
 
 	const int status = SaveEXRImageToFile( &exrImage, &exrHeader, mFilePath.string().c_str(), &error );
-	if( status != TINYEXR_SUCCESS )
-		throw ImageIoExceptionFailedWriteTinyExr( string( "TinyExr: failed to write. Error: " ) + error );
+	if( status != TINYEXR_SUCCESS ) {
+		string errorMsg = error ? string( "TinyExr: failed to write. Error: " ) + error : "TinyExr: failed to write";
+		if( error )
+			FreeEXRErrorMessage( error );
+		throw ImageIoExceptionFailedWriteTinyExr( errorMsg );
+	}
 
 	// Note: since header and image descriptors do not own any data, we explicitely do not call FreeEXRHeader and FreeEXRImage here!
 }

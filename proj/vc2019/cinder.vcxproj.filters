@@ -852,9 +852,6 @@
     <ClCompile Include="..\..\src\cinder\gl\ConstantConversions.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\tinyexr\tinyexr.cc">
-      <Filter>Source Files\tinyexr</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\cinder\ImageFileTinyExr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

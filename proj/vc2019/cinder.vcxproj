@@ -992,7 +992,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">$(IntDir)\vorbis_window.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\r8brain\r8bbase.cpp" />
-    <ClCompile Include="..\..\src\tinyexr\tinyexr.cc" />
     <ClCompile Include="..\..\src\zlib\adler32.c" />
     <ClCompile Include="..\..\src\zlib\compress.c" />
     <ClCompile Include="..\..\src\zlib\crc32.c" />
