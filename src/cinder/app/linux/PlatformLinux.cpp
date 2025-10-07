@@ -172,26 +172,22 @@ struct DialogHelper {
 		if( ! cmd.empty() ) {
 			FILE* pipe = popen( cmd.c_str(), "r" );
 			if( pipe ) {
-				std::vector<char> buffer( 512 );
 				std::string value;
-				while( ! feof( pipe ) ) {
-					std::memset( static_cast<void*>( buffer.data() ), 0, buffer.size() );
-					if( nullptr != fgets( buffer.data(), buffer.size(), pipe ) )  {
-						value += static_cast<const char *>( buffer.data() );
-					}
-				}
-				if( ! value.empty() ) {
-					// Zenity seems to add a new line character at the end of the path, so remove it if present.
-					const auto newLineCharacterPos = std::strcspn( value.c_str(), "\n" );
+				// Read all output from the dialog command in chunks
+				constexpr size_t BUFFER_SIZE = 4096;  // Linux PATH_MAX is typically 4096
+				char buffer[BUFFER_SIZE];
+				while( fgets( buffer, sizeof( buffer ), pipe ) != nullptr )
+					value += buffer;
+				
+				pclose( pipe );
 
-					if( newLineCharacterPos !=  value.size() ) {
-						value[ newLineCharacterPos ] = 0;
-					}
+				// Dialog tools add a trailing newline, remove it
+				if( ! value.empty() && value.back() == '\n' )
+					value.pop_back();
 
+				if( ! value.empty() )
 					result = value;
-				}
 			}
-			pclose(pipe);			
 		}
 
 		return result;
