@@ -80,7 +80,11 @@ if( CINDER_MSW AND MSVC )
 endif()
 
 target_compile_features( cinder PUBLIC cxx_std_17 )
-set_property( TARGET cinder PROPERTY CXX_EXTENSIONS OFF )
+set_target_properties( cinder PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+)
 
 # This file will contain all dependencies, includes, definition, compiler flags and so on..
 export( TARGETS cinder FILE ${PROJECT_BINARY_DIR}/${CINDER_LIB_DIRECTORY}/cinderTargets.cmake )
