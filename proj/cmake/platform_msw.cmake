@@ -101,6 +101,7 @@ source_group( "cinder\\audio\\dsp"	FILES ${SRC_SET_CINDER_AUDIO_DSP} )
 source_group( "cinder\\video\\msw"	FILES ${SRC_SET_VIDEO_MSW} )
 
 list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
+	${CINDER_INC_DIR}/msw/png
 	${CINDER_INC_DIR}/msw/zlib
 	${CINDER_INC_DIR}/msw
 )
