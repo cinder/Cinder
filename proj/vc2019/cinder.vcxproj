@@ -820,6 +820,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\ImageTargetFileStbImage.cpp" />
+    <ClCompile Include="..\..\src\cinder\ImageSourceFileQoi.cpp" />
+    <ClCompile Include="..\..\src\cinder\ImageTargetFileQoi.cpp" />
     <ClCompile Include="..\..\src\cinder\ImageTargetFileWic.cpp" />
     <ClCompile Include="..\..\src\cinder\ip\Blend.cpp" />
     <ClCompile Include="..\..\src\cinder\CinderMath.cpp" />
@@ -1134,6 +1136,8 @@
     <ClInclude Include="..\..\include\cinder\ImageSourceFileRadiance.h" />
     <ClInclude Include="..\..\include\cinder\ImageSourceFileStbImage.h" />
     <ClInclude Include="..\..\include\cinder\ImageTargetFileStbImage.h" />
+    <ClInclude Include="..\..\include\cinder\ImageSourceFileQoi.h" />
+    <ClInclude Include="..\..\include\cinder\ImageTargetFileQoi.h" />
     <ClInclude Include="..\..\include\cinder\ip\Blend.h" />
     <ClInclude Include="..\..\include\cinder\ip\Blur.h" />
     <ClInclude Include="..\..\include\cinder\ip\Checkerboard.h" />

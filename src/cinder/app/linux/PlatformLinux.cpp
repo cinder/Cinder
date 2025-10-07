@@ -26,6 +26,8 @@
 #include "cinder/ImageSourceFileRadiance.h"
 #include "cinder/ImageSourceFileStbImage.h"
 #include "cinder/ImageTargetFileStbImage.h"
+#include "cinder/ImageSourceFileQoi.h"
+#include "cinder/ImageTargetFileQoi.h"
 #include "cinder/ImageFileTinyExr.h"
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
@@ -58,6 +60,8 @@ PlatformLinux::PlatformLinux()
 	ImageSourceFileRadiance::registerSelf();
 	ImageSourceFileStbImage::registerSelf();
 	ImageTargetFileStbImage::registerSelf();
+	ImageSourceFileQoi::registerSelf();
+	ImageTargetFileQoi::registerSelf();
 	ImageSourceFileTinyExr::registerSelf();
 	ImageTargetFileTinyExr::registerSelf();
 }
