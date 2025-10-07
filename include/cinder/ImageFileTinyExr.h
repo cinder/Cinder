@@ -27,9 +27,9 @@
 
 #define USE_PLANAR_CHANNELS 1
 
-typedef struct _EXRVersion EXRVersion;
-typedef struct _EXRHeader  EXRHeader;
-typedef struct _EXRImage   EXRImage;
+typedef struct TEXRVersion EXRVersion;
+typedef struct TEXRHeader  EXRHeader;
+typedef struct TEXRImage   EXRImage;
 
 namespace cinder {
 

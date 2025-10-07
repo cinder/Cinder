@@ -398,7 +398,6 @@
 		111A6010191F72AE005C3166 /* Voice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5FA5191F72AE005C3166 /* Voice.cpp */; };
 		111A6013191F72AE005C3166 /* WaveTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5FA6191F72AE005C3166 /* WaveTable.cpp */; };
 		11316E571B28ABE900BD8783 /* ImageFileTinyExr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11316E561B28ABE900BD8783 /* ImageFileTinyExr.cpp */; };
-		11316E5A1B28AC1300BD8783 /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; settings = {COMPILER_FLAGS = "-Wno-conversion -Wno-unused-variable"; }; };
 		114B7553192B2F9800E30153 /* MonitorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 114B7552192B2F9800E30153 /* MonitorNode.cpp */; };
 		114B7557192B2FB400E30153 /* MonitorNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 114B7556192B2FB400E30153 /* MonitorNode.h */; };
 		116C06271ABD2C06004D8297 /* scoped.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06221ABD2C06004D8297 /* scoped.cpp */; };
@@ -439,7 +438,6 @@
 		27C100051BD16D4800AF387F /* linebreakdef.h in Headers */ = {isa = PBXBuildFile; fileRef = 0034C320151A5B9F003F2E30 /* linebreakdef.h */; };
 		27C100061BD16D4800AF387F /* CaptureImplCocoaDummy.h in Headers */ = {isa = PBXBuildFile; fileRef = 00E5A41B163F5A2B00AACB3A /* CaptureImplCocoaDummy.h */; };
 		27C100091BD16D4800AF387F /* ImageFileTinyExr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11316E561B28ABE900BD8783 /* ImageFileTinyExr.cpp */; };
-		27C1000A1BD16D4800AF387F /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; settings = {COMPILER_FLAGS = "-Wno-conversion -Wno-unused-variable"; }; };
 		27C1000B1BD16D4800AF387F /* DeviceManagerAudioSession.mm in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F82191F72AE005C3166 /* DeviceManagerAudioSession.mm */; };
 		27C1000C1BD16D4800AF387F /* Context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F85191F72AE005C3166 /* Context.cpp */; };
 		27C1000D1BD16D4800AF387F /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00241ABC0E830DD5004D34EB /* Camera.cpp */; };
@@ -771,7 +769,6 @@
 		27C1FEAF1BD0AE3400AF387F /* linebreakdef.h in Headers */ = {isa = PBXBuildFile; fileRef = 0034C320151A5B9F003F2E30 /* linebreakdef.h */; };
 		27C1FEB11BD0AE3400AF387F /* codebook.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E61191F703D005C3166 /* codebook.h */; };
 		27C1FEB31BD0AE3400AF387F /* ImageFileTinyExr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11316E561B28ABE900BD8783 /* ImageFileTinyExr.cpp */; };
-		27C1FEB41BD0AE3400AF387F /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; settings = {COMPILER_FLAGS = "-Wno-conversion -Wno-unused-variable"; }; };
 		27C1FEB51BD0AE3400AF387F /* DeviceManagerAudioSession.mm in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F82191F72AE005C3166 /* DeviceManagerAudioSession.mm */; };
 		27C1FEB61BD0AE3400AF387F /* Context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F85191F72AE005C3166 /* Context.cpp */; };
 		27C1FEB71BD0AE3400AF387F /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00241ABC0E830DD5004D34EB /* Camera.cpp */; };
@@ -2067,7 +2064,6 @@
 		111FBA831B1C1B2000A23DDB /* UrlImplWinInet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UrlImplWinInet.cpp; sourceTree = "<group>"; };
 		11316E531B28AB6400BD8783 /* ImageFileTinyExr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageFileTinyExr.h; sourceTree = "<group>"; };
 		11316E561B28ABE900BD8783 /* ImageFileTinyExr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageFileTinyExr.cpp; sourceTree = "<group>"; };
-		11316E591B28AC1300BD8783 /* tinyexr.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyexr.cc; sourceTree = "<group>"; };
 		114B7552192B2F9800E30153 /* MonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MonitorNode.cpp; sourceTree = "<group>"; };
 		114B7556192B2FB400E30153 /* MonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MonitorNode.h; sourceTree = "<group>"; };
 		1168DB441A8D90C900660ED3 /* Signals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Signals.h; sourceTree = "<group>"; };
@@ -3281,7 +3277,6 @@
 			isa = PBXGroup;
 			children = (
 				000F61E61B338662009D2067 /* tinyexr.h */,
-				11316E591B28AC1300BD8783 /* tinyexr.cc */,
 			);
 			name = tinyexr;
 			path = ../../src/tinyexr;
@@ -4789,7 +4784,6 @@
 			files = (
 				B3EA40901DD0F00900E34348 /* ftcid.c in Sources */,
 				27C100091BD16D4800AF387F /* ImageFileTinyExr.cpp in Sources */,
-				27C1000A1BD16D4800AF387F /* tinyexr.cc in Sources */,
 				27C1000B1BD16D4800AF387F /* DeviceManagerAudioSession.mm in Sources */,
 				B3EA40D91DD0F09C00E34348 /* ftgzip.c in Sources */,
 				27C1000C1BD16D4800AF387F /* Context.cpp in Sources */,
@@ -5043,7 +5037,6 @@
 			files = (
 				B3EA408F1DD0F00900E34348 /* ftcid.c in Sources */,
 				27C1FEB31BD0AE3400AF387F /* ImageFileTinyExr.cpp in Sources */,
-				27C1FEB41BD0AE3400AF387F /* tinyexr.cc in Sources */,
 				27C1FEB51BD0AE3400AF387F /* DeviceManagerAudioSession.mm in Sources */,
 				B3EA40D81DD0F09C00E34348 /* ftgzip.c in Sources */,
 				27C1FEB61BD0AE3400AF387F /* Context.cpp in Sources */,
@@ -5519,7 +5512,6 @@
 				B3EA40DC1DD0F0B300E34348 /* ftlzw.c in Sources */,
 				00A121F01362778200081873 /* TimelineItem.cpp in Sources */,
 				00A121F11362778200081873 /* Tween.cpp in Sources */,
-				11316E5A1B28AC1300BD8783 /* tinyexr.cc in Sources */,
 				B3EA409D1DD0F00900E34348 /* ftgxval.c in Sources */,
 				006D704A19942BF5008149E2 /* AvfUtils.mm in Sources */,
 				0003F3FC1992D64100647C8B /* Shader.cpp in Sources */,

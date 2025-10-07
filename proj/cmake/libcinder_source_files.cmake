@@ -214,13 +214,7 @@ source_group( "cinder\\svg" FILES   ${SRC_SET_CINDER_SVG} )
 # ----------------------------------------------------------------------------------------------------------------------
 # tinyexr
 # ----------------------------------------------------------------------------------------------------------------------
-
-list( APPEND SRC_SET_TINYEXR
-	${CINDER_SRC_DIR}/tinyexr/tinyexr.cc
-)
-
-list( APPEND CINDER_SRC_FILES               ${SRC_SET_TINYEXR} )
-source_group( "thirdparty\\tinyexr" FILES   ${SRC_SET_TINYEXR} )
+# tinyexr is now header-only (v1.0.12), implementation is in ImageFileTinyExr.cpp
 
 # ----------------------------------------------------------------------------------------------------------------------
 # glad
