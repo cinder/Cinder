@@ -29,6 +29,8 @@
 #include "cinder/ImageSourceFileRadiance.h"
 #include "cinder/ImageSourceFileStbImage.h"
 #include "cinder/ImageTargetFileStbImage.h"
+#include "cinder/ImageSourceFileQoi.h"
+#include "cinder/ImageTargetFileQoi.h"
 
 #include "cinder/android/app/CinderNativeActivity.h"
 #include "cinder/android/hardware/Camera.h"
@@ -55,6 +57,8 @@ PlatformAndroid::PlatformAndroid()
 	ImageSourceFileRadiance::registerSelf();
 	ImageSourceFileStbImage::registerSelf();
 	ImageTargetFileStbImage::registerSelf();
+	ImageSourceFileQoi::registerSelf();
+	ImageTargetFileQoi::registerSelf();
 
 	dbg_app_log( "PlatformAndroid::PlatformAndroid" );
 

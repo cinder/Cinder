@@ -32,6 +32,8 @@
 #include "cinder/ImageFileTinyExr.h"
 #include "cinder/ImageSourceFileStbImage.h"
 #include "cinder/ImageTargetFileStbImage.h"
+#include "cinder/ImageSourceFileQoi.h"
+#include "cinder/ImageTargetFileQoi.h"
 
 #include <windows.h>
 #include <Shlwapi.h>
@@ -73,6 +75,8 @@ PlatformMsw::PlatformMsw()
 	ImageTargetFileTinyExr::registerSelf();
 	ImageSourceFileStbImage::registerSelf();
 	ImageTargetFileStbImage::registerSelf();
+	ImageSourceFileQoi::registerSelf();
+	ImageTargetFileQoi::registerSelf();
 }
 
 DataSourceRef PlatformMsw::loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType )

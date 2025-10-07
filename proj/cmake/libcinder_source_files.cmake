@@ -33,6 +33,8 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/ImageSourceFileRadiance.cpp
 	${CINDER_SRC_DIR}/cinder/ImageSourceFileStbImage.cpp
 	${CINDER_SRC_DIR}/cinder/ImageTargetFileStbImage.cpp
+	${CINDER_SRC_DIR}/cinder/ImageSourceFileQoi.cpp
+	${CINDER_SRC_DIR}/cinder/ImageTargetFileQoi.cpp
 	${CINDER_SRC_DIR}/cinder/Json.cpp
 	${CINDER_SRC_DIR}/cinder/Log.cpp
 	${CINDER_SRC_DIR}/cinder/Matrix.cpp

@@ -30,6 +30,8 @@
 #include "cinder/ImageTargetFileQuartz.h"
 #include "cinder/ImageSourceFileRadiance.h"
 #include "cinder/ImageFileTinyExr.h"
+#include "cinder/ImageSourceFileQoi.h"
+#include "cinder/ImageTargetFileQoi.h"
 
 #if defined( CINDER_MAC )
 	#import <Cocoa/Cocoa.h>
@@ -58,10 +60,12 @@ PlatformCocoa::PlatformCocoa()
 
 	// register default ImageSources and ImageTargets
 	ImageSourceFileQuartz::registerSelf();
-	ImageTargetFileQuartz::registerSelf();	
+	ImageTargetFileQuartz::registerSelf();
 	ImageSourceFileRadiance::registerSelf();
 	ImageSourceFileTinyExr::registerSelf();
 	ImageTargetFileTinyExr::registerSelf();
+	ImageSourceFileQoi::registerSelf();
+	ImageTargetFileQoi::registerSelf();
 }
 
 void PlatformCocoa::prepareLaunch()
