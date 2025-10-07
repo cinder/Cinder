@@ -24,7 +24,6 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/DataTarget.cpp
 	${CINDER_SRC_DIR}/cinder/Display.cpp
 	${CINDER_SRC_DIR}/cinder/Exception.cpp
-	${CINDER_SRC_DIR}/cinder/Filesystem.cpp
 	${CINDER_SRC_DIR}/cinder/FileWatcher.cpp
 	${CINDER_SRC_DIR}/cinder/Font.cpp
 	${CINDER_SRC_DIR}/cinder/Frustum.cpp
@@ -284,13 +283,13 @@ source_group( "thirdparty\\libtess" FILES   ${SRC_SET_LIBTESS} )
 # libpng
 # ----------------------------------------------------------------------------------------------------------------------
 
-if( PNG_FOUND )
-	list( APPEND SRC_SET_TINYEXR
+# ImageSourcePng: always included on Windows (user must link against libpng to use it)
+# On other platforms, only include if PNG_FOUND
+if( CINDER_MSW OR PNG_FOUND )
+	list( APPEND CINDER_SRC_FILES
 		${CINDER_SRC_DIR}/cinder/ImageSourcePng.cpp
 	)
-
-	list( APPEND CINDER_SRC_FILES ${SRC_SET_TINYEXR} )
-	source_group( "cinder" FILES ${SRC_SET_CINDER_APP} )
+	source_group( "cinder" FILES ${CINDER_SRC_DIR}/cinder/ImageSourcePng.cpp )
 endif()
 
 # ----------------------------------------------------------------------------------------------------------------------

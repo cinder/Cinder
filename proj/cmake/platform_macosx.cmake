@@ -10,6 +10,7 @@ endif()
 # append mac specific source files
 list( APPEND SRC_SET_COCOA
 	${CINDER_SRC_DIR}/cinder/CaptureImplAvFoundation.mm
+	${CINDER_SRC_DIR}/cinder/Filesystem.cpp
 	${CINDER_SRC_DIR}/cinder/ImageSourceFileQuartz.cpp
 	${CINDER_SRC_DIR}/cinder/ImageTargetFileQuartz.cpp
 	${CINDER_SRC_DIR}/cinder/UrlImplCocoa.mm
