@@ -7,6 +7,11 @@ if( NOT CMAKE_OSX_ARCHITECTURES )
 	set( CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "macOS architectures" FORCE )
 endif()
 
+# Set minimum deployment target to macOS 10.13
+if( NOT CMAKE_OSX_DEPLOYMENT_TARGET )
+	set( CMAKE_OSX_DEPLOYMENT_TARGET "10.13" CACHE STRING "macOS minimum deployment target" FORCE )
+endif()
+
 # append mac specific source files
 list( APPEND SRC_SET_COCOA
 	${CINDER_SRC_DIR}/cinder/CaptureImplAvFoundation.mm
