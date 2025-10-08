@@ -1,5 +1,9 @@
-cmake_minimum_required( VERSION 3.10 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.15 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
+
+if( POLICY CMP0091 )
+	cmake_policy( SET CMP0091 NEW )
+endif()
 
 # Configure the Android toolchain before the project start
 if( CINDER_TARGET )
