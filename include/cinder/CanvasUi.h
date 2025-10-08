@@ -144,6 +144,8 @@ class CI_API CanvasUi {
 	void zoomIn( bool disableAnimation = false );
 	//! Zoom out by one step
 	void zoomOut( bool disableAnimation = false );
+	//! Set zoom to 1.0 and offset to 0.0
+	void viewOnetoOne( bool disableAnimation = false );
 
 	//! Set custom viewport \a viewport rectangle in window coordinates
 	void setCustomViewport( const Rectf& viewport );
@@ -228,9 +230,11 @@ class CI_API CanvasUi {
 	void setHotkeysZoomIn( const std::vector<HotkeyBinding>& hotkeys );
 	//! Set \a hotkeys for zoom out
 	void setHotkeysZoomOut( const std::vector<HotkeyBinding>& hotkeys );
-	//! Set \a hotkeys for reset zoom
+	//! Set \a hotkeys for reset zoom, fitting to window for bounded and equivalent to one-to-one for unbounded
 	void setHotkeysReset( const std::vector<HotkeyBinding>& hotkeys );
-
+	//! Set \a hotkeys for setting zoom and pan to 1:1
+	void setHotkeysOneToOne( const std::vector<HotkeyBinding>& hotkeys );
+	
 	//! Allow panning content outside viewport bounds (auto-disables constrainZoomToContent when enabled). Default is \c false.
 	void setAllowPanOutside( bool allow );
 	//! Check if content can be panned outside viewport bounds. Default is \c false
@@ -286,6 +290,7 @@ class CI_API CanvasUi {
 	std::vector<HotkeyBinding>		mHotkeysZoomIn;
 	std::vector<HotkeyBinding>		mHotkeysZoomOut;
 	std::vector<HotkeyBinding>		mHotkeysReset;
+	std::vector<HotkeyBinding>		mHotkeysOneToOne;
 	std::vector<MouseButtonBinding> mPanMouseButtons;
 
 	// Animation state
