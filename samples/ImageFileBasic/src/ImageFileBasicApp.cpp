@@ -15,21 +15,18 @@ using namespace std;
 class ImageFileBasicApp : public App {
   public:
 	void setup() override;
-	void update() override;
 	void fileDrop( FileDropEvent event ) override;
 	void draw() override;
 
 	void openImage( const fs::path &path );
 	void openImageDialog();
-	void saveImage();
+	void saveImageDialog();
 	void drawGui();
 
 	gl::TextureRef		mTexture;
 	ImageSourceRef		mImageSource;
 	fs::path			mImagePath;
 	std::string			mErrorMessage;
-	bool				mOpenRequested = false;
-	bool				mSaveRequested = false;
 	CanvasUi			mCanvas;
 };
 
@@ -38,18 +35,6 @@ void ImageFileBasicApp::setup()
 	ImGui::Initialize();
 
 	mCanvas.connect( getWindow() );
-}
-
-void ImageFileBasicApp::update()
-{
-	if( mOpenRequested ) {
-		mOpenRequested = false;
-		openImageDialog();
-	}
-	if( mSaveRequested ) {
-		mSaveRequested = false;
-		saveImage();
-	}
 }
 
 void ImageFileBasicApp::openImage( const fs::path &path )
@@ -74,18 +59,16 @@ void ImageFileBasicApp::openImage( const fs::path &path )
 void ImageFileBasicApp::openImageDialog()
 {
 	fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
-	if( ! path.empty() ) {
+	if( ! path.empty() )
 		openImage( path );
-	}
 }
 
-void ImageFileBasicApp::saveImage()
+void ImageFileBasicApp::saveImageDialog()
 {
 	try {
 		fs::path path = getSaveFilePath( "", ImageIo::getWriteExtensions() );
-		if( ! path.empty() ) {
+		if( ! path.empty() )
 			writeImage( writeFile( path ), mTexture->createSource() );
-		}
 	}
 	catch( Exception &exc ) {
 		CI_LOG_EXCEPTION( "failed to save image.", exc );
@@ -116,16 +99,14 @@ void ImageFileBasicApp::drawGui()
 {
 	ImGui::Begin( "Image Info" );
 
-	if( ImGui::Button( "Open Image" ) ) {
-		mOpenRequested = true;
-	}
+	if( ImGui::Button( "Open Image" ) )
+		openImageDialog();
 
 	ImGui::SameLine();
 
 	ImGui::BeginDisabled( ! mTexture );
-	if( ImGui::Button( "Save Image" ) ) {
-		mSaveRequested = true;
-	}
+	if( ImGui::Button( "Save Image" ) )
+		saveImageDialog();
 	ImGui::EndDisabled();
 
 	ImGui::SameLine();
