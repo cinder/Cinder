@@ -10,6 +10,10 @@
 #include "cinder/gl/Context.h"
 #include "cinder/Clipboard.h"
 
+#if defined( CINDER_MSW )
+	#include "cinder/app/msw/PlatformMsw.h"
+#endif
+
 #include <unordered_map>
 
 static bool																   sInitialized = false;
@@ -653,6 +657,14 @@ static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window )
 
 static void ImGui_ImplCinder_PostDraw()
 {
+#if defined( CINDER_MSW )
+	// Skip ImGui rendering when inside modal dialog loop, but reset trigger flag
+	if( static_cast<ci::app::PlatformMsw*>( ci::app::Platform::get() )->isInsideModalLoop() ) {
+		sTriggerNewFrame = true;
+		return;
+	}
+#endif
+
 	ImGui::Render();
 	ImDrawData* drawData = ImGui::GetDrawData();
 
