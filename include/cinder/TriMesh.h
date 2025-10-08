@@ -214,7 +214,7 @@ class CI_API TriMesh : public geom::Source {
 	size_t		getNumIndices() const override { return mIndices.size(); }
 	//! Returns the total number of triangles contained by the TriMesh.
 	size_t		getNumTriangles() const { return mIndices.size() / 3; }
-	//! Returns the total number of indices contained by the TriMesh.
+	//! Returns the total number of verticies contained by the TriMesh.
 	size_t		getNumVertices() const override { if( mPositionsDims ) return mPositions.size() / mPositionsDims; else return 0; }
 
 	//! Copies the 3 vertices of triangle number \a idx into \a a, \a b and \a c. Assumes vertices are 3D
