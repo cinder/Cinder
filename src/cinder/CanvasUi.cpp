@@ -34,11 +34,11 @@ CanvasUi::CanvasUi()
 {
 	// Set default hotkeys
 	using namespace app;
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW ) || defined( CINDER_MAC )
 	// On Windows, use ACCEL_DOWN (which maps to CTRL_DOWN)
 	unsigned int modifier = KeyEvent::ACCEL_DOWN;
 #else
-	// On Linux/Mac, use CTRL_DOWN directly for consistency with Windows behavior
+	// On Linux, use CTRL_DOWN directly for consistency with Windows behavior
 	unsigned int modifier = KeyEvent::CTRL_DOWN;
 #endif
 	mHotkeysZoomIn.emplace_back( KeyEvent::KEY_PLUS, modifier );
@@ -51,6 +51,9 @@ CanvasUi::CanvasUi()
 	mHotkeysReset.emplace_back( KeyEvent::KEY_0, modifier );
 	mHotkeysReset.emplace_back( KeyEvent::KEY_KP0, modifier );
 
+	mHotkeysOneToOne.emplace_back( KeyEvent::KEY_1, modifier );
+	mHotkeysOneToOne.emplace_back( KeyEvent::KEY_KP1, modifier );
+	
 	// Set default pan mouse buttons: Alt+Left, Middle, or Right mouse
 	mPanMouseButtons.emplace_back( app::MouseEvent::LEFT_DOWN, app::MouseEvent::ALT_DOWN );
 	mPanMouseButtons.emplace_back( app::MouseEvent::MIDDLE_DOWN, 0 );
@@ -304,6 +307,20 @@ void CanvasUi::zoomOut( bool disableAnimation )
 	else {
 		// Immediate zoom (expects viewport-local coordinates)
 		zoomByStep( 1.0f / ( 1.0f + mZoomFactor ), centerViewport );
+	}
+}
+
+void CanvasUi::viewOnetoOne( bool disableAnimation )
+{
+	vec2 centerViewport = mViewport.getSize() * 0.5f; // Center of viewport in viewport-local coordinates
+
+	// Calculate the zoom factor needed to reach 1.0
+	float zoomFactor = 1.0f / mZoom;
+
+	if( mAnimationEnabled && ! disableAnimation ) {
+		startZoomAnimation( zoomFactor, centerViewport );
+	} else {
+		zoomByStep( zoomFactor, centerViewport );
 	}
 }
 
@@ -633,6 +650,12 @@ void CanvasUi::keyDown( app::KeyEvent& event )
 	else if( matchesHotkey( event, mHotkeysReset ) ) {
 		if( isBounded() )
 			fitAll();
+		else
+			viewOnetoOne();
+		event.setHandled();
+	}
+	else if( matchesHotkey( event, mHotkeysOneToOne ) ) {
+		viewOnetoOne();
 		event.setHandled();
 	}
 }
@@ -777,6 +800,10 @@ void CanvasUi::setHotkeysReset( const std::vector<HotkeyBinding>& hotkeys )
 	mHotkeysReset = hotkeys;
 }
 
+void CanvasUi::setHotkeysOneToOne( const std::vector<HotkeyBinding>& hotkeys )
+{
+	mHotkeysOneToOne = hotkeys;
+}
 
 bool CanvasUi::matchesHotkey( const app::KeyEvent& event, const std::vector<HotkeyBinding>& hotkeys ) const
 {
