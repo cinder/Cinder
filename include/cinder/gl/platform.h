@@ -232,3 +232,25 @@
 #else
 	#define CINDER_GL_HAS_KHR_DEBUG
 #endif
+
+#if defined( CINDER_COCOA_TOUCH ) && defined( CINDER_GL_ES_2 )
+	#define GL_DEPTH_COMPONENT24					GL_DEPTH_COMPONENT24_OES
+	#define GL_DEPTH24_STENCIL8						GL_DEPTH24_STENCIL8_OES
+	#define GL_RGBA8								GL_RGBA8_OES
+	#define glRenderbufferStorageMultisample		glRenderbufferStorageMultisampleAPPLE
+	#define GL_READ_FRAMEBUFFER						GL_READ_FRAMEBUFFER_APPLE
+	#define GL_DRAW_FRAMEBUFFER						GL_DRAW_FRAMEBUFFER_APPLE
+	#define GL_READ_FRAMEBUFFER_BINDING				GL_READ_FRAMEBUFFER_BINDING_APPLE
+	#define GL_DRAW_FRAMEBUFFER_BINDING				GL_DRAW_FRAMEBUFFER_BINDING_APPLE
+	#define GL_MAX_SAMPLES							GL_MAX_SAMPLES_APPLE
+	#define glGenVertexArrays						glGenVertexArraysOES
+	#define glDeleteVertexArrays					glDeleteVertexArraysOES
+	#define glBindVertexArray						glBindVertexArrayOES
+	#define glResolveMultisampleFramebuffer			glResolveMultisampleFramebufferAPPLE
+	#define glVertexAttribDivisor					glVertexAttribDivisorEXT
+	#define glMapBuffer								glMapBufferOES
+	#define glUnmapBuffer							glUnmapBufferOES
+	#define glMapBufferRange						glMapBufferRangeEXT
+	#define GL_MAP_WRITE_BIT						GL_MAP_WRITE_BIT_EXT
+	#define GL_MAP_INVALIDATE_BUFFER_BIT			GL_MAP_INVALIDATE_BUFFER_BIT_EXT
+#endif

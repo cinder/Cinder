@@ -86,8 +86,9 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_SAMPLER_2D] = "SAMPLER_2D";
 		sSymbols[GL_SAMPLER_CUBE] = "SAMPLER_CUBE";
 
-
+#if ! defined( CINDER_GL_ES_2 )
 		sSymbols[GL_HALF_FLOAT] = "HALF_FLOAT";
+#endif
 #if ! defined( CINDER_GL_ES )
 		sSymbols[GL_SAMPLER_BUFFER] = "SAMPLER_BUFFER";
 		sSymbols[GL_UNSIGNED_INT_SAMPLER_BUFFER] = "UNSIGNED_INT_SAMPLER_BUFFER";
@@ -150,13 +151,17 @@ std::string	constantToString( GLenum constant )
 #endif		
 
 		sSymbols[GL_RED] = "GL_RED";
+#if ! defined( CINDER_GL_ES_2 )
 		sSymbols[GL_RG] = "GL_RG";
 		sSymbols[GL_R8] = "GL_R8";
 		sSymbols[GL_RG8] = "GL_RG8";
 		sSymbols[GL_RGB8] = "GL_RGB8";
+#endif
 		sSymbols[GL_RGBA4] = "GL_RGBA4";
 		sSymbols[GL_RGB5_A1] = "GL_RGB5_A1";
 		sSymbols[GL_RGBA8] = "GL_RGBA8";
+
+#if ! defined( CINDER_GL_ES_2 )
 		sSymbols[GL_R16F] = "GL_R16F";
 		sSymbols[GL_RG16F] = "GL_RG16F";
 		sSymbols[GL_RGB16F] = "GL_RGB16F";
@@ -169,7 +174,6 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_R11F_G11F_B10F] = "GL_R11F_G11F_B10F";
 		sSymbols[GL_RGB9_E5] = "GL_RGB9_E5";
 		
-#if ! defined( CINDER_GL_ES_2 )
 		sSymbols[GL_R8I] = "GL_R8I";
 		sSymbols[GL_R8UI] = "GL_R8UI";
 		sSymbols[GL_R16I] = "GL_R16I";
