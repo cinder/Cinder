@@ -26,14 +26,50 @@
 
 // Note: QOI_IMPLEMENTATION is defined in ImageSourceFileQoi.cpp
 // to avoid multiple definition errors
+#define QOI_NO_STDIO
 #include "qoi/qoi.h"
 
+#include <cstdio>
+#include <cstdlib>
+
 namespace cinder {
+
+namespace {
+
+// Cross-platform wrapper for qoi_write that handles Unicode paths properly
+int qoiWritePath( const fs::path &path, const void *data, const qoi_desc *desc )
+{
+#if defined( CINDER_MSW )
+	FILE *f = _wfopen( path.wstring().c_str(), L"wb" );
+#else
+	FILE *f = fopen( path.string().c_str(), "wb" );
+#endif
+
+	if( ! f )
+		return 0;
+
+	int size;
+	void *encoded = qoi_encode( data, desc, &size );
+	if( ! encoded ) {
+		fclose( f );
+		return 0;
+	}
+
+	fwrite( encoded, 1, size, f );
+	fflush( f );
+	int err = ferror( f );
+	fclose( f );
+
+	free( encoded );
+	return err ? 0 : size;
+}
+
+} // anonymous namespace
 
 void ImageTargetFileQoi::registerSelf()
 {
 	static bool alreadyRegistered = false;
-	const int32_t PRIORITY = 2;
+	const int32_t PRIORITY = 1;
 
 	if( alreadyRegistered )
 		return;
@@ -92,7 +128,7 @@ void ImageTargetFileQoi::finalize()
 	desc.colorspace = QOI_SRGB;
 
 	if( ! mFilePath.empty() ) {
-		if( ! qoi_write( mFilePath.string().c_str(), mData.get(), &desc ) )
+		if( ! qoiWritePath( mFilePath, mData.get(), &desc ) )
 			throw ImageIoExceptionFailedWrite( "Failed to write QOI image" );
 	}
 	else {

@@ -22,10 +22,51 @@
 */
 
 #include "cinder/ImageSourceFileQoi.h"
+#define QOI_NO_STDIO
 #define QOI_IMPLEMENTATION
 #include "qoi/qoi.h"
 
+#include <cstdio>
+#include <cstdlib>
+
 namespace cinder {
+
+namespace {
+
+// Cross-platform wrapper for qoi_read that handles Unicode paths properly
+void* qoiReadPath( const fs::path &path, qoi_desc *desc, int channels )
+{
+#if defined( CINDER_MSW )
+	FILE *f = _wfopen( path.wstring().c_str(), L"rb" );
+#else
+	FILE *f = fopen( path.string().c_str(), "rb" );
+#endif
+
+	if( ! f )
+		return nullptr;
+
+	fseek( f, 0, SEEK_END );
+	int size = ftell( f );
+	if( size <= 0 || fseek( f, 0, SEEK_SET ) != 0 ) {
+		fclose( f );
+		return nullptr;
+	}
+
+	void *data = malloc( size );
+	if( ! data ) {
+		fclose( f );
+		return nullptr;
+	}
+
+	int bytesRead = (int)fread( data, 1, size, f );
+	fclose( f );
+
+	void *pixels = ( bytesRead != size ) ? nullptr : qoi_decode( data, bytesRead, desc, channels );
+	free( data );
+	return pixels;
+}
+
+} // anonymous namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 // Registrar
@@ -52,7 +93,7 @@ ImageSourceFileQoi::ImageSourceFileQoi( DataSourceRef dataSourceRef, ImageSource
 	int channels = 0;
 
 	if( dataSourceRef->isFilePath() ) {
-		mData = (uint8_t*)qoi_read( dataSourceRef->getFilePath().string().c_str(), &desc, 0 );
+		mData = (uint8_t*)qoiReadPath( dataSourceRef->getFilePath(), &desc, 0 );
 		if( ! mData )
 			throw ImageIoExceptionFailedLoad( "Failed to load QOI image" );
 
