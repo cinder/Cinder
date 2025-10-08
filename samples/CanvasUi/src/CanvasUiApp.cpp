@@ -287,10 +287,13 @@ void CanvasUiSampleApp::drawGui()
 		}
 		
 		// Always available operations
-		ImGui::SameLine();
 		if( ImGui::Button( "Zoom In" ) ) mCanvas.zoomIn();
 		ImGui::SameLine();
 		if( ImGui::Button( "Zoom Out" ) ) mCanvas.zoomOut();
+		ImGui::SameLine();
+		if( ImGui::Button( "1:1" ) ) mCanvas.viewOnetoOne();
+		if( ImGui::IsItemHovered() )
+			ImGui::SetTooltip( "View at 100% zoom (1:1 pixel mapping)" );
 		ImGui::SameLine();
 		
 		// Demo operations
@@ -323,7 +326,7 @@ void CanvasUiSampleApp::drawGui()
 			
 		ImGui::Separator();
 		ImGui::Text( "Mouse: Left/Middle drag = pan, Wheel = zoom" );
-		ImGui::Text( "Keys: Ctrl+ (0=reset, +/- =zoom)" );
+		ImGui::Text( "Keys: Cmd+0=reset, Cmd+1=1:1, Cmd+/- = zoom" );
 	}
 
 	// === BEHAVIOR SETTINGS ===
