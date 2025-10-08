@@ -71,6 +71,11 @@ class CI_API PlatformMsw : public Platform {
 	//! Set the windows specific HWND, needed for some things like file dialogs.
 	void setHwnd( HWND hwnd )	{ mHwnd = hwnd; }
 
+	//! Returns whether the application is inside a modal dialog loop
+	bool		isInsideModalLoop() const { return mInsideModalLoop; }
+	//! Flags whether the application is currently inside the event loop of modal dialog
+	void		setInsideModalLoop( bool inside = true ) { mInsideModalLoop = inside; }
+
   private:
 	std::unique_ptr<std::ostream>	mOutputStream;
 	bool							mDirectConsoleToCout;
@@ -78,6 +83,7 @@ class CI_API PlatformMsw : public Platform {
 	bool							mDisplaysInitialized;
 	std::vector<DisplayRef>			mDisplays;
 	HWND							mHwnd = nullptr;
+	bool							mInsideModalLoop = false;
 };
 
 //! MSW-specific Exception for failed resource loading, reports windows resource id and type

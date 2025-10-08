@@ -178,7 +178,11 @@ fs::path PlatformMsw::getOpenFilePath( const fs::path &initialPath, const std::v
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
 	// Display the Open dialog box.
-	if( ::GetOpenFileNameW( &ofn ) == TRUE ) {
+	setInsideModalLoop( true );
+	BOOL result = ::GetOpenFileNameW( &ofn );
+	setInsideModalLoop( false );
+
+	if( result == TRUE ) {
 		return fs::path( ofn.lpstrFile );
 	}
 	else
@@ -214,7 +218,9 @@ fs::path PlatformMsw::getFolderPath( const fs::path &initialPath )
 	bi.lParam = reinterpret_cast<LPARAM>( initialPathWide.c_str() );
 	bi.lpfn = getFolderPathBrowseCallbackProc;
 	bi.lpszTitle = L"Pick a Directory";
+	setInsideModalLoop( true );
 	::LPITEMIDLIST pidl = ::SHBrowseForFolder( &bi );
+	setInsideModalLoop( false );
 	if( pidl ) {
 		// get the name of the folder
 		TCHAR path[MAX_PATH];
@@ -307,8 +313,12 @@ fs::path PlatformMsw::getSaveFilePath( const fs::path &initialPath, const std::v
 	}
 	ofn.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT;
 
-	// Display the Open dialog box.
-	if( ::GetSaveFileName( &ofn ) == TRUE )
+	// Display the Save dialog box.
+	setInsideModalLoop( true );
+	BOOL result = ::GetSaveFileName( &ofn );
+	setInsideModalLoop( false );
+
+	if( result == TRUE )
 		return fs::path( ofn.lpstrFile );
 	else
 		return fs::path();
