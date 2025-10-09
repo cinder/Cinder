@@ -769,13 +769,16 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_DROPFILES: {
 			HDROP dropH = (HDROP)wParam;
 			POINT dropPoint;
-			char fileName[8192];
 			vector<fs::path> files;
-			
+
 			int droppedFileCount = ::DragQueryFile( dropH, 0xFFFFFFFF, 0, 0 );
 			for( int i = 0; i < droppedFileCount; ++i ) {
-				::DragQueryFileA( dropH, i, fileName, 8192 );
-				files.push_back( std::string( fileName ) );
+				UINT fileNameLength = ::DragQueryFileW( dropH, i, NULL, 0 );
+				if( fileNameLength > 0 ) {
+					wstring fileName( fileNameLength, L'\0' );
+					::DragQueryFileW( dropH, i, &fileName[0], fileNameLength + 1 );
+					files.push_back( fileName );
+				}
 			}
 
 			::DragQueryPoint( dropH, &dropPoint );
