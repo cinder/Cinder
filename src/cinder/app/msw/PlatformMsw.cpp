@@ -213,7 +213,7 @@ namespace {
 
 fs::path PlatformMsw::getFolderPath( const fs::path &initialPath )
 {
-	string result;
+	fs::path result;
 
 	// Store wide string to ensure it stays alive for SHBrowseForFolder
 	std::wstring initialPathWide = initialPath.wstring();
@@ -227,9 +227,9 @@ fs::path PlatformMsw::getFolderPath( const fs::path &initialPath )
 	setInsideModalLoop( false );
 	if( pidl ) {
 		// get the name of the folder
-		TCHAR path[MAX_PATH];
+		wchar_t path[MAX_PATH];
 		if( ::SHGetPathFromIDList( pidl, path ) ) {
-			result = msw::toUtf8String( path );
+			result = std::wstring( path );
 		}
 
 		// free memory used
