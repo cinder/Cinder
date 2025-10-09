@@ -1,5 +1,10 @@
 if( NOT TARGET cinder${CINDER_LIB_SUFFIX} )
     include( "${PROJECT_BINARY_DIR}/${CINDER_LIB_DIRECTORY}/cinderTargets.cmake" )
+
+    # Record the C++ standard and extensions setting Cinder was built with
+    # These will be inherited by apps unless they explicitly override
+    set( CINDER_CXX_STANDARD @CINDER_CXX_STANDARD@ )
+    set( CINDER_CXX_EXTENSIONS @CINDER_CXX_EXTENSIONS@ )
 endif()
 
 
