@@ -129,6 +129,36 @@ function( ci_make_app )
 	target_include_directories( ${ARG_APP_NAME} PUBLIC ${ARG_INCLUDES} )
 	target_link_libraries( ${ARG_APP_NAME} PUBLIC cinder ${ARG_LIBRARIES} )
 
+	# Determine C++ standard: user override > Cinder's standard > 17
+	if( CMAKE_CXX_STANDARD )
+		set( APP_CXX_STANDARD ${CMAKE_CXX_STANDARD} )
+	elseif( DEFINED CINDER_CXX_STANDARD )
+		set( APP_CXX_STANDARD ${CINDER_CXX_STANDARD} )
+	else()
+		set( APP_CXX_STANDARD 17 )
+	endif()
+
+	if( APP_CXX_STANDARD LESS 17 )
+		message( FATAL_ERROR "Cinder requires C++17 or later. App is configured to use C++${APP_CXX_STANDARD}" )
+	endif()
+
+	target_compile_features( ${ARG_APP_NAME} PUBLIC cxx_std_${APP_CXX_STANDARD} )
+
+	# Determine CXX_EXTENSIONS: inherit from Cinder, or default OFF (prevents "namespace linux" issue)
+	if( DEFINED CMAKE_CXX_EXTENSIONS )
+		set( APP_CXX_EXTENSIONS ${CMAKE_CXX_EXTENSIONS} )
+	elseif( DEFINED CINDER_CXX_EXTENSIONS )
+		set( APP_CXX_EXTENSIONS ${CINDER_CXX_EXTENSIONS} )
+	else()
+		set( APP_CXX_EXTENSIONS OFF )
+	endif()
+
+	set_target_properties( ${ARG_APP_NAME} PROPERTIES
+		CXX_STANDARD ${APP_CXX_STANDARD}
+		CXX_STANDARD_REQUIRED ON
+		CXX_EXTENSIONS ${APP_CXX_EXTENSIONS}
+	)
+
 	if( MSVC )
 		# Ignore Specific Default Libraries for Debug build
 		set_target_properties( ${ARG_APP_NAME} PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )

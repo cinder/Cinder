@@ -79,11 +79,33 @@ if( CINDER_MSW AND MSVC )
     endif()
 endif()
 
-target_compile_features( cinder PUBLIC cxx_std_17 )
+# Determine C++ standard for Cinder (default 17, allow user override)
+if( CMAKE_CXX_STANDARD )
+    set( CINDER_CXX_STANDARD ${CMAKE_CXX_STANDARD} )
+else()
+    set( CINDER_CXX_STANDARD 17 )
+endif()
+
+# Validate minimum
+if( CINDER_CXX_STANDARD LESS 17 )
+    message( FATAL_ERROR "Cinder requires C++17 or later. CMAKE_CXX_STANDARD is set to ${CINDER_CXX_STANDARD}" )
+endif()
+
+# Set C++ standard for cinder target
+target_compile_features( cinder PUBLIC cxx_std_${CINDER_CXX_STANDARD} )
+
+# Determine CXX_EXTENSIONS: default OFF (prevents "namespace linux" issue)
+# Only enable if user explicitly sets CMAKE_CXX_EXTENSIONS=ON
+if( DEFINED CMAKE_CXX_EXTENSIONS )
+    set( CINDER_CXX_EXTENSIONS ${CMAKE_CXX_EXTENSIONS} )
+else()
+    set( CINDER_CXX_EXTENSIONS OFF )
+endif()
+
 set_target_properties( cinder PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD ${CINDER_CXX_STANDARD}
     CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS OFF
+    CXX_EXTENSIONS ${CINDER_CXX_EXTENSIONS}
 )
 
 # This file will contain all dependencies, includes, definition, compiler flags and so on..
@@ -91,8 +113,9 @@ export( TARGETS cinder FILE ${PROJECT_BINARY_DIR}/${CINDER_LIB_DIRECTORY}/cinder
 
 # And this command will generate a file on the ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
 # that applications have to pull in order to link successfully with Cinder and its dependencies.
-# This specific cinderConfig.cmake file will just hold a path to the above mention 
+# This specific cinderConfig.cmake file will just hold a path to the above mention
 # cinderTargets.cmake file which holds the actual info.
+# CINDER_CXX_STANDARD and CINDER_CXX_EXTENSIONS will be substituted into the template
 configure_file( ${CMAKE_CURRENT_LIST_DIR}/modules/cinderConfig.buildtree.cmake.in
     "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/cinderConfig.cmake"
 )
