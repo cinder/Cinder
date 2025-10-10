@@ -56,8 +56,8 @@ class CaptureImplDirectShow {
 
 	static const std::vector<Capture::DeviceRef>& getDevices( bool forceRefresh = false );
 
-	// Public method to update dimensions (used by DirectShow setup)
-	void updateDimensions( int width, int height );
+	// Public method to update dimensions with stride awareness (used by DirectShow setup)
+	void updateDimensions( int width, int height, int rowStride, int imageSizeBytes );
 
 	class Device : public Capture::Device {
 	  public:
@@ -83,6 +83,8 @@ class CaptureImplDirectShow {
 	std::unique_ptr<class SurfaceCache> mSurfaceCache;
 
 	int32_t				 mWidth, mHeight;
+	int32_t				 mRowStride;   // Actual bytes per row (may include padding)
+	int32_t				 mImageSize;   // Total buffer size in bytes
 	mutable Surface8uRef mCurrentFrame;
 	Capture::DeviceRef	 mDevice;
 

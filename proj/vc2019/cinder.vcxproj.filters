@@ -1083,6 +1083,12 @@
     <ClCompile Include="..\..\src\cinder\CanvasUi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\cinder\app\RendererD3d11.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\app\msw\RendererImplD3d11.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\AntTweakBar\AntPerfTimer.h">
@@ -2278,6 +2284,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\CanvasUi.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\app\RendererD3d11.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\app\msw\RendererImplD3d11.h">
+      <Filter>Header Files\app\msw</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

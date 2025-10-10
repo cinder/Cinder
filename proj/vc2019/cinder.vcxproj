@@ -637,7 +637,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\app\msw\RendererImplGlMsw.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\msw\RendererImplD3d11.cpp" />
     <ClCompile Include="..\..\src\cinder\app\Platform.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\RendererD3d11.cpp" />
     <ClCompile Include="..\..\src\cinder\app\RendererGl.cpp" />
     <ClCompile Include="..\..\src\cinder\app\Window.cpp" />
     <ClCompile Include="..\..\src\cinder\app\winrt\AppImplWinRT.cpp">
@@ -1024,12 +1026,14 @@
     <ClInclude Include="..\..\include\cinder\app\msw\AppMsw.h" />
     <ClInclude Include="..\..\include\cinder\app\msw\PlatformMsw.h" />
     <ClInclude Include="..\..\include\cinder\app\msw\RendererImpl2dGdi.h" />
+    <ClInclude Include="..\..\include\cinder\app\msw\RendererImplD3d11.h" />
     <ClInclude Include="..\..\include\cinder\app\msw\RendererImplDx.h" />
     <ClInclude Include="..\..\include\cinder\app\msw\RendererImplGlAngle.h" />
     <ClInclude Include="..\..\include\cinder\app\msw\RendererImplGlMsw.h" />
     <ClInclude Include="..\..\include\cinder\app\msw\RendererImplMsw.h" />
     <ClInclude Include="..\..\include\cinder\app\Platform.h" />
     <ClInclude Include="..\..\include\cinder\app\Renderer.h" />
+    <ClInclude Include="..\..\include\cinder\app\RendererD3d11.h" />
     <ClInclude Include="..\..\include\cinder\app\RendererDx.h" />
     <ClInclude Include="..\..\include\cinder\app\RendererGl.h" />
     <ClInclude Include="..\..\include\cinder\app\TouchEvent.h" />

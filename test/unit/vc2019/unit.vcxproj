@@ -516,6 +516,7 @@ xcopy /y "..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
     <ClCompile Include="..\src\audio\FftUnit.cpp" />
     <ClCompile Include="..\src\audio\RingBufferUnit.cpp" />
     <ClCompile Include="..\src\Base64Test.cpp" />
+    <ClCompile Include="..\src\ComPtrTest.cpp" />
     <ClCompile Include="..\src\FileWatcherTest.cpp" />
     <ClCompile Include="..\src\JsonTest.cpp" />
     <ClCompile Include="..\src\MediaTime.cpp" />
