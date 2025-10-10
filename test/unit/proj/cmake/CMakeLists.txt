@@ -28,6 +28,13 @@ set( SOURCES
 	${UNIT_DIR}/src/signals/SignalsTest.cpp
 )
 
+# Windows-specific tests for COM smart pointer
+if( MSVC OR WIN32 )
+	list( APPEND SOURCES
+		${UNIT_DIR}/src/ComPtrTest.cpp
+	)
+endif()
+
 ci_make_app(
 	SOURCES     ${SOURCES}
 	CINDER_PATH ${CINDER_PATH}
