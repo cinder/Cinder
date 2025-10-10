@@ -24,6 +24,7 @@
 #include "cinder/CaptureImplDirectShow.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/msw/CinderMsw.h"
+#include "cinder/Log.h"
 #include <dshow.h>
 #include <dvdmedia.h> // For VIDEO_STREAM_CONFIG_CAPS
 #include <set>
@@ -120,7 +121,7 @@ void refreshDeviceCache()
 	bool	comInitialized = SUCCEEDED( hrCom );
 
 	ComPtr<ICreateDevEnum> deviceEnum;
-	HRESULT				   hr = ::CoCreateInstance( CLSID_SystemDeviceEnum, nullptr, CLSCTX_INPROC, IID_ICreateDevEnum, reinterpret_cast<void**>( &deviceEnum ) );
+	HRESULT				   hr = ::CoCreateInstance( CLSID_SystemDeviceEnum, nullptr, CLSCTX_INPROC, IID_ICreateDevEnum, reinterpret_cast<void**>( deviceEnum.releaseAndGetAddressOf() ) );
 
 	if( FAILED( hr ) ) {
 		return;
@@ -139,7 +140,7 @@ void refreshDeviceCache()
 
 	while( enumMoniker->Next( 1, &moniker, &fetched ) == S_OK ) {
 		ComPtr<IPropertyBag> propertyBag;
-		hr = moniker->BindToStorage( 0, 0, IID_IPropertyBag, reinterpret_cast<void**>( &propertyBag ) );
+		hr = moniker->BindToStorage( 0, 0, IID_IPropertyBag, reinterpret_cast<void**>( propertyBag.releaseAndGetAddressOf() ) );
 
 		if( SUCCEEDED( hr ) ) {
 			DeviceInfo deviceInfo;
@@ -222,6 +223,10 @@ std::string guidToString( const GUID& guid )
 		return "YV12";
 	else if( ::IsEqualGUID( guid, MEDIASUBTYPE_NV12 ) )
 		return "NV12";
+	else if( ::IsEqualGUID( guid, MEDIASUBTYPE_MJPG ) )
+		return "MJPG";
+	else if( ::IsEqualGUID( guid, MEDIASUBTYPE_H264 ) )
+		return "H264";
 	return "Unknown";
 }
 
@@ -255,7 +260,7 @@ ComPtr<IBaseFilter> createSourceFilter( int deviceId )
 	}
 
 	ComPtr<ICreateDevEnum> deviceEnum;
-	HRESULT				   hr = ::CoCreateInstance( CLSID_SystemDeviceEnum, nullptr, CLSCTX_INPROC, IID_ICreateDevEnum, reinterpret_cast<void**>( &deviceEnum ) );
+	HRESULT				   hr = ::CoCreateInstance( CLSID_SystemDeviceEnum, nullptr, CLSCTX_INPROC, IID_ICreateDevEnum, reinterpret_cast<void**>( deviceEnum.releaseAndGetAddressOf() ) );
 
 	if( FAILED( hr ) ) {
 		return ComPtr<IBaseFilter>();
@@ -276,7 +281,7 @@ ComPtr<IBaseFilter> createSourceFilter( int deviceId )
 	while( enumMoniker->Next( 1, &moniker, &fetched ) == S_OK && currentIndex <= deviceId ) {
 		if( currentIndex == deviceId ) {
 			ComPtr<IBaseFilter> sourceFilter;
-			hr = moniker->BindToObject( 0, 0, IID_IBaseFilter, reinterpret_cast<void**>( &sourceFilter ) );
+			hr = moniker->BindToObject( 0, 0, IID_IBaseFilter, reinterpret_cast<void**>( sourceFilter.releaseAndGetAddressOf() ) );
 			moniker->Release();
 
 			if( SUCCEEDED( hr ) ) {
@@ -315,7 +320,7 @@ std::vector<StreamFormat> getDeviceFormats( int deviceId )
 		hr = pin->QueryDirection( &direction );
 
 		if( SUCCEEDED( hr ) && direction == PINDIR_OUTPUT ) {
-			outputPin.reset( pin );
+			outputPin = pin;  // Adopt ownership
 			break;
 		}
 
@@ -326,7 +331,7 @@ std::vector<StreamFormat> getDeviceFormats( int deviceId )
 		return formats;
 
 	ComPtr<IAMStreamConfig> streamConfig;
-	hr = outputPin->QueryInterface( IID_IAMStreamConfig, reinterpret_cast<void**>( &streamConfig ) );
+	hr = outputPin->QueryInterface( IID_IAMStreamConfig, reinterpret_cast<void**>( streamConfig.releaseAndGetAddressOf() ) );
 
 	if( FAILED( hr ) )
 		return formats;
@@ -493,6 +498,41 @@ struct DeviceContext {
 	int	 width = 0;
 	int	 height = 0;
 	bool isSetup = false;
+
+	// Destructor: Properly tear down DirectShow graph to avoid circular reference crashes
+	~DeviceContext() {
+		// CRITICAL: DirectShow filters must be released in specific order
+
+		// Step 1: Stop the graph (no more callbacks or streaming)
+		if( mediaControl ) {
+			mediaControl->Stop();
+		}
+
+		// Step 2: Remove callback (breaks callback circular reference)
+		if( sampleGrabber ) {
+			sampleGrabber->SetCallback( nullptr, 0 );
+		}
+
+		// Step 3: Release interfaces in safe order
+		// Release stream config first (it's attached to a pin)
+		streamConfig.reset();
+
+		// Release sample grabber interface
+		sampleGrabber.reset();
+
+		// Now release the actual filter objects
+		// These are what the graph holds references to
+		grabberFilter.reset();
+		sourceFilter.reset();
+
+		// Release media control/event interfaces
+		mediaEvent.reset();
+		mediaControl.reset();
+
+		// Finally release graph builders (these hold the graph)
+		captureBuilder.reset();
+		graphBuilder.reset();
+	}
 };
 } // namespace
 
@@ -547,34 +587,44 @@ STDMETHODIMP_( ULONG ) SampleGrabberCallback::AddRef()
 STDMETHODIMP_( ULONG ) SampleGrabberCallback::Release()
 {
 	LONG count = InterlockedDecrement( &mRefCount );
-	// Note: We don't delete this object here because it's managed by unique_ptr
-	// in the parent CaptureImplDirectShow object. The parent will clean it up properly.
+	if( count == 0 ) {
+		delete this;  // Self-delete on final release (COM semantics)
+		return 0;
+	}
 	return count;
 }
 
 STDMETHODIMP SampleGrabberCallback::SampleCB( double sampleTime, IMediaSample* sample )
 {
 	// These should never be null if setup worked correctly
-	CI_ASSERT( mParent && sample );
+	if( ! mParent || ! sample )
+		return E_POINTER;
 
 	try {
 		BYTE*	ptrBuffer = nullptr;
 		HRESULT hr = sample->GetPointer( &ptrBuffer );
 
-		// These should never fail if DirectShow setup worked correctly
-		CI_ASSERT( SUCCEEDED( hr ) );
-		CI_ASSERT( ptrBuffer );
-		CI_ASSERT( mParent->mPixelBuffer );
+		if( FAILED( hr ) || ! ptrBuffer || ! mParent->mPixelBuffer )
+			return E_FAIL;
 
 		long actualDataLength = sample->GetActualDataLength();
-		int	 expectedDataLength = mParent->mWidth * mParent->mHeight * 3;
 
-		// Dimensions should match what was negotiated in setupCallback
-		CI_ASSERT( expectedDataLength == actualDataLength );
+		// CRITICAL: Validate minimum data length to avoid garbage frames
+		// Some drivers report smaller buffers (cropped ROI, rare but seen)
+		// Require at least (width * 3) bytes per row minimum for RGB24
+		int minExpectedBytes = mParent->mWidth * 3;
+		if( actualDataLength < minExpectedBytes ) {
+			// Data too small - likely cropped/corrupted, skip this frame
+			return S_FALSE;
+		}
+
+		// CRITICAL: Copy min(actual, mImageSize) to prevent buffer overruns
+		// Some drivers report GetActualDataLength() larger than mImageSize due to stride padding
+		int bytesToCopy = std::min( static_cast<int>( actualDataLength ), mParent->mImageSize );
 
 		// Copy frame data to internal buffer
 		::EnterCriticalSection( &mParent->mCriticalSection );
-		memcpy( mParent->mPixelBuffer.get(), ptrBuffer, actualDataLength );
+		memcpy( mParent->mPixelBuffer.get(), ptrBuffer, bytesToCopy );
 		::LeaveCriticalSection( &mParent->mCriticalSection );
 
 		// Signal new frame available
@@ -582,6 +632,7 @@ STDMETHODIMP SampleGrabberCallback::SampleCB( double sampleTime, IMediaSample* s
 	}
 	catch( ... ) {
 		// Ignore exceptions in callback
+		return E_FAIL;
 	}
 
 	return S_OK;
@@ -690,10 +741,19 @@ CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height, con
 		throw CaptureExcInitFail( "Failed to setup DirectShow video input device" );
 	}
 
-	// Allocate pixel buffer for the actual size
-	int bufferSize = mWidth * mHeight * 3;
-	mPixelBuffer = std::make_unique<unsigned char[]>( bufferSize );
+	// Start capture graph
+	DeviceContext* deviceContext = static_cast<DeviceContext*>( mDeviceContext );
+	if( deviceContext->mediaControl ) {
+		HRESULT hr = deviceContext->mediaControl->Run();
+		if( FAILED( hr ) ) {
+			throw CaptureExcInitFail( "Failed to start DirectShow media control" );
+		}
+		// Give the graph a moment to start streaming
+		::Sleep( 100 );
+	}
 
+	// Dimensions and pixel buffer are already set by setupCallback based on negotiated size
+	// Don't overwrite them here!
 	mIsCapturing = true;
 	mSurfaceCache.reset( new SurfaceCache( mWidth, mHeight, SurfaceChannelOrder::BGR, 4 ) );
 }
@@ -743,17 +803,25 @@ CaptureImplDirectShow::CaptureImplDirectShow( const Capture::DeviceRef& device, 
 
 CaptureImplDirectShow::~CaptureImplDirectShow()
 {
-	stop();
+	// CRITICAL: Follow strict teardown order to prevent COM crashes
+	// stop() → clear callback → small sleep → delete context → delete COM init
 
-	// Clean up DirectShow objects
-	if( mCallback ) {
-		delete static_cast<SampleGrabberCallback*>( mCallback );
-		mCallback = nullptr;
-	}
+	stop();  // Stops the graph (DeviceContext destructor will clear callback)
+
+	// Delete DeviceContext (this will stop graph and clear callback in its destructor)
+	// The callback will self-delete when its refcount reaches 0
 	if( mDeviceContext ) {
 		delete static_cast<DeviceContext*>( mDeviceContext );
 		mDeviceContext = nullptr;
 	}
+
+	// Small sleep to ensure callback release completes
+	::Sleep( 50 );
+
+	// Callback should have self-deleted by now, just null the pointer
+	mCallback = nullptr;
+
+	// Clean up COM initializer
 	if( mComInit ) {
 		delete static_cast<ComInitializer*>( mComInit );
 		mComInit = nullptr;
@@ -856,12 +924,15 @@ Surface8uRef CaptureImplDirectShow::getSurface() const
 
 			// Copy with vertical flip (DirectShow uses bottom-up orientation)
 			// Note: MEDIASUBTYPE_RGB24 is stored as BGR in memory (Windows convention)
+			// CRITICAL: Use mRowStride for source, width*3 for destination (no padding)
 			const uint8_t* src = mPixelBuffer.get();
 			uint8_t*	   dst = mCurrentFrame->getData();
-			int			   rowBytes = mWidth * 3;
+			int			   srcRowBytes = mRowStride;      // Source has padding
+			int			   dstRowBytes = mWidth * 3;      // Destination is packed
 
 			for( int y = 0; y < mHeight; y++ ) {
-				memcpy( dst + y * rowBytes, src + ( mHeight - 1 - y ) * rowBytes, rowBytes );
+				// Copy only the actual pixel data, skipping any stride padding
+				memcpy( dst + y * dstRowBytes, src + ( mHeight - 1 - y ) * srcRowBytes, dstRowBytes );
 			}
 
 			mNewFrameAvailable.store( false, std::memory_order_release );
@@ -871,6 +942,12 @@ Surface8uRef CaptureImplDirectShow::getSurface() const
 
 		return mCurrentFrame;
 	}
+
+	// Opportunistic event pump: if no new frame, pump events to avoid queue back-pressure
+	if( ! mNewFrameAvailable.load( std::memory_order_acquire ) )
+		if( auto* deviceContext = static_cast<DeviceContext*>( mDeviceContext ) )
+			if( deviceContext->mediaEvent )
+				const_cast<CaptureImplDirectShow*>( this )->checkDeviceEvents();
 
 	return mCurrentFrame;
 }
@@ -883,12 +960,12 @@ std::vector<Capture::Mode> CaptureImplDirectShow::Device::getModes() const
 // Helper method to create a sample grabber filter
 ComPtr<IBaseFilter> createGrabberFilter()
 {
-	IBaseFilter* filter = nullptr;
-	HRESULT		 hr = ::CoCreateInstance( CLSID_SampleGrabber, nullptr, CLSCTX_INPROC_SERVER, IID_IBaseFilter, reinterpret_cast<void**>( &filter ) );
+	ComPtr<IBaseFilter> filter;
+	HRESULT		 hr = ::CoCreateInstance( CLSID_SampleGrabber, nullptr, CLSCTX_INPROC_SERVER, IID_IBaseFilter, reinterpret_cast<void**>( filter.releaseAndGetAddressOf() ) );
 	if( FAILED( hr ) ) {
 		return ComPtr<IBaseFilter>( nullptr );
 	}
-	return ComPtr<IBaseFilter>( filter );
+	return filter;
 }
 
 // Helper method to create the capture graph
@@ -897,13 +974,13 @@ bool createCaptureGraph( DeviceContext* deviceContext )
 	HRESULT hr;
 
 	// Create the capture graph builder
-	hr = ::CoCreateInstance( CLSID_CaptureGraphBuilder2, nullptr, CLSCTX_INPROC_SERVER, IID_ICaptureGraphBuilder2, reinterpret_cast<void**>( &deviceContext->captureBuilder ) );
+	hr = ::CoCreateInstance( CLSID_CaptureGraphBuilder2, nullptr, CLSCTX_INPROC_SERVER, IID_ICaptureGraphBuilder2, reinterpret_cast<void**>( deviceContext->captureBuilder.releaseAndGetAddressOf() ) );
 	if( FAILED( hr ) ) {
 		return false;
 	}
 
 	// Create the filter graph
-	hr = ::CoCreateInstance( CLSID_FilterGraph, nullptr, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, reinterpret_cast<void**>( &deviceContext->graphBuilder ) );
+	hr = ::CoCreateInstance( CLSID_FilterGraph, nullptr, CLSCTX_INPROC_SERVER, IID_IGraphBuilder, reinterpret_cast<void**>( deviceContext->graphBuilder.releaseAndGetAddressOf() ) );
 	if( FAILED( hr ) ) {
 		return false;
 	}
@@ -915,13 +992,13 @@ bool createCaptureGraph( DeviceContext* deviceContext )
 	}
 
 	// Get the media control interface
-	hr = deviceContext->graphBuilder->QueryInterface( IID_IMediaControl, reinterpret_cast<void**>( &deviceContext->mediaControl ) );
+	hr = deviceContext->graphBuilder->QueryInterface( IID_IMediaControl, reinterpret_cast<void**>( deviceContext->mediaControl.releaseAndGetAddressOf() ) );
 	if( FAILED( hr ) ) {
 		return false;
 	}
 
 	// Get the media event interface for device disconnection detection
-	hr = deviceContext->graphBuilder->QueryInterface( IID_IMediaEvent, reinterpret_cast<void**>( &deviceContext->mediaEvent ) );
+	hr = deviceContext->graphBuilder->QueryInterface( IID_IMediaEvent, reinterpret_cast<void**>( deviceContext->mediaEvent.releaseAndGetAddressOf() ) );
 	if( FAILED( hr ) ) {
 		return false;
 	}
@@ -947,7 +1024,7 @@ bool connectFilters( DeviceContext* deviceContext )
 	}
 
 	// Get the ISampleGrabber interface
-	hr = deviceContext->grabberFilter->QueryInterface( IID_ISampleGrabber, reinterpret_cast<void**>( &deviceContext->sampleGrabber ) );
+	hr = deviceContext->grabberFilter->QueryInterface( IID_ISampleGrabber, reinterpret_cast<void**>( deviceContext->sampleGrabber.releaseAndGetAddressOf() ) );
 	if( FAILED( hr ) ) {
 		return false;
 	}
@@ -1020,6 +1097,11 @@ bool setupCallback( DeviceContext* deviceContext, ::cinder::SampleGrabberCallbac
 		return false;
 	}
 
+	// CRITICAL: Drop creator's reference after successful SetCallback()
+	// SetCallback() does AddRef(), so we now have refcount=2 (creator+graph)
+	// Release our creator ref so the graph owns the lifetime - object will self-delete when graph releases it
+	callback->Release();
+
 	// Set the sample grabber to not buffer samples (we'll handle them immediately)
 	hr = deviceContext->sampleGrabber->SetBufferSamples( FALSE );
 	if( FAILED( hr ) ) {
@@ -1032,22 +1114,33 @@ bool setupCallback( DeviceContext* deviceContext, ::cinder::SampleGrabberCallbac
 		return false;
 	}
 
-	// Get the actual negotiated media type and extract actual dimensions
+	// Get the actual negotiated media type and extract actual dimensions + stride
 	AM_MEDIA_TYPE mt;
 	hr = deviceContext->sampleGrabber->GetConnectedMediaType( &mt );
 	if( SUCCEEDED( hr ) ) {
-		// Extract actual width and height from video info header
+		// Extract actual width, height, stride, and buffer size from video info header
 		if( mt.formattype == FORMAT_VideoInfo && mt.cbFormat >= sizeof( VIDEOINFOHEADER ) ) {
 			VIDEOINFOHEADER* vih = reinterpret_cast<VIDEOINFOHEADER*>( mt.pbFormat );
 			int				 actualWidth = vih->bmiHeader.biWidth;
 			int				 actualHeight = abs( vih->bmiHeader.biHeight );
 
+			// Calculate stride: DWORD-aligned row width (may include padding)
+			// Formula: ((width * bpp + 31) / 32) * 4
+			int bitsPerPixel = vih->bmiHeader.biBitCount;
+			int actualRowStride = ( ( actualWidth * bitsPerPixel + 31 ) / 32 ) * 4;
+			int actualImageSize = vih->bmiHeader.biSizeImage;
+
+			// If biSizeImage is 0, calculate it from stride
+			if( actualImageSize == 0 ) {
+				actualImageSize = actualRowStride * actualHeight;
+			}
+
 			// Update our stored dimensions to match what DirectShow actually negotiated
 			deviceContext->width = actualWidth;
 			deviceContext->height = actualHeight;
 
-			// Update parent dimensions and allocate pixel buffer for actual size
-			callback->mParent->updateDimensions( actualWidth, actualHeight );
+			// Update parent dimensions with stride information
+			callback->mParent->updateDimensions( actualWidth, actualHeight, actualRowStride, actualImageSize );
 		}
 
 		if( mt.cbFormat != 0 ) {
@@ -1065,11 +1158,12 @@ bool setupCallback( DeviceContext* deviceContext, ::cinder::SampleGrabberCallbac
 bool setCameraFormat( DeviceContext* deviceContext, int width, int height )
 {
 	// Get the camera's output pin
-	ComPtr<IEnumPins> enumPins;
-	HRESULT			  hr = deviceContext->sourceFilter->EnumPins( &enumPins );
+	IEnumPins* enumPinsPtr = nullptr;
+	HRESULT	   hr = deviceContext->sourceFilter->EnumPins( &enumPinsPtr );
 	if( FAILED( hr ) ) {
 		return false;
 	}
+	ComPtr<IEnumPins> enumPins( enumPinsPtr );
 
 	ComPtr<IPin> outputPin;
 	IPin*		 pin = nullptr;
@@ -1078,7 +1172,7 @@ bool setCameraFormat( DeviceContext* deviceContext, int width, int height )
 		hr = pin->QueryDirection( &direction );
 
 		if( SUCCEEDED( hr ) && direction == PINDIR_OUTPUT ) {
-			outputPin.reset( pin );
+			outputPin = pin;  // Adopt ownership
 			break;
 		}
 
@@ -1090,7 +1184,7 @@ bool setCameraFormat( DeviceContext* deviceContext, int width, int height )
 
 	// Get the stream config interface
 	ComPtr<IAMStreamConfig> streamConfig;
-	hr = outputPin->QueryInterface( IID_IAMStreamConfig, reinterpret_cast<void**>( &streamConfig ) );
+	hr = outputPin->QueryInterface( IID_IAMStreamConfig, reinterpret_cast<void**>( streamConfig.releaseAndGetAddressOf() ) );
 	if( FAILED( hr ) )
 		return false;
 
@@ -1161,9 +1255,11 @@ bool CaptureImplDirectShow::setupDeviceDirect( int deviceId, int width, int heig
 		return false;
 	}
 
-	// CRITICAL: Set the camera format BEFORE connecting filters
+	// Try to set the camera format BEFORE connecting filters
+	// Some drivers only honor IAMStreamConfig::SetFormat() after the downstream pin is connected,
+	// so treat failure as a warning and continue - we'll use the negotiated format from GetConnectedMediaType()
 	if( ! setCameraFormat( deviceContext, width, height ) ) {
-		return false;
+		CI_LOG_W( "setCameraFormat failed - will use negotiated format from DirectShow" );
 	}
 
 	// Connect the filters (sample grabber, null renderer, etc.)
@@ -1187,18 +1283,26 @@ bool CaptureImplDirectShow::setupDeviceDirect( int deviceId, int width, int heig
 	return true;
 }
 
-// Method to update dimensions and reallocate pixel buffer
-void CaptureImplDirectShow::updateDimensions( int width, int height )
+// Method to update dimensions with stride awareness and reallocate pixel buffer
+void CaptureImplDirectShow::updateDimensions( int width, int height, int rowStride, int imageSizeBytes )
 {
+	// CRITICAL: Guard reallocation with same lock as SampleCB to prevent race
+	// If the graph renegotiates (device reopen, format change), SampleCB could
+	// memcpy into a freed/reallocated buffer without this lock
+	::EnterCriticalSection( &mCriticalSection );
+
 	mWidth = width;
 	mHeight = height;
+	mRowStride = rowStride;
+	mImageSize = imageSizeBytes;
 
-	// Reallocate pixel buffer for new size
-	int bufferSize = width * height * 3; // RGB24
-	mPixelBuffer = std::make_unique<unsigned char[]>( bufferSize );
+	// Allocate pixel buffer for actual image size (includes any padding)
+	mPixelBuffer = std::make_unique<unsigned char[]>( mImageSize );
 
 	// Update the surface cache as well
 	mSurfaceCache.reset( new SurfaceCache( width, height, SurfaceChannelOrder::BGR, 4 ) );
+
+	::LeaveCriticalSection( &mCriticalSection );
 }
 
 } // namespace cinder
