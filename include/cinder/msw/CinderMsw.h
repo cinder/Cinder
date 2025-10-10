@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -56,14 +56,8 @@ CI_API inline vec2 toVec2( const ::POINTFX& p )
 CI_API void ComDelete( void* p );
 
 //! Functor version that calls Release() on a com-managed object
-struct CI_API ComDeleter {
-	template<typename T>
-	void operator()( T* p )
-	{
-		if( p )
-			p->Release();
-	}
-};
+struct CI_API ComDeleter{ template<typename T> void operator()( T* p ){ if( p ) p->Release();
+}}; // namespace cinder::msw
 
 template<typename T>
 using ManagedComRef = std::shared_ptr<T>;
@@ -85,63 +79,170 @@ ManagedComPtr<T> makeComUnique( T* p )
 	return ManagedComPtr<T>( p );
 }
 
-//! A traditional COM smart pointer similar to ATL's CComPtr that manages reference counting automatically
-/*! This class provides automatic AddRef/Release management for COM interfaces, similar to ATL's CComPtr.
-	Unlike ManagedComPtr (which uses unique_ptr semantics), ComPtr uses traditional COM reference
-	counting where multiple instances can share ownership of the same COM object.
-	Use ComPtr when you need standard COM interface pointer management without ATL dependency. */
+//! A COM smart pointer matching Microsoft::WRL::ComPtr semantics for compatibility
+/*! Manages COM interface lifetime with automatic AddRef/Release. Key semantics:
+	- Construction/assignment from T* adopts ownership (no AddRef) - matches COM API returns
+	- Copy construction/assignment does AddRef (sharing ownership)
+	- Move operations transfer ownership without ref-counting */
 template<typename T>
 class CI_API ComPtr {
+	static_assert( std::is_base_of<IUnknown, T>::value, "ComPtr<T>: T must derive from IUnknown" );
+
   public:
-	ComPtr()
+	ComPtr() noexcept
 		: ptr( nullptr )
 	{
 	}
-	ComPtr( T* p )
+
+	//! Construct from raw pointer - ADOPTS ownership without AddRef (WRL semantics)
+	ComPtr( T* p ) noexcept
 		: ptr( p )
 	{
-		if( ptr )
-			ptr->AddRef();
+		// No AddRef - assumes p already has correct refcount (e.g., from COM API)
 	}
-	ComPtr( const ComPtr& other )
+
+	//! Copy constructor - shares ownership with AddRef
+	ComPtr( const ComPtr& other ) noexcept
 		: ptr( other.ptr )
 	{
 		if( ptr )
 			ptr->AddRef();
 	}
+
+	//! Move constructor - transfers ownership without AddRef
+	ComPtr( ComPtr&& other ) noexcept
+		: ptr( other.ptr )
+	{
+		other.ptr = nullptr;
+	}
+
 	~ComPtr()
 	{
 		if( ptr )
 			ptr->Release();
 	}
 
-	ComPtr& operator=( T* p )
+	//! Assign from raw pointer - ADOPTS ownership without AddRef (WRL semantics)
+	ComPtr& operator=( T* p ) noexcept
 	{
 		if( ptr != p ) {
 			if( ptr )
 				ptr->Release();
-			ptr = p;
+			ptr = p; // No AddRef - adopts ownership
+		}
+		return *this;
+	}
+
+	//! Copy assignment - shares ownership with AddRef
+	ComPtr& operator=( const ComPtr& other ) noexcept
+	{
+		if( ptr != other.ptr ) {
+			if( ptr )
+				ptr->Release();
+			ptr = other.ptr;
 			if( ptr )
 				ptr->AddRef();
 		}
 		return *this;
 	}
 
-	ComPtr& operator=( const ComPtr& other ) { return *this = other.ptr; }
-
-	T*	get() const { return ptr; }
-	T** operator&() { return &ptr; }
-	T*	operator->() const { return ptr; }
-		operator bool() const { return ptr != nullptr; }
-
-	void reset( T* p = nullptr )
+	//! Move assignment - transfers ownership without AddRef
+	ComPtr& operator=( ComPtr&& other ) noexcept
 	{
-		if( ptr != p ) {
+		if( this != &other ) {
 			if( ptr )
 				ptr->Release();
-			ptr = p;
+			ptr = other.ptr;
+			other.ptr = nullptr;
+		}
+		return *this;
+	}
+
+	// Accessors
+	T*		 get() const noexcept { return ptr; }
+	T*		 operator->() const noexcept { return ptr; }
+	explicit operator bool() const noexcept { return ptr != nullptr; }
+
+	//! Get address of internal pointer WITHOUT releasing - for APIs that check for existing value
+	T** getAddressOf() noexcept { return &ptr; }
+
+	//! Release current pointer and return address - for output parameters (COM "put" pattern)
+	T** releaseAndGetAddressOf() noexcept
+	{
+		if( ptr ) {
+			ptr->Release();
+			ptr = nullptr;
+		}
+		return &ptr;
+	}
+
+	//! Adopt ownership of raw pointer without AddRef
+	void attach( T* p ) noexcept
+	{
+		if( ptr )
+			ptr->Release();
+		ptr = p; // No AddRef - takes ownership
+	}
+
+	//! Release ownership without calling Release
+	T* detach() noexcept
+	{
+		T* temp = ptr;
+		ptr = nullptr;
+		return temp;
+	}
+
+	//! Release current pointer to null (no parameters)
+	void reset() noexcept
+	{
+		if( ptr ) {
+			ptr->Release();
+			ptr = nullptr;
 		}
 	}
+
+	//! Copy interface pointer to output parameter with AddRef
+	void copyTo( T** ppOut ) const noexcept
+	{
+		if( ppOut ) {
+			*ppOut = ptr;
+			if( ptr )
+				ptr->AddRef();
+		}
+	}
+
+	//! Query for different interface
+	template<typename U>
+	HRESULT as( ComPtr<U>* out ) const noexcept
+	{
+		if( ! out )
+			return E_POINTER;
+		return ptr ? ptr->QueryInterface( __uuidof( U ), reinterpret_cast<void**>( out->releaseAndGetAddressOf() ) ) : E_POINTER;
+	}
+
+	//! Query for different interface (raw pointer out)
+	template<typename U>
+	HRESULT as( U** out ) const noexcept
+	{
+		if( ! out )
+			return E_POINTER;
+		*out = nullptr;
+		return ptr ? ptr->QueryInterface( __uuidof( U ), reinterpret_cast<void**>( out ) ) : E_POINTER;
+	}
+
+	//! Swap pointers with another ComPtr
+	void swap( ComPtr& other ) noexcept
+	{
+		T* temp = ptr;
+		ptr = other.ptr;
+		other.ptr = temp;
+	}
+
+	// Comparison operators
+	bool operator==( const ComPtr& other ) const noexcept { return ptr == other.ptr; }
+	bool operator!=( const ComPtr& other ) const noexcept { return ptr != other.ptr; }
+	bool operator==( T* p ) const noexcept { return ptr == p; }
+	bool operator!=( T* p ) const noexcept { return ptr != p; }
 
   private:
 	T* ptr;
@@ -217,5 +318,5 @@ class CI_API ComIStream : public ::IStream {
 
 //! Initializes COM on this thread. Uses thread local storage to prevent multiple initializations per thread
 CI_API void initializeCom( DWORD params = COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE );
-
-}} // namespace cinder::msw
+}
+} // namespace cinder::msw
