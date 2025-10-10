@@ -26,6 +26,7 @@
 #include "cinder/app/AppBase.h"
 #include "cinder/app/msw/RendererImplMsw.h"
 #include "cinder/app/RendererD3d11.h"
+#include "cinder/msw/CinderMsw.h"
 #include <d3d11_1.h>
 #include <dxgi1_2.h>
 
@@ -68,22 +69,22 @@ class RendererImplD3d11 : public RendererImplMsw {
 	Surface8u copyWindowSurface( const Area &area );
 
 	//! D3D11 device
-	ID3D11Device1 *mDevice;
+	msw::ComPtr<ID3D11Device1> mDevice;
 
 	//! D3D11 device context
-	ID3D11DeviceContext1 *mDeviceContext;
+	msw::ComPtr<ID3D11DeviceContext1> mDeviceContext;
 
 	//! DXGI swap chain
-	IDXGISwapChain1 *mSwapChain;
+	msw::ComPtr<IDXGISwapChain1> mSwapChain;
 
 	//! Render target view for the back buffer
-	ID3D11RenderTargetView *mRenderTargetView;
+	msw::ComPtr<ID3D11RenderTargetView> mRenderTargetView;
 
 	//! Depth stencil texture
-	ID3D11Texture2D *mDepthStencilTexture;
+	msw::ComPtr<ID3D11Texture2D> mDepthStencilTexture;
 
 	//! Depth stencil view
-	ID3D11DepthStencilView *mDepthStencilView;
+	msw::ComPtr<ID3D11DepthStencilView> mDepthStencilView;
 
   protected:
 	RendererD3d11 *mRenderer;

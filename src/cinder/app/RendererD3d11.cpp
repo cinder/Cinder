@@ -112,14 +112,14 @@ void RendererD3d11::clear( const ColorA &color )
 void* RendererD3d11::getDevice()
 {
 	if( mImpl )
-		return mImpl->mDevice;
+		return mImpl->mDevice.get();
 	return nullptr;
 }
 
 void* RendererD3d11::getDeviceContext()
 {
 	if( mImpl )
-		return mImpl->mDeviceContext;
+		return mImpl->mDeviceContext.get();
 	return nullptr;
 }
 
