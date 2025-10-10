@@ -25,6 +25,7 @@
 #include "cinder/app/msw/AppImplMsw.h"
 #include "cinder/app/App.h"
 #include "cinder/Log.h"
+#include "cinder/msw/CinderMsw.h"
 #include <windows.h>
 
 namespace cinder { namespace app {
@@ -32,12 +33,6 @@ namespace cinder { namespace app {
 RendererImplD3d11::RendererImplD3d11( WindowImplMsw* windowImpl, RendererD3d11* renderer )
 	: mRenderer( renderer )
 	, mWnd( nullptr )
-	, mDevice( nullptr )
-	, mDeviceContext( nullptr )
-	, mSwapChain( nullptr )
-	, mRenderTargetView( nullptr )
-	, mDepthStencilTexture( nullptr )
-	, mDepthStencilView( nullptr )
 	, mFullScreen( false )
 {
 }
@@ -99,9 +94,9 @@ bool RendererImplD3d11::createDevice()
 
 	D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0 };
 
-	D3D_FEATURE_LEVEL	 featureLevel;
-	ID3D11Device*		 device = nullptr;
-	ID3D11DeviceContext* context = nullptr;
+	D3D_FEATURE_LEVEL				  featureLevel;
+	msw::ComPtr<ID3D11Device>		  device;
+	msw::ComPtr<ID3D11DeviceContext> context;
 
 	HRESULT hr = D3D11CreateDevice( nullptr, // adapter
 		D3D_DRIVER_TYPE_HARDWARE,			 // driver type
@@ -110,40 +105,36 @@ bool RendererImplD3d11::createDevice()
 		featureLevels,						 // feature levels
 		ARRAYSIZE( featureLevels ),			 // num feature levels
 		D3D11_SDK_VERSION,					 // SDK version
-		&device,							 // device output
+		device.releaseAndGetAddressOf(),	 // device output
 		&featureLevel,						 // feature level output
-		&context							 // context output
+		context.releaseAndGetAddressOf()	 // context output
 	);
 
 	if( FAILED( hr ) ) {
 		// Try again without debug flag if it failed
 		createDeviceFlags &= ~D3D11_CREATE_DEVICE_DEBUG;
-		hr = D3D11CreateDevice( nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevels, ARRAYSIZE( featureLevels ), D3D11_SDK_VERSION, &device, &featureLevel, &context );
+		hr = D3D11CreateDevice( nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevels, ARRAYSIZE( featureLevels ), D3D11_SDK_VERSION, device.releaseAndGetAddressOf(), &featureLevel, context.releaseAndGetAddressOf() );
 
 		if( FAILED( hr ) )
 			return false;
 	}
 
 	// Query for ID3D11Device1
-	hr = device->QueryInterface( __uuidof( ID3D11Device1 ), (void**)&mDevice );
+	msw::ComPtr<ID3D11Device1> device1;
+	hr = device->QueryInterface( __uuidof( ID3D11Device1 ), (void**)device1.releaseAndGetAddressOf() );
 	if( FAILED( hr ) ) {
-		device->Release();
-		context->Release();
 		return false;
 	}
+	mDevice = device1.detach();  // Transfer ownership to member (adopts without AddRef)
 
 	// Query for ID3D11DeviceContext1
-	hr = context->QueryInterface( __uuidof( ID3D11DeviceContext1 ), (void**)&mDeviceContext );
+	msw::ComPtr<ID3D11DeviceContext1> context1;
+	hr = context->QueryInterface( __uuidof( ID3D11DeviceContext1 ), (void**)context1.releaseAndGetAddressOf() );
 	if( FAILED( hr ) ) {
-		mDevice->Release();
-		mDevice = nullptr;
-		device->Release();
-		context->Release();
+		mDevice.reset();
 		return false;
 	}
-
-	device->Release();
-	context->Release();
+	mDeviceContext = context1.detach();  // Transfer ownership to member (adopts without AddRef)
 
 	return true;
 }
@@ -157,23 +148,20 @@ bool RendererImplD3d11::createSwapChain()
 	UINT height = rect.bottom - rect.top;
 
 	// Get the DXGI factory
-	IDXGIDevice1* dxgiDevice = nullptr;
-	HRESULT		  hr = mDevice->QueryInterface( __uuidof( IDXGIDevice1 ), (void**)&dxgiDevice );
+	msw::ComPtr<IDXGIDevice1> dxgiDevice;
+	HRESULT hr = mDevice->QueryInterface( __uuidof( IDXGIDevice1 ), (void**)dxgiDevice.releaseAndGetAddressOf() );
 	if( FAILED( hr ) )
 		return false;
 
-	IDXGIAdapter* dxgiAdapter = nullptr;
-	hr = dxgiDevice->GetAdapter( &dxgiAdapter );
+	msw::ComPtr<IDXGIAdapter> dxgiAdapter;
+	hr = dxgiDevice->GetAdapter( dxgiAdapter.releaseAndGetAddressOf() );
 	if( FAILED( hr ) ) {
-		dxgiDevice->Release();
 		return false;
 	}
 
-	IDXGIFactory2* dxgiFactory = nullptr;
-	hr = dxgiAdapter->GetParent( __uuidof( IDXGIFactory2 ), (void**)&dxgiFactory );
+	msw::ComPtr<IDXGIFactory2> dxgiFactory;
+	hr = dxgiAdapter->GetParent( __uuidof( IDXGIFactory2 ), (void**)dxgiFactory.releaseAndGetAddressOf() );
 	if( FAILED( hr ) ) {
-		dxgiAdapter->Release();
-		dxgiDevice->Release();
 		return false;
 	}
 
@@ -192,11 +180,10 @@ bool RendererImplD3d11::createSwapChain()
 	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	// Create the swap chain
-	hr = dxgiFactory->CreateSwapChainForHwnd( mDevice, mWnd, &swapChainDesc, nullptr, nullptr, &mSwapChain );
-
-	dxgiFactory->Release();
-	dxgiAdapter->Release();
-	dxgiDevice->Release();
+	msw::ComPtr<IDXGISwapChain1> swapChain;
+	hr = dxgiFactory->CreateSwapChainForHwnd( mDevice.get(), mWnd, &swapChainDesc, nullptr, nullptr, swapChain.releaseAndGetAddressOf() );
+	if( SUCCEEDED( hr ) )
+		mSwapChain = swapChain.detach();  // Transfer ownership to member (adopts without AddRef)
 
 	return SUCCEEDED( hr );
 }
@@ -204,14 +191,17 @@ bool RendererImplD3d11::createSwapChain()
 bool RendererImplD3d11::createRenderTarget()
 {
 	// Get the back buffer
-	ID3D11Texture2D* backBuffer = nullptr;
-	HRESULT			 hr = mSwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (void**)&backBuffer );
+	msw::ComPtr<ID3D11Texture2D> backBuffer;
+	HRESULT hr = mSwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (void**)backBuffer.releaseAndGetAddressOf() );
 	if( FAILED( hr ) )
 		return false;
 
 	// Create the render target view
-	hr = mDevice->CreateRenderTargetView( backBuffer, nullptr, &mRenderTargetView );
-	backBuffer->Release();
+	msw::ComPtr<ID3D11RenderTargetView> rtv;
+	hr = mDevice->CreateRenderTargetView( backBuffer.get(), nullptr, rtv.releaseAndGetAddressOf() );
+
+	if( SUCCEEDED( hr ) )
+		mRenderTargetView = rtv.detach();  // Transfer ownership to member (adopts without AddRef)
 
 	return SUCCEEDED( hr );
 }
@@ -238,9 +228,11 @@ bool RendererImplD3d11::createDepthStencil()
 	depthDesc.CPUAccessFlags = 0;
 	depthDesc.MiscFlags = 0;
 
-	HRESULT hr = mDevice->CreateTexture2D( &depthDesc, nullptr, &mDepthStencilTexture );
+	msw::ComPtr<ID3D11Texture2D> depthTex;
+	HRESULT hr = mDevice->CreateTexture2D( &depthDesc, nullptr, depthTex.releaseAndGetAddressOf() );
 	if( FAILED( hr ) )
 		return false;
+	mDepthStencilTexture = depthTex.detach();  // Transfer ownership to member (adopts without AddRef)
 
 	// Create depth stencil view
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
@@ -248,48 +240,33 @@ bool RendererImplD3d11::createDepthStencil()
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsvDesc.Texture2D.MipSlice = 0;
 
-	hr = mDevice->CreateDepthStencilView( mDepthStencilTexture, &dsvDesc, &mDepthStencilView );
+	msw::ComPtr<ID3D11DepthStencilView> dsv;
+	hr = mDevice->CreateDepthStencilView( mDepthStencilTexture.get(), &dsvDesc, dsv.releaseAndGetAddressOf() );
+	if( SUCCEEDED( hr ) )
+		mDepthStencilView = dsv.detach();  // Transfer ownership to member (adopts without AddRef)
 
 	return SUCCEEDED( hr );
 }
 
 void RendererImplD3d11::releaseFramebufferResources()
 {
-	if( mRenderTargetView ) {
-		mRenderTargetView->Release();
-		mRenderTargetView = nullptr;
-	}
-
-	if( mDepthStencilView ) {
-		mDepthStencilView->Release();
-		mDepthStencilView = nullptr;
-	}
-
-	if( mDepthStencilTexture ) {
-		mDepthStencilTexture->Release();
-		mDepthStencilTexture = nullptr;
-	}
+	mRenderTargetView.reset();
+	mDepthStencilView.reset();
+	mDepthStencilTexture.reset();
 }
 
 void RendererImplD3d11::kill()
 {
 	releaseFramebufferResources();
 
-	if( mSwapChain ) {
-		mSwapChain->Release();
-		mSwapChain = nullptr;
-	}
+	mSwapChain.reset();
 
 	if( mDeviceContext ) {
 		mDeviceContext->ClearState();
-		mDeviceContext->Release();
-		mDeviceContext = nullptr;
+		mDeviceContext.reset();
 	}
 
-	if( mDevice ) {
-		mDevice->Release();
-		mDevice = nullptr;
-	}
+	mDevice.reset();
 }
 
 void RendererImplD3d11::prepareToggleFullScreen()
@@ -360,7 +337,8 @@ void RendererImplD3d11::swapBuffers() const
 void RendererImplD3d11::makeCurrentContext( bool force )
 {
 	if( mDeviceContext && mRenderTargetView ) {
-		mDeviceContext->OMSetRenderTargets( 1, &mRenderTargetView, mDepthStencilView );
+		ID3D11RenderTargetView* rtv = mRenderTargetView.get();
+		mDeviceContext->OMSetRenderTargets( 1, &rtv, mDepthStencilView.get() );
 	}
 }
 
@@ -368,10 +346,10 @@ void RendererImplD3d11::clear( const ColorA& color )
 {
 	if( mDeviceContext && mRenderTargetView ) {
 		float clearColor[4] = { color.r, color.g, color.b, color.a };
-		mDeviceContext->ClearRenderTargetView( mRenderTargetView, clearColor );
+		mDeviceContext->ClearRenderTargetView( mRenderTargetView.get(), clearColor );
 
 		if( mDepthStencilView ) {
-			mDeviceContext->ClearDepthStencilView( mDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0 );
+			mDeviceContext->ClearDepthStencilView( mDepthStencilView.get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0 );
 		}
 	}
 }
@@ -384,8 +362,8 @@ Surface8u RendererImplD3d11::copyWindowSurface( const Area& area )
 		return surface;
 
 	// Get the back buffer
-	ID3D11Texture2D* backBuffer = nullptr;
-	HRESULT			 hr = mSwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (void**)&backBuffer );
+	msw::ComPtr<ID3D11Texture2D> backBuffer;
+	HRESULT hr = mSwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (void**)backBuffer.releaseAndGetAddressOf() );
 	if( FAILED( hr ) )
 		return surface;
 
@@ -404,10 +382,9 @@ Surface8u RendererImplD3d11::copyWindowSurface( const Area& area )
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 	desc.MiscFlags = 0;
 
-	ID3D11Texture2D* stagingTexture = nullptr;
-	hr = mDevice->CreateTexture2D( &desc, nullptr, &stagingTexture );
+	msw::ComPtr<ID3D11Texture2D> stagingTexture;
+	hr = mDevice->CreateTexture2D( &desc, nullptr, stagingTexture.releaseAndGetAddressOf() );
 	if( FAILED( hr ) ) {
-		backBuffer->Release();
 		return surface;
 	}
 
@@ -420,11 +397,11 @@ Surface8u RendererImplD3d11::copyWindowSurface( const Area& area )
 	box.front = 0;
 	box.back = 1;
 
-	mDeviceContext->CopySubresourceRegion( stagingTexture, 0, 0, 0, 0, backBuffer, 0, &box );
+	mDeviceContext->CopySubresourceRegion( stagingTexture.get(), 0, 0, 0, 0, backBuffer.get(), 0, &box );
 
 	// Map the staging texture
 	D3D11_MAPPED_SUBRESOURCE mapped;
-	hr = mDeviceContext->Map( stagingTexture, 0, D3D11_MAP_READ, 0, &mapped );
+	hr = mDeviceContext->Map( stagingTexture.get(), 0, D3D11_MAP_READ, 0, &mapped );
 	if( SUCCEEDED( hr ) ) {
 		// Copy the data
 		uint8_t* src = static_cast<uint8_t*>( mapped.pData );
@@ -437,11 +414,8 @@ Surface8u RendererImplD3d11::copyWindowSurface( const Area& area )
 			dst += rowBytes;
 		}
 
-		mDeviceContext->Unmap( stagingTexture, 0 );
+		mDeviceContext->Unmap( stagingTexture.get(), 0 );
 	}
-
-	stagingTexture->Release();
-	backBuffer->Release();
 
 	return surface;
 }
