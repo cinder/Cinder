@@ -18,8 +18,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageHeightField", "..\..\I
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MandelbrotGLSL", "..\..\MandelbrotGLSL\vc2019\MandelbrotGLSL.vcxproj", "{3A382202-321E-4336-BBAA-1DB1E1678ADF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParamsBasic", "..\..\ParamsBasic\vc2019\ParamsBasic.vcxproj", "{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "perlinTest", "..\..\perlinTest\vc2019\perlinTest.vcxproj", "{ECB64D66-2649-4C1A-AC1A-FDD64AB62D94}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RDiffusion", "..\..\RDiffusion\vc2019\RDiffusion.vcxproj", "{D746FDE4-6705-4EA6-9793-C68F5868A5C0}"
@@ -198,10 +196,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Geometry", "..\..\Geometry\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ClothSimulation", "..\..\_opengl\ClothSimulation\vc2019\ClothSimulation.vcxproj", "{9DE8B82B-A428-419E-9283-D634DAC1D0B4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3d11Triangle", "..\..\D3d11Triangle\vc2019\D3d11Triangle.vcxproj", "{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3d11ImageBasic", "..\..\D3d11ImageBasic\vc2019\D3d11ImageBasic.vcxproj", "{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_ANGLE|Mixed Platforms = Debug_ANGLE|Mixed Platforms
@@ -328,20 +322,6 @@ Global
 		{3A382202-321E-4336-BBAA-1DB1E1678ADF}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{3A382202-321E-4336-BBAA-1DB1E1678ADF}.Release|x64.ActiveCfg = Release|x64
 		{3A382202-321E-4336-BBAA-1DB1E1678ADF}.Release|x64.Build.0 = Release|x64
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Debug_ANGLE|Mixed Platforms.ActiveCfg = Debug|Win32
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Debug_ANGLE|Mixed Platforms.Build.0 = Debug|Win32
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Debug_ANGLE|x64.ActiveCfg = Debug|x64
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Debug|x64.ActiveCfg = Debug|x64
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Debug|x64.Build.0 = Debug|x64
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Release_ANGLE|Mixed Platforms.ActiveCfg = Release|Win32
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Release_ANGLE|Mixed Platforms.Build.0 = Release|Win32
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Release_ANGLE|x64.ActiveCfg = Release|x64
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Release|x64.ActiveCfg = Release|x64
-		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Release|x64.Build.0 = Release|x64
 		{ECB64D66-2649-4C1A-AC1A-FDD64AB62D94}.Debug_ANGLE|Mixed Platforms.ActiveCfg = Debug|Win32
 		{ECB64D66-2649-4C1A-AC1A-FDD64AB62D94}.Debug_ANGLE|Mixed Platforms.Build.0 = Debug|Win32
 		{ECB64D66-2649-4C1A-AC1A-FDD64AB62D94}.Debug_ANGLE|x64.ActiveCfg = Debug|x64
@@ -1618,34 +1598,6 @@ Global
 		{9DE8B82B-A428-419E-9283-D634DAC1D0B4}.Release|Mixed Platforms.Build.0 = Release|x64
 		{9DE8B82B-A428-419E-9283-D634DAC1D0B4}.Release|x64.ActiveCfg = Release|x64
 		{9DE8B82B-A428-419E-9283-D634DAC1D0B4}.Release|x64.Build.0 = Release|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Debug_ANGLE|Mixed Platforms.ActiveCfg = Debug|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Debug_ANGLE|Mixed Platforms.Build.0 = Debug|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Debug_ANGLE|x64.ActiveCfg = Debug|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Debug|Mixed Platforms.Build.0 = Debug|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Debug|x64.ActiveCfg = Debug|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Debug|x64.Build.0 = Debug|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Release_ANGLE|Mixed Platforms.ActiveCfg = Release|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Release_ANGLE|Mixed Platforms.Build.0 = Release|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Release_ANGLE|x64.ActiveCfg = Release|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Release|Mixed Platforms.ActiveCfg = Release|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Release|Mixed Platforms.Build.0 = Release|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Release|x64.ActiveCfg = Release|x64
-		{E8C82504-52F8-4D1A-8E3B-7F2D5A6C7B9C}.Release|x64.Build.0 = Release|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Debug_ANGLE|Mixed Platforms.ActiveCfg = Debug|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Debug_ANGLE|Mixed Platforms.Build.0 = Debug|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Debug_ANGLE|x64.ActiveCfg = Debug|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Debug|Mixed Platforms.Build.0 = Debug|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Debug|x64.ActiveCfg = Debug|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Debug|x64.Build.0 = Debug|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Release_ANGLE|Mixed Platforms.ActiveCfg = Release|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Release_ANGLE|Mixed Platforms.Build.0 = Release|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Release_ANGLE|x64.ActiveCfg = Release|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Release|Mixed Platforms.ActiveCfg = Release|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Release|Mixed Platforms.Build.0 = Release|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Release|x64.ActiveCfg = Release|x64
-		{F9A1B7C3-6D4E-5A8F-2B9C-8E7D6F5A4C3B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
