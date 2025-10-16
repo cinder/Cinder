@@ -13,10 +13,6 @@ list( APPEND SRC_SET_MSW
 	${CINDER_SRC_DIR}/glad/glad_wgl.c
 )
 
-if( NOT CINDER_DISABLE_ANTTWEAKBAR )
-	list( APPEND SRC_SET_MSW ${CINDER_SRC_DIR}/AntTweakBar/TwDirect3D11.cpp )
-endif()
-
 list( APPEND SRC_SET_APP_MSW
 	# TODO: should these two files be added to "cinder\\app" group?
 	${CINDER_SRC_DIR}/cinder/app/AppScreenSaver.cpp

@@ -51,7 +51,6 @@ endif()
 list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
 	${CINDER_INC_DIR}
 	${CINDER_INC_DIR}/oggvorbis
-	${CINDER_SRC_DIR}/AntTweakBar
 )
 
 # find cross-platform packages
@@ -78,13 +77,6 @@ else()
 		${CINDER_INC_DIR}/freetype
 	)
 	list( APPEND CINDER_DEFINES "-DFT2_BUILD_LIBRARY;-DFT_DEBUG_LEVEL_TRACE" )
-endif()
-
-# declare whether AntTweakBar is available (isn't on mobile devices)
-if( CINDER_GL_ES OR CINDER_DISABLE_ANTTWEAKBAR )
-	set( CINDER_ANTTWEAKBAR_ENABLED FALSE )
-else()
-	set( CINDER_ANTTWEAKBAR_ENABLED TRUE )
 endif()
 
 if( CINDER_DISABLE_IMGUI )

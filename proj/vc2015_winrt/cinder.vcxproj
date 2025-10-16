@@ -1115,7 +1115,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\AntTweakBar;..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
     </ClCompile>
@@ -1134,7 +1134,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\AntTweakBar;..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
     </ClCompile>
@@ -1153,7 +1153,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\AntTweakBar;..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
@@ -1171,7 +1171,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\AntTweakBar;..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
     </ClCompile>
@@ -1190,7 +1190,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\AntTweakBar;..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
     </ClCompile>
@@ -1209,7 +1209,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\AntTweakBar;..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
     </ClCompile>

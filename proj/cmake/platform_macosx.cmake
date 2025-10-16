@@ -72,21 +72,6 @@ if( NOT CINDER_DISABLE_VIDEO )
 	list( APPEND CINDER_SOURCES_OBJCPP ${CINDER_SRC_DIR}/cinder/qtime/QuickTimeGlImplAvf.cpp )
 endif()
 
-if( NOT CINDER_DISABLE_ANTTWEAKBAR )
-	list( APPEND CINDER_SOURCES_OBJCPP
-		${CINDER_SRC_DIR}/AntTweakBar/TwColors.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/TwFonts.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/LoadOGL.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/LoadOGLCore.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/TwBar.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/TwMgr.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGl.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGLCore.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/TwPrecomp.cpp
-	)
-endif()
-
-
 set_source_files_properties( ${CINDER_SOURCES_OBJCPP}
 	PROPERTIES COMPILE_FLAGS "-x objective-c++"
 )
@@ -173,4 +158,3 @@ list( APPEND CINDER_SKIP_SAMPLES
 	_opengl/ParticleSphereCS
 	_opengl/NVidiaComputeParticles
 )
-
