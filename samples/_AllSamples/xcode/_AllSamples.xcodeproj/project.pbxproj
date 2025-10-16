@@ -1267,13 +1267,6 @@
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = HighDensityDisplay;
 		};
-		00F0B3311039DFFD003AB416 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = ParamsBasic;
-		};
 		00F0B34C1039F821003AB416 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */;
@@ -1287,13 +1280,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = QuickTimeIteration;
-		};
-		00F0B3641039F869003AB416 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = ParamsBasic;
 		};
 		00F0B3681039F869003AB416 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1703,7 +1689,6 @@
 		00D494A91988A1D300A44E4C /* Renderer2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Renderer2d.xcodeproj; path = ../../Renderer2dBasic/xcode/Renderer2d.xcodeproj; sourceTree = "<group>"; };
 		00D494B51988A22800A44E4C /* slerpBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = slerpBasic.xcodeproj; path = ../../slerpBasic/xcode/slerpBasic.xcodeproj; sourceTree = "<group>"; };
 		00F0AAC41FC4BB3000F9EBBE /* HighDensityDisplay.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HighDensityDisplay.xcodeproj; path = ../../HighDensityDisplay/xcode/HighDensityDisplay.xcodeproj; sourceTree = "<group>"; };
-		00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParamsBasic.xcodeproj; path = ../../ParamsBasic/xcode/ParamsBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QTimeAdvApp.xcodeproj; path = ../../QuickTimeAdvanced/xcode/QTimeAdvApp.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B34E1039F830003AB416 /* QuickTimeIteration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeIteration.xcodeproj; path = ../../QuickTimeIteration/xcode/QuickTimeIteration.xcodeproj; sourceTree = SOURCE_ROOT; };
 		11754405193594480075AF60 /* TextureFont.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextureFont.xcodeproj; path = ../../TextureFont/xcode/TextureFont.xcodeproj; sourceTree = "<group>"; };
@@ -1761,7 +1746,6 @@
 				009709CE16CC6741005DC014 /* LocationManager.xcodeproj */,
 				006424F81DBFE782007AAB2A /* LevelOfDetailBasic.xcodeproj */,
 				0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */,
-				00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */,
 				0005C9FF10068206004D82BC /* perlinTest.xcodeproj */,
 				00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */,
 				00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */,
@@ -2517,14 +2501,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		00F0B32B1039DFFD003AB416 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				00F0B3321039DFFD003AB416 /* ParamsBasic.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		00F0B3451039F821003AB416 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2981,10 +2957,6 @@
 				{
 					ProductGroup = 009F6E4C14C0FE430036C292 /* Products */;
 					ProjectRef = 009F6E4B14C0FE430036C292 /* PaletteBrowser.xcodeproj */;
-				},
-				{
-					ProductGroup = 00F0B32B1039DFFD003AB416 /* Products */;
-					ProjectRef = 00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */;
 				},
 				{
 					ProductGroup = 004307FA1BBCE1FE00B72510 /* Products */;
@@ -3765,13 +3737,6 @@
 			remoteRef = 00F0AAC81FC4BB3100F9EBBE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		00F0B3321039DFFD003AB416 /* ParamsBasic.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = ParamsBasic.app;
-			remoteRef = 00F0B3311039DFFD003AB416 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		00F0B34D1039F821003AB416 /* QTimeAdvApp.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -4347,11 +4312,6 @@
 			isa = PBXTargetDependency;
 			name = slerpBasic;
 			targetProxy = 00D494C51988A24F00A44E4C /* PBXContainerItemProxy */;
-		};
-		00F0B3651039F869003AB416 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ParamsBasic;
-			targetProxy = 00F0B3641039F869003AB416 /* PBXContainerItemProxy */;
 		};
 		00F0B3691039F869003AB416 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
