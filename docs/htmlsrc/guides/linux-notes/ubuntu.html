@@ -81,8 +81,8 @@ make</code></pre>
 
 		<h1 id="additional-cmake-flags">Additional Build Options</h1>
 		<h3 id="minimal">Minimal build</h3>
-		<p>The following creates a minimal Cinder build suitable for many command line application scenarios. It disables audio, video, and AntTweakBar.
-		<pre><code>cmake .. -DCINDER_DISABLE_AUDIO=true -DCINDER_DISABLE_VIDEO=true -DCINDER_DISABLE_ANTTWEAKBAR=true</code></pre>
+		<p>The following creates a minimal Cinder build suitable for many command line application scenarios. It disables audio and video.</p>
+		<pre><code>cmake .. -DCINDER_DISABLE_AUDIO=true -DCINDER_DISABLE_VIDEO=true</code></pre>
 		<p>The required apt packages for such a build can be installed with:</p>
 		<pre><code>sudo apt install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev \
 		zlib1g-dev libfontconfig1-dev libcurl4-gnutls-dev</code></pre>
