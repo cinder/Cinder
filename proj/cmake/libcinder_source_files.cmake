@@ -288,38 +288,6 @@ if( CINDER_MSW OR PNG_FOUND )
 	source_group( "cinder" FILES ${CINDER_SRC_DIR}/cinder/ImageSourcePng.cpp )
 endif()
 
-# ----------------------------------------------------------------------------------------------------------------------
-# cinder::params + AntTweakBar
-# ----------------------------------------------------------------------------------------------------------------------
-
-if( CINDER_ANTTWEAKBAR_ENABLED )
-
-	list( APPEND SRC_SET_CINDER_PARAMS
-		${CINDER_SRC_DIR}/cinder/params/Params.cpp
-	)
-
-	list( APPEND SRC_SET_ANTTWEAKBAR
-		${CINDER_SRC_DIR}/AntTweakBar/TwColors.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/TwFonts.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/LoadOGL.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/LoadOGLCore.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/TwBar.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/TwMgr.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGL.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGLCore.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/TwPrecomp.cpp
-	)
-
-	list( APPEND CINDER_SRC_FILES
-		${SRC_SET_CINDER_PARAMS}
-		${SRC_SET_ANTTWEAKBAR}
-	)
-
-	source_group( "cinder\\params"	            FILES ${SRC_SET_CINDER_PARAMS} )
-	source_group( "thirdparty\\AntTweakBar"	    FILES ${SRC_SET_ANTTWEAKBAR} )
-
-endif()
-
 if( CINDER_IMGUI_ENABLED )
 	list( APPEND SRC_SET_CINDER_IMGUI ${CINDER_SRC_DIR}/cinder/CinderImGui.cpp )
 	if( CINDER_IMGUI_DIR )
