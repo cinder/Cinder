@@ -1,10 +1,12 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/params/Params.h"
 #include "cinder/ip/Checkerboard.h"
 #include "cinder/Sphere.h"
 #include "cinder/Timer.h"
+#include "cinder/Log.h"
+#include "cinder/CinderImGui.h"
+#include "cinder/CameraUi.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -18,6 +20,8 @@ class SphereProjectionApp : public App {
 	void update() override;
 	void keyDown( KeyEvent event ) override;
 	void draw() override;
+	void mouseDown( MouseEvent event ) override;
+	void mouseDrag( MouseEvent event ) override;
 
 	vec2 clipToScreenCoords( const vec2 &v ) const;
 	
@@ -25,8 +29,7 @@ class SphereProjectionApp : public App {
 	float				mSphereRadii[3];
 	CameraPersp			mCam;
 	float				mFov;
-	
-	params::InterfaceGlRef	mParams;
+	CameraUi            mCamUi;
 	
 	gl::TextureRef			mTex;
 	gl::BatchRef			mPlaneBatch;
@@ -41,11 +44,9 @@ void SphereProjectionApp::prepareSettings( Settings *settings )
 
 void SphereProjectionApp::setup()
 {
-	mFov = 45.0f;
+	ImGui::Initialize();
 
-	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 200 ) ) );
-	mParams->addParam( "FOV", &mFov );
-	mParams->addButton( "Pause", [=] { if( mTimer.isStopped() ) mTimer.resume(); else mTimer.stop(); } );
+	mFov = 45.0f;
 	
 	mCam.lookAt( vec3( 15, 10, 20 ), vec3( 0 ) );
 	
@@ -54,17 +55,14 @@ void SphereProjectionApp::setup()
 	
 	mPlaneBatch = gl::Batch::create( geom::Plane().size( vec2( 40, 40 ) ), gl::getStockShader( gl::ShaderDef().texture() ) );
 	
+	mCamUi = CameraUi( &mCam, getWindow(), -1 );
+
 	mTimer.start();
 }
 
 void SphereProjectionApp::keyDown( KeyEvent event )
 {
-	if( event.getChar() == '1' )
-		mCam = mCam.calcFraming( Sphere( mSpherePositions[0], mSphereRadii[0] ) );
-	else if( event.getChar() == '2' )
-		mCam = mCam.calcFraming( Sphere( mSpherePositions[1], mSphereRadii[1] ) );
-	else if( event.getChar() == '3' )
-		mCam = mCam.calcFraming( Sphere( mSpherePositions[2], mSphereRadii[2] ) );
+    (void)event;
 }
 
 void SphereProjectionApp::update()
@@ -130,7 +128,37 @@ void SphereProjectionApp::draw()
 		gl::drawStrokedCircle( center, std::max( length( axisA ), length( axisB ) ) );
 	}
 	
-	mParams->draw();
+	ImGui::ScopedWindow window( "Sphere Projection Controls" );
+	float fov = mFov;
+	if( ImGui::SliderFloat( "Field of View", &fov, 1.0f, 120.0f, "%.1f deg" ) )
+		mFov = fov;
+
+	bool paused = mTimer.isStopped();
+	if( ImGui::Checkbox( "Pause Animation", &paused ) ) {
+		if( paused )
+			mTimer.stop();
+		else
+			mTimer.resume();
+	}
+
+	if( ImGui::Button( "Frame Sphere 1" ) )
+		mCam = mCam.calcFraming( Sphere( mSpherePositions[0], mSphereRadii[0] ) );
+	ImGui::SameLine();
+	if( ImGui::Button( "Sphere 2" ) )
+		mCam = mCam.calcFraming( Sphere( mSpherePositions[1], mSphereRadii[1] ) );
+	ImGui::SameLine();
+	if( ImGui::Button( "Sphere 3" ) )
+		mCam = mCam.calcFraming( Sphere( mSpherePositions[2], mSphereRadii[2] ) );
+}
+
+void SphereProjectionApp::mouseDown( MouseEvent event )
+{
+	mCamUi.mouseDown( event );
+}
+
+void SphereProjectionApp::mouseDrag( MouseEvent event )
+{
+	mCamUi.mouseDrag( event );
 }
 
 CINDER_APP( SphereProjectionApp, RendererGl, SphereProjectionApp::prepareSettings )
