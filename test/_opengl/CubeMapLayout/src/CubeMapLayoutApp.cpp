@@ -1,12 +1,14 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/params/Params.h"
 #include "cinder/CameraUi.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Log.h"
+#include "cinder/CinderImGui.h"
+#include "cinder/Filesystem.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -18,14 +20,15 @@ class CubeMapLayoutApp : public App {
 	void setup() override;
 	void mouseDown( MouseEvent event ) override;
 	void mouseDrag( MouseEvent event ) override;
+	void keyDown( KeyEvent event ) override;
 	void draw() override;
 
-	std::vector<gl::TextureCubeMapRef> mCubeMaps;
-	int mSelectedCubeMap;
-	gl::BatchRef mCube;
-	params::InterfaceGlRef mParams;
-	CameraUi mMayaCam;
-	CameraPersp mMayaCamPersp;
+    std::vector<gl::TextureCubeMapRef> mCubeMaps;
+    int mSelectedCubeMap = 0;
+    std::vector<std::string> mCubeMapLabels;
+    gl::BatchRef mCube;
+    CameraUi mMayaCam;
+    CameraPersp mMayaCamPersp;
 };
 
 void CubeMapLayoutApp::prepareSettings( Settings * settings )
@@ -35,11 +38,10 @@ void CubeMapLayoutApp::prepareSettings( Settings * settings )
 
 void CubeMapLayoutApp::setup()
 {
+	ImGui::Initialize();
+
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
-
-	mParams = params::InterfaceGl::create( "Settings", ivec2(200, 200) );
-	mParams->addParam( "Cubemap", { "Horizontal Cross", "Vertical Cross", "Vertical Cross Layout", "Horizontal", "Vertical" }, &mSelectedCubeMap );
 
 	gl::GlslProgRef shader = gl::GlslProg::create( loadAsset( "sky_box.vert" ), loadAsset( "sky_box.frag" ) );
 	shader->uniform( "uCubeMapTex", 0 );
@@ -47,11 +49,22 @@ void CubeMapLayoutApp::setup()
 	mCube = gl::Batch::create( geom::Cube().size( vec3( 100.0f ) ), shader );
 
 	mSelectedCubeMap = 0;
-	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "horizontal_cross.jpg" ) ) ) );
-	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "vertical_cross.png" ) ) ) );
-	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "vertical_cross_layout.png" ) ) ) );
-	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "horizontal.png" ) ) ) );
-	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "vertical.hdr" ) ) ) );
+	auto pushCubeMap = [&]( const std::string &label, const std::string &assetPath ) {
+		auto imageSource = loadImage( loadAsset( assetPath ) );
+		gl::TextureCubeMap::Format format;
+		if( fs::path( assetPath ).extension() == ".hdr" ) {
+			format.internalFormat( GL_RGB16F );
+			format.setDataType( GL_FLOAT );
+		}
+		mCubeMaps.push_back( gl::TextureCubeMap::create( imageSource, format ) );
+		mCubeMapLabels.push_back( label );
+	};
+
+	pushCubeMap( "Horizontal Cross", "horizontal_cross.jpg" );
+	pushCubeMap( "Vertical Cross", "vertical_cross.png" );
+	pushCubeMap( "Vertical Cross Layout", "vertical_cross_layout.png" );
+	pushCubeMap( "Horizontal Strip", "horizontal.png" );
+	pushCubeMap( "Vertical Strip (HDR)", "vertical.hdr" );
 
 	mMayaCamPersp = CameraPersp( getWindowWidth(), getWindowHeight(), 60.0, 0.1f, 1000.0f );
 	mMayaCamPersp.setEyePoint( vec3( 0, 0, 10 ) );
@@ -60,6 +73,13 @@ void CubeMapLayoutApp::setup()
 	mMayaCam.setCamera( &mMayaCamPersp );
 }
 
+
+
+
+void CubeMapLayoutApp::keyDown( KeyEvent event )
+{
+	(void)event;
+}
 void CubeMapLayoutApp::mouseDown( MouseEvent event )
 {
 	mMayaCam.mouseDown( event.getPos() );
@@ -80,7 +100,23 @@ void CubeMapLayoutApp::draw()
 		mCube->draw();
 	}
 
-	mParams->draw();
+	if( ! mCubeMaps.empty() ) {
+		ImGui::ScopedWindow window( "Cubemap Layout" );
+		std::string currentLabel = mCubeMapLabels[mSelectedCubeMap];
+		if( ImGui::BeginCombo( "Layout", currentLabel.c_str() ) ) {
+			for( int i = 0; i < (int)mCubeMaps.size(); ++i ) {
+				bool selected = ( i == mSelectedCubeMap );
+				if( ImGui::Selectable( mCubeMapLabels[i].c_str(), selected ) ) {
+					mSelectedCubeMap = i;
+				}
+				if( selected )
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
+		ImGui::Text( "Use mouse + CameraUi to orbit, pan, and dolly." );
+	}
 }
 
 CINDER_APP( CubeMapLayoutApp, RendererGl, &CubeMapLayoutApp::prepareSettings )
