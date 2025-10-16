@@ -25,6 +25,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/ImageIO.h"
 #include "cinder/Exception.h"
+#include "cinder/msw/CinderMsw.h"
 
 #include <guiddef.h>
 
@@ -32,6 +33,8 @@
 struct IWICImagingFactory;
 struct IWICBitmapFrameDecode;
 struct IWICStream;
+struct IWICComponentEnumerator;
+struct IWICBitmapCodecInfo;
 
 namespace cinder {
 
@@ -52,12 +55,12 @@ class ImageSourceFileWic : public ImageSource {
 
 	bool	processFormat( const ::GUID &guid, ::GUID *convertGUID );
 
-	std::shared_ptr<IWICBitmapFrameDecode>	mFrame;
-	std::shared_ptr<IWICStream>				mStream;
-	ci::BufferRef							mBuffer;
-	bool									mRequiresConversion;
-	int32_t									mRowBytes;
-	::GUID									mPixelFormat, mConvertPixelFormat;
+	msw::ComPtr<IWICBitmapFrameDecode>	mFrame;
+	msw::ComPtr<IWICStream>				mStream;
+	ci::BufferRef						mBuffer;
+	bool								mRequiresConversion;
+	int32_t								mRowBytes;
+	::GUID								mPixelFormat, mConvertPixelFormat;
 };
 
 class ImageSourceFileWicExceptionUnsupportedData : public ImageIoException {

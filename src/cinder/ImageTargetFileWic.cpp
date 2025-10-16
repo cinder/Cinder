@@ -26,6 +26,7 @@
 
 #include <memory>
 #include <map>
+#include <set>
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
 	#include <D2D1.h>
@@ -57,20 +58,93 @@ void ImageTargetFileWic::registerSelf()
 {
 	const int32_t PRIORITY = 2;
 	ImageIoRegistrar::TargetCreationFunc func = ImageTargetFileWic::create;
-	
-	ImageIoRegistrar::registerTargetType( "png", func, PRIORITY, "png" );
-	getExtensionMap()["png"] = &GUID_ContainerFormatPng;
-	ImageIoRegistrar::registerTargetType( "tif", func, PRIORITY, "tif" ); ImageIoRegistrar::registerTargetType( "tiff", func, PRIORITY, "tif" );
-	getExtensionMap()["tif"] = &GUID_ContainerFormatTiff;
-	ImageIoRegistrar::registerTargetType( "jpg", func, PRIORITY, "jpg" ); ImageIoRegistrar::registerTargetType( "jpeg", func, PRIORITY, "jpg" ); ImageIoRegistrar::registerTargetType( "jpe", func, PRIORITY, "jpg" );
-	getExtensionMap()["jpg"] = &GUID_ContainerFormatJpeg;
-	ImageIoRegistrar::registerTargetType( "bmp", func, PRIORITY, "bmp" );
-	getExtensionMap()["bmp"] = &GUID_ContainerFormatBmp;
-// Disabling GIF because we don't handle converting to paletted formats yet
-//	ImageIoRegistrar::registerTargetType( "gif", func, PRIORITY, "gif" );
-//	getExtensionMap()["gif"] = GUID_ContainerFormatGif;
-	ImageIoRegistrar::registerTargetType( "wmp", func, PRIORITY, "wmp" );
-	getExtensionMap()["wmp"] = &GUID_ContainerFormatWmp;
+
+	try {
+		msw::initializeCom();
+
+		msw::ComPtr<IWICImagingFactory> factory;
+		::HRESULT hr = ::CoCreateInstance( CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (void**)factory.releaseAndGetAddressOf() );
+		if( ! SUCCEEDED(hr) )
+			return;
+
+		msw::ComPtr<IEnumUnknown> enumerator;
+		hr = factory->CreateComponentEnumerator( WICEncoder, WICComponentEnumerateDefault, enumerator.releaseAndGetAddressOf() );
+		if( ! SUCCEEDED(hr) )
+			return;
+
+		// Static storage for container format GUIDs to ensure they persist
+		static std::vector<std::shared_ptr<GUID>> sContainerFormatGuids;
+
+		// Track which extensions we've registered
+		std::set<std::string> registered;
+
+		for( UINT i = 0; ; ++i ) {
+			msw::ComPtr<IUnknown> pUnknown;
+			ULONG fetched = 0;
+			hr = enumerator->Next( 1, pUnknown.releaseAndGetAddressOf(), &fetched );
+			if( hr != S_OK || fetched == 0 )
+				break;
+
+			msw::ComPtr<IWICBitmapCodecInfo> codecInfo;
+			hr = pUnknown->QueryInterface( IID_IWICBitmapCodecInfo, (void**)codecInfo.releaseAndGetAddressOf() );
+
+			if( ! SUCCEEDED(hr) || !codecInfo )
+				continue;
+			if( SUCCEEDED(hr) && codecInfo ) {
+
+				// Get the container format GUID
+				GUID containerFormat;
+				hr = codecInfo->GetContainerFormat( &containerFormat );
+				if( ! SUCCEEDED(hr) )
+					continue;
+
+				UINT length = 0;
+				hr = codecInfo->GetFileExtensions( 0, NULL, &length );
+				if( SUCCEEDED(hr) && length > 0 ) {
+					std::vector<wchar_t> buffer( length );
+					hr = codecInfo->GetFileExtensions( length, buffer.data(), &length );
+					if( SUCCEEDED(hr) ) {
+						std::wstring extString( buffer.data() );
+
+						// Allocate a persistent GUID pointer for this codec
+						auto guidPtr = std::make_shared<GUID>( containerFormat );
+						sContainerFormatGuids.push_back( guidPtr );
+
+						// Extensions are comma-separated, e.g., ".jpg,.jpeg,.jpe"
+						size_t start = 0;
+						while( start < extString.length() ) {
+							size_t comma = extString.find( L',', start );
+							if( comma == std::wstring::npos )
+								comma = extString.length();
+
+							std::wstring ext = extString.substr( start, comma - start );
+							// Remove leading dot if present
+							if( ! ext.empty() && ext[0] == L'.' )
+								ext = ext.substr( 1 );
+
+							if( ! ext.empty() ) {
+								std::string narrowExt = msw::toUtf8String( ext );
+
+								// Map all extension synonyms to the same container format GUID
+								getExtensionMap()[narrowExt] = guidPtr.get();
+
+								// Register each extension only once
+								if( registered.find( narrowExt ) == registered.end() ) {
+									ImageIoRegistrar::registerTargetType( narrowExt, func, PRIORITY, narrowExt );
+									registered.insert( narrowExt );
+								}
+							}
+
+							start = comma + 1;
+						}
+					}
+				}
+			}
+		}
+	}
+	catch( ... ) {
+		// If enumeration fails, just return without registering anything
+	}
 }
 
 ImageTargetRef ImageTargetFileWic::create( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const string &extensionData )
@@ -122,24 +196,20 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 	msw::initializeCom();
 
  // Create WIC factory
-    IWICImagingFactory *IWICFactoryP = NULL;
-    hr = ::CoCreateInstance( CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&IWICFactoryP) );
+    msw::ComPtr<IWICImagingFactory> IWICFactory;
+    hr = ::CoCreateInstance( CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (void**)IWICFactory.releaseAndGetAddressOf() );
 	if( ! SUCCEEDED( hr ) )
 		throw ImageIoExceptionFailedWrite( "Could not create WIC Factory." );
-	shared_ptr<IWICImagingFactory> IWICFactory = msw::makeComShared( IWICFactoryP );
 
-	IWICBitmapEncoder *encoderP = NULL;
-	hr = IWICFactory->CreateEncoder( *mCodecGUID, 0, &encoderP );
+	hr = IWICFactory->CreateEncoder( *mCodecGUID, 0, mEncoder.releaseAndGetAddressOf() );
 	if( ! SUCCEEDED( hr ) )
 		throw ImageIoExceptionFailedWrite( "Could not create WIC Encoder." );
-	mEncoder = msw::makeComShared( encoderP );
-	
-	// create the stream		
-	IWICStream *pIWICStream = NULL;
-	hr = IWICFactory->CreateStream( &pIWICStream );
+
+	// create the stream
+	msw::ComPtr<IWICStream> stream;
+	hr = IWICFactory->CreateStream( stream.releaseAndGetAddressOf() );
 	if( ! SUCCEEDED(hr) )
 		throw ImageIoExceptionFailedWrite( "Could not create WIC stream." );
-	shared_ptr<IWICStream> stream = msw::makeComShared( pIWICStream );
 	
 	// initialize the stream based on properties of the cinder::DataSouce
 	if( mDataTarget->providesFilePath() ) {
@@ -154,7 +224,7 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 			throw ImageIoExceptionFailedWrite( "Could not initialize WIC Stream from filename." );
 	}
 	else {
-		shared_ptr<msw::ComOStream> comOStream = msw::makeComShared( new msw::ComOStream( mDataTarget->getStream() ) );
+		msw::ComPtr<msw::ComOStream> comOStream( new msw::ComOStream( mDataTarget->getStream() ) );
 		hr = stream->InitializeFromIStream( comOStream.get() );
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedWrite( "Could not initialize WIC Stream from IStream." );
@@ -166,11 +236,9 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 
 	// create the frame encoder
 	IPropertyBag2 *pPropertybag = NULL;
-	IWICBitmapFrameEncode *pBitmapFrame = NULL;
-	hr = mEncoder->CreateNewFrame( &pBitmapFrame, &pPropertybag );
+	hr = mEncoder->CreateNewFrame( mBitmapFrame.releaseAndGetAddressOf(), &pPropertybag );
 	if( ! SUCCEEDED( hr ) )
 		throw ImageIoExceptionFailedWrite( "Could not ceate WIC Frame." );
-	mBitmapFrame = msw::makeComShared( pBitmapFrame );
 
 	// setup the propertyBag to express quality
 	PROPBAG2 option = { 0 };
@@ -201,7 +269,7 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 
 void ImageTargetFileWic::setupPixelFormat( const GUID &guid )
 {
-	if( guid == GUID_WICPixelFormat24bppBGR ) {		
+	if( guid == GUID_WICPixelFormat24bppBGR ) {
 		setChannelOrder( ImageIo::BGR ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 );
 	}
 	else if( guid == GUID_WICPixelFormat24bppRGB ) {
@@ -228,13 +296,28 @@ void ImageTargetFileWic::setupPixelFormat( const GUID &guid )
 	else if( guid == GUID_WICPixelFormat128bppRGBFloat ) {
 		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 );
 	}
+	else if( guid == GUID_WICPixelFormat128bppRGBAFloat ) {
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 );
+	}
+	else if( guid == GUID_WICPixelFormat128bppPRGBAFloat ) {
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); // mIsPremultipliedAlpha = true;
+	}
 	else if( guid == GUID_WICPixelFormat8bppGray ) {
 		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::UINT8 );
 	}
 	else if( guid == GUID_WICPixelFormat16bppGray ) {
 		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::UINT16 );
 	}
+	else if( guid == GUID_WICPixelFormat16bppGrayFixedPoint ) {
+		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::UINT16 );
+	}
+	else if( guid == GUID_WICPixelFormat16bppGrayHalf ) {
+		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT16 );
+	}
 	else if( guid == GUID_WICPixelFormat32bppGrayFloat ) {
+		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 );
+	}
+	else if( guid == GUID_WICPixelFormat32bppGrayFixedPoint ) {
 		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 );
 	}
 	else
