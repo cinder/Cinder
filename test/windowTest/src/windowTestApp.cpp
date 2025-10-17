@@ -205,10 +205,14 @@ void WindowTestApp::keyDown( KeyEvent event )
 			getWindowIndex(0)->hide();
 	}
 	else if( event.getChar() == 'b' ) {
-		getWindow()->setBorderless( ! getWindow()->isBorderless() );
+		auto window = getWindow();
+		window->setBorderless( ! window->isBorderless() );
+		CI_LOG_V( "Borderless toggled, now: " << ( window->isBorderless() ? "true" : "false" ) );
 	}
 	else if( event.getChar() == 't' ) {
-		getWindow()->setAlwaysOnTop( ! getWindow()->isAlwaysOnTop() );
+		auto window = getWindow();
+		window->setAlwaysOnTop( ! window->isAlwaysOnTop() );
+		CI_LOG_V( "Always-on-top toggled, now: " << ( window->isAlwaysOnTop() ? "true" : "false" ) );
 	}
 	else if( event.getChar() == 's' ) {
 		getWindow()->setBorderless();
@@ -245,9 +249,17 @@ void WindowTestApp::windowDraw()
 
 	glEnable( GL_LINE_SMOOTH );
 	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+
+	const auto window = getWindow();
+	std::string info = "f : toggle fullscreen\n";
+	info += "b : toggle borderless (current: " + std::string( window->isBorderless() ? "on" : "off" ) + ")\n";
+	info += "t : toggle always-on-top (current: " + std::string( window->isAlwaysOnTop() ? "on" : "off" ) + ")\n";
+	info += "h : hide/show\n";
+	info += "s : span displays\n";
+	gl::drawString( info, vec2( 12.0f, 12.0f ), ColorA( 1, 1, 1, 0.9f ) );
 	
 	gl::begin( GL_LINE_STRIP );
-	const vector<vec2> &points = getWindow()->getUserData<WindowData>()->mPoints;
+	const vector<vec2> &points = window->getUserData<WindowData>()->mPoints;
 	for( auto pointIter = points.begin(); pointIter != points.end(); ++pointIter ) {
 		gl::vertex( *pointIter /*+ vec2( 0, getElapsedSeconds() )*/ );
 	}
