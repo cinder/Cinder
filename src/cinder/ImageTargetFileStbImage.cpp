@@ -83,7 +83,7 @@ ImageTargetFileStbImage::ImageTargetFileStbImage( DataTargetRef dataTarget, Imag
 	}
 	else {
 		setDataType( ImageIo::DataType::UINT8 );
-		mRowBytes = mNumComponents * imageSource->getWidth() * sizeof(float);
+		mRowBytes = mNumComponents * imageSource->getWidth() * sizeof(uint8_t);
 	}
 
 	if( mDataTarget->providesFilePath() ) {

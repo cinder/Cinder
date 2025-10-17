@@ -56,8 +56,14 @@ CI_API inline vec2 toVec2( const ::POINTFX& p )
 CI_API void ComDelete( void* p );
 
 //! Functor version that calls Release() on a com-managed object
-struct CI_API ComDeleter{ template<typename T> void operator()( T* p ){ if( p ) p->Release();
-}}; // namespace cinder::msw
+struct CI_API ComDeleter {
+	template<typename T>
+	void operator()( T* p )
+	{
+		if( p )
+			p->Release();
+	}
+};
 
 template<typename T>
 using ManagedComRef = std::shared_ptr<T>;
@@ -86,8 +92,6 @@ ManagedComPtr<T> makeComUnique( T* p )
 	- Move operations transfer ownership without ref-counting */
 template<typename T>
 class CI_API ComPtr {
-	static_assert( std::is_base_of<IUnknown, T>::value, "ComPtr<T>: T must derive from IUnknown" );
-
   public:
 	ComPtr() noexcept
 		: ptr( nullptr )

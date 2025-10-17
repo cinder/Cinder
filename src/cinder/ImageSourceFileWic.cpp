@@ -26,12 +26,25 @@
 #include "cinder/Utilities.h"
 #include "cinder/msw/CinderMsw.h"
 
+#include <set>
+
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
 	#include <D2D1.h>
 #endif
 #include <wincodec.h>
 #include <wincodecsdk.h>
 #pragma comment( lib, "WindowsCodecs.lib" )
+
+// Define GUIDs that may be missing in older Windows SDKs
+#ifndef GUID_WICPixelFormat32bppRGB
+DEFINE_GUID(GUID_WICPixelFormat32bppRGB, 0xd98c6b95, 0x3efe, 0x47d6, 0xbb, 0x25, 0xeb, 0x17, 0x48, 0xab, 0x0c, 0xf1);
+#endif
+#ifndef GUID_WICPixelFormat64bppPRGBAHalf
+DEFINE_GUID(GUID_WICPixelFormat64bppPRGBAHalf, 0x58ad26c2, 0xc623, 0x4d9d, 0xb3, 0x20, 0x38, 0x7e, 0x49, 0xf8, 0xc4, 0x42);
+#endif
+#ifndef GUID_WICPixelFormat96bppRGBFloat
+DEFINE_GUID(GUID_WICPixelFormat96bppRGBFloat, 0xe3fed78f, 0xe8db, 0x4acf, 0x84, 0xc1, 0xe9, 0x7f, 0x61, 0x36, 0xb3, 0x27);
+#endif
 
 namespace cinder {
 
@@ -41,20 +54,75 @@ void ImageSourceFileWic::registerSelf()
 {
 	const int32_t SOURCE_PRIORITY = 2;
 
-	// there doesn't seem to be a way to iterate supported types on WIC, so this list was constructed
-	// based on https://msdn.microsoft.com/en-us/library/windows/desktop/gg430027(v=vs.85).aspx "Native WIC Codecs"
-	ImageIoRegistrar::registerSourceType( "bmp", ImageSourceFileWic::create, SOURCE_PRIORITY ); ImageIoRegistrar::registerSourceType( "dib", ImageSourceFileWic::create, SOURCE_PRIORITY );
-	ImageIoRegistrar::registerSourceType( "dds", ImageSourceFileWic::create, SOURCE_PRIORITY );
-	ImageIoRegistrar::registerSourceType( "gif", ImageSourceFileWic::create, SOURCE_PRIORITY );
-	ImageIoRegistrar::registerSourceType( "wdp", ImageSourceFileWic::create, SOURCE_PRIORITY ); // HD Photo Format
-	ImageIoRegistrar::registerSourceType( "ico", ImageSourceFileWic::create, SOURCE_PRIORITY );
-	ImageIoRegistrar::registerSourceType( "jpe", ImageSourceFileWic::create, SOURCE_PRIORITY ); ImageIoRegistrar::registerSourceType( "jpg", ImageSourceFileWic::create, SOURCE_PRIORITY );
-		ImageIoRegistrar::registerSourceType( "jpeg", ImageSourceFileWic::create, SOURCE_PRIORITY );
-	ImageIoRegistrar::registerSourceType( "jxr", ImageSourceFileWic::create, SOURCE_PRIORITY ); // JPEG XR
-	ImageIoRegistrar::registerSourceType( "png", ImageSourceFileWic::create, SOURCE_PRIORITY );
-	ImageIoRegistrar::registerSourceType( "tif", ImageSourceFileWic::create, SOURCE_PRIORITY ); ImageIoRegistrar::registerSourceType( "tiff", ImageSourceFileWic::create, SOURCE_PRIORITY );
+	try {
+		msw::initializeCom();
 
-	ImageIoRegistrar::registerSourceGeneric( ImageSourceFileWic::create, SOURCE_PRIORITY );
+		msw::ComPtr<IWICImagingFactory> factory;
+		::HRESULT hr = ::CoCreateInstance( CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (void**)factory.releaseAndGetAddressOf() );
+		if( ! SUCCEEDED(hr) )
+			return;
+
+		msw::ComPtr<IEnumUnknown> enumerator;
+		hr = factory->CreateComponentEnumerator( WICDecoder, WICComponentEnumerateDefault, enumerator.releaseAndGetAddressOf() );
+		if( ! SUCCEEDED(hr) )
+			return;
+
+		// Track which extensions we've registered
+		std::set<std::string> registered;
+		ImageIoRegistrar::SourceCreationFunc sourceFunc = ImageSourceFileWic::create;
+
+		for( UINT i = 0; ; ++i ) {
+			msw::ComPtr<IUnknown> pUnknown;
+			ULONG fetched = 0;
+			hr = enumerator->Next( 1, pUnknown.releaseAndGetAddressOf(), &fetched );
+			if( hr != S_OK || fetched == 0 )
+				break;
+
+			msw::ComPtr<IWICBitmapCodecInfo> codecInfo;
+			hr = pUnknown->QueryInterface( IID_IWICBitmapCodecInfo, (void**)codecInfo.releaseAndGetAddressOf() );
+
+			if( ! SUCCEEDED(hr) || !codecInfo )
+				continue;
+
+			UINT length = 0;
+			hr = codecInfo->GetFileExtensions( 0, NULL, &length );
+			if( SUCCEEDED(hr) && length > 0 ) {
+				std::vector<wchar_t> buffer( length );
+				hr = codecInfo->GetFileExtensions( length, buffer.data(), &length );
+				if( SUCCEEDED(hr) ) {
+					std::wstring extString( buffer.data() );
+
+					// Extensions are comma-separated, e.g., ".jpg,.jpeg,.jpe"
+					size_t start = 0;
+					while( start < extString.length() ) {
+						size_t comma = extString.find( L',', start );
+						if( comma == std::wstring::npos )
+							comma = extString.length();
+
+						std::wstring ext = extString.substr( start, comma - start );
+						// Remove leading dot if present
+						if( ! ext.empty() && ext[0] == L'.' )
+							ext = ext.substr( 1 );
+
+						if( ! ext.empty() ) {
+							std::string narrowExt = msw::toUtf8String( ext );
+
+							// Register each extension only once
+							if( registered.find( narrowExt ) == registered.end() ) {
+								ImageIoRegistrar::registerSourceType( narrowExt, sourceFunc, SOURCE_PRIORITY );
+								registered.insert( narrowExt );
+							}
+						}
+
+						start = comma + 1;
+					}
+				}
+			}
+		}
+	}
+	catch( ... ) {
+		// If enumeration fails, just return without registering anything
+	}
 }
 
 IWICImagingFactory* ImageSourceFileWic::getFactory()
@@ -87,15 +155,15 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 
 	// Initialize COM
 	msw::initializeCom();
-	
+
     // Create WIC factory
 	IWICImagingFactory* factory = getFactory();
-	
+
     // Create a decoder
-	IWICBitmapDecoder *decoderP = NULL;
+	msw::ComPtr<IWICBitmapDecoder> decoder;
 #if defined( CINDER_UWP )
 		std::string s = dataSourceRef->getFilePath().string();
-		std::wstring filePath =	std::wstring(s.begin(), s.end());                 
+		std::wstring filePath =	std::wstring(s.begin(), s.end());
 #else
 		std::wstring filePath =	dataSourceRef->getFilePath().wstring().c_str();
 #endif
@@ -107,29 +175,26 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 				NULL,                            // Do not prefer a particular vendor
 				GENERIC_READ,                    // Desired read access to the file
 				WICDecodeMetadataCacheOnDemand,  // Cache metadata when needed
-				&decoderP                        // Pointer to the decoder
+				decoder.releaseAndGetAddressOf()                         // Pointer to the decoder
 			);
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad( "Could not create WIC Decoder from filename." );
 
 	}
 	else { // have to use a buffer
-		IWICStream *pIWICStream = NULL;
-		hr = factory->CreateStream( &pIWICStream );
+		hr = factory->CreateStream( mStream.releaseAndGetAddressOf() );
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad( "Could not create WIC Stream." );
-		mStream = msw::makeComShared( pIWICStream );
-		
+
 		mBuffer = dataSourceRef->getBuffer();
 		hr = mStream->InitializeFromMemory( reinterpret_cast<BYTE*>( mBuffer->getData() ), static_cast<DWORD>( mBuffer->getSize() ) );
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad( "Could not initialize WIC Stream." );
 
-		hr = factory->CreateDecoderFromStream( mStream.get(), NULL, WICDecodeMetadataCacheOnDemand, &decoderP );
+		hr = factory->CreateDecoderFromStream( mStream.get(), NULL, WICDecodeMetadataCacheOnDemand, decoder.releaseAndGetAddressOf() );
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad( "Could not create WIC Decoder from stream." );
 	}
-	std::shared_ptr<IWICBitmapDecoder> decoder = msw::makeComShared( decoderP );
 
 	// Parse # of frames
 	UINT frameCount = 1;
@@ -140,11 +205,9 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 		setFrameCount( frameCount );
 
     // Retrieve the 'index' frame of the image from the decoder
-	IWICBitmapFrameDecode *frameP = NULL;
-	hr = decoder->GetFrame( options.getIndex(), &frameP );
+	hr = decoder->GetFrame( options.getIndex(), mFrame.releaseAndGetAddressOf() );
 	if( ! SUCCEEDED(hr) )
 		throw ImageIoExceptionFailedLoad( "Could not retrieve index frame from WIC Decoder." );
-	mFrame = msw::makeComShared( frameP );
 
 	UINT width = 0, height = 0;
 	mFrame->GetSize( &width, &height );
@@ -162,7 +225,7 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 bool ImageSourceFileWic::processFormat( const ::GUID &guid, ::GUID *convertGUID )
 {
 	if( ( guid == GUID_WICPixelFormat1bppIndexed ) ||
-		( guid == GUID_WICPixelFormat2bppIndexed ) || 
+		( guid == GUID_WICPixelFormat2bppIndexed ) ||
 		( guid == GUID_WICPixelFormat4bppIndexed ) ||
 		( guid == GUID_WICPixelFormat8bppIndexed ) ||
 		( guid == GUID_WICPixelFormat16bppBGR555 ) ||
@@ -170,7 +233,12 @@ bool ImageSourceFileWic::processFormat( const ::GUID &guid, ::GUID *convertGUID 
 		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
 		return true;
 	}
-	else if( guid == GUID_WICPixelFormat24bppBGR ) {		
+	else if( guid == GUID_WICPixelFormatBlackWhite || guid == GUID_WICPixelFormat2bppGray || guid == GUID_WICPixelFormat4bppGray ) {
+		// Convert low bit-depth grayscale to 8-bit grayscale
+		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat8bppGray;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat24bppBGR ) {
 		setChannelOrder( ImageIo::BGR ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 );
 	}
 	else if( guid == GUID_WICPixelFormat24bppRGB ) {
@@ -193,9 +261,15 @@ bool ImageSourceFileWic::processFormat( const ::GUID &guid, ::GUID *convertGUID 
 	}
 	else if( guid == GUID_WICPixelFormat64bppPRGBA ) {
 		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT16 ); setPremultiplied( true );
-	}	
+	}
 	else if( guid == GUID_WICPixelFormat128bppRGBFloat ) {
 		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 );
+	}
+	else if( guid == GUID_WICPixelFormat128bppRGBAFloat ) {
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 );
+	}
+	else if( guid == GUID_WICPixelFormat128bppPRGBAFloat ) {
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); setPremultiplied( true );
 	}
 	else if( guid == GUID_WICPixelFormat8bppGray ) {
 		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::UINT8 );
@@ -203,14 +277,186 @@ bool ImageSourceFileWic::processFormat( const ::GUID &guid, ::GUID *convertGUID 
 	else if( guid == GUID_WICPixelFormat16bppGray ) {
 		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::UINT16 );
 	}
+	else if( guid == GUID_WICPixelFormat16bppGrayFixedPoint ) {
+		// Fixed point is similar to UINT16 for our purposes
+		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::UINT16 );
+	}
+	else if( guid == GUID_WICPixelFormat16bppGrayHalf ) {
+		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT16 );
+	}
 	else if( guid == GUID_WICPixelFormat32bppGrayFloat ) {
 		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 );
 	}
-	else if( guid == GUID_WICPixelFormat32bppCMYK || guid == GUID_WICPixelFormat64bppCMYK || guid == GUID_WICPixelFormat40bppCMYKAlpha || guid == GUID_WICPixelFormat80bppCMYKAlpha ) {
-		throw ImageIoExceptionIllegalColorModel( "CMYK pixel format not supported." );
+	else if( guid == GUID_WICPixelFormat32bppGrayFixedPoint ) {
+		// Convert fixed point to float for consistency
+		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); *convertGUID = GUID_WICPixelFormat32bppGrayFloat;
+		return true;
 	}
-	else
-		throw ImageIoException( "Unsupported format." );
+	// RGB/BGR variants and conversions
+	else if( guid == GUID_WICPixelFormat32bppRGB ) {
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 );
+	}
+	else if( guid == GUID_WICPixelFormat32bppRGBA ) {
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 );
+	}
+	else if( guid == GUID_WICPixelFormat32bppPRGBA ) {
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); setPremultiplied( true );
+	}
+	else if( guid == GUID_WICPixelFormat48bppBGR ) {
+		setChannelOrder( ImageIo::BGR ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT16 );
+	}
+	else if( guid == GUID_WICPixelFormat64bppBGRA ) {
+		setChannelOrder( ImageIo::BGRA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT16 );
+	}
+	else if( guid == GUID_WICPixelFormat64bppPBGRA ) {
+		setChannelOrder( ImageIo::BGRA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT16 ); setPremultiplied( true );
+	}
+	// Fixed-point RGB formats - convert to float to preserve precision
+	else if( guid == GUID_WICPixelFormat48bppRGBFixedPoint ) {
+		// Fixed-point has fractional precision - convert to float
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); *convertGUID = GUID_WICPixelFormat128bppRGBFloat;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat48bppBGRFixedPoint ) {
+		// Convert BGR fixed-point to RGB float
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); *convertGUID = GUID_WICPixelFormat128bppRGBFloat;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat64bppRGBAFixedPoint ) {
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); *convertGUID = GUID_WICPixelFormat128bppRGBAFloat;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat64bppBGRAFixedPoint ) {
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); *convertGUID = GUID_WICPixelFormat128bppRGBAFloat;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat64bppRGBFixedPoint ) {
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); *convertGUID = GUID_WICPixelFormat128bppRGBFloat;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat96bppRGBFixedPoint ) {
+		// Convert to float
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); *convertGUID = GUID_WICPixelFormat128bppRGBFloat;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat128bppRGBAFixedPoint ) {
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); *convertGUID = GUID_WICPixelFormat128bppRGBAFloat;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat128bppRGBFixedPoint ) {
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); *convertGUID = GUID_WICPixelFormat128bppRGBFloat;
+		return true;
+	}
+	// Half-float RGB formats
+	else if( guid == GUID_WICPixelFormat48bppRGBHalf ) {
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 );
+	}
+	else if( guid == GUID_WICPixelFormat64bppRGBAHalf ) {
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 );
+	}
+	else if( guid == GUID_WICPixelFormat64bppPRGBAHalf ) {
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 ); setPremultiplied( true );
+	}
+	else if( guid == GUID_WICPixelFormat64bppRGBHalf ) {
+		// Convert to 48bpp RGB half
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 ); *convertGUID = GUID_WICPixelFormat48bppRGBHalf;
+		return true;
+	}
+	// 96bpp and 128bpp float formats
+	else if( guid == GUID_WICPixelFormat96bppRGBFloat ) {
+		// Convert to 128bpp RGB float (adds padding channel)
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); *convertGUID = GUID_WICPixelFormat128bppRGBFloat;
+		return true;
+	}
+	// 10-bit and HDR formats - convert to 16-bit or float
+	else if( guid == GUID_WICPixelFormat32bppBGR101010 ) {
+		// Convert to 48bpp RGB (16-bit per channel)
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT16 ); *convertGUID = GUID_WICPixelFormat48bppRGB;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat32bppRGBA1010102 || guid == GUID_WICPixelFormat32bppRGBA1010102XR ||
+	         guid == GUID_WICPixelFormat32bppR10G10B10A2 || guid == GUID_WICPixelFormat32bppR10G10B10A2HDR10 ) {
+		// Convert 10-bit formats to 64bpp RGBA
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT16 ); *convertGUID = GUID_WICPixelFormat64bppRGBA;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat32bppRGBE ) {
+		// RGBE (shared exponent) - convert to float
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); *convertGUID = GUID_WICPixelFormat128bppRGBFloat;
+		return true;
+	}
+	// 16bpp BGRA5551 format
+	else if( guid == GUID_WICPixelFormat16bppBGRA5551 ) {
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
+		return true;
+	}
+	// Multi-channel formats (3-8 channels) - convert to RGBA
+	else if( guid == GUID_WICPixelFormat24bpp3Channels || guid == GUID_WICPixelFormat48bpp3Channels ) {
+		// 3-channel formats - treat as RGB
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat24bppRGB;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat32bpp4Channels || guid == GUID_WICPixelFormat64bpp4Channels ) {
+		// 4-channel formats - convert to RGBA
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat40bpp5Channels || guid == GUID_WICPixelFormat80bpp5Channels ||
+	         guid == GUID_WICPixelFormat48bpp6Channels || guid == GUID_WICPixelFormat96bpp6Channels ||
+	         guid == GUID_WICPixelFormat56bpp7Channels || guid == GUID_WICPixelFormat112bpp7Channels ||
+	         guid == GUID_WICPixelFormat64bpp8Channels || guid == GUID_WICPixelFormat128bpp8Channels ) {
+		// Multi-channel formats (5-8 channels) - convert to RGBA
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
+		return true;
+	}
+	// Multi-channel with alpha formats - convert to RGBA
+	else if( guid == GUID_WICPixelFormat32bpp3ChannelsAlpha || guid == GUID_WICPixelFormat64bpp3ChannelsAlpha ||
+	         guid == GUID_WICPixelFormat40bpp4ChannelsAlpha || guid == GUID_WICPixelFormat80bpp4ChannelsAlpha ||
+	         guid == GUID_WICPixelFormat48bpp5ChannelsAlpha || guid == GUID_WICPixelFormat96bpp5ChannelsAlpha ||
+	         guid == GUID_WICPixelFormat56bpp6ChannelsAlpha || guid == GUID_WICPixelFormat112bpp6ChannelsAlpha ||
+	         guid == GUID_WICPixelFormat64bpp7ChannelsAlpha || guid == GUID_WICPixelFormat128bpp7ChannelsAlpha ||
+	         guid == GUID_WICPixelFormat72bpp8ChannelsAlpha || guid == GUID_WICPixelFormat144bpp8ChannelsAlpha ) {
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
+		return true;
+	}
+	// YUV/YCbCr formats - convert to RGB
+	else if( guid == GUID_WICPixelFormat8bppY ) {
+		// Y channel only - treat as grayscale
+		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat8bppGray;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat8bppCb || guid == GUID_WICPixelFormat8bppCr || guid == GUID_WICPixelFormat16bppCbCr ) {
+		// Chroma channels - convert to RGB
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat24bppRGB;
+		return true;
+	}
+	// CMYK formats - convert to RGB
+	else if( guid == GUID_WICPixelFormat32bppCMYK ) {
+		// Convert CMYK to RGB
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat24bppRGB;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat64bppCMYK ) {
+		// Convert 64bpp CMYK to 48bpp RGB
+		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT16 ); *convertGUID = GUID_WICPixelFormat48bppRGB;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat40bppCMYKAlpha ) {
+		// Convert CMYK+Alpha to RGBA
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
+		return true;
+	}
+	else if( guid == GUID_WICPixelFormat80bppCMYKAlpha ) {
+		// Convert 80bpp CMYK+Alpha to 64bpp RGBA
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT16 ); *convertGUID = GUID_WICPixelFormat64bppRGBA;
+		return true;
+	}
+	// Unknown format - try to convert to RGBA as fallback
+	else {
+		// Last resort - request conversion to 32bppRGBA
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
+		return true;
+	}
 
 	return false;
 }
@@ -223,11 +469,10 @@ void ImageSourceFileWic::load( ImageTargetRef target )
 	std::unique_ptr<uint8_t[]> data( new uint8_t[mRowBytes * mHeight] );
 
 	if( mRequiresConversion ) {
-		IWICFormatConverter *pIFormatConverter = NULL;	
-		::HRESULT hr = getFactory()->CreateFormatConverter( &pIFormatConverter );
+		msw::ComPtr<IWICFormatConverter> formatConverter;
+		::HRESULT hr = getFactory()->CreateFormatConverter( formatConverter.releaseAndGetAddressOf() );
 		if( ! SUCCEEDED( hr ) )
 			throw ImageIoExceptionFailedLoad( "Could not create WIC Format Converter." );
-		std::shared_ptr<IWICFormatConverter> formatConverter = msw::makeComShared( pIFormatConverter );
 		hr = formatConverter->Initialize( mFrame.get(), mConvertPixelFormat, WICBitmapDitherTypeNone, NULL, 0.f, WICBitmapPaletteTypeCustom );
 		if( ! SUCCEEDED( hr ) )
 			throw ImageIoExceptionFailedLoad( "Could not initialize WIC Format Converter." );
