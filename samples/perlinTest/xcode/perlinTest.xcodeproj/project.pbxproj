@@ -19,7 +19,7 @@
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		971313AC4FD14339A566FF02 /* PerlinTestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACC9561D7279446A9B5D6E9D /* PerlinTestApp.cpp */; };
+		971313AC4FD14339A566FF02 /* perlinTestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACC9561D7279446A9B5D6E9D /* perlinTestApp.cpp */; };
 		9ABAF2665A1A461DB612659A /* Cairo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1012F7F7CA041B796694825 /* Cairo.cpp */; };
 		CBB624289949460082066DD6 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4B9EA6670FB94B019CB80224 /* CinderApp.icns */; };
 /* End PBXBuildFile section */
@@ -45,8 +45,8 @@
 		8D1107320486CEB800E47090 /* PerlinTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PerlinTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1012F7F7CA041B796694825 /* Cairo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Cairo.cpp; path = ../../../blocks/Cairo/src/Cairo.cpp; sourceTree = "<group>"; };
 		A79F92F014ED4C5484508062 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		ACC9561D7279446A9B5D6E9D /* PerlinTestApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = PerlinTestApp.cpp; path = ../src/PerlinTestApp.cpp; sourceTree = "<group>"; };
-		E3FE71DEC3104A3AB8011460 /* PerlinTest_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = PerlinTest_Prefix.pch; sourceTree = "<group>"; };
+		ACC9561D7279446A9B5D6E9D /* perlinTestApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = perlinTestApp.cpp; path = ../src/perlinTestApp.cpp; sourceTree = "<group>"; };
+		E3FE71DEC3104A3AB8011460 /* perlinTest_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = perlinTest_Prefix.pch; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,7 +83,7 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				ACC9561D7279446A9B5D6E9D /* PerlinTestApp.cpp */,
+				ACC9561D7279446A9B5D6E9D /* perlinTestApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -137,7 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				52D75384003B4E658A882A95 /* Resources.h */,
-				E3FE71DEC3104A3AB8011460 /* PerlinTest_Prefix.pch */,
+				E3FE71DEC3104A3AB8011460 /* perlinTest_Prefix.pch */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -268,7 +268,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				971313AC4FD14339A566FF02 /* PerlinTestApp.cpp in Sources */,
+				971313AC4FD14339A566FF02 /* perlinTestApp.cpp in Sources */,
 				9ABAF2665A1A461DB612659A /* Cairo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -286,7 +286,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = PerlinTest_Prefix.pch;
+				GCC_PREFIX_HEADER = perlinTest_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -313,7 +313,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = PerlinTest_Prefix.pch;
+				GCC_PREFIX_HEADER = perlinTest_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";

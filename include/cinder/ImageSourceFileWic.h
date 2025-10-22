@@ -23,7 +23,7 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include "cinder/ImageIO.h"
+#include "cinder/ImageIo.h"
 #include "cinder/Exception.h"
 #include "cinder/msw/CinderMsw.h"
 

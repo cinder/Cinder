@@ -26,7 +26,7 @@
 
 #include "cinder/app/winrt/AppWinRt.h"
 #include "cinder/app/winrt/WindowImplWinRt.h"
-#include "cinder/winrt/WinRtUtils.h"
+#include "cinder/winrt/WinRTUtils.h"
 #include "cinder/app/winrt/CinderFrameworkView.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Log.h"

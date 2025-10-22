@@ -26,7 +26,7 @@
 
 #include "cinder/app/winrt/WindowImplWinRt.h"
 #include "cinder/app/winrt/AppWinRt.h"
-#include "cinder/winrt/WinRtUtils.h"
+#include "cinder/winrt/WinRTUtils.h"
 
 using namespace Windows::ApplicationModel;
 using namespace Windows::ApplicationModel::Core;

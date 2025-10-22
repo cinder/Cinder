@@ -4,7 +4,7 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 	#include <CoreGraphics/CoreGraphics.h>
 #elif defined( CINDER_MSW )
-	#include "cinder/msw/CinderMswGdiplus.h"
+	#include "cinder/msw/CinderMswGdiPlus.h"
 #endif
 
 #include "Resources.h"
