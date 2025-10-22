@@ -4,6 +4,7 @@
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/VboMesh.h"
+#include "cinder/Rand.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -30,7 +31,21 @@ Surface createSolid( int width, int height, Color8u c )
 			it.b() = c.b;
 		}
 	}
-	
+	return result;
+}
+
+Surface createRandomLines( int width, int height, Color8u c )
+{
+	Surface result( width, height, false );
+	Surface::Iter it = result.getIter();
+	while( it.line() ) {
+		float r = ci::randFloat();
+		while( it.pixel() ) {
+			it.r() = c.r * r;
+			it.g() = c.g * r;
+			it.b() = c.b * r;
+		}
+	}
 	return result;
 }
 
@@ -44,11 +59,14 @@ void Texture3dApp::setup()
 	mTex3d->setWrapR( GL_REPEAT );
 
 	// GL_TEXTURE_2D_ARRAY
-	mTex2dArray = gl::Texture3d::create( 256, 256, 3, gl::Texture3d::Format().target( GL_TEXTURE_2D_ARRAY ) );
-	mTex2dArray->update( createSolid( mTex3d->getWidth(), mTex3d->getHeight(), Color8u(255,0,0) ), 0 );
-	mTex2dArray->update( createSolid( mTex3d->getWidth(), mTex3d->getHeight(), Color8u(0,255,0) ), 1 );
-	mTex2dArray->update( createSolid( mTex3d->getWidth(), mTex3d->getHeight(), Color8u(0,0,255) ), 2 );	
-	
+	auto fmt = gl::Texture3d::Format();
+	fmt.setTarget( GL_TEXTURE_2D_ARRAY );
+	fmt.enableMipmapping();
+	mTex2dArray = gl::Texture3d::create( 256, 256, 3, fmt );
+	mTex2dArray->update( createRandomLines( mTex3d->getWidth(), mTex3d->getHeight(), Color8u(255,0,0) ), 0 );
+	mTex2dArray->update( createRandomLines( mTex3d->getWidth(), mTex3d->getHeight(), Color8u(0,255,0) ), 1 );
+	mTex2dArray->update( createRandomLines( mTex3d->getWidth(), mTex3d->getHeight(), Color8u(0,0,255) ), 2 );
+
 	mShader3d = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader_3d.frag" ) );
 	mShader3d->uniform( "uTex0", 0 );
 	mShader2dArray = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader_2d_array.frag" ) );
@@ -61,15 +79,22 @@ void Texture3dApp::setup()
 
 void Texture3dApp::draw()
 {
-	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::clear(); 
 
-	mTex3d->bind();
-	mTex3dBatch->getGlslProg()->uniform( "uTexCoord", vec3( 0.5, 0.5, getElapsedSeconds() / 2 ) );
-	mTex3dBatch->draw();
+	{
+		gl::ScopedModelMatrix push;
+		gl::scale( vec2( sin( app::getElapsedSeconds() ) + 1.0f ) );
 
-	mTex2dArray->bind();
-	mTex2dArrayBatch->getGlslProg()->uniform( "uTexCoord", vec3( 0.5, 0.5, getElapsedSeconds() / 2 ) );
-	mTex2dArrayBatch->draw();
+		mTex3d->bind();
+		mTex3dBatch->getGlslProg()->uniform( "uDepth", float( getElapsedSeconds() / 2 ) );
+		mTex3dBatch->draw();
+
+		mTex2dArray->bind();
+		mTex2dArrayBatch->getGlslProg()->uniform( "uDepth", glm::mod( float( getElapsedSeconds() / 2 ), float( mTex2dArray->getDepth() ) ) );
+		mTex2dArrayBatch->draw();
+	}
+
+	CI_CHECK_GL();
 }
 
 CINDER_APP( Texture3dApp, RendererGl )
