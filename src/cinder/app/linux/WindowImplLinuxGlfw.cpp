@@ -25,8 +25,6 @@
 #include "cinder/app/linux/WindowImplLinux.h"
 #include "cinder/app/linux/AppImplLinux.h"
 #include "cinder/app/linux/PlatformLinux.h"
-#include "cinder/Log.h"
-
 namespace cinder { namespace app {
 
 WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux *sharedRendererWindow, AppImplLinux *appImpl )
@@ -74,6 +72,7 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux 
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, minorVersion );
 	::glfwWindowHint( GLFW_DECORATED, format.isBorderless() ? GL_FALSE : GL_TRUE );
 	::glfwWindowHint( GLFW_RESIZABLE, format.isResizable() ? GL_TRUE : GL_FALSE );
+	::glfwWindowHint( GLFW_FLOATING, format.isAlwaysOnTop() ? GL_TRUE : GL_FALSE );
 	if( options.getCoreProfile() ) {
 		::glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
 		std::cout << "Rendering with OpenGL Core Profile " << majorVersion << "." << minorVersion << std::endl;
@@ -105,6 +104,9 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, WindowImplLinux 
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 
 	mAppImpl->registerWindowEvents( this );
+
+	setBorderless( format.isBorderless() );
+	setAlwaysOnTop( format.isAlwaysOnTop() );
 }
 
 WindowImplLinux::~WindowImplLinux()
@@ -188,14 +190,30 @@ const std::vector<TouchEvent::Touch>& WindowImplLinux::getActiveTouches() const
 
 void WindowImplLinux::setBorderless( bool borderless )
 {
-	CI_LOG_W( "Window::setBorderless() currently unimplemented in GLFW" );
-	// TODO: Find a way to do this w/o recreating 
+	if( mBorderless == borderless )
+		return;
+
+#if ! defined( CINDER_HEADLESS )
+	if( mGlfwWindow ) {
+		::glfwSetWindowAttrib( mGlfwWindow, GLFW_DECORATED, borderless ? GLFW_FALSE : GLFW_TRUE );
+	}
+#endif
+
+	mBorderless = borderless;
 }
 
 void WindowImplLinux::setAlwaysOnTop( bool alwaysOnTop )
 {
-	CI_LOG_W( "Window::setAlwaysOnTop() currently unimplemented in GLFW" );
-	// TODO: Find a way to do this w/o recreating 
+	if( mAlwayOnTop == alwaysOnTop )
+		return;
+
+#if ! defined( CINDER_HEADLESS )
+	if( mGlfwWindow ) {
+		::glfwSetWindowAttrib( mGlfwWindow, GLFW_FLOATING, alwaysOnTop ? GLFW_TRUE : GLFW_FALSE );
+	}
+#endif
+
+	mAlwayOnTop = alwaysOnTop;
 }
 
 void WindowImplLinux::keyDown( const KeyEvent &event )

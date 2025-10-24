@@ -36,7 +36,6 @@ class GlfwCallbacks {
 public:
 	
 	static std::map<GLFWwindow*, std::pair<AppImplLinux*,WindowRef>> sWindowMapping;
-	static KeyEvent sKeyEvent;
 	static bool sCapsLockDown, sNumLockDown, sScrollLockDown;
 		
 	static void registerWindowEvents( GLFWwindow *glfwWindow, AppImplLinux* cinderAppImpl, const WindowRef& cinderWindow ) {
@@ -45,7 +44,7 @@ public:
 		::glfwSetWindowSizeCallback( glfwWindow, GlfwCallbacks::onWindowSize );
 		::glfwSetWindowPosCallback( glfwWindow, GlfwCallbacks::onWindowMove );
 		::glfwSetKeyCallback( glfwWindow, GlfwCallbacks::onKeyboard );
-		::glfwSetCharCallback( glfwWindow, GlfwCallbacks::onCharInput );
+		// Note: NOT using glfwSetCharCallback - we compute characters directly in onKeyboard
 		::glfwSetCursorPosCallback( glfwWindow, GlfwCallbacks::onMousePos );
 		::glfwSetMouseButtonCallback( glfwWindow, GlfwCallbacks::onMouseButton );
 		::glfwSetScrollCallback( glfwWindow, GlfwCallbacks::onMouseWheel );
@@ -201,7 +200,7 @@ public:
 			cinderAppImpl->setWindow( cinderWindow );
 
 			int32_t nativeKeyCode = KeyEvent::translateNativeKeyCode( key );
-			
+
 			if( glfwGetKey( glfwWindow, GLFW_KEY_CAPS_LOCK ) )
 				sCapsLockDown = ! sCapsLockDown;
 			if( glfwGetKey( glfwWindow, GLFW_KEY_NUM_LOCK ) )
@@ -210,38 +209,22 @@ public:
 				sScrollLockDown = !sScrollLockDown;
 
 			auto modifiers = extractKeyModifiers( mods );
-			auto convertedChar = modifyChar( key, modifiers, sCapsLockDown );
+			char convertedChar = modifyChar( key, modifiers, sCapsLockDown );
+			uint32_t charUtf32 = convertedChar ? (uint32_t)(unsigned char)convertedChar : 0;
 
-			if( GLFW_PRESS == action ) {
-				sKeyEvent = KeyEvent( cinderWindow, nativeKeyCode, 0, 0, modifiers, scancode );
-				// if convertedChar != 0, we'll get the unicode char value and wait until onCharInput is called.
-				// if convertedChar == 0, that means it is a non-unicode key (ex ctrl), so we'll emit the keydown here.
-				if( convertedChar == 0 ) {
-					cinderWindow->emitKeyDown( &sKeyEvent );
-				}
+			// Calculate KeyEvent from GLFW's parameters on both press and release
+			KeyEvent keyEvent( cinderWindow, nativeKeyCode, charUtf32, convertedChar, modifiers, scancode );
+
+			if( GLFW_PRESS == action || GLFW_REPEAT == action ) {
+				cinderWindow->emitKeyDown( &keyEvent );
 			}
 			else if( GLFW_RELEASE == action ) {
-				KeyEvent event( cinderWindow, sKeyEvent.getCode(), sKeyEvent.getCharUtf32(), sKeyEvent.getChar(), modifiers, scancode );
-				sKeyEvent = {};
-				cinderWindow->emitKeyUp( &event );
+				cinderWindow->emitKeyUp( &keyEvent );
 			}
 		}
 	}
 
-	static void onCharInput( GLFWwindow *glfwWindow, unsigned int codepoint )
-	{
-		auto iter = sWindowMapping.find( glfwWindow );
-		if( sWindowMapping.end() != iter ) {
-			auto& cinderAppImpl = iter->second.first;
-			auto& cinderWindow = iter->second.second;
-			cinderAppImpl->setWindow( cinderWindow );
-
-			// create new sKeyEvent that includes same info as previous but also the utf32 char. emit key down signal with that
-			char asciiChar = codepoint < 256 ? (char)codepoint : 0;
-			sKeyEvent = KeyEvent( cinderWindow, sKeyEvent.getCode(), codepoint, asciiChar, sKeyEvent.getModifiers(), sKeyEvent.getNativeKeyCode() );
-			cinderWindow->emitKeyDown( &sKeyEvent );
-		}
-	}
+	// onCharInput removed - we now compute characters directly in onKeyboard
 
 	static void onMousePos( GLFWwindow* glfwWindow, double mouseX, double mouseY ) {
 		auto iter = sWindowMapping.find( glfwWindow );
@@ -317,14 +300,16 @@ public:
 			files.push_back( paths[i] );
 		}
 
-		vec2 dropPoint = { 0, 0 }; // note: doesn't appear to be any way to get the drop position.
+		// Get the cursor position at the time of the drop
+		double xpos, ypos;
+		::glfwGetCursorPos( glfwWindow, &xpos, &ypos );
+		vec2 dropPoint = { static_cast<float>(xpos), static_cast<float>(ypos) };
 		FileDropEvent dropEvent( getWindow(), dropPoint.x, dropPoint.y, files );
 		getWindow()->emitFileDrop( &dropEvent );
 	}
 };
 
 std::map<GLFWwindow*, std::pair<AppImplLinux*,WindowRef>> GlfwCallbacks::sWindowMapping;
-KeyEvent GlfwCallbacks::sKeyEvent;
 bool GlfwCallbacks::sCapsLockDown = false;
 bool GlfwCallbacks::sNumLockDown = false;
 bool GlfwCallbacks::sScrollLockDown = false;

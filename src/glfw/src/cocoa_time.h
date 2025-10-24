@@ -1,8 +1,7 @@
 //========================================================================
-// GLFW 3.2 POSIX - www.glfw.org
+// GLFW 3.4 macOS - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2009-2021 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -25,25 +24,12 @@
 //
 //========================================================================
 
-#ifndef _glfw3_posix_tls_h_
-#define _glfw3_posix_tls_h_
+#define GLFW_COCOA_LIBRARY_TIMER_STATE  _GLFWtimerNS   ns;
 
-#include <pthread.h>
-
-#define _GLFW_PLATFORM_LIBRARY_TLS_STATE _GLFWtlsPOSIX posix_tls
-
-
-// POSIX-specific global TLS data
+// Cocoa-specific global timer data
 //
-typedef struct _GLFWtlsPOSIX
+typedef struct _GLFWtimerNS
 {
-    GLFWbool        allocated;
-    pthread_key_t   context;
+    uint64_t        frequency;
+} _GLFWtimerNS;
 
-} _GLFWtlsPOSIX;
-
-
-GLFWbool _glfwInitThreadLocalStoragePOSIX(void);
-void _glfwTerminateThreadLocalStoragePOSIX(void);
-
-#endif // _glfw3_posix_tls_h_

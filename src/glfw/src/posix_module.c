@@ -1,8 +1,7 @@
 //========================================================================
-// GLFW 3.2 Win32 - www.glfw.org
+// GLFW 3.4 POSIX - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2021 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -27,43 +26,28 @@
 
 #include "internal.h"
 
+#if defined(GLFW_BUILD_POSIX_MODULE)
 
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-GLFWbool _glfwInitThreadLocalStorageWin32(void)
-{
-    _glfw.win32_tls.context = TlsAlloc();
-    if (_glfw.win32_tls.context == TLS_OUT_OF_INDEXES)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to allocate TLS index");
-        return GLFW_FALSE;
-    }
-
-    _glfw.win32_tls.allocated = GLFW_TRUE;
-    return GLFW_TRUE;
-}
-
-void _glfwTerminateThreadLocalStorageWin32(void)
-{
-    if (_glfw.win32_tls.allocated)
-        TlsFree(_glfw.win32_tls.context);
-}
-
+#include <dlfcn.h>
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-void _glfwPlatformSetCurrentContext(_GLFWwindow* context)
+void* _glfwPlatformLoadModule(const char* path)
 {
-    TlsSetValue(_glfw.win32_tls.context, context);
+    return dlopen(path, RTLD_LAZY | RTLD_LOCAL);
 }
 
-_GLFWwindow* _glfwPlatformGetCurrentContext(void)
+void _glfwPlatformFreeModule(void* module)
 {
-    return TlsGetValue(_glfw.win32_tls.context);
+    dlclose(module);
 }
+
+GLFWproc _glfwPlatformGetModuleSymbol(void* module, const char* name)
+{
+    return dlsym(module, name);
+}
+
+#endif // GLFW_BUILD_POSIX_MODULE
 

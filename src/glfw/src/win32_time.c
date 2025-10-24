@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.2 Win32 - www.glfw.org
+// GLFW 3.4 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -27,48 +27,28 @@
 
 #include "internal.h"
 
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-// Initialise timer
-//
-void _glfwInitTimerWin32(void)
-{
-    uint64_t frequency;
-
-    if (QueryPerformanceFrequency((LARGE_INTEGER*) &frequency))
-    {
-        _glfw.win32_time.hasPC = GLFW_TRUE;
-        _glfw.win32_time.frequency = frequency;
-    }
-    else
-    {
-        _glfw.win32_time.hasPC = GLFW_FALSE;
-        _glfw.win32_time.frequency = 1000;
-    }
-}
-
+#if defined(GLFW_BUILD_WIN32_TIMER)
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
+void _glfwPlatformInitTimer(void)
+{
+    QueryPerformanceFrequency((LARGE_INTEGER*) &_glfw.timer.win32.frequency);
+}
+
 uint64_t _glfwPlatformGetTimerValue(void)
 {
-    if (_glfw.win32_time.hasPC)
-    {
-        uint64_t value;
-        QueryPerformanceCounter((LARGE_INTEGER*) &value);
-        return value;
-    }
-    else
-        return (uint64_t) _glfw_timeGetTime();
+    uint64_t value;
+    QueryPerformanceCounter((LARGE_INTEGER*) &value);
+    return value;
 }
 
 uint64_t _glfwPlatformGetTimerFrequency(void)
 {
-    return _glfw.win32_time.frequency;
+    return _glfw.timer.win32.frequency;
 }
+
+#endif // GLFW_BUILD_WIN32_TIMER
 

@@ -1,8 +1,7 @@
 //========================================================================
-// GLFW 3.2 POSIX - www.glfw.org
+// GLFW 3.4 - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
+// Copyright (c) 2016-2017 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -29,40 +28,29 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-GLFWbool _glfwInitThreadLocalStoragePOSIX(void)
-{
-    if (pthread_key_create(&_glfw.posix_tls.context, NULL) != 0)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "POSIX: Failed to create context TLS");
-        return GLFW_FALSE;
-    }
-
-    _glfw.posix_tls.allocated = GLFW_TRUE;
-    return GLFW_TRUE;
-}
-
-void _glfwTerminateThreadLocalStoragePOSIX(void)
-{
-    if (_glfw.posix_tls.allocated)
-        pthread_key_delete(_glfw.posix_tls.context);
-}
-
-
-//////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-void _glfwPlatformSetCurrentContext(_GLFWwindow* context)
+GLFWbool _glfwInitJoysticksNull(void)
 {
-    pthread_setspecific(_glfw.posix_tls.context, context);
+    return GLFW_TRUE;
 }
 
-_GLFWwindow* _glfwPlatformGetCurrentContext(void)
+void _glfwTerminateJoysticksNull(void)
 {
-    return pthread_getspecific(_glfw.posix_tls.context);
+}
+
+GLFWbool _glfwPollJoystickNull(_GLFWjoystick* js, int mode)
+{
+    return GLFW_FALSE;
+}
+
+const char* _glfwGetMappingNameNull(void)
+{
+    return "";
+}
+
+void _glfwUpdateGamepadGUIDNull(char* guid)
+{
 }
 

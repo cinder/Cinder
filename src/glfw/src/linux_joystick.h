@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.2 Linux - www.glfw.org
+// GLFW 3.4 Linux - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -24,45 +24,41 @@
 //
 //========================================================================
 
-#ifndef _glfw3_linux_joystick_h_
-#define _glfw3_linux_joystick_h_
-
+#include <linux/input.h>
+#include <linux/limits.h>
 #include <regex.h>
 
-#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE _GLFWjoylistLinux linux_js
-
+#define GLFW_LINUX_JOYSTICK_STATE         _GLFWjoystickLinux linjs;
+#define GLFW_LINUX_LIBRARY_JOYSTICK_STATE _GLFWlibraryLinux  linjs;
 
 // Linux-specific joystick data
 //
 typedef struct _GLFWjoystickLinux
 {
-    GLFWbool        present;
-    int             fd;
-    float*          axes;
-    int             axisCount;
-    unsigned char*  buttons;
-    int             buttonCount;
-    char*           name;
-    char*           path;
+    int                     fd;
+    char                    path[PATH_MAX];
+    int                     keyMap[KEY_CNT - BTN_MISC];
+    int                     absMap[ABS_CNT];
+    struct input_absinfo    absInfo[ABS_CNT];
+    int                     hats[4][2];
 } _GLFWjoystickLinux;
 
 // Linux-specific joystick API data
 //
-typedef struct _GLFWjoylistLinux
+typedef struct _GLFWlibraryLinux
 {
-    _GLFWjoystickLinux js[GLFW_JOYSTICK_LAST + 1];
+    int                     inotify;
+    int                     watch;
+    regex_t                 regex;
+    GLFWbool                regexCompiled;
+    GLFWbool                dropped;
+} _GLFWlibraryLinux;
 
-#if defined(__linux__)
-    int             inotify;
-    int             watch;
-    regex_t         regex;
-#endif /*__linux__*/
-} _GLFWjoylistLinux;
-
+void _glfwDetectJoystickConnectionLinux(void);
 
 GLFWbool _glfwInitJoysticksLinux(void);
 void _glfwTerminateJoysticksLinux(void);
+GLFWbool _glfwPollJoystickLinux(_GLFWjoystick* js, int mode);
+const char* _glfwGetMappingNameLinux(void);
+void _glfwUpdateGamepadGUIDLinux(char* guid);
 
-void _glfwPollJoystickEvents(void);
-
-#endif // _glfw3_linux_joystick_h_
