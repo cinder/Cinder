@@ -26,10 +26,6 @@
 
 #include "cinder/app/Renderer.h"
 
-#if defined( CINDER_UWP )
-	#include <agile.h>
-#endif
-
 namespace cinder { namespace app {
 
 typedef std::shared_ptr<class RendererDx>	RendererDxRef;
@@ -44,8 +40,6 @@ class RendererDx : public Renderer {
 #if defined ( CINDER_MSW_DESKTOP )
 	virtual void setup( AppBase *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual HWND	getHwnd() { return mWnd; }
-#elif defined( CINDER_UWP )
-	virtual void	setup( AppBase *aApp, Platform::Agile<Windows::UI::Core::CoreWindow> wnd);
 #endif
 
 	virtual void	kill();
@@ -72,7 +66,7 @@ class RendererDx : public Renderer {
 	RendererDx( const RendererDx &renderer );
 
 	int				mAntiAliasing;
-	DX_WINDOW_TYPE	mWnd;
+	HWND			mWnd;
 	MatrixStack		mModelView;
 	MatrixStack		mProjection;
 };

@@ -137,7 +137,6 @@ DataSourceRef loadFile( const fs::path &path )
 }
 
 
-#if ! defined( CINDER_UWP )
 /////////////////////////////////////////////////////////////////////////////
 // DataSourceUrl
 DataSourceUrlRef DataSourceUrl::create( const Url &url, const UrlOptions &options )
@@ -166,7 +165,6 @@ DataSourceRef loadUrl( const Url &url, const UrlOptions &options )
 {
 	return DataSourceUrl::create( url, options );
 }
-#endif // ! defined( CINDER_UWP )
 
 /////////////////////////////////////////////////////////////////////////////
 // DataSourceBuffer

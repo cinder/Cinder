@@ -26,8 +26,6 @@
 #include "cinder/Shape2d.h"
 #include "cinder/Exception.h"
 #include "cinder/DataSource.h"
-#if defined( CINDER_UWP )
-#endif
 
 #include <string>
 #include <vector>
@@ -43,7 +41,7 @@
 	namespace Gdiplus {
 		class Font;
 	}
-#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	typedef struct FT_FaceRec_* FT_Face;
 #endif
 
@@ -93,7 +91,7 @@ class CI_API Font {
 	//! Returns the bounding box of a Glyph, relative to the baseline as the origin
 	Rectf					getGlyphBoundingBox( Glyph glyph ) const;
 
-#if defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	FT_Face					getFreetypeFace() const;
 #endif
 	

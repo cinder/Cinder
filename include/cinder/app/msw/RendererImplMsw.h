@@ -39,21 +39,12 @@ class WindowImplMsw;
 
 class RendererImplMsw {
  public:
-#if defined( CINDER_UWP )
-	virtual bool	initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) = 0;
-#endif
 	virtual void	prepareToggleFullScreen() {}
 	virtual void	finishToggleFullScreen() {}
 	virtual void	kill() = 0;
 	virtual void	defaultResize() const = 0;
 	virtual void	swapBuffers() const = 0;
 	virtual void	makeCurrentContext( bool force = false ) = 0;
-
- protected:
-  #if defined( CINDER_MSW_DESKTOP )
-  #else
-	::Platform::Agile<Windows::UI::Core::CoreWindow>		mWnd;
-  #endif
 };
 
 } } // namespace cinder::app

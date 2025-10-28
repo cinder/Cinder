@@ -30,13 +30,8 @@
 #include "cinder/app/AppBase.h"
 #include "cinder/gl/Environment.h"
 #include <signal.h>
+#include "cinder/app/msw/AppImplMsw.h"
 
-#if defined( CINDER_UWP )
-	#include "cinder/winrt/WinRTUtils.h"
-	#include "angle_windowsstore.h"
-#else
-	#include "cinder/app/msw/AppImplMsw.h"
-#endif
 
 #define DEBUG_GL 1
 
@@ -59,17 +54,9 @@ RendererImplGlAngle::RendererImplGlAngle( RendererGl *renderer )
 	
 }
 
-#if defined( CINDER_MSW_DESKTOP )
 bool RendererImplGlAngle::initialize( WindowImplMsw *windowImpl, RendererRef sharedRenderer )
-#elif defined( CINDER_UWP )
-bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer )
-#endif
 {
-#if defined( CINDER_MSW_DESKTOP )
 	mWindowImpl = windowImpl;
-#else
-	mWnd = wnd;
-#endif
 
 	if( sharedRenderer )
 		CI_LOG_E( "ANGLE does not currenty supported shared renderers." );
@@ -93,28 +80,17 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 	if( ! eglGetPlatformDisplayEXT )
 		return false;
 
-#if defined( CINDER_MSW_DESKTOP )
 	const EGLint displayAttributes[] = {
 		EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
 		EGL_NONE
 	};
 
 	mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_ANGLE_ANGLE, mWindowImpl->getDc(), displayAttributes );
-#else
-	const EGLint displayAttributes[] = {
-		EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
-		EGL_ANGLE_DISPLAY_ALLOW_RENDER_TO_BACK_BUFFER, EGL_TRUE, 
-		EGL_NONE,
-	};
-
-	mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, displayAttributes );
-#endif
 	if( mDisplay == EGL_NO_DISPLAY )
 		return false;
 
 	EGLint majorVersion, minorVersion;
 	if( eglInitialize( mDisplay, &majorVersion, &minorVersion ) == EGL_FALSE ) {
-#if defined( CINDER_MSW_DESKTOP )
 		// try again with D3D11 Feature Level 9.3 if 10.0+ is unavailable
 		const EGLint fl9_3DisplayAttributes[] = {
 			EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
@@ -132,9 +108,6 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 			// NB: could try again with D3D11 Feature Level 11.0 on WARP if 9.3+ is unavailable
 			return false;
 		}
-#else
-		return false;
-#endif
 	}
 
 	eglBindAPI( EGL_OPENGL_ES_API );
@@ -146,14 +119,7 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &config, 1, &configCount ) || (configCount != 1) )
 		return false;
 
-#if defined( CINDER_MSW_DESKTOP )
 	mSurface = eglCreateWindowSurface( mDisplay, config, mWindowImpl->getHwnd(), NULL );
-#else
-	Windows::Foundation::Collections::PropertySet^ surfaceCreationProperties = ref new Windows::Foundation::Collections::PropertySet();
-	surfaceCreationProperties->Insert( ref new ::Platform::String(EGLNativeWindowTypeProperty), wnd.Get() );
-
-	mSurface = eglCreateWindowSurface( mDisplay, config, reinterpret_cast<IInspectable*>(surfaceCreationProperties), NULL );
-#endif
  
 	auto err = eglGetError();
 	if( err != EGL_SUCCESS )
@@ -215,19 +181,11 @@ void RendererImplGlAngle::defaultResize() const
 {
 	checkGlStatus();
 
-#if defined( CINDER_MSW_DESKTOP )
 	::RECT clientRect;
 	::GetClientRect( mWindowImpl->getHwnd(), &clientRect );
 	int width = clientRect.right - clientRect.left;
 	int height = clientRect.bottom - clientRect.top;
 	ivec2 sizePt = mWindowImpl->getSize();
-#else
-	float widthf, heightf;
-	winrt::GetPlatformWindowDimensions( mWnd.Get(), &widthf, &heightf );
-	int width = (int)widthf;
-	int height = (int)heightf;
-	ivec2 sizePt( width, height );
-#endif
 
 	gl::viewport( 0, 0, width, height );
 	gl::setMatricesWindow( sizePt.x, sizePt.y );

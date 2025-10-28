@@ -160,7 +160,7 @@ class CI_API TextBox {
 	void						calculate() const;
 
 	mutable std::u16string	mWideText;
-#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	std::vector<std::string>	calculateLineBreaks( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics = nullptr ) const;
 	void 						calculate() const;
 #endif

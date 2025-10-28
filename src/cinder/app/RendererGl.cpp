@@ -41,8 +41,6 @@
 	#else
 		#include "cinder/app/msw/RendererImplGlMsw.h"
 	#endif
-#elif defined( CINDER_UWP )
-	#include "cinder/app/msw/RendererImplGlAngle.h"
 #elif defined( CINDER_ANDROID )
 	#include "cinder/app/android/RendererGlAndroid.h"
 #elif defined( CINDER_LINUX )
@@ -293,75 +291,6 @@ Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPix
 	ip::flipVertical( &s );
 	return s;
 }
-#elif defined( CINDER_UWP )
-RendererGl::~RendererGl()
-{
-	delete mImpl;
-}
-
-void RendererGl::setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer )
-{
-	mWnd = wnd;
-	if( ! mImpl )
-		mImpl = new RendererImplGlAngle( this );
-	if( ! mImpl->initialize( wnd, sharedRenderer ) )
-		throw ExcRendererAllocation( "RendererImplGlMsw initialization failed." );
-}
-
-void RendererGl::prepareToggleFullScreen()
-{
-	mImpl->prepareToggleFullScreen();
-}
-
-void RendererGl::finishToggleFullScreen()
-{
-	mImpl->finishToggleFullScreen();
-}
-
-void RendererGl::startDraw()
-{
-	if( mStartDrawFn )
-		mStartDrawFn( this );
-	else
-		mImpl->makeCurrentContext( false );
-}
-
-void RendererGl::makeCurrentContext( bool force )
-{
-	mImpl->makeCurrentContext( force );
-}
-
-void RendererGl::swapBuffers()
-{
-	mImpl->swapBuffers();
-}
-
-void RendererGl::finishDraw()
-{
-	if( mFinishDrawFn )
-		mFinishDrawFn( this );
-	else
-		mImpl->swapBuffers();
-}
-
-void RendererGl::defaultResize()
-{
-	mImpl->defaultResize();
-}
-
-Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
-{
-	Surface s( area.getWidth(), area.getHeight(), false );
-	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
-	GLint oldPackAlignment;
-	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment );
-	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, windowHeightPixels - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
-	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );
-	ip::flipVertical( &s );
-	return s;
-}
-
 #elif defined( CINDER_ANDROID )
 RendererGl::~RendererGl()
 {

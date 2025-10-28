@@ -110,11 +110,7 @@ void ImageSourceFileRadiance::loadStream( IStreamRef stream )
 	}
 
 	int width, height;
-#if defined( CINDER_UWP )
-	if( ! sscanf_s( resolution, "-Y %d +X %d", &height, &width ) )
-#else
 	if( ! sscanf( resolution, "-Y %d +X %d", &height, &width ) )
-#endif
 		throw ImageSourceFileRadianceException( "Unable to parse size" );
 	setSize( width, height );
 

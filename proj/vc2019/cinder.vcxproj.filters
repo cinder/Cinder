@@ -121,12 +121,6 @@
     <Filter Include="Source Files\app\msw">
       <UniqueIdentifier>{d87b601e-f0bc-4dc1-8cd1-624ae4de33cb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\app\winrt">
-      <UniqueIdentifier>{5310b59c-654a-431d-9860-d270bb5eab0e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\app\winrt">
-      <UniqueIdentifier>{dc3ddcfa-3bbd-4478-8d5d-5a750bd6f7d6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\jsoncpp">
       <UniqueIdentifier>{1f0d2d7b-fc30-443d-a52d-dd3867811355}</UniqueIdentifier>
     </Filter>
@@ -480,7 +474,6 @@
     <ClCompile Include="..\..\src\cinder\app\AppScreenSaver.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
-    </ClCompile>
     <ClCompile Include="..\..\src\cinder\audio\ChannelRouterNode.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
@@ -727,8 +720,6 @@
     <ClCompile Include="..\..\src\cinder\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    </ClCompile>
-    </ClCompile>
     <ClCompile Include="..\..\src\cinder\gl\Query.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
@@ -776,18 +767,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\app\msw\RendererImplGlMsw.cpp">
       <Filter>Source Files\app\msw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\cinder\app\winrt\AppImplWinRT.cpp">
-      <Filter>Source Files\app\winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\cinder\app\winrt\AppImplWinRTBasic.cpp">
-      <Filter>Source Files\app\winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\cinder\app\winrt\PlatformWinRt.cpp">
-      <Filter>Source Files\app\winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\cinder\app\winrt\WinRTApp.cpp">
-      <Filter>Source Files\app\winrt</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\gl\ShaderPreprocessor.cpp">
       <Filter>Source Files\gl</Filter>
@@ -1046,17 +1025,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    </ClInclude>
-    </ClInclude>
-    </ClInclude>
-    </ClInclude>
-    </ClInclude>
-    </ClInclude>
-    </ClInclude>
-    </ClInclude>
-    </ClInclude>
-    </ClInclude>
-    </ClInclude>
     <ClInclude Include="..\..\include\cinder\Arcball.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1374,7 +1342,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\dx\PlatformHelpers.h">
       <Filter>Header Files\dx</Filter>
-    </ClInclude>
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\dx\DxRenderTarget.h">
       <Filter>Header Files\dx</Filter>
@@ -1715,8 +1682,6 @@
     <ClInclude Include="..\..\include\cinder\Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    </ClInclude>
-    </ClInclude>
     <ClInclude Include="..\..\include\cinder\CinderGlm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1800,18 +1765,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\app\msw\RendererImplMsw.h">
       <Filter>Header Files\app\msw</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\cinder\app\winrt\AppImplWinRTBasic.h">
-      <Filter>Header Files\app\winrt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\cinder\app\winrt\WinRTApp.h">
-      <Filter>Header Files\app\winrt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\cinder\app\winrt\AppImplWinRT.h">
-      <Filter>Header Files\app\winrt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\cinder\app\winrt\PlatformWinRt.h">
-      <Filter>Header Files\app\winrt</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\gl\ShaderPreprocessor.h">
       <Filter>Header Files\gl</Filter>

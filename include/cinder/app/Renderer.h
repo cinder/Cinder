@@ -27,11 +27,6 @@
 #include "cinder/Cinder.h"
 #include "cinder/Exception.h"
 
-#if defined( CINDER_UWP )
-	#include <agile.h>
-	#undef min
-	#undef max
-#endif
 
 #include "cinder/Surface.h"
 #include "cinder/Display.h"
@@ -105,8 +100,6 @@ class CI_API Renderer {
 
 	virtual HWND				getHwnd() const = 0;
 	virtual HDC					getDc() const = 0;
-#elif defined( CINDER_UWP )
-	virtual void setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) = 0;
 #elif defined( CINDER_ANDROID )
 	virtual void setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) = 0;
 #elif defined( CINDER_LINUX )

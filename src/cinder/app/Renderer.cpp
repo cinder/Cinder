@@ -23,9 +23,7 @@
 
 #include "cinder/app/Renderer.h"
 
-#if !defined( CINDER_UWP )
-	#include "cinder/gl/platform.h"
-#endif
+#include "cinder/gl/platform.h"
 
 #include "cinder/app/AppBase.h"
 

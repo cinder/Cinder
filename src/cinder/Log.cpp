@@ -532,9 +532,7 @@ void LoggerSystem::write( const Metadata &meta, const std::string &text )
 	if( meta.mLevel < mLevel )
 		return;
 
-#if ! defined( CINDER_UWP ) // Currently no system logging support on WinRT
 	mImpl->write( meta, text );
-#endif
 }
 
 // ----------------------------------------------------------------------------------------------------

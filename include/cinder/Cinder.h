@@ -22,7 +22,7 @@
 
 #pragma once
 
-#if __clang__ 
+#if __clang__
 	#if ! __has_include( <cstdint> )
 		#error "<cstdint> is missing - Cinder requires libc++ on Mac OS X and iOS"
 	#endif
@@ -57,17 +57,10 @@ using std::uint64_t;
 
 #if defined( _WIN32 ) || defined( __WIN32__ ) || defined( WIN32 )
 	#define CINDER_MSW
-	#if defined( WINAPI_PARTITION_DESKTOP )
-		#if WINAPI_FAMILY_PARTITION( WINAPI_PARTITION_DESKTOP )
-			#define CINDER_MSW_DESKTOP
-		#else
-			#define CINDER_UWP
-			#define ASIO_WINDOWS_RUNTIME 1
-		#endif
-	#else
-		#define CINDER_MSW_DESKTOP
-		#include <sdkddkver.h>
-	#endif
+	#define CINDER_MSW_DESKTOP
+	#include <sdkddkver.h>
+	// Note: ANGLE (OpenGL ES on Direct3D) is supported on Windows desktop.
+	// Define CINDER_GL_ANGLE in your project to enable ANGLE rendering.
 #elif (defined( linux ) || defined( __linux ) || defined( __linux__ )) && ! defined( __ANDROID__ )
 	#define CINDER_POSIX
 	#define CINDER_LINUX

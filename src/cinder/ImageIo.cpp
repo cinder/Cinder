@@ -30,13 +30,6 @@
 
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
-#elif defined( CINDER_UWP )
-	#include <ppltasks.h>
-	#include "cinder/winrt/WinRTUtils.h"
-	#include "cinder/Utilities.h"
-	#include "cinder/msw/CinderMsw.h"
-	using namespace Windows::Storage;
-	using namespace Concurrency;
 #elif defined( CINDER_ANDROID )
 	#include "cinder/app/android/PlatformAndroid.h"	
 #endif
@@ -390,51 +383,18 @@ ImageSource::RowFunc ImageSource::setupRowFunc( ImageTargetRef target )
 	}
 }
 
-
-#if defined( CINDER_UWP )
-void loadImageAsync(const fs::path path, std::function<void (ImageSourceRef)> callback, ImageSource::Options options, std::string extension)
-{
-	auto loadImageTask = create_task([path, options, extension]() -> ImageSourceRef
-	{
-		return loadImage(path, options, extension);
-	});
-
-    auto c2 = loadImageTask.then([path, options, extension, callback](task<ImageSourceRef> previousTask)
-    {
-        // If we get an ImageIoExceptionFailedLoad, we try to copy the image to the Application temp folder and try again
-        try
-        {
-			// Image was loaded. This callback is on the main UI thread
-			callback(previousTask.get());
-        }
-        catch (const ImageIoExceptionFailedLoad&)
-        {
-			auto copyTask = winrt::copyFileToTempDirAsync(path);
-			copyTask.then([options, extension, callback](StorageFile^ file) 
-			{
-				fs::path temp = fs::path( msw::toUtf8String( file->Path->Data() ) );
-				// Image was loaded. This callback is on the main UI thread
-				callback(loadImage(temp, options, extension));
-				winrt::deleteFileAsync(temp);
-			});
-        }
-    });
-}
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
 ImageSourceRef loadImage( const fs::path &path, ImageSource::Options options, string extension )
 {
 #if defined( CINDER_ANDROID )
 	if( ci::app::PlatformAndroid::isAssetPath( path ) ) {
-		return loadImage( (DataSourceRef)DataSourceAndroidAsset::create( path ), options, extension );			
+		return loadImage( (DataSourceRef)DataSourceAndroidAsset::create( path ), options, extension );
 	}
 	else {
 		return loadImage( (DataSourceRef)DataSourcePath::create( path ), options, extension );
 	}
-#else	
+#else
 	return loadImage( (DataSourceRef)DataSourcePath::create( path ), options, extension );
-#endif	
+#endif
 }
 
 ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options, string extension )
@@ -444,11 +404,7 @@ ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options
 #endif
 
 	if( extension.empty() ) // this is necessary to limit the lifetime of the objc-based loader's allocations
-#if ! defined( CINDER_UWP ) || ( _MSC_VER > 1800 )
 		extension = dataSource->getFilePathHint().extension().string();
-#else
-		extension = dataSource->getFilePathHint().extension();
-#endif	
 	return ImageIoRegistrar::createSource( dataSource, options, extension );
 }
 
@@ -464,11 +420,7 @@ void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, Im
 #endif
 
 	if( extension.empty() ) {
-#if ! defined( CINDER_UWP ) || ( _MSC_VER > 1800 )
 		extension = dataTarget->getFilePathHint().extension().string();
-#else
-		extension = dataTarget->getFilePathHint().extension();
-#endif
 		// strip leading .
 		extension = ( ( ! extension.empty() ) && ( extension[0] == '.' ) ) ? extension.substr( 1, string::npos ) : extension;
 	}

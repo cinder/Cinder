@@ -66,7 +66,7 @@ def appendSuffixedCopyLibDir( line, find, addition ):
 	
 def processLine( line ):
 	#return replaceLibDir( line, r"..\..\..\\lib\msw\$(PlatformTarget)", r"..\..\..\lib\msw\$(PlatformTarget)" )
-	return appendSuffixedCopyLibDir( line, r"..\..\..\lib\winrt\$(PlatformTarget)", "$(Configuration)\\" )
+	return line
 	#return replaceStaticLib( line, "cinder-$(PlatformToolset)_d.lib", "cinder-$(PlatformToolset).lib" )
 	#return replaceStaticLib( line, "cinder-$(PlatformToolset)-ANGLE_d.lib", "cinder-$(PlatformToolset)-ANGLE.lib" )
 	#return replaceStaticLib( line, "cinder-$(PlatformToolset)-ANGLE.lib", "cinder-$(PlatformToolset).lib" )

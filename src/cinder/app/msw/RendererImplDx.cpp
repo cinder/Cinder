@@ -33,17 +33,7 @@
 #include "cinder/Camera.h"
 
 #include <windows.h>
-#if ! defined( CINDER_WINRT )
 #include <windowsx.h>
-#endif
-
-#if defined( CINDER_WINRT )
-#include "cinder/WinRTUtils.h"
-using namespace Windows::UI::Core;
-using namespace Windows::Foundation;
-using namespace Windows::Graphics::Display;
-using namespace cinder::winrt;
-#endif
 
 namespace Shaders {
 
@@ -244,18 +234,12 @@ void RendererImplDx::finishToggleFullScreen()
 	}
 }
 
-void RendererImplDx::getPlatformWindowDimensions( Platform::Agile<Windows::UI::Core::CoreWindow> wnd, float* width, float* height) const
+void RendererImplDx::getPlatformWindowDimensions( HWND wnd, float* width, float* height) const
 {
-
-#if defined( CINDER_MSW ) 
 	RECT rect;
 	::GetClientRect(wnd, &rect);
 	*width = static_cast<float>(rect.right - rect.left);
 	*height = static_cast<float>(rect.bottom - rect.top);
-
-#elif defined( CINDER_WINRT )
-	return GetPlatformWindowDimensions(wnd.Get(), width, height);
-#endif
 }
 
 void RendererImplDx::releaseNonDeviceResources()
@@ -332,7 +316,7 @@ void RendererImplDx::swapBuffers() const
 	parameters.pScrollOffset = nullptr;
 
 	HRESULT hr;
-#if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
+#if ( _WIN32_WINNT >= 0x0602 )
 	if( mVsyncEnable )
 		hr = mSwapChain->Present1( 1, 0, &parameters );
 	else
@@ -346,7 +330,7 @@ void RendererImplDx::swapBuffers() const
 	//handle device lost
 	if(hr == DXGI_ERROR_DEVICE_REMOVED)
 		const_cast<RendererImplDx*>(this)->handleLostDevice();
-#if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
+#if ( _WIN32_WINNT >= 0x0602 )
 	mDeviceContext->DiscardView( mMainFramebuffer );
 	mDeviceContext->DiscardView( mDepthStencilView );
 #endif
@@ -426,7 +410,6 @@ void RendererImplDx::enableDepthWriting(bool enable)
 	md3dDevice->CreateDepthStencilState(&mDepthStencilDesc, &mDepthStencilState);
 }
 
-#if defined( CINDER_MSW )
 bool RendererImplDx::initialize( HWND wnd, HDC,  RendererRef sharedRenderer )
 {
 	// TODO: see if DX can do antialiasing automatically
@@ -438,21 +421,8 @@ bool RendererImplDx::initialize( HWND wnd, HDC,  RendererRef sharedRenderer )
 	}
 	return success;
 }
-#elif defined( CINDER_WINRT )
-bool RendererImplDx::initialize( DX_WINDOW_TYPE wnd)
-{
-	// TODO: see if DX can do antialiasing automatically
-	bool success = initializeInternal( wnd );
-	if(!success)
-	{
-		::WinRTMessageBox("Couldn't initialize DirectX.", "OK");
-		return FALSE;
-	}
-	return success;
-}
-#endif
 
-bool RendererImplDx::initializeInternal( DX_WINDOW_TYPE wnd )
+bool RendererImplDx::initializeInternal( HWND wnd )
 {
 	mWnd = wnd;
 	
@@ -655,7 +625,7 @@ bool RendererImplDx::createDevice( UINT createDeviceFlags )
 	);
 
 	if( hr == S_OK ) {
-#if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
+#if ( _WIN32_WINNT >= 0x0602 )
 		hr = device->QueryInterface(__uuidof(ID3D11Device1), (void**)&md3dDevice);
 #else
 		hr = device->QueryInterface(__uuidof(ID3D11Device), (void**)&md3dDevice);
@@ -663,7 +633,7 @@ bool RendererImplDx::createDevice( UINT createDeviceFlags )
 	}
 
 	if( hr == S_OK ) {
-#if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
+#if ( _WIN32_WINNT >= 0x0602 )
 		hr = context->QueryInterface(__uuidof(ID3D11DeviceContext1), (void**)&mDeviceContext);
 #else
 		hr = context->QueryInterface(__uuidof(ID3D11DeviceContext), (void**)&mDeviceContext);
@@ -718,8 +688,8 @@ bool RendererImplDx::createFramebufferResources()
 		hr = dxgiDevice->GetAdapter(&dxgiAdapter);
 		if( hr != S_OK )
 			return false;
-		
- #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
+
+ #if ( _WIN32_WINNT >= 0x0602 )
 		IDXGIFactory2 *dxgiFactory;
 		hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory);
 		if( hr != S_OK )
@@ -735,9 +705,6 @@ bool RendererImplDx::createFramebufferResources()
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.BufferCount = 2; // Use double-buffering to minimize latency.
 
-  #if defined( CINDER_WINRT )
-		swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
-  #else
 		// Check to see if the OS is Windows 8 or later. If it's not, then that means
 		// compiling/running on Windows 7 SP1. We use this to set the appropriate
 		// flags for Windows7 SP 1's DirectX 11.1 support.
@@ -749,7 +716,7 @@ bool RendererImplDx::createFramebufferResources()
 		bool isWin8 = (osver.dwMajorVersion >= 6) && (osver.dwMinorVersion >= 2);
 
 		if( isWin8 ) {
-			swapChainDesc.Scaling = DXGI_SCALING_NONE;			
+			swapChainDesc.Scaling = DXGI_SCALING_NONE;
 		}
 		else {
 			//
@@ -758,16 +725,11 @@ bool RendererImplDx::createFramebufferResources()
 			//
 			swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
 		}
-  #endif
 
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL; // All Windows Store apps must use this SwapEffect.
 		swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-  #if defined( CINDER_WINRT )
-		hr = dxgiFactory->CreateSwapChainForCoreWindow( md3dDevice, reinterpret_cast<IUnknown*>(mWnd.Get()), &swapChainDesc, nullptr, &mSwapChain );
-  #else 
 		hr = dxgiFactory->CreateSwapChainForHwnd( md3dDevice, mWnd, &swapChainDesc, NULL, NULL, &mSwapChain );
-  #endif
 #else
 		IDXGIFactory1 *dxgiFactory;
 		hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory1), (void**)&dxgiFactory);

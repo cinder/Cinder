@@ -28,13 +28,6 @@
 #include "cinder/Utilities.h"
 #include "cinder/Noncopyable.h"
 
-#if defined( CINDER_UWP )
-	#define generic GenericFromFreeTypeLibrary
-	#include <ft2build.h>
-	#include <freetype.h>
-	#undef generic
-#endif
-
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
 	#if defined( CINDER_MAC )
@@ -55,7 +48,7 @@
 	#include "cinder/Unicode.h"
 
 	static const float MAX_SIZE = 1000000.0f;
-#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	#include "cinder/linux/FreeTypeUtil.h"
 
 	static const float MAX_SIZE = 1000000.0f;
@@ -157,9 +150,7 @@ class Line {
 	void render( CGContextRef &cgContext, float currentY, float xBorder, float maxWidth );
 #elif defined( CINDER_MSW_DESKTOP )
 	void render( Gdiplus::Graphics *graphics, float currentY, float xBorder, float maxWidth );
-#elif 0 //defined( CINDER_UWP )
-	void render(Channel &channel, float currentY, float xBorder, float maxWidth);
-#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	void render( Surface &surface, float currentY, float xBorder, float maxWidth );
 #endif
 
@@ -237,23 +228,6 @@ void Line::calcExtents()
 		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
 		mHeight = std::max( mHeight, sizeRect.Height );
 	}
-#elif defined( CINDER_UWP )
-	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
-	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
-		FT_Face face = runIt->mFont.getFreetypeFace();
-		
-		int width = 0;
-		for(string::iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt)
-		{
-			FT_Load_Char(face, *strIt, FT_LOAD_DEFAULT);
-			width += face->glyph->advance.x;
-		}
-		mWidth += width / 64.0f;
-		mAscent = std::max( runIt->mFont.getAscent(), mAscent );
-		mDescent = std::max( runIt->mFont.getDescent(), mDescent );
-		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
-		mHeight = std::max( mHeight, face->bbox.yMax / 64.0f );
-	}
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
 	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
@@ -306,7 +280,7 @@ void Line::render( Gdiplus::Graphics *graphics, float currentY, float xBorder, f
 	}
 }
 
-#elif 0//defined( CINDER_UWP )
+#elif 0
 
 void Line::render(Channel &channel, float currentY, float xBorder, float maxWidth)
 {
@@ -329,7 +303,7 @@ void Line::render(Channel &channel, float currentY, float xBorder, float maxWidt
 	}
 }
 
-#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 
 void draw_bitmap( FT_Int x, FT_Int y, FT_Bitmap* bitmap, const ColorA8u& color, uint8_t *dstData, size_t dstPixelInc, size_t dstRowBytes, const ivec2& dstSize )
 {
@@ -593,7 +567,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 
 	delete offscreenBitmap;
 	delete offscreenGraphics;
-#elif 0 //defined( CINDER_UWP )
+#elif 0
 	Channel channel( pixelWidth, pixelHeight );
 	ip::fill<uint8_t>( &channel, 0 );
 	float currentY = (float)mVerticalBorder;
@@ -604,7 +578,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	}
 	result = Surface(channel, SurfaceConstraintsDefault(), true);
 	result.getChannelAlpha().copyFrom( channel, channel.getBounds() );
-#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	result = Surface( pixelWidth, pixelHeight, true, SurfaceConstraintsDefault() );
 	ip::fill( &result, mBackgroundColor );
 
@@ -660,7 +634,7 @@ Surface renderStringPow2( const string &str, const Font &font, const ColorA &col
 	::CGContextRelease( cgContext );
 	return result;
 }
-#elif defined( CINDER_MAC) || defined( CINDER_MSW_DESKTOP ) || defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_MAC) || defined( CINDER_MSW_DESKTOP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 Surface renderString( const string &str, const Font &font, const ColorA &color, float *baselineOffset )
 {
 	Line line;
@@ -716,7 +690,7 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 
 	delete offscreenBitmap;
 	delete offscreenGraphics;
-#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	Surface result = Surface( pixelWidth, pixelHeight, true, SurfaceConstraintsDefault() );
 	ip::fill( &result, ColorA( 0, 0, 0, 0 ) );
 

@@ -30,9 +30,6 @@
 #define CINDER_GL_ES_VERSION_3_1	310
 #define CINDER_GL_ES_VERSION_3_2	320
 
-#if ! defined( CINDER_GL_ANGLE ) && defined( CINDER_UWP )
-	#define CINDER_GL_ANGLE
-#endif
 
 #if defined( CINDER_GL_ANGLE )
 	#define GL_GLEXT_PROTOTYPES

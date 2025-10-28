@@ -23,9 +23,6 @@
 */
 
 #include "cinder/Cinder.h"
-#if defined( CINDER_UWP )
-	#define ASIO_WINDOWS_RUNTIME 1
-#endif
 
 #if defined( __ANDROID__ ) && defined( __clang__ )
  	#if defined( __GNUC__ )

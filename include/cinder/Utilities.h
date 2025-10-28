@@ -75,7 +75,7 @@ CI_API inline char getPathSeparator() { return '\\'; }
 inline char getPathSeparator() { return '/'; }
 #endif
 
-//! Returns a std::map of the system's environment variables. Empty on WinRT.
+//! Returns a std::map of the system's environment variables.
 CI_API std::map<std::string, std::string> getEnvironmentVariables();
 
 template<typename T>

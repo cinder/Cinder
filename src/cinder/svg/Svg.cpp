@@ -2357,11 +2357,7 @@ shared_ptr<Surface8u> Doc::loadImage( fs::path relativePath )
 {
 	if( mImageCache.find( relativePath ) == mImageCache.end() ) {
 		try {
-#if defined( CINDER_UWP )
-			fs::path fullPath = ( mFilePath / relativePath );
-#else
 			fs::path fullPath = ( mFilePath / relativePath ).make_preferred();
-#endif
 
 			if( fs::exists( fullPath ) )
 				mImageCache[relativePath] = shared_ptr<Surface8u>( new Surface8u( ci::loadImage( fullPath ) ) );
