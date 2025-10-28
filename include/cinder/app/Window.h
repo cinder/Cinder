@@ -83,7 +83,6 @@ typedef std::shared_ptr<Window>		WindowRef;
 	#if defined( CINDER_COCOA_TOUCH )
 		class UIViewController;
 	#endif
-	} } // namespace cinder::app
 #elif defined( CINDER_MSW_DESKTOP )
 	namespace cinder { namespace app {
 		class WindowImplMsw;
