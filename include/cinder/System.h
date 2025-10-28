@@ -49,7 +49,7 @@ class CI_API System {
 	static bool			hasArm();
 	//! Returns the number of physical processors in the system. A single processor dual core machine returns 1.
 	static int			getNumCpus();
-	//! Returns the number of cores (or logical processors) in the system. A single processor dual core machine returns 2. Inaccurate on MSW x64 and WinRT, where it returns the number of processors instead.
+	//! Returns the number of cores (or logical processors) in the system. A single processor dual core machine returns 2. Inaccurate on MSW x64, where it returns the number of processors instead.
 	static int			getNumCores();
 	//! Returns the major version of the operating system.
 	//! For version \c 10.5.8, this is \c 10. For Windows Vista this is 6. Refer to the MSDN documentation for the \c OSVERSIONINFOEX struct for Windows meanings
@@ -78,7 +78,7 @@ class CI_API System {
 	  public:
 		const std::string&	getName() const { return mName; }
 		const std::string&	getIpAddress() const { return mIpAddress; }
-		//! Returns the subnet mask as a string in the form "255.255.240.0". On WinRT returns the prefix length.
+		//! Returns the subnet mask as a string in the form "255.255.240.0".
 		const std::string&	getSubnetMask() const { return mSubnetMask; }
 
 		NetworkAdapter( const std::string &name, const std::string &ip, const std::string &subnetMask )

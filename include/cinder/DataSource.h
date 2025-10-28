@@ -108,7 +108,6 @@ class DataSourceAndroidAsset : public DataSource {
 
 CI_API DataSourceRef loadFile( const fs::path &path );
 
-#if ! defined( CINDER_UWP )
 typedef std::shared_ptr<class DataSourceUrl>	DataSourceUrlRef;
 
 class CI_API DataSourceUrl : public DataSource {
@@ -130,7 +129,6 @@ class CI_API DataSourceUrl : public DataSource {
 	UrlOptions		mOptions;
 	IStreamUrlRef	mStream;
 };
-#endif // if !defined( CINDER_UWP )
 
 CI_API DataSourceRef		loadUrl( const Url &Url, const UrlOptions &options = UrlOptions() );
 CI_API inline DataSourceRef	loadUrl( const std::string &urlString, const UrlOptions &options = UrlOptions() ) { return loadUrl( Url( urlString ), options ); }

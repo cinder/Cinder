@@ -42,20 +42,6 @@
 	#include "cinder/msw/CinderMsw.h"
 	#include "cinder/msw/CinderMswGdiPlus.h"
 	#pragma comment(lib, "gdiplus")
-#elif defined( CINDER_UWP )
-	#include <dwrite.h>
-	#include <ft2build.h>
-
-	// Note: generic is a reserved word in winrt c++/cx
-	// need to redefine it for freetype.h
-	#define generic GenericFromFreeTypeLibrary
-	#include FT_FREETYPE_H
-	#include FT_OUTLINE_H
-	#undef generic
-
-	#include FT_GLYPH_H
-
-	#include "cinder/winrt/FontEnumerator.h"
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
  	#include "ft2build.h"
 	#include FT_FREETYPE_H 
@@ -104,10 +90,6 @@ class FontObj : public std::enable_shared_from_this<FontObj> {
 	std::shared_ptr<Gdiplus::Font>	mGdiplusFont;
 	std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
 	void *mFileData;
-#elif defined( CINDER_UWP )
-	std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
-	void *mFileData;
-	FT_Face mFace;
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	BufferRef				mFileData;
 	FT_Face 				mFace = nullptr;
@@ -173,8 +155,6 @@ class FontManager
 #elif defined( CINDER_MSW_DESKTOP )
 	HDC					mFontDc;
 	Gdiplus::Graphics	*mGraphics;
-#elif defined( CINDER_UWP )
-	FT_Library			mLibrary = nullptr;
 #elif defined( CINDER_ANDROID )
 	FT_Library				mLibrary;
 	std::vector<FontInfo>	mFontInfos;
@@ -224,10 +204,6 @@ FontManager::FontManager()
 #elif defined( CINDER_MSW_DESKTOP )
 	mFontDc = ::CreateCompatibleDC( NULL );
 	mGraphics = new Gdiplus::Graphics( mFontDc );
-#elif defined( CINDER_UWP ) 
-	if( FT_Init_FreeType( &mLibrary ) ) {
-		throw FontInvalidNameExc("Failed to initialize freetype");
-	}
 #elif defined( CINDER_ANDROID )
 	if( FT_Err_Ok == FT_Init_FreeType( &mLibrary ) ) {
 		fs::path systemFontDir = "/system/fonts";
@@ -274,8 +250,6 @@ FontManager::~FontManager()
 {
 #if defined( CINDER_MAC )
 	[nsFontManager release];
-#elif defined( CINDER_UWP )
-	FT_Done_FreeType(mLibrary);
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	for( auto& fontObj : mTrackedFonts ) {
 		if( fontObj ) {
@@ -359,23 +333,6 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 		// consider enumerating character sets? DEFAULT_CHARSET potentially here
 		::LOGFONT lf = { 0, 0, 0, 0, 0, 0, 0, 0, ANSI_CHARSET, 0, 0, 0, 0, '\0' };
 		::EnumFontFamiliesEx( getFontDc(), &lf, (FONTENUMPROC)EnumFontFamiliesExProc, reinterpret_cast<LPARAM>( &mFontNames ), 0 );
-#elif defined( CINDER_UWP )
-		Platform::Array<Platform::String^>^ fontNames = FontEnumeration::FontEnumerator().ListSystemFonts();
-		for(unsigned i = 0; i < fontNames->Length; ++i)
-		{
-			//mFontNames.push_back(std::string(fontNames[i]->Begin(), fontNames[i]->End())); //this doesn't work in release mode
-			const wchar_t *start = fontNames[i]->Begin();
-			const wchar_t *end = fontNames[i]->End();
-			mFontNames.push_back(std::string(start, end));
-			//int length = end - start;
-			//char *str = new char[length + 1];
-			//char *itr = str;
-			//for(; start != end; ++start)
-			//	*itr++ = *start;
-			//*itr = 0;
-			//mFontNames.push_back(std::string(str));
-			//delete [] str;
-		}
 #elif defined( CINDER_ANDROID )
 		std::set<std::string> uniqueNames;
 		for( const auto& fontInfos : mFontInfos ) {
@@ -741,19 +698,16 @@ Rectf Font::getGlyphBoundingBox( Glyph glyphIndex ) const
 	);
 }
 
-#elif defined( CINDER_UWP )  || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 std::string Font::getFullName() const
 {
 	return mObj->mName;
 }
-
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 float Font::getLinespace() const
 {
 	const FT_Size_Metrics& metrics  = mObj->mFace->size->metrics;
-	return (float)(metrics.height / 64.0f);		
+	return (float)(metrics.height / 64.0f);
 }
-#endif
 
 float Font::getLeading() const
 {
@@ -788,28 +742,8 @@ Font::Glyph Font::getGlyphChar( char c ) const
 
 Font::Glyph Font::getGlyphIndex( size_t idx ) const
 {
-#if defined( CINDER_UWP )	
-	size_t ct = 0;
-	bool found = false;
-	for( vector<pair<uint16_t,uint16_t> >::const_iterator rangeIt = mObj->mUnicodeRanges.begin(); rangeIt != mObj->mUnicodeRanges.end(); ++rangeIt ) {
-		if( ct + rangeIt->second - rangeIt->first >= idx ) {
-			ct = rangeIt->first + ( idx - ct );
-			found = true;
-			break;
-		}
-		else
-			ct += rangeIt->second - rangeIt->first;
-	}
-	
-	// this idx is invalid
-	if( ! found )
-		ct = 0;
-	
-	return (Glyph)ct;
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	FT_UInt result = FT_Get_Char_Index( mObj->mFace, (FT_ULong)idx );
 	return result;
-#endif	
 }
 
 vector<Font::Glyph> Font::getGlyphs( const string &utf8String ) const
@@ -890,8 +824,8 @@ Rectf Font::getGlyphBoundingBox( Glyph glyphIndex ) const
 	);
 	*/
 }
-
 #endif
+
 
 FontObj::FontObj( const string &aName, float aSize )
 	: mName( aName ), mSize( aSize )
@@ -924,82 +858,6 @@ FontObj::FontObj( const string &aName, float aSize )
 	mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( FontManager::instance()->getFontDc(), mHfont ) );
 	
 	finishSetup();
-#elif defined( CINDER_UWP )
-	//gotta go through a long tedious process just to get a font file
-
-	//create the factory
-	IDWriteFactory *writeFactory;
-	if(!SUCCEEDED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&writeFactory))))
-		throw FontInvalidNameExc("Failed to create IDWriteFactory");
-
-	//obtain the fonts owned by the machine
-	IDWriteFontCollection *fontCollection;
-	if(!SUCCEEDED(writeFactory->GetSystemFontCollection(&fontCollection, TRUE)))
-		throw FontInvalidNameExc("Failed to get system fonts");
-
-	//get the arial font itself
-	UINT32 index;
-	BOOL exists;
-	std::wstring fontNameW;
-	fontNameW.assign(aName.begin(), aName.end());
-	if(!SUCCEEDED(fontCollection->FindFamilyName(fontNameW.c_str(), &index, &exists)))
-		throw FontInvalidNameExc("Failed to locate the " + aName + " font family");
-	if(exists == FALSE)
-		throw FontInvalidNameExc("The " + aName + " font family doesn't exist");
-	IDWriteFontFamily *fontFamily;
-	if(!SUCCEEDED(fontCollection->GetFontFamily(index, &fontFamily)))
-		throw FontInvalidNameExc("Failed to get the " + aName + " font family");
-	IDWriteFont *matchingFont;
-	if(!SUCCEEDED(fontFamily->GetFirstMatchingFont(DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STRETCH_NORMAL, DWRITE_FONT_STYLE_NORMAL, &matchingFont)))
-		throw FontInvalidNameExc("Failed to get matching font for " + aName);
-
-	//get the font face
-	IDWriteFontFace *fontFace;
-	if(!SUCCEEDED(matchingFont->CreateFontFace(&fontFace)))
-		throw FontInvalidNameExc("Failed to get the " + aName + " font face");
-
-	//get the font file making up this face
-	IDWriteFontFile *fontFile;
-	UINT32 numberOfFiles = 1;
-	if(!SUCCEEDED(fontFace->GetFiles(&numberOfFiles, &fontFile)))
-		throw FontInvalidNameExc("Failed to get the " + aName + " font file");
-
-	//create the font file stream
-	const void *fontFileReferenceKey;
-	UINT32 fontFileReferenceKeySize;
-	if(!SUCCEEDED(fontFile->GetReferenceKey(&fontFileReferenceKey, &fontFileReferenceKeySize)))
-		throw FontInvalidNameExc("Failed to get the reference key for " + aName);
-	IDWriteFontFileLoader *fontFileLoader;
-	if(!SUCCEEDED(fontFile->GetLoader(&fontFileLoader)))
-		throw FontInvalidNameExc("Failed to get the font file loader for " + aName);
-	IDWriteFontFileStream *fontFileStream;
-	if(!SUCCEEDED(fontFileLoader->CreateStreamFromKey(fontFileReferenceKey, fontFileReferenceKeySize, &fontFileStream)))
-		throw FontInvalidNameExc("Failed to create font file stream for " + aName);
-
-	//finally get the font file data and pass it to freetype
-	UINT64 fileSize;
-	if(!SUCCEEDED(fontFileStream->GetFileSize(&fileSize)))
-		throw FontInvalidNameExc("Failed to get the file size for " + aName);
-	const void *fragmentStart;
-	void *fragmentContext;
-	if(!SUCCEEDED(fontFileStream->ReadFileFragment(&fragmentStart, 0, fileSize, &fragmentContext)))
-		throw FontInvalidNameExc("Failed to get the raw font file data for " + aName);
-	mFileData = malloc((size_t)fileSize);
-	memcpy(mFileData, fragmentStart, (size_t)fileSize);
-	if(FT_New_Memory_Face(FontManager::instance()->mLibrary, reinterpret_cast<FT_Byte*>(mFileData), static_cast<FT_Long>(fileSize), 0, &mFace))
-		throw FontInvalidNameExc("Failed to create a face for " + aName);
-	FT_Set_Char_Size(mFace, 0, (int)aSize * 64, 0, 72);
-	fontFileStream->ReleaseFileFragment(fragmentContext);
-
-	//clean up all the DWrite stuff
-	fontFileStream->Release();
-	fontFileLoader->Release();
-	fontFile->Release();
-	fontFace->Release();
-	matchingFont->Release();
-	fontFamily->Release();
-	fontCollection->Release();
-	writeFactory->Release();
 #elif defined( CINDER_ANDROID )
 	FontManager::FontInfo fontInfo = FontManager::instance()->getFontInfo( aName );
 
@@ -1151,16 +1009,6 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 		throw FontInvalidNameExc();
 
 	finishSetup();
-#elif defined( CINDER_UWP )
-	FT_New_Memory_Face(
-		FontManager::instance()->mLibrary, 
-		(FT_Byte*)dataSource->getBuffer()->getData(), 
-		dataSource->getBuffer()->getSize(), 
-		0, 
-		&mFace
-	);
-
-	FT_Set_Pixel_Sizes(mFace, 0, (int)size);
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	mFileData = dataSource->getBuffer();
 	FT_New_Memory_Face(
@@ -1185,10 +1033,7 @@ FontObj::~FontObj()
 	::CFRelease( mCTFont );
 #elif defined( CINDER_MSW_DESKTOP )
 	if( mHfont ) // this should be replaced with something exception-safe
-		::DeleteObject( mHfont ); 
-#elif defined( CINDER_UWP )
-	FT_Done_Face(mFace);
-	free( mFileData );
+		::DeleteObject( mHfont );
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	releaseFreeTypeFace();
 	mFileData.reset();
@@ -1232,7 +1077,7 @@ void FontObj::finishSetup()
 #endif
 }
 
-#if defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 FT_Face Font::getFreetypeFace() const
 {
 	return mObj->mFace;

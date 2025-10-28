@@ -146,14 +146,6 @@ class CI_API SurfaceT {
 	static std::shared_ptr<SurfaceT<T>>	create( const SurfaceT<T> &surface )
 	{ return std::make_shared<SurfaceT<T>>( surface ); }
 
-#if defined( CINDER_UWP )
-	/** \brief Constructs asynchronously a Surface from an images located at \a path. The loaded Surface is returned in \a surface.
-		If you are creating a Surface from an image that is located outside of the WinRT Windows Store App folder, you must use this method.
-	**/
-	static void loadImageAsync(const fs::path path, SurfaceT &surface, const SurfaceConstraints &constraints = SurfaceConstraintsDefault() );
-	static void loadImageAsync(const fs::path path, SurfaceT &surface, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), bool alpha = true );
-#endif
-
 	SurfaceT<T>&	operator=( const SurfaceT<T> &rhs );
 	SurfaceT<T>&	operator=( SurfaceT<T> &&rhs );
 

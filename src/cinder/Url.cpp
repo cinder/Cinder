@@ -35,13 +35,6 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 	#include "cinder/UrlImplCocoa.h"
 	typedef cinder::IStreamUrlImplCocoa		IStreamUrlPlatformImpl;
-#elif defined( CINDER_UWP )
-	#include "cinder/winrt/WinRTUtils.h"
-	#include "cinder/msw/CinderMsw.h"
-	#include <wrl/client.h>
-	#include <agile.h>
-	using namespace Windows::Storage;
-	using namespace Windows::System;
 #elif defined( CINDER_ANDROID ) 
 	#include "cinder/UrlImplJni.h"
 	typedef cinder::IStreamUrlImplJni		IStreamUrlPlatformImpl;
@@ -117,10 +110,6 @@ std::string Url::encode( const std::string &unescaped )
 	std::u16string wideUnescaped = toUtf16( unescaped );
 	UrlEscape( (wchar_t*)wideUnescaped.c_str(), (wchar_t*)buffer, &bufferSize, 0 );
 	return toUtf8( buffer );
-#elif defined( CINDER_UWP )
-	std::wstring urlStr = msw::toWideString( unescaped );
-	auto uri = ref new Windows::Foundation::Uri(ref new Platform::String(urlStr.c_str()));
-	return msw::toUtf8String( std::wstring( uri->AbsoluteCanonicalUri->Data()));
 #elif defined( CINDER_ANDROID )
 	std::string result = urlencode( unescaped );
 	return result;
@@ -130,7 +119,6 @@ std::string Url::encode( const std::string &unescaped )
 #endif	
 }
 
-#if ! defined( CINDER_UWP )
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // IStreamUrl
@@ -157,7 +145,6 @@ IStreamUrlRef loadUrlStream( const std::string &url, const std::string &user, co
 {
 	return IStreamUrl::create( Url( url ), user, password, options );
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // UrlLoadExc

@@ -44,11 +44,7 @@ class RendererImplGlAngle : public RendererImplMsw {
  public:
 	RendererImplGlAngle( class RendererGl *renderer );
 
-#if defined( CINDER_MSW_DESKTOP )	
 	bool	initialize( WindowImplMsw *windowImpl, RendererRef sharedRenderer );
-#elif defined( CINDER_UWP )
-	bool	initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
-#endif
 	void	prepareToggleFullScreen() override;
 	void	finishToggleFullScreen() override;
 	void	kill() override;

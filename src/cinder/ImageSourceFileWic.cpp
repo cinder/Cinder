@@ -161,12 +161,7 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 
     // Create a decoder
 	msw::ComPtr<IWICBitmapDecoder> decoder;
-#if defined( CINDER_UWP )
-		std::string s = dataSourceRef->getFilePath().string();
-		std::wstring filePath =	std::wstring(s.begin(), s.end());
-#else
-		std::wstring filePath =	dataSourceRef->getFilePath().wstring().c_str();
-#endif
+	std::wstring filePath =	dataSourceRef->getFilePath().wstring().c_str();
 
 	if( dataSourceRef->isFilePath() ) {
 		hr = factory->CreateDecoderFromFilename(

@@ -50,15 +50,6 @@
 	namespace cinder {
 		void cpuidwrap( int *p, unsigned int param );
 	}
-#elif defined( CINDER_UWP )
-	#include <collection.h>
-	#include "cinder/winrt/WinRTUtils.h"
-	using namespace Windows::Devices::Input;
-	using namespace Windows::Foundation::Collections;
-	using namespace Windows::ApplicationModel;
-	using namespace Windows::Networking;
-	using namespace Windows::Networking::Connectivity;
-	using namespace cinder::winrt;
 #elif defined( CINDER_LINUX )
 	#include <ifaddrs.h>
 	#include <netdb.h>
@@ -262,8 +253,6 @@ bool System::hasSse2()
 		instance()->mHasSSE2 = true;
 #elif defined( CINDER_MSW_DESKTOP )
 		instance()->mHasSSE2 = ( instance()->mCPUID_EDX & 0x04000000 ) != 0;
-#elif defined( CINDER_UWP )
-		instance()->mHasSSE2 = IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE) != 0;
 #else
 	throw Exception( "Not implemented" );
 #endif
@@ -282,8 +271,6 @@ bool System::hasSse3()
 		instance()->mHasSSE3 = true;
 #elif defined( CINDER_MSW_DESKTOP )
 		instance()->mHasSSE3 = ( instance()->mCPUID_ECX & 0x00000001 ) != 0;
-#elif defined( CINDER_UWP )
-		instance()->mHasSSE3 = IsProcessorFeaturePresent(PF_SSE3_INSTRUCTIONS_AVAILABLE) != 0;
 #else
 		throw Exception( "Not implemented" );
 #endif
@@ -332,11 +319,7 @@ bool System::hasSse4_2()
 bool System::hasArm()
 {
 	if( ! instance()->mCachedValues[HAS_ARM] ) {
-#if defined( CINDER_UWP )	
-		SYSTEM_INFO info;
-		::GetNativeSystemInfo(&info);
-		instance()->mHasArm = info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM;
-#elif defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_COCOA_TOUCH )
 		instance()->mHasArm = true;
 #else
 		instance()->mHasArm = false;
@@ -355,10 +338,6 @@ bool System::hasX86_64()
 		instance()->mHasX86_64 = true;
 #elif defined( CINDER_MSW_DESKTOP )
 		instance()->mHasX86_64 = ( instance()->mCPUID_EDX & ( 1 << 29 ) ) != 0;
-#elif defined( CINDER_UWP )
-		SYSTEM_INFO info;
-		::GetNativeSystemInfo(&info);
-		instance()->mHasX86_64 = info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;
 #else
 		throw Exception( "Not implemented" );
 #endif		
@@ -372,9 +351,9 @@ bool System::hasX86_64()
 int System::getNumCpus()
 {
 	if( ! instance()->mCachedValues[PHYSICAL_CPUS] ) {
-#if defined( CINDER_COCOA )	
+#if defined( CINDER_COCOA )
 		instance()->mPhysicalCPUs = getSysCtlValue<int>( "hw.packages" );
-#elif defined( CINDER_UWP ) || defined( _WIN64 )
+#elif defined( _WIN64 )
 		SYSTEM_INFO info;
 		::GetNativeSystemInfo(&info);
 		instance()->mPhysicalCPUs = info.dwNumberOfProcessors;
@@ -419,9 +398,9 @@ int System::getNumCpus()
 int System::getNumCores()
 {
 	if( ! instance()->mCachedValues[LOGICAL_CPUS] ) {
-#if defined( CINDER_COCOA )	
+#if defined( CINDER_COCOA )
 		instance()->mLogicalCPUs = getSysCtlValue<int>( "hw.logicalcpu" );
-#elif defined( CINDER_UWP ) || defined( _WIN64 )
+#elif defined( _WIN64 )
 		SYSTEM_INFO info;
 		::GetNativeSystemInfo(&info);
 		// no way to check the actual number of cores, so return dwNumberOfProcessors
@@ -527,15 +506,8 @@ bool System::hasMultiTouch()
 		instance()->mHasMultiTouch = true;
 #elif defined( CINDER_MSW_DESKTOP )
 		int value = ::GetSystemMetrics( 94/*SM_DIGITIZER*/ );
-		instance()->mHasMultiTouch = (value & 0x00000080/*NID_READY*/ ) && 
+		instance()->mHasMultiTouch = (value & 0x00000080/*NID_READY*/ ) &&
 				( (value & 0x00000040/*NID_MULTI_INPUT*/ ) || (value & 0x00000001/*NID_INTEGRATED_TOUCH*/ ) );
-#elif defined( CINDER_UWP )
-		auto pointerDevices = PointerDevice::GetPointerDevices();
-		std::for_each(begin(pointerDevices), end(pointerDevices), [&](PointerDevice^ p) {
-			if(p->PointerDeviceType == PointerDeviceType::Touch) {
-				instance()->mHasMultiTouch  = true;
-			}
-		});
 #elif defined( CINDER_ANDROID )
 		// @TODO Check to make sure all variants of Android device support multiTouch 
 		instance()->mHasMultiTouch = true;
@@ -557,16 +529,6 @@ int32_t System::getMaxMultiTouchPoints()
 		instance()->mMaxMultiTouchPoints = 6; // we don't seem to be able to query this at runtime; should be hardcoded based on the device
 #elif defined( CINDER_MSW_DESKTOP )
 		instance()->mMaxMultiTouchPoints = ::GetSystemMetrics( 95/*SM_MAXIMUMTOUCHES*/ );
-#elif defined( CINDER_UWP )
-		auto pointerDevices = PointerDevice::GetPointerDevices();
-		unsigned int maxContacts = 0;
-		std::for_each(begin(pointerDevices), end(pointerDevices), [&](PointerDevice^ p) {
-			if(p->MaxContacts > maxContacts) {
-				maxContacts  = p->MaxContacts;
-			}
-		});
-		instance()->mMaxMultiTouchPoints = maxContacts;
-
 #elif defined( CINDER_ANDROID )
 		instance()->mMaxMultiTouchPoints = 10;
 #else
@@ -580,7 +542,7 @@ int32_t System::getMaxMultiTouchPoints()
 
 string System::demangleTypeName( const char *mangledName )
 {
-	// not supported on MSW or UWP
+	// not supported on MSW
 #if defined( CINDER_MSW )
 	return mangledName;
 #else
@@ -646,15 +608,6 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 
     if( pAdapterInfo )
         ::HeapFree( ::GetProcessHeap(), 0, pAdapterInfo );
-#elif defined( CINDER_UWP )
-	auto hosts = NetworkInformation::GetHostNames();
-	std::for_each( begin(hosts), end(hosts), [&](HostName^ n) {
-		std::string subnetMask;
-		if( n->IPInformation && n->IPInformation->PrefixLength )
-			subnetMask = PlatformStringToString( n->IPInformation->PrefixLength->ToString() );
-		
-		adapters.push_back( System::NetworkAdapter( PlatformStringToString(n->CanonicalName), PlatformStringToString(n->DisplayName), subnetMask ) );
-	});
 #else
 		throw Exception( "Not implemented" );
 #endif
@@ -674,28 +627,6 @@ std::string System::getSubnetMask() {
 	return "0.0.0.0";
 }
 
-#if defined( CINDER_UWP )
-std::string System::getIpAddress()
-{
-    auto icp = NetworkInformation::GetInternetConnectionProfile();
-	std::string ip("");
-	if (icp != nullptr && icp->NetworkAdapter != nullptr)
-    {
-		auto hosts = NetworkInformation::GetHostNames();
-		std::for_each(begin(hosts), end(hosts), [&](HostName^ n) {
-			if(n->IPInformation && n->IPInformation->NetworkAdapter)
-			{
-				if(n->IPInformation->NetworkAdapter->NetworkAdapterId == icp->NetworkAdapter->NetworkAdapterId) {
-					ip = PlatformStringToString(n->DisplayName);
-				}
-				//OutputDebugString(std::wstring(n->DisplayName->Data()).c_str());
-			}
-		});
-    }
-
-    return ip;
-}
-#else
 std::string System::getIpAddress()
 {
 	vector<System::NetworkAdapter> adapters = getNetworkAdapters();
@@ -712,10 +643,9 @@ std::string System::getIpAddress()
 		if( (adaptIt->getIpAddress() != "127.0.0.1") && (adaptIt->getIpAddress() != "0.0.0.0") )
 			result = adaptIt->getIpAddress();
 	}
-	
+
 	return result;
 }
-#endif
 
 #if defined( CINDER_COCOA_TOUCH )
 bool System::isDeviceIphone()

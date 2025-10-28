@@ -28,8 +28,6 @@
 
 #if defined( CINDER_MSW_DESKTOP )
 	#include "cinder/app/msw/AppImplMsw.h"
-#elif defined( CINDER_UWP )
-	#include "cinder/app/winrt/WindowImplWinRt.h"
 #elif defined( CINDER_COCOA )
 	#include <Foundation/Foundation.h>
 #elif defined( CINDER_ANDROID )
@@ -403,8 +401,6 @@ const std::vector<TouchEvent::Touch>& Window::getActiveTouches() const
 #if defined( CINDER_COCOA )
 	return [mImpl getActiveTouches];
 #elif defined( CINDER_MSW_DESKTOP )
-	return mImpl->getActiveTouches();
-#elif defined( CINDER_UWP )
 	return mImpl->getActiveTouches();
 #elif defined( CINDER_ANDROID )
 	return mImpl->getActiveTouches();	

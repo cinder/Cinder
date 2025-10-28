@@ -197,10 +197,6 @@ class CI_API RendererGl : public Renderer {
 	virtual HDC		getDc() const override;
 	virtual void	prepareToggleFullScreen();
 	virtual void	finishToggleFullScreen();
-#elif defined( CINDER_UWP )
-	void			setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
-	void			prepareToggleFullScreen();
-	void			finishToggleFullScreen();
 #elif defined( CINDER_ANDROID )
 	virtual void	setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) override;
 #elif defined( CINDER_LINUX )
@@ -242,10 +238,6 @@ protected:
 		friend class				RendererImplGlMsw;
 	#endif
 	WindowImplMsw					*mWindowImpl;
-#elif defined( CINDER_UWP )
-	class RendererImplGlAngle	*mImpl;
-	friend class				RendererImplGlAngle;
-	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
 #elif defined( CINDER_ANDROID )
 	class RendererGlAndroid		*mImpl;
 	RendererGlAndroid		  *getImpl() { return mImpl; }

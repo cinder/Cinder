@@ -37,10 +37,6 @@ using std::memcpy;
 
 namespace cinder {
 
-#if defined( CINDER_UWP )
-	#pragma warning(push) 
-	#pragma warning(disable:4996) 
-#endif
 //////////////////////////////////////////////////////////////////////////
 template<typename T>
 void OStream::writeBig( T t )
@@ -815,9 +811,5 @@ STREAM_PROTOTYPES(uint64_t)
 STREAM_PROTOTYPES(float)
 STREAM_PROTOTYPES(double)
 
-
-#if defined( CINDER_UWP )
-	#pragma warning(pop) 
-#endif
 
 } // namespace dt

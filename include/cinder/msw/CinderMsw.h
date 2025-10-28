@@ -45,12 +45,10 @@ CI_API std::wstring toWideString( const std::string& utf8String );
 CI_API std::string toUtf8String( const std::wstring& wideString );
 
 //! Converts a Win32 POINTFX fixed point point to a cinder::vec2
-#if ! defined( CINDER_UWP )
 CI_API inline vec2 toVec2( const ::POINTFX& p )
 {
 	return vec2( ( ( p.x.value << 16 ) | p.x.fract ) / 65535.0f, ( ( p.y.value << 16 ) | p.y.fract ) / 65535.0f );
 }
-#endif
 
 //! A free function designed to interact with makeComShared, calls Release() on a com-managed object
 CI_API void ComDelete( void* p );

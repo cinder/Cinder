@@ -15,7 +15,6 @@ class SystemTestApp : public App {
 void SystemTestApp::setup()
 {
 	console() << "System information:" << std::endl;
-#if ! defined( CINDER_WINRT )
   #if ! defined( CINDER_MSW )
 	console() << " OS Version " << System::getOsMajorVersion() << "." << System::getOsMinorVersion() << "." << System::getOsBugFixVersion() << std::endl;
   #else
@@ -29,7 +28,6 @@ void SystemTestApp::setup()
 	console() << " CPUs:" << System::getNumCpus() << std::endl;
 	console() << " Cores:" << System::getNumCores() << std::endl;
 //	console() << " QuickTime version: " << std::hex << qtime::getQuickTimeVersion() << std::dec << " (" << qtime::getQuickTimeVersionString() << ")" << std::endl;
-#endif	
 	console() << "Network Adapters: " << std::endl;
 	vector<System::NetworkAdapter> adapters = System::getNetworkAdapters();
 	for( vector<System::NetworkAdapter>::const_iterator netIt = adapters.begin(); netIt != adapters.end(); ++netIt )

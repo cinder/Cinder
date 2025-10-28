@@ -79,7 +79,7 @@
                 <ci dox="ci::log::LoggerBreakpoint">LoggerBreakpoint</ci> doesn't actually log messages, but triggers a breakpoint on log events above a specified threshold.  <code>triggerLevel</code> defines the minimum logging level that will break execution.
                 <br>The trigger level can be controlled by calling <ci dox="ci::log::LoggerBreakpoint::setLevel">LoggerBreakpoint::setLevel()</ci>.
             </li>
-            <li><ci dox="ci::log::LoggerSystem">LoggerSystem</ci> will write log messages to the platform specific system log.  This currently means the system log on OS X <code>/var/log/system.log</code> and the Event Log on Windows with MSW applications.  WinRT system logging is still being developed.</li>
+            <li><ci dox="ci::log::LoggerSystem">LoggerSystem</ci> will write log messages to the platform specific system log.  This currently means the system log on OS X <code>/var/log/system.log</code> and the Event Log on Windows.</li>
         </ul>
         <h3>LoggerSystem Notes</h3>
         <h4>Minimum System Logging Level</h4>

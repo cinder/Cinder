@@ -30,16 +30,15 @@
 
 namespace cinder { namespace msw {
 
-#if ! defined( CINDER_UWP )
 Surface8uRef convertHBitmap( HBITMAP hbitmap )
 {
 	// create a temporary DC
 	HDC hdc = ::CreateCompatibleDC( 0 );
-	
+
 	// determine the dimensions first
 	BITMAP bm;
 	::GetObject( hbitmap, sizeof(BITMAP), &bm );
-	
+
 	BITMAPINFO bmi;
 	memset( &bmi, 0, sizeof(BITMAPINFO) );
 	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -64,15 +63,14 @@ Surface8uRef convertHBitmap( HBITMAP hbitmap )
 	Surface8u *newSurface = new Surface8u( data, width, height, width * 4, SurfaceChannelOrder::BGRX );
 	Surface8uRef result( newSurface, [=] ( Surface8u *s ) { ::GlobalFree( (HGLOBAL)data ); delete s; } );
 	// have the Surface's destructor call this to call ::GlobalFree
-	
+
 	if( ::GetDIBits( hdc, hbitmap, 0, height, result->getData(), &bmi, DIB_RGB_COLORS ) == 0 )
 		throw Exception( "Invalid HBITMAP" );
-	
+
 	::ReleaseDC( NULL, hdc );
 
 	return result;
 }
-#endif
 
 void ComDelete( void *p )
 {
@@ -265,13 +263,6 @@ struct ComInitializer {
 	}
 };
 
-#if defined( CINDER_UWP )
-
-void initializeCom( DWORD params )
-{
-	::CoInitializeEx( NULL, params );
-}
-#else
 __declspec(thread) ComInitializer *threadComInitializer = nullptr;
 
 void initializeCom(DWORD params)
@@ -279,6 +270,5 @@ void initializeCom(DWORD params)
 	if( ! threadComInitializer )
 		threadComInitializer = new ComInitializer(params);
 }
-#endif
 
 } } // namespace cinder::msw

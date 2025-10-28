@@ -42,11 +42,7 @@ namespace cinder { namespace audio {
 std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, std::string ext )
 {
 	if( ext.empty() ) {
-#if ! defined( CINDER_UWP ) || ( _MSC_VER > 1800 )
 		ext = dataTarget->getFilePathHint().extension().string();
-#else
-		ext = dataTarget->getFilePathHint().extension();
-#endif
 		if ( ! ext.empty() && ( ext[0] == '.' ) ) {
 			ext.erase( ext.begin() );
 		}
