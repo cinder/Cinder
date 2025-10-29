@@ -1,49 +1,25 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version='1.0' encoding='utf-8'?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="14.0">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug_ANGLE|Win32">
-      <Configuration>Debug_ANGLE</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug_ANGLE|x64">
       <Configuration>Debug_ANGLE</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug_Shared|Win32">
-      <Configuration>Debug_Shared</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug_Shared|x64">
       <Configuration>Debug_Shared</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release_ANGLE|Win32">
-      <Configuration>Release_ANGLE</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release_ANGLE|x64">
       <Configuration>Release_ANGLE</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release_Shared|Win32">
-      <Configuration>Release_Shared</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release_Shared|x64">
       <Configuration>Release_Shared</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
@@ -57,24 +33,6 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Shared|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
@@ -91,21 +49,6 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -223,109 +166,6 @@
     <TargetName>$(ProjectName)</TargetName>
     <IntDir>$(ProjectDir)build\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\intermediate\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>$(ProjectName)</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Shared|Win32'">
-    <TargetName>$(ProjectName)</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">
-    <TargetName>$(ProjectName)</TargetName>
-  </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir);..\..\include;..\..\include\imgui;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
-      <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-    </ClCompile>
-    <Lib>
-      <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <RemoveObjects>LIBCMT</RemoveObjects>
-    </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|Win32'">
-    <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir);..\..\include;..\..\include\imgui;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CINDER_SHARED_BUILD;JSON_DLL_BUILD;WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
-      <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-    </ClCompile>
-    <Lib>
-      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <RemoveObjects>LIBCMT</RemoveObjects>
-    </Lib>
-    <Link>
-      <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
-      <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCMTD</IgnoreSpecificDefaultLibraries>
-    </Link>
-    <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-    </ProjectReference>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">
-    <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir);..\..\include;..\..\include\imgui;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;CINDER_GL_ANGLE;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
-      <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-    </ClCompile>
-    <Lib>
-      <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <RemoveObjects>LIBCMT</RemoveObjects>
-    </Lib>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
@@ -413,102 +253,6 @@
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <RemoveObjects>LIBCMT</RemoveObjects>
-    </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(SolutionDir);..\..\include;..\..\include\imgui;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>Full</Optimization>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
-      <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-    </ClCompile>
-    <Lib>
-      <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-    </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Shared|Win32'">
-    <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(SolutionDir);..\..\include;..\..\include\imgui;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CINDER_SHARED_BUILD;JSON_DLL_BUILD;WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>Full</Optimization>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ProgramDataBaseFileName>..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
-      <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-    </ClCompile>
-    <Lib>
-      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-    </Lib>
-    <Link>
-      <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCMTD</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">
-    <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(SolutionDir);..\..\include;..\..\include\imgui;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;CINDER_GL_ANGLE;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>Full</Optimization>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <ProgramDataBaseFileName>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\cinder.pdb</ProgramDataBaseFileName>
-      <ForcedIncludeFiles>CinderMswUserDefines.h</ForcedIncludeFiles>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-    </ClCompile>
-    <Lib>
-      <AdditionalDependencies>Ws2_32.lib;shlwapi.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -609,16 +353,12 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\cinder\app\AppBase.cpp" />
     <ClCompile Include="..\..\src\cinder\app\AppScreenSaver.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Shared|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\app\msw\AppImplMsw.cpp" />
     <ClCompile Include="..\..\src\cinder\app\msw\AppImplMswBasic.cpp" />
     <ClCompile Include="..\..\src\cinder\app\msw\AppImplMswScreenSaver.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Shared|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -755,8 +495,6 @@
     <ClCompile Include="..\..\src\cinder\ImageSourceFileStbImage.cpp" />
     <ClCompile Include="..\..\src\cinder\ImageSourceFileWic.cpp" />
     <ClCompile Include="..\..\src\cinder\ImageSourcePng.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Shared|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -858,16 +596,10 @@
     <ClCompile Include="..\..\src\freetype\type42\type42.c" />
     <ClCompile Include="..\..\src\freetype\winfonts\winfnt.c" />
     <ClCompile Include="..\..\src\glad\glad.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\glad\glad_es.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Shared|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Shared|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
