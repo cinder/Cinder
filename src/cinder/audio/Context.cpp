@@ -87,11 +87,7 @@ Context* Context::master()
 #if defined( CINDER_COCOA )
 		sMasterContext.reset( new cocoa::ContextAudioUnit() );
 #elif defined( CINDER_MSW )
-	#if( _WIN32_WINNT >= 0x0600 ) // requires Windows Vista+
 		sMasterContext.reset( new msw::ContextWasapi() );
-	#else
-		sMasterContext.reset( new msw::ContextXAudio() );
-	#endif
 #elif defined( CINDER_ANDROID )
 		sMasterContext.reset( new android::ContextOpenSl() );
 #elif defined( CINDER_LINUX )
@@ -111,9 +107,7 @@ DeviceManager* Context::deviceManager()
 #elif defined( CINDER_COCOA_TOUCH )
 		sDeviceManager.reset( new cocoa::DeviceManagerAudioSession() );
 #elif defined( CINDER_MSW )
-	#if( _WIN32_WINNT > 0x0600 ) // requires Windows Vista+
 		sDeviceManager.reset( new msw::DeviceManagerWasapi() );
-	#endif
 #elif defined( CINDER_ANDROID )
 		sDeviceManager.reset( new android::DeviceManagerOpenSl() );
 #elif defined( CINDER_LINUX )
