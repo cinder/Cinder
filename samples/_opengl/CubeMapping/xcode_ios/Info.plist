@@ -4,8 +4,6 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen.xib</string>
 	<key>CFBundleDisplayName</key>
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundleExecutable</key>
@@ -41,10 +39,14 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSHighResolutionCapable</key>
+	<false/>
 	<key>NSMainNibFile</key>
 	<string></string>
 	<key>NSMainNibFile~ipad</key>
 	<string></string>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen.xib</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

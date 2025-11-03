@@ -229,8 +229,9 @@
 		00692BF314FF149000D0A05E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
 				DEAD_CODE_STRIPPING = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -260,8 +261,9 @@
 		00692BF414FF149000D0A05E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
 				DEAD_CODE_STRIPPING = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
@@ -286,6 +288,7 @@
 		00692BF614FF149000D0A05E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Texture3d_Prefix.pch";
 				INFOPLIST_FILE = "Info.plist";
@@ -305,6 +308,7 @@
 		00692BF714FF149000D0A05E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Texture3d_Prefix.pch";
 				INFOPLIST_FILE = "Info.plist";

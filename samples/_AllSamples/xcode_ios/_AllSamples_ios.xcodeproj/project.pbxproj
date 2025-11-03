@@ -1762,6 +1762,8 @@
 		0087D08712CD7DC5002CD69F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				COPY_PHASE_STRIP = NO;
 			};
 			name = Debug;
@@ -1769,6 +1771,8 @@
 		0087D08812CD7DC5002CD69F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				COPY_PHASE_STRIP = YES;
 			};
 			name = Release;
@@ -1776,6 +1780,8 @@
 		0087D1AB12CD7E58002CD69F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1786,6 +1792,8 @@
 		0087D1AC12CD7E58002CD69F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;

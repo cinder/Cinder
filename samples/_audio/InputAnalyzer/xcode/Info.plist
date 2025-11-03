@@ -24,13 +24,15 @@
 	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
+	<key>NSHighResolutionCapable</key>
+	<false/>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2013 __MyCompanyName__. All rights reserved.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This application requires microphone access.</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
 </dict>
 </plist>

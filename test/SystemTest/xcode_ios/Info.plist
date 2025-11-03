@@ -22,7 +22,7 @@
 			<key>UIPrerenderedIcon</key>
 			<true/>
 		</dict>
-	</dict>	
+	</dict>
 	<key>CFBundleIdentifier</key>
 	<string>org.libcinder.${PRODUCT_NAME:rfc1034identifier}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -39,6 +39,8 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSHighResolutionCapable</key>
+	<false/>
 	<key>NSMainNibFile</key>
 	<string></string>
 	<key>NSMainNibFile~ipad</key>

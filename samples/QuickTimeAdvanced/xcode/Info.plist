@@ -36,6 +36,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSHighResolutionCapable</key>
+	<false/>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
