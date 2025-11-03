@@ -2,7 +2,7 @@
 // detail/scheduler.hpp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,8 +23,8 @@
 #include "asio/detail/conditionally_enabled_event.hpp"
 #include "asio/detail/conditionally_enabled_mutex.hpp"
 #include "asio/detail/op_queue.hpp"
-#include "asio/detail/reactor_fwd.hpp"
 #include "asio/detail/scheduler_operation.hpp"
+#include "asio/detail/scheduler_task.hpp"
 #include "asio/detail/thread.hpp"
 #include "asio/detail/thread_context.hpp"
 
@@ -42,10 +42,20 @@ class scheduler
 public:
   typedef scheduler_operation operation;
 
-  // Constructor. Specifies the number of concurrent threads that are likely to
-  // run the scheduler. If set to 1 certain optimisation are performed.
+  // Tag type used for constructing as an internal scheduler.
+  struct internal {};
+
+  // The type of a function used to obtain a task instance.
+  typedef scheduler_task* (*get_task_func_type)(
+      asio::execution_context&);
+
+  // Constructor.
   ASIO_DECL scheduler(asio::execution_context& ctx,
-      int concurrency_hint = 0, bool own_thread = true);
+      bool own_thread = true,
+      get_task_func_type get_task = &scheduler::get_default_task);
+
+  // Construct as an internal scheduler.
+  ASIO_DECL scheduler(internal, asio::execution_context& ctx);
 
   // Destructor.
   ASIO_DECL ~scheduler();
@@ -99,10 +109,7 @@ public:
   }
 
   // Return whether a handler can be dispatched immediately.
-  bool can_dispatch()
-  {
-    return thread_call_stack::contains(this) != 0;
-  }
+  ASIO_DECL bool can_dispatch();
 
   /// Capture the current exception so it can be rethrown from a run function.
   ASIO_DECL void capture_current_exception();
@@ -133,12 +140,6 @@ public:
   // work_started() was previously called for the operations.
   ASIO_DECL void abandon_operations(op_queue<operation>& ops);
 
-  // Get the concurrency hint that was used to initialise the scheduler.
-  int concurrency_hint() const
-  {
-    return concurrency_hint_;
-  }
-
 private:
   // The mutex type used by this scheduler.
   typedef conditionally_enabled_mutex mutex;
@@ -168,6 +169,10 @@ private:
   ASIO_DECL void wake_one_thread_and_unlock(
       mutex::scoped_lock& lock);
 
+  // Get the default task.
+  ASIO_DECL static scheduler_task* get_default_task(
+      asio::execution_context& ctx);
+
   // Helper class to run the scheduler in its own thread.
   class thread_function;
   friend class thread_function;
@@ -190,7 +195,10 @@ private:
   event wakeup_event_;
 
   // The task to be run by this service.
-  reactor* task_;
+  scheduler_task* task_;
+
+  // The function used to get the task.
+  get_task_func_type get_task_;
 
   // Operation object to represent the position of the task in the queue.
   struct task_operation : operation
@@ -201,23 +209,26 @@ private:
   // Whether the task has been interrupted.
   bool task_interrupted_;
 
-  // The count of unfinished work.
-  atomic_count outstanding_work_;
-
-  // The queue of handlers that are ready to be delivered.
-  op_queue<operation> op_queue_;
-
   // Flag to indicate that the dispatcher has been stopped.
   bool stopped_;
 
   // Flag to indicate that the dispatcher has been shut down.
   bool shutdown_;
 
-  // The concurrency hint used to initialise the scheduler.
-  const int concurrency_hint_;
+  // The count of unfinished work.
+  atomic_count outstanding_work_;
+
+  // The queue of handlers that are ready to be delivered.
+  op_queue<operation> op_queue_;
+
+  // The time limit on running the scheduler task, in microseconds.
+  const long task_usec_;
+
+  // The time limit on waiting when the queue is empty, in microseconds.
+  const long wait_usec_;
 
   // The thread that is running the scheduler.
-  asio::detail::thread* thread_;
+  asio::detail::thread thread_;
 };
 
 } // namespace detail

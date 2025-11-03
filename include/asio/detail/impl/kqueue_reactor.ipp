@@ -2,7 +2,7 @@
 // detail/impl/kqueue_reactor.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2005 Stefan Arentz (stefan at soze dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -20,6 +20,7 @@
 
 #if defined(ASIO_HAS_KQUEUE)
 
+#include "asio/config.hpp"
 #include "asio/detail/kqueue_reactor.hpp"
 #include "asio/detail/scheduler.hpp"
 #include "asio/detail/throw_error.hpp"
@@ -46,12 +47,18 @@ namespace detail {
 kqueue_reactor::kqueue_reactor(asio::execution_context& ctx)
   : execution_context_service_base<kqueue_reactor>(ctx),
     scheduler_(use_service<scheduler>(ctx)),
-    mutex_(ASIO_CONCURRENCY_HINT_IS_LOCKING(
-          REACTOR_REGISTRATION, scheduler_.concurrency_hint())),
+    mutex_(config(ctx).get("reactor", "registration_locking", true),
+        config(ctx).get("reactor", "registration_locking_spin_count", 0)),
     kqueue_fd_(do_kqueue_create()),
     interrupter_(),
     shutdown_(false),
-    registered_descriptors_mutex_(mutex_.enabled())
+    io_locking_(config(ctx).get("reactor", "io_locking", true)),
+    io_locking_spin_count_(
+        config(ctx).get("reactor", "io_locking_spin_count", 0)),
+    registered_descriptors_mutex_(mutex_.enabled()),
+    registered_descriptors_(execution_context::allocator<void>(ctx),
+        config(ctx).get("reactor", "preallocated_io_objects", 0U),
+        io_locking_, io_locking_spin_count_)
 {
   struct kevent events[1];
   ASIO_KQUEUE_EV_SET(&events[0], interrupter_.read_descriptor(),
@@ -190,14 +197,23 @@ void kqueue_reactor::move_descriptor(socket_type,
   source_descriptor_data = 0;
 }
 
+void kqueue_reactor::call_post_immediate_completion(
+    operation* op, bool is_continuation, const void* self)
+{
+  static_cast<const kqueue_reactor*>(self)->post_immediate_completion(
+      op, is_continuation);
+}
+
 void kqueue_reactor::start_op(int op_type, socket_type descriptor,
     kqueue_reactor::per_descriptor_data& descriptor_data, reactor_op* op,
-    bool is_continuation, bool allow_speculative)
+    bool is_continuation, bool allow_speculative,
+    void (*on_immediate)(operation*, bool, const void*),
+    const void* immediate_arg)
 {
   if (!descriptor_data)
   {
     op->ec_ = asio::error::bad_descriptor;
-    post_immediate_completion(op, is_continuation);
+    on_immediate(op, is_continuation, immediate_arg);
     return;
   }
 
@@ -205,7 +221,7 @@ void kqueue_reactor::start_op(int op_type, socket_type descriptor,
 
   if (descriptor_data->shutdown_)
   {
-    post_immediate_completion(op, is_continuation);
+    on_immediate(op, is_continuation, immediate_arg);
     return;
   }
 
@@ -220,7 +236,7 @@ void kqueue_reactor::start_op(int op_type, socket_type descriptor,
       if (op->perform())
       {
         descriptor_lock.unlock();
-        scheduler_.post_immediate_completion(op, is_continuation);
+        on_immediate(op, is_continuation, immediate_arg);
         return;
       }
 
@@ -239,7 +255,7 @@ void kqueue_reactor::start_op(int op_type, socket_type descriptor,
         {
           op->ec_ = asio::error_code(errno,
               asio::error::get_system_category());
-          scheduler_.post_immediate_completion(op, is_continuation);
+          on_immediate(op, is_continuation, immediate_arg);
           return;
         }
       }
@@ -280,6 +296,35 @@ void kqueue_reactor::cancel_ops(socket_type,
       ops.push(op);
     }
   }
+
+  descriptor_lock.unlock();
+
+  scheduler_.post_deferred_completions(ops);
+}
+
+void kqueue_reactor::cancel_ops_by_key(socket_type,
+    kqueue_reactor::per_descriptor_data& descriptor_data,
+    int op_type, void* cancellation_key)
+{
+  if (!descriptor_data)
+    return;
+
+  mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
+
+  op_queue<operation> ops;
+  op_queue<reactor_op> other_ops;
+  while (reactor_op* op = descriptor_data->op_queue_[op_type].front())
+  {
+    descriptor_data->op_queue_[op_type].pop();
+    if (op->cancellation_key_ == cancellation_key)
+    {
+      op->ec_ = asio::error::operation_aborted;
+      ops.push(op);
+    }
+    else
+      other_ops.push(op);
+  }
+  descriptor_data->op_queue_[op_type].push(other_ops);
 
   descriptor_lock.unlock();
 
@@ -524,8 +569,7 @@ int kqueue_reactor::do_kqueue_create()
 kqueue_reactor::descriptor_state* kqueue_reactor::allocate_descriptor_state()
 {
   mutex::scoped_lock descriptors_lock(registered_descriptors_mutex_);
-  return registered_descriptors_.alloc(ASIO_CONCURRENCY_HINT_IS_LOCKING(
-        REACTOR_IO, scheduler_.concurrency_hint()));
+  return registered_descriptors_.alloc(io_locking_, io_locking_spin_count_);
 }
 
 void kqueue_reactor::free_descriptor_state(kqueue_reactor::descriptor_state* s)

@@ -2,7 +2,7 @@
 // impl/system_context.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -45,7 +45,8 @@ struct system_context::thread_function
 };
 
 system_context::system_context()
-  : scheduler_(add_scheduler(new detail::scheduler(*this, 0, false)))
+  : scheduler_(add_scheduler(new detail::scheduler(*this, false))),
+    threads_(std::allocator<void>())
 {
   scheduler_.work_started();
 
@@ -67,7 +68,7 @@ void system_context::stop()
   scheduler_.stop();
 }
 
-bool system_context::stopped() const ASIO_NOEXCEPT
+bool system_context::stopped() const noexcept
 {
   return scheduler_.stopped();
 }
