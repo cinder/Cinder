@@ -1,4 +1,4 @@
-name: VC2019
+name: VC2022
 
 on:
   push:
@@ -24,12 +24,12 @@ jobs:
 
       - name: Build
         working-directory: ${{github.workspace}}
-        run: msbuild proj\vc2019\cinder.sln /m /t:rebuild /p:Configuration=${{matrix.config}}
+        run: msbuild proj\vc2022\cinder.sln /m /t:rebuild /p:Configuration=${{matrix.config}}
 
       - name: Build Unit Tests
         working-directory: ${{github.workspace}}\test\unit
-        run: msbuild vc2019\unit.sln /m /t:rebuild /p:Configuration=${{matrix.config}}
+        run: msbuild vc2022\unit.sln /m /t:rebuild /p:Configuration=${{matrix.config}}
 
       - name: Run Unit Tests
         working-directory: ${{github.workspace}}\test\unit
-        run: vc2019\build\v142\${{matrix.config}}\x64\CinderUnitTests.exe
+        run: vc2022\build\v143\${{matrix.config}}\x64\CinderUnitTests.exe
