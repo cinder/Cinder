@@ -1,22 +1,14 @@
-cmake_minimum_required( VERSION 3.16 FATAL_ERROR )
+cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
-project( timeline-VisualDictionary )
+project( opengl-LevelOfDetailBasic )
 
 get_filename_component( CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE )
 get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
-list( APPEND SOURCES
-		${APP_PATH}/src/VisualDictionaryApp.cpp
-		${APP_PATH}/src/CenterState.cpp
-		${APP_PATH}/src/Dictionary.cpp
-		${APP_PATH}/src/WordNode.cpp
-	)
-
 ci_make_app(
-	SOURCES     ${SOURCES}
+	SOURCES     ${APP_PATH}/src/LevelOfDetailBasicApp.cpp
 	CINDER_PATH ${CINDER_PATH}
-	INCLUDES    ${APP_PATH}/include
 )

@@ -4,6 +4,31 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 
 set( CINDER_PLATFORM "Posix" )
 
+# Some samples are not available on Linux
+list( APPEND CINDER_SKIP_SAMPLES
+    # Renderer2D is required for:
+    FontSample
+    perlinTest
+    BSpline
+    CairoBasic
+    Wisteria
+    Renderer2dBasic
+    # Capture class is required for:
+    CaptureBasic
+    CaptureCube
+    # Apple only:
+    MotionBasic     # (uses MotionManager block)
+    Compass         # (uses MotionManager block)
+    LocationManager # (uses LocationManager block)
+    iosKeyboard
+    iosNativeControl
+    # Quicktime has no linux support:
+    QuickTimeAdvanced
+    QuickTimeAvfWriter
+    QuickTimeBasic
+    QuickTimeIteration
+)
+
 # When CINDER_HEADLESS is set, ${SRC_SET_GLFW} will *not* be compiled.
 list( APPEND SRC_SET_GLFW
 	${CINDER_SRC_DIR}/glfw/src/context.c

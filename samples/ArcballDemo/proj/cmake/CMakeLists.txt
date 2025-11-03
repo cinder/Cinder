@@ -12,4 +12,5 @@ ci_make_app(
 	SOURCES     ${APP_PATH}/src/ArcballDemoApp.cpp
 	CINDER_PATH ${CINDER_PATH}
 	INCLUDES    ${APP_PATH}/include
+	RESOURCES   ${APP_PATH}/../data/earth.jpg
 )

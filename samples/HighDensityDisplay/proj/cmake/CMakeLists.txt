@@ -1,7 +1,7 @@
-cmake_minimum_required( VERSION 3.16 FATAL_ERROR )
+cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
-project( CameraPersp )
+project( HighIntensityDisplay )
 
 get_filename_component( CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../.." ABSOLUTE )
 get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
@@ -9,8 +9,7 @@ get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
 ci_make_app(
-	SOURCES		${APP_PATH}/src/CameraPerspApp.cpp
-	INCLUDES	${APP_PATH}/include
+	SOURCES     ${APP_PATH}/src/HighDensityDisplayApp.cpp
 	CINDER_PATH ${CINDER_PATH}
-	RESOURCES   ${APP_PATH}/../data/environment_maps/humus_sf.jpg
+	INCLUDES    ${APP_PATH}/include
 )
