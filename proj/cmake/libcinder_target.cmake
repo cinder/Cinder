@@ -79,16 +79,16 @@ if( CINDER_MSW AND MSVC )
     endif()
 endif()
 
-# Determine C++ standard for Cinder (default 17, allow user override)
+# Determine C++ standard for Cinder (default 20, allow user override)
 if( CMAKE_CXX_STANDARD )
     set( CINDER_CXX_STANDARD ${CMAKE_CXX_STANDARD} )
 else()
-    set( CINDER_CXX_STANDARD 17 )
+    set( CINDER_CXX_STANDARD 20 )
 endif()
 
 # Validate minimum
-if( CINDER_CXX_STANDARD LESS 17 )
-    message( FATAL_ERROR "Cinder requires C++17 or later. CMAKE_CXX_STANDARD is set to ${CINDER_CXX_STANDARD}" )
+if( CINDER_CXX_STANDARD LESS 20 )
+    message( FATAL_ERROR "Cinder requires C++20 or later. CMAKE_CXX_STANDARD is set to ${CINDER_CXX_STANDARD}" )
 endif()
 
 # Set C++ standard for cinder target
