@@ -30,24 +30,26 @@ class SimpleReceiverApp : public App {
 	void startListening();
 	void stopListening();
 
-	ivec2	mCurrentCirclePos;
-	vec2	mCurrentSquarePos;
+	ivec2 mCurrentCirclePos;
+	vec2  mCurrentSquarePos;
 
-	std::unique_ptr<Receiver> mReceiver;
+	std::unique_ptr<Receiver>			   mReceiver;
 	std::map<uint64_t, protocol::endpoint> mConnections;
 
 	// ImGui UI state
-	int		mLocalPort;
-	bool	mIsListening;
-	int		mMouseMoveCount;
-	int		mMouseClickCount;
+	int			mLocalPort;
+	bool		mIsListening;
+	int			mMouseMoveCount;
+	int			mMouseClickCount;
 	std::string mLastError;
 	std::string mLastMessageAddress;
 };
 
 SimpleReceiverApp::SimpleReceiverApp()
-: mLocalPort( 10001 ), mIsListening( false ),
-  mMouseMoveCount( 0 ), mMouseClickCount( 0 )
+	: mLocalPort( 10001 )
+	, mIsListening( false )
+	, mMouseMoveCount( 0 )
+	, mMouseClickCount( 0 )
 {
 }
 
@@ -70,26 +72,23 @@ void SimpleReceiverApp::startListening()
 	try {
 		mReceiver.reset( new Receiver( mLocalPort ) );
 
-		mReceiver->setListener( "/mousemove/1",
-		[&]( const osc::Message &msg ){
+		mReceiver->setListener( "/mousemove/1", [&]( const osc::Message& msg ) {
 			mCurrentCirclePos.x = msg[0].int32();
 			mCurrentCirclePos.y = msg[1].int32();
 			mMouseMoveCount++;
 			mLastMessageAddress = msg.getAddress();
-		});
+		} );
 
-		mReceiver->setListener( "/mouseclick/1",
-		[&]( const osc::Message &msg ){
+		mReceiver->setListener( "/mouseclick/1", [&]( const osc::Message& msg ) {
 			mCurrentSquarePos = vec2( msg[0].flt(), msg[1].flt() ) * vec2( getWindowSize() );
 			mMouseClickCount++;
 			mLastMessageAddress = msg.getAddress();
-		});
+		} );
 
 		mReceiver->bind();
 
 #if USE_UDP
-		mReceiver->listen(
-		[&]( asio::error_code error, protocol::endpoint endpoint ) -> bool {
+		mReceiver->listen( [&]( asio::error_code error, protocol::endpoint endpoint ) -> bool {
 			if( error ) {
 				mLastError = "Error Listening: " + error.message();
 				CI_LOG_E( mLastError << " val: " << error.value() << " endpoint: " << endpoint );
@@ -97,11 +96,10 @@ void SimpleReceiverApp::startListening()
 			}
 			else
 				return true;
-		});
+		} );
 #else
-		mReceiver->setConnectionErrorFn(
-		[&]( asio::error_code error, uint64_t identifier ) {
-			if ( error ) {
+		mReceiver->setConnectionErrorFn( [&]( asio::error_code error, uint64_t identifier ) {
+			if( error ) {
 				auto foundIt = mConnections.find( identifier );
 				if( foundIt != mConnections.end() ) {
 					if( error == asio::error::eof ) {
@@ -114,30 +112,30 @@ void SimpleReceiverApp::startListening()
 					mConnections.erase( foundIt );
 				}
 			}
-		});
+		} );
 
 		auto expectedOriginator = protocol::endpoint( asio::ip::make_address( "127.0.0.1" ), 10000 );
 		mReceiver->accept(
-		[&]( asio::error_code error, protocol::endpoint endpoint ) -> bool {
-			if( error ) {
-				mLastError = "Error Accepting: " + error.message();
-				CI_LOG_E( mLastError );
-				return false;
-			}
-			else
-				return true;
-		},
-		[&, expectedOriginator]( osc::TcpSocketRef socket, uint64_t identifier ) -> bool {
-			mConnections.emplace( identifier, socket->remote_endpoint() );
-			return socket->remote_endpoint() == expectedOriginator;
-		} );
+			[&]( asio::error_code error, protocol::endpoint endpoint ) -> bool {
+				if( error ) {
+					mLastError = "Error Accepting: " + error.message();
+					CI_LOG_E( mLastError );
+					return false;
+				}
+				else
+					return true;
+			},
+			[&, expectedOriginator]( osc::TcpSocketRef socket, uint64_t identifier ) -> bool {
+				mConnections.emplace( identifier, socket->remote_endpoint() );
+				return socket->remote_endpoint() == expectedOriginator;
+			} );
 #endif
 
 		mIsListening = true;
 		mLastError.clear();
 		CI_LOG_V( "Started listening on port " << mLocalPort );
 	}
-	catch( const osc::Exception &ex ) {
+	catch( const osc::Exception& ex ) {
 		mLastError = "Error binding: " + std::string( ex.what() );
 		CI_LOG_E( mLastError << " val: " << ex.value() );
 		mIsListening = false;
@@ -150,7 +148,7 @@ void SimpleReceiverApp::stopListening()
 		try {
 			mReceiver->close();
 		}
-		catch( const osc::Exception &ex ) {
+		catch( const osc::Exception& ex ) {
 			CI_LOG_EXCEPTION( "Error closing receiver", ex );
 		}
 		mReceiver.reset();
@@ -223,7 +221,7 @@ void SimpleReceiverApp::draw()
 	ImGui::End();
 }
 
-auto settingsFunc = []( App::Settings *settings ) {
+auto settingsFunc = []( App::Settings* settings ) {
 #if defined( CINDER_MSW )
 	settings->setConsoleWindowEnabled();
 #endif
