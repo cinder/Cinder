@@ -143,7 +143,8 @@ AppBase::AppBase()
 	mHighDensityDisplayEnabled = sSettingsFromMain->isHighDensityDisplayEnabled();
 
 	mIo = shared_ptr<asio::io_context>( new asio::io_context() );
-	mIoWork = shared_ptr<asio::io_context::work>( new asio::io_context::work( *mIo ) );
+	mIoWork = shared_ptr<asio::executor_work_guard<asio::io_context::executor_type>>(
+		new asio::executor_work_guard<asio::io_context::executor_type>( asio::make_work_guard( *mIo ) ) );
 
 	// due to an issue with boost::filesystem's static initialization on Windows, 
 	// it's necessary to create a fs::path here in case of secondary threads doing the same thing simultaneously
@@ -312,7 +313,7 @@ bool AppBase::isMainThread()
 
 void AppBase::dispatchAsync( const std::function<void()> &fn )
 {
-	io_context().post( fn );
+	asio::post( io_context(), fn );
 }
 
 Surface	AppBase::copyWindowSurface()
