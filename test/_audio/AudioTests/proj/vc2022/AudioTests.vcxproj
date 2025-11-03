@@ -125,7 +125,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\src;$(CINDER_PATH)\include;$(CINDER_PATH)\..\LivePP\API\x64</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_OOURA;WIN_VERSION;CINDER_IMGUI_NO_NAMESPACE_ALIAS;VGIZMO_USES_GLM;_CRT_SECURE_NO_WARNINGS;WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_OOURA;WIN_VERSION;CINDER_IMGUI_NO_NAMESPACE_ALIAS;VGIZMO_USES_GLM;_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -162,7 +162,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\src;$(CINDER_PATH)\include;$(CINDER_PATH)\..\LivePP\API\x64</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_OOURA;WIN_VERSION;CINDER_IMGUI_NO_NAMESPACE_ALIAS;VGIZMO_USES_GLM;FMT_SHARED;_CRT_SECURE_NO_WARNINGS;CINDER_SHARED;WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_OOURA;WIN_VERSION;CINDER_IMGUI_NO_NAMESPACE_ALIAS;VGIZMO_USES_GLM;FMT_SHARED;_CRT_SECURE_NO_WARNINGS;CINDER_SHARED;WIN32;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -204,7 +204,7 @@ xcopy /y /d "$(REPO_PATH)\blocks\mason\lib\msw\$(PlatformTarget)\$(Configuration
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\src;$(CINDER_PATH)\include;$(CINDER_PATH)\..\LivePP\API\x64</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_OOURA;WIN_VERSION;CINDER_IMGUI_NO_NAMESPACE_ALIAS;VGIZMO_USES_GLM;_CRT_SECURE_NO_WARNINGS;WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_OOURA;WIN_VERSION;CINDER_IMGUI_NO_NAMESPACE_ALIAS;VGIZMO_USES_GLM;_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
@@ -242,7 +242,7 @@ xcopy /y /d "$(REPO_PATH)\blocks\mason\lib\msw\$(PlatformTarget)\$(Configuration
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Shared|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\src;$(CINDER_PATH)\include;$(CINDER_PATH)\..\LivePP\API\x64</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_OOURA;WIN_VERSION;CINDER_IMGUI_NO_NAMESPACE_ALIAS;VGIZMO_USES_GLM;FMT_SHARED;_CRT_SECURE_NO_WARNINGS;CINDER_SHARED;WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_OOURA;WIN_VERSION;CINDER_IMGUI_NO_NAMESPACE_ALIAS;VGIZMO_USES_GLM;FMT_SHARED;_CRT_SECURE_NO_WARNINGS;CINDER_SHARED;WIN32;_WINDOWS;NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
