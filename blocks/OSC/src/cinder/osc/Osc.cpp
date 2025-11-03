@@ -953,7 +953,7 @@ void SenderBase::send( const Bundle &bundle, OnErrorFn onErrorFn, OnCompleteFn o
 
 SenderUdp::SenderUdp( uint16_t localPort, const std::string &destinationHost, uint16_t destinationPort, const protocol &protocol, asio::io_context &service )
 : mSocket( new udp::socket( service ) ), mLocalEndpoint( protocol, localPort ),
-	mRemoteEndpoint( udp::endpoint( address::from_string( destinationHost ), destinationPort ) )
+	mRemoteEndpoint( udp::endpoint( asio::ip::make_address( destinationHost ), destinationPort ) )
 {
 }
 	
@@ -1015,7 +1015,7 @@ void SenderUdp::closeImpl()
 
 SenderTcp::SenderTcp( uint16_t localPort, const string &destinationHost, uint16_t destinationPort, const protocol &protocol, io_context &service, PacketFramingRef packetFraming )
 : mSocket( new tcp::socket( service ) ), mPacketFraming( packetFraming ), mLocalEndpoint( protocol, localPort ),
-	mRemoteEndpoint( tcp::endpoint( address::from_string( destinationHost ), destinationPort ) )
+	mRemoteEndpoint( tcp::endpoint( asio::ip::make_address( destinationHost ), destinationPort ) )
 {
 }
 	
@@ -1544,7 +1544,7 @@ void ReceiverTcp::bindImpl()
 	if( ec )
 		throw osc::Exception( ec );
 	
-	mAcceptor->listen( socket_base::max_connections, ec );
+	mAcceptor->listen( socket_base::max_listen_connections, ec );
 	if( ec )
 		throw osc::Exception( ec );
 }
