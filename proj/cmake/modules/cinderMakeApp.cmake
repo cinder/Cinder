@@ -129,17 +129,17 @@ function( ci_make_app )
 	target_include_directories( ${ARG_APP_NAME} PUBLIC ${ARG_INCLUDES} )
 	target_link_libraries( ${ARG_APP_NAME} PUBLIC cinder ${ARG_LIBRARIES} )
 
-	# Determine C++ standard: user override > Cinder's standard > 17
+	# Determine C++ standard: user override > Cinder's standard > 20
 	if( CMAKE_CXX_STANDARD )
 		set( APP_CXX_STANDARD ${CMAKE_CXX_STANDARD} )
 	elseif( DEFINED CINDER_CXX_STANDARD )
 		set( APP_CXX_STANDARD ${CINDER_CXX_STANDARD} )
 	else()
-		set( APP_CXX_STANDARD 17 )
+		set( APP_CXX_STANDARD 20 )
 	endif()
 
-	if( APP_CXX_STANDARD LESS 17 )
-		message( FATAL_ERROR "Cinder requires C++17 or later. App is configured to use C++${APP_CXX_STANDARD}" )
+	if( APP_CXX_STANDARD LESS 20 )
+		message( FATAL_ERROR "Cinder requires C++20 or later. App is configured to use C++${APP_CXX_STANDARD}" )
 	endif()
 
 	target_compile_features( ${ARG_APP_NAME} PUBLIC cxx_std_${APP_CXX_STANDARD} )
