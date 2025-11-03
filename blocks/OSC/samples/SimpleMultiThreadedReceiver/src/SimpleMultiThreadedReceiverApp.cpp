@@ -27,9 +27,9 @@ public:
 	void draw() override;
 	void cleanup() override;
 	
-	std::shared_ptr<asio::io_service>		mIoService;
-	std::shared_ptr<asio::io_service::work>	mWork;
-	std::thread								mThread;
+	std::shared_ptr<asio::io_context>								mIoService;
+	std::shared_ptr<asio::executor_work_guard<asio::io_context::executor_type>>	mWork;
+	std::thread														mThread;
 	
 	ivec2	mCurrentCirclePos;
 	vec2	mCurrentSquarePos;
@@ -42,7 +42,7 @@ public:
 };
 
 SimpleMultiThreadedReceiverApp::SimpleMultiThreadedReceiverApp()
-: mIoService( new asio::io_service ), mWork( new asio::io_service::work( *mIoService ) ),
+: mIoService( new asio::io_context ), mWork( new asio::executor_work_guard<asio::io_context::executor_type>( asio::make_work_guard( *mIoService ) ) ),
     mReceiver( 10001, protocol::v4(), *mIoService )
 {
 }
@@ -96,7 +96,7 @@ void SimpleMultiThreadedReceiverApp::setup()
 			}
 		}
 	});
-	auto expectedOriginator = protocol::endpoint( asio::ip::address::from_string( "127.0.0.1" ), 10000 );
+	auto expectedOriginator = protocol::endpoint( asio::ip::make_address( "127.0.0.1" ), 10000 );
 	mReceiver.accept(
 	[]( asio::error_code error, protocol::endpoint endpoint ) -> bool {
 		if( error ) {
@@ -115,9 +115,9 @@ void SimpleMultiThreadedReceiverApp::setup()
 	} );
 #endif
 	
-	// Now that everything is setup, run the io_service on the other thread.
+	// Now that everything is setup, run the io_context on the other thread.
 	mThread = std::thread( std::bind(
-	[]( std::shared_ptr<asio::io_service> &service ){
+	[]( std::shared_ptr<asio::io_context> &service ){
 		service->run();
 	}, mIoService ));
 }

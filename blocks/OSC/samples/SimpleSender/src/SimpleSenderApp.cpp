@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Log.h"
+#include "cinder/CinderImGui.h"
 
 #include "cinder/osc/Osc.h"
 
@@ -17,121 +18,152 @@ using Sender = osc::SenderUdp;
 using Sender = osc::SenderTcp;
 #endif
 
-const std::string destinationHost = "127.0.0.1";
-const uint16_t destinationPort = 10001;
-const uint16_t localPort = 10000;
-
 class SimpleSenderApp : public App {
   public:
 	SimpleSenderApp();
 	void setup() override;
+	void cleanup() override;
 	void mouseDown( MouseEvent event ) override;
 	void mouseDrag( MouseEvent event ) override;
 	void mouseUp( MouseEvent event ) override;
 	void mouseMove( MouseEvent event ) override;
+	void update() override;
 	void draw() override;
-	
+
+	void connectSender();
+	void disconnectSender();
 	void onSendError( asio::error_code error );
-	
+
 	ivec2	mCurrentMousePositon;
-	
-	Sender	mSender;
+
+	std::unique_ptr<Sender>	mSender;
 	bool	mIsConnected;
+
+	// ImGui UI state
+	char	mDestinationHost[256];
+	int		mDestinationPort;
+	int		mLocalPort;
+	bool	mUseUdp;
+	int		mMessagesSent;
+	std::string mLastError;
 };
 
 SimpleSenderApp::SimpleSenderApp()
-: mSender( localPort, destinationHost, destinationPort ), mIsConnected( false )
+: mIsConnected( false ), mDestinationPort( 10001 ), mLocalPort( 10000 ),
+  mUseUdp( true ), mMessagesSent( 0 )
 {
+	strcpy( mDestinationHost, "127.0.0.1" );
 }
 
 void SimpleSenderApp::setup()
 {
-	try {
-		// Bind the sender to the endpoint. This function may throw. The exception will
-		// contain asio::error_code information.
-		mSender.bind();
-	}
-	catch ( const osc::Exception &ex ) {
-		CI_LOG_E( "Error binding: " << ex.what() << " val: " << ex.value() );
-		quit();
-	}
-	
-#if ! USE_UDP
-	mSender.connect(
-	// Set up the OnConnectFn. If there's no error, you can consider yourself connected to
-	// the endpoint supplied.
-	[&]( asio::error_code error ){
-		if( error ) {
-			CI_LOG_E( "Error connecting: " << error.message() << " val: " << error.value() );
-			quit();
-		}
-		else {
-			CI_LOG_V( "Connected" );
-			mIsConnected = true;
-		}
-	});
-#else
-	// Udp doesn't "connect" the same way Tcp does. If bind doesn't throw, we can
-	// consider ourselves connected.
-	mIsConnected = true;
-#endif
+	// Initialize ImGui
+	ImGui::Initialize();
+
+	// Start with UDP by default
+	connectSender();
 }
 
-// Unified error handler. Easiest to have a bound function in this situation,
-// since we're sending from many different places.
-void SimpleSenderApp::onSendError( asio::error_code error )
+void SimpleSenderApp::cleanup()
 {
-	if( error ) {
-		CI_LOG_E( "Error sending: " << error.message() << " val: " << error.value() );
-		// If you determine that this error is fatal, make sure to flip mIsConnected. It's
-		// possible that the error isn't fatal.
+	disconnectSender();
+}
+
+void SimpleSenderApp::connectSender()
+{
+	try {
+		// Create new sender with current settings
+		mSender.reset( new Sender( mLocalPort, std::string( mDestinationHost ), mDestinationPort ) );
+
+		// Bind the sender to the endpoint. This function may throw.
+		mSender->bind();
+
+#if ! USE_UDP
+		if( !mUseUdp ) {
+			mSender->connect(
+			[&]( asio::error_code error ){
+				if( error ) {
+					mLastError = "Error connecting: " + error.message();
+					CI_LOG_E( mLastError );
+					mIsConnected = false;
+				}
+				else {
+					CI_LOG_V( "Connected" );
+					mIsConnected = true;
+					mLastError.clear();
+				}
+			});
+		}
+		else
+#endif
+		{
+			// UDP doesn't "connect" the same way TCP does
+			mIsConnected = true;
+			mLastError.clear();
+			CI_LOG_V( "UDP Sender bound and ready" );
+		}
+	}
+	catch ( const osc::Exception &ex ) {
+		mLastError = "Error binding: " + std::string( ex.what() );
+		CI_LOG_E( mLastError << " val: " << ex.value() );
 		mIsConnected = false;
+	}
+}
+
+void SimpleSenderApp::disconnectSender()
+{
+	if( mSender ) {
 		try {
 #if ! USE_UDP
-			// If this is Tcp, it's recommended that you shutdown before closing. This
-			// function could throw. The exception will contain asio::error_code
-			// information.
-			mSender.shutdown();
+			if( !mUseUdp ) {
+				mSender->shutdown();
+			}
 #endif
-			// Close the socket on exit. This function could throw. The exception will
-			// contain asio::error_code information.
-			mSender.close();
+			mSender->close();
 		}
 		catch( const osc::Exception &ex ) {
 			CI_LOG_EXCEPTION( "Cleaning up socket: val -" << ex.value(), ex );
 		}
-		quit();
+		mSender.reset();
+	}
+	mIsConnected = false;
+}
+
+void SimpleSenderApp::onSendError( asio::error_code error )
+{
+	if( error ) {
+		mLastError = "Error sending: " + error.message();
+		CI_LOG_E( mLastError << " val: " << error.value() );
+		mIsConnected = false;
+		disconnectSender();
+	}
+	else {
+		mMessagesSent++;
 	}
 }
 
 void SimpleSenderApp::mouseMove( cinder::app::MouseEvent event )
 {
 	mCurrentMousePositon = event.getPos();
-	// Make sure you're connected before trying to send.
-	if( ! mIsConnected )
+	if( ! mIsConnected || ! mSender )
 		return;
-	
+
 	osc::Message msg( "/mousemove/1" );
 	msg.append( mCurrentMousePositon.x );
 	msg.append( mCurrentMousePositon.y );
-	// Send the msg and also provide an error handler. If the message is important you
-	// could store it in the error callback to dispatch it again if there was a problem.
-	mSender.send( msg, std::bind( &SimpleSenderApp::onSendError,
+	mSender->send( msg, std::bind( &SimpleSenderApp::onSendError,
 								  this, std::placeholders::_1 ) );
 }
 
 void SimpleSenderApp::mouseDown( MouseEvent event )
 {
-	// Make sure you're connected before trying to send.
-	if( ! mIsConnected )
+	if( ! mIsConnected || ! mSender )
 		return;
-	
+
 	osc::Message msg( "/mouseclick/1" );
 	msg.append( (float)event.getPos().x / getWindowWidth() );
 	msg.append( (float)event.getPos().y / getWindowHeight() );
-	// Send the msg and also provide an error handler. If the message is important you
-	// could store it in the error callback to dispatch it again if there was a problem.
-	mSender.send( msg, std::bind( &SimpleSenderApp::onSendError,
+	mSender->send( msg, std::bind( &SimpleSenderApp::onSendError,
 								  this, std::placeholders::_1 ) );
 }
 
@@ -142,24 +174,73 @@ void SimpleSenderApp::mouseDrag( MouseEvent event )
 
 void SimpleSenderApp::mouseUp( MouseEvent event )
 {
-	// Make sure you're connected before trying to send.
-	if( ! mIsConnected )
+	if( ! mIsConnected || ! mSender )
 		return;
-	
+
 	osc::Message msg( "/mouseclick/1" );
 	msg.append( (float)event.getPos().x / getWindowWidth() );
 	msg.append( (float)event.getPos().y / getWindowHeight() );
-	// Send the msg and also provide an error handler. If the message is important you
-	// could store it in the error callback to dispatch it again if there was a problem.
-	mSender.send( msg, std::bind( &SimpleSenderApp::onSendError,
+	mSender->send( msg, std::bind( &SimpleSenderApp::onSendError,
 								  this, std::placeholders::_1 ) );
+}
+
+void SimpleSenderApp::update()
+{
 }
 
 void SimpleSenderApp::draw()
 {
-	gl::clear( Color( 0, 0, 0 ) );
+	gl::clear( Color( 0.1f, 0.1f, 0.15f ) );
 	gl::setMatricesWindow( getWindowSize() );
-	gl::drawSolidCircle( mCurrentMousePositon, 100 );
+
+	// Draw the circle at mouse position
+	gl::color( mIsConnected ? ColorA( 0.0f, 1.0f, 0.0f, 0.8f ) : ColorA( 1.0f, 0.0f, 0.0f, 0.8f ) );
+	gl::drawSolidCircle( mCurrentMousePositon, 50 );
+
+	// ImGui UI
+	ImGui::Begin( "OSC Sender Settings" );
+
+	ImGui::Text( "Connection Settings" );
+	ImGui::Separator();
+
+	// Host and port configuration
+	ImGui::InputText( "Destination Host", mDestinationHost, sizeof( mDestinationHost ) );
+	ImGui::InputInt( "Destination Port", &mDestinationPort );
+	ImGui::InputInt( "Local Port", &mLocalPort );
+
+	// Connect/Disconnect button
+	if( mIsConnected ) {
+		if( ImGui::Button( "Disconnect" ) ) {
+			disconnectSender();
+		}
+		ImGui::SameLine();
+		ImGui::TextColored( ImVec4( 0.0f, 1.0f, 0.0f, 1.0f ), "Connected" );
+	}
+	else {
+		if( ImGui::Button( "Connect" ) ) {
+			connectSender();
+		}
+		ImGui::SameLine();
+		ImGui::TextColored( ImVec4( 1.0f, 0.0f, 0.0f, 1.0f ), "Disconnected" );
+	}
+
+	ImGui::Spacing();
+	ImGui::Text( "Statistics" );
+	ImGui::Separator();
+	ImGui::Text( "Messages Sent: %d", mMessagesSent );
+
+	if( ! mLastError.empty() ) {
+		ImGui::Spacing();
+		ImGui::TextColored( ImVec4( 1.0f, 0.0f, 0.0f, 1.0f ), "Last Error:" );
+		ImGui::TextWrapped( "%s", mLastError.c_str() );
+	}
+
+	ImGui::Spacing();
+	ImGui::Text( "Instructions:" );
+	ImGui::TextWrapped( "Move mouse to send /mousemove/1 messages" );
+	ImGui::TextWrapped( "Click to send /mouseclick/1 messages" );
+
+	ImGui::End();
 }
 
 auto settingsFunc = []( App::Settings *settings ) {

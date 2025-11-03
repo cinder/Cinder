@@ -40,16 +40,16 @@ public:
 	
 	ivec2 mCurrentMousePositon;
 	
-	std::shared_ptr<asio::io_service>		mIoService;
-	std::shared_ptr<asio::io_service::work>	mWork;
-	std::thread								mThread;
+	std::shared_ptr<asio::io_context>								mIoService;
+	std::shared_ptr<asio::executor_work_guard<asio::io_context::executor_type>>	mWork;
+	std::thread														mThread;
 	
 	Sender				mSender;
 	std::atomic_bool	mIsConnected;
 };
 
 SimpleMultiThreadedSenderApp::SimpleMultiThreadedSenderApp()
-: mIoService( new asio::io_service ), mWork( new asio::io_service::work( *mIoService ) ),
+: mIoService( new asio::io_context ), mWork( new asio::executor_work_guard<asio::io_context::executor_type>( asio::make_work_guard( *mIoService ) ) ),
 	mSender( 10000, destinationHost, destinationPort, protocol::v4(), *mIoService ),
 	mIsConnected( false )
 {
@@ -84,7 +84,7 @@ void SimpleMultiThreadedSenderApp::setup()
 #endif
 
 	mThread = std::thread( std::bind(
-	[]( std::shared_ptr<asio::io_service> &service ){
+	[]( std::shared_ptr<asio::io_context> &service ){
 		service->run();
 	}, mIoService ));
 }
