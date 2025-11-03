@@ -34,23 +34,26 @@ class SimpleSenderApp : public App {
 	void disconnectSender();
 	void onSendError( asio::error_code error );
 
-	ivec2	mCurrentMousePositon;
+	ivec2 mCurrentMousePositon;
 
-	std::unique_ptr<Sender>	mSender;
-	bool	mIsConnected;
+	std::unique_ptr<Sender> mSender;
+	bool					mIsConnected;
 
 	// ImGui UI state
-	char	mDestinationHost[256];
-	int		mDestinationPort;
-	int		mLocalPort;
-	bool	mUseUdp;
-	int		mMessagesSent;
+	char		mDestinationHost[256];
+	int			mDestinationPort;
+	int			mLocalPort;
+	bool		mUseUdp;
+	int			mMessagesSent;
 	std::string mLastError;
 };
 
 SimpleSenderApp::SimpleSenderApp()
-: mIsConnected( false ), mDestinationPort( 10001 ), mLocalPort( 10000 ),
-  mUseUdp( true ), mMessagesSent( 0 )
+	: mIsConnected( false )
+	, mDestinationPort( 10001 )
+	, mLocalPort( 10000 )
+	, mUseUdp( true )
+	, mMessagesSent( 0 )
 {
 	strcpy( mDestinationHost, "127.0.0.1" );
 }
@@ -79,9 +82,8 @@ void SimpleSenderApp::connectSender()
 		mSender->bind();
 
 #if ! USE_UDP
-		if( !mUseUdp ) {
-			mSender->connect(
-			[&]( asio::error_code error ){
+		if( ! mUseUdp ) {
+			mSender->connect( [&]( asio::error_code error ) {
 				if( error ) {
 					mLastError = "Error connecting: " + error.message();
 					CI_LOG_E( mLastError );
@@ -92,7 +94,7 @@ void SimpleSenderApp::connectSender()
 					mIsConnected = true;
 					mLastError.clear();
 				}
-			});
+			} );
 		}
 		else
 #endif
@@ -103,7 +105,7 @@ void SimpleSenderApp::connectSender()
 			CI_LOG_V( "UDP Sender bound and ready" );
 		}
 	}
-	catch ( const osc::Exception &ex ) {
+	catch( const osc::Exception& ex ) {
 		mLastError = "Error binding: " + std::string( ex.what() );
 		CI_LOG_E( mLastError << " val: " << ex.value() );
 		mIsConnected = false;
@@ -115,13 +117,13 @@ void SimpleSenderApp::disconnectSender()
 	if( mSender ) {
 		try {
 #if ! USE_UDP
-			if( !mUseUdp ) {
+			if( ! mUseUdp ) {
 				mSender->shutdown();
 			}
 #endif
 			mSender->close();
 		}
-		catch( const osc::Exception &ex ) {
+		catch( const osc::Exception& ex ) {
 			CI_LOG_EXCEPTION( "Cleaning up socket: val -" << ex.value(), ex );
 		}
 		mSender.reset();
@@ -151,8 +153,7 @@ void SimpleSenderApp::mouseMove( cinder::app::MouseEvent event )
 	osc::Message msg( "/mousemove/1" );
 	msg.append( mCurrentMousePositon.x );
 	msg.append( mCurrentMousePositon.y );
-	mSender->send( msg, std::bind( &SimpleSenderApp::onSendError,
-								  this, std::placeholders::_1 ) );
+	mSender->send( msg, std::bind( &SimpleSenderApp::onSendError, this, std::placeholders::_1 ) );
 }
 
 void SimpleSenderApp::mouseDown( MouseEvent event )
@@ -163,8 +164,7 @@ void SimpleSenderApp::mouseDown( MouseEvent event )
 	osc::Message msg( "/mouseclick/1" );
 	msg.append( (float)event.getPos().x / getWindowWidth() );
 	msg.append( (float)event.getPos().y / getWindowHeight() );
-	mSender->send( msg, std::bind( &SimpleSenderApp::onSendError,
-								  this, std::placeholders::_1 ) );
+	mSender->send( msg, std::bind( &SimpleSenderApp::onSendError, this, std::placeholders::_1 ) );
 }
 
 void SimpleSenderApp::mouseDrag( MouseEvent event )
@@ -180,8 +180,7 @@ void SimpleSenderApp::mouseUp( MouseEvent event )
 	osc::Message msg( "/mouseclick/1" );
 	msg.append( (float)event.getPos().x / getWindowWidth() );
 	msg.append( (float)event.getPos().y / getWindowHeight() );
-	mSender->send( msg, std::bind( &SimpleSenderApp::onSendError,
-								  this, std::placeholders::_1 ) );
+	mSender->send( msg, std::bind( &SimpleSenderApp::onSendError, this, std::placeholders::_1 ) );
 }
 
 void SimpleSenderApp::update()
@@ -243,7 +242,7 @@ void SimpleSenderApp::draw()
 	ImGui::End();
 }
 
-auto settingsFunc = []( App::Settings *settings ) {
+auto settingsFunc = []( App::Settings* settings ) {
 #if defined( CINDER_MSW )
 	settings->setConsoleWindowEnabled();
 #endif
