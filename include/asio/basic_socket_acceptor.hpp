@@ -2,7 +2,7 @@
 // basic_socket_acceptor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -15,6 +15,7 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
+#include <utility>
 #include "asio/detail/config.hpp"
 #include "asio/any_io_executor.hpp"
 #include "asio/basic_socket.hpp"
@@ -31,13 +32,11 @@
 # include "asio/detail/null_socket_service.hpp"
 #elif defined(ASIO_HAS_IOCP)
 # include "asio/detail/win_iocp_socket_service.hpp"
+#elif defined(ASIO_HAS_IO_URING_AS_DEFAULT)
+# include "asio/detail/io_uring_socket_service.hpp"
 #else
 # include "asio/detail/reactive_socket_service.hpp"
 #endif
-
-#if defined(ASIO_HAS_MOVE)
-# include <utility>
-#endif // defined(ASIO_HAS_MOVE)
 
 #include "asio/detail/push_options.hpp"
 
@@ -82,6 +81,11 @@ template <typename Protocol, typename Executor>
 class basic_socket_acceptor
   : public socket_base
 {
+private:
+  class initiate_async_wait;
+  class initiate_async_accept;
+  class initiate_async_move_accept;
+
 public:
   /// The type of the executor associated with the object.
   typedef Executor executor_type;
@@ -102,6 +106,9 @@ public:
     Protocol>::native_handle_type native_handle_type;
 #elif defined(ASIO_HAS_IOCP)
   typedef typename detail::win_iocp_socket_service<
+    Protocol>::native_handle_type native_handle_type;
+#elif defined(ASIO_HAS_IO_URING_AS_DEFAULT)
+  typedef typename detail::io_uring_socket_service<
     Protocol>::native_handle_type native_handle_type;
 #else
   typedef typename detail::reactive_socket_service<
@@ -141,9 +148,9 @@ public:
    */
   template <typename ExecutionContext>
   explicit basic_socket_acceptor(ExecutionContext& context,
-      typename enable_if<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      > = 0)
     : impl_(0, 0, context)
   {
   }
@@ -183,9 +190,10 @@ public:
   template <typename ExecutionContext>
   basic_socket_acceptor(ExecutionContext& context,
       const protocol_type& protocol,
-      typename enable_if<
-        is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      constraint_t<
+        is_convertible<ExecutionContext&, execution_context&>::value,
+        defaulted_constraint
+      > = defaulted_constraint())
     : impl_(0, 0, context)
   {
     asio::error_code ec;
@@ -271,9 +279,9 @@ public:
   template <typename ExecutionContext>
   basic_socket_acceptor(ExecutionContext& context,
       const endpoint_type& endpoint, bool reuse_addr = true,
-      typename enable_if<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      > = 0)
     : impl_(0, 0, context)
   {
     asio::error_code ec;
@@ -336,9 +344,9 @@ public:
   template <typename ExecutionContext>
   basic_socket_acceptor(ExecutionContext& context,
       const protocol_type& protocol, const native_handle_type& native_acceptor,
-      typename enable_if<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      > = 0)
     : impl_(0, 0, context)
   {
     asio::error_code ec;
@@ -347,7 +355,6 @@ public:
     asio::detail::throw_error(ec, "assign");
   }
 
-#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move-construct a basic_socket_acceptor from another.
   /**
    * This constructor moves an acceptor from one object to another.
@@ -359,7 +366,7 @@ public:
    * constructed using the @c basic_socket_acceptor(const executor_type&)
    * constructor.
    */
-  basic_socket_acceptor(basic_socket_acceptor&& other) ASIO_NOEXCEPT
+  basic_socket_acceptor(basic_socket_acceptor&& other) noexcept
     : impl_(std::move(other.impl_))
   {
   }
@@ -399,10 +406,10 @@ public:
    */
   template <typename Protocol1, typename Executor1>
   basic_socket_acceptor(basic_socket_acceptor<Protocol1, Executor1>&& other,
-      typename enable_if<
+      constraint_t<
         is_convertible<Protocol1, Protocol>::value
           && is_convertible<Executor1, Executor>::value
-      >::type* = 0)
+      > = 0)
     : impl_(std::move(other.impl_))
   {
   }
@@ -420,17 +427,16 @@ public:
    * constructor.
    */
   template <typename Protocol1, typename Executor1>
-  typename enable_if<
+  constraint_t<
     is_convertible<Protocol1, Protocol>::value
       && is_convertible<Executor1, Executor>::value,
     basic_socket_acceptor&
-  >::type operator=(basic_socket_acceptor<Protocol1, Executor1>&& other)
+  > operator=(basic_socket_acceptor<Protocol1, Executor1>&& other)
   {
     basic_socket_acceptor tmp(std::move(other));
     impl_ = std::move(tmp.impl_);
     return *this;
   }
-#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Destroys the acceptor.
   /**
@@ -443,7 +449,7 @@ public:
   }
 
   /// Get the executor associated with the object.
-  executor_type get_executor() ASIO_NOEXCEPT
+  const executor_type& get_executor() noexcept
   {
     return impl_.get_executor();
   }
@@ -1190,20 +1196,27 @@ public:
   /// write, or to have pending error conditions.
   /**
    * This function is used to perform an asynchronous wait for an acceptor to
-   * enter a ready to read, write or error condition state.
+   * enter a ready to read, write or error condition state. It is an initiating
+   * function for an @ref asynchronous_operation, and always returns
+   * immediately.
    *
    * @param w Specifies the desired acceptor state.
    *
-   * @param handler The handler to be called when the wait operation completes.
-   * Copies will be made of the handler as required. The function signature of
-   * the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the wait completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
-   *   const asio::error_code& error // Result of operation
+   *   const asio::error_code& error // Result of operation.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(asio::error_code) @endcode
    *
    * @par Example
    * @code
@@ -1223,18 +1236,28 @@ public:
    *     asio::ip::tcp::acceptor::wait_read,
    *     wait_handler);
    * @endcode
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code))
-        WaitHandler ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(WaitHandler,
-      void (asio::error_code))
-  async_wait(wait_type w,
-      ASIO_MOVE_ARG(WaitHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+        WaitToken = default_completion_token_t<executor_type>>
+  auto async_wait(wait_type w,
+      WaitToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
+      async_initiate<WaitToken, void (asio::error_code)>(
+        declval<initiate_async_wait>(), token, w))
   {
-    return async_initiate<WaitHandler, void (asio::error_code)>(
-        initiate_async_wait(this), handler, w);
+    return async_initiate<WaitToken, void (asio::error_code)>(
+        initiate_async_wait(this), token, w);
   }
 
 #if !defined(ASIO_NO_EXTENSIONS)
@@ -1258,9 +1281,9 @@ public:
    */
   template <typename Protocol1, typename Executor1>
   void accept(basic_socket<Protocol1, Executor1>& peer,
-      typename enable_if<
+      constraint_t<
         is_convertible<Protocol, Protocol1>::value
-      >::type* = 0)
+      > = 0)
   {
     asio::error_code ec;
     impl_.get_service().accept(impl_.get_implementation(),
@@ -1294,9 +1317,9 @@ public:
   template <typename Protocol1, typename Executor1>
   ASIO_SYNC_OP_VOID accept(
       basic_socket<Protocol1, Executor1>& peer, asio::error_code& ec,
-      typename enable_if<
+      constraint_t<
         is_convertible<Protocol, Protocol1>::value
-      >::type* = 0)
+      > = 0)
   {
     impl_.get_service().accept(impl_.get_implementation(),
         peer, static_cast<endpoint_type*>(0), ec);
@@ -1306,22 +1329,29 @@ public:
   /// Start an asynchronous accept.
   /**
    * This function is used to asynchronously accept a new connection into a
-   * socket. The function call always returns immediately.
+   * socket, and additionally obtain the endpoint of the remote peer. It is an
+   * initiating function for an @ref asynchronous_operation, and always returns
+   * immediately.
    *
    * @param peer The socket into which the new connection will be accepted.
    * Ownership of the peer object is retained by the caller, which must
-   * guarantee that it is valid until the handler is called.
+   * guarantee that it is valid until the completion handler is called.
    *
-   * @param handler The handler to be called when the accept operation
-   * completes. Copies will be made of the handler as required. The function
-   * signature of the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the accept completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
    *   const asio::error_code& error // Result of operation.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(asio::error_code) @endcode
    *
    * @par Example
    * @code
@@ -1340,21 +1370,32 @@ public:
    * asio::ip::tcp::socket socket(my_context);
    * acceptor.async_accept(socket, accept_handler);
    * @endcode
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename Protocol1, typename Executor1,
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code))
-        AcceptHandler ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(AcceptHandler,
-      void (asio::error_code))
-  async_accept(basic_socket<Protocol1, Executor1>& peer,
-      ASIO_MOVE_ARG(AcceptHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type),
-      typename enable_if<
+        AcceptToken = default_completion_token_t<executor_type>>
+  auto async_accept(basic_socket<Protocol1, Executor1>& peer,
+      AcceptToken&& token = default_completion_token_t<executor_type>(),
+      constraint_t<
         is_convertible<Protocol, Protocol1>::value
-      >::type* = 0)
+      > = 0)
+    -> decltype(
+      async_initiate<AcceptToken, void (asio::error_code)>(
+        declval<initiate_async_accept>(), token,
+        &peer, static_cast<endpoint_type*>(0)))
   {
-    return async_initiate<AcceptHandler, void (asio::error_code)>(
-        initiate_async_accept(this), handler,
+    return async_initiate<AcceptToken, void (asio::error_code)>(
+        initiate_async_accept(this), token,
         &peer, static_cast<endpoint_type*>(0));
   }
 
@@ -1431,45 +1472,60 @@ public:
   /// Start an asynchronous accept.
   /**
    * This function is used to asynchronously accept a new connection into a
-   * socket, and additionally obtain the endpoint of the remote peer. The
-   * function call always returns immediately.
+   * socket, and additionally obtain the endpoint of the remote peer. It is an
+   * initiating function for an @ref asynchronous_operation, and always returns
+   * immediately.
    *
    * @param peer The socket into which the new connection will be accepted.
    * Ownership of the peer object is retained by the caller, which must
-   * guarantee that it is valid until the handler is called.
+   * guarantee that it is valid until the completion handler is called.
    *
    * @param peer_endpoint An endpoint object into which the endpoint of the
    * remote peer will be written. Ownership of the peer_endpoint object is
    * retained by the caller, which must guarantee that it is valid until the
    * handler is called.
    *
-   * @param handler The handler to be called when the accept operation
-   * completes. Copies will be made of the handler as required. The function
-   * signature of the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the accept completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
    *   const asio::error_code& error // Result of operation.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(asio::error_code) @endcode
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename Executor1,
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code))
-        AcceptHandler ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(AcceptHandler,
-      void (asio::error_code))
-  async_accept(basic_socket<protocol_type, Executor1>& peer,
+        AcceptToken = default_completion_token_t<executor_type>>
+  auto async_accept(basic_socket<protocol_type, Executor1>& peer,
       endpoint_type& peer_endpoint,
-      ASIO_MOVE_ARG(AcceptHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+      AcceptToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
+      async_initiate<AcceptToken, void (asio::error_code)>(
+        declval<initiate_async_accept>(), token, &peer, &peer_endpoint))
   {
-    return async_initiate<AcceptHandler, void (asio::error_code)>(
-        initiate_async_accept(this), handler, &peer, &peer_endpoint);
+    return async_initiate<AcceptToken, void (asio::error_code)>(
+        initiate_async_accept(this), token, &peer, &peer_endpoint);
   }
 #endif // !defined(ASIO_NO_EXTENSIONS)
 
-#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Accept a new connection.
   /**
    * This function is used to accept a new connection from a peer. The function
@@ -1537,26 +1593,35 @@ public:
 
   /// Start an asynchronous accept.
   /**
-   * This function is used to asynchronously accept a new connection. The
-   * function call always returns immediately.
+   * This function is used to asynchronously accept a new connection. It is an
+   * initiating function for an @ref asynchronous_operation, and always returns
+   * immediately.
    *
    * This overload requires that the Protocol template parameter satisfy the
    * AcceptableProtocol type requirements.
    *
-   * @param handler The handler to be called when the accept operation
-   * completes. Copies will be made of the handler as required. The function
-   * signature of the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the accept completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
    *   // Result of operation.
    *   const asio::error_code& error,
+   *
    *   // On success, the newly accepted socket.
    *   typename Protocol::socket::template
    *     rebind_executor<executor_type>::other peer
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(asio::error_code,
+   *    typename Protocol::socket::template
+   *      rebind_executor<executor_type>::other)) @endcode
    *
    * @par Example
    * @code
@@ -1575,24 +1640,37 @@ public:
    * ...
    * acceptor.async_accept(accept_handler);
    * @endcode
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         typename Protocol::socket::template rebind_executor<
-          executor_type>::other)) MoveAcceptHandler
-            ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(MoveAcceptHandler,
-      void (asio::error_code,
-        typename Protocol::socket::template
-          rebind_executor<executor_type>::other))
-  async_accept(
-      ASIO_MOVE_ARG(MoveAcceptHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+          executor_type>::other)) MoveAcceptToken
+            = default_completion_token_t<executor_type>>
+  auto async_accept(
+      MoveAcceptToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
+      async_initiate<MoveAcceptToken,
+        void (asio::error_code, typename Protocol::socket::template
+          rebind_executor<executor_type>::other)>(
+            declval<initiate_async_move_accept>(), token,
+            declval<const executor_type&>(), static_cast<endpoint_type*>(0),
+            static_cast<typename Protocol::socket::template
+              rebind_executor<executor_type>::other*>(0)))
   {
-    return async_initiate<MoveAcceptHandler,
+    return async_initiate<MoveAcceptToken,
       void (asio::error_code, typename Protocol::socket::template
         rebind_executor<executor_type>::other)>(
-          initiate_async_move_accept(this), handler,
+          initiate_async_move_accept(this), token,
           impl_.get_executor(), static_cast<endpoint_type*>(0),
           static_cast<typename Protocol::socket::template
             rebind_executor<executor_type>::other*>(0));
@@ -1624,10 +1702,10 @@ public:
   template <typename Executor1>
   typename Protocol::socket::template rebind_executor<Executor1>::other
   accept(const Executor1& ex,
-      typename enable_if<
+      constraint_t<
         is_executor<Executor1>::value
           || execution::is_executor<Executor1>::value
-      >::type* = 0)
+      > = 0)
   {
     asio::error_code ec;
     typename Protocol::socket::template
@@ -1664,9 +1742,9 @@ public:
   typename Protocol::socket::template rebind_executor<
       typename ExecutionContext::executor_type>::other
   accept(ExecutionContext& context,
-      typename enable_if<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      > = 0)
   {
     asio::error_code ec;
     typename Protocol::socket::template rebind_executor<
@@ -1707,10 +1785,10 @@ public:
   template <typename Executor1>
   typename Protocol::socket::template rebind_executor<Executor1>::other
   accept(const Executor1& ex, asio::error_code& ec,
-      typename enable_if<
+      constraint_t<
         is_executor<Executor1>::value
           || execution::is_executor<Executor1>::value
-      >::type* = 0)
+      > = 0)
   {
     typename Protocol::socket::template
       rebind_executor<Executor1>::other peer(ex);
@@ -1750,9 +1828,9 @@ public:
   typename Protocol::socket::template rebind_executor<
       typename ExecutionContext::executor_type>::other
   accept(ExecutionContext& context, asio::error_code& ec,
-      typename enable_if<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      > = 0)
   {
     typename Protocol::socket::template rebind_executor<
         typename ExecutionContext::executor_type>::other peer(context);
@@ -1762,8 +1840,9 @@ public:
 
   /// Start an asynchronous accept.
   /**
-   * This function is used to asynchronously accept a new connection. The
-   * function call always returns immediately.
+   * This function is used to asynchronously accept a new connection. It is an
+   * initiating function for an @ref asynchronous_operation, and always returns
+   * immediately.
    *
    * This overload requires that the Protocol template parameter satisfy the
    * AcceptableProtocol type requirements.
@@ -1771,18 +1850,28 @@ public:
    * @param ex The I/O executor object to be used for the newly accepted
    * socket.
    *
-   * @param handler The handler to be called when the accept operation
-   * completes. Copies will be made of the handler as required. The function
-   * signature of the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the accept completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   // Result of operation.
+   *   const asio::error_code& error,
+   *
+   *   // On success, the newly accepted socket.
    *   typename Protocol::socket::template rebind_executor<
-   *     Executor1>::other peer // On success, the newly accepted socket.
+   *     Executor1>::other peer
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(asio::error_code,
+   *    typename Protocol::socket::template rebind_executor<
+   *      Executor1>::other)) @endcode
    *
    * @par Example
    * @code
@@ -1801,38 +1890,55 @@ public:
    * ...
    * acceptor.async_accept(my_context2, accept_handler);
    * @endcode
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename Executor1,
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         typename Protocol::socket::template rebind_executor<
-          Executor1>::other)) MoveAcceptHandler
-            ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(MoveAcceptHandler,
-      void (asio::error_code,
-        typename Protocol::socket::template rebind_executor<
-          Executor1>::other))
-  async_accept(const Executor1& ex,
-      ASIO_MOVE_ARG(MoveAcceptHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type),
-      typename enable_if<
+          constraint_t<is_executor<Executor1>::value
+            || execution::is_executor<Executor1>::value,
+              Executor1>>::other)) MoveAcceptToken
+                = default_completion_token_t<executor_type>>
+  auto async_accept(const Executor1& ex,
+      MoveAcceptToken&& token = default_completion_token_t<executor_type>(),
+      constraint_t<
         is_executor<Executor1>::value
           || execution::is_executor<Executor1>::value
-      >::type* = 0)
+      > = 0)
+    -> decltype(
+      async_initiate<MoveAcceptToken,
+        void (asio::error_code,
+          typename Protocol::socket::template rebind_executor<
+            Executor1>::other)>(
+              declval<initiate_async_move_accept>(), token,
+              ex, static_cast<endpoint_type*>(0),
+              static_cast<typename Protocol::socket::template
+                rebind_executor<Executor1>::other*>(0)))
   {
-    typedef typename Protocol::socket::template rebind_executor<
-      Executor1>::other other_socket_type;
-
-    return async_initiate<MoveAcceptHandler,
-      void (asio::error_code, other_socket_type)>(
-        initiate_async_move_accept(this), handler,
-        ex, static_cast<endpoint_type*>(0),
-        static_cast<other_socket_type*>(0));
+    return async_initiate<MoveAcceptToken,
+      void (asio::error_code,
+        typename Protocol::socket::template rebind_executor<
+          Executor1>::other)>(
+            initiate_async_move_accept(this), token,
+            ex, static_cast<endpoint_type*>(0),
+            static_cast<typename Protocol::socket::template
+              rebind_executor<Executor1>::other*>(0));
   }
 
   /// Start an asynchronous accept.
   /**
-   * This function is used to asynchronously accept a new connection. The
-   * function call always returns immediately.
+   * This function is used to asynchronously accept a new connection. It is an
+   * initiating function for an @ref asynchronous_operation, and always returns
+   * immediately.
    *
    * This overload requires that the Protocol template parameter satisfy the
    * AcceptableProtocol type requirements.
@@ -1840,19 +1946,28 @@ public:
    * @param context The I/O execution context object to be used for the newly
    * accepted socket.
    *
-   * @param handler The handler to be called when the accept operation
-   * completes. Copies will be made of the handler as required. The function
-   * signature of the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the accept completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   // Result of operation.
+   *   const asio::error_code& error,
+   *
+   *   // On success, the newly accepted socket.
    *   typename Protocol::socket::template rebind_executor<
    *     typename ExecutionContext::executor_type>::other peer
-   *       // On success, the newly accepted socket.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(asio::error_code,
+   *    typename Protocol::socket::template rebind_executor<
+   *      typename ExecutionContext::executor_type>::other)) @endcode
    *
    * @par Example
    * @code
@@ -1871,31 +1986,45 @@ public:
    * ...
    * acceptor.async_accept(my_context2, accept_handler);
    * @endcode
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename ExecutionContext,
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         typename Protocol::socket::template rebind_executor<
-          typename ExecutionContext::executor_type>::other)) MoveAcceptHandler
-            ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(MoveAcceptHandler,
+          typename ExecutionContext::executor_type>::other)) MoveAcceptToken
+            = default_completion_token_t<executor_type>>
+  auto async_accept(ExecutionContext& context,
+      MoveAcceptToken&& token = default_completion_token_t<executor_type>(),
+      constraint_t<
+        is_convertible<ExecutionContext&, execution_context&>::value
+      > = 0)
+    -> decltype(
+      async_initiate<MoveAcceptToken,
+        void (asio::error_code,
+          typename Protocol::socket::template rebind_executor<
+            typename ExecutionContext::executor_type>::other)>(
+              declval<initiate_async_move_accept>(), token,
+              context.get_executor(), static_cast<endpoint_type*>(0),
+              static_cast<typename Protocol::socket::template rebind_executor<
+                typename ExecutionContext::executor_type>::other*>(0)))
+  {
+    return async_initiate<MoveAcceptToken,
       void (asio::error_code,
         typename Protocol::socket::template rebind_executor<
-          typename ExecutionContext::executor_type>::other))
-  async_accept(ExecutionContext& context,
-      ASIO_MOVE_ARG(MoveAcceptHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type),
-      typename enable_if<
-        is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
-  {
-    typedef typename Protocol::socket::template rebind_executor<
-      typename ExecutionContext::executor_type>::other other_socket_type;
-
-    return async_initiate<MoveAcceptHandler,
-      void (asio::error_code, other_socket_type)>(
-        initiate_async_move_accept(this), handler,
-        context.get_executor(), static_cast<endpoint_type*>(0),
-        static_cast<other_socket_type*>(0));
+          typename ExecutionContext::executor_type>::other)>(
+            initiate_async_move_accept(this), token,
+            context.get_executor(), static_cast<endpoint_type*>(0),
+            static_cast<typename Protocol::socket::template rebind_executor<
+              typename ExecutionContext::executor_type>::other*>(0));
   }
 
   /// Accept a new connection.
@@ -1975,8 +2104,9 @@ public:
 
   /// Start an asynchronous accept.
   /**
-   * This function is used to asynchronously accept a new connection. The
-   * function call always returns immediately.
+   * This function is used to asynchronously accept a new connection. It is an
+   * initiating function for an @ref asynchronous_operation, and always returns
+   * immediately.
    *
    * This overload requires that the Protocol template parameter satisfy the
    * AcceptableProtocol type requirements.
@@ -1984,22 +2114,30 @@ public:
    * @param peer_endpoint An endpoint object into which the endpoint of the
    * remote peer will be written. Ownership of the peer_endpoint object is
    * retained by the caller, which must guarantee that it is valid until the
-   * handler is called.
+   * completion handler is called.
    *
-   * @param handler The handler to be called when the accept operation
-   * completes. Copies will be made of the handler as required. The function
-   * signature of the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the accept completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
    *   // Result of operation.
    *   const asio::error_code& error,
+   *
    *   // On success, the newly accepted socket.
    *   typename Protocol::socket::template
    *     rebind_executor<executor_type>::other peer
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(asio::error_code,
+   *    typename Protocol::socket::template
+   *      rebind_executor<executor_type>::other)) @endcode
    *
    * @par Example
    * @code
@@ -2019,24 +2157,37 @@ public:
    * asio::ip::tcp::endpoint endpoint;
    * acceptor.async_accept(endpoint, accept_handler);
    * @endcode
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         typename Protocol::socket::template rebind_executor<
-          executor_type>::other)) MoveAcceptHandler
-            ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(MoveAcceptHandler,
-      void (asio::error_code,
-        typename Protocol::socket::template
-          rebind_executor<executor_type>::other))
-  async_accept(endpoint_type& peer_endpoint,
-      ASIO_MOVE_ARG(MoveAcceptHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+          executor_type>::other)) MoveAcceptToken
+            = default_completion_token_t<executor_type>>
+  auto async_accept(endpoint_type& peer_endpoint,
+      MoveAcceptToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
+      async_initiate<MoveAcceptToken,
+        void (asio::error_code, typename Protocol::socket::template
+          rebind_executor<executor_type>::other)>(
+            declval<initiate_async_move_accept>(), token,
+            declval<const executor_type&>(), &peer_endpoint,
+            static_cast<typename Protocol::socket::template
+              rebind_executor<executor_type>::other*>(0)))
   {
-    return async_initiate<MoveAcceptHandler,
+    return async_initiate<MoveAcceptToken,
       void (asio::error_code, typename Protocol::socket::template
         rebind_executor<executor_type>::other)>(
-          initiate_async_move_accept(this), handler,
+          initiate_async_move_accept(this), token,
           impl_.get_executor(), &peer_endpoint,
           static_cast<typename Protocol::socket::template
             rebind_executor<executor_type>::other*>(0));
@@ -2073,10 +2224,10 @@ public:
   template <typename Executor1>
   typename Protocol::socket::template rebind_executor<Executor1>::other
   accept(const Executor1& ex, endpoint_type& peer_endpoint,
-      typename enable_if<
+      constraint_t<
         is_executor<Executor1>::value
           || execution::is_executor<Executor1>::value
-      >::type* = 0)
+      > = 0)
   {
     asio::error_code ec;
     typename Protocol::socket::template
@@ -2119,9 +2270,9 @@ public:
   typename Protocol::socket::template rebind_executor<
       typename ExecutionContext::executor_type>::other
   accept(ExecutionContext& context, endpoint_type& peer_endpoint,
-      typename enable_if<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      > = 0)
   {
     asio::error_code ec;
     typename Protocol::socket::template rebind_executor<
@@ -2169,10 +2320,10 @@ public:
   typename Protocol::socket::template rebind_executor<Executor1>::other
   accept(const executor_type& ex,
       endpoint_type& peer_endpoint, asio::error_code& ec,
-      typename enable_if<
+      constraint_t<
         is_executor<Executor1>::value
           || execution::is_executor<Executor1>::value
-      >::type* = 0)
+      > = 0)
   {
     typename Protocol::socket::template
       rebind_executor<Executor1>::other peer(ex);
@@ -2219,9 +2370,9 @@ public:
       typename ExecutionContext::executor_type>::other
   accept(ExecutionContext& context,
       endpoint_type& peer_endpoint, asio::error_code& ec,
-      typename enable_if<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      > = 0)
   {
     typename Protocol::socket::template rebind_executor<
         typename ExecutionContext::executor_type>::other peer(context);
@@ -2232,8 +2383,9 @@ public:
 
   /// Start an asynchronous accept.
   /**
-   * This function is used to asynchronously accept a new connection. The
-   * function call always returns immediately.
+   * This function is used to asynchronously accept a new connection. It is an
+   * initiating function for an @ref asynchronous_operation, and always returns
+   * immediately.
    *
    * This overload requires that the Protocol template parameter satisfy the
    * AcceptableProtocol type requirements.
@@ -2244,20 +2396,30 @@ public:
    * @param peer_endpoint An endpoint object into which the endpoint of the
    * remote peer will be written. Ownership of the peer_endpoint object is
    * retained by the caller, which must guarantee that it is valid until the
-   * handler is called.
+   * completion handler is called.
    *
-   * @param handler The handler to be called when the accept operation
-   * completes. Copies will be made of the handler as required. The function
-   * signature of the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the accept completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   // Result of operation.
+   *   const asio::error_code& error,
+   *
+   *   // On success, the newly accepted socket.
    *   typename Protocol::socket::template rebind_executor<
-   *     Executor1>::other peer // On success, the newly accepted socket.
+   *     Executor1>::other peer
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(asio::error_code,
+   *    typename Protocol::socket::template rebind_executor<
+   *      Executor1>::other)) @endcode
    *
    * @par Example
    * @code
@@ -2277,38 +2439,53 @@ public:
    * asio::ip::tcp::endpoint endpoint;
    * acceptor.async_accept(my_context2, endpoint, accept_handler);
    * @endcode
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename Executor1,
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         typename Protocol::socket::template rebind_executor<
-          Executor1>::other)) MoveAcceptHandler
-            ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(MoveAcceptHandler,
-      void (asio::error_code,
-        typename Protocol::socket::template rebind_executor<
-          Executor1>::other))
-  async_accept(const Executor1& ex, endpoint_type& peer_endpoint,
-      ASIO_MOVE_ARG(MoveAcceptHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type),
-      typename enable_if<
+          constraint_t<is_executor<Executor1>::value
+            || execution::is_executor<Executor1>::value,
+              Executor1>>::other)) MoveAcceptToken
+                = default_completion_token_t<executor_type>>
+  auto async_accept(const Executor1& ex, endpoint_type& peer_endpoint,
+      MoveAcceptToken&& token = default_completion_token_t<executor_type>(),
+      constraint_t<
         is_executor<Executor1>::value
           || execution::is_executor<Executor1>::value
-      >::type* = 0)
+      > = 0)
+    -> decltype(
+      async_initiate<MoveAcceptToken,
+        void (asio::error_code,
+          typename Protocol::socket::template rebind_executor<
+            Executor1>::other)>(
+          declval<initiate_async_move_accept>(), token, ex, &peer_endpoint,
+          static_cast<typename Protocol::socket::template
+            rebind_executor<Executor1>::other*>(0)))
   {
-    typedef typename Protocol::socket::template rebind_executor<
-      Executor1>::other other_socket_type;
-
-    return async_initiate<MoveAcceptHandler,
-      void (asio::error_code, other_socket_type)>(
-        initiate_async_move_accept(this), handler,
-        ex, &peer_endpoint,
-        static_cast<other_socket_type*>(0));
+    return async_initiate<MoveAcceptToken,
+      void (asio::error_code,
+        typename Protocol::socket::template rebind_executor<
+          Executor1>::other)>(
+            initiate_async_move_accept(this), token, ex, &peer_endpoint,
+            static_cast<typename Protocol::socket::template
+              rebind_executor<Executor1>::other*>(0));
   }
 
   /// Start an asynchronous accept.
   /**
-   * This function is used to asynchronously accept a new connection. The
-   * function call always returns immediately.
+   * This function is used to asynchronously accept a new connection. It is an
+   * initiating function for an @ref asynchronous_operation, and always returns
+   * immediately.
    *
    * This overload requires that the Protocol template parameter satisfy the
    * AcceptableProtocol type requirements.
@@ -2319,21 +2496,30 @@ public:
    * @param peer_endpoint An endpoint object into which the endpoint of the
    * remote peer will be written. Ownership of the peer_endpoint object is
    * retained by the caller, which must guarantee that it is valid until the
-   * handler is called.
+   * completion handler is called.
    *
-   * @param handler The handler to be called when the accept operation
-   * completes. Copies will be made of the handler as required. The function
-   * signature of the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the accept completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   // Result of operation.
+   *   const asio::error_code& error,
+   *
+   *   // On success, the newly accepted socket.
    *   typename Protocol::socket::template rebind_executor<
    *     typename ExecutionContext::executor_type>::other peer
-   *       // On success, the newly accepted socket.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(asio::error_code,
+   *    typename Protocol::socket::template rebind_executor<
+   *      typename ExecutionContext::executor_type>::other)) @endcode
    *
    * @par Example
    * @code
@@ -2353,40 +2539,52 @@ public:
    * asio::ip::tcp::endpoint endpoint;
    * acceptor.async_accept(my_context2, endpoint, accept_handler);
    * @endcode
+   *
+   * @par Per-Operation Cancellation
+   * On POSIX or Windows operating systems, this asynchronous operation supports
+   * cancellation for the following asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <typename ExecutionContext,
       ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
         typename Protocol::socket::template rebind_executor<
-          typename ExecutionContext::executor_type>::other)) MoveAcceptHandler
-            ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  ASIO_INITFN_AUTO_RESULT_TYPE(MoveAcceptHandler,
+          typename ExecutionContext::executor_type>::other)) MoveAcceptToken
+            = default_completion_token_t<executor_type>>
+  auto async_accept(ExecutionContext& context, endpoint_type& peer_endpoint,
+      MoveAcceptToken&& token = default_completion_token_t<executor_type>(),
+      constraint_t<
+        is_convertible<ExecutionContext&, execution_context&>::value
+      > = 0)
+    -> decltype(
+      async_initiate<MoveAcceptToken,
+        void (asio::error_code,
+          typename Protocol::socket::template rebind_executor<
+            typename ExecutionContext::executor_type>::other)>(
+              declval<initiate_async_move_accept>(), token,
+              context.get_executor(), &peer_endpoint,
+              static_cast<typename Protocol::socket::template rebind_executor<
+                typename ExecutionContext::executor_type>::other*>(0)))
+  {
+    return async_initiate<MoveAcceptToken,
       void (asio::error_code,
         typename Protocol::socket::template rebind_executor<
-          typename ExecutionContext::executor_type>::other))
-  async_accept(ExecutionContext& context,
-      endpoint_type& peer_endpoint,
-      ASIO_MOVE_ARG(MoveAcceptHandler) handler
-        ASIO_DEFAULT_COMPLETION_TOKEN(executor_type),
-      typename enable_if<
-        is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
-  {
-    typedef typename Protocol::socket::template rebind_executor<
-      typename ExecutionContext::executor_type>::other other_socket_type;
-
-    return async_initiate<MoveAcceptHandler,
-      void (asio::error_code, other_socket_type)>(
-        initiate_async_move_accept(this), handler,
-        context.get_executor(), &peer_endpoint,
-        static_cast<other_socket_type*>(0));
+          typename ExecutionContext::executor_type>::other)>(
+            initiate_async_move_accept(this), token,
+            context.get_executor(), &peer_endpoint,
+            static_cast<typename Protocol::socket::template rebind_executor<
+              typename ExecutionContext::executor_type>::other*>(0));
   }
-#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
 private:
   // Disallow copying and assignment.
-  basic_socket_acceptor(const basic_socket_acceptor&) ASIO_DELETED;
+  basic_socket_acceptor(const basic_socket_acceptor&) = delete;
   basic_socket_acceptor& operator=(
-      const basic_socket_acceptor&) ASIO_DELETED;
+      const basic_socket_acceptor&) = delete;
 
   class initiate_async_wait
   {
@@ -2398,13 +2596,13 @@ private:
     {
     }
 
-    executor_type get_executor() const ASIO_NOEXCEPT
+    const executor_type& get_executor() const noexcept
     {
       return self_->get_executor();
     }
 
     template <typename WaitHandler>
-    void operator()(ASIO_MOVE_ARG(WaitHandler) handler, wait_type w) const
+    void operator()(WaitHandler&& handler, wait_type w) const
     {
       // If you get an error on the following line it means that your handler
       // does not meet the documented type requirements for a WaitHandler.
@@ -2430,13 +2628,13 @@ private:
     {
     }
 
-    executor_type get_executor() const ASIO_NOEXCEPT
+    const executor_type& get_executor() const noexcept
     {
       return self_->get_executor();
     }
 
     template <typename AcceptHandler, typename Protocol1, typename Executor1>
-    void operator()(ASIO_MOVE_ARG(AcceptHandler) handler,
+    void operator()(AcceptHandler&& handler,
         basic_socket<Protocol1, Executor1>* peer,
         endpoint_type* peer_endpoint) const
     {
@@ -2464,13 +2662,13 @@ private:
     {
     }
 
-    executor_type get_executor() const ASIO_NOEXCEPT
+    const executor_type& get_executor() const noexcept
     {
       return self_->get_executor();
     }
 
     template <typename MoveAcceptHandler, typename Executor1, typename Socket>
-    void operator()(ASIO_MOVE_ARG(MoveAcceptHandler) handler,
+    void operator()(MoveAcceptHandler&& handler,
         const Executor1& peer_ex, endpoint_type* peer_endpoint, Socket*) const
     {
       // If you get an error on the following line it means that your handler
@@ -2494,6 +2692,9 @@ private:
 #elif defined(ASIO_HAS_IOCP)
   detail::io_object_impl<
     detail::win_iocp_socket_service<Protocol>, Executor> impl_;
+#elif defined(ASIO_HAS_IO_URING_AS_DEFAULT)
+  detail::io_object_impl<
+    detail::io_uring_socket_service<Protocol>, Executor> impl_;
 #else
   detail::io_object_impl<
     detail::reactive_socket_service<Protocol>, Executor> impl_;

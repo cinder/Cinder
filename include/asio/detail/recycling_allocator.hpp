@@ -2,7 +2,7 @@
 // detail/recycling_allocator.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -48,17 +48,25 @@ public:
 
   T* allocate(std::size_t n)
   {
-    typedef thread_context::thread_call_stack call_stack;
+#if !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
     void* p = thread_info_base::allocate(Purpose(),
-        call_stack::top(), sizeof(T) * n);
+        thread_context::top_of_thread_call_stack(),
+        sizeof(T) * n, alignof(T));
+#else // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
+    void* p = asio::aligned_new(alignof(T), sizeof(T) * n);
+#endif // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
     return static_cast<T*>(p);
   }
 
   void deallocate(T* p, std::size_t n)
   {
-    typedef thread_context::thread_call_stack call_stack;
+#if !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
     thread_info_base::deallocate(Purpose(),
-        call_stack::top(), p, sizeof(T) * n);
+        thread_context::top_of_thread_call_stack(), p, sizeof(T) * n);
+#else // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
+    (void)n;
+    asio::aligned_delete(p);
+#endif // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
   }
 };
 

@@ -2,7 +2,7 @@
 // ts/netfwd.hpp
 // ~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,14 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
-
-#if defined(ASIO_HAS_CHRONO)
-# include "asio/detail/chrono.hpp"
-#endif // defined(ASIO_HAS_CHRONO)
-
-#if defined(ASIO_HAS_BOOST_DATE_TIME)
-# include "asio/detail/date_time_fwd.hpp"
-#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
+#include "asio/detail/chrono.hpp"
 
 #if !defined(ASIO_USE_TS_EXECUTOR_AS_DEFAULT)
 #include "asio/execution/blocking.hpp"
@@ -66,19 +59,8 @@ namespace execution {
 #if !defined(ASIO_EXECUTION_ANY_EXECUTOR_FWD_DECL)
 #define ASIO_EXECUTION_ANY_EXECUTOR_FWD_DECL
 
-#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
 template <typename... SupportableProperties>
 class any_executor;
-
-#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-template <typename = void, typename = void, typename = void,
-    typename = void, typename = void, typename = void,
-    typename = void, typename = void, typename = void>
-class any_executor;
-
-#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 #endif // !defined(ASIO_EXECUTION_ANY_EXECUTOR_FWD_DECL)
 
@@ -90,15 +72,7 @@ struct prefer_only;
 
 } // namespace execution
 
-typedef execution::any_executor<
-    execution::context_as_t<execution_context&>,
-    execution::blocking_t::never_t,
-    execution::prefer_only<execution::blocking_t::possibly_t>,
-    execution::prefer_only<execution::outstanding_work_t::tracked_t>,
-    execution::prefer_only<execution::outstanding_work_t::untracked_t>,
-    execution::prefer_only<execution::relationship_t::fork_t>,
-    execution::prefer_only<execution::relationship_t::continuation_t>
-  > any_io_executor;
+class any_io_executor;
 
 #endif // defined(ASIO_USE_TS_EXECUTOR_AS_DEFAULT)
 
@@ -110,13 +84,6 @@ class io_context;
 template <typename Clock>
 struct wait_traits;
 
-#if defined(ASIO_HAS_BOOST_DATE_TIME)
-
-template <typename Time>
-struct time_traits;
-
-#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
-
 #if !defined(ASIO_BASIC_WAITABLE_TIMER_FWD_DECL)
 #define ASIO_BASIC_WAITABLE_TIMER_FWD_DECL
 
@@ -127,16 +94,12 @@ class basic_waitable_timer;
 
 #endif // !defined(ASIO_BASIC_WAITABLE_TIMER_FWD_DECL)
 
-#if defined(ASIO_HAS_CHRONO)
-
 typedef basic_waitable_timer<chrono::system_clock> system_timer;
 
 typedef basic_waitable_timer<chrono::steady_clock> steady_timer;
 
 typedef basic_waitable_timer<chrono::high_resolution_clock>
   high_resolution_timer;
-
-#endif // defined(ASIO_HAS_CHRONO)
 
 #if !defined(ASIO_BASIC_SOCKET_FWD_DECL)
 #define ASIO_BASIC_SOCKET_FWD_DECL
@@ -176,14 +139,8 @@ class basic_socket_acceptor;
 
 // Forward declaration with defaulted arguments.
 template <typename Protocol,
-#if defined(ASIO_HAS_BOOST_DATE_TIME) \
-  || defined(GENERATING_DOCUMENTATION)
-    typename Clock = boost::posix_time::ptime,
-    typename WaitTraits = time_traits<Clock> >
-#else
     typename Clock = chrono::steady_clock,
-    typename WaitTraits = wait_traits<Clock> >
-#endif
+    typename WaitTraits = wait_traits<Clock>>
 class basic_socket_streambuf;
 
 #endif // !defined(ASIO_BASIC_SOCKET_STREAMBUF_FWD_DECL)
@@ -193,14 +150,8 @@ class basic_socket_streambuf;
 
 // Forward declaration with defaulted arguments.
 template <typename Protocol,
-#if defined(ASIO_HAS_BOOST_DATE_TIME) \
-  || defined(GENERATING_DOCUMENTATION)
-    typename Clock = boost::posix_time::ptime,
-    typename WaitTraits = time_traits<Clock> >
-#else
     typename Clock = chrono::steady_clock,
-    typename WaitTraits = wait_traits<Clock> >
-#endif
+    typename WaitTraits = wait_traits<Clock>>
 class basic_socket_iostream;
 
 #endif // !defined(ASIO_BASIC_SOCKET_IOSTREAM_FWD_DECL)

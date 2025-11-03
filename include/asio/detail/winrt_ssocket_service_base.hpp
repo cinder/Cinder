@@ -2,7 +2,7 @@
 // detail/winrt_ssocket_service_base.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -77,7 +77,7 @@ public:
 
   // Move-construct a new socket implementation.
   ASIO_DECL void base_move_construct(base_implementation_type& impl,
-      base_implementation_type& other_impl) ASIO_NOEXCEPT;
+      base_implementation_type& other_impl) noexcept;
 
   // Move-assign from another socket implementation.
   ASIO_DECL void base_move_assign(base_implementation_type& impl,
@@ -341,7 +341,7 @@ protected:
   // The manager that keeps track of outstanding operations.
   winrt_async_manager& async_manager_;
 
-  // Mutex to protect access to the linked list of implementations. 
+  // Mutex to protect access to the linked list of implementations.
   asio::detail::mutex mutex_;
 
   // The head of a linked list of all implementations.
