@@ -306,6 +306,13 @@ void Window::emitResize()
 	getApp()->resize();
 }
 
+void Window::emitPostResizeMove()
+{
+	applyCurrentContext();
+
+	mSignalPostResizeMove.emit();
+}
+
 void Window::emitDisplayChange()
 {
 	applyCurrentContext();
