@@ -766,6 +766,13 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			return 0;
 		}
 		break;
+		case WM_EXITSIZEMOVE: {
+			if( impl->getWindow() ) {
+				impl->getWindow()->emitPostResizeMove();
+			}
+			return 0;
+		}
+		break;
 		case WM_DROPFILES: {
 			HDROP dropH = (HDROP)wParam;
 			POINT dropPoint;
