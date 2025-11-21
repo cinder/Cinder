@@ -49,7 +49,7 @@ namespace cinder {
 	}
 }
 
-//! Additional convenience initializaiont and overloads for cinder types
+//! Additional convenience initialization and overloads for cinder types
 namespace ImGui {
 	struct CI_API Options {
 		//! Defaults to using the current window, the basic ImGui font and the dark theme
