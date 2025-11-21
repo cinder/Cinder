@@ -404,6 +404,9 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	EventSignalWindow&	getSignalResize() { return mSignalResize; }
 	void 				emitResize();
 
+	EventSignalWindow& getSignalPostResizeMove() { return mSignalPostResizeMove; }
+	void			   emitPostResizeMove();
+
 	EventSignalWindow&	getSignalDisplayChange() { return mSignalDisplayChange; }
 	void				emitDisplayChange();
 
@@ -482,7 +485,7 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	EventSignalMouse		mSignalMouseDown, mSignalMouseDrag, mSignalMouseUp, mSignalMouseWheel, mSignalMouseMove;
 	EventSignalTouch		mSignalTouchesBegan, mSignalTouchesMoved, mSignalTouchesEnded;
 	EventSignalKey			mSignalKeyDown, mSignalKeyUp;
-	EventSignalWindow		mSignalDraw, mSignalPostDraw, mSignalMove, mSignalResize, mSignalDisplayChange, mSignalClose;
+	EventSignalWindow		mSignalDraw, mSignalPostDraw, mSignalMove, mSignalResize, mSignalPostResizeMove, mSignalDisplayChange, mSignalClose;
 	EventSignalFileDrop		mSignalFileDrop;
 
 #if defined( CINDER_GLFW )
