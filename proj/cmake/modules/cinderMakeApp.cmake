@@ -129,6 +129,15 @@ function( ci_make_app )
 	target_include_directories( ${ARG_APP_NAME} PUBLIC ${ARG_INCLUDES} )
 	target_link_libraries( ${ARG_APP_NAME} PUBLIC cinder ${ARG_LIBRARIES} )
 
+	if( APPLE )
+		get_filename_component( APP_PATH_GUESS "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE )
+		set( DEFAULT_INFO_PLIST "${APP_PATH_GUESS}/xcode/Info.plist" )
+		if( EXISTS "${DEFAULT_INFO_PLIST}" )
+			set_target_properties( ${ARG_APP_NAME} PROPERTIES
+				MACOSX_BUNDLE_INFO_PLIST "${DEFAULT_INFO_PLIST}" )
+		endif()
+	endif()
+
 	# Determine C++ standard: user override > Cinder's standard > 20
 	if( CMAKE_CXX_STANDARD )
 		set( APP_CXX_STANDARD ${CMAKE_CXX_STANDARD} )
@@ -276,3 +285,7 @@ function( ci_make_app )
 	endif()
 
 endfunction()
+	if( NOT ARG_APP_PATH )
+		# Assume standard app layout: proj/cmake is two levels below app root
+		get_filename_component( ARG_APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE )
+	endif()

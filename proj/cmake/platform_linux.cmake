@@ -4,33 +4,9 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 
 set( CINDER_PLATFORM "Posix" )
 
-# When CINDER_HEADLESS is set, ${SRC_SET_GLFW} will *not* be compiled.
-list( APPEND SRC_SET_GLFW
-	${CINDER_SRC_DIR}/glfw/src/context.c
-	${CINDER_SRC_DIR}/glfw/src/init.c
-	${CINDER_SRC_DIR}/glfw/src/input.c
-	${CINDER_SRC_DIR}/glfw/src/monitor.c
-	${CINDER_SRC_DIR}/glfw/src/platform.c
-	${CINDER_SRC_DIR}/glfw/src/window.c
-	${CINDER_SRC_DIR}/glfw/src/glx_context.c
-	${CINDER_SRC_DIR}/glfw/src/egl_context.c
-	${CINDER_SRC_DIR}/glfw/src/osmesa_context.c
-	${CINDER_SRC_DIR}/glfw/src/x11_init.c
-	${CINDER_SRC_DIR}/glfw/src/x11_monitor.c
-	${CINDER_SRC_DIR}/glfw/src/x11_window.c
-	${CINDER_SRC_DIR}/glfw/src/xkb_unicode.c
-	${CINDER_SRC_DIR}/glfw/src/linux_joystick.c
-	${CINDER_SRC_DIR}/glfw/src/posix_time.c
-	${CINDER_SRC_DIR}/glfw/src/posix_thread.c
-	${CINDER_SRC_DIR}/glfw/src/posix_module.c
-	${CINDER_SRC_DIR}/glfw/src/posix_poll.c
-	${CINDER_SRC_DIR}/glfw/src/null_init.c
-	${CINDER_SRC_DIR}/glfw/src/null_joystick.c
-	${CINDER_SRC_DIR}/glfw/src/null_monitor.c
-	${CINDER_SRC_DIR}/glfw/src/null_window.c
-	${CINDER_SRC_DIR}/glfw/src/vulkan.c
-)
+# Note: SRC_SET_GLFW, SRC_SET_GLFW_X11 are now defined in libcinder_source_files.cmake
 
+# Linux-specific app files (not GLFW-specific)
 list( APPEND SRC_SET_CINDER_APP_LINUX
 	${CINDER_SRC_DIR}/cinder/app/linux/AppLinux.cpp
 	${CINDER_SRC_DIR}/cinder/app/linux/PlatformLinux.cpp
@@ -63,7 +39,13 @@ endif()
 list( APPEND SRC_SET_CINDER_LINUX ${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp )
 
 # Relevant source files depending on target GL and if we running headless.
-if( NOT CINDER_HEADLESS ) # Desktop ogl, es2, es3, RPi
+if( NOT CINDER_HEADLESS ) # Desktop ogl, es2, es3, RPi with GLFW
+	message( STATUS "Using GLFW backend for Linux" )
+
+	# Define CINDER_GLFW preprocessor macro
+	list( APPEND CINDER_DEFINES CINDER_GLFW )
+	list( APPEND CINDER_DEFINES _GLFW_X11 )
+
 	if( CINDER_GL_ES )
 		list( APPEND SRC_SET_CINDER_LINUX
 			${CINDER_SRC_DIR}/glad/glad_es.c
@@ -74,14 +56,23 @@ if( NOT CINDER_HEADLESS ) # Desktop ogl, es2, es3, RPi
 		)
 	endif()
 
+	# Add GLFW library sources (core + X11 backend)
 	list( APPEND SRC_SET_CINDER_LINUX
 		${SRC_SET_GLFW}
+		${SRC_SET_GLFW_X11}
 	)
+
+	# Add GLFW app implementation (from new glfw/ directory)
 	list( APPEND SRC_SET_CINDER_APP_LINUX
-		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxGlfw.cpp
-		${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGlfw.cpp
-		${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGlfw.cpp
+		${CINDER_SRC_DIR}/cinder/app/glfw/AppGlfw.cpp
+		${CINDER_SRC_DIR}/cinder/app/glfw/AppImplGlfw.cpp
+		${CINDER_SRC_DIR}/cinder/app/glfw/RendererGlGlfw.cpp
+		${CINDER_SRC_DIR}/cinder/app/glfw/RendererImplGlfwGl.cpp
+		${CINDER_SRC_DIR}/cinder/app/glfw/WindowImplGlfw.cpp
 	)
+
+	source_group( "cinder\\app\\glfw" FILES ${SRC_SET_APP_GLFW} )
+	source_group( "thirdparty\\glfw" FILES ${SRC_SET_GLFW} ${SRC_SET_GLFW_X11} )
 else() # Headless egl, osmesa
 	list( APPEND SRC_SET_CINDER_LINUX
 		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxHeadless.cpp

@@ -95,17 +95,181 @@ make</code></pre>
 		<pre><code>sudo apt install libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-libav \
 gstreamer1.0-alsa gstreamer1.0-pulseaudio gstreamer1.0-plugins-bad</code></pre>			
 
-		<h3 id="video-packages">Headless OpenGL</h3>
-		<p>Cinder supports headless OpenGL via two implementations, OSMesa and EGL.</p>
-		<h4>Headless OpenGL via OSMesa</h4>
-		<pre><code>cmake .. -DCINDER_HEADLESS_GL=osmesa</code></pre>
-		<p>Note that the above can also take a <code>-DOSMESA_ROOT=&lt;path to custom Mesa build&gt;</code></p>
-		<p>To install the necessary apt packages:</p>
-		<pre><code>sudo apt install libosmesa6-dev</code></pre>			
+		<h1 id="headless-rendering">Headless OpenGL Rendering</h1>
 
-		<h4>Headless OpenGL via EGL</h4>
-		<pre><code>cmake .. -DCINDER_HEADLESS_GL=EGL</code></pre>
-		<p>Note that this configuration is suitable for hardware accelerated OpenGL.</p>
+		<div style="background-color: #fffbcc; border-left: 4px solid #ffeb3b; padding: 12px; margin: 20px 0;">
+			<p><strong>Build Requirement:</strong> Both Cinder and your application must be built with the <strong>same</strong> <code>-DCINDER_HEADLESS_GL</code> flag. For example, if you build Cinder with <code>-DCINDER_HEADLESS_GL=EGL</code>, you must also build your application with <code>-DCINDER_HEADLESS_GL=EGL</code>.</p>
+		</div>
+
+		<h3 id="what-is-headless">What is Headless Rendering?</h3>
+		<p>Headless rendering allows Cinder applications to perform OpenGL rendering without creating visible windows or requiring a display server (X11). This is useful for:</p>
+		<ul>
+			<li>Server-side rendering and image generation</li>
+			<li>Continuous Integration (CI) and automated testing</li>
+			<li>Batch processing of visual content</li>
+			<li>Cloud-based rendering services</li>
+		</ul>
+
+		<p>Cinder supports two headless OpenGL backends on Linux:</p>
+		<ul>
+			<li><strong>EGL</strong>: Hardware-accelerated GPU rendering (recommended for performance)</li>
+			<li><strong>OSMesa</strong>: Software-based CPU rendering (works without GPU)</li>
+		</ul>
+
+		<h3 id="headless-egl">Headless Rendering via EGL (GPU-Accelerated)</h3>
+		<p>EGL provides hardware-accelerated OpenGL rendering without a window system. This is the recommended approach when GPU acceleration is available.</p>
+
+		<h4>Building Cinder with EGL Backend</h4>
+		<pre><code>cd Cinder
+mkdir build &amp;&amp; cd build
+cmake .. -DCINDER_HEADLESS_GL=EGL
+make -j 8</code></pre>
+
+		<h4>Building Applications with EGL Backend</h4>
+		<p><strong>Important:</strong> Your application must be built with the <strong>same</strong> <code>-DCINDER_HEADLESS_GL</code> flag that was used to build Cinder. This ensures the application links against the correct Cinder library variant.</p>
+		<pre><code>cd your_app/proj/cmake
+mkdir build &amp;&amp; cd build
+cmake .. -DCINDER_HEADLESS_GL=EGL
+make</code></pre>
+
+		<p><strong>Note:</strong> EGL headless rendering requires a GPU and appropriate drivers. The standard Mesa OpenGL packages installed earlier include EGL support.</p>
+
+		<h4>Library Organization</h4>
+		<p>Cinder creates separate library directories for each rendering backend. When you build Cinder with <code>-DCINDER_HEADLESS_GL=EGL</code>, the libraries are placed in a directory specific to that configuration (e.g., <code>lib/linux/x86_64/ogl/</code> for normal builds). Your application must use the matching configuration to link against the correct libraries.</p>
+
+		<h3 id="headless-osmesa">Headless Rendering via OSMesa (CPU Software Rendering)</h3>
+		<p>OSMesa provides CPU-based software rendering without requiring a GPU. This is useful for environments without graphics hardware, such as some cloud/container scenarios.</p>
+
+		<h4>Installing OSMesa Dependencies</h4>
+		<pre><code>sudo apt install libosmesa6-dev</code></pre>
+
+		<h4>Building Cinder with OSMesa Backend</h4>
+		<pre><code>cd Cinder
+mkdir build &amp;&amp; cd build
+cmake .. -DCINDER_HEADLESS_GL=osmesa
+make -j 8</code></pre>
+
+		<p>For custom Mesa builds, you can specify the path:</p>
+		<pre><code>cmake .. -DCINDER_HEADLESS_GL=osmesa -DOSMESA_ROOT=/path/to/custom/mesa</code></pre>
+
+		<h4>Building Applications with OSMesa Backend</h4>
+		<p><strong>Important:</strong> Just like with EGL, your application must be built with the <strong>same</strong> <code>-DCINDER_HEADLESS_GL=osmesa</code> flag that was used to build Cinder.</p>
+		<pre><code>cd your_app/proj/cmake
+mkdir build &amp;&amp; cd build
+cmake .. -DCINDER_HEADLESS_GL=osmesa
+make</code></pre>
+
+		<p><strong>Performance Note:</strong> OSMesa uses CPU-based software rendering, which is significantly slower than EGL GPU acceleration. Use EGL when GPU hardware is available.</p>
+
+		<h3 id="headless-usage">Using Headless Rendering in Your Application</h3>
+		<p>The beauty of Cinder's headless rendering is that your application code remains largely unchanged. Standard Cinder apps will automatically work in headless mode when built with headless backends.</p>
+
+		<h4>Key Differences from Windowed Applications</h4>
+		<ul>
+			<li>No visible window is created</li>
+			<li>The application runs in an event loop but without window events</li>
+			<li>You can capture rendered frames using <code>copyWindowSurface()</code> and save them to disk</li>
+			<li>The application terminates when <code>quit()</code> is called or after a set number of frames</li>
+		</ul>
+
+		<h4>Example: Rendering and Saving a Frame</h4>
+		<pre><code class="language-cpp">void MyApp::draw()
+{
+    gl::clear( Color( 0.0f, 0.2f, 1.0f ) );
+    gl::setMatricesWindow( getWindowSize() );
+
+    // Your rendering code here
+    gl::drawSolidCircle( getWindowCenter(), 100.0f );
+
+    // Capture and save the frame
+    writeImage( "output.png", copyWindowSurface() );
+
+    // Quit after rendering
+    quit();
+}</code></pre>
+
+		<h3 id="headless-samples">Building Samples and Applications</h3>
+		<p><strong>Do samples automatically inherit the headless setting?</strong> Yes! When you build a sample or application, it automatically reads Cinder's configuration and links against the appropriate library variant.</p>
+
+		<p>The CMake configuration system ensures that:</p>
+		<ul>
+			<li>Each application includes <code>configure.cmake</code>, which processes the <code>-DCINDER_HEADLESS_GL</code> flag</li>
+			<li>The flag determines which Cinder library directory to link against</li>
+			<li>Both Cinder and your application must use the same flag to ensure compatibility</li>
+		</ul>
+
+		<p><strong>Important Rule:</strong> Always use the same <code>-DCINDER_HEADLESS_GL</code> flag when building both Cinder and your application. Mixing configurations (e.g., building Cinder with EGL but the app without the flag) will cause linking errors or runtime failures.</p>
+
+		<h3 id="headless-testing">Testing Headless Rendering</h3>
+		<p>Cinder includes a test application specifically for headless rendering located at:</p>
+		<pre><code>test/Linux/HeadlessTestApp/</code></pre>
+
+		<p>This app demonstrates rendering text and saving snapshots to disk. To build and run it with EGL:</p>
+		<pre><code>cd test/Linux/HeadlessTestApp/proj/cmake
+mkdir build &amp;&amp; cd build
+cmake .. -DCINDER_HEADLESS_GL=EGL
+make
+./Debug/HeadlessTestApp/HeadlessTestApp</code></pre>
+
+		<p>To test with OSMesa instead:</p>
+		<pre><code>cmake .. -DCINDER_HEADLESS_GL=osmesa
+make
+./Debug/HeadlessTestApp/HeadlessTestApp</code></pre>
+
+		<p>The application will render text and save a snapshot to <code>headless-snapshot.png</code> every 120 frames. Press Ctrl+C to stop the application.</p>
+
+		<h4>Verifying the Output</h4>
+		<p>After running the headless test app, verify the generated image:</p>
+		<pre><code>ls -lh headless-snapshot.png
+file headless-snapshot.png</code></pre>
+		<p>You can view the image with any image viewer or transfer it to another machine to verify the rendering worked correctly.</p>
+
+		<h3 id="headless-ci-cd">Using Headless Rendering in CI/CD</h3>
+		<p>Headless rendering is particularly useful in CI/CD pipelines for automated testing and validation of rendering code.</p>
+
+		<h4>Example CI Configuration (GitHub Actions)</h4>
+		<pre><code>- name: Install Cinder dependencies
+  run: |
+    sudo apt update
+    sudo apt install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev \
+      libgl1-mesa-dev zlib1g-dev libfontconfig1-dev libcurl4-gnutls-dev
+
+- name: Build Cinder (Headless EGL)
+  run: |
+    cd Cinder
+    mkdir build &amp;&amp; cd build
+    cmake .. -DCINDER_HEADLESS_GL=EGL
+    make -j $(nproc)
+
+- name: Build and test app
+  run: |
+    cd my_app/proj/cmake
+    mkdir build &amp;&amp; cd build
+    cmake .. -DCINDER_HEADLESS_GL=EGL
+    make
+    ./Debug/MyApp/MyApp</code></pre>
+
+		<h3 id="headless-troubleshooting">Troubleshooting Headless Rendering</h3>
+
+		<h4>EGL Initialization Failures</h4>
+		<p>If EGL fails to initialize, ensure:</p>
+		<ul>
+			<li>GPU drivers are properly installed</li>
+			<li>The system has a compatible GPU</li>
+			<li>Mesa's EGL libraries are installed (<code>sudo apt install libegl1-mesa-dev</code>)</li>
+		</ul>
+
+		<h4>OSMesa Missing Symbols</h4>
+		<p>If you encounter missing symbol errors with OSMesa:</p>
+		<pre><code>sudo apt install --reinstall libosmesa6-dev mesa-common-dev</code></pre>
+
+		<h4>Performance Issues</h4>
+		<p>If rendering is slower than expected:</p>
+		<ul>
+			<li>Verify you're using EGL (not OSMesa) if GPU is available</li>
+			<li>Check that GPU acceleration is actually being used (use <code>nvidia-smi</code> for NVIDIA GPUs)</li>
+			<li>Consider reducing render resolution or complexity for OSMesa builds</li>
+		</ul>
 		
 		<!-- END CONTENT -->
 
