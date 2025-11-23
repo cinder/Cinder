@@ -428,7 +428,9 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	
 	//! \cond
 	// This should not be called except by App implementations
-#if defined( CINDER_COCOA ) && defined( __OBJC__ )
+#if defined( CINDER_GLFW )
+	static WindowRef		privateCreate__( class WindowImplGlfw *impl, AppBase *app )
+#elif defined( CINDER_COCOA ) && defined( __OBJC__ )
 	static WindowRef		privateCreate__( id<WindowImplCocoa> impl, AppBase *app )
 #elif defined( CINDER_MSW_DESKTOP )
 	static WindowRef		privateCreate__( WindowImplMsw *impl, AppBase *app )
@@ -441,7 +443,7 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 		WindowRef result( new Window );
 		result->setImpl( impl );
 		result->setApp( app );
-		
+
 		return result;
 	}
 	//! \endcond
@@ -456,10 +458,12 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 			throw ExcInvalidWindow();
 	}
 
-	void		setApp( AppBase *app ) { mApp = app; }	
+	void		setApp( AppBase *app ) { mApp = app; }
 	void		applyCurrentContext();
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_GLFW )
+	void		setImpl( WindowImplGlfw *impl ) { mImpl = impl; }
+#elif defined( CINDER_COCOA_TOUCH )
   #if defined( __OBJC__ )
 	void		setImpl( id<WindowImplCocoa> impl ) { mImpl = impl; }
   #else
@@ -468,7 +472,7 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 #elif defined( CINDER_MSW_DESKTOP )
 	void		setImpl( WindowImplMsw *impl ) { mImpl = impl; }
 #elif defined( CINDER_LINUX )
-  void    setImpl( WindowImplLinux *impl ) { mImpl = impl; }    
+  void    setImpl( WindowImplLinux *impl ) { mImpl = impl; }
 #endif
 
 	AppBase							*mApp;
@@ -480,8 +484,10 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	EventSignalKey			mSignalKeyDown, mSignalKeyUp;
 	EventSignalWindow		mSignalDraw, mSignalPostDraw, mSignalMove, mSignalResize, mSignalDisplayChange, mSignalClose;
 	EventSignalFileDrop		mSignalFileDrop;
-	
-#if defined( CINDER_COCOA )
+
+#if defined( CINDER_GLFW )
+	WindowImplGlfw		*mImpl;
+#elif defined( CINDER_COCOA_TOUCH )
   #if defined( __OBJC__ )
 	id<WindowImplCocoa>		mImpl;
   #else
@@ -494,13 +500,16 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 #endif
  
 private:
-#if defined( CINDER_ANDROID )
+#if defined( CINDER_GLFW )
+	friend class AppImplGlfw;
+	WindowImplGlfw      *getImpl() { return mImpl; }
+#elif defined( CINDER_ANDROID )
 	friend class AppImplAndroid;
 	WindowImplAndroid   *getImpl() { return mImpl; }
 #elif defined( CINDER_LINUX )
 	friend class AppImplLinux;
 	WindowImplLinux     *getImpl() { return mImpl; }
-#endif    
+#endif
 };
 
 } } // namespace cinder::app

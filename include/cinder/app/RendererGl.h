@@ -46,7 +46,9 @@
 		class RendererImplGlCocoaTouch;
 		class EAGLContext;
 	#endif
-#elif defined( CINDER_LINUX )
+#endif
+
+#if defined( CINDER_GLFW )
 	typedef struct GLFWwindow	GLFWwindow;
 #endif
 
@@ -59,6 +61,10 @@ typedef std::shared_ptr<Context>		ContextRef;
 
 namespace cinder { namespace app {
 
+#if defined( CINDER_GLFW )
+	class RendererImplGlfw;
+#endif
+
 typedef std::shared_ptr<class RendererGl>	RendererGlRef;
 class CI_API RendererGl : public Renderer {
   public:
@@ -68,11 +74,19 @@ class CI_API RendererGl : public Renderer {
 #if defined( CINDER_COCOA_TOUCH )
 			mMsaaSamples = 0;
 			mCoreProfile = false;
+			mProfileSpecified = false;
 			mVersion = std::pair<int,int>( 2, 0 );
-#else
+#elif defined( CINDER_MAC )
 			mMsaaSamples = 0;
 			mCoreProfile = true;
-			mVersion = std::pair<int,int>( 3, 2 );
+			mProfileSpecified = true;  // macOS always specifies profile
+			mVersion = std::pair<int,int>( 4, 1 );
+#else
+			mMsaaSamples = 0;
+			mCoreProfile = false;
+			mProfileSpecified = false;  // Let GLFW auto-select when profile not specified
+			// Use (0, 0) to indicate "request highest available version"
+			mVersion = std::pair<int,int>( 0, 0 );
 #endif
 #if ! defined( CINDER_GL_ES )
 			mDebugContext = false;
@@ -87,9 +101,10 @@ class CI_API RendererGl : public Renderer {
 			mColorBpc = 8;
 		}
 
-		Options&	coreProfile( bool enable = true ) { mCoreProfile = enable; return *this; }
+		Options&	coreProfile( bool enable = true ) { mCoreProfile = enable; mProfileSpecified = true; return *this; }
 		bool		getCoreProfile() const { return mCoreProfile; }
-		void		setCoreProfile( bool enable ) { mCoreProfile = enable; }
+		void		setCoreProfile( bool enable ) { mCoreProfile = enable; mProfileSpecified = true; }
+		bool		getProfileSpecified() const { return mProfileSpecified; }
 
 		Options&			version( int major, int minor ) { mVersion = std::make_pair( major, minor ); return *this; }
 		Options&			version( std::pair<int,int> version ) { mVersion = version; return *this; }
@@ -157,6 +172,7 @@ class CI_API RendererGl : public Renderer {
 
 	  protected:
 		bool					mCoreProfile;
+		bool					mProfileSpecified;
 		std::pair<int,int>		mVersion;
 		int						mMsaaSamples;
 		bool					mStencil;
@@ -178,13 +194,19 @@ class CI_API RendererGl : public Renderer {
 	static RendererGlRef	create( const Options &options = Options() )	{ return RendererGlRef( new RendererGl( options ) ); }
 	RendererRef				clone() const override							{ return RendererGlRef( new RendererGl( *this ) ); }
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_GLFW )
+	// GLFW rendering (Linux or macOS)
+	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) override;
+	RendererImplGlfw*	getGlfwRendererImpl();
 	#if defined( CINDER_MAC )
-		void						setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) override;
-		CGLContextObj				getCglContext() override;
-		CGLPixelFormatObj			getCglPixelFormat() override;
-		virtual NSOpenGLContext*	getNsOpenGlContext();
-	#elif defined( CINDER_COCOA_TOUCH )
+		// macOS-specific methods for GLFW backend
+		CGLContextObj	getCglContext() override;
+	#endif
+#elif defined( CINDER_HEADLESS )
+	// Headless rendering (Linux-specific)
+	virtual void	setup( ci::ivec2 renderSize, RendererRef sharedRenderer ) override;
+#elif defined( CINDER_COCOA )
+	#if defined( CINDER_COCOA_TOUCH )
 		void						setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer ) override;
 		bool						isEaglLayer() const override { return true; }
 		EAGLContext*				getEaglContext() const;
@@ -199,12 +221,6 @@ class CI_API RendererGl : public Renderer {
 	virtual void	finishToggleFullScreen();
 #elif defined( CINDER_ANDROID )
 	virtual void	setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) override;
-#elif defined( CINDER_LINUX )
-#if defined( CINDER_HEADLESS )
-	virtual void	setup( ci::ivec2 renderSize, RendererRef sharedRenderer ) override;
-#else
-	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) override;
-#endif
 #endif
 
 	const Options&	getOptions() const { return mOptions; }
@@ -225,9 +241,7 @@ protected:
 	RendererGl( const RendererGl &renderer );
 
 	Options		mOptions;
-#if defined( CINDER_MAC )
-	RendererImplGlMac		*mImpl;
-#elif defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_COCOA_TOUCH )
 	RendererImplGlCocoaTouch	*mImpl;
 #elif defined( CINDER_MSW_DESKTOP )
 	#if defined( CINDER_GL_ANGLE )
@@ -242,10 +256,15 @@ protected:
 	class RendererGlAndroid		*mImpl;
 	RendererGlAndroid		  *getImpl() { return mImpl; }
 	friend class WindowImplAndroid;
-#elif defined( CINDER_LINUX )
+#elif defined( CINDER_HEADLESS )
+	// Headless rendering (Linux-specific)
 	class RendererGlLinux	*mImpl;
 	RendererGlLinux			*getImpl() { return mImpl; }
-	friend class WindowImplLinux;
+#elif defined( CINDER_GLFW )
+	// GLFW rendering (Linux or macOS)
+	class RendererGlGlfw	*mImpl;
+	RendererGlGlfw			*getImpl() { return mImpl; }
+	friend class RendererImplGlfwGl;
 #endif
 
 	std::function<void( Renderer* )> mStartDrawFn;

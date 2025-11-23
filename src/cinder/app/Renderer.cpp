@@ -27,17 +27,9 @@
 
 #include "cinder/app/AppBase.h"
 
-#if defined( CINDER_COCOA )
-	#include "cinder/cocoa/CinderCocoa.h"
-	#if defined( CINDER_MAC )
-		#include <ApplicationServices/ApplicationServices.h>
-		#import <Cocoa/Cocoa.h>
-		#import "cinder/app/cocoa/RendererImpl2dMacQuartz.h"
-	#elif defined( CINDER_COCOA_TOUCH )
-		#include "cinder/cocoa/CinderCocoaTouch.h"
-		#import "cinder/app/cocoa/RendererImpl2dCocoaTouchQuartz.h"		
-	#endif
-
+#if defined( CINDER_COCOA_TOUCH )
+	#include "cinder/cocoa/CinderCocoaTouch.h"
+	#import "cinder/app/cocoa/RendererImpl2dCocoaTouchQuartz.h"
 #elif defined( CINDER_MSW_DESKTOP )
 	#include "cinder/app/msw/AppImplMsw.h"
 	#include "cinder/app/msw/RendererImpl2dGdi.h"
@@ -55,86 +47,6 @@ Renderer::Renderer( const Renderer & /*renderer*/ )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Renderer2d
-#if defined( CINDER_COCOA )
-
-Renderer2d::Renderer2d( const Renderer2d &renderer )
-	: Renderer( renderer ), mImpl( nullptr )
-{
-}
-
-Renderer2d::Renderer2d()
-	: Renderer(), mImpl( nullptr )
-{
-}
-
-#if defined( CINDER_MAC )
-Renderer2d::~Renderer2d()
-{
-}
-
-void Renderer2d::setup( CGRect frame, NSView *cinderView, RendererRef /*sharedRenderer*/, bool retinaEnabled )
-{
-	mImpl = [[RendererImpl2dMacQuartz alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView];
-}
-
-#else
-
-void Renderer2d::setup( const Area &frame, UIView *cinderView, RendererRef /*sharedRenderer*/ )
-{
-	mImpl = [[RendererImpl2dCocoaTouchQuartz alloc] initWithFrame:cinder::cocoa::createCgRect(frame) cinderView:cinderView];
-}
-
-#endif
-
-CGContextRef Renderer2d::getCgContext()
-{
-	return [mImpl getCGContextRef];
-}
-
-void Renderer2d::startDraw()
-{
-	[mImpl startDraw];
-}
-
-void Renderer2d::finishDraw()
-{
-	[mImpl finishDraw];
-}
-
-void Renderer2d::setFrameSize( int width, int height )
-{
-#if defined( CINDER_MAC )
-	[mImpl setFrameSize:NSSizeToCGSize(NSMakeSize( width, height ))];
-#endif
-}
-
-void Renderer2d::defaultResize()
-{
-	[mImpl defaultResize];
-}
-
-void Renderer2d::makeCurrentContext( bool /*force*/ )
-{
-}
-
-Surface Renderer2d::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
-{
-#if defined( CINDER_MAC )
-	NSBitmapImageRep *rep = [mImpl getContents:area];
-	if( rep )
-		return *cocoa::convertNsBitmapDataRep( rep, true );
-	else
-		return Surface( 0, 0, false );
-#elif defined( CINDER_COCOA_TOUCH )
-	UIImage *image = [mImpl getContents:area];
-	if( image )
-		return *cocoa::convertUiImage( image, true );
-	else
-		return Surface( 0, 0, false );
-#endif
-}
-#endif
-
 #if defined( CINDER_MSW_DESKTOP )
 
 Renderer2d::Renderer2d( const Renderer2d &renderer )

@@ -67,6 +67,8 @@ using std::uint64_t;
 #elif defined( macintosh ) || defined( __APPLE__ ) || defined( __APPLE_CC__ )
 	#define CINDER_POSIX
 	#define CINDER_COCOA
+    #define CINDER_GLFW
+	#define _GLFW_COCOA 1
 	#include <TargetConditionals.h>
 	#include <AvailabilityMacros.h>
 	#if TARGET_OS_IPHONE

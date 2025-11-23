@@ -28,7 +28,11 @@
 #include "cinder/gl/Context.h"
 
 #if defined( CINDER_MAC )
+	// Always need CGLContextObj on macOS (for both legacy Cocoa and GLFW shared contexts)
 	typedef struct _CGLContextObject       *CGLContextObj;
+	#if defined( CINDER_GLFW )
+		typedef struct GLFWwindow GLFWwindow;
+	#endif
 #elif defined( CINDER_COCOA_TOUCH )
 	#if defined( __OBJC__ )
 		@class	EAGLContext;
@@ -123,7 +127,7 @@ struct PlatformDataMac : public Context::PlatformData {
 	PlatformDataMac( CGLContextObj cglContext )
 		: mCglContext( cglContext )
 	{}
-	
+
 	CGLContextObj		mCglContext;
 };
 
