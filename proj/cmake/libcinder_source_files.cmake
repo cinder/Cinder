@@ -450,3 +450,62 @@ if( NOT CINDER_DISABLE_AUDIO )
 	list( APPEND CINDER_SRC_FILES                   ${SRC_SET_OGGVORBIS} )
 	source_group( "thirdparty\\oggvorbis" FILES     ${SRC_SET_OGGVORBIS} )
 endif()
+
+# ----------------------------------------------------------------------------------------------------------------------
+# GLFW - Platform-agnostic windowing library
+# ----------------------------------------------------------------------------------------------------------------------
+
+# Core GLFW sources (platform-independent)
+list( APPEND SRC_SET_GLFW
+	${CINDER_SRC_DIR}/glfw/src/context.c
+	${CINDER_SRC_DIR}/glfw/src/egl_context.c
+	${CINDER_SRC_DIR}/glfw/src/init.c
+	${CINDER_SRC_DIR}/glfw/src/input.c
+	${CINDER_SRC_DIR}/glfw/src/monitor.c
+	${CINDER_SRC_DIR}/glfw/src/null_init.c
+	${CINDER_SRC_DIR}/glfw/src/null_joystick.c
+	${CINDER_SRC_DIR}/glfw/src/null_monitor.c
+	${CINDER_SRC_DIR}/glfw/src/null_window.c
+	${CINDER_SRC_DIR}/glfw/src/osmesa_context.c
+	${CINDER_SRC_DIR}/glfw/src/platform.c
+	${CINDER_SRC_DIR}/glfw/src/vulkan.c
+	${CINDER_SRC_DIR}/glfw/src/window.c
+)
+
+# GLFW Cocoa backend (macOS)
+list( APPEND SRC_SET_GLFW_COCOA
+	${CINDER_SRC_DIR}/glfw/src/cocoa_init.m
+	${CINDER_SRC_DIR}/glfw/src/cocoa_joystick.m
+	${CINDER_SRC_DIR}/glfw/src/cocoa_monitor.m
+	${CINDER_SRC_DIR}/glfw/src/cocoa_time.c
+	${CINDER_SRC_DIR}/glfw/src/cocoa_window.m
+	${CINDER_SRC_DIR}/glfw/src/nsgl_context.m
+	${CINDER_SRC_DIR}/glfw/src/posix_module.c
+	${CINDER_SRC_DIR}/glfw/src/posix_thread.c
+)
+
+# GLFW X11 backend (Linux)
+list( APPEND SRC_SET_GLFW_X11
+	${CINDER_SRC_DIR}/glfw/src/glx_context.c
+	${CINDER_SRC_DIR}/glfw/src/linux_joystick.c
+	${CINDER_SRC_DIR}/glfw/src/posix_module.c
+	${CINDER_SRC_DIR}/glfw/src/posix_poll.c
+	${CINDER_SRC_DIR}/glfw/src/posix_thread.c
+	${CINDER_SRC_DIR}/glfw/src/posix_time.c
+	${CINDER_SRC_DIR}/glfw/src/x11_init.c
+	${CINDER_SRC_DIR}/glfw/src/x11_monitor.c
+	${CINDER_SRC_DIR}/glfw/src/x11_window.c
+	${CINDER_SRC_DIR}/glfw/src/xkb_unicode.c
+)
+
+# Cinder GLFW app implementation (platform-agnostic)
+list( APPEND SRC_SET_APP_GLFW
+	${CINDER_SRC_DIR}/cinder/app/glfw/AppGlfw.cpp
+	${CINDER_SRC_DIR}/cinder/app/glfw/AppImplGlfw.cpp
+	${CINDER_SRC_DIR}/cinder/app/glfw/AppImplGlfwMac.mm
+	${CINDER_SRC_DIR}/cinder/app/glfw/WindowImplGlfw.cpp
+	${CINDER_SRC_DIR}/cinder/app/glfw/RendererGlGlfw.cpp
+	${CINDER_SRC_DIR}/cinder/app/glfw/RendererImplGlfwGl.cpp
+)
+
+# Note: These source sets are used by platform_macosx.cmake and platform_linux.cmake
