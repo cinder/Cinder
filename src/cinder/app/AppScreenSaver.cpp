@@ -25,12 +25,12 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/CinderAssert.h"
 
-#if defined( CINDER_MAC )
+#if defined( CINDER_MAC_LEGACY_APP )
 #include <list>
 	#import "cinder/app/cocoa/AppImplMacScreenSaver.h"
 	#include "cinder/app/cocoa/PlatformCocoa.h"
 	#include "cinder/ImageSourceFileQuartz.h"
-	#include "cinder/ImageTargetFileQuartz.h"	
+	#include "cinder/ImageTargetFileQuartz.h"
 #elif defined( CINDER_MSW )
 	#include "cinder/app/msw/AppImplMswScreenSaver.h"
 #endif
@@ -42,7 +42,7 @@ HWND cinder::app::AppScreenSaver::sMainHwnd = 0;
 
 namespace cinder { namespace app {
 
-#if defined( CINDER_MAC )
+#if defined( CINDER_MAC_LEGACY_APP )
 //static cinder::app::AppScreenSaverFactory *CINDER_SCREENSAVER_FACTORY = 0;
 
 AppScreenSaver::AppScreenSaver()
@@ -84,7 +84,7 @@ LRESULT AppScreenSaver::eventHandler( HWND hWnd, UINT message, WPARAM wParam, LP
 
 float AppScreenSaver::getFrameRate() const
 {
-#if defined( CINDER_MAC )
+#if defined( CINDER_MAC_LEGACY_APP )
 	return [mImpl getFrameRate];
 #elif defined( CINDER_MSW )
 	return mImpl->getFrameRate();
@@ -93,7 +93,7 @@ float AppScreenSaver::getFrameRate() const
 
 void AppScreenSaver::setFrameRate( float frameRate )
 {
-#if defined( CINDER_MAC )
+#if defined( CINDER_MAC_LEGACY_APP )
 	[mImpl setFrameRate:frameRate];
 #elif defined( CINDER_MSW )
 	mImpl->setFrameRate( frameRate );
@@ -102,14 +102,14 @@ void AppScreenSaver::setFrameRate( float frameRate )
 
 bool AppScreenSaver::isPreview() const
 {
-#if defined( CINDER_MAC )
+#if defined( CINDER_MAC_LEGACY_APP )
 	return [mImpl isPreview];
 #elif defined( CINDER_MSW )
 	return mImpl->isPreview();
 #endif
 }
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_MAC_LEGACY_APP )
 NSBundle* AppScreenSaver::getBundle() const
 {
 	return [NSBundle bundleForClass:[AppImplMacScreenSaver class]];
@@ -118,7 +118,7 @@ NSBundle* AppScreenSaver::getBundle() const
 
 size_t AppScreenSaver::getNumWindows() const
 {
-#if defined( CINDER_MAC )
+#if defined( CINDER_MAC_LEGACY_APP )
 	return [mImpl getNumWindows];
 #elif defined( CINDER_MSW )
 	return mImpl->getNumWindows();
@@ -127,7 +127,7 @@ size_t AppScreenSaver::getNumWindows() const
 
 WindowRef AppScreenSaver::getWindow() const
 {
-#if defined( CINDER_MAC )
+#if defined( CINDER_MAC_LEGACY_APP )
 	return [mImpl getWindow];
 #elif defined( CINDER_MSW )
 	return mImpl->getWindow();
@@ -136,7 +136,7 @@ WindowRef AppScreenSaver::getWindow() const
 
 WindowRef AppScreenSaver::getWindowIndex( size_t index ) const
 {
-#if defined( CINDER_MAC )
+#if defined( CINDER_MAC_LEGACY_APP )
 	return [mImpl getWindowIndex:index];
 #elif defined( CINDER_MSW )
 	return mImpl->getWindowIndex( index );

@@ -32,6 +32,13 @@
 
 #if defined( CINDER_MAC )
 	#include <OpenGL/OpenGL.h>
+	#if defined( CINDER_GLFW )
+		#define GLFW_EXPOSE_NATIVE_COCOA
+		#define GLFW_EXPOSE_NATIVE_NSGL
+		#include "glfw/glfw3.h"
+		#include "glfw/glfw3native.h"
+		#import <Cocoa/Cocoa.h>
+	#endif
 #elif defined( CINDER_COCOA_TOUCH )
 	#import <OpenGLES/EAGL.h>
 #elif defined( CINDER_GL_ANGLE )
@@ -95,7 +102,7 @@ void destroyPlatformData( Context::PlatformData *data )
 {
 #if defined( CINDER_MAC )
 	auto platformData = dynamic_cast<PlatformDataMac*>( data );
-	::CGLDestroyContext( platformData->mCglContext );
+	::CGLReleaseContext( platformData->mCglContext );
 #elif defined( CINDER_COCOA_TOUCH )
 	auto platformData = dynamic_cast<PlatformDataIos*>( data );
 	[(EAGLContext*)platformData->mEaglContext release];
@@ -115,7 +122,9 @@ void destroyPlatformData( Context::PlatformData *data )
 	#elif defined( CINDER_HEADLESS_GL_OSMESA )
 		OSMesaDestroyContext( platformData->mContext );
 	#else
-		::glfwDestroyWindow( platformData->mContext );
+		// GLFW doesn't have a CGLDestroyContext equivalent - contexts are tied to windows.
+		// These shared context "windows" (1x1 invisible) will be cleaned up by glfwTerminate().
+		// Destroying them here can cause issues with threading and destruction order.
 	#endif
 #endif
 
@@ -126,17 +135,45 @@ void destroyPlatformData( Context::PlatformData *data )
 ContextRef Environment::createSharedContext( const Context *sharedContext )
 {
 #if defined( CINDER_MAC )
+	// macOS with GLFW: main context is GLFW window, but create shared context using native CGL
+	// (GLFW doesn't have first-class offscreen contexts, but macOS does via CGL)
 	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataMac>( sharedContext->getPlatformData() );
-	CGLContextObj prevContext = ::CGLGetCurrentContext();
+
+	// Save both GLFW and CGL state for proper restoration
 	CGLContextObj sharedContextCgl = sharedContextPlatformData->mCglContext;
 	CGLPixelFormatObj sharedContextPixelFormat = ::CGLGetPixelFormat( sharedContextCgl );
+	if( sharedContextPixelFormat ) {
+		::CGLRetainPixelFormat( sharedContextPixelFormat );
+	}
+
 	CGLContextObj cglContext;
-	if( ::CGLCreateContext( sharedContextPixelFormat, sharedContextCgl, (CGLContextObj*)&cglContext ) != kCGLNoError ) {
+	CGLError err = ::CGLCreateContext( sharedContextPixelFormat, sharedContextCgl, &cglContext );
+
+	if( sharedContextPixelFormat ) {
+		::CGLReleasePixelFormat( sharedContextPixelFormat );
+	}
+
+	if( err != kCGLNoError ) {
 		throw ExcContextAllocation();
 	}
 
-	::CGLSetCurrentContext( cglContext );
+	err = ::CGLSetCurrentContext( cglContext );
+	if( err != kCGLNoError ) {
+		::CGLDestroyContext( cglContext );
+		throw ExcContextAllocation();
+	}
+
+	// Return PlatformDataMac (native CGL context), not PlatformDataLinux
 	shared_ptr<Context::PlatformData> platformData = shared_ptr<Context::PlatformData>( new PlatformDataMac( cglContext ), destroyPlatformData );
+#elif defined( CINDER_LINUX ) && defined( CINDER_GLFW )
+	// Linux with GLFW: use GLFW's invisible window approach
+	// Save the current GLFW context for restoration later
+	GLFWwindow* prevGlfwWindow = ::glfwGetCurrentContext();
+
+	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
+	glfwWindowHint( GLFW_VISIBLE, GL_FALSE );
+	GLFWwindow* sharedGlfwContext = ::glfwCreateWindow( 1, 1, "", NULL, sharedContextPlatformData->mContext );
+	shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( sharedGlfwContext ), destroyPlatformData );
 #elif defined( CINDER_COCOA_TOUCH )
 	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataIos>( sharedContext->getPlatformData() );
 	EAGLContext *prevContext = [EAGLContext currentContext];
@@ -189,6 +226,9 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 
 	shared_ptr<Context::PlatformData> platformData( new PlatformDataAndroid( eglContext, sharedContextPlatformData->mDisplay, sharedContextPlatformData->mSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );
 #elif defined( CINDER_LINUX )
+	// Save the current GLFW context for restoration later
+	GLFWwindow* prevGlfwWindow = ::glfwGetCurrentContext();
+
 	#if defined( CINDER_LINUX_EGL_ONLY )
 		auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
 		EGLContext prevEglContext = ::eglGetCurrentContext();
@@ -217,8 +257,14 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 	ContextRef result( new Context( platformData ) );
 	env()->initializeFunctionPointers();
 
-#if defined( CINDER_MAC )
-	::CGLSetCurrentContext( prevContext );
+#if defined( CINDER_LINUX )
+	// Restore previous context - prefer GLFW window context if it was active
+	if( prevGlfwWindow ) {
+		::glfwMakeContextCurrent( prevGlfwWindow );
+	}
+	else {
+//		::CGLSetCurrentContext( prevCglContext );
+	}
 #elif defined( CINDER_COCOA_TOUCH )
 	[EAGLContext setCurrentContext:prevContext];
 #elif defined( CINDER_GL_ANGLE )
@@ -234,12 +280,19 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 void Environment::makeContextCurrent( const Context *context )
 {
 #if defined( CINDER_MAC )
+	// macOS with GLFW: handle both GLFW window contexts and native CGL shared contexts
 	if( context ) {
-		auto platformData = dynamic_pointer_cast<PlatformDataMac>( context->getPlatformData() );
-		::CGLSetCurrentContext( platformData->mCglContext );
+		// Try PlatformDataMac first (native CGL shared contexts)
+		auto platformDataMac = dynamic_pointer_cast<PlatformDataMac>( context->getPlatformData() );
+		if( platformDataMac ) {
+			CGLError err = ::CGLSetCurrentContext( platformDataMac->mCglContext );
+			if( err != kCGLNoError ) {
+				throw ExcContextMakeCurrent();
+			}
+		}
 	}
 	else {
-		::CGLSetCurrentContext( NULL );
+		::glfwMakeContextCurrent( nullptr );
 	}
 #elif defined( CINDER_COCOA_TOUCH )
 	if( context ) {

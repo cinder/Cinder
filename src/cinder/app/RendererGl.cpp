@@ -24,16 +24,21 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/ip/Flip.h"
 
-#if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
-	#error "This file must be compiled as Objective-C++ on the Mac"
+#if defined( CINDER_COCOA_TOUCH ) && ( ! defined( __OBJC__ ) )
+	#error "This file must be compiled as Objective-C++ for iOS"
 #endif
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_GLFW )
+	#include "cinder/app/glfw/RendererGlGlfw.h"
+	#include "cinder/app/glfw/RendererImplGlfw.h"
 	#if defined( CINDER_MAC )
-		#import "cinder/app/cocoa/RendererImplGlMac.h"
-	#elif defined( CINDER_COCOA_TOUCH )
-		#import "cinder/app/cocoa/RendererImplGlCocoaTouch.h"
+		#define GLFW_EXPOSE_NATIVE_COCOA
+		#define GLFW_EXPOSE_NATIVE_NSGL
+		#include <glfw/glfw3.h>
+		#include <glfw/glfw3native.h>
 	#endif
+#elif defined( CINDER_COCOA_TOUCH )
+	#import "cinder/app/cocoa/RendererImplGlCocoaTouch.h"
 #elif defined( CINDER_MSW_DESKTOP )
 	#include "cinder/app/msw/AppImplMsw.h"
 	#if defined( CINDER_GL_ANGLE )
@@ -43,7 +48,7 @@
 	#endif
 #elif defined( CINDER_ANDROID )
 	#include "cinder/app/android/RendererGlAndroid.h"
-#elif defined( CINDER_LINUX )
+#elif defined( CINDER_HEADLESS )
 	#include "cinder/app/linux/RendererGlLinux.h"
 #endif
 
@@ -51,93 +56,24 @@ namespace cinder { namespace app {
 
 RendererGl::RendererGl( const RendererGl::Options &options )
 	: Renderer(), mImpl( nullptr ), mOptions( options )
-{}
+{
+#if defined( CINDER_GLFW )
+	mImpl = new RendererGlGlfw( this );
+#endif
+}
 
 RendererGl::RendererGl( const RendererGl &renderer )
 	: Renderer( renderer ), mImpl( nullptr ), mOptions( renderer.mOptions )
 {
-#if defined( CINDER_MSW_DESKTOP )
+#if defined( CINDER_GLFW )
+	mImpl = new RendererGlGlfw( this );
+#elif defined( CINDER_MSW_DESKTOP )
 #elif defined( CINDER_ANDROID )
 	mImpl = 0;
 #endif
 }
 
-#if defined( CINDER_MAC )
-RendererGl::~RendererGl()
-{
-}
-
-void RendererGl::setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled )
-{
-	RendererGlRef sharedGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
-	mImpl = [[RendererImplGlMac alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView renderer:this sharedRenderer:sharedGl withRetina:retinaEnabled];
-}
-
-void RendererGl::startDraw()
-{
-	if( mStartDrawFn )
-		mStartDrawFn( this );
-	else
-		[mImpl makeCurrentContext:false];
-}
-
-void RendererGl::finishDraw()
-{
-	if( mFinishDrawFn )
-		mFinishDrawFn( this );
-	else
-		[mImpl flushBuffer];
-}
-
-void RendererGl::setFrameSize( int width, int height )
-{
-	[mImpl setFrameSize:NSSizeToCGSize(NSMakeSize( width, height ))];
-}
-
-void RendererGl::defaultResize()
-{
-	[mImpl defaultResize];
-}
-
-Surface RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
-{
-	Surface s( area.getWidth(), area.getHeight(), false );
-	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
-	GLint oldPackAlignment;
-	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment );
-	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, windowHeightPixels - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
-	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );
-	ip::flipVertical( &s );
-	return s;
-}
-
-CGLContextObj RendererGl::getCglContext()
-{
-	return [mImpl getCglContext];
-}
-
-CGLPixelFormatObj RendererGl::getCglPixelFormat()
-{
-	return [mImpl getCglPixelFormat];
-}
-
-NSOpenGLContext* RendererGl::getNsOpenGlContext()
-{
-	return [mImpl getNsOpenGlContext];
-}
-
-void RendererGl::makeCurrentContext( bool force )
-{
-	[mImpl makeCurrentContext:force];
-}
-
-void RendererGl::swapBuffers()
-{
-	[mImpl flushBuffer];
-}
-
-#elif defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_COCOA_TOUCH )
 RendererGl::~RendererGl()
 {
 }
@@ -203,7 +139,9 @@ Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPix
 	return s;
 }
 
-#elif defined( CINDER_MSW_DESKTOP )
+#endif // CINDER_COCOA_TOUCH
+
+#if defined( CINDER_MSW_DESKTOP )
 RendererGl::~RendererGl()
 {
 	delete mImpl;
@@ -352,27 +290,105 @@ Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPix
 	return s;
 }
 
+#elif defined( CINDER_GLFW )
+RendererGl::~RendererGl()
+{
+	delete mImpl;
+}
+
+void RendererGl::setup( void* nativeWindow, RendererRef sharedRenderer )
+{
+	if( ! mImpl ) {
+		mImpl = new RendererGlGlfw( this );
+	}
+
+	if( ! mImpl->initialize( nativeWindow, sharedRenderer ) ) {
+		throw ExcRendererAllocation( "RendererGlGlfw initialization failed." );
+	}
+}
+
+#if defined( CINDER_MAC )
+CGLContextObj RendererGl::getCglContext()
+{
+	// Get the NSOpenGLContext from GLFW, then extract the CGL context
+	RendererGlGlfw* glfwImpl = static_cast<RendererGlGlfw*>( mImpl );
+	GLFWwindow* window = static_cast<GLFWwindow*>( glfwImpl->getNativeWindow() );
+	if( window ) {
+		id nsContext = glfwGetNSGLContext( window );
+		if( nsContext ) {
+			return [(NSOpenGLContext*)nsContext CGLContextObj];
+		}
+	}
+	return nullptr;
+}
+#endif // CINDER_MAC
+
+RendererImplGlfw* RendererGl::getGlfwRendererImpl()
+{
+	if( mImpl ) {
+		RendererGlGlfw* glfwImpl = static_cast<RendererGlGlfw*>( mImpl );
+		return glfwImpl->getImpl();
+	}
+	return nullptr;
+}
+
+void RendererGl::startDraw()
+{
+	if( mStartDrawFn )
+		mStartDrawFn( this );
+	else
+		mImpl->makeCurrentContext( false );
+}
+
+void RendererGl::makeCurrentContext( bool force )
+{
+	mImpl->makeCurrentContext( force );
+}
+
+void RendererGl::swapBuffers()
+{
+	mImpl->swapBuffers();
+}
+
+void RendererGl::finishDraw()
+{
+	if( mFinishDrawFn )
+		mFinishDrawFn( this );
+	else
+		mImpl->swapBuffers();
+}
+
+void RendererGl::defaultResize()
+{
+	mImpl->defaultResize();
+}
+
+Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
+{
+	Surface s( area.getWidth(), area.getHeight(), false );
+	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
+	GLint oldPackAlignment;
+	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment );
+	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
+	glReadPixels( area.x1, windowHeightPixels - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
+	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );
+	ip::flipVertical( &s );
+	return s;
+}
+
 #elif defined( CINDER_LINUX )
 RendererGl::~RendererGl()
 {
 	delete mImpl;
 }
 
-#if defined( CINDER_HEADLESS )
 void RendererGl::setup( ci::ivec2 renderSize, RendererRef sharedRenderer )
-#else
-void RendererGl::setup( void* nativeWindow, RendererRef sharedRenderer )
-#endif
 {
 	if( ! mImpl ) {
 		mImpl = new RendererGlLinux( this );
 	}
 
-#if defined( CINDER_HEADLESS )
 	if( ! mImpl->initialize( renderSize, sharedRenderer ) ) {
-#else
-	if( ! mImpl->initialize( nativeWindow, sharedRenderer ) ) {
-#endif
 		throw ExcRendererAllocation( "RendererGlLinux initialization failed." );
 	}
 }

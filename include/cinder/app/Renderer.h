@@ -78,7 +78,17 @@ class CI_API Renderer {
 
 	virtual RendererRef	clone() const = 0;
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_GLFW )
+	// GLFW backend (Linux or macOS)
+	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) = 0;
+	#if defined( CINDER_MAC )
+		// macOS-specific methods for GLFW backend
+		virtual CGLContextObj	getCglContext() { throw; } // default behavior is failure
+	#endif
+#elif defined( CINDER_HEADLESS )
+	// Headless rendering (Linux only)
+	virtual void	setup( ci::ivec2 renderSize, RendererRef sharedRenderer ) = 0;
+#elif defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
 		virtual void	setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) = 0;
 		virtual CGLContextObj			getCglContext() { throw; } // the default behavior is failure
@@ -102,12 +112,6 @@ class CI_API Renderer {
 	virtual HDC					getDc() const = 0;
 #elif defined( CINDER_ANDROID )
 	virtual void setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) = 0;
-#elif defined( CINDER_LINUX )
-#if defined( CINDER_HEADLESS )
-	virtual void	setup( ci::ivec2 renderSize, RendererRef sharedRenderer ) = 0;
-#else
-	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) = 0;
-#endif
 #endif
 
 	virtual Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) = 0;
@@ -124,7 +128,7 @@ class CI_API Renderer {
 };
 
 typedef std::shared_ptr<class Renderer2d>	Renderer2dRef;
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) && !defined( CINDER_GLFW )
 class CI_API Renderer2d : public Renderer {
   public:
 	Renderer2d();

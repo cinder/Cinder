@@ -599,7 +599,7 @@ inline Surface	copyWindowSurface( const Area &area ) { return AppBase::get()->co
 //! Restores the current rendering context to be the App's window or the screen in full-screen mode. Generally this is only necessary if the app has display a dialog box or some other external window.
 inline void		restoreWindowContext() { return AppBase::get()->restoreWindowContext(); }
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA_TOUCH )
 //! Returns a CGContextRef for drawing to the Window using CoreGraphics under Cocoa & Cocoa Touch. Assumes your App uses a Renderer2d
 inline ::CGContextRef	createWindowCgContext() { return (std::dynamic_pointer_cast<Renderer2d>(AppBase::get()->getRenderer()))->getCgContext(); }
 #endif

@@ -28,7 +28,9 @@
 
 #if defined( CINDER_MSW_DESKTOP )
 	#include "cinder/app/msw/AppImplMsw.h"
-#elif defined( CINDER_COCOA )
+#elif defined( CINDER_GLFW )
+	#include "cinder/app/glfw/WindowImplGlfw.h"
+#elif defined( CINDER_COCOA_TOUCH )
 	#include <Foundation/Foundation.h>
 #elif defined( CINDER_ANDROID )
 	#include "cinder/app/android/WindowImplAndroid.h"
@@ -42,7 +44,7 @@ bool Window::isFullScreen() const
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) && ! defined( CINDER_GLFW )
 	return [mImpl isFullScreen];
 #else
 	return mImpl->isFullScreen();
@@ -53,7 +55,7 @@ void Window::setFullScreen( bool fullScreen, const FullScreenOptions &options )
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) && ! defined( CINDER_GLFW )
 	[mImpl setFullScreen:fullScreen options:&options];
 #else
 	mImpl->setFullScreen( fullScreen, options );
@@ -64,7 +66,7 @@ ivec2 Window::getSize() const
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) && ! defined( CINDER_GLFW )
 	return [mImpl getSize];
 #else
 	return mImpl->getSize();
@@ -75,7 +77,7 @@ void Window::setSize( const ivec2 &size )
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) && ! defined( CINDER_GLFW )
 	[mImpl setSize:size];
 #else
 	mImpl->setSize( size );
@@ -86,7 +88,7 @@ ivec2 Window::getPos() const
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) && ! defined( CINDER_GLFW )
 	return [mImpl getPos];
 #else
 	return mImpl->getPos();
@@ -97,7 +99,7 @@ void Window::setPos( const ivec2 &pos ) const
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) && ! defined( CINDER_GLFW )
 	[mImpl setPos:pos];
 #else
 	mImpl->setPos( pos );
@@ -121,7 +123,7 @@ float Window::getContentScale() const
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) && ! defined( CINDER_GLFW )
 	return [mImpl getContentScale];
 #elif defined( CINDER_MSW_DESKTOP )
 	return mImpl->getContentScale();
@@ -134,7 +136,7 @@ void Window::close()
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) && ! defined( CINDER_GLFW )
 	[mImpl close];
 #else
 	mImpl->close();
@@ -145,7 +147,7 @@ std::string	Window::getTitle() const
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) && ! defined( CINDER_GLFW )
 	NSString *title = [mImpl getTitle];
 	return title ? std::string( [title cStringUsingEncoding:NSUTF8StringEncoding] ) : std::string();
 #else
@@ -157,7 +159,7 @@ void Window::setTitle( const std::string &title )
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) && ! defined( CINDER_GLFW )
 	[mImpl setTitle:[NSString stringWithUTF8String:title.c_str()]];
 #else
 	mImpl->setTitle( title );
@@ -168,7 +170,7 @@ bool Window::isBorderless() const
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) && ! defined( CINDER_GLFW )
 	return [mImpl isBorderless];
 #else
 	return mImpl->isBorderless();
@@ -179,7 +181,7 @@ void Window::setBorderless( bool borderless )
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA_TOUCH )
 	[mImpl setBorderless:borderless];
 #else
 	mImpl->setBorderless( borderless );
@@ -190,7 +192,7 @@ bool Window::isAlwaysOnTop() const
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA_TOUCH )
 	return [mImpl isAlwaysOnTop];
 #else
 	return mImpl->isAlwaysOnTop();
@@ -201,7 +203,7 @@ void Window::setAlwaysOnTop( bool alwaysOnTop )
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA_TOUCH )
 	[mImpl setAlwaysOnTop:alwaysOnTop];
 #else
 	mImpl->setAlwaysOnTop( alwaysOnTop );
@@ -212,7 +214,7 @@ void Window::hide()
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA_TOUCH )
 	[mImpl hide];
 #else
 	mImpl->hide();
@@ -223,7 +225,7 @@ void Window::show()
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA_TOUCH )
 	[mImpl show];
 #else
 	mImpl->show();
@@ -234,7 +236,7 @@ bool Window::isHidden() const
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA_TOUCH )
 	return [mImpl isHidden];
 #else
 	return mImpl->isHidden();
@@ -245,7 +247,7 @@ DisplayRef Window::getDisplay() const
 {
 	testValid();
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA_TOUCH )
 	return [mImpl getDisplay];
 #else
 	return mImpl->getDisplay();
@@ -256,7 +258,7 @@ RendererRef Window::getRenderer() const
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA_TOUCH )
 	return [mImpl getRenderer];
 #else
 	return mImpl->getRenderer();
@@ -267,7 +269,7 @@ void* Window::getNative() const
 {
 	testValid();
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA_TOUCH )
 	return [mImpl getNative];
 #else
 	return (void*)mImpl->getNative();
@@ -398,14 +400,14 @@ const std::vector<TouchEvent::Touch>& Window::getActiveTouches() const
 {
 	testValid();
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA_TOUCH )
 	return [mImpl getActiveTouches];
 #elif defined( CINDER_MSW_DESKTOP )
 	return mImpl->getActiveTouches();
 #elif defined( CINDER_ANDROID )
 	return mImpl->getActiveTouches();	
-#elif defined( CINDER_LINUX )
-	return mImpl->getActiveTouches();	
+#elif defined( CINDER_GLFW )
+	return mImpl->getActiveTouches();
 #endif
 }
 
