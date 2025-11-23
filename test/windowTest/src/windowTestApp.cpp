@@ -58,7 +58,7 @@ void WindowTestApp::mouseDrag( MouseEvent event )
 void WindowTestApp::prepareSettings( Settings *settings )
 {
 	settings->setPowerManagementEnabled( false );
-	settings->setQuitOnLastWindowCloseEnabled( false );
+	settings->setQuitOnLastWindowCloseEnabled( true );
 //	settings->setFullScreen( true );
 	settings->setWindowSize( 800, 500 );
 	settings->setTitle( "title set from App::Settings" );
@@ -70,6 +70,12 @@ void WindowTestApp::setup()
 {
 	for( auto display : Display::getDisplays() )
 		CI_LOG_V( "display name: '" << display->getName() << "', bounds: " << display->getBounds() );
+
+	// Log OpenGL version information
+	console() << "OpenGL Version: " << glGetString( GL_VERSION ) << std::endl;
+	console() << "GLSL Version: " << glGetString( GL_SHADING_LANGUAGE_VERSION ) << std::endl;
+	console() << "OpenGL Vendor: " << glGetString( GL_VENDOR ) << std::endl;
+	console() << "OpenGL Renderer: " << glGetString( GL_RENDERER ) << std::endl;
 
 	getWindow()->setUserData( new WindowData );
 
@@ -84,12 +90,13 @@ void WindowTestApp::setup()
 	getWindow()->getSignalDisplayChange().connect( std::bind( &WindowTestApp::displayChange, this ) );
 	getWindow()->getSignalClose().connect( std::bind( &WindowTestApp::windowClose, this ) );
 	
-	getSignalDidBecomeActive().connect( [] { CI_LOG_V( "App became active." ); } );
-	getSignalWillResignActive().connect( [] { CI_LOG_V( "App will resign active." ); } );
+	getSignalDidBecomeActive().connect( [this] { console() << "App didBecomeActive signal received" << std::endl; } );
+	getSignalWillResignActive().connect( [this] { console() << "App willResignActive signal received" << std::endl; } );
 }
 
 bool WindowTestApp::shouldQuit()
 {
+	console() << "App shouldQuit() signal received - allowing quit" << std::endl;
 	return true;
 }
 

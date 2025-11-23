@@ -71,11 +71,11 @@ void FlickrTestMTApp::loadImagesThreadFn( gl::ContextRef context )
 			auto urlSource = loadUrl( urls.back() );
 			auto imageSource = loadImage( urlSource );
 			auto tex = gl::Texture::create( imageSource );
-			
+
 			// we need to wait on a fence before alerting the primary thread that the Texture is ready
 			auto fence = gl::Sync::create();
 			fence->clientWaitSync();
-			
+
 			mImages->pushFront( tex );
 			urls.pop_back();
 		}
@@ -119,9 +119,22 @@ void FlickrTestMTApp::draw()
 
 FlickrTestMTApp::~FlickrTestMTApp()
 {
+	// Signal thread to stop
 	mShouldQuit = true;
 	mImages->cancel();
-	mThread->join();
+
+	// Wait for thread to finish
+	if( mThread && mThread->joinable() ) {
+		mThread->join();
+	}
+
+	// Release GL resources explicitly before context destruction
+	mTexture.reset();
+	mLastTexture.reset();
+
+	// Clean up heap-allocated buffer
+	delete mImages;
+	mImages = nullptr;
 }
 
 CINDER_APP( FlickrTestMTApp, RendererGl )

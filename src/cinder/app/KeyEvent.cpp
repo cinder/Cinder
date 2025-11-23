@@ -35,7 +35,7 @@ using std::map;
 namespace cinder {
 namespace app {
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA_TOUCH )
 
 static bool sTableInited = false;
 map<int,int> sKeyTable;
@@ -337,7 +337,7 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 	else
 		return sKeyTable[nativeKeyCode];
 }
-#elif defined( CINDER_LINUX )
+#elif defined( CINDER_LINUX ) || defined( CINDER_GLFW )
 
 #if defined( CINDER_LINUX_EGL_ONLY )
 
