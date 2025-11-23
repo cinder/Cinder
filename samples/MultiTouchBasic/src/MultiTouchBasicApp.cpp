@@ -130,8 +130,8 @@ void MultiTouchApp::draw()
 	
 	// draw yellow circles at the active touch points
 	gl::color( Color( 1, 1, 0 ) );
-	for( const auto &touch : getActiveTouches() )
-		gl::drawStrokedCircle( touch.getPos(), 20 );
+//	for( const auto &touch : getActiveTouches() )
+//		gl::drawStrokedCircle( touch.getPos(), 20 );
 }
 
 CINDER_APP( MultiTouchApp, RendererGl, prepareSettings )
