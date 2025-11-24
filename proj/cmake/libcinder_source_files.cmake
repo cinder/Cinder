@@ -66,7 +66,7 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Xml.cpp
 )
 
-if( NOT CINDER_ANDROID )
+if( (NOT CINDER_ANDROID) AND (NOT CINDER_DISABLE_VIDEO) )
     list( APPEND SRC_SET_CINDER
         ${CINDER_SRC_DIR}/cinder/Capture.cpp
     )
