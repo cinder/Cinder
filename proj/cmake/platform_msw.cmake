@@ -17,6 +17,9 @@ list( APPEND SRC_SET_APP_MSW
 	# TODO: should these two files be added to "cinder\\app" group?
 	${CINDER_SRC_DIR}/cinder/app/AppScreenSaver.cpp
 	#${CINDER_SRC_DIR}/cinder/app/RendererDx.cpp
+	# D3D11/D3D12 renderers not included in default build - add to your project if needed
+	#${CINDER_SRC_DIR}/cinder/app/RendererD3d11.cpp
+	#${CINDER_SRC_DIR}/cinder/app/RendererD3d12.cpp
 
 	${CINDER_SRC_DIR}/cinder/app/msw/AppImplMsw.cpp
 	${CINDER_SRC_DIR}/cinder/app/msw/AppImplMswBasic.cpp
@@ -29,6 +32,10 @@ list( APPEND SRC_SET_APP_MSW
 	# D3D11 renderer
 	${CINDER_SRC_DIR}/cinder/app/RendererD3d11.cpp
 	${CINDER_SRC_DIR}/cinder/app/msw/RendererImplD3d11.cpp
+
+	# D3D12 renderer
+	${CINDER_SRC_DIR}/cinder/app/RendererD3d12.cpp
+	${CINDER_SRC_DIR}/cinder/app/msw/RendererImplD3d12.cpp
 )
 
 # ANGLE or native OpenGL renderer
@@ -159,7 +166,7 @@ if( MSVC )
 	set( CINDER_STATIC_LIBS_FLAGS_DEBUG		"/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
 
 	# Platform libraries - base set without GL
-	set( MSW_PLATFORM_LIBS_BASE "Ws2_32.lib wldap32.lib shlwapi.lib wmvcore.lib Strmiids.lib Msimg32.lib d3d11.lib dxgi.lib" )
+	set( MSW_PLATFORM_LIBS_BASE "Ws2_32.lib wldap32.lib shlwapi.lib wmvcore.lib Strmiids.lib Msimg32.lib d3d11.lib d3d12.lib dxgi.lib d3dcompiler.lib" )
 
 	# GL libraries - either ANGLE or native OpenGL
 	if( CINDER_GL_ANGLE )
