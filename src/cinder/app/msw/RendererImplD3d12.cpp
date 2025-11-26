@@ -44,6 +44,15 @@ RendererImplD3d12::RendererImplD3d12( WindowImplMsw* windowImpl, RendererD3d12* 
 RendererImplD3d12::~RendererImplD3d12()
 {
 	kill();
+
+	// NOTE: Device, queue, and factory are intentionally NOT released here.
+	// When the window closes, the renderer is destroyed BEFORE app cleanup runs.
+	// External code (like video) may still need the queue during cleanup.
+	// These COM objects will be cleaned up by the OS when the process exits.
+	// Detach from ComPtr so destructor doesn't Release() them.
+	(void)mCommandQueue.detach();
+	(void)mDevice.detach();
+	(void)mFactory.detach();
 }
 
 bool RendererImplD3d12::initialize( WindowImplMsw* windowImpl, RendererRef sharedRenderer )
@@ -608,6 +617,7 @@ void RendererImplD3d12::kill()
 	// Wait for all GPU work to complete before releasing resources
 	waitForIdle();
 
+	// Release window-specific resources
 	releaseMsaaTarget();
 	releaseBackBuffers();
 	mRtvHeap.reset();
@@ -620,9 +630,10 @@ void RendererImplD3d12::kill()
 	}
 
 	mSwapChain.reset();
-	mCommandQueue.reset();
-	mDevice.reset();
-	mFactory.reset();
+
+	// NOTE: Device, queue, and factory are NOT released here.
+	// They stay alive so external code can use the queue during cleanup()
+	// after the window closes. They're released in the destructor via detach().
 }
 
 void RendererImplD3d12::prepareToggleFullScreen()
