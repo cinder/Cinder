@@ -374,6 +374,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\app\msw\RendererImplGlMsw.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\RendererD3d11.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\RendererD3d12.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\msw\RendererImplD3d11.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\msw\RendererImplD3d12.cpp" />
     <ClCompile Include="..\..\src\cinder\app\Platform.cpp" />
     <ClCompile Include="..\..\src\cinder\app\RendererGl.cpp" />
     <ClCompile Include="..\..\src\cinder\app\Window.cpp" />
