@@ -282,4 +282,4 @@ void WindowTestApp::windowDraw()
 	gl::popMatrices();
 }
 
-CINDER_APP( WindowTestApp, RendererGl, WindowTestApp::prepareSettings )
+CINDER_APP( WindowTestApp, RendererGl( RendererGl::Options() ), WindowTestApp::prepareSettings )
