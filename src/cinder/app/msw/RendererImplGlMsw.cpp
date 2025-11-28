@@ -179,34 +179,77 @@ bool getWglFunctionPointers( PFNWGLCREATECONTEXTATTRIBSARB *resultCreateContextA
 	}
 }
 
-HGLRC createContext( HDC dc, bool coreProfile, bool debug, int majorVersion, int minorVersion, GLenum multigpu = 0 )
+HGLRC createContext( HDC dc, bool coreProfile, bool debug, bool profileSpecified, int majorVersion, int minorVersion, GLenum multigpu = 0 )
 {
-	HGLRC result = 0;
-	static bool initializedLoadOGL = false;
+	HGLRC		result = 0;
+	static bool initializedLoadOGL = false; // kept from your original, in case it's used elsewhere
 
-	PFNWGLCREATECONTEXTATTRIBSARB wglCreateContextAttribsARBPtr = NULL;
-	PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARBPtr = NULL;
-	if( getWglFunctionPointers( &wglCreateContextAttribsARBPtr, &wglChoosePixelFormatARBPtr ) ) {
-		int attribList[] = {
-			WGL_CONTEXT_MAJOR_VERSION_ARB, majorVersion,
-			WGL_CONTEXT_MINOR_VERSION_ARB, minorVersion,
-			WGL_CONTEXT_FLAGS_ARB, (debug) ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
-			WGL_CONTEXT_PROFILE_MASK_ARB, (coreProfile) ? WGL_CONTEXT_CORE_PROFILE_BIT_ARB : WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
-			0, 0,
-			0
-		};
-		if( multigpu != 0 ) {
-			attribList[8] = WGL_CONTEXT_MULTIGPU_ATTRIB_NV;
-			attribList[9] = multigpu;
-		} 
-		result = (*wglCreateContextAttribsARBPtr)( dc, 0, attribList );
-		return result;
-	}
-	else {
+	PFNWGLCREATECONTEXTATTRIBSARB  wglCreateContextAttribsARBPtr = nullptr;
+	PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARBPtr = nullptr;
+	if( ! getWglFunctionPointers( &wglCreateContextAttribsARBPtr, &wglChoosePixelFormatARBPtr ) ) {
 		throw ExcRendererAllocation( "wglCreateContextAttribsARB / wglChoosePixelFormatARB unavailable" );
 	}
-}
 
+	const int baseFlags = debug ? WGL_CONTEXT_DEBUG_BIT_ARB : 0;
+
+	auto tryCreate = [&]( int maj, int min ) -> HGLRC {
+		int attribList[32];
+		int idx = 0;
+
+		// Explicit version
+		attribList[idx++] = WGL_CONTEXT_MAJOR_VERSION_ARB;
+		attribList[idx++] = maj;
+		attribList[idx++] = WGL_CONTEXT_MINOR_VERSION_ARB;
+		attribList[idx++] = min;
+
+		// Flags (only if non-zero)
+		if( baseFlags != 0 ) {
+			attribList[idx++] = WGL_CONTEXT_FLAGS_ARB;
+			attribList[idx++] = baseFlags;
+		}
+
+		// Profile mask only if the user actually specified a profile
+		if( profileSpecified ) {
+			const int profileMask = coreProfile ? WGL_CONTEXT_CORE_PROFILE_BIT_ARB : WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
+			attribList[idx++] = WGL_CONTEXT_PROFILE_MASK_ARB;
+			attribList[idx++] = profileMask;
+		}
+
+		// Optional multigpu
+		if( multigpu != 0 ) {
+			attribList[idx++] = WGL_CONTEXT_MULTIGPU_ATTRIB_NV;
+			attribList[idx++] = multigpu;
+		}
+
+		// Terminator
+		attribList[idx++] = 0;
+		attribList[idx++] = 0;
+
+		return wglCreateContextAttribsARBPtr( dc, 0, attribList );
+	};
+
+	// version unspecified -> descending test of known versions
+	if( majorVersion == 0 && minorVersion == 0 ) {
+		static const int versions[][2] = { { 4, 6 }, { 4, 5 }, { 4, 4 }, { 4, 3 }, { 4, 2 }, { 4, 1 }, { 4, 0 }, { 3, 3 }, { 3, 2 } };
+
+		const int numVersions = (int)( sizeof( versions ) / sizeof( versions[0] ) );
+		for( int i = 0; i < numVersions; ++i ) {
+			HGLRC ctx = tryCreate( versions[i][0], versions[i][1] );
+			if( ctx )
+				return ctx; // first successful (highest in our list)
+		}
+
+		// If we get here, nothing in our list worked
+		throw ExcRendererAllocation( "Failed to create any modern OpenGL context (tried 4.6 down to 3.2)" );
+	}
+	else { // user specified a version - try only that one
+		result = tryCreate( majorVersion, minorVersion );
+		if( ! result )
+			throw ExcRendererAllocation( "Failed to create requested OpenGL context" );
+	}
+
+	return result;
+}
 bool testPixelFormat( HDC dc, int colorSamples, int depthDepth, int msaaSamples, int stencilDepth, int *resultFormat )
 {
 	PFNWGLCREATECONTEXTATTRIBSARB wglCreateContextAttribsARBPtr = NULL;
@@ -280,17 +323,14 @@ bool initializeGl( HWND /*wnd*/, HDC dc, HGLRC sharedRC, const RendererGl::Optio
 		throw ExcRendererAllocation( "Failed to find suitable WGL pixel format" );
 
 	GLenum multigpu = 0;
-	if( options.isMultiGpuEnabledNV() ) {
+	if( options.isMultiGpuEnabledNV() )
 		multigpu = getMultiGpuContextMode( options.getMultiGpuModeNV() );
-	}
 
-	if( ! ( *resultRc = createContext( dc, options.getCoreProfile(), options.getDebug(), options.getVersion().first, options.getVersion().second, multigpu ) ) ) {
-		return false;								
-	}
+	if( ! ( *resultRc = createContext( dc, options.getCoreProfile(), options.getDebug(), options.getProfileSpecified(), options.getVersion().first, options.getVersion().second, multigpu ) ) )
+		return false;
 
-	if( ! ::wglMakeCurrent( dc, *resultRc ) ){					// Try To Activate The Rendering Context
+	if( ! ::wglMakeCurrent( dc, *resultRc ) ) 				// Try To Activate The Rendering Context
 		return false;								
-	}
 
 	gl::Environment::setCore();
 	gl::env()->initializeFunctionPointers();
