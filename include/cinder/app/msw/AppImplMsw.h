@@ -138,6 +138,11 @@ class WindowImplMsw {
 	virtual void			redraw();
 	virtual void			resize();
 
+	//! Set the window's resizing state
+	void					setResizing( bool resizing );
+	//! Emit the PostResize signal (called when resize operation completes)
+	void					handlePostResize();
+
 	HWND			getHwnd() const { return mWnd; }
 	HDC				getDc() const { return mDC; }
 
@@ -168,6 +173,7 @@ class WindowImplMsw {
 	std::map<DWORD,vec2>			mMultiTouchPrev;
 	std::vector<TouchEvent::Touch>	mActiveTouches;
 	bool					mIsDragging;
+	bool					mInSizeMoveLoop = false;
 
 	friend AppImplMsw;
 	friend LRESULT CALLBACK WndProc( HWND, UINT, WPARAM, LPARAM );
