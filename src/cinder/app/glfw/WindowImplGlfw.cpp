@@ -30,6 +30,10 @@
 	#include "cinder/app/linux/PlatformLinux.h"
 #endif
 
+#if defined( CINDER_MAC )
+	#include "cinder/app/glfw/AppImplGlfwMac.h"
+#endif
+
 namespace cinder { namespace app {
 
 WindowImplGlfw::WindowImplGlfw( const Window::Format &format, WindowImplGlfw *sharedRendererWindow, AppImplGlfw *appImpl )
@@ -87,6 +91,11 @@ WindowImplGlfw::WindowImplGlfw( const Window::Format &format, WindowImplGlfw *sh
 
 	mAppImpl->registerWindowEvents( this );
 
+#if defined( CINDER_MAC )
+	// Enable resize/move tracking on macOS
+	enableResizeTrackingForWindow( mGlfwWindow, this );
+#endif
+
 	setBorderless( format.isBorderless() );
 	setAlwaysOnTop( format.isAlwaysOnTop() );
 }
@@ -98,6 +107,10 @@ WindowImplGlfw::~WindowImplGlfw()
 	}
 
 	if( mGlfwWindow ) {
+#if defined( CINDER_MAC )
+		// Clean up resize tracking before destroying window
+		disableResizeTrackingForWindow( mGlfwWindow );
+#endif
 		::glfwDestroyWindow( mGlfwWindow );
 		mGlfwWindow = nullptr;
 	}
@@ -251,6 +264,20 @@ ivec2 WindowImplGlfw::getMousePos() const
 	double xpos, ypos;
 	::glfwGetCursorPos( mGlfwWindow, &xpos, &ypos );
 	return ivec2( static_cast<int>( xpos ), static_cast<int>( ypos ) );
+}
+
+void WindowImplGlfw::setResizing( bool resizing )
+{
+	if( mWindowRef ) {
+		mWindowRef->setIsResizing( resizing );
+	}
+}
+
+void WindowImplGlfw::handlePostResize()
+{
+	if( mWindowRef ) {
+		mWindowRef->emitPostResize();
+	}
 }
 
 }} // namespace cinder::app

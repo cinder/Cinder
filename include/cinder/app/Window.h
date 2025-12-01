@@ -404,8 +404,12 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	EventSignalWindow&	getSignalResize() { return mSignalResize; }
 	void 				emitResize();
 
-	EventSignalWindow& getSignalPostResizeMove() { return mSignalPostResizeMove; }
-	void			   emitPostResizeMove();
+	//! Returns the Signal emitted when a resize operation ends
+	EventSignalWindow&	getSignalPostResize() { return mSignalPostResize; }
+	void				emitPostResize();
+
+	//! Returns whether the Window is currently being resized or moved by the user
+	bool				isResizing() const { return mIsResizing; }
 
 	EventSignalWindow&	getSignalDisplayChange() { return mSignalDisplayChange; }
 	void				emitDisplayChange();
@@ -485,8 +489,10 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	EventSignalMouse		mSignalMouseDown, mSignalMouseDrag, mSignalMouseUp, mSignalMouseWheel, mSignalMouseMove;
 	EventSignalTouch		mSignalTouchesBegan, mSignalTouchesMoved, mSignalTouchesEnded;
 	EventSignalKey			mSignalKeyDown, mSignalKeyUp;
-	EventSignalWindow		mSignalDraw, mSignalPostDraw, mSignalMove, mSignalResize, mSignalPostResizeMove, mSignalDisplayChange, mSignalClose;
+	EventSignalWindow		mSignalDraw, mSignalPostDraw, mSignalMove, mSignalResize, mSignalPostResize, mSignalDisplayChange, mSignalClose;
 	EventSignalFileDrop		mSignalFileDrop;
+
+	bool					mIsResizing = false;
 
 #if defined( CINDER_GLFW )
 	WindowImplGlfw		*mImpl;
@@ -505,7 +511,9 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 private:
 #if defined( CINDER_GLFW )
 	friend class AppImplGlfw;
+	friend class WindowImplGlfw;
 	WindowImplGlfw      *getImpl() { return mImpl; }
+	void				 setIsResizing( bool resizing ) { mIsResizing = resizing; }
 #elif defined( CINDER_ANDROID )
 	friend class AppImplAndroid;
 	WindowImplAndroid   *getImpl() { return mImpl; }
