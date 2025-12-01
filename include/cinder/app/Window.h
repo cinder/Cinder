@@ -87,6 +87,11 @@ typedef std::shared_ptr<Window>		WindowRef;
 	namespace cinder { namespace app {
 		class WindowImplMsw;
 	} } // namespace cinder::app
+#elif defined( CINDER_MSW_DESKTOP )
+	friend class AppImplMsw;
+	friend class WindowImplMsw;
+	WindowImplMsw       *getImpl() { return mImpl; }
+	void                 setIsResizing( bool resizing ) { mIsResizing = resizing; }
 #elif defined( CINDER_ANDROID )
 	namespace cinder { namespace app {
   	class WindowImplAndroid;
@@ -404,11 +409,11 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	EventSignalWindow&	getSignalResize() { return mSignalResize; }
 	void 				emitResize();
 
-	//! Returns the Signal emitted when a resize operation ends
+	//! Returns the Signal emitted when a resize operation ends. Note: Not supported on Linux.
 	EventSignalWindow&	getSignalPostResize() { return mSignalPostResize; }
 	void				emitPostResize();
 
-	//! Returns whether the Window is currently being resized or moved by the user
+	//! Returns whether the Window is currently being resized by the user. Note: Not supported on Linux.
 	bool				isResizing() const { return mIsResizing; }
 
 	EventSignalWindow&	getSignalDisplayChange() { return mSignalDisplayChange; }
@@ -514,6 +519,11 @@ private:
 	friend class WindowImplGlfw;
 	WindowImplGlfw      *getImpl() { return mImpl; }
 	void				 setIsResizing( bool resizing ) { mIsResizing = resizing; }
+#elif defined( CINDER_MSW_DESKTOP )
+	friend class AppImplMsw;
+	friend class WindowImplMsw;
+	WindowImplMsw       *getImpl() { return mImpl; }
+	void                 setIsResizing( bool resizing ) { mIsResizing = resizing; }
 #elif defined( CINDER_ANDROID )
 	friend class AppImplAndroid;
 	WindowImplAndroid   *getImpl() { return mImpl; }

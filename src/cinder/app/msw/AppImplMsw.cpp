@@ -743,10 +743,18 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			}
 		}
 		break;
+		case WM_ENTERSIZEMOVE:
+			impl->mInSizeMoveLoop = true;
+			return 0;
+		break;
 		case WM_SIZE:
 			impl->mWindowWidthPx = LOWORD(lParam);
 			impl->mWindowHeightPx = HIWORD(lParam);
 			if( impl->getWindow() && impl->mAppImpl->setupHasBeenCalled() ) {
+				// If we're in a size/move loop and receiving WM_SIZE, we're resizing (not just moving)
+				if( impl->mInSizeMoveLoop ) {
+					impl->setResizing( true );
+				}
 				impl->getWindow()->emitResize();
 			}
 			return 0;
@@ -768,8 +776,13 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		break;
 		case WM_EXITSIZEMOVE: {
 			if( impl->getWindow() ) {
-				impl->getWindow()->emitPostResizeMove();
+				// Only emit postResize if we were actually resizing (not just moving)
+				if( impl->getWindow()->isResizing() ) {
+					impl->handlePostResize();
+				}
+				impl->setResizing( false );
 			}
+			impl->mInSizeMoveLoop = false;
 			return 0;
 		}
 		break;
@@ -832,6 +845,20 @@ void WindowImplMsw::resize()
 {
 	mAppImpl->setWindow( mWindowRef );
 	mWindowRef->emitResize();
+}
+
+void WindowImplMsw::setResizing( bool resizing )
+{
+	if( mWindowRef ) {
+		mWindowRef->setIsResizing( resizing );
+	}
+}
+
+void WindowImplMsw::handlePostResize()
+{
+	if( mWindowRef ) {
+		mWindowRef->emitPostResize();
+	}
 }
 
 void WindowImplMsw::redraw()
