@@ -40,6 +40,7 @@ class WindowTestApp : public App {
 	void windowClose();
 	void windowMouseDown( MouseEvent &mouseEvt );
 	void displayChange();
+	void windowPostResize();
 
 	bool shouldQuit();
 
@@ -89,6 +90,7 @@ void WindowTestApp::setup()
 	getWindow()->getSignalDraw().connect( std::bind( &WindowTestApp::windowDraw, this ) );
 	getWindow()->getSignalDisplayChange().connect( std::bind( &WindowTestApp::displayChange, this ) );
 	getWindow()->getSignalClose().connect( std::bind( &WindowTestApp::windowClose, this ) );
+	getWindow()->getSignalPostResize().connect( std::bind( &WindowTestApp::windowPostResize, this ) );
 	
 	getSignalDidBecomeActive().connect( [this] { console() << "App didBecomeActive signal received" << std::endl; } );
 	getSignalWillResignActive().connect( [this] { console() << "App willResignActive signal received" << std::endl; } );
@@ -134,6 +136,11 @@ void WindowTestApp::windowMove()
 void WindowTestApp::displayChange()
 {
 	CI_LOG_V( "window display changed: " << getWindow()->getDisplay()->getBounds() );
+}
+
+void WindowTestApp::windowPostResize()
+{
+	CI_LOG_V( "PostResize signal fired - window size: " << getWindow()->getSize() );
 }
 
 bool WindowTestApp::mouseDown2( MouseEvent event )
@@ -246,10 +253,17 @@ void WindowTestApp::windowDraw()
 {
 	gl::enableAlphaBlending();
 //	glEnable(GL_MULTISAMPLE_ARB);
-	if( getWindow() == getForegroundWindow() )
+
+	// Draw different background color when resizing
+	if( getWindow()->isResizing() ) {
+		gl::clear( Color( 0.8f, 0.6f, 0.1f ) );  // Yellow/orange when resizing
+	}
+	else if( getWindow() == getForegroundWindow() ) {
 		gl::clear( Color( 0.1f, 0.1f, 0.5f ) );
-	else
+	}
+	else {
 		gl::clear( Color( 0.3f, 0.1f, 0.1f ) );
+	}
 
 	// We'll set the color to an orange color
 	gl::color( 1.0f, 0.5f, 0.25f );
