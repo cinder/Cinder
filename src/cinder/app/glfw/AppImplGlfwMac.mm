@@ -406,3 +406,81 @@ void enableMultiTouchForWindow( void *nativeWindow, WindowImplGlfw *windowImpl )
 }
 
 }} // namespace cinder::app
+
+// Observer object for window resize/move notifications
+// Note: Objective-C declarations must be at global scope
+@interface CinderResizeObserver : NSObject
+@property (nonatomic, assign) cinder::app::WindowImplGlfw *windowImpl;
+@end
+
+@implementation CinderResizeObserver
+
+- (void)windowWillStartLiveResize:(NSNotification *)notification
+{
+	if( self.windowImpl ) {
+		self.windowImpl->setResizing( true );
+	}
+}
+
+- (void)windowDidEndLiveResize:(NSNotification *)notification
+{
+	if( self.windowImpl ) {
+		self.windowImpl->setResizing( false );
+		self.windowImpl->handlePostResize();
+	}
+}
+
+@end
+
+// Key for storing resize observer as associated object
+static char kResizeObserverKey;
+
+namespace cinder { namespace app {
+
+// Enable resize tracking on a GLFW window
+void enableResizeTrackingForWindow( void *nativeWindow, WindowImplGlfw *windowImpl )
+{
+	GLFWwindow* glfwWindow = static_cast<GLFWwindow*>( nativeWindow );
+	NSWindow *nsWindow = glfwGetCocoaWindow( glfwWindow );
+	if( ! nsWindow )
+		return;
+
+	// Create observer object
+	CinderResizeObserver *observer = [[CinderResizeObserver alloc] init];
+	observer.windowImpl = windowImpl;
+
+	// Register for resize notifications
+	[[NSNotificationCenter defaultCenter] addObserver:observer
+											 selector:@selector(windowWillStartLiveResize:)
+												 name:NSWindowWillStartLiveResizeNotification
+											   object:nsWindow];
+
+	[[NSNotificationCenter defaultCenter] addObserver:observer
+											 selector:@selector(windowDidEndLiveResize:)
+												 name:NSWindowDidEndLiveResizeNotification
+											   object:nsWindow];
+
+	// Store the observer as an associated object so it persists with the window
+	objc_setAssociatedObject( nsWindow, &kResizeObserverKey, observer, OBJC_ASSOCIATION_RETAIN_NONATOMIC );
+}
+
+// Disable resize tracking on a GLFW window
+void disableResizeTrackingForWindow( void *nativeWindow )
+{
+	GLFWwindow* glfwWindow = static_cast<GLFWwindow*>( nativeWindow );
+	NSWindow *nsWindow = glfwGetCocoaWindow( glfwWindow );
+	if( ! nsWindow )
+		return;
+
+	CinderResizeObserver *observer = objc_getAssociatedObject( nsWindow, &kResizeObserverKey );
+	if( observer ) {
+		// Remove from notification center
+		[[NSNotificationCenter defaultCenter] removeObserver:observer];
+		// Clear the windowImpl pointer to prevent dangling pointer access
+		observer.windowImpl = nullptr;
+		// Remove the associated object
+		objc_setAssociatedObject( nsWindow, &kResizeObserverKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC );
+	}
+}
+
+}} // namespace cinder::app

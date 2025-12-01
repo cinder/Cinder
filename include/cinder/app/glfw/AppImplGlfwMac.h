@@ -36,4 +36,12 @@ void setupMacOSDelegate( AppGlfw *app, bool *quitOnLastWindowClosed );
 // Client apps should call this if they want to receive touch events
 void enableMultiTouchForWindow( void *nativeWindow, WindowImplGlfw *windowImpl );
 
+// Enable resize tracking on a GLFW window
+// This sets up notification observers to track window resize operations
+void enableResizeTrackingForWindow( void *nativeWindow, WindowImplGlfw *windowImpl );
+
+// Disable resize tracking on a GLFW window
+// This removes notification observers and cleans up - call before window destruction
+void disableResizeTrackingForWindow( void *nativeWindow );
+
 }} // namespace cinder::app

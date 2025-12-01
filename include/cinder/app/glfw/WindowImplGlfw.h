@@ -69,6 +69,11 @@ public:
 	AppImplGlfw*		getAppImpl() { return mAppImpl; }
 	WindowRef			getWindow() { return mWindowRef; }
 
+	//! Set the window's resizing state (called from platform-specific resize tracking code)
+	void				setResizing( bool resizing );
+	//! Emit the PostResize signal (called when resize operation completes)
+	void				handlePostResize();
+
 	virtual void		keyDown( const KeyEvent &event );
 	virtual void		draw();
 	virtual void		resize();
