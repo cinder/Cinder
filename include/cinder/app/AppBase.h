@@ -224,6 +224,8 @@ class CI_API AppBase {
 	virtual void	keyDown( KeyEvent event ) {}
 	//! Override to receive key-up events.
 	virtual void	keyUp( KeyEvent event ) {}
+	//! Override to receive character input events. Preferred for text entry as it properly handles IME, dead keys, and composed characters.
+	virtual void	keyChar( KeyEvent event ) {}
 	//! Override to receive window resize events.
 	virtual void	resize() {}
 	//! Override to receive file-drop events.	

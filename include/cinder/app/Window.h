@@ -396,6 +396,10 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	EventSignalKey&		getSignalKeyUp() { return mSignalKeyUp; }
 	void				emitKeyUp( KeyEvent *event );
 
+	//! Returns the signal emitted when character input is received. Preferred for text entry.
+	EventSignalKey&		getSignalKeyChar() { return mSignalKeyChar; }
+	void				emitKeyChar( KeyEvent *event );
+
 	EventSignalWindow&	getSignalDraw() { return mSignalDraw; }
 	//! Fires the 'draw' signal. Note in general this should not be called directly as it doesn't perform all necessary setup.
 	void				emitDraw();
@@ -493,7 +497,7 @@ class CI_API Window : public std::enable_shared_from_this<Window> {
 	
 	EventSignalMouse		mSignalMouseDown, mSignalMouseDrag, mSignalMouseUp, mSignalMouseWheel, mSignalMouseMove;
 	EventSignalTouch		mSignalTouchesBegan, mSignalTouchesMoved, mSignalTouchesEnded;
-	EventSignalKey			mSignalKeyDown, mSignalKeyUp;
+	EventSignalKey			mSignalKeyDown, mSignalKeyUp, mSignalKeyChar;
 	EventSignalWindow		mSignalDraw, mSignalPostDraw, mSignalMove, mSignalResize, mSignalPostResize, mSignalDisplayChange, mSignalClose;
 	EventSignalFileDrop		mSignalFileDrop;
 
