@@ -99,8 +99,8 @@ void EventTestApp::setup()
 		[this]( KeyEvent& event ) { handleKeyDown( event ); } );
 	mKeyUpConnection = getWindow()->getSignalKeyUp().connect( 2,
 		[this]( KeyEvent& event ) { handleKeyUp( event ); } );
-//	mKeyCharConnection = getWindow()->getSignalKeyChar().connect( 2,
-//		[this]( KeyEvent& event ) { handleKeyChar( event ); } );
+	mKeyCharConnection = getWindow()->getSignalKeyChar().connect( 2,
+		[this]( KeyEvent& event ) { handleKeyChar( event ); } );
 
 	mMouseDownConnection = getWindow()->getSignalMouseDown().connect( 2,
 		[this]( MouseEvent& event ) { handleMouseDown( event ); } );
@@ -516,7 +516,7 @@ void EventTestApp::handleKeyUp( KeyEvent& event )
 	// Note: We do NOT call event.setHandled() - we're just observing
 }
 
-/*void EventTestApp::handleKeyChar( KeyEvent& event )
+void EventTestApp::handleKeyChar( KeyEvent& event )
 {
 	// This handler runs at priority 2 (before ImGui at priority 1)
 	// We observe all events but don't mark them handled, so ImGui can still consume them
@@ -561,7 +561,7 @@ void EventTestApp::handleKeyUp( KeyEvent& event )
 
 	addEvent( rec );
 	// Note: We do NOT call event.setHandled() - we're just observing
-}*/
+}
 
 void EventTestApp::fileDrop( FileDropEvent event )
 {
@@ -576,10 +576,10 @@ void EventTestApp::fileDrop( FileDropEvent event )
 	ss2 << "(" << std::setw(5) << event.getPos().x << "," << std::setw(5) << event.getPos().y << ")";
 	rec.extraInfo = ss2.str();
 
-//	rec.shift = event.isShiftDown();
-//	rec.ctrl = event.isControlDown();
-//	rec.alt = event.isAltDown();
-//	rec.meta = event.isMetaDown();
+	rec.shift = event.isShiftDown();
+	rec.ctrl = event.isControlDown();
+	rec.alt = event.isAltDown();
+	rec.meta = event.isMetaDown();
 	rec.leftMouse = false;
 	rec.rightMouse = false;
 	rec.middleMouse = false;
