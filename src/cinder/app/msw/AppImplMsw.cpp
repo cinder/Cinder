@@ -55,6 +55,14 @@ LRESULT CALLBACK BlankingWndProc( HWND mWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 static const wchar_t *WINDOWED_WIN_CLASS_NAME = TEXT("CinderWinClass");
 static const wchar_t *BLANKING_WINDOW_CLASS_NAME = TEXT("CinderBlankingWindow");
 
+//! Stores key data from the most recent WM_KEYDOWN for correlation with subsequent WM_CHAR
+struct LastKeyData {
+	int				code = 0;
+	unsigned int	nativeKeyCode = 0;
+	unsigned int	modifiers = 0;
+};
+static LastKeyData sLastKeyDown;
+
 AppImplMsw::AppImplMsw( AppBase *aApp )
 	: mApp( aApp ), mSetupHasBeenCalled( false ), mActive( true ), mNeedsToRefreshDisplays( false )
 {
@@ -650,8 +658,12 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_SYSKEYDOWN:
 		case WM_KEYDOWN: {
 			WCHAR c = mapVirtualKey( wParam );
-			KeyEvent event( impl->getWindow(), KeyEvent::translateNativeKeyCode( prepNativeKeyCode( wParam ) ),
-							c, static_cast<char>( c ), prepKeyEventModifiers(), static_cast<unsigned int>(wParam) );
+			int keyCode = KeyEvent::translateNativeKeyCode( prepNativeKeyCode( wParam ) );
+			unsigned int modifiers = prepKeyEventModifiers();
+			// Store key data for correlation with subsequent WM_CHAR
+			sLastKeyDown = { keyCode, static_cast<unsigned int>( wParam ), modifiers };
+			KeyEvent event( impl->getWindow(), keyCode,
+							c, static_cast<char>( c ), modifiers, static_cast<unsigned int>(wParam) );
 			impl->getWindow()->emitKeyDown( &event );
 			if ( event.isHandled() )
 				return 0;
@@ -664,6 +676,23 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 							c, static_cast<char>( c ), prepKeyEventModifiers(), static_cast<unsigned int>( wParam ) );
 			impl->getWindow()->emitKeyUp( &event );
 			if ( event.isHandled() )
+				return 0;
+		}
+		break;
+		case WM_DEADCHAR:
+		case WM_SYSDEADCHAR:
+			// Dead keys are intermediate characters in a compose sequence (e.g., ' before e to make é)
+			// Ignore them - the final composed character will arrive via WM_CHAR
+			return 0;
+		case WM_SYSCHAR:
+		case WM_CHAR: {
+			// WM_CHAR provides the actual character input (handles dead keys, Alt codes, etc.)
+			uint32_t charUtf32 = static_cast<uint32_t>( wParam );
+			char charValue = ( charUtf32 < 128 ) ? static_cast<char>( charUtf32 ) : 0;
+			KeyEvent event( impl->getWindow(), sLastKeyDown.code, charUtf32, charValue,
+							sLastKeyDown.modifiers, sLastKeyDown.nativeKeyCode );
+			impl->getWindow()->emitKeyChar( &event );
+			if( event.isHandled() )
 				return 0;
 		}
 		break;
@@ -804,7 +833,10 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			::DragQueryPoint( dropH, &dropPoint );
 			::DragFinish( dropH );
 
-			FileDropEvent dropEvent( impl->getWindow(), impl->toPoints( (int)dropPoint.x ), impl->toPoints( (int)dropPoint.y ), files );
+			// Capture modifier key state during drop
+			unsigned int modifiers = prepKeyEventModifiers();
+
+			FileDropEvent dropEvent( impl->getWindow(), impl->toPoints( (int)dropPoint.x ), impl->toPoints( (int)dropPoint.y ), files, modifiers );
 			impl->getWindow()->emitFileDrop( &dropEvent );
 			return 0;
 		}

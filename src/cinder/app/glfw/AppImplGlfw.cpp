@@ -44,13 +44,21 @@ public:
 	static std::map<GLFWwindow*, std::pair<AppImplGlfw*,WindowRef>> sWindowMapping;
 	static bool sCapsLockDown, sNumLockDown, sScrollLockDown;
 
+	//! Stores key data from the most recent keyDown for correlation with subsequent char events
+	struct LastKeyData {
+		int			code = 0;
+		int			scancode = 0;
+		unsigned int modifiers = 0;
+	};
+	static std::map<GLFWwindow*, LastKeyData> sLastKeyData;
+
 	static void registerWindowEvents( GLFWwindow *glfwWindow, AppImplGlfw* cinderAppImpl, const WindowRef& cinderWindow ) {
 		sWindowMapping[glfwWindow] = std::make_pair( cinderAppImpl, cinderWindow );
 
 		::glfwSetWindowSizeCallback( glfwWindow, GlfwCallbacks::onWindowSize );
 		::glfwSetWindowPosCallback( glfwWindow, GlfwCallbacks::onWindowMove );
 		::glfwSetKeyCallback( glfwWindow, GlfwCallbacks::onKeyboard );
-		// Note: NOT using glfwSetCharCallback - we compute characters directly in onKeyboard
+		::glfwSetCharCallback( glfwWindow, GlfwCallbacks::onCharInput );
 		::glfwSetCursorPosCallback( glfwWindow, GlfwCallbacks::onMousePos );
 		::glfwSetMouseButtonCallback( glfwWindow, GlfwCallbacks::onMouseButton );
 		::glfwSetScrollCallback( glfwWindow, GlfwCallbacks::onMouseWheel );
@@ -60,6 +68,7 @@ public:
 
 	static void unregisterWindowEvents( GLFWwindow *glfwWindow ) {
 		sWindowMapping.erase( glfwWindow );
+		sLastKeyData.erase( glfwWindow );
 	}
 
 	static void onError( int error, const char* description ) {
@@ -224,6 +233,8 @@ public:
 			KeyEvent keyEvent( cinderWindow, nativeKeyCode, charUtf32, convertedChar, modifiers, scancode );
 
 			if( GLFW_PRESS == action || GLFW_REPEAT == action ) {
+				// Store key data for correlation with subsequent char callback
+				sLastKeyData[glfwWindow] = { nativeKeyCode, scancode, modifiers };
 				cinderWindow->emitKeyDown( &keyEvent );
 			}
 			else if( GLFW_RELEASE == action ) {
@@ -232,7 +243,32 @@ public:
 		}
 	}
 
-	// onCharInput removed - we now compute characters directly in onKeyboard
+	//! Character input callback - emits keyChar events for text input
+	static void onCharInput( GLFWwindow *glfwWindow, unsigned int codepoint ) {
+		auto iter = sWindowMapping.find( glfwWindow );
+		if( sWindowMapping.end() != iter ) {
+			auto& cinderAppImpl = iter->second.first;
+			auto& cinderWindow = iter->second.second;
+			cinderAppImpl->setWindow( cinderWindow );
+
+			// Retrieve stored key data from preceding keyDown (if any)
+			int keyCode = 0;
+			int scancode = 0;
+			unsigned int modifiers = 0;
+			auto keyDataIter = sLastKeyData.find( glfwWindow );
+			if( keyDataIter != sLastKeyData.end() ) {
+				keyCode = keyDataIter->second.code;
+				scancode = keyDataIter->second.scancode;
+				modifiers = keyDataIter->second.modifiers;
+			}
+
+			// Convert UTF-32 codepoint to char (ASCII only, 0 otherwise)
+			char charValue = ( codepoint < 128 ) ? static_cast<char>( codepoint ) : 0;
+
+			KeyEvent charEvent( cinderWindow, keyCode, codepoint, charValue, modifiers, scancode );
+			cinderWindow->emitKeyChar( &charEvent );
+		}
+	}
 
 	static void onMousePos( GLFWwindow* glfwWindow, double mouseX, double mouseY ) {
 		auto iter = sWindowMapping.find( glfwWindow );
@@ -318,7 +354,11 @@ public:
 			double xpos, ypos;
 			::glfwGetCursorPos( glfwWindow, &xpos, &ypos );
 			vec2 dropPoint = { static_cast<float>(xpos), static_cast<float>(ypos) };
-			FileDropEvent dropEvent( cinderWindow, dropPoint.x, dropPoint.y, files );
+
+			// Get current modifier key state
+			unsigned int modifiers = getGlfwKeyModifiersMouse( glfwWindow );
+
+			FileDropEvent dropEvent( cinderWindow, static_cast<int>( dropPoint.x ), static_cast<int>( dropPoint.y ), files, modifiers );
 			cinderWindow->emitFileDrop( &dropEvent );
 		}
 	}
@@ -337,6 +377,7 @@ public:
 };
 
 std::map<GLFWwindow*, std::pair<AppImplGlfw*,WindowRef>> GlfwCallbacks::sWindowMapping;
+std::map<GLFWwindow*, GlfwCallbacks::LastKeyData> GlfwCallbacks::sLastKeyData;
 bool GlfwCallbacks::sCapsLockDown = false;
 bool GlfwCallbacks::sNumLockDown = false;
 bool GlfwCallbacks::sScrollLockDown = false;
