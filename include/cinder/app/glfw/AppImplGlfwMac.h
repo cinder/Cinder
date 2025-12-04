@@ -44,4 +44,8 @@ void enableResizeTrackingForWindow( void *nativeWindow, WindowImplGlfw *windowIm
 // This removes notification observers and cleans up - call before window destruction
 void disableResizeTrackingForWindow( void *nativeWindow );
 
+// Get current global modifier key state (works even when window doesn't have focus)
+// This is useful for file drop events where the drag originates from an external app
+unsigned int getGlobalModifierState();
+
 }} // namespace cinder::app

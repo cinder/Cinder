@@ -234,7 +234,7 @@ public:
 
 			if( GLFW_PRESS == action || GLFW_REPEAT == action ) {
 				// Store key data for correlation with subsequent char callback
-				sLastKeyData[glfwWindow] = { nativeKeyCode, scancode, modifiers };
+				sLastKeyData[glfwWindow] = { nativeKeyCode, scancode, static_cast<unsigned int>( modifiers ) };
 				cinderWindow->emitKeyDown( &keyEvent );
 			}
 			else if( GLFW_RELEASE == action ) {
@@ -356,7 +356,12 @@ public:
 			vec2 dropPoint = { static_cast<float>(xpos), static_cast<float>(ypos) };
 
 			// Get current modifier key state
+			// On macOS, use global modifier state since the drag may originate from an external app
+#if defined( CINDER_MAC )
+			unsigned int modifiers = getGlobalModifierState();
+#else
 			unsigned int modifiers = getGlfwKeyModifiersMouse( glfwWindow );
+#endif
 
 			FileDropEvent dropEvent( cinderWindow, static_cast<int>( dropPoint.x ), static_cast<int>( dropPoint.y ), files, modifiers );
 			cinderWindow->emitFileDrop( &dropEvent );

@@ -464,6 +464,24 @@ void enableResizeTrackingForWindow( void *nativeWindow, WindowImplGlfw *windowIm
 	objc_setAssociatedObject( nsWindow, &kResizeObserverKey, observer, OBJC_ASSOCIATION_RETAIN_NONATOMIC );
 }
 
+// Get current global modifier key state (works even when window doesn't have focus)
+unsigned int getGlobalModifierState()
+{
+	NSUInteger cocoaMods = [NSEvent modifierFlags];
+	unsigned int modifiers = 0;
+
+	if( cocoaMods & NSEventModifierFlagShift )
+		modifiers |= 0x0008;  // MouseEvent::SHIFT_DOWN
+	if( cocoaMods & NSEventModifierFlagOption )
+		modifiers |= 0x0010;  // MouseEvent::ALT_DOWN
+	if( cocoaMods & NSEventModifierFlagControl )
+		modifiers |= 0x0020;  // MouseEvent::CTRL_DOWN
+	if( cocoaMods & NSEventModifierFlagCommand )
+		modifiers |= 0x0040;  // MouseEvent::META_DOWN
+
+	return modifiers;
+}
+
 // Disable resize tracking on a GLFW window
 void disableResizeTrackingForWindow( void *nativeWindow )
 {
