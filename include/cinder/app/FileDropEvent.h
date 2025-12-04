@@ -55,15 +55,15 @@ class CI_API FileDropEvent : public Event {
 	//! Returns the path for file number \a index.
 	const fs::path&					getFile( size_t index ) const { return mFiles.at(index); }
 
-	//! Returns a bitwise-or of modifier key flags active during the drop
+	//! Returns a bitwise-or of modifier key flags active during the drop. Unimplemented on Linux.
 	unsigned int	getModifiers() const { return mModifiers; }
-	//! Returns whether the Shift key was held during the drop
+	//! Returns whether the Shift key was held during the drop. Unimplemented on Linux.
 	bool			isShiftDown() const { return ( mModifiers & SHIFT_DOWN ) != 0; }
-	//! Returns whether the Alt (Option on macOS) key was held during the drop
+	//! Returns whether the Alt (Option on macOS) key was held during the drop. Unimplemented on Linux.
 	bool			isAltDown() const { return ( mModifiers & ALT_DOWN ) != 0; }
-	//! Returns whether the Control key was held during the drop
+	//! Returns whether the Control key was held during the drop. Unimplemented on Linux.
 	bool			isControlDown() const { return ( mModifiers & CTRL_DOWN ) != 0; }
-	//! Returns whether the Meta key (Command on macOS, Windows key on Windows) was held during the drop
+	//! Returns whether the Meta key (Command on macOS, Windows key on Windows) was held during the drop. Unimplemented on Linux.
 	bool			isMetaDown() const { return ( mModifiers & META_DOWN ) != 0; }
 
 	enum {
