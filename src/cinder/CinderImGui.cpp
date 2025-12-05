@@ -742,6 +742,23 @@ static bool ImGui_ImplCinder_Init( const ci::app::WindowRef& window, const ImGui
 	sWindowConnections[window] += window->getSignalClose().connect( [=] {
 		sWindowConnections.erase( window );
 		sTriggerNewFrame = false;
+#if defined( CINDER_MSW )
+		// For D3D12, do cleanup on window close while renderer is still valid
+		if( sUsingD3D12 && sInitialized ) {
+			auto d3d12Renderer = std::dynamic_pointer_cast<ci::app::RendererD3d12>( ci::app::App::get()->getRenderer() );
+			if( d3d12Renderer )
+				d3d12Renderer->waitForGpu();
+
+			ImGui_ImplDX12_Shutdown();
+			if( sImGuiSrvHeap ) {
+				sImGuiSrvHeap->Release();
+				sImGuiSrvHeap = nullptr;
+			}
+			sWindowConnections.clear();
+			ImGui::DestroyContext();
+			sInitialized = false;
+		}
+#endif
 	} );
 
 	return true;
@@ -849,25 +866,18 @@ bool ImGui::Initialize( const ImGui::Options& options )
 
 	sAppConnections += ci::app::App::get()->getSignalCleanup().connect( [context]() {
 #if defined( CINDER_MSW )
+		// D3D12 cleanup is handled in window close signal (while renderer is still valid)
 		if( sUsingD3D12 ) {
-			// Wait for GPU to be idle before releasing ImGui D3D12 resources
-			auto d3d12Renderer = std::dynamic_pointer_cast<ci::app::RendererD3d12>( ci::app::App::get()->getRenderer() );
-			if( d3d12Renderer )
-				d3d12Renderer->waitForGpu();
-
-			ImGui_ImplDX12_Shutdown();
-			if( sImGuiSrvHeap ) {
-				sImGuiSrvHeap->Release();
-				sImGuiSrvHeap = nullptr;
-			}
+			// Already cleaned up in window close, just reset state
+			sInitialized = false;
+			return;
 		}
-		else
 #endif
-		{
-			ImGui_ImplOpenGL3_Shutdown();
-		}
+		// OpenGL cleanup
+		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplCinder_Shutdown();
 		ImGui::DestroyContext( context );
+		sInitialized = false;
 	} );
 
 	sInitialized = true;
@@ -878,6 +888,15 @@ bool ImGui::IsUsingD3D12()
 {
 #if defined( CINDER_MSW )
 	return sUsingD3D12;
+#else
+	return false;
+#endif
+}
+
+bool ImGui::ShouldSkipFrame()
+{
+#if defined( CINDER_MSW )
+	return static_cast<ci::app::PlatformMsw*>( ci::app::Platform::get() )->isInsideModalLoop();
 #else
 	return false;
 #endif

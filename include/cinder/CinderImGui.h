@@ -117,6 +117,10 @@ namespace ImGui {
 	//! Returns true if ImGui is using the D3D12 backend
 	CI_API bool IsUsingD3D12();
 
+	//! Returns true if the current frame should skip ImGui rendering (e.g., during modal dialog).
+	//! D3D12 apps should check this before calling NewFrame()/Render() to avoid assertion failures.
+	CI_API bool ShouldSkipFrame();
+
 #if defined( CINDER_MSW )
 	//! Returns the SRV descriptor heap used by ImGui for D3D12. Returns nullptr if not using D3D12.
 	//! D3D12 apps must set this heap on their command list before calling ImGui_ImplDX12_RenderDrawData().
