@@ -19,7 +19,6 @@
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererD3d12.h"
-#include "cinder/app/msw/RendererImplD3d12.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Surface.h"
 #include "cinder/CanvasUi.h"
@@ -57,24 +56,26 @@ class D3d12ImageBasicApp : public App {
 	ID3D12CommandQueue* mCommandQueue = nullptr;
 
 	// Per-frame command allocators for proper triple buffering
-	static const UINT		   FrameCount = 3;
-	ID3D12CommandAllocator*	   mCommandAllocators[FrameCount] = {};
+	ID3D12CommandAllocator*	   mCommandAllocators[RendererD3d12::MaxFrameCount] = {};
 	ID3D12GraphicsCommandList* mCommandList = nullptr;
 
 	// App rendering resources
 	ID3D12RootSignature* mRootSignature = nullptr;
 	ID3D12PipelineState* mPipelineState = nullptr;
 	// Per-frame vertex buffers to avoid GPU/CPU races during animation
-	ID3D12Resource*			 mVertexBuffers[FrameCount] = {};
-	D3D12_VERTEX_BUFFER_VIEW mVertexBufferViews[FrameCount] = {};
+	ID3D12Resource*			 mVertexBuffers[RendererD3d12::MaxFrameCount] = {};
+	D3D12_VERTEX_BUFFER_VIEW mVertexBufferViews[RendererD3d12::MaxFrameCount] = {};
 	ID3D12Resource*			 mTexture = nullptr;
 	ID3D12Resource*			 mTextureUploadHeap = nullptr;
 	ID3D12DescriptorHeap*	 mSrvHeap = nullptr;
 
 	// App-managed synchronization (per-frame fences for triple buffering)
 	ID3D12Fence* mFence = nullptr;
-	UINT64		 mFenceValues[FrameCount] = {};
+	UINT64		 mFenceValues[RendererD3d12::MaxFrameCount] = {};
 	HANDLE		 mFenceEvent = nullptr;
+
+	// Cached renderer pointer
+	RendererD3d12Ref mRenderer;
 
 	CanvasUi mCanvas;
 	ivec2	 mImageSize{ 0, 0 };
@@ -94,19 +95,19 @@ void D3d12ImageBasicApp::setup()
 
 	setWindowSize( 800, 600 );
 
-	auto renderer = std::dynamic_pointer_cast<RendererD3d12>( getRenderer() );
-	if( ! renderer )
+	mRenderer = std::dynamic_pointer_cast<RendererD3d12>( getRenderer() );
+	if( ! mRenderer )
 		return;
 
 	// Get device and queue from minimal renderer
-	mDevice = static_cast<ID3D12Device*>( renderer->getDevice() );
-	mCommandQueue = static_cast<ID3D12CommandQueue*>( renderer->getCommandQueue() );
+	mDevice = mRenderer->getDevice();
+	mCommandQueue = mRenderer->getCommandQueue();
 	if( ! mDevice || ! mCommandQueue )
 		return;
 
 	// Create per-frame command allocators for proper triple buffering
 	HRESULT hr = S_OK;
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
 		hr = mDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( &mCommandAllocators[i] ) );
 		if( FAILED( hr ) )
 			return;
@@ -122,7 +123,7 @@ void D3d12ImageBasicApp::setup()
 	hr = mDevice->CreateFence( 0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( &mFence ) );
 	if( FAILED( hr ) )
 		return;
-	for( UINT i = 0; i < FrameCount; i++ )
+	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ )
 		mFenceValues[i] = 0;
 	mFenceEvent = CreateEvent( nullptr, FALSE, FALSE, nullptr );
 
@@ -272,7 +273,7 @@ void D3d12ImageBasicApp::setup()
 	bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
 	// Create per-frame vertex buffers
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
 		hr = mDevice->CreateCommittedResource( &heapProps, D3D12_HEAP_FLAG_NONE, &bufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS( &mVertexBuffers[i] ) );
 		if( FAILED( hr ) )
 			return;
@@ -310,7 +311,7 @@ void D3d12ImageBasicApp::cleanup()
 		mTexture->Release();
 	if( mSrvHeap )
 		mSrvHeap->Release();
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
 		if( mVertexBuffers[i] )
 			mVertexBuffers[i]->Release();
 	}
@@ -320,7 +321,7 @@ void D3d12ImageBasicApp::cleanup()
 		mRootSignature->Release();
 	if( mCommandList )
 		mCommandList->Release();
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
 		if( mCommandAllocators[i] )
 			mCommandAllocators[i]->Release();
 	}
@@ -338,12 +339,11 @@ void D3d12ImageBasicApp::resize()
 	// but we need to wait for our own command lists too
 	waitForGpu();
 
-	auto renderer = std::dynamic_pointer_cast<RendererD3d12>( getRenderer() );
-	if( renderer )
-		renderer->defaultResize();
+	if( mRenderer )
+		mRenderer->defaultResize();
 
 	// Reset fence values after resize since buffers are new
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
 		mFenceValues[i] = 0;
 	}
 	CI_LOG_I( "[App] resize: Complete" );
@@ -351,21 +351,16 @@ void D3d12ImageBasicApp::resize()
 
 void D3d12ImageBasicApp::draw()
 {
-	auto renderer = std::dynamic_pointer_cast<RendererD3d12>( getRenderer() );
-	if( ! renderer )
-		return;
-
-	// Get renderer's implementation to access back buffers and RTVs
-	auto rendererImpl = renderer->mImpl;
-	if( ! rendererImpl )
+	if( ! mRenderer )
 		return;
 
 	if( ! mTexture )
 		return;
 
-	UINT						frameIndex = rendererImpl->mFrameIndex;
-	ID3D12Resource*				backBuffer = rendererImpl->mBackBuffers[frameIndex].get();
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = rendererImpl->mRtvHandles[frameIndex];
+	// Get back buffer info from renderer
+	UINT frameIndex = mRenderer->getCurrentBackBufferIndex();
+	ID3D12Resource* backBuffer = mRenderer->getCurrentBackBuffer();
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mRenderer->getCurrentRtvHandle();
 
 	// Back buffer may be null during resize - skip this frame
 	if( ! backBuffer )
@@ -498,7 +493,7 @@ void D3d12ImageBasicApp::waitForGpu()
 	if( mFence && mCommandQueue ) {
 		// Wait for all frames to complete
 		UINT64 maxFenceValue = 0;
-		for( UINT i = 0; i < FrameCount; i++ ) {
+		for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
 			if( mFenceValues[i] > maxFenceValue )
 				maxFenceValue = mFenceValues[i];
 		}
@@ -697,7 +692,7 @@ void D3d12ImageBasicApp::createTextureFromSurface( const Surface8u& surface )
 	// Wait for upload to complete before releasing resources
 	// Signal a fence value higher than all current frames to maintain monotonicity
 	UINT64 uploadFenceValue = 0;
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
 		if( mFenceValues[i] > uploadFenceValue )
 			uploadFenceValue = mFenceValues[i];
 	}
@@ -710,7 +705,7 @@ void D3d12ImageBasicApp::createTextureFromSurface( const Surface8u& surface )
 	}
 
 	// Update all frame fence values to maintain monotonicity for future signals
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
 		mFenceValues[i] = uploadFenceValue;
 	}
 

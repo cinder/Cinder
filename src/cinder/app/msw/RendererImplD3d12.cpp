@@ -27,14 +27,18 @@
 #include "cinder/Log.h"
 #include "cinder/msw/CinderMsw.h"
 #include <windows.h>
+#include <vector>
 
 namespace cinder { namespace app {
 
-RendererImplD3d12::RendererImplD3d12( WindowImplMsw* windowImpl, RendererD3d12* renderer )
+RendererImplD3d12::RendererImplD3d12( WindowImplMsw* windowImpl, RendererD3d12* renderer, const RendererD3d12::Options& options )
 	: mRenderer( renderer )
+	, mOptions( options )
 	, mWnd( nullptr )
 	, mFullScreen( false )
 {
+	mVSync = options.getVSync();
+	mBufferCount = options.getFrameCount();
 }
 
 RendererImplD3d12::~RendererImplD3d12()
@@ -95,6 +99,15 @@ bool RendererImplD3d12::initialize( WindowImplMsw* windowImpl, RendererRef share
 		return false;
 	}
 
+	// Create MSAA target if requested
+	if( mOptions.getMsaa() > 1 ) {
+		CI_LOG_I( "[D3D12] Creating MSAA target..." );
+		if( ! createMsaaTarget() ) {
+			CI_LOG_W( "[D3D12] Failed to create MSAA target, falling back to no MSAA" );
+			mMsaaSamples = 1;
+		}
+	}
+
 	mFrameIndex = mSwapChain->GetCurrentBackBufferIndex();
 	CI_LOG_I( "[D3D12] Initial frame index: " << mFrameIndex );
 	CI_LOG_I( "[D3D12] === INITIALIZE COMPLETE ===" );
@@ -106,18 +119,24 @@ bool RendererImplD3d12::createFactory()
 {
 	UINT dxgiFactoryFlags = 0;
 
-#ifdef _DEBUG
-	msw::ComPtr<ID3D12Debug> debugController;
-	if( SUCCEEDED( D3D12GetDebugInterface( IID_PPV_ARGS( debugController.releaseAndGetAddressOf() ) ) ) ) {
-		debugController->EnableDebugLayer();
-		dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+	// Enable debug layer if requested (or always in _DEBUG builds via Options default)
+	if( mOptions.getDebugLayer() ) {
+		msw::ComPtr<ID3D12Debug> debugController;
+		if( SUCCEEDED( D3D12GetDebugInterface( IID_PPV_ARGS( debugController.releaseAndGetAddressOf() ) ) ) ) {
+			debugController->EnableDebugLayer();
+			dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+			CI_LOG_I( "[D3D12] Debug layer enabled" );
 
-		msw::ComPtr<ID3D12Debug1> debugController1;
-		if( SUCCEEDED( debugController->QueryInterface( IID_PPV_ARGS( debugController1.releaseAndGetAddressOf() ) ) ) ) {
-			debugController1->SetEnableGPUBasedValidation( TRUE );
+			// Enable GPU-based validation if requested (very slow but thorough)
+			if( mOptions.getGpuValidation() ) {
+				msw::ComPtr<ID3D12Debug1> debugController1;
+				if( SUCCEEDED( debugController->QueryInterface( IID_PPV_ARGS( debugController1.releaseAndGetAddressOf() ) ) ) ) {
+					debugController1->SetEnableGPUBasedValidation( TRUE );
+					CI_LOG_I( "[D3D12] GPU-based validation enabled" );
+				}
+			}
 		}
 	}
-#endif
 
 	msw::ComPtr<IDXGIFactory6> factory;
 	HRESULT hr = CreateDXGIFactory2( dxgiFactoryFlags, IID_PPV_ARGS( factory.releaseAndGetAddressOf() ) );
@@ -129,20 +148,44 @@ bool RendererImplD3d12::createFactory()
 
 bool RendererImplD3d12::selectAdapter()
 {
+	// This function just validates adapter availability; actual selection happens in createDevice
 	msw::ComPtr<IDXGIAdapter1> adapter;
-	HRESULT hr = mFactory->EnumAdapterByGpuPreference( 0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
-		IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
 
-	if( FAILED( hr ) ) {
-		hr = mFactory->EnumWarpAdapter( IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
+	if( mOptions.getForceWarp() ) {
+		HRESULT hr = mFactory->EnumWarpAdapter( IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
 		if( FAILED( hr ) )
 			return false;
-		CI_LOG_I( "Using WARP software adapter" );
+		CI_LOG_I( "[D3D12] WARP adapter available (forced)" );
 	}
 	else {
-		DXGI_ADAPTER_DESC1 desc;
-		adapter->GetDesc1( &desc );
-		CI_LOG_I( "Using adapter: " << msw::toUtf8String( desc.Description ) );
+		// Map our preference enum to DXGI preference
+		DXGI_GPU_PREFERENCE dxgiPref = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE;
+		switch( mOptions.getGpuPreference() ) {
+			case RendererD3d12::GpuPreference::HIGH_PERFORMANCE:
+				dxgiPref = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE;
+				break;
+			case RendererD3d12::GpuPreference::MINIMUM_POWER:
+				dxgiPref = DXGI_GPU_PREFERENCE_MINIMUM_POWER;
+				break;
+			case RendererD3d12::GpuPreference::UNSPECIFIED:
+				dxgiPref = DXGI_GPU_PREFERENCE_UNSPECIFIED;
+				break;
+		}
+
+		HRESULT hr = mFactory->EnumAdapterByGpuPreference( 0, dxgiPref,
+			IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
+
+		if( FAILED( hr ) ) {
+			hr = mFactory->EnumWarpAdapter( IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
+			if( FAILED( hr ) )
+				return false;
+			CI_LOG_I( "[D3D12] Using WARP software adapter (fallback)" );
+		}
+		else {
+			DXGI_ADAPTER_DESC1 desc;
+			adapter->GetDesc1( &desc );
+			CI_LOG_I( "[D3D12] Using adapter: " << msw::toUtf8String( desc.Description ) );
+		}
 	}
 
 	return true;
@@ -150,28 +193,64 @@ bool RendererImplD3d12::selectAdapter()
 
 bool RendererImplD3d12::createDevice()
 {
-	D3D_FEATURE_LEVEL featureLevels[] = {
+	// Build list of feature levels to try, respecting minimum
+	D3D_FEATURE_LEVEL allFeatureLevels[] = {
+		D3D_FEATURE_LEVEL_12_2,
 		D3D_FEATURE_LEVEL_12_1,
 		D3D_FEATURE_LEVEL_12_0,
 		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0
 	};
 
-	msw::ComPtr<IDXGIAdapter1> adapter;
-	HRESULT hr = mFactory->EnumAdapterByGpuPreference( 0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
-		IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
+	std::vector<D3D_FEATURE_LEVEL> featureLevels;
+	for( auto level : allFeatureLevels ) {
+		if( level >= mOptions.getMinFeatureLevel() )
+			featureLevels.push_back( level );
+	}
 
-	if( FAILED( hr ) ) {
+	if( featureLevels.empty() ) {
+		CI_LOG_E( "[D3D12] No valid feature levels available above minimum" );
+		return false;
+	}
+
+	msw::ComPtr<IDXGIAdapter1> adapter;
+	HRESULT hr;
+
+	if( mOptions.getForceWarp() ) {
 		hr = mFactory->EnumWarpAdapter( IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
 		if( FAILED( hr ) )
 			return false;
+	}
+	else {
+		// Map our preference enum to DXGI preference
+		DXGI_GPU_PREFERENCE dxgiPref = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE;
+		switch( mOptions.getGpuPreference() ) {
+			case RendererD3d12::GpuPreference::HIGH_PERFORMANCE:
+				dxgiPref = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE;
+				break;
+			case RendererD3d12::GpuPreference::MINIMUM_POWER:
+				dxgiPref = DXGI_GPU_PREFERENCE_MINIMUM_POWER;
+				break;
+			case RendererD3d12::GpuPreference::UNSPECIFIED:
+				dxgiPref = DXGI_GPU_PREFERENCE_UNSPECIFIED;
+				break;
+		}
+
+		hr = mFactory->EnumAdapterByGpuPreference( 0, dxgiPref,
+			IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
+
+		if( FAILED( hr ) ) {
+			hr = mFactory->EnumWarpAdapter( IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
+			if( FAILED( hr ) )
+				return false;
+		}
 	}
 
 	msw::ComPtr<ID3D12Device> device;
 	for( auto featureLevel : featureLevels ) {
 		hr = D3D12CreateDevice( adapter.get(), featureLevel, IID_PPV_ARGS( device.releaseAndGetAddressOf() ) );
 		if( SUCCEEDED( hr ) ) {
-			CI_LOG_I( "Created D3D12 device with feature level " << std::hex << featureLevel );
+			CI_LOG_I( "[D3D12] Created device with feature level 0x" << std::hex << featureLevel );
 			break;
 		}
 	}
@@ -181,13 +260,15 @@ bool RendererImplD3d12::createDevice()
 
 	mDevice = device.detach();
 
-#ifdef _DEBUG
-	msw::ComPtr<ID3D12InfoQueue> infoQueue;
-	if( SUCCEEDED( mDevice->QueryInterface( IID_PPV_ARGS( infoQueue.releaseAndGetAddressOf() ) ) ) ) {
-		infoQueue->SetBreakOnSeverity( D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE );
-		infoQueue->SetBreakOnSeverity( D3D12_MESSAGE_SEVERITY_ERROR, TRUE );
+	// Set up debug break on errors if requested
+	if( mOptions.getDebugBreakOnError() ) {
+		msw::ComPtr<ID3D12InfoQueue> infoQueue;
+		if( SUCCEEDED( mDevice->QueryInterface( IID_PPV_ARGS( infoQueue.releaseAndGetAddressOf() ) ) ) ) {
+			infoQueue->SetBreakOnSeverity( D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE );
+			infoQueue->SetBreakOnSeverity( D3D12_MESSAGE_SEVERITY_ERROR, TRUE );
+			CI_LOG_I( "[D3D12] Debug break on error enabled" );
+		}
 	}
-#endif
 
 	return true;
 }
@@ -226,7 +307,7 @@ bool RendererImplD3d12::createSwapChain()
 	swapChainDesc.SampleDesc.Count = 1;
 	swapChainDesc.SampleDesc.Quality = 0;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.BufferCount = FrameCount;
+	swapChainDesc.BufferCount = mBufferCount;
 	swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
@@ -258,7 +339,7 @@ bool RendererImplD3d12::createSwapChain()
 bool RendererImplD3d12::createRtvHeap()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-	rtvHeapDesc.NumDescriptors = FrameCount;
+	rtvHeapDesc.NumDescriptors = mBufferCount;
 	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
@@ -277,7 +358,7 @@ bool RendererImplD3d12::createBackBufferRtvs()
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mRtvHeap->GetCPUDescriptorHandleForHeapStart();
 
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < mBufferCount; i++ ) {
 		msw::ComPtr<ID3D12Resource> backBuffer;
 		HRESULT hr = mSwapChain->GetBuffer( i, IID_PPV_ARGS( backBuffer.releaseAndGetAddressOf() ) );
 		if( FAILED( hr ) )
@@ -303,11 +384,11 @@ bool RendererImplD3d12::createFrameFence()
 	}
 
 	mFrameFence = fence.detach();
-	mFrameCount = 0;  // Monotonic counter for fence values
-	CI_LOG_I( "[D3D12] createFrameFence: Fence created, mFrameCount=" << mFrameCount );
+	mFenceCounter = 0;  // Monotonic counter for fence values
+	CI_LOG_I( "[D3D12] createFrameFence: Fence created, mFenceCounter=" << mFenceCounter );
 
 	// Initialize fence values for each buffer to 0 (no work pending)
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < mBufferCount; i++ ) {
 		mFenceValues[i] = 0;
 	}
 
@@ -331,13 +412,13 @@ void RendererImplD3d12::waitForIdle()
 	}
 
 	// If no frames have been rendered yet, nothing to wait for
-	if( mFrameCount == 0 ) {
+	if( mFenceCounter == 0 ) {
 		CI_LOG_I( "[D3D12] waitForIdle: No frames submitted yet, skipping" );
 		return;
 	}
 
 	// Signal a new fence value and wait for it to ensure all GPU work is done
-	UINT64 fenceValue = ++mFrameCount;
+	UINT64 fenceValue = ++mFenceCounter;
 	CI_LOG_I( "[D3D12] waitForIdle: Signaling fence with value=" << fenceValue );
 	mCommandQueue->Signal( mFrameFence.get(), fenceValue );
 
@@ -353,7 +434,7 @@ void RendererImplD3d12::waitForIdle()
 
 void RendererImplD3d12::releaseBackBuffers()
 {
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < mBufferCount; i++ ) {
 		mBackBuffers[i].reset();
 	}
 }
@@ -362,7 +443,7 @@ bool RendererImplD3d12::recreateBackBuffers()
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mRtvHeap->GetCPUDescriptorHandleForHeapStart();
 
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < mBufferCount; i++ ) {
 		msw::ComPtr<ID3D12Resource> backBuffer;
 		HRESULT hr = mSwapChain->GetBuffer( i, IID_PPV_ARGS( backBuffer.releaseAndGetAddressOf() ) );
 		if( FAILED( hr ) )
@@ -377,11 +458,138 @@ bool RendererImplD3d12::recreateBackBuffers()
 	return true;
 }
 
+bool RendererImplD3d12::createMsaaTarget()
+{
+	// Get back buffer dimensions
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc;
+	mSwapChain->GetDesc1( &swapChainDesc );
+
+	// Validate and clamp MSAA sample count
+	UINT requestedSamples = mOptions.getMsaa();
+	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
+	msQualityLevels.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	msQualityLevels.SampleCount = requestedSamples;
+
+	HRESULT hr = mDevice->CheckFeatureSupport(
+		D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS,
+		&msQualityLevels,
+		sizeof( msQualityLevels )
+	);
+
+	if( FAILED( hr ) || msQualityLevels.NumQualityLevels == 0 ) {
+		// Try lower sample counts
+		UINT sampleCounts[] = { 8, 4, 2 };
+		mMsaaSamples = 1;
+		for( UINT samples : sampleCounts ) {
+			if( samples > requestedSamples )
+				continue;
+			msQualityLevels.SampleCount = samples;
+			hr = mDevice->CheckFeatureSupport(
+				D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS,
+				&msQualityLevels,
+				sizeof( msQualityLevels )
+			);
+			if( SUCCEEDED( hr ) && msQualityLevels.NumQualityLevels > 0 ) {
+				mMsaaSamples = samples;
+				break;
+			}
+		}
+		if( mMsaaSamples == 1 ) {
+			CI_LOG_W( "[D3D12] MSAA not supported, falling back to no MSAA" );
+			return false;
+		}
+		CI_LOG_I( "[D3D12] Requested MSAA " << requestedSamples << "x not supported, using " << mMsaaSamples << "x" );
+	}
+	else {
+		mMsaaSamples = requestedSamples;
+	}
+
+	CI_LOG_I( "[D3D12] Creating MSAA " << mMsaaSamples << "x render target" );
+
+	// Create MSAA RTV heap
+	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+	rtvHeapDesc.NumDescriptors = 1;
+	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+
+	msw::ComPtr<ID3D12DescriptorHeap> msaaRtvHeap;
+	hr = mDevice->CreateDescriptorHeap( &rtvHeapDesc, IID_PPV_ARGS( msaaRtvHeap.releaseAndGetAddressOf() ) );
+	if( FAILED( hr ) ) {
+		CI_LOG_E( "[D3D12] Failed to create MSAA RTV heap" );
+		return false;
+	}
+	mMsaaRtvHeap = msaaRtvHeap.detach();
+
+	// Create MSAA render target
+	D3D12_RESOURCE_DESC msaaDesc = {};
+	msaaDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	msaaDesc.Width = swapChainDesc.Width;
+	msaaDesc.Height = swapChainDesc.Height;
+	msaaDesc.DepthOrArraySize = 1;
+	msaaDesc.MipLevels = 1;
+	msaaDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	msaaDesc.SampleDesc.Count = mMsaaSamples;
+	msaaDesc.SampleDesc.Quality = 0;
+	msaaDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	msaaDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+	D3D12_HEAP_PROPERTIES heapProps = {};
+	heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	clearValue.Color[0] = 0.0f;
+	clearValue.Color[1] = 0.0f;
+	clearValue.Color[2] = 0.0f;
+	clearValue.Color[3] = 1.0f;
+
+	msw::ComPtr<ID3D12Resource> msaaTarget;
+	hr = mDevice->CreateCommittedResource(
+		&heapProps,
+		D3D12_HEAP_FLAG_NONE,
+		&msaaDesc,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		&clearValue,
+		IID_PPV_ARGS( msaaTarget.releaseAndGetAddressOf() )
+	);
+
+	if( FAILED( hr ) ) {
+		CI_LOG_E( "[D3D12] Failed to create MSAA render target" );
+		mMsaaRtvHeap.reset();
+		return false;
+	}
+	mMsaaTarget = msaaTarget.detach();
+
+	// Create RTV for MSAA target
+	mMsaaRtvHandle = mMsaaRtvHeap->GetCPUDescriptorHandleForHeapStart();
+	mDevice->CreateRenderTargetView( mMsaaTarget.get(), nullptr, mMsaaRtvHandle );
+
+	CI_LOG_I( "[D3D12] MSAA " << mMsaaSamples << "x target created successfully" );
+	return true;
+}
+
+void RendererImplD3d12::releaseMsaaTarget()
+{
+	mMsaaTarget.reset();
+	mMsaaRtvHeap.reset();
+	mMsaaRtvHandle = {};
+}
+
+bool RendererImplD3d12::recreateMsaaTarget()
+{
+	if( mMsaaSamples <= 1 )
+		return true;
+
+	releaseMsaaTarget();
+	return createMsaaTarget();
+}
+
 void RendererImplD3d12::kill()
 {
 	// Wait for all GPU work to complete before releasing resources
 	waitForIdle();
 
+	releaseMsaaTarget();
 	releaseBackBuffers();
 	mRtvHeap.reset();
 	mFrameFence.reset();
@@ -418,7 +626,7 @@ void RendererImplD3d12::startDraw()
 		mFrameIndex = mSwapChain->GetCurrentBackBufferIndex();
 
 		// Wait for this buffer's previous work to complete
-		if( mFrameFence && mFrameIndex < FrameCount ) {
+		if( mFrameFence && mFrameIndex < mBufferCount ) {
 			UINT64 fenceValueForBuffer = mFenceValues[mFrameIndex];
 			if( fenceValueForBuffer != 0 && mFrameFence->GetCompletedValue() < fenceValueForBuffer ) {
 				mFrameFence->SetEventOnCompletion( fenceValueForBuffer, mFenceEvent );
@@ -451,7 +659,7 @@ void RendererImplD3d12::defaultResize() const
 
 	UINT flags = self->mTearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 	HRESULT hr = mSwapChain->ResizeBuffers(
-		FrameCount,
+		self->mBufferCount,
 		width,
 		height,
 		DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -468,8 +676,15 @@ void RendererImplD3d12::defaultResize() const
 		return;
 	}
 
+	// Recreate MSAA target if enabled
+	if( self->mMsaaSamples > 1 ) {
+		if( ! self->recreateMsaaTarget() ) {
+			CI_LOG_E( "[D3D12] defaultResize: Failed to recreate MSAA target after resize" );
+		}
+	}
+
 	// Reset fence values for all buffers after resize
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < self->mBufferCount; i++ ) {
 		self->mFenceValues[i] = 0;
 	}
 
@@ -488,8 +703,8 @@ void RendererImplD3d12::swapBuffers() const
 
 	// Signal fence for this back buffer and record the value
 	auto self = const_cast<RendererImplD3d12*>( this );
-	if( self->mFrameFence && self->mFrameIndex < FrameCount ) {
-		UINT64 fenceValue = ++self->mFrameCount;
+	if( self->mFrameFence && self->mFrameIndex < self->mBufferCount ) {
+		UINT64 fenceValue = ++self->mFenceCounter;
 		self->mFenceValues[self->mFrameIndex] = fenceValue;
 		self->mCommandQueue->Signal( self->mFrameFence.get(), fenceValue );
 	}

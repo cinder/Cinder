@@ -40,7 +40,7 @@ class WindowImplMsw;
 //! NVRHI/App handles: Command lists, descriptors, barriers, pipelines, resources
 class RendererImplD3d12 : public RendererImplMsw {
   public:
-	RendererImplD3d12( WindowImplMsw *windowImpl, RendererD3d12 *renderer );
+	RendererImplD3d12( WindowImplMsw *windowImpl, RendererD3d12 *renderer, const RendererD3d12::Options& options );
 	~RendererImplD3d12();
 
 	//! Initializes the D3D12 device, queue, and swap chain
@@ -88,19 +88,22 @@ class RendererImplD3d12 : public RendererImplMsw {
 	//! RTV descriptor size
 	UINT mRtvDescriptorSize = 0;
 
-	//! Swap chain back buffer resources
-	static const UINT FrameCount = 3;
-	msw::ComPtr<ID3D12Resource> mBackBuffers[FrameCount];
-	D3D12_CPU_DESCRIPTOR_HANDLE mRtvHandles[FrameCount];
+	//! Swap chain back buffer resources (max 3 for triple buffering)
+	static const UINT MaxFrameCount = 3;
+	msw::ComPtr<ID3D12Resource> mBackBuffers[MaxFrameCount];
+	D3D12_CPU_DESCRIPTOR_HANDLE mRtvHandles[MaxFrameCount];
+
+	//! Actual frame count from options (2 or 3)
+	UINT mBufferCount = 3;
 
 	//! Current back buffer index
 	UINT mFrameIndex = 0;
 
 	//! Per-frame fence for synchronization (NVRHI pattern)
 	msw::ComPtr<ID3D12Fence> mFrameFence;
-	HANDLE mFenceEvent = nullptr;  // Single event for waiting
-	UINT64 mFenceValues[FrameCount] = {};  // Fence value expected for each buffer
-	UINT64 mFrameCount = 0;
+	HANDLE mFenceEvent = nullptr;            //!< Single event for waiting
+	UINT64 mFenceValues[MaxFrameCount] = {}; //!< Fence value expected for each buffer
+	UINT64 mFenceCounter = 0;                //!< Monotonic counter for fence values
 
 	//! Tearing support flag
 	bool mTearingSupport = false;
@@ -108,8 +111,19 @@ class RendererImplD3d12 : public RendererImplMsw {
 	//! VSync flag
 	bool mVSync = true;
 
+	// ---- MSAA Support ----
+	//! MSAA render target (nullptr if msaa samples == 1)
+	msw::ComPtr<ID3D12Resource> mMsaaTarget;
+	//! MSAA RTV descriptor heap (separate from back buffer heap)
+	msw::ComPtr<ID3D12DescriptorHeap> mMsaaRtvHeap;
+	//! MSAA RTV handle
+	D3D12_CPU_DESCRIPTOR_HANDLE mMsaaRtvHandle = {};
+	//! MSAA sample count (validated against device support)
+	UINT mMsaaSamples = 1;
+
   protected:
 	RendererD3d12 *mRenderer;
+	RendererD3d12::Options mOptions;
 	HWND mWnd;
 	bool mFullScreen;
 
@@ -145,6 +159,15 @@ class RendererImplD3d12 : public RendererImplMsw {
 
 	//! Recreates back buffer RTVs after resize
 	bool recreateBackBuffers();
+
+	//! Creates MSAA render target and RTV heap
+	bool createMsaaTarget();
+
+	//! Releases MSAA resources
+	void releaseMsaaTarget();
+
+	//! Recreates MSAA target after resize
+	bool recreateMsaaTarget();
 };
 
 } } // namespace cinder::app
