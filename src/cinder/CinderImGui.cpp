@@ -1,6 +1,12 @@
 #include "cinder/CinderImGui.h"
 #include "imgui_impl_opengl3.h"
 
+#if defined( CINDER_MSW )
+#include "imgui/imgui_impl_dx12.h"
+#include "cinder/app/RendererD3d12.h"
+#include <d3d12.h>
+#endif
+
 #include "cinder/app/App.h"
 #include "cinder/Log.h"
 #include "cinder/app/Window.h"
@@ -20,6 +26,13 @@ static bool																   sInitialized = false;
 static bool																   sTriggerNewFrame = false;
 static ci::signals::ConnectionList										   sAppConnections;
 static std::unordered_map<ci::app::WindowRef, ci::signals::ConnectionList> sWindowConnections;
+
+// D3D12-specific state
+#if defined( CINDER_MSW )
+static bool																   sUsingD3D12 = false;
+static ID3D12DescriptorHeap*											   sImGuiSrvHeap = nullptr;
+static const UINT														   kImGuiSrvHeapSize = 64;
+#endif
 
 namespace ImGui {
 Options::Options()
@@ -768,20 +781,91 @@ bool ImGui::Initialize( const ImGui::Options& options )
 	}
 	io.IniFilename = path.c_str();
 
-#if ! defined( CINDER_GL_ES )
-	ImGui_ImplOpenGL3_Init( "#version 150" );
-#else
-	ImGui_ImplOpenGL3_Init();
-#endif
+	// Detect renderer type and initialize appropriate backend
+#if defined( CINDER_MSW )
+	auto d3d12Renderer = std::dynamic_pointer_cast<ci::app::RendererD3d12>( ci::app::App::get()->getRenderer() );
+	if( d3d12Renderer ) {
+		sUsingD3D12 = true;
 
-	ImGui_ImplCinder_Init( window, options );
-	if( options.isAutoRenderEnabled() ) {
-		ImGui_ImplCinder_NewFrameGuard( window );
-		sTriggerNewFrame = true;
+		// Create SRV descriptor heap for ImGui
+		ID3D12Device* device = d3d12Renderer->getDevice();
+		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+		heapDesc.NumDescriptors = kImGuiSrvHeapSize;
+		heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+		HRESULT hr = device->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &sImGuiSrvHeap ) );
+		if( FAILED( hr ) ) {
+			CI_LOG_E( "Failed to create ImGui SRV descriptor heap" );
+			return false;
+		}
+
+		// Initialize D3D12 backend using legacy single descriptor API
+		ImGui_ImplDX12_InitInfo initInfo = {};
+		initInfo.Device = device;
+		initInfo.CommandQueue = d3d12Renderer->getCommandQueue();
+		initInfo.NumFramesInFlight = ci::app::RendererD3d12::MaxFrameCount;
+		initInfo.RTVFormat = d3d12Renderer->getBackBufferFormat();
+		initInfo.SrvDescriptorHeap = sImGuiSrvHeap;
+		initInfo.LegacySingleSrvCpuDescriptor = sImGuiSrvHeap->GetCPUDescriptorHandleForHeapStart();
+		initInfo.LegacySingleSrvGpuDescriptor = sImGuiSrvHeap->GetGPUDescriptorHandleForHeapStart();
+
+		if( ! ImGui_ImplDX12_Init( &initInfo ) ) {
+			CI_LOG_E( "Failed to initialize ImGui D3D12 backend" );
+			sImGuiSrvHeap->Release();
+			sImGuiSrvHeap = nullptr;
+			return false;
+		}
+	}
+	else
+#endif
+	{
+		// OpenGL path
+#if ! defined( CINDER_GL_ES )
+		ImGui_ImplOpenGL3_Init( "#version 150" );
+#else
+		ImGui_ImplOpenGL3_Init();
+#endif
+	}
+
+	// For D3D12, force auto-render off since apps manage their own command lists
+	ImGui::Options effectiveOptions = options;
+#if defined( CINDER_MSW )
+	if( sUsingD3D12 ) {
+		effectiveOptions.autoRender( false );
+	}
+#endif
+	ImGui_ImplCinder_Init( window, effectiveOptions );
+
+#if defined( CINDER_MSW )
+	if( ! sUsingD3D12 )
+#endif
+	{
+		// Auto-render only supported for OpenGL (D3D12 apps manage their own command lists)
+		if( effectiveOptions.isAutoRenderEnabled() ) {
+			ImGui_ImplCinder_NewFrameGuard( window );
+			sTriggerNewFrame = true;
+		}
 	}
 
 	sAppConnections += ci::app::App::get()->getSignalCleanup().connect( [context]() {
-		ImGui_ImplOpenGL3_Shutdown();
+#if defined( CINDER_MSW )
+		if( sUsingD3D12 ) {
+			// Wait for GPU to be idle before releasing ImGui D3D12 resources
+			auto d3d12Renderer = std::dynamic_pointer_cast<ci::app::RendererD3d12>( ci::app::App::get()->getRenderer() );
+			if( d3d12Renderer )
+				d3d12Renderer->waitForGpu();
+
+			ImGui_ImplDX12_Shutdown();
+			if( sImGuiSrvHeap ) {
+				sImGuiSrvHeap->Release();
+				sImGuiSrvHeap = nullptr;
+			}
+		}
+		else
+#endif
+		{
+			ImGui_ImplOpenGL3_Shutdown();
+		}
 		ImGui_ImplCinder_Shutdown();
 		ImGui::DestroyContext( context );
 	} );
@@ -789,3 +873,19 @@ bool ImGui::Initialize( const ImGui::Options& options )
 	sInitialized = true;
 	return sInitialized;
 }
+
+bool ImGui::IsUsingD3D12()
+{
+#if defined( CINDER_MSW )
+	return sUsingD3D12;
+#else
+	return false;
+#endif
+}
+
+#if defined( CINDER_MSW )
+ID3D12DescriptorHeap* ImGui::GetD3D12SrvHeap()
+{
+	return sImGuiSrvHeap;
+}
+#endif

@@ -1,7 +1,7 @@
 /*
  D3d12ImageBasic Sample - Proof of Concept
 
- Demonstrates basic Direct3D 12 image loading
+ Demonstrates basic Direct3D 12 image loading with ImGui integration
 
  Features:
  - Direct3D 12 texture creation from Cinder Surface8u
@@ -10,6 +10,7 @@
  - Ctrl+O to open image file dialog
  - Ctrl+S to save screenshot
  - App-managed D3D12 command lists (minimal renderer pattern)
+ - ImGui integration for image info display
 
  Controls:
  - Ctrl+O: Open image file
@@ -26,6 +27,10 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <d3dcompiler.h>
+
+// ImGui - uses CinderImGui for input handling, imgui_impl_dx12 for rendering
+#include "cinder/CinderImGui.h"
+#include "imgui/imgui_impl_dx12.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -47,9 +52,10 @@ class D3d12ImageBasicApp : public App {
   private:
 	void loadImage( const fs::path& path );
 	void openImageDialog();
+	void saveImageDialog();
 	void saveScreenshot();
 	void createTextureFromSurface( const Surface8u& surface );
-	void waitForGpu();
+	void drawGui();
 
 	// App-managed D3D12 resources (minimal renderer pattern)
 	ID3D12Device*		mDevice = nullptr;
@@ -69,11 +75,6 @@ class D3d12ImageBasicApp : public App {
 	ID3D12Resource*			 mTextureUploadHeap = nullptr;
 	ID3D12DescriptorHeap*	 mSrvHeap = nullptr;
 
-	// App-managed synchronization (per-frame fences for triple buffering)
-	ID3D12Fence* mFence = nullptr;
-	UINT64		 mFenceValues[RendererD3d12::MaxFrameCount] = {};
-	HANDLE		 mFenceEvent = nullptr;
-
 	// Cached renderer pointer
 	RendererD3d12Ref mRenderer;
 
@@ -81,6 +82,11 @@ class D3d12ImageBasicApp : public App {
 	ivec2	 mImageSize{ 0, 0 };
 	bool	 mCaptureMode = false;
 	bool	 mCaptured = false;
+
+	// Image source info for ImGui display
+	ImageSourceRef mImageSource;
+	fs::path	   mImagePath;
+	std::string	   mErrorMessage;
 };
 
 void D3d12ImageBasicApp::setup()
@@ -118,14 +124,6 @@ void D3d12ImageBasicApp::setup()
 	if( FAILED( hr ) )
 		return;
 	mCommandList->Close(); // Start closed
-
-	// Create app's own fence for synchronization
-	hr = mDevice->CreateFence( 0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( &mFence ) );
-	if( FAILED( hr ) )
-		return;
-	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ )
-		mFenceValues[i] = 0;
-	mFenceEvent = CreateEvent( nullptr, FALSE, FALSE, nullptr );
 
 	// Create root signature with one descriptor table (SRV for texture) and one static sampler
 	D3D12_DESCRIPTOR_RANGE ranges[1] = {};
@@ -296,6 +294,9 @@ void D3d12ImageBasicApp::setup()
 	// Connect CanvasUi
 	mCanvas.connect( getWindow() );
 
+	// Initialize ImGui - CinderImGui handles input via signals, we handle D3D12 rendering
+	ImGui::Initialize();
+
 	// Prompt user to open an image
 	openImageDialog();
 }
@@ -304,6 +305,7 @@ void D3d12ImageBasicApp::cleanup()
 {
 	// Don't call waitForGpu() here - the renderer may have already destroyed the queue
 	// The renderer's kill() already waits for GPU idle before destroying resources
+	// Note: CinderImGui handles ImGui shutdown via app cleanup signal
 
 	if( mTextureUploadHeap )
 		mTextureUploadHeap->Release();
@@ -325,27 +327,18 @@ void D3d12ImageBasicApp::cleanup()
 		if( mCommandAllocators[i] )
 			mCommandAllocators[i]->Release();
 	}
-	if( mFence )
-		mFence->Release();
-	if( mFenceEvent )
-		CloseHandle( mFenceEvent );
 }
 
 void D3d12ImageBasicApp::resize()
 {
 	CI_LOG_I( "[App] resize: Starting..." );
-	// Wait for all app GPU work to complete before resize
-	// The renderer's defaultResize() will wait for present operations,
-	// but we need to wait for our own command lists too
-	waitForGpu();
+	// Wait for all GPU work to complete before resize
+	if( mRenderer )
+		mRenderer->waitForGpu();
 
 	if( mRenderer )
 		mRenderer->defaultResize();
 
-	// Reset fence values after resize since buffers are new
-	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
-		mFenceValues[i] = 0;
-	}
 	CI_LOG_I( "[App] resize: Complete" );
 }
 
@@ -354,12 +347,9 @@ void D3d12ImageBasicApp::draw()
 	if( ! mRenderer )
 		return;
 
-	if( ! mTexture )
-		return;
-
 	// Get back buffer info from renderer
-	UINT frameIndex = mRenderer->getCurrentBackBufferIndex();
-	ID3D12Resource* backBuffer = mRenderer->getCurrentBackBuffer();
+	UINT						frameIndex = mRenderer->getCurrentBackBufferIndex();
+	ID3D12Resource*				backBuffer = mRenderer->getCurrentBackBuffer();
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mRenderer->getCurrentRtvHandle();
 
 	// Back buffer may be null during resize - skip this frame
@@ -372,11 +362,7 @@ void D3d12ImageBasicApp::draw()
 	UINT				bufferHeight = bufferDesc.Height;
 
 	// Wait for this frame's GPU work to complete before reusing its allocator
-	const UINT64 currentFrameFenceValue = mFenceValues[frameIndex];
-	if( currentFrameFenceValue != 0 && mFence->GetCompletedValue() < currentFrameFenceValue ) {
-		mFence->SetEventOnCompletion( currentFrameFenceValue, mFenceEvent );
-		WaitForSingleObject( mFenceEvent, INFINITE );
-	}
+	mRenderer->waitForFrame( frameIndex );
 
 	// Reset this frame's command allocator and list
 	ID3D12CommandAllocator* frameAllocator = mCommandAllocators[frameIndex];
@@ -399,64 +385,62 @@ void D3d12ImageBasicApp::draw()
 	mCommandList->RSSetScissorRects( 1, &scissor );
 
 	// Clear and set render target
-	float clearColor[] = { 0.2f, 0.2f, 0.25f, 1.0f };
+	float clearColor[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 	mCommandList->ClearRenderTargetView( rtvHandle, clearColor, 0, nullptr );
 	mCommandList->OMSetRenderTargets( 1, &rtvHandle, FALSE, nullptr );
 
-	// Use CanvasUi's matrix
-	// Note: During resize, CanvasUi uses window size but we render to old buffer size.
-	// This causes the image to appear stretched until resize completes - same as Triangle sample.
-	mat4 modelMatrix = mCanvas.getModelMatrix();
-	vec2 bufferSize = vec2( bufferWidth, bufferHeight );
+	// Draw image if we have a texture
+	if( mTexture ) {
+		// Use CanvasUi's matrix
+		mat4 modelMatrix = mCanvas.getModelMatrix();
+		vec2 bufferSize = vec2( bufferWidth, bufferHeight );
 
-	// Define quad corners in content space
-	float halfWidth = mImageSize.x * 0.5f;
-	float halfHeight = mImageSize.y * 0.5f;
+		// Define quad corners in content space
+		float halfWidth = mImageSize.x * 0.5f;
+		float halfHeight = mImageSize.y * 0.5f;
 
-	// Transform content-space corners to window-space
-	// CanvasUi designed for OpenGL (Y-up in both content and NDC), but we're using D3D12 (Y-down in window)
-	// Flip content Y to compensate: what was "top" (+Y) in content should go to top (small Y) in window
-	vec4 windowPos[4] = {
-		modelMatrix * vec4( -halfWidth, -halfHeight, 0.0f, 1.0f ), // Top-left (flip: use negative Y)
-		modelMatrix * vec4( halfWidth, -halfHeight, 0.0f, 1.0f ),  // Top-right
-		modelMatrix * vec4( -halfWidth, halfHeight, 0.0f, 1.0f ),  // Bottom-left (flip: use positive Y)
-		modelMatrix * vec4( halfWidth, halfHeight, 0.0f, 1.0f )	   // Bottom-right
-	};
+		// Transform content-space corners to window-space
+		vec4 windowPos[4] = { modelMatrix * vec4( -halfWidth, -halfHeight, 0.0f, 1.0f ), modelMatrix * vec4( halfWidth, -halfHeight, 0.0f, 1.0f ), modelMatrix * vec4( -halfWidth, halfHeight, 0.0f, 1.0f ),
+			modelMatrix * vec4( halfWidth, halfHeight, 0.0f, 1.0f ) };
 
-	// Convert window-space to NDC and arrange for triangle strip
-	// Triangle strip needs: TL, TR, BL, BR (in NDC space where Y increases upward)
-	// After conversion, windowPos top/bottom are flipped due to Y-axis difference
-	// Use buffer size for NDC - DXGI will stretch the buffer to window size
-	vec2 windowSize = bufferSize;
+		vec2   windowSize = bufferSize;
+		Vertex vertices[] = { { { windowPos[0].x / windowSize.x * 2.0f - 1.0f, 1.0f - windowPos[0].y / windowSize.y * 2.0f, 0.0f }, { 0.0f, 0.0f } },
+			{ { windowPos[1].x / windowSize.x * 2.0f - 1.0f, 1.0f - windowPos[1].y / windowSize.y * 2.0f, 0.0f }, { 1.0f, 0.0f } },
+			{ { windowPos[2].x / windowSize.x * 2.0f - 1.0f, 1.0f - windowPos[2].y / windowSize.y * 2.0f, 0.0f }, { 0.0f, 1.0f } },
+			{ { windowPos[3].x / windowSize.x * 2.0f - 1.0f, 1.0f - windowPos[3].y / windowSize.y * 2.0f, 0.0f }, { 1.0f, 1.0f } } };
 
-	// windowPos[0/1] have smaller window Y (top in window space) -> larger NDC Y (top in NDC)
-	// windowPos[2/3] have larger window Y (bottom in window space) -> smaller NDC Y (bottom in NDC)
-	// Triangle strip order: TL, TR, BL, BR
-	Vertex vertices[] = {
-		{ { windowPos[0].x / windowSize.x * 2.0f - 1.0f, 1.0f - windowPos[0].y / windowSize.y * 2.0f, 0.0f }, { 0.0f, 0.0f } }, // TL (window top)
-		{ { windowPos[1].x / windowSize.x * 2.0f - 1.0f, 1.0f - windowPos[1].y / windowSize.y * 2.0f, 0.0f }, { 1.0f, 0.0f } }, // TR (window top)
-		{ { windowPos[2].x / windowSize.x * 2.0f - 1.0f, 1.0f - windowPos[2].y / windowSize.y * 2.0f, 0.0f }, { 0.0f, 1.0f } }, // BL (window bottom)
-		{ { windowPos[3].x / windowSize.x * 2.0f - 1.0f, 1.0f - windowPos[3].y / windowSize.y * 2.0f, 0.0f }, { 1.0f, 1.0f } }	// BR (window bottom)
-	};
+		// Update this frame's vertex buffer
+		void*	data;
+		HRESULT hr = mVertexBuffers[frameIndex]->Map( 0, nullptr, &data );
+		if( SUCCEEDED( hr ) ) {
+			memcpy( data, vertices, sizeof( vertices ) );
+			mVertexBuffers[frameIndex]->Unmap( 0, nullptr );
+		}
 
-	// Update this frame's vertex buffer
-	void*	data;
-	HRESULT hr = mVertexBuffers[frameIndex]->Map( 0, nullptr, &data );
-	if( SUCCEEDED( hr ) ) {
-		memcpy( data, vertices, sizeof( vertices ) );
-		mVertexBuffers[frameIndex]->Unmap( 0, nullptr );
+		// Set descriptor heaps and root signature
+		ID3D12DescriptorHeap* heaps[] = { mSrvHeap };
+		mCommandList->SetDescriptorHeaps( 1, heaps );
+		mCommandList->SetGraphicsRootSignature( mRootSignature );
+		mCommandList->SetGraphicsRootDescriptorTable( 0, mSrvHeap->GetGPUDescriptorHandleForHeapStart() );
+
+		// Draw quad using this frame's vertex buffer
+		mCommandList->IASetPrimitiveTopology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP );
+		mCommandList->IASetVertexBuffers( 0, 1, &mVertexBufferViews[frameIndex] );
+		mCommandList->DrawInstanced( 4, 1, 0, 0 );
 	}
 
-	// Set descriptor heaps and root signature
-	ID3D12DescriptorHeap* heaps[] = { mSrvHeap };
-	mCommandList->SetDescriptorHeaps( 1, heaps );
-	mCommandList->SetGraphicsRootSignature( mRootSignature );
-	mCommandList->SetGraphicsRootDescriptorTable( 0, mSrvHeap->GetGPUDescriptorHandleForHeapStart() );
+	// Draw ImGui - CinderImGui manages context and input, we just need to render
+	if( ID3D12DescriptorHeap* imguiHeap = ImGui::GetD3D12SrvHeap() ) {
+		// Set ImGui descriptor heap
+		ID3D12DescriptorHeap* imguiHeaps[] = { imguiHeap };
+		mCommandList->SetDescriptorHeaps( 1, imguiHeaps );
 
-	// Draw quad using this frame's vertex buffer
-	mCommandList->IASetPrimitiveTopology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP );
-	mCommandList->IASetVertexBuffers( 0, 1, &mVertexBufferViews[frameIndex] );
-	mCommandList->DrawInstanced( 4, 1, 0, 0 );
+		ImGui_ImplDX12_NewFrame();
+		ImGui::NewFrame();
+		drawGui();
+		ImGui::Render();
+		ImGui_ImplDX12_RenderDrawData( ImGui::GetDrawData(), mCommandList );
+	}
 
 	// Transition back buffer from RENDER_TARGET to PRESENT
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -468,12 +452,8 @@ void D3d12ImageBasicApp::draw()
 	ID3D12CommandList* lists[] = { mCommandList };
 	mCommandQueue->ExecuteCommandLists( 1, lists );
 
-	// Signal fence for this frame
-	const UINT64 currentFenceValue = mFenceValues[frameIndex] + 1;
-	mCommandQueue->Signal( mFence, currentFenceValue );
-	mFenceValues[frameIndex] = currentFenceValue;
-
-	// Note: Don't call finishDraw() here - the framework calls it after draw() returns
+	// Signal renderer's frame fence so it can track when this frame's work completes
+	mRenderer->signalFrameFence();
 
 	// Handle capture mode
 	if( mCaptureMode && ! mCaptured ) {
@@ -488,25 +468,9 @@ void D3d12ImageBasicApp::draw()
 	}
 }
 
-void D3d12ImageBasicApp::waitForGpu()
-{
-	if( mFence && mCommandQueue ) {
-		// Wait for all frames to complete
-		UINT64 maxFenceValue = 0;
-		for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
-			if( mFenceValues[i] > maxFenceValue )
-				maxFenceValue = mFenceValues[i];
-		}
-
-		if( maxFenceValue > 0 && mFence->GetCompletedValue() < maxFenceValue ) {
-			mFence->SetEventOnCompletion( maxFenceValue, mFenceEvent );
-			WaitForSingleObject( mFenceEvent, INFINITE );
-		}
-	}
-}
-
 void D3d12ImageBasicApp::keyDown( KeyEvent event )
 {
+	// App shortcuts (ImGui input is handled by CinderImGui via signals)
 	if( event.isControlDown() && event.getCode() == KeyEvent::KEY_o ) {
 		openImageDialog();
 	}
@@ -526,13 +490,21 @@ void D3d12ImageBasicApp::fileDrop( FileDropEvent event )
 void D3d12ImageBasicApp::loadImage( const fs::path& path )
 {
 	try {
-		ImageSourceRef imageSource = ci::loadImage( path );
-		Surface8u	   surface = Surface8u( imageSource );
+		mImagePath = path;
+		mImageSource = ci::loadImage( path );
+		Surface8u surface = Surface8u( mImageSource );
 		createTextureFromSurface( surface );
+		mCanvas.setContentBounds( Rectf( -mImageSize.x * 0.5f, -mImageSize.y * 0.5f, mImageSize.x * 0.5f, mImageSize.y * 0.5f ) );
+		mCanvas.fitAll();
+		mErrorMessage.clear();
 		getWindow()->setTitle( path.filename().string() );
 	}
 	catch( const std::exception& e ) {
-		console() << "Failed to load image: " << e.what() << std::endl;
+		CI_LOG_EXCEPTION( "failed to load image.", e );
+		mTexture = nullptr;
+		mImageSource.reset();
+		mImagePath.clear();
+		mErrorMessage = e.what();
 	}
 }
 
@@ -563,7 +535,8 @@ void D3d12ImageBasicApp::createTextureFromSurface( const Surface8u& surface )
 		return;
 
 	// Wait for GPU before releasing old resources
-	waitForGpu();
+	if( mRenderer )
+		mRenderer->waitForGpu();
 
 	if( mTextureUploadHeap ) {
 		mTextureUploadHeap->Release();
@@ -690,24 +663,7 @@ void D3d12ImageBasicApp::createTextureFromSurface( const Surface8u& surface )
 	mCommandQueue->ExecuteCommandLists( 1, uploadLists );
 
 	// Wait for upload to complete before releasing resources
-	// Signal a fence value higher than all current frames to maintain monotonicity
-	UINT64 uploadFenceValue = 0;
-	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
-		if( mFenceValues[i] > uploadFenceValue )
-			uploadFenceValue = mFenceValues[i];
-	}
-	uploadFenceValue++;
-
-	mCommandQueue->Signal( mFence, uploadFenceValue );
-	if( mFence->GetCompletedValue() < uploadFenceValue ) {
-		mFence->SetEventOnCompletion( uploadFenceValue, mFenceEvent );
-		WaitForSingleObject( mFenceEvent, INFINITE );
-	}
-
-	// Update all frame fence values to maintain monotonicity for future signals
-	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
-		mFenceValues[i] = uploadFenceValue;
-	}
+	mRenderer->waitForGpu();
 
 	uploadList->Release();
 	uploadAllocator->Release();
@@ -726,6 +682,132 @@ void D3d12ImageBasicApp::createTextureFromSurface( const Surface8u& surface )
 	float halfHeight = mImageSize.y * 0.5f;
 	mCanvas.setContentBounds( Rectf( -halfWidth, -halfHeight, halfWidth, halfHeight ) );
 	mCanvas.fitAll();
+}
+
+void D3d12ImageBasicApp::saveImageDialog()
+{
+	try {
+		fs::path path = getSaveFilePath( "", ImageIo::getWriteExtensions() );
+		if( ! path.empty() )
+			writeImage( writeFile( path ), copyWindowSurface() );
+	}
+	catch( const std::exception& e ) {
+		CI_LOG_EXCEPTION( "failed to save image.", e );
+	}
+}
+
+void D3d12ImageBasicApp::drawGui()
+{
+	ImGui::Begin( "Image Info" );
+
+	if( ImGui::Button( "Open Image" ) )
+		openImageDialog();
+
+	ImGui::SameLine();
+
+	ImGui::BeginDisabled( ! mTexture );
+	if( ImGui::Button( "Save Image" ) )
+		saveImageDialog();
+	ImGui::EndDisabled();
+
+	ImGui::SameLine();
+
+	ImGui::BeginDisabled( ! mTexture );
+	if( ImGui::Button( "Fit to Window" ) ) {
+		mCanvas.setContentBounds( Rectf( -mImageSize.x * 0.5f, -mImageSize.y * 0.5f, mImageSize.x * 0.5f, mImageSize.y * 0.5f ) );
+		mCanvas.fitAll();
+	}
+	ImGui::EndDisabled();
+
+	ImGui::Separator();
+
+	if( mTexture && mImageSource ) {
+		ImGui::Text( "File: %s", mImagePath.filename().string().c_str() );
+		ImGui::Separator();
+		ImGui::Text( "Dimensions: %d x %d", mImageSize.x, mImageSize.y );
+		ImGui::Text( "Texture Format: DXGI_FORMAT_R8G8B8A8_UNORM" );
+		ImGui::Separator();
+
+		// Image source information
+		const char* colorModelStr = "Unknown";
+		switch( mImageSource->getColorModel() ) {
+			case ImageIo::CM_RGB:
+				colorModelStr = "RGB";
+				break;
+			case ImageIo::CM_GRAY:
+				colorModelStr = "Grayscale";
+				break;
+			default:
+				break;
+		}
+		ImGui::Text( "Color Model: %s", colorModelStr );
+
+		const char* dataTypeStr = "Unknown";
+		switch( mImageSource->getDataType() ) {
+			case ImageIo::UINT8:
+				dataTypeStr = "UINT8";
+				break;
+			case ImageIo::UINT16:
+				dataTypeStr = "UINT16";
+				break;
+			case ImageIo::FLOAT16:
+				dataTypeStr = "FLOAT16";
+				break;
+			case ImageIo::FLOAT32:
+				dataTypeStr = "FLOAT32";
+				break;
+			default:
+				break;
+		}
+		ImGui::Text( "Data Type: %s", dataTypeStr );
+
+		const char* channelOrderStr = "Unknown";
+		switch( mImageSource->getChannelOrder() ) {
+			case ImageIo::Y:
+				channelOrderStr = "Y (Grayscale)";
+				break;
+			case ImageIo::YA:
+				channelOrderStr = "YA (Grayscale + Alpha)";
+				break;
+			case ImageIo::RGB:
+				channelOrderStr = "RGB";
+				break;
+			case ImageIo::RGBA:
+				channelOrderStr = "RGBA";
+				break;
+			case ImageIo::RGBX:
+				channelOrderStr = "RGBX";
+				break;
+			case ImageIo::BGR:
+				channelOrderStr = "BGR";
+				break;
+			case ImageIo::BGRA:
+				channelOrderStr = "BGRA";
+				break;
+			case ImageIo::BGRX:
+				channelOrderStr = "BGRX";
+				break;
+			default:
+				break;
+		}
+		ImGui::Text( "Channel Order: %s", channelOrderStr );
+
+		ImGui::Text( "Has Alpha: %s", mImageSource->hasAlpha() ? "Yes" : "No" );
+		ImGui::Text( "Premultiplied: %s", mImageSource->isPremultiplied() ? "Yes" : "No" );
+	}
+	else {
+		ImGui::Text( "No image loaded" );
+		ImGui::Text( "Click 'Open Image' or drag & drop an image file" );
+
+		if( ! mErrorMessage.empty() ) {
+			ImGui::Separator();
+			ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.0f, 0.3f, 0.3f, 1.0f ) );
+			ImGui::TextWrapped( "Error: %s", mErrorMessage.c_str() );
+			ImGui::PopStyleColor();
+		}
+	}
+
+	ImGui::End();
 }
 
 CINDER_APP( D3d12ImageBasicApp, RendererD3d12 )

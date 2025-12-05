@@ -121,6 +121,21 @@ class RendererImplD3d12 : public RendererImplMsw {
 	//! MSAA sample count (validated against device support)
 	UINT mMsaaSamples = 1;
 
+	//! Waits for GPU to be completely idle (all work finished)
+	void waitForIdle();
+
+	//! Signals the frame fence for the current frame after app submits command lists
+	void signalFrameFence();
+
+	//! Waits for the specified frame's GPU work to complete
+	void waitForFrame( UINT frameIndex );
+
+	//! Returns the fence object
+	ID3D12Fence* getFence() { return mFrameFence.get(); }
+
+	//! Returns the fence value for the specified frame
+	UINT64 getFenceValue( UINT frameIndex ) const;
+
   protected:
 	RendererD3d12 *mRenderer;
 	RendererD3d12::Options mOptions;
@@ -150,9 +165,6 @@ class RendererImplD3d12 : public RendererImplMsw {
 
 	//! Creates the frame fence and events
 	bool createFrameFence();
-
-	//! Waits for GPU to be completely idle (all work finished)
-	void waitForIdle();
 
 	//! Releases back buffer resources
 	void releaseBackBuffers();

@@ -224,6 +224,29 @@ class RendererD3d12 : public Renderer {
 	void recordMsaaResolve( ID3D12GraphicsCommandList* cmdList,
 		D3D12_RESOURCE_STATES finalBackBufferState = D3D12_RESOURCE_STATE_PRESENT ) const;
 
+	// ---- Synchronization ----
+
+	//! Waits for all GPU work to complete. Call this before destroying resources
+	//! or during resize operations to ensure the GPU is idle.
+	void waitForGpu();
+
+	//! Signals the frame fence after submitting command lists for the current frame.
+	//! Call this after ExecuteCommandLists() but before the framework's finishDraw().
+	//! This allows the renderer to track when each frame's GPU work is complete.
+	void signalFrameFence();
+
+	//! Waits for the specified frame's GPU work to complete.
+	//! Used internally by startDraw() but can be called manually if needed.
+	void waitForFrame( UINT frameIndex );
+
+	//! Returns the fence object for advanced synchronization scenarios.
+	//! Most apps should use signalFrameFence() and waitForFrame() instead.
+	ID3D12Fence* getFence();
+
+	//! Returns the fence value for the specified frame.
+	//! Returns 0 if the frame has not been signaled yet.
+	UINT64 getFenceValue( UINT frameIndex ) const;
+
   protected:
 	RendererD3d12( const RendererD3d12 &renderer );
 
