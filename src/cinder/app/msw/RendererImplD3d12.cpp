@@ -432,6 +432,35 @@ void RendererImplD3d12::waitForIdle()
 	CI_LOG_I( "[D3D12] waitForIdle: Complete" );
 }
 
+void RendererImplD3d12::signalFrameFence()
+{
+	if( ! mCommandQueue || ! mFrameFence || mFrameIndex >= mBufferCount )
+		return;
+
+	UINT64 fenceValue = ++mFenceCounter;
+	mFenceValues[mFrameIndex] = fenceValue;
+	mCommandQueue->Signal( mFrameFence.get(), fenceValue );
+}
+
+void RendererImplD3d12::waitForFrame( UINT frameIndex )
+{
+	if( ! mFrameFence || frameIndex >= mBufferCount )
+		return;
+
+	UINT64 fenceValueForFrame = mFenceValues[frameIndex];
+	if( fenceValueForFrame != 0 && mFrameFence->GetCompletedValue() < fenceValueForFrame ) {
+		mFrameFence->SetEventOnCompletion( fenceValueForFrame, mFenceEvent );
+		WaitForSingleObject( mFenceEvent, INFINITE );
+	}
+}
+
+UINT64 RendererImplD3d12::getFenceValue( UINT frameIndex ) const
+{
+	if( frameIndex >= MaxFrameCount )
+		return 0;
+	return mFenceValues[frameIndex];
+}
+
 void RendererImplD3d12::releaseBackBuffers()
 {
 	for( UINT i = 0; i < mBufferCount; i++ ) {

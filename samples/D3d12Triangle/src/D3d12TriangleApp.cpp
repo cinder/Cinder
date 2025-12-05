@@ -24,7 +24,6 @@ class D3d12TriangleApp : public App {
 
   private:
 	void saveScreenshot();
-	void waitForGpu();
 
 	// App-managed D3D12 resources (minimal renderer pattern)
 	ID3D12Device*				mDevice = nullptr;
@@ -39,11 +38,6 @@ class D3d12TriangleApp : public App {
 	ID3D12PipelineState*	mPipelineState = nullptr;
 	ID3D12Resource*			mVertexBuffer = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView = {};
-
-	// App-managed synchronization (per-frame fences for triple buffering)
-	ID3D12Fence*	mFence = nullptr;
-	UINT64			mFenceValues[RendererD3d12::MaxFrameCount] = {};
-	HANDLE			mFenceEvent = nullptr;
 
 	// Cached renderer pointer
 	RendererD3d12Ref mRenderer;
@@ -78,14 +72,6 @@ void D3d12TriangleApp::setup()
 	if( FAILED( hr ) )
 		return;
 	mCommandList->Close(); // Start closed
-
-	// Create app's own fence for synchronization
-	hr = mDevice->CreateFence( 0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( &mFence ) );
-	if( FAILED( hr ) )
-		return;
-	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ )
-		mFenceValues[i] = 0;
-	mFenceEvent = CreateEvent( nullptr, FALSE, FALSE, nullptr );
 
 	// Create root signature
 	D3D12_ROOT_SIGNATURE_DESC rootSigDesc = {};
@@ -264,29 +250,19 @@ void D3d12TriangleApp::cleanup()
 		if( mCommandAllocators[i] )
 			mCommandAllocators[i]->Release();
 	}
-	if( mFence )
-		mFence->Release();
-	if( mFenceEvent )
-		CloseHandle( mFenceEvent );
 }
 
 void D3d12TriangleApp::resize()
 {
 	CI_LOG_I( "[App] resize: Starting..." );
-	// Wait for all app GPU work to complete before resize
-	// The renderer's defaultResize() will wait for present operations,
-	// but we need to wait for our own command lists too
-	waitForGpu();
+	// Wait for all GPU work to complete before resize
+	if( mRenderer )
+		mRenderer->waitForGpu();
 	CI_LOG_I( "[App] resize: waitForGpu complete" );
 
 	if( mRenderer )
 		mRenderer->defaultResize();
 
-	CI_LOG_I( "[App] resize: defaultResize complete, resetting fence values" );
-	// Reset fence values after resize since buffers are new
-	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
-		mFenceValues[i] = 0;
-	}
 	CI_LOG_I( "[App] resize: Complete" );
 }
 
@@ -321,11 +297,9 @@ void D3d12TriangleApp::draw()
 	}
 
 	// Wait for this frame's GPU work to complete before reusing its allocator
-	const UINT64 currentFrameFenceValue = mFenceValues[frameIndex];
-	if( currentFrameFenceValue != 0 && mFence->GetCompletedValue() < currentFrameFenceValue ) {
-		mFence->SetEventOnCompletion( currentFrameFenceValue, mFenceEvent );
-		WaitForSingleObject( mFenceEvent, INFINITE );
-	}
+	// The renderer's startDraw() already calls waitForFrame(), but we need to ensure
+	// our command allocator is safe to reset
+	mRenderer->waitForFrame( frameIndex );
 
 	// Reset this frame's command allocator and list
 	ID3D12CommandAllocator* frameAllocator = mCommandAllocators[frameIndex];
@@ -411,29 +385,10 @@ void D3d12TriangleApp::draw()
 	ID3D12CommandList* lists[] = { mCommandList };
 	mCommandQueue->ExecuteCommandLists( 1, lists );
 
-	// Signal fence for this frame
-	const UINT64 currentFenceValue = mFenceValues[frameIndex] + 1;
-	mCommandQueue->Signal( mFence, currentFenceValue );
-	mFenceValues[frameIndex] = currentFenceValue;
+	// Signal renderer's frame fence so it can track when this frame's work completes
+	mRenderer->signalFrameFence();
 
 	// Note: Don't call finishDraw() here - the framework calls it after draw() returns
-}
-
-void D3d12TriangleApp::waitForGpu()
-{
-	if( mFence && mCommandQueue ) {
-		// Wait for all frames to complete
-		UINT64 maxFenceValue = 0;
-		for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
-			if( mFenceValues[i] > maxFenceValue )
-				maxFenceValue = mFenceValues[i];
-		}
-
-		if( maxFenceValue > 0 && mFence->GetCompletedValue() < maxFenceValue ) {
-			mFence->SetEventOnCompletion( maxFenceValue, mFenceEvent );
-			WaitForSingleObject( mFenceEvent, INFINITE );
-		}
-	}
 }
 
 void D3d12TriangleApp::keyDown( KeyEvent event )

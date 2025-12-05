@@ -296,4 +296,32 @@ void RendererD3d12::recordMsaaResolve( ID3D12GraphicsCommandList* cmdList,
 	cmdList->ResourceBarrier( 2, barriers );
 }
 
+void RendererD3d12::waitForGpu()
+{
+	if( mImpl )
+		mImpl->waitForIdle();
+}
+
+void RendererD3d12::signalFrameFence()
+{
+	if( mImpl )
+		mImpl->signalFrameFence();
+}
+
+void RendererD3d12::waitForFrame( UINT frameIndex )
+{
+	if( mImpl )
+		mImpl->waitForFrame( frameIndex );
+}
+
+ID3D12Fence* RendererD3d12::getFence()
+{
+	return mImpl ? mImpl->getFence() : nullptr;
+}
+
+UINT64 RendererD3d12::getFenceValue( UINT frameIndex ) const
+{
+	return mImpl ? mImpl->getFenceValue( frameIndex ) : 0;
+}
+
 } } // namespace cinder::app
