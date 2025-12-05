@@ -1,6 +1,5 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererD3d12.h"
-#include "cinder/app/msw/RendererImplD3d12.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Log.h"
 #include <d3d12.h>
@@ -32,8 +31,7 @@ class D3d12TriangleApp : public App {
 	ID3D12CommandQueue*			mCommandQueue = nullptr;
 
 	// Per-frame command allocators for proper triple buffering
-	static const UINT FrameCount = 3;
-	ID3D12CommandAllocator*		mCommandAllocators[FrameCount] = {};
+	ID3D12CommandAllocator*		mCommandAllocators[RendererD3d12::MaxFrameCount] = {};
 	ID3D12GraphicsCommandList*	mCommandList = nullptr;
 
 	// App rendering resources
@@ -44,27 +42,30 @@ class D3d12TriangleApp : public App {
 
 	// App-managed synchronization (per-frame fences for triple buffering)
 	ID3D12Fence*	mFence = nullptr;
-	UINT64			mFenceValues[FrameCount] = {};
+	UINT64			mFenceValues[RendererD3d12::MaxFrameCount] = {};
 	HANDLE			mFenceEvent = nullptr;
+
+	// Cached renderer pointer
+	RendererD3d12Ref mRenderer;
 };
 
 void D3d12TriangleApp::setup()
 {
 	setWindowSize( 800, 800 );
 
-	auto renderer = std::dynamic_pointer_cast<RendererD3d12>( getRenderer() );
-	if( ! renderer )
+	mRenderer = std::dynamic_pointer_cast<RendererD3d12>( getRenderer() );
+	if( ! mRenderer )
 		return;
 
 	// Get device and queue from minimal renderer
-	mDevice = static_cast<ID3D12Device*>( renderer->getDevice() );
-	mCommandQueue = static_cast<ID3D12CommandQueue*>( renderer->getCommandQueue() );
+	mDevice = mRenderer->getDevice();
+	mCommandQueue = mRenderer->getCommandQueue();
 	if( ! mDevice || ! mCommandQueue )
 		return;
 
 	// Create per-frame command allocators for proper triple buffering
 	HRESULT hr = S_OK;
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
 		hr = mDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT,
 			IID_PPV_ARGS( &mCommandAllocators[i] ) );
 		if( FAILED( hr ) )
@@ -82,7 +83,7 @@ void D3d12TriangleApp::setup()
 	hr = mDevice->CreateFence( 0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( &mFence ) );
 	if( FAILED( hr ) )
 		return;
-	for( UINT i = 0; i < FrameCount; i++ )
+	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ )
 		mFenceValues[i] = 0;
 	mFenceEvent = CreateEvent( nullptr, FALSE, FALSE, nullptr );
 
@@ -170,7 +171,10 @@ void D3d12TriangleApp::setup()
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	};
 
-	// Create pipeline state
+	// Create pipeline state - use MSAA sample count from renderer
+	UINT msaaSamples = mRenderer->getMsaaSamples();
+	CI_LOG_I( "[App] Creating PSO with MSAA " << msaaSamples << "x" );
+
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.pRootSignature = mRootSignature;
 	psoDesc.VS = { vsBlob->GetBufferPointer(), vsBlob->GetBufferSize() };
@@ -185,7 +189,7 @@ void D3d12TriangleApp::setup()
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-	psoDesc.SampleDesc.Count = 1;
+	psoDesc.SampleDesc.Count = msaaSamples;
 
 	hr = mDevice->CreateGraphicsPipelineState( &psoDesc, IID_PPV_ARGS( &mPipelineState ) );
 	vsBlob->Release();
@@ -256,7 +260,7 @@ void D3d12TriangleApp::cleanup()
 		mRootSignature->Release();
 	if( mCommandList )
 		mCommandList->Release();
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
 		if( mCommandAllocators[i] )
 			mCommandAllocators[i]->Release();
 	}
@@ -275,13 +279,12 @@ void D3d12TriangleApp::resize()
 	waitForGpu();
 	CI_LOG_I( "[App] resize: waitForGpu complete" );
 
-	auto renderer = std::dynamic_pointer_cast<RendererD3d12>( getRenderer() );
-	if( renderer )
-		renderer->defaultResize();
+	if( mRenderer )
+		mRenderer->defaultResize();
 
 	CI_LOG_I( "[App] resize: defaultResize complete, resetting fence values" );
 	// Reset fence values after resize since buffers are new
-	for( UINT i = 0; i < FrameCount; i++ ) {
+	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
 		mFenceValues[i] = 0;
 	}
 	CI_LOG_I( "[App] resize: Complete" );
@@ -289,27 +292,33 @@ void D3d12TriangleApp::resize()
 
 void D3d12TriangleApp::draw()
 {
-	auto renderer = std::dynamic_pointer_cast<RendererD3d12>( getRenderer() );
-	if( ! renderer )
+	if( ! mRenderer )
 		return;
 
-	// Get renderer's implementation to access back buffers and RTVs
-	auto rendererImpl = renderer->mImpl;
-	if( ! rendererImpl )
-		return;
-
-	UINT frameIndex = rendererImpl->mFrameIndex;
-	ID3D12Resource* backBuffer = rendererImpl->mBackBuffers[frameIndex].get();
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = rendererImpl->mRtvHandles[frameIndex];
+	// Get back buffer info from renderer
+	UINT frameIndex = mRenderer->getCurrentBackBufferIndex();
+	ID3D12Resource* backBuffer = mRenderer->getCurrentBackBuffer();
 
 	// Back buffer may be null during resize - skip this frame
 	if( ! backBuffer )
 		return;
 
-	// Get actual back buffer dimensions (may differ from window size during resize)
-	D3D12_RESOURCE_DESC bufferDesc = backBuffer->GetDesc();
-	UINT bufferWidth = static_cast<UINT>( bufferDesc.Width );
-	UINT bufferHeight = bufferDesc.Height;
+	// Get the appropriate render target handle - MSAA target if enabled, back buffer otherwise
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mRenderer->getRenderTargetHandle();
+	bool msaaEnabled = mRenderer->isMsaaEnabled();
+
+	// Get render target dimensions from MSAA target if enabled, otherwise from back buffer
+	UINT bufferWidth, bufferHeight;
+	if( msaaEnabled && mRenderer->getMsaaTarget() ) {
+		D3D12_RESOURCE_DESC msaaDesc = mRenderer->getMsaaTarget()->GetDesc();
+		bufferWidth = static_cast<UINT>( msaaDesc.Width );
+		bufferHeight = msaaDesc.Height;
+	}
+	else {
+		D3D12_RESOURCE_DESC bufferDesc = backBuffer->GetDesc();
+		bufferWidth = static_cast<UINT>( bufferDesc.Width );
+		bufferHeight = bufferDesc.Height;
+	}
 
 	// Wait for this frame's GPU work to complete before reusing its allocator
 	const UINT64 currentFrameFenceValue = mFenceValues[frameIndex];
@@ -323,14 +332,17 @@ void D3d12TriangleApp::draw()
 	frameAllocator->Reset();
 	mCommandList->Reset( frameAllocator, mPipelineState );
 
-	// Transition back buffer from PRESENT to RENDER_TARGET
-	D3D12_RESOURCE_BARRIER barrier = {};
-	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	barrier.Transition.pResource = backBuffer;
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	mCommandList->ResourceBarrier( 1, &barrier );
+	// When MSAA is disabled, transition back buffer from PRESENT to RENDER_TARGET
+	// (MSAA target is always in RENDER_TARGET state)
+	if( ! msaaEnabled ) {
+		D3D12_RESOURCE_BARRIER barrier = {};
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Transition.pResource = backBuffer;
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		mCommandList->ResourceBarrier( 1, &barrier );
+	}
 
 	// Set viewport and scissor based on actual buffer size
 	D3D12_VIEWPORT viewport = { 0.0f, 0.0f, (float)bufferWidth, (float)bufferHeight, 0.0f, 1.0f };
@@ -378,10 +390,21 @@ void D3d12TriangleApp::draw()
 	mCommandList->IASetVertexBuffers( 0, 1, &mVertexBufferView );
 	mCommandList->DrawInstanced( 3, 1, 0, 0 );
 
-	// Transition back buffer from RENDER_TARGET to PRESENT
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-	mCommandList->ResourceBarrier( 1, &barrier );
+	// Handle end-of-frame transitions
+	if( msaaEnabled ) {
+		// MSAA: resolve to back buffer (handles all barriers internally)
+		mRenderer->recordMsaaResolve( mCommandList, D3D12_RESOURCE_STATE_PRESENT );
+	}
+	else {
+		// No MSAA: transition back buffer from RENDER_TARGET to PRESENT
+		D3D12_RESOURCE_BARRIER barrier = {};
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Transition.pResource = backBuffer;
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		mCommandList->ResourceBarrier( 1, &barrier );
+	}
 
 	// Close and execute
 	mCommandList->Close();
@@ -401,7 +424,7 @@ void D3d12TriangleApp::waitForGpu()
 	if( mFence && mCommandQueue ) {
 		// Wait for all frames to complete
 		UINT64 maxFenceValue = 0;
-		for( UINT i = 0; i < FrameCount; i++ ) {
+		for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
 			if( mFenceValues[i] > maxFenceValue )
 				maxFenceValue = mFenceValues[i];
 		}
@@ -434,4 +457,4 @@ void D3d12TriangleApp::saveScreenshot()
 	}
 }
 
-CINDER_APP( D3d12TriangleApp, RendererD3d12 )
+CINDER_APP( D3d12TriangleApp, RendererD3d12( RendererD3d12::Options().msaa( 0 ) ) )
