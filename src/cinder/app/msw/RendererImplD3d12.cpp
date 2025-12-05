@@ -405,31 +405,21 @@ bool RendererImplD3d12::createFrameFence()
 
 void RendererImplD3d12::waitForIdle()
 {
-	CI_LOG_I( "[D3D12] waitForIdle: Starting..." );
-	if( ! mCommandQueue || ! mFrameFence ) {
-		CI_LOG_I( "[D3D12] waitForIdle: No queue or fence, skipping" );
+	if( ! mCommandQueue || ! mFrameFence )
 		return;
-	}
 
 	// If no frames have been rendered yet, nothing to wait for
-	if( mFenceCounter == 0 ) {
-		CI_LOG_I( "[D3D12] waitForIdle: No frames submitted yet, skipping" );
+	if( mFenceCounter == 0 )
 		return;
-	}
 
 	// Signal a new fence value and wait for it to ensure all GPU work is done
 	UINT64 fenceValue = ++mFenceCounter;
-	CI_LOG_I( "[D3D12] waitForIdle: Signaling fence with value=" << fenceValue );
 	mCommandQueue->Signal( mFrameFence.get(), fenceValue );
 
-	UINT64 completedValue = mFrameFence->GetCompletedValue();
-	if( completedValue < fenceValue ) {
-		CI_LOG_I( "[D3D12] waitForIdle: Completed=" << completedValue << ", waiting for=" << fenceValue );
+	if( mFrameFence->GetCompletedValue() < fenceValue ) {
 		mFrameFence->SetEventOnCompletion( fenceValue, mFenceEvent );
 		WaitForSingleObject( mFenceEvent, INFINITE );
-		CI_LOG_I( "[D3D12] waitForIdle: Fence completed" );
 	}
-	CI_LOG_I( "[D3D12] waitForIdle: Complete" );
 }
 
 void RendererImplD3d12::signalFrameFence()

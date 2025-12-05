@@ -45,15 +45,15 @@ class D3d12ImageBasicApp : public App {
 	void setup() override;
 	void cleanup() override;
 	void resize() override;
+	void update() override;
 	void draw() override;
 	void keyDown( KeyEvent event ) override;
 	void fileDrop( FileDropEvent event ) override;
 
   private:
 	void loadImage( const fs::path& path );
-	void openImageDialog();
-	void saveImageDialog();
-	void saveScreenshot();
+	void processFileDialogs();
+	void saveScreenshot( const fs::path& path );
 	void createTextureFromSurface( const Surface8u& surface );
 	void drawGui();
 
@@ -87,6 +87,10 @@ class D3d12ImageBasicApp : public App {
 	ImageSourceRef mImageSource;
 	fs::path	   mImagePath;
 	std::string	   mErrorMessage;
+
+	// Deferred file dialog requests (avoid modal dialogs during draw)
+	bool mOpenRequested = false;
+	bool mSaveRequested = false;
 };
 
 void D3d12ImageBasicApp::setup()
@@ -297,8 +301,8 @@ void D3d12ImageBasicApp::setup()
 	// Initialize ImGui - CinderImGui handles input via signals, we handle D3D12 rendering
 	ImGui::Initialize();
 
-	// Prompt user to open an image
-	openImageDialog();
+	// Request file dialog on first frame (deferred to avoid modal during setup)
+	mOpenRequested = true;
 }
 
 void D3d12ImageBasicApp::cleanup()
@@ -340,6 +344,31 @@ void D3d12ImageBasicApp::resize()
 		mRenderer->defaultResize();
 
 	CI_LOG_I( "[App] resize: Complete" );
+}
+
+void D3d12ImageBasicApp::update()
+{
+	// Process deferred file dialogs outside of draw loop
+	processFileDialogs();
+}
+
+void D3d12ImageBasicApp::processFileDialogs()
+{
+	if( mOpenRequested ) {
+		mOpenRequested = false;
+		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
+		if( ! path.empty() ) {
+			loadImage( path );
+		}
+	}
+
+	if( mSaveRequested ) {
+		mSaveRequested = false;
+		fs::path path = getSaveFilePath();
+		if( ! path.empty() ) {
+			saveScreenshot( path );
+		}
+	}
 }
 
 void D3d12ImageBasicApp::draw()
@@ -436,6 +465,16 @@ void D3d12ImageBasicApp::draw()
 		mCommandList->SetDescriptorHeaps( 1, imguiHeaps );
 
 		ImGui_ImplDX12_NewFrame();
+
+		// Set display size and delta time (CinderImGui handles input, but D3D12 apps
+		// must set these since auto-render is disabled)
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2( (float)bufferWidth, (float)bufferHeight );
+		static double lastTime = 0.0;
+		double		  currentTime = getElapsedSeconds();
+		io.DeltaTime = lastTime > 0.0 ? (float)( currentTime - lastTime ) : ( 1.0f / 60.0f );
+		lastTime = currentTime;
+
 		ImGui::NewFrame();
 		drawGui();
 		ImGui::Render();
@@ -472,10 +511,10 @@ void D3d12ImageBasicApp::keyDown( KeyEvent event )
 {
 	// App shortcuts (ImGui input is handled by CinderImGui via signals)
 	if( event.isControlDown() && event.getCode() == KeyEvent::KEY_o ) {
-		openImageDialog();
+		mOpenRequested = true;
 	}
 	else if( event.isControlDown() && event.getCode() == KeyEvent::KEY_s ) {
-		saveScreenshot();
+		mSaveRequested = true;
 	}
 	else if( event.isControlDown() && event.getCode() == KeyEvent::KEY_f ) {
 		setFullScreen( ! isFullScreen() );
@@ -508,24 +547,13 @@ void D3d12ImageBasicApp::loadImage( const fs::path& path )
 	}
 }
 
-void D3d12ImageBasicApp::openImageDialog()
+void D3d12ImageBasicApp::saveScreenshot( const fs::path& path )
 {
-	fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
-	if( ! path.empty() ) {
-		loadImage( path );
+	try {
+		writeImage( path, copyWindowSurface() );
 	}
-}
-
-void D3d12ImageBasicApp::saveScreenshot()
-{
-	fs::path savePath = getSaveFilePath();
-	if( ! savePath.empty() ) {
-		try {
-			writeImage( savePath, copyWindowSurface() );
-		}
-		catch( const std::exception& e ) {
-			console() << "Failed to save screenshot: " << e.what() << std::endl;
-		}
+	catch( const std::exception& e ) {
+		console() << "Failed to save screenshot: " << e.what() << std::endl;
 	}
 }
 
@@ -684,30 +712,18 @@ void D3d12ImageBasicApp::createTextureFromSurface( const Surface8u& surface )
 	mCanvas.fitAll();
 }
 
-void D3d12ImageBasicApp::saveImageDialog()
-{
-	try {
-		fs::path path = getSaveFilePath( "", ImageIo::getWriteExtensions() );
-		if( ! path.empty() )
-			writeImage( writeFile( path ), copyWindowSurface() );
-	}
-	catch( const std::exception& e ) {
-		CI_LOG_EXCEPTION( "failed to save image.", e );
-	}
-}
-
 void D3d12ImageBasicApp::drawGui()
 {
 	ImGui::Begin( "Image Info" );
 
 	if( ImGui::Button( "Open Image" ) )
-		openImageDialog();
+		mOpenRequested = true;
 
 	ImGui::SameLine();
 
 	ImGui::BeginDisabled( ! mTexture );
 	if( ImGui::Button( "Save Image" ) )
-		saveImageDialog();
+		mSaveRequested = true;
 	ImGui::EndDisabled();
 
 	ImGui::SameLine();
