@@ -1,7 +1,7 @@
 /*
  D3d12ImageBasic Sample - Proof of Concept
 
- Demonstrates basic Direct3D 12 image loading
+ Demonstrates basic Direct3D 12 image loading with ImGui integration
 
  Features:
  - Direct3D 12 texture creation from Cinder Surface8u
@@ -10,6 +10,7 @@
  - Ctrl+O to open image file dialog
  - Ctrl+S to save screenshot
  - App-managed D3D12 command lists (minimal renderer pattern)
+ - ImGui integration for image info display
 
  Controls:
  - Ctrl+O: Open image file
@@ -26,6 +27,10 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <d3dcompiler.h>
+
+// ImGui - uses CinderImGui for input handling, imgui_impl_dx12 for rendering
+#include "cinder/CinderImGui.h"
+#include "imgui/imgui_impl_dx12.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -50,6 +55,7 @@ class D3d12ImageBasicApp : public App {
 	void processFileDialogs();
 	void saveScreenshot( const fs::path& path );
 	void createTextureFromSurface( const Surface8u& surface );
+	void drawGui();
 
 	// App-managed D3D12 resources (minimal renderer pattern)
 	ID3D12Device*		mDevice = nullptr;
@@ -77,7 +83,7 @@ class D3d12ImageBasicApp : public App {
 	bool	 mCaptureMode = false;
 	bool	 mCaptured = false;
 
-	// Image source info
+	// Image source info for ImGui display
 	ImageSourceRef mImageSource;
 	fs::path	   mImagePath;
 	std::string	   mErrorMessage;
@@ -292,6 +298,9 @@ void D3d12ImageBasicApp::setup()
 	// Connect CanvasUi
 	mCanvas.connect( getWindow() );
 
+	// Initialize ImGui - CinderImGui handles input via signals, we handle D3D12 rendering
+	ImGui::Initialize();
+
 	// Request file dialog on first frame (deferred to avoid modal during setup)
 	mOpenRequested = true;
 }
@@ -300,6 +309,7 @@ void D3d12ImageBasicApp::cleanup()
 {
 	// Don't call waitForGpu() here - the renderer may have already destroyed the queue
 	// The renderer's kill() already waits for GPU idle before destroying resources
+	// Note: CinderImGui handles ImGui shutdown via app cleanup signal
 
 	if( mTextureUploadHeap )
 		mTextureUploadHeap->Release();
@@ -448,6 +458,29 @@ void D3d12ImageBasicApp::draw()
 		mCommandList->DrawInstanced( 4, 1, 0, 0 );
 	}
 
+	// Draw ImGui - CinderImGui manages context and input, we just need to render
+	if( ID3D12DescriptorHeap* imguiHeap = ImGui::GetD3D12SrvHeap() ) {
+		// Set ImGui descriptor heap
+		ID3D12DescriptorHeap* imguiHeaps[] = { imguiHeap };
+		mCommandList->SetDescriptorHeaps( 1, imguiHeaps );
+
+		ImGui_ImplDX12_NewFrame();
+
+		// Set display size and delta time (CinderImGui handles input, but D3D12 apps
+		// must set these since auto-render is disabled)
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2( (float)bufferWidth, (float)bufferHeight );
+		static double lastTime = 0.0;
+		double		  currentTime = getElapsedSeconds();
+		io.DeltaTime = lastTime > 0.0 ? (float)( currentTime - lastTime ) : ( 1.0f / 60.0f );
+		lastTime = currentTime;
+
+		ImGui::NewFrame();
+		drawGui();
+		ImGui::Render();
+		ImGui_ImplDX12_RenderDrawData( ImGui::GetDrawData(), mCommandList );
+	}
+
 	// Transition back buffer from RENDER_TARGET to PRESENT
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
@@ -476,6 +509,7 @@ void D3d12ImageBasicApp::draw()
 
 void D3d12ImageBasicApp::keyDown( KeyEvent event )
 {
+	// App shortcuts (ImGui input is handled by CinderImGui via signals)
 	if( event.isControlDown() && event.getCode() == KeyEvent::KEY_o ) {
 		mOpenRequested = true;
 	}
@@ -676,6 +710,120 @@ void D3d12ImageBasicApp::createTextureFromSurface( const Surface8u& surface )
 	float halfHeight = mImageSize.y * 0.5f;
 	mCanvas.setContentBounds( Rectf( -halfWidth, -halfHeight, halfWidth, halfHeight ) );
 	mCanvas.fitAll();
+}
+
+void D3d12ImageBasicApp::drawGui()
+{
+	ImGui::Begin( "Image Info" );
+
+	if( ImGui::Button( "Open Image" ) )
+		mOpenRequested = true;
+
+	ImGui::SameLine();
+
+	ImGui::BeginDisabled( ! mTexture );
+	if( ImGui::Button( "Save Image" ) )
+		mSaveRequested = true;
+	ImGui::EndDisabled();
+
+	ImGui::SameLine();
+
+	ImGui::BeginDisabled( ! mTexture );
+	if( ImGui::Button( "Fit to Window" ) ) {
+		mCanvas.setContentBounds( Rectf( -mImageSize.x * 0.5f, -mImageSize.y * 0.5f, mImageSize.x * 0.5f, mImageSize.y * 0.5f ) );
+		mCanvas.fitAll();
+	}
+	ImGui::EndDisabled();
+
+	ImGui::Separator();
+
+	if( mTexture && mImageSource ) {
+		ImGui::Text( "File: %s", mImagePath.filename().string().c_str() );
+		ImGui::Separator();
+		ImGui::Text( "Dimensions: %d x %d", mImageSize.x, mImageSize.y );
+		ImGui::Text( "Texture Format: DXGI_FORMAT_R8G8B8A8_UNORM" );
+		ImGui::Separator();
+
+		// Image source information
+		const char* colorModelStr = "Unknown";
+		switch( mImageSource->getColorModel() ) {
+			case ImageIo::CM_RGB:
+				colorModelStr = "RGB";
+				break;
+			case ImageIo::CM_GRAY:
+				colorModelStr = "Grayscale";
+				break;
+			default:
+				break;
+		}
+		ImGui::Text( "Color Model: %s", colorModelStr );
+
+		const char* dataTypeStr = "Unknown";
+		switch( mImageSource->getDataType() ) {
+			case ImageIo::UINT8:
+				dataTypeStr = "UINT8";
+				break;
+			case ImageIo::UINT16:
+				dataTypeStr = "UINT16";
+				break;
+			case ImageIo::FLOAT16:
+				dataTypeStr = "FLOAT16";
+				break;
+			case ImageIo::FLOAT32:
+				dataTypeStr = "FLOAT32";
+				break;
+			default:
+				break;
+		}
+		ImGui::Text( "Data Type: %s", dataTypeStr );
+
+		const char* channelOrderStr = "Unknown";
+		switch( mImageSource->getChannelOrder() ) {
+			case ImageIo::Y:
+				channelOrderStr = "Y (Grayscale)";
+				break;
+			case ImageIo::YA:
+				channelOrderStr = "YA (Grayscale + Alpha)";
+				break;
+			case ImageIo::RGB:
+				channelOrderStr = "RGB";
+				break;
+			case ImageIo::RGBA:
+				channelOrderStr = "RGBA";
+				break;
+			case ImageIo::RGBX:
+				channelOrderStr = "RGBX";
+				break;
+			case ImageIo::BGR:
+				channelOrderStr = "BGR";
+				break;
+			case ImageIo::BGRA:
+				channelOrderStr = "BGRA";
+				break;
+			case ImageIo::BGRX:
+				channelOrderStr = "BGRX";
+				break;
+			default:
+				break;
+		}
+		ImGui::Text( "Channel Order: %s", channelOrderStr );
+
+		ImGui::Text( "Has Alpha: %s", mImageSource->hasAlpha() ? "Yes" : "No" );
+		ImGui::Text( "Premultiplied: %s", mImageSource->isPremultiplied() ? "Yes" : "No" );
+	}
+	else {
+		ImGui::Text( "No image loaded" );
+		ImGui::Text( "Click 'Open Image' or drag & drop an image file" );
+
+		if( ! mErrorMessage.empty() ) {
+			ImGui::Separator();
+			ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.0f, 0.3f, 0.3f, 1.0f ) );
+			ImGui::TextWrapped( "Error: %s", mErrorMessage.c_str() );
+			ImGui::PopStyleColor();
+		}
+	}
+
+	ImGui::End();
 }
 
 CINDER_APP( D3d12ImageBasicApp, RendererD3d12 )
