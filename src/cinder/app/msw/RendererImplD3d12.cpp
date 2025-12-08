@@ -633,7 +633,7 @@ void RendererImplD3d12::kill()
 
 	// NOTE: Device, queue, and factory are NOT released here.
 	// They stay alive so external code can use the queue during cleanup()
-	// after the window closes. They're released in the destructor via detach().
+	// after the window closes. They're released in the destructor.
 }
 
 void RendererImplD3d12::prepareToggleFullScreen()
