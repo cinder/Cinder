@@ -12,4 +12,5 @@ ci_make_app(
 	SOURCES     ${APP_PATH}/src/ClipboardBasicApp.cpp
 	CINDER_PATH ${CINDER_PATH}
 	INCLUDES    ${APP_PATH}/include
+	RESOURCES   ${CINDER_PATH}/samples/data/cinder_logo.png
 )

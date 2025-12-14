@@ -12,4 +12,7 @@ ci_make_app(
 	SOURCES		${APP_PATH}/src/MandelbrotGLSLApp.cpp
 	INCLUDES	${APP_PATH}/include
 	CINDER_PATH ${CINDER_PATH}
+	RESOURCES	${APP_PATH}/resources/mandelbrot.vert
+			${APP_PATH}/resources/mandelbrot.frag
+			${APP_PATH}/resources/colors.png
 )
