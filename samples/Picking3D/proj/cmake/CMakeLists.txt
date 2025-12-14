@@ -11,4 +11,7 @@ include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 ci_make_app(
 	SOURCES     ${APP_PATH}/src/Picking3DApp.cpp
 	CINDER_PATH ${CINDER_PATH}
+	INCLUDES    ${APP_PATH}/include
+	RESOURCES   ${APP_PATH}/resources/ducky.msh
+	            ${APP_PATH}/resources/ducky.png
 )
