@@ -63,6 +63,7 @@ struct CI_API math
 	}
 	static T	pow   (T x, T y)	{return ::pow (double(x), double(y));}
 	static T	sqrt  (T x)		{return ::sqrt (double(x));}
+	static T	sqr   (T x)		{return x * x;}
 #if defined( _MSC_VER )
 	static T	cbrt( T x )		{ return ( x > 0 ) ? (::pow( x, 1.0 / 3.0 )) : (- ::pow( -x, 1.0 / 3.0 ) ); }
 #else
@@ -99,6 +100,7 @@ struct CI_API math<float>
 	static float	modf  (float x, float *y)	{return ::modff (x, y);}
 	static float	pow   (float x, float y)	{return ::powf (x, y);}
 	static float	sqrt  (float x)			{return ::sqrtf (x);}
+	static float	sqr   (float x)			{return x * x;}
 #if defined( _MSC_VER )
 	static float	cbrt( float x )		{ return ( x > 0 ) ? (::powf( x, 1.0f / 3.0f )) : (- ::powf( -x, 1.0f / 3.0f ) ); }
 #else
