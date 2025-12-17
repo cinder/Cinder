@@ -529,6 +529,7 @@ xcopy /y "..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
     <ClCompile Include="..\src\UnicodeTest.cpp" />
     <ClCompile Include="..\src\PolyLineTest.cpp" />
     <ClCompile Include="..\src\Path2dTest.cpp" />
+    <ClCompile Include="..\src\CinderMathTest.cpp" />
     <ClCompile Include="..\src\Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>

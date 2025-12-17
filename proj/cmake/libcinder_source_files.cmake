@@ -41,6 +41,7 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/MediaTime.cpp
 	${CINDER_SRC_DIR}/cinder/ObjLoader.cpp
 	${CINDER_SRC_DIR}/cinder/Path2d.cpp
+	${CINDER_SRC_DIR}/cinder/Path2dStroke.cpp
 	${CINDER_SRC_DIR}/cinder/Perlin.cpp
 	${CINDER_SRC_DIR}/cinder/Plane.cpp
 	${CINDER_SRC_DIR}/cinder/PolyLine.cpp

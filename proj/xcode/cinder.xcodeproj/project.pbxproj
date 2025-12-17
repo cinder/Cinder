@@ -1121,9 +1121,11 @@
 		84A3FFF524048D6200932807 /* imgui_widgets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84A3FFEE24048D6200932807 /* imgui_widgets.cpp */; };
 		84A3FFF624048D6200932807 /* imgui_freetype.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84A3FFEF24048D6200932807 /* imgui_freetype.cpp */; };
 		84A3FFF724048D6200932807 /* imgui_demo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84A3FFF024048D6200932807 /* imgui_demo.cpp */; };
+		88D2B86E792344A08EF029B9 /* Path2dStroke.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 441247F6342B4A1C9912B40E /* Path2dStroke.cpp */; };
 		92AF10066D6041E09E56B37A /* posix_module.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CACD51097F141AFA99A589B /* posix_module.c */; };
 		949F123AD40D4D2E8698B2E6 /* cocoa_init.m in Sources */ = {isa = PBXBuildFile; fileRef = 434F29DBC77B48938219C983 /* cocoa_init.m */; };
 		98E3B86D2C4849E0A6AD6B2E /* null_init.c in Sources */ = {isa = PBXBuildFile; fileRef = 45400D9FA51249A890BAEFA4 /* null_init.c */; };
+		999848A92BCB474DB0C9EB3C /* Path2dStroke.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 441247F6342B4A1C9912B40E /* Path2dStroke.cpp */; };
 		B0245F5919BEDF3200BC878D /* Query.h in Headers */ = {isa = PBXBuildFile; fileRef = B0245F5819BEDF3200BC878D /* Query.h */; };
 		B06DE70319C74935008B9E1B /* Query.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B06DE70219C74935008B9E1B /* Query.cpp */; };
 		B31987EB1ACB9D8B00DEB9EF /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B31987EA1ACB9D8B00DEB9EF /* draw.cpp */; };
@@ -1602,6 +1604,7 @@
 		B3EA41001DD0F15400E34348 /* bdflib.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EA40FD1DD0F15400E34348 /* bdflib.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		BC8926A0BB4E427D81B6D719 /* RendererImplGlfwMetal.h in Headers */ = {isa = PBXBuildFile; fileRef = A4CAB7B961E94B2CBF92D779 /* RendererImplGlfwMetal.h */; };
 		BF1ABC3D9ABF4B8D8A48AEFE /* RendererMetal.h in Headers */ = {isa = PBXBuildFile; fileRef = EAD54ABCA3F84D849EB0BD2C /* RendererMetal.h */; };
+		C352ECCC529940A7B935AC3D /* Path2dStroke.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 441247F6342B4A1C9912B40E /* Path2dStroke.cpp */; };
 		C70E19FF106AA38700E63577 /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C70E19FE106AA38700E63577 /* Buffer.h */; };
 		C70E1A03106AA39D00E63577 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70E1A01106AA39D00E63577 /* Buffer.cpp */; };
 		C7BA40890FA8C13A00AADC07 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA40880FA8C13A00AADC07 /* AudioToolbox.framework */; };
@@ -2141,6 +2144,7 @@
 		43ED0FE11220949A003AEB0B /* UrlImplCocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UrlImplCocoa.h; sourceTree = "<group>"; };
 		43F78EF11516DAB700EB63B5 /* Json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Json.cpp; sourceTree = "<group>"; };
 		43F78EF51516DAE200EB63B5 /* Json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Json.h; sourceTree = "<group>"; };
+		441247F6342B4A1C9912B40E /* Path2dStroke.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Path2dStroke.cpp; sourceTree = "<group>"; };
 		4539F08A8F9446C6A2B53201 /* cocoa_monitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = cocoa_monitor.m; path = ../../src/glfw/src/cocoa_monitor.m; sourceTree = "<group>"; };
 		45400D9FA51249A890BAEFA4 /* null_init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = null_init.c; path = ../../src/glfw/src/null_init.c; sourceTree = "<group>"; };
 		4B82AF195C934322A85B2A3B /* nsgl_context.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = nsgl_context.m; path = ../../src/glfw/src/nsgl_context.m; sourceTree = "<group>"; };
@@ -2803,6 +2807,7 @@
 				003CE47E242A9823007BE072 /* MediaTime.cpp */,
 				002DFD500FA5600900E45AE0 /* ObjLoader.cpp */,
 				001F52090FCF99A10021731E /* Path2d.cpp */,
+				441247F6342B4A1C9912B40E /* Path2dStroke.cpp */,
 				00D2F1850F8D8ACD00A7189A /* Perlin.cpp */,
 				0041730214C9BE8E0070C0D1 /* Plane.cpp */,
 				009EE4710F7A9FAC00F17CB1 /* PolyLine.cpp */,
@@ -4835,6 +4840,7 @@
 				27C1003F1BD16D4800AF387F /* Biquad.cpp in Sources */,
 				27C100401BD16D4800AF387F /* ObjLoader.cpp in Sources */,
 				27C100411BD16D4800AF387F /* Path2d.cpp in Sources */,
+				C352ECCC529940A7B935AC3D /* Path2dStroke.cpp in Sources */,
 				27C100421BD16D4800AF387F /* System.cpp in Sources */,
 				27C100431BD16D4800AF387F /* Buffer.cpp in Sources */,
 				27C100441BD16D4800AF387F /* Exception.cpp in Sources */,
@@ -5090,6 +5096,7 @@
 				27C1FEE91BD0AE3400AF387F /* Biquad.cpp in Sources */,
 				27C1FEEA1BD0AE3400AF387F /* ObjLoader.cpp in Sources */,
 				27C1FEEB1BD0AE3400AF387F /* Path2d.cpp in Sources */,
+				88D2B86E792344A08EF029B9 /* Path2dStroke.cpp in Sources */,
 				27C1FEEC1BD0AE3400AF387F /* System.cpp in Sources */,
 				27C1FEED1BD0AE3400AF387F /* Buffer.cpp in Sources */,
 				27C1FEEE1BD0AE3400AF387F /* Exception.cpp in Sources */,
@@ -5373,6 +5380,7 @@
 				B3EA40CD1DD0F05D00E34348 /* ftbzip2.c in Sources */,
 				111A600D191F72AE005C3166 /* Utilities.cpp in Sources */,
 				001F520A0FCF99A10021731E /* Path2d.cpp in Sources */,
+				999848A92BCB474DB0C9EB3C /* Path2dStroke.cpp in Sources */,
 				00C071B00FF16244004801EA /* Font.cpp in Sources */,
 				000529200FFBF4C200F19492 /* Text.cpp in Sources */,
 				111A5FBC191F72AE005C3166 /* DelayNode.cpp in Sources */,
