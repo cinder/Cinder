@@ -312,6 +312,12 @@
     <ClCompile Include="..\..\src\cinder\Rand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\cinder\Path2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\Path2dStroke.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\cinder\Rect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

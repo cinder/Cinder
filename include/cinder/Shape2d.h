@@ -115,6 +115,46 @@ class CI_API Shape2d {
 	//! Returns whether the point \a pt is contained within the boundaries of the Shape2d. If \a evenOddFill is \c true (the default) then Even-Odd fill rule is used, otherwise the Winding fill rule is applied.
 	bool	contains( const vec2 &pt, bool evenOddFill = true ) const;
 
+	//! Result of a shape-to-shape or shape-to-path intersection search
+	struct Intersection {
+		size_t contour1;    //!< Contour index in this shape (or 0 for Path2d)
+		size_t contour2;    //!< Contour index in the other shape (or 0 for Path2d)
+		float t1;           //!< Parameter value on contour1's path (in range [0, numSegments])
+		float t2;           //!< Parameter value on contour2's path (in range [0, numSegments])
+		vec2  point;        //!< The intersection point
+		size_t segment1;    //!< Segment index within contour1
+		size_t segment2;    //!< Segment index within contour2
+	};
+
+	//! Find all points where this shape intersects with \a other. \a tolerance controls approximation accuracy.
+	//! Returns intersection results with contour and segment indices for both shapes.
+	std::vector<Intersection>	findIntersections( const Shape2d &other, float tolerance = 1e-4f ) const;
+
+	//! Find all points where this shape intersects with \a path. \a tolerance controls approximation accuracy.
+	//! Returns intersection results; contour2 is always 0 for the path.
+	std::vector<Intersection>	findIntersections( const Path2d &path, float tolerance = 1e-4f ) const;
+
+	//! Returns true if this shape is coincident with \a other (all contours and control points within \a tolerance).
+	//! Coincident shapes have the same geometry and would cause pathological intersection behavior.
+	bool	isCoincident( const Shape2d &other, float tolerance = 1.0f ) const;
+
+	//! Returns true if any contour of this shape is coincident with \a path.
+	bool	isCoincident( const Path2d &path, float tolerance = 1.0f ) const;
+
+	//! Offset all contours by a signed \a distance. Positive values offset outward (to the left
+	//! when traversing the path), negative values offset inward. \a join specifies the corner
+	//! style, \a miterLimit is the ratio of miter length to offset distance. \a tolerance
+	//! controls approximation accuracy. If \a removeSelfIntersections is true, self-intersecting
+	//! loops at sharp corners are removed. Returns a Shape2d (may contain multiple contours).
+	Shape2d	calcOffset( float distance, Join join, float miterLimit, float tolerance = 0.25f, bool removeSelfIntersections = false ) const;
+
+	//! Expand all contours into stroked shapes using \a style parameters. \a tolerance controls curve approximation accuracy.
+	Shape2d	calcStroke( const StrokeStyle& style, float tolerance = 0.25f ) const;
+
+	//! Apply a dash pattern to all contours. \a dashOffset is the starting offset into the pattern,
+	//! and \a pattern contains alternating on/off dash lengths. Returns multiple contours, one for each dash segment.
+	Shape2d	calcDashed( float dashOffset, const std::vector<float>& pattern ) const;
+
 	//! Iterates all of the contours and points of a Shape2d.
 	/** Expects a template parameter that implements
 		\code bool operator()( Path2d::SegmentType type, vec2 *points, vec2 *previousPoint ) \endcode.

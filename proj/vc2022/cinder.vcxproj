@@ -512,6 +512,7 @@
     <ClCompile Include="..\..\src\cinder\MediaTime.cpp" />
     <ClCompile Include="..\..\src\cinder\ObjLoader.cpp" />
     <ClCompile Include="..\..\src\cinder\Path2d.cpp" />
+    <ClCompile Include="..\..\src\cinder\Path2dStroke.cpp" />
     <ClCompile Include="..\..\src\cinder\Perlin.cpp" />
     <ClCompile Include="..\..\src\cinder\Plane.cpp" />
     <ClCompile Include="..\..\src\cinder\PolyLine.cpp" />
