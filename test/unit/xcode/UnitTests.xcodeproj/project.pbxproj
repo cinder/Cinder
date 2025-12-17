@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		000703221DEB7DE00086D6CA /* Path2dTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000703211DEB7DE00086D6CA /* Path2dTest.cpp */; };
+		AABB00011234567800CCDDEE /* CinderMathTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AABB00001234567800CCDDEE /* CinderMathTest.cpp */; };
 		00C7BBC024120160001D5238 /* MediaTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C7BBBF24120160001D5238 /* MediaTime.cpp */; };
 		114CE0E91E2F03930002A384 /* ShaderPreprocessorTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 114CE0E71E2F03930002A384 /* ShaderPreprocessorTest.cpp */; };
 		114CE0EA1E2F03930002A384 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 114CE0E81E2F03930002A384 /* Utilities.cpp */; };
@@ -51,6 +52,7 @@
 
 /* Begin PBXFileReference section */
 		000703211DEB7DE00086D6CA /* Path2dTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Path2dTest.cpp; sourceTree = "<group>"; };
+		AABB00001234567800CCDDEE /* CinderMathTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CinderMathTest.cpp; sourceTree = "<group>"; };
 		006D720219952D00008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		006D720319952D00008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -220,6 +222,7 @@
 				9CA851BF1C1F74000049358B /* UnicodeTest.cpp */,
 				9CA851BE1C1F74000049358B /* TestMain.cpp */,
 				000703211DEB7DE00086D6CA /* Path2dTest.cpp */,
+				AABB00001234567800CCDDEE /* CinderMathTest.cpp */,
 				114CE0E81E2F03930002A384 /* Utilities.cpp */,
 			);
 			name = Source;
@@ -306,6 +309,7 @@
 				9CA851C71C1F74000049358B /* UnicodeTest.cpp in Sources */,
 				11E4FC491C26788A0082A67E /* BufferUnit.cpp in Sources */,
 				000703221DEB7DE00086D6CA /* Path2dTest.cpp in Sources */,
+				AABB00011234567800CCDDEE /* CinderMathTest.cpp in Sources */,
 				114CE0EA1E2F03930002A384 /* Utilities.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -22,6 +22,7 @@ set( SOURCES
 	${UNIT_DIR}/src/MediaTime.cpp
 	${UNIT_DIR}/src/Path2dTest.cpp
 	${UNIT_DIR}/src/PolyLineTest.cpp
+	${UNIT_DIR}/src/CinderMathTest.cpp
 	${UNIT_DIR}/src/audio/BufferUnit.cpp
 	${UNIT_DIR}/src/audio/FftUnit.cpp
 	${UNIT_DIR}/src/audio/RingBufferUnit.cpp
