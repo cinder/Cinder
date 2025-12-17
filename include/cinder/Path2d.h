@@ -32,6 +32,69 @@
 
 namespace cinder {
 
+class Shape2d;  // Forward declaration
+
+//=============================================================================
+// Stroke and Offset Style Parameters
+//=============================================================================
+
+//! Join style for corners (used by both stroke and offset)
+enum class Join {
+	Bevel,  //!< Straight line connecting segments
+	Miter,  //!< Extend segments to natural intersection
+	Round   //!< Arc between segments
+};
+
+//! Cap style for stroke endpoints
+enum class Cap {
+	Butt,   //!< Flat cap
+	Square, //!< Square cap extending half stroke width
+	Round   //!< Rounded cap with radius = half stroke width
+};
+
+//! Visual style for a stroke
+struct CI_API StrokeStyle {
+	StrokeStyle() = default;
+	explicit StrokeStyle( float w ) : mWidth( w ) {}
+
+	float getWidth() const { return mWidth; }
+	Join getJoin() const { return mJoin; }
+	float getMiterLimit() const { return mMiterLimit; }
+	Cap getStartCap() const { return mStartCap; }
+	Cap getEndCap() const { return mEndCap; }
+	const std::vector<float>& getDashPattern() const { return mDashPattern; }
+	float getDashOffset() const { return mDashOffset; }
+
+	void setWidth( float w ) { mWidth = w; }
+	void setJoin( Join j ) { mJoin = j; }
+	void setMiterLimit( float limit ) { mMiterLimit = limit; }
+	void setStartCap( Cap c ) { mStartCap = c; }
+	void setEndCap( Cap c ) { mEndCap = c; }
+	void setCaps( Cap c ) { mStartCap = mEndCap = c; }
+	void setDashes( float offset, const std::vector<float>& pattern ) { mDashOffset = offset; mDashPattern = pattern; }
+
+	StrokeStyle& width( float w ) { mWidth = w; return *this; }
+	StrokeStyle& join( Join j ) { mJoin = j; return *this; }
+	StrokeStyle& miterLimit( float limit ) { mMiterLimit = limit; return *this; }
+	StrokeStyle& startCap( Cap c ) { mStartCap = c; return *this; }
+	StrokeStyle& endCap( Cap c ) { mEndCap = c; return *this; }
+	StrokeStyle& caps( Cap c ) { mStartCap = mEndCap = c; return *this; }
+	StrokeStyle& dashes( float offset, const std::vector<float>& pattern ) { mDashOffset = offset; mDashPattern = pattern; return *this; }
+
+  private:
+	float mWidth = 1.0f;
+	Join mJoin = Join::Round;
+	float mMiterLimit = 4.0f;
+	Cap mStartCap = Cap::Round;
+	Cap mEndCap = Cap::Round;
+	std::vector<float> mDashPattern;
+	float mDashOffset = 0.0f;
+};
+
+//=============================================================================
+// Path2d
+//=============================================================================
+
 class CI_API Path2d {
  public:
 	Path2d() {}
@@ -58,7 +121,7 @@ class CI_API Path2d {
 	void	arcTo( const vec2 &p, const vec2 &t, float radius );
 	void	arcTo( float x, float y, float tanX, float tanY, float radius) { arcTo( vec2( x, y ), vec2( tanX, tanY ), radius ); }
 	void	arcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &p2 );
-	
+
 	//!
 	void    relativeMoveTo( float dx, float dy ) { relativeMoveTo( vec2( dx, dy ) ); }
 	void    relativeMoveTo( const vec2 &delta );
@@ -76,7 +139,7 @@ class CI_API Path2d {
 	void    relativeSmoothCurveTo( const vec2 &delta2, const vec2 &delta3 );
 	void    relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, float dx, float dy ) { relativeArcTo( rx, ry, phi, largeArcFlag, sweepFlag, vec2( dx, dy ) ); }
 	void	relativeArcTo( float rx, float ry, float phi, bool largeArcFlag, bool sweepFlag, const vec2 &delta );
-	
+
 	//! Closes the path, by drawing a straight line from the first to the last point. This is only legal as the last command.
 	void	close() { mSegments.push_back( CLOSE ); }
 	bool	isClosed() const { return ! mSegments.empty() && mSegments.back() == CLOSE; }
@@ -110,10 +173,10 @@ class CI_API Path2d {
 	//! Creates an Archimedean spiral at \a center and returns it as a Path2d. The spiral runs from \a innerRadius to \a outerRadius and the radius will increase by \a spacing every full revolution.
 	//! You can provide an optional radial \a offset.
 	static Path2d spiral( const vec2 &center, float innerRadius, float outerRadius, float spacing, float offset = 0 );
-    
+
 	//! Reverses the orientation of the path, changing CW to CCW and vice versa.
     void	reverse();
-	
+
 	bool	empty() const { return mPoints.empty(); }
 	void	clear() { mSegments.clear(); mPoints.clear(); }
 	size_t	getNumSegments() const { return mSegments.size(); }
@@ -130,7 +193,7 @@ class CI_API Path2d {
 
 	//! Stores into \a segment the segment # associated with \a t, and if \a relativeT is not NULL, the t relative to its segment, in the range <tt>[0,1]</tt>
 	void	getSegmentRelativeT( float t, size_t *segment, float *relativeT ) const;
-	
+
 	std::vector<vec2>	subdivide( float approximationScale = 1.0f ) const;
 	//! if \a resultTangents aren't null then un-normalized tangents corresponding to \a resultPositions are calculated.
 	void				subdivide( std::vector<vec2> *resultPositions, std::vector<vec2> *resultTangents, float approximationScale = 1.0f ) const;
@@ -168,16 +231,16 @@ class CI_API Path2d {
 	//! Appends a new segment of type \a segmentType to the Path2d. \a points must contain an appropriate number of points for the segment type. Note that while the first point for the segment is always required, it will only be used when the Path2d is initially empty.
 	void	appendSegment( SegmentType segmentType, const vec2 *points );
 	void	removeSegment( size_t segment );
-	
+
 	//! Returns the bounding box around all control points. As with Shape2d, note this is not necessarily the bounding box of the Path's shape.
 	Rectf	calcBoundingBox() const;
 	//! Returns the precise bounding box around the curve itself. Slower to calculate than calcBoundingBox().
-	Rectf	calcPreciseBoundingBox() const;	
+	Rectf	calcPreciseBoundingBox() const;
 
 	//! Returns whether the path is defined in clockwise order.
 	bool calcClockwise() const;
 	//! Returns whether the path is defined in counter-clockwise order.
-	bool calcCounterClockwise() const { return !calcClockwise(); }
+	bool calcCounterClockwise() const { return ! calcClockwise(); }
 
 	//! Returns whether the point \a pt is contained within the boundaries of the Path2d. If \a evenOddFill is \c true (the default) then Even-Odd fill rule is used, otherwise, the Winding fill rule is applied.
 	bool	contains( const vec2 &pt, bool evenOddFill = true ) const;
@@ -198,12 +261,78 @@ class CI_API Path2d {
 	float	calcLength() const;
 	//! Calculates the length of a specific segment in the range [\a minT,\a maxT], where \a minT and \a maxT range from 0 to 1 and are relative to the segment
 	float	calcSegmentLength( size_t segment, float minT = 0, float maxT = 1 ) const;
-	
+
 	//! Calculates the t value corresponding to \a relativeTime in the range [0,1) within epsilon of \a tolerance. For example, \a relativeTime of 0.5f returns the t-value corresponding to half the length. \a maxIterations dictates the number of refinement loop iterations allowed, setting an upper bound for worst-case performance. Consider a Path2dCalcCache if using frequently.
 	float	calcNormalizedTime( float relativeTime, bool wrap = true, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
 	//! Calculates a t-value corresponding to arc length \a distance. If \a wrap then the t-value loops inside the 0-1 range as \a distance exceeds the arc length. Consider a Path2dCalcCache if using frequently.
 	float	calcTimeForDistance( float distance, bool wrap = true, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
 
+	//! Result of a self-intersection search
+	struct SelfIntersection {
+		float t1;           //!< First parameter value on the path (in range [0, numSegments])
+		float t2;           //!< Second parameter value on the path (in range [0, numSegments], t2 > t1)
+		vec2  point;        //!< The intersection point
+		size_t segment1;    //!< First segment index
+		size_t segment2;    //!< Second segment index
+	};
+
+	//! Find all points where the path crosses itself. \a tolerance controls approximation accuracy.
+	//! Returns a vector of self-intersection results, each containing the two t-values and the intersection point.
+	std::vector<SelfIntersection>	findSelfIntersections( float tolerance = 1e-4f ) const;
+
+	//! Result of a path-to-path intersection search
+	struct Intersection {
+		float t1;           //!< Parameter value on this path (in range [0, numSegments])
+		float t2;           //!< Parameter value on the other path (in range [0, numSegments])
+		vec2  point;        //!< The intersection point
+		size_t segment1;    //!< Segment index on this path
+		size_t segment2;    //!< Segment index on the other path
+		size_t contour2;    //!< Contour index of the other path (when intersecting with Shape2d, otherwise 0)
+	};
+
+	//! Find all points where this path intersects with \a other. \a tolerance controls approximation accuracy.
+	//! Returns intersection results where t1/segment1 refer to this path and t2/segment2 refer to \a other.
+	std::vector<Intersection>	findIntersections( const Path2d &other, float tolerance = 1e-4f ) const;
+
+	//! Find all points where this path intersects with any contour of \a shape. \a tolerance controls approximation accuracy.
+	//! Returns intersection results where t1/segment1 refer to this path and t2/segment2 refer to the shape's contours.
+	std::vector<Intersection>	findIntersections( const Shape2d &shape, float tolerance = 1e-4f ) const;
+
+	//! Returns true if this path is coincident with \a other (all control points within \a tolerance).
+	//! Coincident paths have the same geometry and would cause pathological intersection behavior.
+	bool	isCoincident( const Path2d &other, float tolerance = 1.0f ) const;
+
+	//! Returns true if this path is coincident with any contour of \a shape.
+	bool	isCoincident( const Shape2d &shape, float tolerance = 1.0f ) const;
+
+	//! Split the path at parameter \a t, where the integer part is the segment index
+	//! and the fractional part is the position within that segment [0,1). For example,
+	//! \a t = 1.5 means the middle of segment 1. Returns a pair of Path2d objects:
+	//! first contains path up to split point, second contains path from split point to end.
+	std::pair<Path2d, Path2d>	splitAt( float t ) const;
+
+	//! Split the path at multiple parameter values. \a tValues should be sorted.
+	//! Returns a vector of Path2d segments between split points.
+	std::vector<Path2d>	splitAtMultiple( const std::vector<float>& tValues ) const;
+
+	//! Remove self-intersecting loops from the path. Walks from t=0 and skips any
+	//! loop where the path crosses itself, continuing from the exit point.
+	//! For offset curves, this removes the "inner" loops that occur at sharp corners.
+	Path2d	removeSelfIntersections() const;
+
+	//! Offset the path by a signed \a distance. Positive values offset outward (to the left
+	//! when traversing the path), negative values offset inward. \a join specifies the corner
+	//! style, \a miterLimit is the ratio of miter length to offset distance. \a tolerance
+	//! controls approximation accuracy. If \a removeSelfIntersections is true, self-intersecting
+	//! loops at sharp corners are removed.
+	Path2d	calcOffset( float distance, Join join, float miterLimit, float tolerance = 0.25f, bool removeSelfIntersections = false ) const;
+
+	//! Expand the path into a stroked Shape2d using \a style parameters. \a tolerance controls curve approximation accuracy.
+	Shape2d	calcStroke( const StrokeStyle& style, float tolerance = 0.25f ) const;
+
+	//! Apply a dash pattern to the path. \a dashOffset is the starting offset into the pattern,
+	//! and \a pattern contains alternating on/off dash lengths. Returns multiple contours, one for each dash segment.
+	Shape2d	calcDashed( float dashOffset, const std::vector<float>& pattern ) const;
 
 	static int	calcQuadraticBezierMonotoneRegions( const vec2 p[3], float resultT[2] );
 	static vec2	calcQuadraticBezierPos( const vec2 p[3], float t );
@@ -217,12 +346,12 @@ class CI_API Path2d {
 
 	friend class Shape2d;
 	friend class Path2dCalcCache;
-	
+
 	friend CI_API std::ostream& operator<<( std::ostream &out, const Path2d &p );
   private:
 	void	arcHelper( const vec2 &center, float radius, float startRadians, float endRadians, bool forward );
 	void	arcSegmentAsCubicBezier( const vec2 &center, float radius, float startRadians, float endRadians );
-	
+
 	//! Returns the minimum distance from point \a pt to segment \a segment. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
 	float	calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) const;
 
@@ -231,7 +360,7 @@ class CI_API Path2d {
 
 	//! Returns the point on segment \a segment that is closest to \a pt. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
 	vec2	calcClosestPoint( const vec2 &pt, size_t segment, size_t firstPoint ) const;
-	
+
 	std::vector<vec2>			mPoints;
 	std::vector<SegmentType>	mSegments;
 };
@@ -262,7 +391,7 @@ CI_API inline std::ostream& operator<<( std::ostream &out, const Path2d &p )
 		}
 
 	}
-	
+
 	return out;
 }
 
@@ -270,7 +399,7 @@ CI_API inline std::ostream& operator<<( std::ostream &out, const Path2d &p )
 class CI_API Path2dCalcCache {
   public:
 	Path2dCalcCache( const Path2d &path );
-	
+
 	const Path2d&	getPath2d() const { return mPath; }
 	float			getLength() const { return mLength; }
 
