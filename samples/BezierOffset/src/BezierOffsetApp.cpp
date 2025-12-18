@@ -360,7 +360,7 @@ void BezierOffsetApp::mouseDown( MouseEvent event )
 			return;
 		}
 
-		// Add points - add to last contour
+		// Add points - add to last contour (or start new one if closed)
 		if( getActiveShape().empty() ) {
 			// Empty shape - start a new path
 			getActiveShape().moveTo( pos );
@@ -368,10 +368,13 @@ void BezierOffsetApp::mouseDown( MouseEvent event )
 			updateResult();
 		}
 		else {
-			// Add to last contour
 			Path2d& lastContour = getActiveShape().getContours().back();
 			if( lastContour.empty() ) {
 				lastContour.moveTo( pos );
+			}
+			else if( lastContour.isClosed() ) {
+				// Can't add to closed contour - start a new one
+				getActiveShape().moveTo( pos );
 			}
 			else {
 				lastContour.lineTo( pos );
