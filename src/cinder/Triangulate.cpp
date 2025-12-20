@@ -23,6 +23,7 @@
 #include "cinder/Triangulate.h"
 #include "cinder/Shape2d.h"
 #include "../libtess2/tesselator.h"
+#include "../libtess2/tess.h"
 
 using namespace std;
 
@@ -58,6 +59,12 @@ Triangulator::Triangulator( const PolyLine2f &polyLine )
 	addPolyLine( polyLine );
 }
 
+Triangulator::Triangulator( const std::vector<vec3> &points )
+{
+	allocate();
+	addPolyLine( points.data(), points.size() );
+}
+
 Triangulator::Triangulator()
 {
 	allocate();
@@ -66,15 +73,16 @@ Triangulator::Triangulator()
 void Triangulator::allocate()
 {
 	mAllocated = 0;
-	
-	TESSalloc ma;
-	memset( &ma, 0, sizeof(ma) );
-	ma.memalloc = stdAlloc;
-	ma.memfree = stdFree;
-	ma.userData = (void*)&mAllocated;
-	ma.extraVertices = 2560; // realloc not provided, allow 256 extra vertices.
 
-	mTess = shared_ptr<TESStesselator>( tessNewTess( &ma ), tessDeleteTess );
+	mAlloc = make_shared<TESSalloc>();
+	// Zero it out to get all the default values
+	memset( mAlloc.get(), 0, sizeof(TESSalloc) );
+	mAlloc->memalloc = stdAlloc;
+	mAlloc->memfree = stdFree;
+	mAlloc->userData = (void*)&mAllocated;
+	mAlloc->extraVertices = 2560; // realloc not provided, allow extra vertices.
+
+	mTess = shared_ptr<TESStesselator>( tessNewTess( mAlloc.get() ), tessDeleteTess );
 	if( ! mTess )
 		throw Triangulator::Exception();
 }
@@ -96,34 +104,72 @@ void Triangulator::addPath( const Path2d &path, float approximationScale )
 void Triangulator::addPolyLine( const PolyLine2f &polyLine )
 {
 	if( polyLine.size() > 0 )
-		tessAddContour( mTess.get(), 2, &polyLine.getPoints()[0], sizeof(float) * 2, (int)polyLine.size() );
+		tessAddContour( mTess.get(), 2, polyLine.getPoints().data(), sizeof(vec2), (int)polyLine.size() );
 }
 
 void Triangulator::addPolyLine( const vec2 *points, size_t numPoints )
 {
 	if( numPoints > 0 )
-		tessAddContour( mTess.get(), 2, &points, sizeof(vec2), (int)numPoints );
+		tessAddContour( mTess.get(), 2, points, sizeof(vec2), (int)numPoints );
+}
+
+void Triangulator::addPolyLine( const vec3 *points, size_t numPoints )
+{
+	if( numPoints > 0 )
+		tessAddContour( mTess.get(), 3, points, sizeof(vec3), (int)numPoints );
 }
 
 TriMesh Triangulator::calcMesh( Winding winding )
 {
 	TriMesh result( TriMesh::Format().positions( 2 ) );
-	
-	tessTesselate( mTess.get(), (int)winding, TESS_POLYGONS, 3, 2, 0 );
+
+	float normal[3] = { 0, 0, 1 };
+	int status = tessTesselate( mTess.get(), (int)winding, TESS_POLYGONS, 3, 2, normal );
+	if( ! status )
+		return result;
 	result.appendPositions( (vec2*)tessGetVertices( mTess.get() ), tessGetVertexCount( mTess.get() ) );
 	result.appendIndices( (uint32_t*)( tessGetElements( mTess.get() ) ), tessGetElementCount( mTess.get() ) * 3 );
-	
+
 	return result;
 }
 
 TriMeshRef Triangulator::createMesh( Winding winding )
 {
 	TriMeshRef result = make_shared<TriMesh>( TriMesh::Format().positions( 2 ) );
-	
-	tessTesselate( mTess.get(), (int)winding, TESS_POLYGONS, 3, 2, 0 );
+
+	float normal[3] = { 0, 0, 1 };
+	int status = tessTesselate( mTess.get(), (int)winding, TESS_POLYGONS, 3, 2, normal );
+	if( ! status )
+		return result;
 	result->appendPositions( (vec2*)tessGetVertices( mTess.get() ), tessGetVertexCount( mTess.get() ) );
 	result->appendIndices( (uint32_t*)( tessGetElements( mTess.get() ) ), tessGetElementCount( mTess.get() ) * 3 );
-	
+
+	return result;
+}
+
+TriMesh Triangulator::calcMesh3d( vec3 normal, Triangulator::Winding winding )
+{
+	TriMesh result( TriMesh::Format().positions( 3 ) );
+
+	int status = tessTesselate( mTess.get(), (int)winding, TESS_POLYGONS, 3, 3, (float*)&normal );
+	if( ! status )
+		return result;
+	result.appendPositions( (vec3*)tessGetVertices( mTess.get() ), tessGetVertexCount( mTess.get() ) );
+	result.appendIndices( (uint32_t*)( tessGetElements( mTess.get() ) ), tessGetElementCount( mTess.get() ) * 3 );
+
+	return result;
+}
+
+TriMeshRef Triangulator::createMesh3d( vec3 normal, Triangulator::Winding winding )
+{
+	TriMeshRef result = make_shared<TriMesh>( TriMesh::Format().positions( 3 ) );
+
+	int status = tessTesselate( mTess.get(), (int)winding, TESS_POLYGONS, 3, 3, (float*)&normal );
+	if( ! status )
+		return result;
+	result->appendPositions( (vec3*)tessGetVertices( mTess.get() ), tessGetVertexCount( mTess.get() ) );
+	result->appendIndices( (uint32_t*)( tessGetElements( mTess.get() ) ), tessGetElementCount( mTess.get() ) * 3 );
+
 	return result;
 }
 
