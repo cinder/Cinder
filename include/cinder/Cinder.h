@@ -67,8 +67,6 @@ using std::uint64_t;
 #elif defined( macintosh ) || defined( __APPLE__ ) || defined( __APPLE_CC__ )
 	#define CINDER_POSIX
 	#define CINDER_COCOA
-    #define CINDER_GLFW
-	#define _GLFW_COCOA 1
 	#include <TargetConditionals.h>
 	#include <AvailabilityMacros.h>
 	#if TARGET_OS_IPHONE
@@ -80,6 +78,8 @@ using std::uint64_t;
 		#endif
 	#else
 		#define CINDER_MAC
+		#define CINDER_GLFW
+		#define _GLFW_COCOA 1
 	#endif
 	// This is defined to prevent the inclusion of some unfortunate macros in <AssertMacros.h>
 	#define __ASSERTMACROS__
