@@ -29,15 +29,7 @@ target_compile_definitions( cinder PUBLIC ${CINDER_DEFINES} )
 if( CINDER_MSW )
 	set( PLATFORM_TOOLSET "$(PlatformToolset)" )
 	if( NOT ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) )
-		# Assume Visual Studio 2019
-        set( PLATFORM_TOOLSET "v142" )
-		if( MSVC_VERSION LESS 1920 ) # Visual Studio 2015
-            set( PLATFORM_TOOLSET "v140" )
-        elseif( MSVC_VERSION LESS 1900 ) # Visual Studio 2013
-            set( PLATFORM_TOOLSET "v120" )
-        elseif( MSVC_VERSION LESS 1800 ) 
-			message( FATAL_ERROR "Unsupported MSVC version: ${MSVC_VERSION}" )
-		endif()
+		set( PLATFORM_TOOLSET "v143" )
 	endif()
 
     set( OUTPUT_DIRECTORY_BASE "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
@@ -69,13 +61,24 @@ elseif( CINDER_MAC )
 		STATIC_LIBRARY_FLAGS					"${CINDER_STATIC_LIBS_DEPENDS}" 
 	)
 elseif( CINDER_COCOA_TOUCH )
+	set( OUTPUT_DIRECTORY_BASE "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
+	set_target_properties( cinder PROPERTIES
+		ARCHIVE_OUTPUT_DIRECTORY_DEBUG			"${OUTPUT_DIRECTORY_BASE}/Debug"
+		ARCHIVE_OUTPUT_DIRECTORY_RELEASE		"${OUTPUT_DIRECTORY_BASE}/Release"
+		ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL		"${OUTPUT_DIRECTORY_BASE}/MinSizeRel"
+		ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO	"${OUTPUT_DIRECTORY_BASE}/RelWithDebInfo"
+		LIBRARY_OUTPUT_DIRECTORY_DEBUG			"${OUTPUT_DIRECTORY_BASE}/Debug"
+		LIBRARY_OUTPUT_DIRECTORY_RELEASE		"${OUTPUT_DIRECTORY_BASE}/Release"
+		LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL		"${OUTPUT_DIRECTORY_BASE}/MinSizeRel"
+		LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO	"${OUTPUT_DIRECTORY_BASE}/RelWithDebInfo"
+	)
 elseif( CINDER_LINUX )
 endif()
 
 # Enforce the minimum C++ standard Cinder requires.
 if( CINDER_MSW AND MSVC )
-    if( MSVC_VERSION LESS 1920 )
-        message( FATAL_ERROR "Cinder requires Visual Studio 2019 (MSVC 19.20) or newer." )
+    if( MSVC_VERSION LESS 1930 )
+        message( FATAL_ERROR "Cinder requires Visual Studio 2022 (MSVC 19.30) or newer." )
     endif()
 endif()
 
