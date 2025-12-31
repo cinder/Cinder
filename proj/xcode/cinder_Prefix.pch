@@ -1,7 +1,0 @@
-#if defined( __cplusplus ) && 0
-	#include "cinder/Cinder.h"
-	#include "cinder/CinderMath.h"
-	#include "cinder/Matrix.h"
-	#include "cinder/Vector.h"
-	#include "cinder/Quaternion.h"
-#endif
