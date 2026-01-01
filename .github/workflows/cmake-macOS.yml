@@ -21,7 +21,7 @@ jobs:
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCINDER_BUILD_TESTS=1
 
       - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel
+        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
 
       - name: Run Unit Tests
         working-directory: ${{github.workspace}}/build
