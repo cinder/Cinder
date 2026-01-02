@@ -235,6 +235,15 @@
     <Filter Include="Header Files\gl\nv">
       <UniqueIdentifier>{7ff32b0d-8190-49b2-ab18-187db6196a2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\qtime">
+      <UniqueIdentifier>{34354d97-72cb-43e6-8615-7b0c1073fe23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\qtime">
+      <UniqueIdentifier>{8f27f7d6-4f67-44bd-844a-96ddae12b659}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\qtime\mf">
+      <UniqueIdentifier>{5bf44c8b-738b-496d-b667-813b1ef8e7cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\cinder\Area.cpp">
@@ -1028,6 +1037,27 @@
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\CanvasUi.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\ImageSourceFileQoi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\ImageTargetFileQoi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\qtime\QuickTimeGlImplMsw.cpp">
+      <Filter>Source Files\qtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\qtime\QuickTimeImplMsw.cpp">
+      <Filter>Source Files\qtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\qtime\mf\MediaEnginePlayer.cpp">
+      <Filter>Source Files\qtime\mf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\qtime\mf\WICRenderPath.cpp">
+      <Filter>Source Files\qtime\mf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\qtime\mf\DXGIRenderPath.cpp">
+      <Filter>Source Files\qtime\mf</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2167,6 +2197,24 @@
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\CanvasUi.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\ImageSourceFileQoi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\ImageTargetFileQoi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\qtime\QuickTime.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\qtime\QuickTimeGl.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\qtime\QuickTimeGlImplMsw.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cinder\qtime\QuickTimeImplMsw.h">
+      <Filter>Header Files\qtime</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

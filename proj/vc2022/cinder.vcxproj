@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="14.0">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug_ANGLE|x64">
@@ -553,6 +553,11 @@
     <ClCompile Include="..\..\src\cinder\msw\CinderMsw.cpp" />
     <ClCompile Include="..\..\src\cinder\msw\CinderMswGdiPlus.cpp" />
     <ClCompile Include="..\..\src\cinder\msw\StackWalker.cpp" />
+    <ClCompile Include="..\..\src\cinder\qtime\QuickTimeImplMsw.cpp" />
+    <ClCompile Include="..\..\src\cinder\qtime\QuickTimeGlImplMsw.cpp" />
+    <ClCompile Include="..\..\src\cinder\qtime\mf\MediaEnginePlayer.cpp" />
+    <ClCompile Include="..\..\src\cinder\qtime\mf\DXGIRenderPath.cpp" />
+    <ClCompile Include="..\..\src\cinder\qtime\mf\WICRenderPath.cpp" />
     <ClCompile Include="..\..\src\freetype\autofit\autofit.c" />
     <ClCompile Include="..\..\src\freetype\base\ftbase.c" />
     <ClCompile Include="..\..\src\freetype\base\ftbbox.c" />
@@ -815,6 +820,10 @@
     <ClInclude Include="..\..\include\cinder\MediaTime.h" />
     <ClInclude Include="..\..\include\cinder\Plane.h" />
     <ClInclude Include="..\..\include\cinder\Function.h" />
+    <ClInclude Include="..\..\include\cinder\qtime\QuickTime.h" />
+    <ClInclude Include="..\..\include\cinder\qtime\QuickTimeGl.h" />
+    <ClInclude Include="..\..\include\cinder\qtime\QuickTimeGlImplMsw.h" />
+    <ClInclude Include="..\..\include\cinder\qtime\QuickTimeImplMsw.h" />
     <ClInclude Include="..\..\include\cinder\Signals.h" />
     <ClInclude Include="..\..\include\cinder\svg\Svg.h" />
     <ClInclude Include="..\..\include\cinder\svg\SvgGl.h" />
