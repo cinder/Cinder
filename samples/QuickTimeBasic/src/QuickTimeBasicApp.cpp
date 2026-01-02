@@ -35,10 +35,9 @@ class QuickTimeSampleApp : public App {
 void QuickTimeSampleApp::setup()
 {
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	fs::path moviePath = getAssetPath( "bbb.mp4" );
+	fs::path moviePath = getAssetPath( "test.mp4" );
 #else
 	fs::path moviePath = getOpenFilePath();
-	console() << "moviePath: " << moviePath << std::endl;
 #endif
 	if( ! moviePath.empty() )
 		loadMovieFile( moviePath );
