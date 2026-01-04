@@ -50,7 +50,7 @@ if( NOT CINDER_DISABLE_VIDEO )
 	if( CINDER_MSW_USE_GSTREAMER )
 		set( GST_ROOT $ENV{GSTREAMER_1_0_ROOT_X86_64} )
 		if( GST_ROOT )
-			list( APPEND CINDER_LIBS_DEPENDS 
+			list( APPEND CINDER_LIBS_DEPENDS
 						${GST_ROOT}/lib/gstreamer-1.0.lib
 						${GST_ROOT}/lib/gstapp-1.0.lib
 						${GST_ROOT}/lib/gstvideo-1.0.lib
@@ -64,22 +64,33 @@ if( NOT CINDER_DISABLE_VIDEO )
 						${GST_ROOT}/lib/glib-2.0.lib
 						${GST_ROOT}/lib/gio-2.0.lib )
 
-			list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE 
-						${GST_ROOT}/include 
+			list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
+						${GST_ROOT}/include
 						${GST_ROOT}/include/gstreamer-1.0
 						${GST_ROOT}/include/glib-2.0
 						${GST_ROOT}/lib/gstreamer-1.0/include
 						${GST_ROOT}/lib/glib-2.0/include
 						${CINDER_INC_DIR}/cinder/linux )
 
-			list( APPEND CINDER_SRC_FILES 
-						${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp 
+			list( APPEND CINDER_SRC_FILES
+						${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp
 						${CINDER_SRC_DIR}/cinder/linux/Movie.cpp )
 
 			list( APPEND CINDER_DEFINES CINDER_MSW_USE_GSTREAMER )
 		else()
 			message( WARNING "Requested GStreamer video playback support for MSW but no suitable GStreamer installation found. Make sure that GStreamer is installed properly and GSTREAMER_1_0_ROOT_X86_64 is defined in your env variables. " )
 		endif()
+	else()
+		# Default: Use MediaFoundation for video playback on Windows
+		list( APPEND SRC_SET_VIDEO_MSW
+			${CINDER_SRC_DIR}/cinder/qtime/QuickTimeImplMsw.cpp
+			${CINDER_SRC_DIR}/cinder/qtime/QuickTimeGlImplMsw.cpp
+			${CINDER_SRC_DIR}/cinder/qtime/mf/MediaEnginePlayer.cpp
+			${CINDER_SRC_DIR}/cinder/qtime/mf/DXGIRenderPath.cpp
+			${CINDER_SRC_DIR}/cinder/qtime/mf/WICRenderPath.cpp
+		)
+
+		list( APPEND CINDER_SRC_FILES ${SRC_SET_VIDEO_MSW} )
 	endif()
 endif()
 
