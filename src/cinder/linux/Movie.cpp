@@ -58,6 +58,8 @@ void MovieBase::initFromUrl( const Url& url )
     }
 
     mGstPlayer->load( url.str() );
+    mWidth = mGstPlayer->width();
+    mHeight = mGstPlayer->height();
 }
 
 void MovieBase::initFromPath( const fs::path& filePath )
@@ -67,6 +69,8 @@ void MovieBase::initFromPath( const fs::path& filePath )
     }
 
     mGstPlayer->load( filePath.string() );
+    mWidth = mGstPlayer->width();
+    mHeight = mGstPlayer->height();
 
     init();
 }
