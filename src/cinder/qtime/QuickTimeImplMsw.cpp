@@ -1,18 +1,36 @@
 /*
- Copyright (c) 2024, The Cinder Project, All rights reserved.
+ Copyright (c) 2025, The Cinder Project, All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
- Windows 64-bit Media Foundation implementation of MovieBase and MovieSurface.
+ Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+ the following conditions are met:
+
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+ the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+
+ Windows 64-bit Media Foundation GL implementation.
+ Based on AX-MediaPlayer by Andrew Wright (@axjxwright).
+
+ Hardware acceleration uses WGL_NV_DX_interop for D3D11/OpenGL texture sharing.
+ Falls back to WIC/CPU path if hardware acceleration is unavailable.
  */
 
 #include "cinder/Cinder.h"
 
-#ifdef CINDER_MSW
-#ifdef _WIN64
-
 #include "cinder/qtime/QuickTimeImplMsw.h"
-#include "mf/MediaEnginePlayer.h"
+#include "cinder/qtime/mf/MediaEnginePlayer.h"
 #include "cinder/app/App.h"
 #include "cinder/Log.h"
 
@@ -21,28 +39,18 @@ using namespace ci;
 namespace cinder { namespace qtime {
 
 // MovieBase::Impl is just a typedef for the internal MediaEnginePlayer
-class MovieBase::Impl : public mf::MediaEnginePlayer
-{
-public:
+class MovieBase::Impl : public mf::MediaEnginePlayer {
+  public:
 	using mf::MediaEnginePlayer::MediaEnginePlayer;
 };
 
 // MovieBase implementation
 
 MovieBase::MovieBase()
-	: mWidth( 0 )
-	, mHeight( 0 )
-	, mFrameCount( -1 )
-	, mFrameRate( 30.0f )
-	, mDuration( 0.0f )
-	, mLoaded( false )
-	, mPlayThroughOk( false )
-	, mPlayingForward( true )
-	, mLoop( false )
-	, mPalindrome( false )
-	, mHasAudio( false )
-	, mHasVideo( false )
-	, mPlaying( false )
+	: mWidth( 0 ) , mHeight( 0 ) , mFrameCount( -1 )
+	, mFrameRate( 30.0f ) , mDuration( 0.0f )
+	, mLoaded( false ), mPlayThroughOk( false ), mPlayingForward( true ), mLoop( false )
+	, mPalindrome( false ), mHasAudio( false ), mHasVideo( false ), mPlaying( false )
 {
 }
 
@@ -59,8 +67,7 @@ void MovieBase::init()
 
 void MovieBase::initFromUrl( const Url& url )
 {
-	try
-	{
+	try {
 		mf::MediaEnginePlayer::staticInitialize();
 
 		auto format = mf::MediaEnginePlayer::Format().hardwareAccelerated( false ); // Surface uses WIC
@@ -70,8 +77,7 @@ void MovieBase::initFromUrl( const Url& url )
 		// Connect to app update for frame processing
 		mUpdateConnection = app::App::get()->getSignalUpdate().connect( [this] { updateFrame(); } );
 	}
-	catch( const std::exception& e )
-	{
+	catch( const std::exception& e ) {
 		CI_LOG_E( "Failed to load movie from URL: " << e.what() );
 		throw MswUrlInvalidExc();
 	}
@@ -79,13 +85,11 @@ void MovieBase::initFromUrl( const Url& url )
 
 void MovieBase::initFromPath( const fs::path& filePath )
 {
-	if( !fs::exists( filePath ) )
-	{
+	if( ! fs::exists( filePath ) ) {
 		throw MswPathInvalidExc();
 	}
 
-	try
-	{
+	try {
 		mf::MediaEnginePlayer::staticInitialize();
 
 		auto format = mf::MediaEnginePlayer::Format().hardwareAccelerated( false );
@@ -94,8 +98,7 @@ void MovieBase::initFromPath( const fs::path& filePath )
 
 		mUpdateConnection = app::App::get()->getSignalUpdate().connect( [this] { updateFrame(); } );
 	}
-	catch( const std::exception& e )
-	{
+	catch( const std::exception& e ) {
 		CI_LOG_E( "Failed to load movie from path: " << e.what() );
 		throw MswFileInvalidExc();
 	}
@@ -104,8 +107,7 @@ void MovieBase::initFromPath( const fs::path& filePath )
 void MovieBase::initFromLoader( const MovieLoader& loader )
 {
 	mImpl = std::const_pointer_cast<Impl>( std::static_pointer_cast<const Impl>( loader.getImpl() ) );
-	if( mImpl )
-	{
+	if( mImpl ) {
 		connectSignals();
 		mUpdateConnection = app::App::get()->getSignalUpdate().connect( [this] { updateFrame(); } );
 	}
@@ -113,11 +115,10 @@ void MovieBase::initFromLoader( const MovieLoader& loader )
 
 void MovieBase::connectSignals()
 {
-	if( !mImpl )
+	if( ! mImpl )
 		return;
 
-	mImpl->signalReady.connect( [this]
-	{
+	mImpl->signalReady.connect( [this] {
 		mWidth = mImpl->getSize().x;
 		mHeight = mImpl->getSize().y;
 		mDuration = mImpl->getDuration();
@@ -128,25 +129,17 @@ void MovieBase::connectSignals()
 		mSignalReady.emit();
 	} );
 
-	mImpl->signalComplete.connect( [this]
-	{
-		mSignalEnded.emit();
-	} );
+	mImpl->signalComplete.connect( [this] { mSignalEnded.emit(); } );
 
-	mImpl->signalSeekEnd.connect( [this]
-	{
-		mSignalJumped.emit();
-	} );
+	mImpl->signalSeekEnd.connect( [this] { mSignalJumped.emit(); } );
 }
 
 void MovieBase::updateFrame()
 {
-	if( mImpl )
-	{
+	if( mImpl ) {
 		mImpl->update();
 
-		if( mImpl->checkNewFrame() )
-		{
+		if( mImpl->checkNewFrame() ) {
 			mSignalNewFrame.emit();
 		}
 	}
@@ -160,8 +153,7 @@ bool MovieBase::checkPlaythroughOk()
 
 int32_t MovieBase::getNumFrames()
 {
-	if( mFrameCount < 0 && mDuration > 0 && mFrameRate > 0 )
-	{
+	if( mFrameCount < 0 && mDuration > 0 && mFrameRate > 0 ) {
 		mFrameCount = static_cast<int32_t>( mDuration * mFrameRate );
 	}
 	return mFrameCount;
@@ -185,8 +177,7 @@ void MovieBase::seekToTime( float seconds )
 
 void MovieBase::seekToFrame( int frame )
 {
-	if( mFrameRate > 0 )
-	{
+	if( mFrameRate > 0 ) {
 		seekToTime( static_cast<float>( frame ) / mFrameRate );
 	}
 }
@@ -217,8 +208,7 @@ void MovieBase::setLoop( bool loop, bool palindrome )
 	mLoop = loop;
 	mPalindrome = palindrome;
 
-	if( palindrome )
-	{
+	if( palindrome ) {
 		CI_LOG_W( "Palindrome looping is not supported on Windows Media Foundation, using normal loop" );
 	}
 
@@ -228,8 +218,7 @@ void MovieBase::setLoop( bool loop, bool palindrome )
 
 bool MovieBase::stepForward()
 {
-	if( mImpl )
-	{
+	if( mImpl ) {
 		mImpl->frameStep( 1 );
 		return true;
 	}
@@ -238,8 +227,7 @@ bool MovieBase::stepForward()
 
 bool MovieBase::stepBackward()
 {
-	if( mImpl )
-	{
+	if( mImpl ) {
 		mImpl->frameStep( -1 );
 		return true;
 	}
@@ -248,8 +236,7 @@ bool MovieBase::stepBackward()
 
 bool MovieBase::setRate( float rate )
 {
-	if( mImpl )
-	{
+	if( mImpl ) {
 		mPlayingForward = ( rate >= 0 );
 		return mImpl->setPlaybackRate( rate );
 	}
@@ -279,8 +266,7 @@ bool MovieBase::isDone() const
 
 void MovieBase::play( bool toggle )
 {
-	if( mImpl )
-	{
+	if( mImpl ) {
 		if( toggle )
 			mImpl->togglePlayback();
 		else
@@ -325,8 +311,7 @@ MovieSurfaceRef MovieSurface::create( const MovieLoaderRef& loader )
 
 Surface8uRef MovieSurface::getSurface()
 {
-	if( mImpl )
-	{
+	if( mImpl ) {
 		return mImpl->getSurface();
 	}
 	return nullptr;
@@ -340,13 +325,11 @@ MovieLoader::MovieLoader( const Url& url )
 {
 	mf::MediaEnginePlayer::staticInitialize();
 
-	try
-	{
+	try {
 		auto format = mf::MediaEnginePlayer::Format().hardwareAccelerated( false );
 		mImpl = std::make_shared<MovieBase::Impl>( loadUrl( url ), format );
 	}
-	catch( const std::exception& e )
-	{
+	catch( const std::exception& e ) {
 		CI_LOG_E( "MovieLoader failed: " << e.what() );
 	}
 }
@@ -373,8 +356,7 @@ bool MovieLoader::checkPlaythroughOk() const
 void MovieLoader::waitForLoaded() const
 {
 	// Spin wait - not ideal but matches existing API
-	while( mImpl && !mImpl->isReady() )
-	{
+	while( mImpl && ! mImpl->isReady() ) {
 		std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
 	}
 }
@@ -390,6 +372,3 @@ void MovieLoader::waitForPlayThroughOk() const
 }
 
 } } // namespace cinder::qtime
-
-#endif // _WIN64
-#endif // CINDER_MSW
