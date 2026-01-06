@@ -1,0 +1,330 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A156FF0F1030B198002FC39B /* QuickTimeStressTestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A156FF0E1030B198002FC39B /* QuickTimeStressTestApp.cpp */; };
+		A156FF1B1030B1D3002FC39B /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A156FF171030B1D3002FC39B /* Accelerate.framework */; };
+		A156FF1C1030B1D3002FC39B /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A156FF181030B1D3002FC39B /* AudioToolbox.framework */; };
+		A156FF1D1030B1D3002FC39B /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A156FF191030B1D3002FC39B /* AudioUnit.framework */; };
+		A156FF1E1030B1D3002FC39B /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A156FF1A1030B1D3002FC39B /* CoreAudio.framework */; };
+		A16D730E1995336F008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A16D730C1995336F008149E2 /* AVFoundation.framework */; };
+		A16D730F1995336F008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A16D730D1995336F008149E2 /* CoreMedia.framework */; };
+		A191D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A191D8F80E81B9330029341E /* OpenGL.framework */; };
+		A1B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B995581B128DF400A5C623 /* IOKit.framework */; };
+		A1B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1B995591B128DF400A5C623 /* IOSurface.framework */; };
+		A323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
+		A323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
+		A3E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E3CDFB0E86099300238D2B /* Carbon.framework */; };
+		AD11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A156FF0E1030B198002FC39B /* QuickTimeStressTestApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QuickTimeStressTestApp.cpp; path = ../src/QuickTimeStressTestApp.cpp; sourceTree = SOURCE_ROOT; };
+		A156FF171030B1D3002FC39B /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = /System/Library/Frameworks/Accelerate.framework; sourceTree = "<absolute>"; };
+		A156FF181030B1D3002FC39B /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = /System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<absolute>"; };
+		A156FF191030B1D3002FC39B /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
+		A156FF1A1030B1D3002FC39B /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = /System/Library/Frameworks/CoreAudio.framework; sourceTree = "<absolute>"; };
+		A16D730C1995336F008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		A16D730D1995336F008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		A191D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		A197E3E40F3E9819005A4392 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
+		A1B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		A1B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		A058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		A3E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		A9B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		A9B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		A2CA4F630368D1EE00C91783 /* QuickTimeStressTest_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuickTimeStressTest_Prefix.pch; sourceTree = "<group>"; };
+		A323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
+		A323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
+		A3E3CDFB0E86099300238D2B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		AD1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AD1107320486CEB800E47090 /* QuickTimeStressTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickTimeStressTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AD11072E0486CEB800E47090 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */,
+				A1B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */,
+				A16D730E1995336F008149E2 /* AVFoundation.framework in Frameworks */,
+				A16D730F1995336F008149E2 /* CoreMedia.framework in Frameworks */,
+				AD11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+				A191D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
+				A3E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */,
+				A323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
+				A323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */,
+				A156FF1B1030B1D3002FC39B /* Accelerate.framework in Frameworks */,
+				A156FF1C1030B1D3002FC39B /* AudioToolbox.framework in Frameworks */,
+				A156FF1D1030B1D3002FC39B /* AudioUnit.framework in Frameworks */,
+				A156FF1E1030B1D3002FC39B /* CoreAudio.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A80E96DDFE201D6D7F000001 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				A156FF0E1030B198002FC39B /* QuickTimeStressTestApp.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		A058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A156FF171030B1D3002FC39B /* Accelerate.framework */,
+				A156FF181030B1D3002FC39B /* AudioToolbox.framework */,
+				A156FF191030B1D3002FC39B /* AudioUnit.framework */,
+				A156FF1A1030B1D3002FC39B /* CoreAudio.framework */,
+				A197E3E40F3E9819005A4392 /* QuickTime.framework */,
+				A323E6B50EAFCA7E003A9687 /* QTKit.framework */,
+				A323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
+				A3E3CDFB0E86099300238D2B /* Carbon.framework */,
+				A191D8F80E81B9330029341E /* OpenGL.framework */,
+				A058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		A058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A9B97324FDCFA39411CA2CEA /* AppKit.framework */,
+				A3E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
+				A9B97325FDCFA39411CA2CEA /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		A9C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AD1107320486CEB800E47090 /* QuickTimeStressTest.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A9B97314FDCFA39411CA2CEA /* QuickTimeStressTest */ = {
+			isa = PBXGroup;
+			children = (
+				A80E96DDFE201D6D7F000001 /* Source */,
+				A9B97315FDCFA39411CA2CEA /* Other Sources */,
+				A9B97317FDCFA39411CA2CEA /* Resources */,
+				A9B97323FDCFA39411CA2CEA /* Frameworks */,
+				A9C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = QuickTimeStressTest;
+			sourceTree = "<group>";
+		};
+		A9B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				A2CA4F630368D1EE00C91783 /* QuickTimeStressTest_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		A9B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AD1107310486CEB800E47090 /* Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		A9B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A1B995581B128DF400A5C623 /* IOKit.framework */,
+				A1B995591B128DF400A5C623 /* IOSurface.framework */,
+				A16D730C1995336F008149E2 /* AVFoundation.framework */,
+				A16D730D1995336F008149E2 /* CoreMedia.framework */,
+				A058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
+				A058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AD1107260486CEB800E47090 /* QuickTimeStressTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "QuickTimeStressTest" */;
+			buildPhases = (
+				AD1107290486CEB800E47090 /* Resources */,
+				AD11072C0486CEB800E47090 /* Sources */,
+				AD11072E0486CEB800E47090 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = QuickTimeStressTest;
+			productInstallPath = "$(HOME)/Applications";
+			productName = QuickTimeStressTest;
+			productReference = AD1107320486CEB800E47090 /* QuickTimeStressTest.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A9B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "QuickTimeStressTest" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = A9B97314FDCFA39411CA2CEA /* QuickTimeStressTest */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AD1107260486CEB800E47090 /* QuickTimeStressTest */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AD1107290486CEB800E47090 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AD11072C0486CEB800E47090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A156FF0F1030B198002FC39B /* QuickTimeStressTestApp.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C01FCF4B08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = QuickTimeStressTest_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a";
+				PRODUCT_NAME = QuickTimeStressTest;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		C01FCF4C08A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_FAST_MATH = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = QuickTimeStressTest_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a";
+				PRODUCT_NAME = QuickTimeStressTest;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
+				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
+				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "QuickTimeStressTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4B08A954540054247B /* Debug */,
+				C01FCF4C08A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "QuickTimeStressTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A9B97313FDCFA39411CA2CEA /* Project object */;
+}
