@@ -5,9 +5,11 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <d3dcompiler.h>
+#include <wrl/client.h>
 
 using namespace ci;
 using namespace ci::app;
+using Microsoft::WRL::ComPtr;
 
 struct Vertex {
 	float pos[3];
@@ -18,26 +20,25 @@ class D3d12TriangleApp : public App {
   public:
 	void setup() override;
 	void cleanup() override;
-	void resize() override;
 	void draw() override;
 	void keyDown( KeyEvent event ) override;
 
   private:
 	void saveScreenshot();
 
-	// App-managed D3D12 resources (minimal renderer pattern)
-	ID3D12Device*				mDevice = nullptr;
-	ID3D12CommandQueue*			mCommandQueue = nullptr;
+	// Borrowed pointers from renderer (not owned, don't use ComPtr)
+	ID3D12Device*		mDevice = nullptr;
+	ID3D12CommandQueue* mCommandQueue = nullptr;
 
 	// Per-frame command allocators for proper triple buffering
-	ID3D12CommandAllocator*		mCommandAllocators[RendererD3d12::MaxFrameCount] = {};
-	ID3D12GraphicsCommandList*	mCommandList = nullptr;
+	ComPtr<ID3D12CommandAllocator>	  mCommandAllocators[RendererD3d12::MaxFrameCount];
+	ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
 	// App rendering resources
-	ID3D12RootSignature*	mRootSignature = nullptr;
-	ID3D12PipelineState*	mPipelineState = nullptr;
-	ID3D12Resource*			mVertexBuffer = nullptr;
-	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView = {};
+	ComPtr<ID3D12RootSignature> mRootSignature;
+	ComPtr<ID3D12PipelineState> mPipelineState;
+	ComPtr<ID3D12Resource>		mVertexBuffer;
+	D3D12_VERTEX_BUFFER_VIEW	mVertexBufferView = {};
 
 	// Cached renderer pointer
 	RendererD3d12Ref mRenderer;
@@ -60,15 +61,13 @@ void D3d12TriangleApp::setup()
 	// Create per-frame command allocators for proper triple buffering
 	HRESULT hr = S_OK;
 	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
-		hr = mDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT,
-			IID_PPV_ARGS( &mCommandAllocators[i] ) );
+		hr = mDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( &mCommandAllocators[i] ) );
 		if( FAILED( hr ) )
 			return;
 	}
 
 	// Create app's own command list (using first allocator initially)
-	hr = mDevice->CreateCommandList( 0, D3D12_COMMAND_LIST_TYPE_DIRECT,
-		mCommandAllocators[0], nullptr, IID_PPV_ARGS( &mCommandList ) );
+	hr = mDevice->CreateCommandList( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCommandAllocators[0].Get(), nullptr, IID_PPV_ARGS( &mCommandList ) );
 	if( FAILED( hr ) )
 		return;
 	mCommandList->Close(); // Start closed
@@ -81,21 +80,13 @@ void D3d12TriangleApp::setup()
 	rootSigDesc.pStaticSamplers = nullptr;
 	rootSigDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	ID3DBlob* signature = nullptr;
-	ID3DBlob* error = nullptr;
-	hr = D3D12SerializeRootSignature( &rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,
-		&signature, &error );
-	if( FAILED( hr ) ) {
-		if( error )
-			error->Release();
+	ComPtr<ID3DBlob> signature;
+	ComPtr<ID3DBlob> error;
+	hr = ::D3D12SerializeRootSignature( &rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error );
+	if( FAILED( hr ) )
 		return;
-	}
-	if( error )
-		error->Release();
 
-	hr = mDevice->CreateRootSignature( 0, signature->GetBufferPointer(),
-		signature->GetBufferSize(), IID_PPV_ARGS( &mRootSignature ) );
-	signature->Release();
+	hr = mDevice->CreateRootSignature( 0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS( &mRootSignature ) );
 	if( FAILED( hr ) )
 		return;
 
@@ -127,29 +118,16 @@ void D3d12TriangleApp::setup()
 		}
 	)";
 
-	ID3DBlob* vsBlob = nullptr;
-	ID3DBlob* errorBlob = nullptr;
-	hr = D3DCompile( vertexShaderSource, strlen( vertexShaderSource ), nullptr, nullptr, nullptr,
-		"main", "vs_5_0", 0, 0, &vsBlob, &errorBlob );
-	if( FAILED( hr ) ) {
-		if( errorBlob )
-			errorBlob->Release();
+	ComPtr<ID3DBlob> vsBlob;
+	ComPtr<ID3DBlob> errorBlob;
+	hr = ::D3DCompile( vertexShaderSource, strlen( vertexShaderSource ), nullptr, nullptr, nullptr, "main", "vs_5_0", 0, 0, &vsBlob, &errorBlob );
+	if( FAILED( hr ) )
 		return;
-	}
-	if( errorBlob )
-		errorBlob->Release();
 
-	ID3DBlob* psBlob = nullptr;
-	hr = D3DCompile( pixelShaderSource, strlen( pixelShaderSource ), nullptr, nullptr, nullptr,
-		"main", "ps_5_0", 0, 0, &psBlob, &errorBlob );
-	if( FAILED( hr ) ) {
-		if( errorBlob )
-			errorBlob->Release();
-		vsBlob->Release();
+	ComPtr<ID3DBlob> psBlob;
+	hr = ::D3DCompile( pixelShaderSource, strlen( pixelShaderSource ), nullptr, nullptr, nullptr, "main", "ps_5_0", 0, 0, &psBlob, &errorBlob );
+	if( FAILED( hr ) )
 		return;
-	}
-	if( errorBlob )
-		errorBlob->Release();
 
 	// Create input layout
 	D3D12_INPUT_ELEMENT_DESC layout[] = {
@@ -162,7 +140,7 @@ void D3d12TriangleApp::setup()
 	CI_LOG_I( "[App] Creating PSO with MSAA " << msaaSamples << "x" );
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-	psoDesc.pRootSignature = mRootSignature;
+	psoDesc.pRootSignature = mRootSignature.Get();
 	psoDesc.VS = { vsBlob->GetBufferPointer(), vsBlob->GetBufferSize() };
 	psoDesc.PS = { psBlob->GetBufferPointer(), psBlob->GetBufferSize() };
 	psoDesc.BlendState.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
@@ -178,8 +156,6 @@ void D3d12TriangleApp::setup()
 	psoDesc.SampleDesc.Count = msaaSamples;
 
 	hr = mDevice->CreateGraphicsPipelineState( &psoDesc, IID_PPV_ARGS( &mPipelineState ) );
-	vsBlob->Release();
-	psBlob->Release();
 	if( FAILED( hr ) )
 		return;
 
@@ -189,11 +165,7 @@ void D3d12TriangleApp::setup()
 	float height = sideLength * 0.866025f;
 	float centroidY = height / 3.0f;
 
-	Vertex vertices[] = {
-		{ { 0.0f, height - centroidY, 0.0f }, { 1.0f, 0.0f, 0.0f } },
-		{ { halfSide, -centroidY, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-		{ { -halfSide, -centroidY, 0.0f }, { 0.0f, 1.0f, 0.0f } }
-	};
+	Vertex vertices[] = { { { 0.0f, height - centroidY, 0.0f }, { 1.0f, 0.0f, 0.0f } }, { { halfSide, -centroidY, 0.0f }, { 0.0f, 0.0f, 1.0f } }, { { -halfSide, -centroidY, 0.0f }, { 0.0f, 1.0f, 0.0f } } };
 
 	D3D12_HEAP_PROPERTIES heapProps = {};
 	heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
@@ -208,14 +180,7 @@ void D3d12TriangleApp::setup()
 	bufferDesc.SampleDesc.Count = 1;
 	bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
-	hr = mDevice->CreateCommittedResource(
-		&heapProps,
-		D3D12_HEAP_FLAG_NONE,
-		&bufferDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS( &mVertexBuffer )
-	);
+	hr = mDevice->CreateCommittedResource( &heapProps, D3D12_HEAP_FLAG_NONE, &bufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS( &mVertexBuffer ) );
 	if( FAILED( hr ) )
 		return;
 
@@ -235,35 +200,7 @@ void D3d12TriangleApp::setup()
 
 void D3d12TriangleApp::cleanup()
 {
-	// Don't call waitForGpu() here - the renderer may have already destroyed the queue
-	// The renderer's kill() already waits for GPU idle before destroying resources
-
-	if( mVertexBuffer )
-		mVertexBuffer->Release();
-	if( mPipelineState )
-		mPipelineState->Release();
-	if( mRootSignature )
-		mRootSignature->Release();
-	if( mCommandList )
-		mCommandList->Release();
-	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
-		if( mCommandAllocators[i] )
-			mCommandAllocators[i]->Release();
-	}
-}
-
-void D3d12TriangleApp::resize()
-{
-	CI_LOG_I( "[App] resize: Starting..." );
-	// Wait for all GPU work to complete before resize
-	if( mRenderer )
-		mRenderer->waitForGpu();
-	CI_LOG_I( "[App] resize: waitForGpu complete" );
-
-	if( mRenderer )
-		mRenderer->defaultResize();
-
-	CI_LOG_I( "[App] resize: Complete" );
+	// ComPtr handles Release automatically
 }
 
 void D3d12TriangleApp::draw()
@@ -272,16 +209,18 @@ void D3d12TriangleApp::draw()
 		return;
 
 	// Get back buffer info from renderer
-	UINT frameIndex = mRenderer->getCurrentBackBufferIndex();
+	UINT			frameIndex = mRenderer->getCurrentBackBufferIndex();
 	ID3D12Resource* backBuffer = mRenderer->getCurrentBackBuffer();
 
 	// Back buffer may be null during resize - skip this frame
-	if( ! backBuffer )
+	if( ! backBuffer ) {
+		CI_LOG_W( "[App] draw: SKIPPING - backBuffer is null!" );
 		return;
+	}
 
 	// Get the appropriate render target handle - MSAA target if enabled, back buffer otherwise
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mRenderer->getRenderTargetHandle();
-	bool msaaEnabled = mRenderer->isMsaaEnabled();
+	bool						msaaEnabled = mRenderer->isMsaaEnabled();
 
 	// Get render target dimensions from MSAA target if enabled, otherwise from back buffer
 	UINT bufferWidth, bufferHeight;
@@ -296,15 +235,19 @@ void D3d12TriangleApp::draw()
 		bufferHeight = bufferDesc.Height;
 	}
 
-	// Wait for this frame's GPU work to complete before reusing its allocator
-	// The renderer's startDraw() already calls waitForFrame(), but we need to ensure
-	// our command allocator is safe to reset
-	mRenderer->waitForFrame( frameIndex );
+	// RendererD3d12::startDraw() has already waited for this back buffer's previous GPU work
+	// to complete, so per-frame resources indexed by frameIndex are safe to reset here.
 
 	// Reset this frame's command allocator and list
-	ID3D12CommandAllocator* frameAllocator = mCommandAllocators[frameIndex];
-	frameAllocator->Reset();
-	mCommandList->Reset( frameAllocator, mPipelineState );
+	ID3D12CommandAllocator* frameAllocator = mCommandAllocators[frameIndex].Get();
+	HRESULT					hr = frameAllocator->Reset();
+	if( FAILED( hr ) ) {
+		CI_LOG_E( "[App] draw: FAILED to reset allocator, hr=" << std::hex << hr );
+	}
+	hr = mCommandList->Reset( frameAllocator, mPipelineState.Get() );
+	if( FAILED( hr ) ) {
+		CI_LOG_E( "[App] draw: FAILED to reset command list, hr=" << std::hex << hr );
+	}
 
 	// When MSAA is disabled, transition back buffer from PRESENT to RENDER_TARGET
 	// (MSAA target is always in RENDER_TARGET state)
@@ -320,7 +263,7 @@ void D3d12TriangleApp::draw()
 
 	// Set viewport and scissor based on actual buffer size
 	D3D12_VIEWPORT viewport = { 0.0f, 0.0f, (float)bufferWidth, (float)bufferHeight, 0.0f, 1.0f };
-	D3D12_RECT scissor = { 0, 0, (LONG)bufferWidth, (LONG)bufferHeight };
+	D3D12_RECT	   scissor = { 0, 0, (LONG)bufferWidth, (LONG)bufferHeight };
 	mCommandList->RSSetViewports( 1, &viewport );
 	mCommandList->RSSetScissorRects( 1, &scissor );
 
@@ -346,9 +289,9 @@ void D3d12TriangleApp::draw()
 	float invHeight = 2.0f / height;
 
 	Vertex vertices[] = {
-		{ { 0.0f, topY * invHeight, 0.0f }, { 1.0f, 0.0f, 0.0f } },           // Top (red)
-		{ { halfSide * invWidth, bottomY * invHeight, 0.0f }, { 0.0f, 0.0f, 1.0f } },   // Bottom-right (blue)
-		{ { -halfSide * invWidth, bottomY * invHeight, 0.0f }, { 0.0f, 1.0f, 0.0f } }   // Bottom-left (green)
+		{ { 0.0f, topY * invHeight, 0.0f }, { 1.0f, 0.0f, 0.0f } },					  // Top (red)
+		{ { halfSide * invWidth, bottomY * invHeight, 0.0f }, { 0.0f, 0.0f, 1.0f } }, // Bottom-right (blue)
+		{ { -halfSide * invWidth, bottomY * invHeight, 0.0f }, { 0.0f, 1.0f, 0.0f } } // Bottom-left (green)
 	};
 
 	// Update vertex buffer
@@ -359,7 +302,7 @@ void D3d12TriangleApp::draw()
 	}
 
 	// Draw triangle
-	mCommandList->SetGraphicsRootSignature( mRootSignature );
+	mCommandList->SetGraphicsRootSignature( mRootSignature.Get() );
 	mCommandList->IASetPrimitiveTopology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 	mCommandList->IASetVertexBuffers( 0, 1, &mVertexBufferView );
 	mCommandList->DrawInstanced( 3, 1, 0, 0 );
@@ -367,7 +310,7 @@ void D3d12TriangleApp::draw()
 	// Handle end-of-frame transitions
 	if( msaaEnabled ) {
 		// MSAA: resolve to back buffer (handles all barriers internally)
-		mRenderer->recordMsaaResolve( mCommandList, D3D12_RESOURCE_STATE_PRESENT );
+		mRenderer->recordMsaaResolve( mCommandList.Get(), D3D12_RESOURCE_STATE_PRESENT );
 	}
 	else {
 		// No MSAA: transition back buffer from RENDER_TARGET to PRESENT
@@ -381,12 +324,12 @@ void D3d12TriangleApp::draw()
 	}
 
 	// Close and execute
-	mCommandList->Close();
-	ID3D12CommandList* lists[] = { mCommandList };
+	hr = mCommandList->Close();
+	if( FAILED( hr ) ) {
+		CI_LOG_E( "[App] draw: FAILED to close command list, hr=" << std::hex << hr );
+	}
+	ID3D12CommandList* lists[] = { mCommandList.Get() };
 	mCommandQueue->ExecuteCommandLists( 1, lists );
-
-	// Signal renderer's frame fence so it can track when this frame's work completes
-	mRenderer->signalFrameFence();
 
 	// Note: Don't call finishDraw() here - the framework calls it after draw() returns
 }
@@ -412,4 +355,4 @@ void D3d12TriangleApp::saveScreenshot()
 	}
 }
 
-CINDER_APP( D3d12TriangleApp, RendererD3d12( RendererD3d12::Options().msaa( 0 ) ) )
+CINDER_APP( D3d12TriangleApp, RendererD3d12( RendererD3d12::Options().msaa( 8 ) ) )

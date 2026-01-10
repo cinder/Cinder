@@ -47,7 +47,7 @@ RendererImplD3d12::~RendererImplD3d12()
 
 	// NOTE: Device, queue, and factory are intentionally NOT released here.
 	// When the window closes, the renderer is destroyed BEFORE app cleanup runs.
-	// External code (like video) may still need the queue during cleanup.
+	// External code may still need the queue during cleanup.
 	// These COM objects will be cleaned up by the OS when the process exits.
 	// Detach from ComPtr so destructor doesn't Release() them.
 	(void)mCommandQueue.detach();
@@ -128,7 +128,7 @@ bool RendererImplD3d12::createFactory()
 {
 	UINT dxgiFactoryFlags = 0;
 
-	// Enable debug layer if requested (or always in _DEBUG builds via Options default)
+	// Enable debug layer if requested
 	if( mOptions.getDebugLayer() ) {
 		msw::ComPtr<ID3D12Debug> debugController;
 		if( SUCCEEDED( D3D12GetDebugInterface( IID_PPV_ARGS( debugController.releaseAndGetAddressOf() ) ) ) ) {
@@ -148,7 +148,7 @@ bool RendererImplD3d12::createFactory()
 	}
 
 	msw::ComPtr<IDXGIFactory6> factory;
-	HRESULT hr = CreateDXGIFactory2( dxgiFactoryFlags, IID_PPV_ARGS( factory.releaseAndGetAddressOf() ) );
+	HRESULT					   hr = CreateDXGIFactory2( dxgiFactoryFlags, IID_PPV_ARGS( factory.releaseAndGetAddressOf() ) );
 	if( SUCCEEDED( hr ) )
 		mFactory = factory.detach();
 
@@ -181,8 +181,7 @@ bool RendererImplD3d12::selectAdapter()
 				break;
 		}
 
-		HRESULT hr = mFactory->EnumAdapterByGpuPreference( 0, dxgiPref,
-			IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
+		HRESULT hr = mFactory->EnumAdapterByGpuPreference( 0, dxgiPref, IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
 
 		if( FAILED( hr ) ) {
 			hr = mFactory->EnumWarpAdapter( IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
@@ -203,13 +202,7 @@ bool RendererImplD3d12::selectAdapter()
 bool RendererImplD3d12::createDevice()
 {
 	// Build list of feature levels to try, respecting minimum
-	D3D_FEATURE_LEVEL allFeatureLevels[] = {
-		D3D_FEATURE_LEVEL_12_2,
-		D3D_FEATURE_LEVEL_12_1,
-		D3D_FEATURE_LEVEL_12_0,
-		D3D_FEATURE_LEVEL_11_1,
-		D3D_FEATURE_LEVEL_11_0
-	};
+	D3D_FEATURE_LEVEL allFeatureLevels[] = { D3D_FEATURE_LEVEL_12_2, D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0 };
 
 	std::vector<D3D_FEATURE_LEVEL> featureLevels;
 	for( auto level : allFeatureLevels ) {
@@ -223,7 +216,7 @@ bool RendererImplD3d12::createDevice()
 	}
 
 	msw::ComPtr<IDXGIAdapter1> adapter;
-	HRESULT hr;
+	HRESULT					   hr;
 
 	if( mOptions.getForceWarp() ) {
 		hr = mFactory->EnumWarpAdapter( IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
@@ -245,8 +238,7 @@ bool RendererImplD3d12::createDevice()
 				break;
 		}
 
-		hr = mFactory->EnumAdapterByGpuPreference( 0, dxgiPref,
-			IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
+		hr = mFactory->EnumAdapterByGpuPreference( 0, dxgiPref, IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
 
 		if( FAILED( hr ) ) {
 			hr = mFactory->EnumWarpAdapter( IID_PPV_ARGS( adapter.releaseAndGetAddressOf() ) );
@@ -289,7 +281,7 @@ bool RendererImplD3d12::createCommandQueue()
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 
 	msw::ComPtr<ID3D12CommandQueue> queue;
-	HRESULT hr = mDevice->CreateCommandQueue( &queueDesc, IID_PPV_ARGS( queue.releaseAndGetAddressOf() ) );
+	HRESULT							hr = mDevice->CreateCommandQueue( &queueDesc, IID_PPV_ARGS( queue.releaseAndGetAddressOf() ) );
 	if( SUCCEEDED( hr ) )
 		mCommandQueue = queue.detach();
 
@@ -303,9 +295,8 @@ bool RendererImplD3d12::createSwapChain()
 	UINT width = rect.right - rect.left;
 	UINT height = rect.bottom - rect.top;
 
-	BOOL allowTearing = FALSE;
-	HRESULT hr = mFactory->CheckFeatureSupport( DXGI_FEATURE_PRESENT_ALLOW_TEARING,
-		&allowTearing, sizeof( allowTearing ) );
+	BOOL	allowTearing = FALSE;
+	HRESULT hr = mFactory->CheckFeatureSupport( DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof( allowTearing ) );
 	mTearingSupport = SUCCEEDED( hr ) && allowTearing;
 
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
@@ -323,14 +314,7 @@ bool RendererImplD3d12::createSwapChain()
 	swapChainDesc.Flags = mTearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
 	msw::ComPtr<IDXGISwapChain1> swapChain1;
-	hr = mFactory->CreateSwapChainForHwnd(
-		mCommandQueue.get(),
-		mWnd,
-		&swapChainDesc,
-		nullptr,
-		nullptr,
-		swapChain1.releaseAndGetAddressOf()
-	);
+	hr = mFactory->CreateSwapChainForHwnd( mCommandQueue.get(), mWnd, &swapChainDesc, nullptr, nullptr, swapChain1.releaseAndGetAddressOf() );
 
 	if( FAILED( hr ) )
 		return false;
@@ -353,7 +337,7 @@ bool RendererImplD3d12::createRtvHeap()
 	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
 	msw::ComPtr<ID3D12DescriptorHeap> rtvHeap;
-	HRESULT hr = mDevice->CreateDescriptorHeap( &rtvHeapDesc, IID_PPV_ARGS( rtvHeap.releaseAndGetAddressOf() ) );
+	HRESULT							  hr = mDevice->CreateDescriptorHeap( &rtvHeapDesc, IID_PPV_ARGS( rtvHeap.releaseAndGetAddressOf() ) );
 	if( FAILED( hr ) )
 		return false;
 
@@ -369,7 +353,7 @@ bool RendererImplD3d12::createBackBufferRtvs()
 
 	for( UINT i = 0; i < mBufferCount; i++ ) {
 		msw::ComPtr<ID3D12Resource> backBuffer;
-		HRESULT hr = mSwapChain->GetBuffer( i, IID_PPV_ARGS( backBuffer.releaseAndGetAddressOf() ) );
+		HRESULT						hr = mSwapChain->GetBuffer( i, IID_PPV_ARGS( backBuffer.releaseAndGetAddressOf() ) );
 		if( FAILED( hr ) )
 			return false;
 
@@ -386,14 +370,14 @@ bool RendererImplD3d12::createFrameFence()
 {
 	CI_LOG_I( "[D3D12] createFrameFence: Creating fence..." );
 	msw::ComPtr<ID3D12Fence> fence;
-	HRESULT hr = mDevice->CreateFence( 0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( fence.releaseAndGetAddressOf() ) );
+	HRESULT					 hr = mDevice->CreateFence( 0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( fence.releaseAndGetAddressOf() ) );
 	if( FAILED( hr ) ) {
 		CI_LOG_E( "[D3D12] createFrameFence: Failed to create fence, hr=" << std::hex << hr );
 		return false;
 	}
 
 	mFrameFence = fence.detach();
-	mFenceCounter = 0;  // Monotonic counter for fence values
+	mFenceCounter = 0; // Monotonic counter for fence values
 	CI_LOG_I( "[D3D12] createFrameFence: Fence created, mFenceCounter=" << mFenceCounter );
 
 	// Initialize fence values for each buffer to 0 (no work pending)
@@ -473,7 +457,7 @@ bool RendererImplD3d12::recreateBackBuffers()
 
 	for( UINT i = 0; i < mBufferCount; i++ ) {
 		msw::ComPtr<ID3D12Resource> backBuffer;
-		HRESULT hr = mSwapChain->GetBuffer( i, IID_PPV_ARGS( backBuffer.releaseAndGetAddressOf() ) );
+		HRESULT						hr = mSwapChain->GetBuffer( i, IID_PPV_ARGS( backBuffer.releaseAndGetAddressOf() ) );
 		if( FAILED( hr ) )
 			return false;
 
@@ -493,16 +477,12 @@ bool RendererImplD3d12::createMsaaTarget()
 	mSwapChain->GetDesc1( &swapChainDesc );
 
 	// Validate and clamp MSAA sample count
-	UINT requestedSamples = mOptions.getMsaa();
+	UINT										  requestedSamples = mOptions.getMsaa();
 	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
 	msQualityLevels.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	msQualityLevels.SampleCount = requestedSamples;
 
-	HRESULT hr = mDevice->CheckFeatureSupport(
-		D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS,
-		&msQualityLevels,
-		sizeof( msQualityLevels )
-	);
+	HRESULT hr = mDevice->CheckFeatureSupport( D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels, sizeof( msQualityLevels ) );
 
 	if( FAILED( hr ) || msQualityLevels.NumQualityLevels == 0 ) {
 		// Try lower sample counts
@@ -512,11 +492,7 @@ bool RendererImplD3d12::createMsaaTarget()
 			if( samples > requestedSamples )
 				continue;
 			msQualityLevels.SampleCount = samples;
-			hr = mDevice->CheckFeatureSupport(
-				D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS,
-				&msQualityLevels,
-				sizeof( msQualityLevels )
-			);
+			hr = mDevice->CheckFeatureSupport( D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels, sizeof( msQualityLevels ) );
 			if( SUCCEEDED( hr ) && msQualityLevels.NumQualityLevels > 0 ) {
 				mMsaaSamples = samples;
 				break;
@@ -572,14 +548,7 @@ bool RendererImplD3d12::createMsaaTarget()
 	clearValue.Color[3] = 1.0f;
 
 	msw::ComPtr<ID3D12Resource> msaaTarget;
-	hr = mDevice->CreateCommittedResource(
-		&heapProps,
-		D3D12_HEAP_FLAG_NONE,
-		&msaaDesc,
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		&clearValue,
-		IID_PPV_ARGS( msaaTarget.releaseAndGetAddressOf() )
-	);
+	hr = mDevice->CreateCommittedResource( &heapProps, D3D12_HEAP_FLAG_NONE, &msaaDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue, IID_PPV_ARGS( msaaTarget.releaseAndGetAddressOf() ) );
 
 	if( FAILED( hr ) ) {
 		CI_LOG_E( "[D3D12] Failed to create MSAA render target" );
@@ -643,7 +612,7 @@ void RendererImplD3d12::prepareToggleFullScreen()
 
 void RendererImplD3d12::finishToggleFullScreen()
 {
-	mFullScreen = !mFullScreen;
+	mFullScreen = ! mFullScreen;
 
 	if( mSwapChain ) {
 		mSwapChain->SetFullscreenState( mFullScreen ? TRUE : FALSE, nullptr );
@@ -653,6 +622,21 @@ void RendererImplD3d12::finishToggleFullScreen()
 void RendererImplD3d12::startDraw()
 {
 	if( mSwapChain ) {
+		// Check if swap chain dimensions match window client rect
+		// If not, force a resize before drawing (safeguard against race conditions)
+		RECT clientRect;
+		::GetClientRect( mWnd, &clientRect );
+		UINT clientWidth = clientRect.right - clientRect.left;
+		UINT clientHeight = clientRect.bottom - clientRect.top;
+
+		DXGI_SWAP_CHAIN_DESC1 desc;
+		mSwapChain->GetDesc1( &desc );
+
+		if( clientWidth > 0 && clientHeight > 0 &&
+			( desc.Width != clientWidth || desc.Height != clientHeight ) ) {
+			defaultResize();
+		}
+
 		mFrameIndex = mSwapChain->GetCurrentBackBufferIndex();
 
 		// Wait for this buffer's previous work to complete
@@ -663,19 +647,21 @@ void RendererImplD3d12::startDraw()
 				WaitForSingleObject( mFenceEvent, INFINITE );
 			}
 		}
+
+		// Mark frame as valid - will be invalidated if resize happens mid-frame
+		mFrameValid = true;
 	}
 }
 
 void RendererImplD3d12::defaultResize() const
 {
-	CI_LOG_I( "[D3D12] === defaultResize BEGIN ===" );
 	if( ! mSwapChain )
 		return;
 
-	RECT rect;
-	::GetClientRect( mWnd, &rect );
-	UINT width = rect.right - rect.left;
-	UINT height = rect.bottom - rect.top;
+	RECT clientRect;
+	::GetClientRect( mWnd, &clientRect );
+	UINT width = clientRect.right - clientRect.left;
+	UINT height = clientRect.bottom - clientRect.top;
 
 	if( width == 0 || height == 0 )
 		return;
@@ -687,17 +673,11 @@ void RendererImplD3d12::defaultResize() const
 
 	self->releaseBackBuffers();
 
-	UINT flags = self->mTearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
-	HRESULT hr = mSwapChain->ResizeBuffers(
-		self->mBufferCount,
-		width,
-		height,
-		DXGI_FORMAT_R8G8B8A8_UNORM,
-		flags
-	);
+	UINT	flags = self->mTearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+	HRESULT hr = mSwapChain->ResizeBuffers( self->mBufferCount, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, flags );
 
 	if( FAILED( hr ) ) {
-		CI_LOG_E( "[D3D12] defaultResize: Failed to resize swap chain buffers" );
+		CI_LOG_E( "[D3D12] defaultResize: Failed to resize swap chain buffers, hr=" << std::hex << hr );
 		return;
 	}
 
@@ -719,13 +699,20 @@ void RendererImplD3d12::defaultResize() const
 	}
 
 	self->mFrameIndex = mSwapChain->GetCurrentBackBufferIndex();
-	CI_LOG_I( "[D3D12] === defaultResize END ===" );
+
+	// Invalidate any in-progress frame - it was rendered with stale dimensions
+	self->mFrameValid = false;
 }
 
 void RendererImplD3d12::swapBuffers() const
 {
-	UINT presentFlags = mTearingSupport && !mVSync ? DXGI_PRESENT_ALLOW_TEARING : 0;
-	UINT syncInterval = mVSync ? 1 : 0;
+	// Skip present if frame was invalidated by a resize mid-frame
+	if( ! mFrameValid ) {
+		return;
+	}
+
+	UINT	presentFlags = mTearingSupport && ! mVSync ? DXGI_PRESENT_ALLOW_TEARING : 0;
+	UINT	syncInterval = mVSync ? 1 : 0;
 	HRESULT hr = mSwapChain->Present( syncInterval, presentFlags );
 	if( FAILED( hr ) ) {
 		CI_LOG_E( "[D3D12] swapBuffers: Failed to present, hr=" << std::hex << hr );
@@ -750,4 +737,4 @@ Surface8u RendererImplD3d12::copyWindowSurface( const Area& area )
 	return surface;
 }
 
-} } // namespace cinder::app
+}} // namespace cinder::app

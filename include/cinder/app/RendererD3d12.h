@@ -230,17 +230,20 @@ class RendererD3d12 : public Renderer {
 	//! or during resize operations to ensure the GPU is idle.
 	void waitForGpu();
 
-	//! Signals the frame fence after submitting command lists for the current frame.
-	//! Call this after ExecuteCommandLists() but before the framework's finishDraw().
-	//! This allows the renderer to track when each frame's GPU work is complete.
+	//! Signals the renderer's internal per-frame fence for the current back buffer.
+	//! In the normal Cinder render loop you should not call this: the renderer signals
+	//! automatically as part of finishDraw() (after your draw() returns).
+	//! This is only useful if you need a fence signal before finishDraw() runs.
 	void signalFrameFence();
 
-	//! Waits for the specified frame's GPU work to complete.
-	//! Used internally by startDraw() but can be called manually if needed.
+	//! Waits for the specified back buffer's previously-submitted GPU work to complete.
+	//! In the normal Cinder render loop you should not call this: startDraw() already
+	//! waits for the current back buffer before your draw() runs, so per-frame resources
+	//! indexed by getCurrentBackBufferIndex() are safe to reset inside draw().
 	void waitForFrame( UINT frameIndex );
 
 	//! Returns the fence object for advanced synchronization scenarios.
-	//! Most apps should use signalFrameFence() and waitForFrame() instead.
+	//! Most apps should not need direct access; prefer the normal startDraw()/finishDraw() flow.
 	ID3D12Fence* getFence();
 
 	//! Returns the fence value for the specified frame.

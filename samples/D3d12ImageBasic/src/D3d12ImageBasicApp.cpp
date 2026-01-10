@@ -25,8 +25,8 @@
 #include "cinder/CanvasUi.h"
 #include "cinder/Log.h"
 #include <d3d12.h>
-#include <dxgi1_6.h>
 #include <d3dcompiler.h>
+#include <wrl/client.h>
 
 // ImGui - uses CinderImGui for input handling, imgui_impl_dx12 for rendering
 #include "cinder/CinderImGui.h"
@@ -34,6 +34,7 @@
 
 using namespace ci;
 using namespace ci::app;
+using Microsoft::WRL::ComPtr;
 
 struct Vertex {
 	float pos[3];
@@ -43,8 +44,6 @@ struct Vertex {
 class D3d12ImageBasicApp : public App {
   public:
 	void setup() override;
-	void cleanup() override;
-	void resize() override;
 	void update() override;
 	void draw() override;
 	void keyDown( KeyEvent event ) override;
@@ -57,23 +56,23 @@ class D3d12ImageBasicApp : public App {
 	void createTextureFromSurface( const Surface8u& surface );
 	void drawGui();
 
-	// App-managed D3D12 resources (minimal renderer pattern)
+	// Borrowed pointers from renderer (not owned, don't use ComPtr)
 	ID3D12Device*		mDevice = nullptr;
 	ID3D12CommandQueue* mCommandQueue = nullptr;
 
 	// Per-frame command allocators for proper triple buffering
-	ID3D12CommandAllocator*	   mCommandAllocators[RendererD3d12::MaxFrameCount] = {};
-	ID3D12GraphicsCommandList* mCommandList = nullptr;
+	ComPtr<ID3D12CommandAllocator>	  mCommandAllocators[RendererD3d12::MaxFrameCount];
+	ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
 	// App rendering resources
-	ID3D12RootSignature* mRootSignature = nullptr;
-	ID3D12PipelineState* mPipelineState = nullptr;
+	ComPtr<ID3D12RootSignature> mRootSignature;
+	ComPtr<ID3D12PipelineState> mPipelineState;
 	// Per-frame vertex buffers to avoid GPU/CPU races during animation
-	ID3D12Resource*			 mVertexBuffers[RendererD3d12::MaxFrameCount] = {};
+	ComPtr<ID3D12Resource>	 mVertexBuffers[RendererD3d12::MaxFrameCount];
 	D3D12_VERTEX_BUFFER_VIEW mVertexBufferViews[RendererD3d12::MaxFrameCount] = {};
-	ID3D12Resource*			 mTexture = nullptr;
-	ID3D12Resource*			 mTextureUploadHeap = nullptr;
-	ID3D12DescriptorHeap*	 mSrvHeap = nullptr;
+	ComPtr<ID3D12Resource>	 mTexture;
+	ComPtr<ID3D12Resource>	 mTextureUploadHeap;
+	ComPtr<ID3D12DescriptorHeap> mSrvHeap;
 
 	// Cached renderer pointer
 	RendererD3d12Ref mRenderer;
@@ -124,7 +123,7 @@ void D3d12ImageBasicApp::setup()
 	}
 
 	// Create app's own command list (using first allocator initially)
-	hr = mDevice->CreateCommandList( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCommandAllocators[0], nullptr, IID_PPV_ARGS( &mCommandList ) );
+	hr = mDevice->CreateCommandList( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCommandAllocators[0].Get(), nullptr, IID_PPV_ARGS( &mCommandList ) );
 	if( FAILED( hr ) )
 		return;
 	mCommandList->Close(); // Start closed
@@ -162,19 +161,13 @@ void D3d12ImageBasicApp::setup()
 	rootSigDesc.pStaticSamplers = &staticSampler;
 	rootSigDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	ID3DBlob* signature = nullptr;
-	ID3DBlob* error = nullptr;
-	hr = D3D12SerializeRootSignature( &rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error );
-	if( FAILED( hr ) ) {
-		if( error )
-			error->Release();
+	ComPtr<ID3DBlob> signature;
+	ComPtr<ID3DBlob> error;
+	hr = ::D3D12SerializeRootSignature( &rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error );
+	if( FAILED( hr ) )
 		return;
-	}
-	if( error )
-		error->Release();
 
 	hr = mDevice->CreateRootSignature( 0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS( &mRootSignature ) );
-	signature->Release();
 	if( FAILED( hr ) )
 		return;
 
@@ -209,27 +202,16 @@ void D3d12ImageBasicApp::setup()
 		}
 	)";
 
-	ID3DBlob* vsBlob = nullptr;
-	ID3DBlob* errorBlob = nullptr;
-	hr = D3DCompile( vertexShaderSource, strlen( vertexShaderSource ), nullptr, nullptr, nullptr, "main", "vs_5_0", 0, 0, &vsBlob, &errorBlob );
-	if( FAILED( hr ) ) {
-		if( errorBlob )
-			errorBlob->Release();
+	ComPtr<ID3DBlob> vsBlob;
+	ComPtr<ID3DBlob> errorBlob;
+	hr = ::D3DCompile( vertexShaderSource, strlen( vertexShaderSource ), nullptr, nullptr, nullptr, "main", "vs_5_0", 0, 0, &vsBlob, &errorBlob );
+	if( FAILED( hr ) )
 		return;
-	}
-	if( errorBlob )
-		errorBlob->Release();
 
-	ID3DBlob* psBlob = nullptr;
-	hr = D3DCompile( pixelShaderSource, strlen( pixelShaderSource ), nullptr, nullptr, nullptr, "main", "ps_5_0", 0, 0, &psBlob, &errorBlob );
-	if( FAILED( hr ) ) {
-		if( errorBlob )
-			errorBlob->Release();
-		vsBlob->Release();
+	ComPtr<ID3DBlob> psBlob;
+	hr = ::D3DCompile( pixelShaderSource, strlen( pixelShaderSource ), nullptr, nullptr, nullptr, "main", "ps_5_0", 0, 0, &psBlob, &errorBlob );
+	if( FAILED( hr ) )
 		return;
-	}
-	if( errorBlob )
-		errorBlob->Release();
 
 	// Create input layout
 	D3D12_INPUT_ELEMENT_DESC layout[] = {
@@ -239,7 +221,7 @@ void D3d12ImageBasicApp::setup()
 
 	// Create pipeline state
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-	psoDesc.pRootSignature = mRootSignature;
+	psoDesc.pRootSignature = mRootSignature.Get();
 	psoDesc.VS = { vsBlob->GetBufferPointer(), vsBlob->GetBufferSize() };
 	psoDesc.PS = { psBlob->GetBufferPointer(), psBlob->GetBufferSize() };
 	psoDesc.BlendState.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
@@ -255,8 +237,6 @@ void D3d12ImageBasicApp::setup()
 	psoDesc.SampleDesc.Count = 1;
 
 	hr = mDevice->CreateGraphicsPipelineState( &psoDesc, IID_PPV_ARGS( &mPipelineState ) );
-	vsBlob->Release();
-	psBlob->Release();
 	if( FAILED( hr ) )
 		return;
 
@@ -305,47 +285,6 @@ void D3d12ImageBasicApp::setup()
 	mOpenRequested = true;
 }
 
-void D3d12ImageBasicApp::cleanup()
-{
-	// Don't call waitForGpu() here - the renderer may have already destroyed the queue
-	// The renderer's kill() already waits for GPU idle before destroying resources
-	// Note: CinderImGui handles ImGui shutdown via app cleanup signal
-
-	if( mTextureUploadHeap )
-		mTextureUploadHeap->Release();
-	if( mTexture )
-		mTexture->Release();
-	if( mSrvHeap )
-		mSrvHeap->Release();
-	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
-		if( mVertexBuffers[i] )
-			mVertexBuffers[i]->Release();
-	}
-	if( mPipelineState )
-		mPipelineState->Release();
-	if( mRootSignature )
-		mRootSignature->Release();
-	if( mCommandList )
-		mCommandList->Release();
-	for( UINT i = 0; i < RendererD3d12::MaxFrameCount; i++ ) {
-		if( mCommandAllocators[i] )
-			mCommandAllocators[i]->Release();
-	}
-}
-
-void D3d12ImageBasicApp::resize()
-{
-	CI_LOG_I( "[App] resize: Starting..." );
-	// Wait for all GPU work to complete before resize
-	if( mRenderer )
-		mRenderer->waitForGpu();
-
-	if( mRenderer )
-		mRenderer->defaultResize();
-
-	CI_LOG_I( "[App] resize: Complete" );
-}
-
 void D3d12ImageBasicApp::update()
 {
 	// Process deferred file dialogs outside of draw loop
@@ -390,13 +329,13 @@ void D3d12ImageBasicApp::draw()
 	UINT				bufferWidth = static_cast<UINT>( bufferDesc.Width );
 	UINT				bufferHeight = bufferDesc.Height;
 
-	// Wait for this frame's GPU work to complete before reusing its allocator
-	mRenderer->waitForFrame( frameIndex );
+	// RendererD3d12::startDraw() has already waited for this back buffer's previous GPU work
+	// to complete, so per-frame resources indexed by frameIndex are safe to reset here.
 
 	// Reset this frame's command allocator and list
-	ID3D12CommandAllocator* frameAllocator = mCommandAllocators[frameIndex];
+	ID3D12CommandAllocator* frameAllocator = mCommandAllocators[frameIndex].Get();
 	frameAllocator->Reset();
-	mCommandList->Reset( frameAllocator, mPipelineState );
+	mCommandList->Reset( frameAllocator, mPipelineState.Get() );
 
 	// Transition back buffer from PRESENT to RENDER_TARGET
 	D3D12_RESOURCE_BARRIER barrier = {};
@@ -447,9 +386,9 @@ void D3d12ImageBasicApp::draw()
 		}
 
 		// Set descriptor heaps and root signature
-		ID3D12DescriptorHeap* heaps[] = { mSrvHeap };
+		ID3D12DescriptorHeap* heaps[] = { mSrvHeap.Get() };
 		mCommandList->SetDescriptorHeaps( 1, heaps );
-		mCommandList->SetGraphicsRootSignature( mRootSignature );
+		mCommandList->SetGraphicsRootSignature( mRootSignature.Get() );
 		mCommandList->SetGraphicsRootDescriptorTable( 0, mSrvHeap->GetGPUDescriptorHandleForHeapStart() );
 
 		// Draw quad using this frame's vertex buffer
@@ -478,7 +417,7 @@ void D3d12ImageBasicApp::draw()
 		ImGui::NewFrame();
 		drawGui();
 		ImGui::Render();
-		ImGui_ImplDX12_RenderDrawData( ImGui::GetDrawData(), mCommandList );
+		ImGui_ImplDX12_RenderDrawData( ImGui::GetDrawData(), mCommandList.Get() );
 	}
 
 	// Transition back buffer from RENDER_TARGET to PRESENT
@@ -488,11 +427,8 @@ void D3d12ImageBasicApp::draw()
 
 	// Close and execute
 	mCommandList->Close();
-	ID3D12CommandList* lists[] = { mCommandList };
+	ID3D12CommandList* lists[] = { mCommandList.Get() };
 	mCommandQueue->ExecuteCommandLists( 1, lists );
-
-	// Signal renderer's frame fence so it can track when this frame's work completes
-	mRenderer->signalFrameFence();
 
 	// Handle capture mode
 	if( mCaptureMode && ! mCaptured ) {
@@ -540,7 +476,7 @@ void D3d12ImageBasicApp::loadImage( const fs::path& path )
 	}
 	catch( const std::exception& e ) {
 		CI_LOG_EXCEPTION( "failed to load image.", e );
-		mTexture = nullptr;
+		mTexture.Reset();
 		mImageSource.reset();
 		mImagePath.clear();
 		mErrorMessage = e.what();
@@ -566,14 +502,8 @@ void D3d12ImageBasicApp::createTextureFromSurface( const Surface8u& surface )
 	if( mRenderer )
 		mRenderer->waitForGpu();
 
-	if( mTextureUploadHeap ) {
-		mTextureUploadHeap->Release();
-		mTextureUploadHeap = nullptr;
-	}
-	if( mTexture ) {
-		mTexture->Release();
-		mTexture = nullptr;
-	}
+	mTextureUploadHeap.Reset();
+	mTexture.Reset();
 
 	mImageSize = ivec2( surface.getWidth(), surface.getHeight() );
 
@@ -628,17 +558,15 @@ void D3d12ImageBasicApp::createTextureFromSurface( const Surface8u& surface )
 		return;
 
 	// Create temporary command list for upload
-	ID3D12CommandAllocator* uploadAllocator = nullptr;
+	ComPtr<ID3D12CommandAllocator> uploadAllocator;
 	hr = mDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( &uploadAllocator ) );
 	if( FAILED( hr ) )
 		return;
 
-	ID3D12GraphicsCommandList* uploadList = nullptr;
-	hr = mDevice->CreateCommandList( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, uploadAllocator, nullptr, IID_PPV_ARGS( &uploadList ) );
-	if( FAILED( hr ) ) {
-		uploadAllocator->Release();
+	ComPtr<ID3D12GraphicsCommandList> uploadList;
+	hr = mDevice->CreateCommandList( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, uploadAllocator.Get(), nullptr, IID_PPV_ARGS( &uploadList ) );
+	if( FAILED( hr ) )
 		return;
-	}
 
 	// Manually copy texture data without using UpdateSubresources helper
 	void* uploadData;
@@ -657,20 +585,19 @@ void D3d12ImageBasicApp::createTextureFromSurface( const Surface8u& surface )
 		mDevice->GetCopyableFootprints( &desc, 0, 1, 0, &footprint, &numRows, &rowSizeInBytes, &totalBytes );
 
 		// Copy row by row
-		for( UINT y = 0; y < numRows; y++ ) {
+		for( UINT y = 0; y < numRows; y++ )
 			memcpy( destData + footprint.Footprint.RowPitch * y, srcData + srcRowPitch * y, rowSizeInBytes );
-		}
 
 		mTextureUploadHeap->Unmap( 0, nullptr );
 
 		// Copy from upload heap to texture
 		D3D12_TEXTURE_COPY_LOCATION dst = {};
-		dst.pResource = mTexture;
+		dst.pResource = mTexture.Get();
 		dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
 		dst.SubresourceIndex = 0;
 
 		D3D12_TEXTURE_COPY_LOCATION src = {};
-		src.pResource = mTextureUploadHeap;
+		src.pResource = mTextureUploadHeap.Get();
 		src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
 		src.PlacedFootprint = footprint;
 
@@ -680,21 +607,18 @@ void D3d12ImageBasicApp::createTextureFromSurface( const Surface8u& surface )
 	// Transition texture to shader resource
 	D3D12_RESOURCE_BARRIER barrier = {};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	barrier.Transition.pResource = mTexture;
+	barrier.Transition.pResource = mTexture.Get();
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 	uploadList->ResourceBarrier( 1, &barrier );
 
 	uploadList->Close();
-	ID3D12CommandList* uploadLists[] = { uploadList };
+	ID3D12CommandList* uploadLists[] = { uploadList.Get() };
 	mCommandQueue->ExecuteCommandLists( 1, uploadLists );
 
 	// Wait for upload to complete before releasing resources
 	mRenderer->waitForGpu();
-
-	uploadList->Release();
-	uploadAllocator->Release();
 
 	// Create SRV
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -703,7 +627,7 @@ void D3d12ImageBasicApp::createTextureFromSurface( const Surface8u& surface )
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
 
-	mDevice->CreateShaderResourceView( mTexture, &srvDesc, mSrvHeap->GetCPUDescriptorHandleForHeapStart() );
+	mDevice->CreateShaderResourceView( mTexture.Get(), &srvDesc, mSrvHeap->GetCPUDescriptorHandleForHeapStart() );
 
 	// Set canvas bounds - centered at origin
 	float halfWidth = mImageSize.x * 0.5f;
