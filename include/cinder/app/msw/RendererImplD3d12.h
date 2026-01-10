@@ -111,6 +111,10 @@ class RendererImplD3d12 : public RendererImplMsw {
 	//! VSync flag
 	bool mVSync = true;
 
+	//! Frame validity flag - set true at startDraw, set false on resize
+	//! If false at swapBuffers time, skip Present (frame was rendered with stale dimensions)
+	bool mFrameValid = false;
+
 	// ---- MSAA Support ----
 	//! MSAA render target (nullptr if msaa samples == 1)
 	msw::ComPtr<ID3D12Resource> mMsaaTarget;

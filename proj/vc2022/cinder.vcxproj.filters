@@ -1053,6 +1053,21 @@
     <ClCompile Include="..\..\src\cinder\qtime\mf\DXGIRenderPath.cpp">
       <Filter>Source Files\qtime\mf</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\imgui\imgui_impl_dx12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\app\RendererD3d11.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\app\RendererD3d12.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\app\msw\RendererImplD3d11.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cinder\app\msw\RendererImplD3d12.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\cinder\Arcball.h">
@@ -2209,6 +2224,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\cinder\qtime\QuickTimeImplMsw.h">
       <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\imgui\imgui_impl_dx12.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
