@@ -8,10 +8,7 @@ get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
-if( NOT APPLE AND NOT DEFINED CINDER_FORCE_MAC_SAMPLE )
-	message( STATUS "MetalTriangle sample is macOS-only; skipping configuration." )
-	return()
-endif()
+ci_require_platform( MAC )
 
 ci_make_app(
 	SOURCES
