@@ -1814,16 +1814,8 @@ cairo::SurfaceGdi createWindowSurface()
 {
 	return cairo::SurfaceGdi( cinder::app::App::get()->getRenderer()->getDc() );
 }
-#elif defined( CINDER_MAC )
-cairo::SurfaceQuartz createWindowSurface()
-{
-	auto cgContext = cinder::app::App::get()->getRenderer()->getCgContext();
-	auto height = cinder::app::getWindowHeight();
-	CGContextTranslateCTM( cgContext, 0.0, height );
-	CGContextScaleCTM( cgContext, 1.0, -1.0 );
-	return cairo::SurfaceQuartz( cgContext, cinder::app::getWindowWidth(), height );
-}
 #endif
+// Note: macOS uses software rendering via SurfaceImage instead of createWindowSurface()
 
 /*void Context::glyphExtents( const GlyphArray &glyphs, int num_glyphs, TextExtents *extents )
 {
