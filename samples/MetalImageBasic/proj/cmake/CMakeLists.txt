@@ -13,7 +13,7 @@ ci_require_platform( MAC )
 ci_make_app(
 	SOURCES
 		${APP_PATH}/src/MetalImageBasicApp.mm
-		${CINDER_PATH}/src/cinder/app/RendererMetal.cpp
+		${CINDER_PATH}/src/cinder/app/RendererMetal.mm
 		${CINDER_PATH}/src/cinder/app/glfw/RendererImplGlfwMetal.mm
 	CINDER_PATH ${CINDER_PATH}
 )
