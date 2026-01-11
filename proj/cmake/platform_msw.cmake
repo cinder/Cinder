@@ -25,6 +25,10 @@ list( APPEND SRC_SET_APP_MSW
 	${CINDER_SRC_DIR}/cinder/app/msw/PlatformMsw.cpp
 	${CINDER_SRC_DIR}/cinder/app/msw/RendererImpl2dGdi.cpp
 	#${CINDER_SRC_DIR}/cinder/app/msw/RendererImplDx.cpp
+
+	# D3D11 renderer
+	${CINDER_SRC_DIR}/cinder/app/RendererD3d11.cpp
+	${CINDER_SRC_DIR}/cinder/app/msw/RendererImplD3d11.cpp
 )
 
 # ANGLE or native OpenGL renderer
@@ -149,7 +153,7 @@ if( MSVC )
 	set( CINDER_STATIC_LIBS_FLAGS_DEBUG		"/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
 
 	# Platform libraries - base set without GL
-	set( MSW_PLATFORM_LIBS_BASE "Ws2_32.lib wldap32.lib shlwapi.lib wmvcore.lib Strmiids.lib Msimg32.lib" )
+	set( MSW_PLATFORM_LIBS_BASE "Ws2_32.lib wldap32.lib shlwapi.lib wmvcore.lib Strmiids.lib Msimg32.lib d3d11.lib dxgi.lib" )
 
 	# GL libraries - either ANGLE or native OpenGL
 	if( CINDER_GL_ANGLE )
