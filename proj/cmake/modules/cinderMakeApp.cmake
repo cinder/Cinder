@@ -1,5 +1,42 @@
 include( CMakeParseArguments )
 
+#
+# ci_require_platform( <platform> [<platform2> ...] )
+#
+# Use at the top of a sample's CMakeLists.txt to skip configuration on unsupported platforms.
+# Accepts one or more platform names: MSW, MAC, LINUX, IOS, ANDROID
+#
+# Examples:
+#   ci_require_platform( MSW )           # Windows only
+#   ci_require_platform( MAC )           # macOS only
+#   ci_require_platform( MSW MAC )       # Windows or macOS (not Linux)
+#   ci_require_platform( MAC IOS )       # macOS or iOS
+#
+macro( ci_require_platform )
+	set( _CI_PLATFORM_SUPPORTED FALSE )
+
+	foreach( _platform ${ARGN} )
+		# Normalize platform name and check against Cinder platform variables
+		string( TOUPPER "${_platform}" _platform_upper )
+		if( "${_platform_upper}" STREQUAL "MSW" AND CINDER_MSW )
+			set( _CI_PLATFORM_SUPPORTED TRUE )
+		elseif( "${_platform_upper}" STREQUAL "MAC" AND CINDER_MAC )
+			set( _CI_PLATFORM_SUPPORTED TRUE )
+		elseif( "${_platform_upper}" STREQUAL "LINUX" AND CINDER_LINUX )
+			set( _CI_PLATFORM_SUPPORTED TRUE )
+		elseif( "${_platform_upper}" STREQUAL "IOS" AND CINDER_COCOA_TOUCH )
+			set( _CI_PLATFORM_SUPPORTED TRUE )
+		elseif( "${_platform_upper}" STREQUAL "ANDROID" AND CINDER_ANDROID )
+			set( _CI_PLATFORM_SUPPORTED TRUE )
+		endif()
+	endforeach()
+
+	if( NOT _CI_PLATFORM_SUPPORTED )
+		message( STATUS "${PROJECT_NAME} requires platform(s): ${ARGN}; skipping configuration." )
+		return()
+	endif()
+endmacro()
+
 function( ci_make_app )
 	set( oneValueArgs APP_NAME CINDER_PATH ASSETS_PATH )
 	set( multiValueArgs SOURCES INCLUDES LIBRARIES RESOURCES BLOCKS )
@@ -110,9 +147,15 @@ function( ci_make_app )
 		endif()
 	elseif( CINDER_MSW )
 		if( MSVC )
-			# Default to static runtime (/MT) unless user specifies otherwise
+			# Set runtime library to match Cinder's build:
+			# - DLL builds (BUILD_SHARED_LIBS=ON) use dynamic CRT (/MD)
+			# - Static builds use static CRT (/MT)
 			if( NOT DEFINED CMAKE_MSVC_RUNTIME_LIBRARY )
-				set( CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" )
+				if( BUILD_SHARED_LIBS )
+					set( CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL" )
+				else()
+					set( CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" )
+				endif()
 			endif()
 
 			# Force synchronous PDB writes
@@ -171,6 +214,19 @@ function( ci_make_app )
 	if( MSVC )
 		# Ignore Specific Default Libraries for Debug build
 		set_target_properties( ${ARG_APP_NAME} PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
+
+		# Copy ANGLE DLLs to output directory when using ANGLE
+		if( CINDER_GL_ANGLE )
+			set( ANGLE_DLL_DIR "${ARG_CINDER_PATH}/lib/msw/${CINDER_ARCH}" )
+			add_custom_command( TARGET ${ARG_APP_NAME} POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different
+					"${ANGLE_DLL_DIR}/libEGL.dll"
+					"${ANGLE_DLL_DIR}/libGLESv2.dll"
+					"${ANGLE_DLL_DIR}/d3dcompiler_46.dll"
+					"$<TARGET_FILE_DIR:${ARG_APP_NAME}>"
+				COMMENT "Copying ANGLE DLLs for ${ARG_APP_NAME}"
+			)
+		endif()
 	endif()
 
 	# Blocks are first searched relative to the sample's CMakeLists.txt file, then within cinder's blocks folder
