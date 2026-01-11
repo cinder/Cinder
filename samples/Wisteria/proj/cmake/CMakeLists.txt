@@ -1,3 +1,5 @@
+# CMakeLists.txt for Wisteria with Cairo support
+
 cmake_minimum_required( VERSION 3.16 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
@@ -8,45 +10,43 @@ get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
-# Linux-specific Cairo handling
-if( CMAKE_SYSTEM_NAME STREQUAL "Linux" )
-    # Add our custom FindCairo module to the module path
-    list(APPEND CMAKE_MODULE_PATH "${CINDER_PATH}/proj/cmake/modules")
+set( CAIRO_BLOCK "${CINDER_PATH}/blocks/Cairo" )
+set( CAIRO_SOURCES ${CAIRO_BLOCK}/src/Cairo.cpp )
+set( CAIRO_INCLUDES ${CAIRO_BLOCK}/include )
 
-    # Find system Cairo
+if( CINDER_LINUX )
+    list( APPEND CMAKE_MODULE_PATH "${CINDER_PATH}/proj/cmake/modules" )
     find_package( Cairo REQUIRED )
-
-    # Include Cairo headers and Cinder Cairo wrapper
-    set( CAIRO_SOURCES
-        ${CINDER_PATH}/blocks/Cairo/src/Cairo.cpp
+    list( APPEND CAIRO_INCLUDES ${CAIRO_INCLUDE_DIRS} )
+    set( CAIRO_LIBS ${CAIRO_LIBRARIES} )
+elseif( CINDER_MAC )
+    list( APPEND CAIRO_INCLUDES ${CAIRO_BLOCK}/include/macosx )
+    set( CAIRO_LIBS
+        ${CAIRO_BLOCK}/lib/macosx/libcairo.a
+        ${CAIRO_BLOCK}/lib/macosx/libpixman-1.a
+        ${CAIRO_BLOCK}/lib/macosx/libpng16.a
     )
-
-    set( CAIRO_INCLUDES
-        ${CINDER_PATH}/blocks/Cairo/include
-        ${CAIRO_INCLUDE_DIRS}
+elseif( CINDER_MSW )
+    list( APPEND CAIRO_INCLUDES ${CAIRO_BLOCK}/include/msw )
+    set( CAIRO_LIBS
+        ${CAIRO_BLOCK}/lib/msw/x64/cairo-static.lib
+        ${CAIRO_BLOCK}/lib/msw/x64/pixman-1.lib
     )
+endif()
 
-    ci_make_app(
-        SOURCES     ${APP_PATH}/src/WisteriaApp.cpp
-                    ${APP_PATH}/src/Branch.cpp
-                    ${CAIRO_SOURCES}
-        INCLUDES    ${APP_PATH}/include
-                    ${CAIRO_INCLUDES}
-        LIBRARIES   ${CAIRO_LIBRARIES}
-        CINDER_PATH ${CINDER_PATH}
-    )
+ci_make_app(
+    SOURCES     ${APP_PATH}/src/WisteriaApp.cpp
+                ${APP_PATH}/src/Branch.cpp
+                ${CAIRO_SOURCES}
+    INCLUDES    ${APP_PATH}/include ${CAIRO_INCLUDES}
+    CINDER_PATH ${CINDER_PATH}
+)
 
-    # Link Cairo libraries and set include directories
-    target_link_libraries( ${PROJECT_NAME} PRIVATE ${CAIRO_LIBRARIES} )
-    target_include_directories( ${PROJECT_NAME} PRIVATE ${CAIRO_INCLUDE_DIRS} )
+target_link_libraries( ${PROJECT_NAME} PRIVATE ${CAIRO_LIBS} )
 
-else()
-    # Use standard CinderBlock for other platforms
-    ci_make_app(
-        SOURCES     ${APP_PATH}/src/WisteriaApp.cpp
-                    ${APP_PATH}/src/Branch.cpp
-        INCLUDES    ${APP_PATH}/include
-        BLOCKS      Cairo
-        CINDER_PATH ${CINDER_PATH}
+if( CINDER_MAC )
+    add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND plutil -replace NSHighResolutionCapable -bool false
+                "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Contents/Info.plist"
     )
 endif()
