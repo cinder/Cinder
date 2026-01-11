@@ -13,5 +13,4 @@ ci_make_app(
 	CINDER_PATH ${CINDER_PATH}
 	SOURCES     ${APP_PATH}/src/ObjLoaderApp.cpp
 	INCLUDES    ${APP_PATH}/include
-	RESOURCES   ${APP_PATH}/../../data/models/8lbs.obj
 )
