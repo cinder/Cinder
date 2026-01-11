@@ -25,9 +25,14 @@ list( APPEND SRC_SET_APP_MSW
 	${CINDER_SRC_DIR}/cinder/app/msw/PlatformMsw.cpp
 	${CINDER_SRC_DIR}/cinder/app/msw/RendererImpl2dGdi.cpp
 	#${CINDER_SRC_DIR}/cinder/app/msw/RendererImplDx.cpp
-	#${CINDER_SRC_DIR}/cinder/app/msw/RendererImplGlAngle.cpp
-	${CINDER_SRC_DIR}/cinder/app/msw/RendererImplGlMsw.cpp
 )
+
+# ANGLE or native OpenGL renderer
+if( CINDER_GL_ANGLE )
+	list( APPEND SRC_SET_APP_MSW ${CINDER_SRC_DIR}/cinder/app/msw/RendererImplGlAngle.cpp )
+else()
+	list( APPEND SRC_SET_APP_MSW ${CINDER_SRC_DIR}/cinder/app/msw/RendererImplGlMsw.cpp )
+endif()
 
 if( NOT CINDER_DISABLE_AUDIO )
 	list( APPEND SRC_SET_AUDIO_MSW
@@ -113,13 +118,27 @@ list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
 	${CINDER_INC_DIR}/msw
 )
 
+# ANGLE includes
+if( CINDER_GL_ANGLE )
+	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${CINDER_INC_DIR}/ANGLE )
+endif()
+
 # NOTE: UNICODE and _UNICODE forces generator to use Unicode instead of MultiByte
 list( APPEND CINDER_DEFINES "_LIB;UNICODE;_UNICODE;NOMINMAX;_WIN32_WINNT=0x0A00;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS" )
 
+# ANGLE define
+if( CINDER_GL_ANGLE )
+	list( APPEND CINDER_DEFINES "CINDER_GL_ANGLE" )
+endif()
+
 if( MSVC )
-	# Default to static runtime (/MT) unless user specifies otherwise
+	# Set runtime library - DLL builds use dynamic CRT (/MD), static builds use static CRT (/MT)
 	if( NOT DEFINED CMAKE_MSVC_RUNTIME_LIBRARY )
-		set( CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" )
+		if( BUILD_SHARED_LIBS )
+			set( CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL" )
+		else()
+			set( CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" )
+		endif()
 	endif()
 
 	# Force synchronous PDB writes
@@ -128,9 +147,20 @@ if( MSVC )
 	add_compile_options( /MP )
 	# Static library flags
 	set( CINDER_STATIC_LIBS_FLAGS_DEBUG		"/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
-   
-	# Platform libraries 
-	set( MSW_PLATFORM_LIBS "Ws2_32.lib wldap32.lib shlwapi.lib OpenGL32.lib wmvcore.lib Strmiids.lib Msimg32.lib" )
+
+	# Platform libraries - base set without GL
+	set( MSW_PLATFORM_LIBS_BASE "Ws2_32.lib wldap32.lib shlwapi.lib wmvcore.lib Strmiids.lib Msimg32.lib" )
+
+	# GL libraries - either ANGLE or native OpenGL
+	if( CINDER_GL_ANGLE )
+		set( MSW_GL_LIBS "libEGL.lib libGLESv2.lib" )
+		# ANGLE libraries are in lib/msw/<arch>
+		link_directories( "${CINDER_PATH}/lib/msw/${CINDER_ARCH}" )
+	else()
+		set( MSW_GL_LIBS "OpenGL32.lib" )
+	endif()
+
+	set( MSW_PLATFORM_LIBS "${MSW_PLATFORM_LIBS_BASE} ${MSW_GL_LIBS}" )
 
 	set( MSW_SUBFOLDER "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
 	# Static library debug depends

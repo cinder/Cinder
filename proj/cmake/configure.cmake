@@ -7,6 +7,9 @@ option( CINDER_DISABLE_AUDIO "Build Cinder without audio support. " OFF )
 option( CINDER_DISABLE_VIDEO "Build Cinder without video support. " OFF )
 option( CINDER_DISABLE_IMGUI "Build Cinder without imgui support. " OFF )
 
+# ANGLE support (Windows only) - uses OpenGL ES via Direct3D translation
+option( CINDER_GL_ANGLE "Build with ANGLE instead of native OpenGL (Windows only). " OFF )
+
 include( ${CMAKE_CURRENT_LIST_DIR}/utilities.cmake )
 
 # Set default build type to Debug

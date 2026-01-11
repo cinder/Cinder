@@ -24,6 +24,14 @@ target_link_libraries( cinder PUBLIC ${CINDER_LIBS_DEPENDS}  )
 
 target_compile_definitions( cinder PUBLIC ${CINDER_DEFINES} )
 
+# DLL/Shared library support
+if( BUILD_SHARED_LIBS )
+	# CINDER_SHARED_BUILD - used when building the DLL (dllexport)
+	target_compile_definitions( cinder PRIVATE CINDER_SHARED_BUILD )
+	# CINDER_SHARED - propagates to consumers (dllimport)
+	target_compile_definitions( cinder PUBLIC CINDER_SHARED )
+endif()
+
 # Visual Studio and Xcode generators adds a ${CMAKE_BUILD_TYPE} to the ARCHIVE 
 # and LIBRARY directories. Override the directories so, ${CMAKE_BUILD_TYPE} doesn't double up.
 if( CINDER_MSW )
