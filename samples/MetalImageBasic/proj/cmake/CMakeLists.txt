@@ -1,21 +1,18 @@
 cmake_minimum_required( VERSION 3.15 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
-project( MetalTriangle )
+project( MetalImageBasic )
 
 get_filename_component( CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../.." ABSOLUTE )
 get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
-if( NOT APPLE AND NOT DEFINED CINDER_FORCE_MAC_SAMPLE )
-	message( STATUS "MetalTriangle sample is macOS-only; skipping configuration." )
-	return()
-endif()
+ci_require_platform( MAC )
 
 ci_make_app(
 	SOURCES
-		${APP_PATH}/src/MetalTriangleApp.mm
+		${APP_PATH}/src/MetalImageBasicApp.mm
 		${CINDER_PATH}/src/cinder/app/RendererMetal.cpp
 		${CINDER_PATH}/src/cinder/app/glfw/RendererImplGlfwMetal.mm
 	CINDER_PATH ${CINDER_PATH}
