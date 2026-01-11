@@ -39,11 +39,10 @@ set( SAMPLES_MSW_ONLY
 	_opengl/ParticleSphereCS
 )
 
-# macOS-only samples (Metal, AVFoundation writer)
+# macOS-only samples (Metal)
 set( SAMPLES_MAC_ONLY
 	MetalImageBasic
 	MetalTriangle
-	QuickTimeAvfWriter
 )
 
 # iOS-only samples (CoreMotion)
@@ -52,9 +51,16 @@ set( SAMPLES_IOS_ONLY
 )
 
 # Samples that work on macOS and iOS but not Windows/Linux (CoreLocation, etc.)
+# Note: LocationManager block needs ObjC++ compilation fixes for CMake builds
 set( SAMPLES_MAC_IOS_ONLY
-	LocationManager
 	QuickTimeIteration
+)
+
+# Samples that need CMake/code fixes before they can build
+set( SAMPLES_NEEDS_FIXES
+	LocationManager
+	QuickTimeAvfWriter
+	Renderer2dBasic
 )
 
 # Samples with CMake support but no native IDE projects (CMake-first)
@@ -64,6 +70,7 @@ set( SAMPLES_CMAKE_ONLY
 	CanvasUiMinimap
 	ImGui
 )
+
 
 # Build the skip list based on current platform
 set( CINDER_SKIP_SAMPLES "" )
@@ -88,6 +95,9 @@ elseif( CINDER_LINUX )
 	list( APPEND CINDER_SKIP_SAMPLES ${SAMPLES_IOS_ONLY} )
 	list( APPEND CINDER_SKIP_SAMPLES ${SAMPLES_MAC_IOS_ONLY} )
 endif()
+
+# Skip samples that need code fixes
+list( APPEND CINDER_SKIP_SAMPLES ${SAMPLES_NEEDS_FIXES} )
 
 # Also skip the _AllSamples directory itself to avoid recursion
 list( APPEND CINDER_SKIP_SAMPLES _AllSamples )
