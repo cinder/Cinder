@@ -122,10 +122,10 @@ ivec2 Window::getMousePos() const
 float Window::getContentScale() const
 {
 	testValid();
-	
+
 #if defined( CINDER_COCOA ) && ! defined( CINDER_GLFW )
 	return [mImpl getContentScale];
-#elif defined( CINDER_MSW_DESKTOP )
+#elif defined( CINDER_MSW_DESKTOP ) || defined( CINDER_GLFW )
 	return mImpl->getContentScale();
 #else
 	return 1.0f;

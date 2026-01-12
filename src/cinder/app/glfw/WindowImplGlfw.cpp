@@ -64,6 +64,10 @@ WindowImplGlfw::WindowImplGlfw( const Window::Format &format, WindowImplGlfw *sh
 	::glfwWindowHint( GLFW_DECORATED, format.isBorderless() ? GL_FALSE : GL_TRUE );
 	::glfwWindowHint( GLFW_RESIZABLE, format.isResizable() ? GL_TRUE : GL_FALSE );
 	::glfwWindowHint( GLFW_FLOATING, format.isAlwaysOnTop() ? GL_TRUE : GL_FALSE );
+#if defined( CINDER_MAC )
+	// Set retina framebuffer hint based on app's high density display setting
+	::glfwWindowHint( GLFW_COCOA_RETINA_FRAMEBUFFER, mAppImpl->getApp()->isHighDensityDisplayEnabled() ? GL_TRUE : GL_FALSE );
+#endif
 
 	if( mFullScreen ) {
 #if defined( CINDER_LINUX )
