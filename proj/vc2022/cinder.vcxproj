@@ -620,7 +620,6 @@
     <ClCompile Include="..\..\src\imgui\imgui_stdlib.cpp" />
     <ClCompile Include="..\..\src\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\..\src\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="..\..\src\jsoncpp\jsoncpp.cpp" />
     <ClCompile Include="..\..\src\libtess2\bucketalloc.c" />
     <ClCompile Include="..\..\src\libtess2\dict.c" />
     <ClCompile Include="..\..\src\libtess2\geom.c" />
