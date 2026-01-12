@@ -93,11 +93,17 @@ if( NOT CINDER_DISABLE_VIDEO )
 		# Default: Use MediaFoundation for video playback on Windows
 		list( APPEND SRC_SET_VIDEO_MSW
 			${CINDER_SRC_DIR}/cinder/qtime/QuickTimeImplMsw.cpp
-			${CINDER_SRC_DIR}/cinder/qtime/QuickTimeGlImplMsw.cpp
 			${CINDER_SRC_DIR}/cinder/qtime/mf/MediaEnginePlayer.cpp
-			${CINDER_SRC_DIR}/cinder/qtime/mf/DXGIRenderPath.cpp
 			${CINDER_SRC_DIR}/cinder/qtime/mf/WICRenderPath.cpp
 		)
+
+		# MovieGl and DXGIRenderPath use WGL_NV_DX_interop which requires native OpenGL
+		if( NOT CINDER_GL_ANGLE )
+			list( APPEND SRC_SET_VIDEO_MSW
+				${CINDER_SRC_DIR}/cinder/qtime/QuickTimeGlImplMsw.cpp
+				${CINDER_SRC_DIR}/cinder/qtime/mf/DXGIRenderPath.cpp
+			)
+		endif()
 
 		list( APPEND CINDER_SRC_FILES ${SRC_SET_VIDEO_MSW} )
 	endif()
