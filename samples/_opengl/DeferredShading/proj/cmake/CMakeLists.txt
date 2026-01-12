@@ -19,7 +19,7 @@ ci_make_app(
 	INCLUDES    ${APP_PATH}/include
 )
 
-if( CINDER_MAC )
+if( CMAKE_SYSTEM_NAME STREQUAL "Darwin" )
     add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND plutil -replace NSHighResolutionCapable -bool false
                 "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Contents/Info.plist"

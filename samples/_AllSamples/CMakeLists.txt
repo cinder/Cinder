@@ -19,6 +19,15 @@ endif()
 # Include Cinder's configuration
 include( "${CINDER_PATH}/proj/cmake/configure.cmake" )
 
+# Option to control where sample outputs are placed
+option( CINDER_SAMPLES_INLINE_BUILD "Build samples to their individual proj/cmake/build directories" OFF )
+
+if( NOT CINDER_SAMPLES_INLINE_BUILD )
+	# Centralized output - all samples build to the main build directory
+	# This allows 'cmake --build . --target clean' to fully clean all outputs
+	set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin" )
+endif()
+
 # Include the sample discovery module
 include( "${CINDER_PATH}/proj/cmake/modules/findCMakeDirs.cmake" )
 

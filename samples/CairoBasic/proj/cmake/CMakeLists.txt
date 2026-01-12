@@ -19,7 +19,7 @@ if( CINDER_LINUX )
     find_package( Cairo REQUIRED )
     list( APPEND CAIRO_INCLUDES ${CAIRO_INCLUDE_DIRS} )
     set( CAIRO_LIBS ${CAIRO_LIBRARIES} )
-elseif( CINDER_MAC )
+elseif( CMAKE_SYSTEM_NAME STREQUAL "Darwin" )
     list( APPEND CAIRO_INCLUDES ${CAIRO_BLOCK}/include/macosx )
     set( CAIRO_LIBS
         ${CAIRO_BLOCK}/lib/macosx/libcairo.a
@@ -43,7 +43,7 @@ ci_make_app(
 
 target_link_libraries( ${PROJECT_NAME} PRIVATE ${CAIRO_LIBS} )
 
-if( CINDER_MAC )
+if( CMAKE_SYSTEM_NAME STREQUAL "Darwin" )
     add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND plutil -replace NSHighResolutionCapable -bool false
                 "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Contents/Info.plist"
