@@ -55,9 +55,6 @@
     <Filter Include="Source Files\libtess2">
       <UniqueIdentifier>{2d33008c-c675-44bd-a5bb-b5998abbf655}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\jsoncpp">
-      <UniqueIdentifier>{13c0913f-8fdb-4945-a68a-6b210c4e8d91}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\svg">
       <UniqueIdentifier>{74f66efa-5b4e-49f4-8ea2-21b75f65a52e}</UniqueIdentifier>
     </Filter>
@@ -746,9 +743,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\gl\Ubo.cpp">
       <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\jsoncpp\jsoncpp.cpp">
-      <Filter>Source Files\jsoncpp</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\cinder\app\AppBase.cpp">
       <Filter>Source Files\app</Filter>
