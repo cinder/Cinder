@@ -79,16 +79,14 @@ function( ci_make_app )
 	endif()
 
 	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
+		# Default to building next to the sample's CMakeLists.txt
 		if( ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) OR ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
-			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
+			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build" )
 		else()
 			# Append the build type to the output dir
-			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
+			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}" )
 		endif()
 	endif()
-
-	# place the binary one level deeper, so that the assets folder can live next to it when building out-of-source.
-	set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${ARG_APP_NAME} )
 
 	ci_log_v( "APP_NAME: ${ARG_APP_NAME}" )
 	ci_log_v( "SOURCES: ${ARG_SOURCES}" )
