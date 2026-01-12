@@ -31,6 +31,7 @@ elseif( CINDER_MSW )
     set( CAIRO_LIBS
         ${CAIRO_BLOCK}/lib/msw/x64/cairo-static.lib
         ${CAIRO_BLOCK}/lib/msw/x64/pixman-1.lib
+        ${CINDER_PATH}/lib/msw/x64/libpng.lib
     )
 endif()
 
