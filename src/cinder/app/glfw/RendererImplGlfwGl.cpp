@@ -160,12 +160,15 @@ void RendererImplGlfwGl::kill()
 
 void RendererImplGlfwGl::defaultResize() const
 {
-	int width = 0;
-	int height = 0;
-	glfwGetFramebufferSize( mGlfwWindow, &width, &height );
-CI_LOG_I( "Viewport: " << width << height );
-	gl::viewport( 0, 0, width, height );
-	gl::setMatricesWindow( width, height );
+	// Viewport uses framebuffer size (pixels)
+	int fbWidth = 0, fbHeight = 0;
+	::glfwGetFramebufferSize( mGlfwWindow, &fbWidth, &fbHeight );
+	gl::viewport( 0, 0, fbWidth, fbHeight );
+
+	// Matrices use window size (points) so app code works in points
+	int winWidth = 0, winHeight = 0;
+	::glfwGetWindowSize( mGlfwWindow, &winWidth, &winHeight );
+	gl::setMatricesWindow( winWidth, winHeight );
 }
 
 void RendererImplGlfwGl::swapBuffers() const
