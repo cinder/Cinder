@@ -17,3 +17,10 @@ ci_make_app(
 	RESOURCES	${APP_PATH}/resources/Asap-Regular.ttf
 			${APP_PATH}/resources/Kreon-Bold.ttf
 )
+
+if( CINDER_MAC )
+    add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND plutil -replace NSHighResolutionCapable -bool false
+                "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Contents/Info.plist"
+    )
+endif()

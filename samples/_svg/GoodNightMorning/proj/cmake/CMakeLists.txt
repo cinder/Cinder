@@ -43,3 +43,10 @@ ci_make_app(
 )
 
 target_link_libraries( ${PROJECT_NAME} PRIVATE ${CAIRO_LIBS} )
+
+if( CINDER_MAC )
+    add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND plutil -replace NSHighResolutionCapable -bool false
+                "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Contents/Info.plist"
+    )
+endif()

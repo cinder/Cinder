@@ -14,3 +14,10 @@ ci_make_app(
 	SOURCES     ${APP_PATH}/src/ObjLoaderApp.cpp
 	INCLUDES    ${APP_PATH}/include
 )
+
+if( CINDER_MAC )
+    add_custom_command( TARGET ObjLoader POST_BUILD
+        COMMAND plutil -replace NSHighResolutionCapable -bool false
+                "$<TARGET_BUNDLE_DIR:ObjLoader>/Contents/Info.plist"
+    )
+endif()

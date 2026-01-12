@@ -73,12 +73,13 @@ class CanvasUiMinimapApp : public App {
 
 void CanvasUiMinimapApp::setup()
 {
+	// Setup ImGui and FBO first - must be before setWindowSize() as resize triggers draw
+	ImGui::Initialize();
+	setupFbo();
+
 	setWindowSize( 1280, 720 );
 	resize(); // force minimap rect calculation
-	
-	ImGui::Initialize();
 
-	setupFbo();
 	setupCanvasUi();
 }
 
