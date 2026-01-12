@@ -16,3 +16,10 @@ ci_make_app(
 			${APP_PATH}/resources/mandelbrot.frag
 			${APP_PATH}/resources/colors.png
 )
+
+if( CINDER_MAC )
+    add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND plutil -replace NSHighResolutionCapable -bool false
+                "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>/Contents/Info.plist"
+    )
+endif()

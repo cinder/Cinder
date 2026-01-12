@@ -63,10 +63,10 @@ class CanvasUiSampleApp : public App {
 
 void CanvasUiSampleApp::setup()
 {
-	setWindowSize( 1280, 800 );
-
-	// Setup ImGui
+	// Setup ImGui first - must be before setWindowSize() as resize triggers draw
 	ImGui::Initialize();
+
+	setWindowSize( 1280, 800 );
 
 	// Generate circle content
 	generateCircles();

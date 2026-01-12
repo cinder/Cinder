@@ -13,3 +13,10 @@ ci_make_app(
 	SOURCES     ${APP_PATH}/src/CubeApp.cpp
 	CINDER_PATH ${CINDER_PATH}
 )
+
+if( CINDER_MAC )
+    add_custom_command( TARGET Cube POST_BUILD
+        COMMAND plutil -replace NSHighResolutionCapable -bool false
+                "$<TARGET_BUNDLE_DIR:Cube>/Contents/Info.plist"
+    )
+endif()
