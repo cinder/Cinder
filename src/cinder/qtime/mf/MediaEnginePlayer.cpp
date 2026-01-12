@@ -29,7 +29,9 @@
 #include "cinder/Cinder.h"
 
 #include "cinder/qtime/mf/MediaEnginePlayer.h"
+#if ! defined( CINDER_GL_ANGLE )
 #include "cinder/qtime/mf/DXGIRenderPath.h"
+#endif
 #include "cinder/qtime/mf/WICRenderPath.h"
 
 #include "cinder/app/App.h"
@@ -285,6 +287,8 @@ MediaEnginePlayer::MediaEnginePlayer( const DataSourceRef& source, const Format&
 		}
 
 		// Set up render path - DXGI for hardware accelerated, WIC for software
+		// Note: DXGI path uses WGL_NV_DX_interop which is not available with ANGLE
+#if ! defined( CINDER_GL_ANGLE )
 		if( mFormat.isHardwareAccelerated() ) {
 			mRenderPath = std::make_unique<DXGIRenderPath>( *this, source );
 			if( ! mRenderPath->initialize( *attributes.Get() ) ) {
@@ -294,7 +298,9 @@ MediaEnginePlayer::MediaEnginePlayer( const DataSourceRef& source, const Format&
 				mFormat = Format().hardwareAccelerated( false );
 			}
 		}
-		else {
+		else
+#endif
+		{
 			mRenderPath = std::make_unique<WICRenderPath>( *this, source );
 			mRenderPath->initialize( *attributes.Get() );
 		}
