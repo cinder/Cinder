@@ -56,6 +56,12 @@ endif()
 
 if( CINDER_BUILD_TESTS )
 	enable_testing()
+	# Set output directory so tests are in a predictable location within the build tree
+	if( ( "${CMAKE_GENERATOR}" MATCHES "Visual Studio.+" ) OR ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
+		set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}" )
+	else()
+		set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}" )
+	endif()
 	add_subdirectory( ${CINDER_PATH}/test/unit/proj/cmake )
 	add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} --verbose )
 endif()
