@@ -42,13 +42,11 @@ ci_make_app(
 	INCLUDES    "${UNIT_DIR}/src"    # for catch.hpp
 )
 
-if( APPLE )
-	set( TESTBINDIR ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/UnitTests/UnitTests.app/Contents/MacOS )
-else()
-	set( TESTBINDIR ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/UnitTests )
-endif()
+# Unit tests need to be a console app (not WIN32 GUI app) for output
+set_target_properties( UnitTests PROPERTIES WIN32_EXECUTABLE FALSE )
 
 add_test(
 	NAME UnitTests
-	COMMAND ${TESTBINDIR}/UnitTests
+	COMMAND $<TARGET_FILE:UnitTests>
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
