@@ -17,7 +17,9 @@
 #include "cinder/Clipboard.h"
 
 #if defined( CINDER_MSW )
-	#include "cinder/app/msw/PlatformMsw.h"
+#include "cinder/app/msw/PlatformMsw.h"
+void initializeD3d12();
+void shutdownD3d12();
 #endif
 
 #include <unordered_map>
@@ -450,7 +452,7 @@ static void ImGui_ImplCinder_MouseWheel( ci::app::MouseEvent& event )
 static void ImGui_ImplCinder_MouseMove( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.AddMousePosEvent( event.getWindow()->toPixels( event.getPos() ).x, event.getWindow()->toPixels( event.getPos() ).y );
+	io.AddMousePosEvent( (float)event.getWindow()->toPixels( event.getPos() ).x, (float)event.getWindow()->toPixels( event.getPos() ).y );
 	io.AddKeyEvent( ImGuiMod_Ctrl, event.isControlDown() );
 	io.AddKeyEvent( ImGuiMod_Shift, event.isShiftDown() );
 	io.AddKeyEvent( ImGuiMod_Alt, event.isAltDown() );
@@ -461,7 +463,7 @@ static void ImGui_ImplCinder_MouseMove( ci::app::MouseEvent& event )
 static void ImGui_ImplCinder_MouseDrag( ci::app::MouseEvent& event )
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.AddMousePosEvent( event.getWindow()->toPixels( event.getPos() ).x, event.getWindow()->toPixels( event.getPos() ).y );
+	io.AddMousePosEvent( (float)event.getWindow()->toPixels( event.getPos() ).x, (float)event.getWindow()->toPixels( event.getPos() ).y );
 	io.AddKeyEvent( ImGuiMod_Ctrl, event.isControlDown() );
 	io.AddKeyEvent( ImGuiMod_Shift, event.isShiftDown() );
 	io.AddKeyEvent( ImGuiMod_Alt, event.isAltDown() );
@@ -745,15 +747,7 @@ static bool ImGui_ImplCinder_Init( const ci::app::WindowRef& window, const ImGui
 #if defined( CINDER_MSW )
 		// For D3D12, do cleanup on window close while renderer is still valid
 		if( sUsingD3D12 && sInitialized ) {
-			auto d3d12Renderer = std::dynamic_pointer_cast<ci::app::RendererD3d12>( ci::app::App::get()->getRenderer() );
-			if( d3d12Renderer )
-				d3d12Renderer->waitForGpu();
-
-			ImGui_ImplDX12_Shutdown();
-			if( sImGuiSrvHeap ) {
-				sImGuiSrvHeap->Release();
-				sImGuiSrvHeap = nullptr;
-			}
+			shutdownD3d12();
 			sWindowConnections.clear();
 			ImGui::DestroyContext();
 			sInitialized = false;
@@ -768,6 +762,57 @@ static void ImGui_ImplCinder_Shutdown()
 {
 	sWindowConnections.clear();
 }
+
+#if defined( CINDER_MSW )
+static bool initializeD3d12( ci::app::RendererD3d12* renderer )
+{
+	sUsingD3D12 = true;
+
+	ID3D12Device* device = renderer->getDevice();
+
+	// Create SRV descriptor heap for ImGui
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+	heapDesc.NumDescriptors = kImGuiSrvHeapSize;
+	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	HRESULT hr = device->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &sImGuiSrvHeap ) );
+	if( FAILED( hr ) ) {
+		CI_LOG_E( "Failed to create ImGui SRV descriptor heap" );
+		return false;
+	}
+
+	// Initialize D3D12 backend using legacy single descriptor API
+	ImGui_ImplDX12_InitInfo initInfo = {};
+	initInfo.Device = device;
+	initInfo.CommandQueue = renderer->getCommandQueue();
+	initInfo.NumFramesInFlight = ci::app::RendererD3d12::MaxFrameCount;
+	initInfo.RTVFormat = renderer->getBackBufferFormat();
+	initInfo.SrvDescriptorHeap = sImGuiSrvHeap;
+	initInfo.LegacySingleSrvCpuDescriptor = sImGuiSrvHeap->GetCPUDescriptorHandleForHeapStart();
+	initInfo.LegacySingleSrvGpuDescriptor = sImGuiSrvHeap->GetGPUDescriptorHandleForHeapStart();
+
+	if( ! ImGui_ImplDX12_Init( &initInfo ) ) {
+		CI_LOG_E( "Failed to initialize ImGui D3D12 backend" );
+		sImGuiSrvHeap->Release();
+		sImGuiSrvHeap = nullptr;
+		return false;
+	}
+	return true;
+}
+
+static void shutdownD3d12()
+{
+	auto d3d12Renderer = std::dynamic_pointer_cast<ci::app::RendererD3d12>( ci::app::App::get()->getRenderer() );
+	if( d3d12Renderer )
+		d3d12Renderer->waitForGpu();
+
+	ImGui_ImplDX12_Shutdown();
+	if( sImGuiSrvHeap ) {
+		sImGuiSrvHeap->Release();
+		sImGuiSrvHeap = nullptr;
+	}
+}
+#endif
 
 bool ImGui::Initialize( const ImGui::Options& options )
 {
@@ -802,36 +847,8 @@ bool ImGui::Initialize( const ImGui::Options& options )
 #if defined( CINDER_MSW )
 	auto d3d12Renderer = std::dynamic_pointer_cast<ci::app::RendererD3d12>( ci::app::App::get()->getRenderer() );
 	if( d3d12Renderer ) {
-		sUsingD3D12 = true;
-
-		// Create SRV descriptor heap for ImGui
-		ID3D12Device* device = d3d12Renderer->getDevice();
-		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-		heapDesc.NumDescriptors = kImGuiSrvHeapSize;
-		heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-		HRESULT hr = device->CreateDescriptorHeap( &heapDesc, IID_PPV_ARGS( &sImGuiSrvHeap ) );
-		if( FAILED( hr ) ) {
-			CI_LOG_E( "Failed to create ImGui SRV descriptor heap" );
+		if( ! initializeD3d12( d3d12Renderer.get() ) )
 			return false;
-		}
-
-		// Initialize D3D12 backend using legacy single descriptor API
-		ImGui_ImplDX12_InitInfo initInfo = {};
-		initInfo.Device = device;
-		initInfo.CommandQueue = d3d12Renderer->getCommandQueue();
-		initInfo.NumFramesInFlight = ci::app::RendererD3d12::MaxFrameCount;
-		initInfo.RTVFormat = d3d12Renderer->getBackBufferFormat();
-		initInfo.SrvDescriptorHeap = sImGuiSrvHeap;
-		initInfo.LegacySingleSrvCpuDescriptor = sImGuiSrvHeap->GetCPUDescriptorHandleForHeapStart();
-		initInfo.LegacySingleSrvGpuDescriptor = sImGuiSrvHeap->GetGPUDescriptorHandleForHeapStart();
-
-		if( ! ImGui_ImplDX12_Init( &initInfo ) ) {
-			CI_LOG_E( "Failed to initialize ImGui D3D12 backend" );
-			sImGuiSrvHeap->Release();
-			sImGuiSrvHeap = nullptr;
-			return false;
-		}
 	}
 	else
 #endif
