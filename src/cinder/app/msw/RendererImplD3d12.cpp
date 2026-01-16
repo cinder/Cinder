@@ -658,6 +658,11 @@ void RendererImplD3d12::defaultResize() const
 	if( ! mSwapChain )
 		return;
 
+	// Skip expensive swap chain resize during live resize
+	// startDraw() will catch the size mismatch after resize ends
+	if( App::get()->getWindow()->isResizing() )
+		return;
+
 	RECT clientRect;
 	::GetClientRect( mWnd, &clientRect );
 	UINT width = clientRect.right - clientRect.left;

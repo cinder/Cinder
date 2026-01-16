@@ -781,13 +781,11 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			impl->mWindowWidthPx = LOWORD(lParam);
 			impl->mWindowHeightPx = HIWORD(lParam);
 			if( impl->getWindow() && impl->mAppImpl->setupHasBeenCalled() ) {
+				// If we're in a size/move loop and receiving WM_SIZE, we're resizing (not just moving)
 				if( impl->mInSizeMoveLoop ) {
 					impl->setResizing( true );
-					// During live resize, defer swap chain resize to WM_EXITSIZEMOVE
 				}
-				else {
-					impl->getWindow()->emitResize();
-				}
+				impl->getWindow()->emitResize();
 			}
 			return 0;
 		break;
@@ -806,17 +804,17 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			return 0;
 		}
 		break;
-		case WM_EXITSIZEMOVE:
+		case WM_EXITSIZEMOVE: {
 			if( impl->getWindow() ) {
 				// Only emit postResize if we were actually resizing (not just moving)
 				if( impl->getWindow()->isResizing() ) {
-					impl->getWindow()->emitResize();
 					impl->handlePostResize();
 				}
 				impl->setResizing( false );
 			}
 			impl->mInSizeMoveLoop = false;
 			return 0;
+		}
 		break;
 		case WM_DROPFILES: {
 			HDROP dropH = (HDROP)wParam;
