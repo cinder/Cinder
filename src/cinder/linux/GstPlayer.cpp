@@ -11,7 +11,9 @@
 		// These files will include a glfw_config.h that's custom to Cinder.
 		#include "glad/glad.h"
 		#define GLFW_EXPOSE_NATIVE_X11
-		#define GLFW_EXPOSE_NATIVE_GLX
+		#if ! defined( CINDER_GL_ES )
+			#define GLFW_EXPOSE_NATIVE_GLX
+		#endif
 		#define GLFW_EXPOSE_NATIVE_EGL
 		#include "glfw/glfw3.h"
 		#include "glfw/glfw3native.h"
@@ -531,13 +533,18 @@ bool GstPlayer::initialize()
 			ci::gl::context()->makeCurrent( true );
 		}
 #else
-		if( ! sGstGLDisplay )
+		if( ! sGstGLDisplay ) {
+  #if defined( CINDER_GL_ES )
+			sGstGLDisplay = (GstGLDisplay*)gst_gl_display_egl_new_with_egl_display( (gpointer)::glfwGetEGLDisplay() );
+  #else
 			sGstGLDisplay = (GstGLDisplay*)gst_gl_display_x11_new_with_display( ::glfwGetX11Display() );
+  #endif
+		}
 		if( ! sGstGLContext ) {
 			ci::gl::env()->makeContextCurrent( nullptr );
 			sGstGLContext = (GstGLContext*)gst_object_ref( gst_gl_context_new( sGstGLDisplay ) );
   #if defined( CINDER_GL_ES )
-			sharedCtx  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)::glfwGetEGLContext( platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_GLES2 );
+			sharedCtx  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)::glfwGetEGLContext( platformData->mContext ), GST_GL_PLATFORM_EGL, GST_GL_API_GLES2 );
   #else
 			sharedCtx  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)::glfwGetGLXContext( platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_OPENGL );
   #endif
