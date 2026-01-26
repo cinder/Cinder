@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Cinder on Raspberry Pi 4 &amp; 5</title>
+
+		<!-- keywords used for searching -->
+		<meta name="keywords" content="guide, linux, raspberry, pi">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- reference to Cinder classes -->
+   		<!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+   		<!-- master stylesheet - these links will be replaced when compiled -->
+		<link rel="stylesheet" href="../../_assets/css/foundation.css">
+		<link rel="stylesheet" href="../../_assets/css/prism.css">
+		<link rel="stylesheet" href="../../_assets/css/style.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+		<!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+
+	</head>
+
+	<body id="guide-contents" class="language-c++">
+
+		<!-- CONTENT STARTS HERE -->
+
+		<h1>Raspberry Pi 4 &amp; 5 Notes</h1>
+		<h3 id="requirements">Requirements</h3>
+		<ul>
+			<li>Raspberry Pi OS (Debian Bookworm, aarch64)</li>
+			<li>GCC 12+ (ships with stock Raspberry Pi OS)</li>
+			<li>CMake 3.16+ (ships with stock Raspberry Pi OS)</li>
+		</ul>
+
+		<h3 id="library-dependencies">Cinder Build Dependencies</h3>
+<pre><code>sudo apt-get install zlib1g-dev \
+libfontconfig1-dev \
+libcurl4-openssl-dev \
+libgl1-mesa-dev \
+libpulse-dev \
+libmpg123-dev \
+libsndfile1-dev \
+libgstreamer1.0-dev \
+libgstreamer-plugins-base1.0-dev \
+libgstreamer-plugins-bad1.0-dev \
+libxcursor-dev \
+libxrandr-dev \
+libxinerama-dev \
+libxi-dev
+</code></pre>
+
+		<h3 id="runtime-dependencies">Runtime Dependencies for Video Playback</h3>
+		<p>These are not needed to build Cinder, but are required at runtime for GStreamer video (e.g. the QuickTimeBasic sample):</p>
+<pre><code>sudo apt-get install gstreamer1.0-gl \
+gstreamer1.0-libav
+</code></pre>
+
+		<h1 id="building-cinder">Building Cinder</h1>
+		<h3 id="fetching-and-building-cinder">Fetching and Building Cinder</h3>
+<pre><code>git clone --recursive https://github.com/cinder/Cinder.git
+cd Cinder
+cmake -B build -DCINDER_TARGET_GL=es3-rpi -DCMAKE_BUILD_TYPE=Debug
+cmake --build build -j$(nproc)
+</code></pre>
+
+		<p>Output: <code>lib/linux/aarch64/es3-rpi/Debug/libcinder.a</code></p>
+
+		<h1 id="building-and-running-basicapp">Building and Running BasicApp</h1>
+		<h3 id="building">Building</h3>
+<pre><code>cd samples/BasicApp/proj/cmake
+cmake -B build -DCINDER_TARGET_GL=es3-rpi -DCMAKE_BUILD_TYPE=Debug
+cmake --build build
+</code></pre>
+
+		<h3 id="running">Running</h3>
+		<p>Starting from <code>samples/BasicApp/proj/cmake/build</code>:</p>
+		<pre><code>./Debug/BasicApp</code></pre>
+
+		<h3 id="exiting">Exiting</h3>
+		<p>Hit the <code>Esc</code> key to exit the application.</p>
+
+		<!-- END CONTENT -->
+
+		<!-- Scripts -->
+		<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+		<!-- Place additional scripts here (optional) -->
+		<!-- <script type="text/javascript"></script> -->
+
+	</body>
+</html>
