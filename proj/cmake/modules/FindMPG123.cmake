@@ -8,7 +8,7 @@
 
 set( MPG123_FOUND false )
 
-set( MPG123_INCLUDE_DIRS /opt/local/include /usr/local/include /usr/include /usr/include/x86_64-linux-gnu )
+set( MPG123_INCLUDE_DIRS /opt/local/include /usr/local/include /usr/include /usr/include/x86_64-linux-gnu /usr/include/aarch64-linux-gnu )
 set( MPG123_LIBRARY_DIRS /opt/local/lib /usr/local/lib /usr/lib )
 
 set( MPG123_LIB_SUFFIXES lib x86_64-linux-gnu arm-linux-gnueabihf aarch64-linux-gnu )
