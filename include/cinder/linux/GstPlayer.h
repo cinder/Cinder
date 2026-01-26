@@ -45,7 +45,11 @@
 	#if defined( CINDER_LINUX_EGL_ONLY )
 		#include <gst/gl/egl/gstgldisplay_egl.h>
 	#elif defined( CINDER_LINUX )
-		#include <gst/gl/x11/gstgldisplay_x11.h>
+		#if defined( CINDER_GL_ES )
+			#include <gst/gl/egl/gstgldisplay_egl.h>
+		#else
+			#include <gst/gl/x11/gstgldisplay_x11.h>
+		#endif
 	#endif
 
 	#define CINDER_GST_HAS_GL
