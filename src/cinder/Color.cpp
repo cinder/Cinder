@@ -192,9 +192,9 @@ void ColorAT<T>::set( ColorModel cm, const vec4 &v )
 		}
 		break;
 		case CM_RGB:
-			r = CHANTRAIT<T>::convert( v.r );
-			g = CHANTRAIT<T>::convert( v.g );
-			b = CHANTRAIT<T>::convert( v.b );
+			r = CHANTRAIT<T>::convert( v.x );
+			g = CHANTRAIT<T>::convert( v.y );
+			b = CHANTRAIT<T>::convert( v.z );
 		break;
 		default:
 			throw ImageIoExceptionIllegalColorModel();
