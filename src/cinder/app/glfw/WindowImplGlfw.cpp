@@ -197,6 +197,10 @@ void WindowImplGlfw::show()
 
 float WindowImplGlfw::getContentScale() const
 {
+	if( ! mAppImpl->getApp()->isHighDensityDisplayEnabled() ) {
+		return 1.0f;
+	}
+
 	float xscale = 1.0f, yscale = 1.0f;
 	::glfwGetWindowContentScale( mGlfwWindow, &xscale, &yscale );
 	// Return the larger of the two scales (they should typically be the same)
