@@ -173,7 +173,7 @@ class AppCocoaTouch : public AppBase {
 	//! Retuens a pointer to the native UITextView, which can be used to customize the virtual keyboard.
 	::UITextView	*getKeyboardTextView() const;
 
-	typedef enum StatusBarAnimation { NONE, FADE, SLIDE } StatusBarAnimation;
+	enum StatusBarAnimation { NONE, FADE, SLIDE };
 	//! Shows the system status bar
 	void 	showStatusBar( StatusBarAnimation animation = StatusBarAnimation::NONE );
 	//! Returns whether the system status bar is visible

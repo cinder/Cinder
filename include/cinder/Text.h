@@ -90,7 +90,7 @@ class CI_API TextLayout {
 
 class CI_API TextBox {
   public:
-	typedef enum Alignment { LEFT, CENTER, RIGHT } Alignment;
+	enum Alignment { LEFT, CENTER, RIGHT };
 	enum { GROW = 0 };
 	
 	TextBox() : mAlign( LEFT ), mSize( GROW, GROW ), mFont( Font::getDefault() ), mInvalid( true ), mColor( 1, 1, 1, 1 ), mBackgroundColor( 0, 0, 0, 0 ), mPremultiplied( false ), mLigate( true ) {}

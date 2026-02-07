@@ -48,12 +48,12 @@ typedef std::shared_ptr<MovieWriter> MovieWriterRef;
 
 class MovieWriter {
   public:
-	typedef enum Codec { H264, JPEG
+	enum Codec { H264, JPEG
 #if ! defined( CINDER_COCOA_TOUCH )
 	, PRO_RES_4444, PRO_RES_422
 #endif
-	} Codec;
-	typedef enum FileType { QUICK_TIME_MOVIE, MPEG4, M4V } FileType;
+	};
+	enum FileType { QUICK_TIME_MOVIE, MPEG4, M4V };
 
 	//! Defines the encoding parameters of a MovieWriter
 	class Format {

@@ -188,7 +188,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 		} ;
 	} DdPixelFormat;
 
-	typedef struct DdSurface // this is lifted and adapted from DDSURFACEDESC2
+	struct DdSurface // this is lifted and adapted from DDSURFACEDESC2
 	{
 		uint32_t               dwSize;                 // size of the DDSURFACEDESC structure
 		uint32_t               dwFlags;                // determines what fields are valid
@@ -229,7 +229,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 		};
 		ddCaps2			ddsCaps;                // direct draw surface capabilities
 		uint32_t		dwTextureStage;         // stage in multitexture cascade
-	} DdSurface;
+	};
 
 	typedef struct {
 		uint32_t/*DXGI_FORMAT*/					dxgiFormat;

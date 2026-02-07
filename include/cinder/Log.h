@@ -49,14 +49,14 @@
 
 namespace cinder { namespace log {
 
-typedef enum {
+enum Level {
 	LEVEL_VERBOSE,
 	LEVEL_DEBUG,
 	LEVEL_INFO,
 	LEVEL_WARNING,
 	LEVEL_ERROR,
 	LEVEL_FATAL
-} Level;
+};
 
 struct CI_API Location {
 	Location() {}
