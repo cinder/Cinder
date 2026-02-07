@@ -35,7 +35,7 @@ namespace cinder {
 //! Converts an arbitrary Shape2d into a TriMesh2d
 class CI_API Triangulator {
   public:
-	typedef enum Winding { WINDING_ODD, WINDING_NONZERO, WINDING_POSITIVE, WINDING_NEGATIVE, WINDING_ABS_GEQ_TWO } Winding;
+	enum Winding { WINDING_ODD, WINDING_NONZERO, WINDING_POSITIVE, WINDING_NEGATIVE, WINDING_ABS_GEQ_TWO };
 
 	//! Default constructor
 	Triangulator();

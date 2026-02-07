@@ -63,7 +63,7 @@ class CI_API Vao : public std::enable_shared_from_this<Vao> {
 	void				setLabel( const std::string &label );
 
 	struct VertexAttrib {
-		typedef enum { FLOAT, INTEGER } PointerType;
+		enum PointerType { FLOAT, INTEGER };
 	
 		VertexAttrib()
 			: mEnabled( false ), mSize( 0 ), mType( GL_FLOAT ), mNormalized( false ), mStride( 0 ), mPointer( 0 ), mArrayBufferBinding( 0 ), mDivisor( 0 ), mPointerType( FLOAT )

@@ -52,7 +52,7 @@ class StackWalkerInternal;  // forward
 class StackWalker
 {
 public:
-  typedef enum StackWalkOptions
+  enum StackWalkOptions
   {
     // No addition info will be retrived 
     // (only the address is available)
@@ -84,7 +84,7 @@ public:
     
     // Contains all options (default)
     OptionsAll = 0x3F
-  } StackWalkOptions;
+  };
 
   StackWalker(
     int options = OptionsAll, // 'int' is by design, to combine the enum-flags
@@ -122,7 +122,7 @@ protected:
 
 protected:
   // Entry for each Callstack-Entry
-  typedef struct CallstackEntry
+  struct CallstackEntry
   {
     DWORD64 offset;  // if 0, we have no valid entry
     CHAR name[STACKWALK_MAX_NAMELEN];
@@ -137,7 +137,7 @@ protected:
     CHAR moduleName[STACKWALK_MAX_NAMELEN];
     DWORD64 baseOfImage;
     CHAR loadedImageName[STACKWALK_MAX_NAMELEN];
-  } CallstackEntry;
+  };
 
   enum CallstackEntryType {firstEntry, nextEntry, lastEntry};
 
