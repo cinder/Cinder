@@ -366,7 +366,16 @@ bool RendererImplGlMsw::initialize( WindowImplMsw *windowImpl, RendererRef share
 	platformData->mDebugBreakSeverity = mRenderer->getOptions().getDebugBreakSeverity();
 	platformData->mObjectTracking = mRenderer->getOptions().getObjectTracking();
 	platformData->mCoreProfile = mRenderer->getOptions().getCoreProfile();
+	// If the requested version was (0,0) meaning "highest available", resolve to
+	// the actual GL version. createSharedContext() passes mVersion directly to
+	// wglCreateContextAttribsARB, which fails on a literal 0.0.
 	platformData->mVersion = mRenderer->getOptions().getVersion();
+	if( platformData->mVersion.first == 0 && platformData->mVersion.second == 0 ) {
+		GLint major = 0, minor = 0;
+		glGetIntegerv( GL_MAJOR_VERSION, &major );
+		glGetIntegerv( GL_MINOR_VERSION, &minor );
+		platformData->mVersion = { major, minor };
+	}
 #if ! defined( CINDER_GL_ES )
 	platformData->mMultiGpuEnabledNV = mRenderer->getOptions().isMultiGpuEnabledNV();
 	platformData->mMultiGpuModeNV = getMultiGpuContextMode( mRenderer->getOptions().getMultiGpuModeNV() );
