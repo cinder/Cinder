@@ -28,6 +28,7 @@
 #include "cinder/Shape2d.h"
 #include "cinder/Path2d.h"
 
+struct TESSalloc;
 struct TESStesselator;
 
 namespace cinder {
@@ -45,6 +46,8 @@ class CI_API Triangulator {
 	Triangulator( const Shape2d &shape, float approximationScale = 1.0f );
 	//! Constructs using a PolyLine2f.
 	Triangulator( const PolyLine2f &polyLine );
+	//! Constructs using a PolyLine3f.
+	Triangulator( const std::vector<vec3> &points );
 
 	//! Adds a Shape2d to the tesselation. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space	
 	void		addShape( const Shape2d &path, float approximationScale = 1.0f );
@@ -54,12 +57,19 @@ class CI_API Triangulator {
 	void		addPolyLine( const PolyLine2f &polyLine );
 	//! Adds a PolyLine defined as a series of vec2's
 	void		addPolyLine( const vec2 *points, size_t numPoints );
+	//! Adds a PolyLine defined as a series of vec3's
+	void		addPolyLine( const vec3 *points, size_t numPoints );
 
 	//! Performs the tesselation, returning a TriMesh2d
 	TriMesh		calcMesh( Winding winding = WINDING_ODD );
 	//! Performs the tesselation, returning a TriMesh2d
 	TriMeshRef	createMesh( Winding winding = WINDING_ODD );
 	
+	//! Performs the tesselation, returning a TriMesh3d. \a normal describes the projection plane used to compute the arrangment, a value of (0, 0, 0) compute a normal.
+	TriMesh		calcMesh3d( vec3 normal = vec3( 0, 0, 1 ), Winding winding = Triangulator::WINDING_ODD );
+	//! Performs the tesselation, returning a TriMesh3d. \a normal describes the projection plane used to compute the arrangment, a value of (0, 0, 0) compute a normal.
+	TriMeshRef	createMesh3d( vec3 normal = vec3( 0, 0, 1 ), Winding winding = Triangulator::WINDING_ODD );
+
 	class CI_API Exception : public cinder::Exception {
 	};
 	
@@ -67,6 +77,7 @@ class CI_API Triangulator {
 	void			allocate();
 	
 	int									mAllocated;
+	std::shared_ptr<TESSalloc>			mAlloc;
 	std::shared_ptr<TESStesselator>		mTess;
 };
 
