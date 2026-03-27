@@ -51,9 +51,8 @@ class CI_API ColorT
 		: r( src.r ), g( src.g ), b( src.b )
 	{}
 	ColorT( const vec3 &src )
-		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) )
+		: r( CHANTRAIT<T>::convert( src.x ) ), g( CHANTRAIT<T>::convert( src.y ) ), b( CHANTRAIT<T>::convert( src.z ) )
 	{}
-
 	ColorT( const char *svgColorName );
 
 	ColorT( ColorModel cm, const vec3 &v );
@@ -93,21 +92,21 @@ class CI_API ColorT
 	T*  ptr() const { return &(const_cast<ColorT*>( this )->r); }
 
 	ColorT<T>		operator+( const ColorT<T> &rhs ) const { return ColorT<T>( r + rhs.r, g + rhs.g, b + rhs.b ); }
-	ColorT<T>		operator+( const glm::vec3 &rhs ) const { return ColorT<T>( r + CHANTRAIT<T>::convert( rhs.r ), g + CHANTRAIT<T>::convert( rhs.g ), b + CHANTRAIT<T>::convert( rhs.b ) ); }
+	ColorT<T>		operator+( const glm::vec3 &rhs ) const { return ColorT<T>( r + CHANTRAIT<T>::convert( rhs.x ), g + CHANTRAIT<T>::convert( rhs.y ), b + CHANTRAIT<T>::convert( rhs.z ) ); }
 	ColorT<T>		operator-( const ColorT<T> &rhs ) const { return ColorT<T>( r - rhs.r, g - rhs.g, b - rhs.b ); }
-	ColorT<T>		operator-( const glm::vec3 &rhs ) const { return ColorT<T>( r - CHANTRAIT<T>::convert( rhs.r ), g - CHANTRAIT<T>::convert( rhs.g ), b - CHANTRAIT<T>::convert( rhs.b ) ); }
+	ColorT<T>		operator-( const glm::vec3 &rhs ) const { return ColorT<T>( r - CHANTRAIT<T>::convert( rhs.x ), g - CHANTRAIT<T>::convert( rhs.y ), b - CHANTRAIT<T>::convert( rhs.z ) ); }
 	ColorT<T>		operator*( const ColorT<T> &rhs ) const { return ColorT<T>( r * rhs.r, g * rhs.g, b * rhs.b ); }
-	ColorT<T>		operator*( const glm::vec3 &rhs ) const { return ColorT<T>( r * CHANTRAIT<T>::convert( rhs.r ), g * CHANTRAIT<T>::convert( rhs.g ), b * CHANTRAIT<T>::convert( rhs.b ) ); }
+	ColorT<T>		operator*( const glm::vec3 &rhs ) const { return ColorT<T>( r * CHANTRAIT<T>::convert( rhs.x ), g * CHANTRAIT<T>::convert( rhs.y ), b * CHANTRAIT<T>::convert( rhs.z ) ); }
 	ColorT<T>		operator/( const ColorT<T> &rhs ) const { return ColorT<T>( r / rhs.r, g / rhs.g, b / rhs.b ); }
-	ColorT<T>		operator/( const glm::vec3 &rhs ) const { return ColorT<T>( r / CHANTRAIT<T>::convert( rhs.r ), g / CHANTRAIT<T>::convert( rhs.g ), b / CHANTRAIT<T>::convert( rhs.b ) ); }
+	ColorT<T>		operator/( const glm::vec3 &rhs ) const { return ColorT<T>( r / CHANTRAIT<T>::convert( rhs.x ), g / CHANTRAIT<T>::convert( rhs.y ), b / CHANTRAIT<T>::convert( rhs.z ) ); }
 	const ColorT<T>&	operator+=( const ColorT<T> &rhs ) { r += rhs.r; g += rhs.g; b += rhs.b; return *this; }
-	const ColorT<T>&	operator+=( const glm::vec3 &rhs ) { r += CHANTRAIT<T>::convert( rhs.r ); g += CHANTRAIT<T>::convert( rhs.g ); b += CHANTRAIT<T>::convert( rhs.b ); return *this; }
+	const ColorT<T>&	operator+=( const glm::vec3 &rhs ) { r += CHANTRAIT<T>::convert( rhs.x ); g += CHANTRAIT<T>::convert( rhs.y ); b += CHANTRAIT<T>::convert( rhs.z ); return *this; }
 	const ColorT<T>&	operator-=( const ColorT<T> &rhs ) { r -= rhs.r; g -= rhs.g; b -= rhs.b; return *this; }
-	const ColorT<T>&	operator-=( const glm::vec3 &rhs ) { r -= CHANTRAIT<T>::convert( rhs.r ); g -= CHANTRAIT<T>::convert( rhs.g ); b -= CHANTRAIT<T>::convert( rhs.b ); return *this; }
+	const ColorT<T>&	operator-=( const glm::vec3 &rhs ) { r -= CHANTRAIT<T>::convert( rhs.x ); g -= CHANTRAIT<T>::convert( rhs.y ); b -= CHANTRAIT<T>::convert( rhs.z ); return *this; }
 	const ColorT<T>&	operator*=( const ColorT<T> &rhs ) { r *= rhs.r; g *= rhs.g; b *= rhs.b; return *this; }
-	const ColorT<T>&	operator*=( const glm::vec3 &rhs ) { r *= CHANTRAIT<T>::convert( rhs.r ); g *= CHANTRAIT<T>::convert( rhs.g ); b *= CHANTRAIT<T>::convert( rhs.b ); return *this; }
+	const ColorT<T>&	operator*=( const glm::vec3 &rhs ) { r *= CHANTRAIT<T>::convert( rhs.x ); g *= CHANTRAIT<T>::convert( rhs.y ); b *= CHANTRAIT<T>::convert( rhs.z ); return *this; }
 	const ColorT<T>&	operator/=( const ColorT<T> &rhs ) { r /= rhs.r; g /= rhs.g; b /= rhs.b; return *this; }
-	const ColorT<T>&	operator/=( const glm::vec3 &rhs ) { r /= CHANTRAIT<T>::convert( rhs.r ); g /= CHANTRAIT<T>::convert( rhs.g ); b /= CHANTRAIT<T>::convert( rhs.b ); return *this; }
+	const ColorT<T>&	operator/=( const glm::vec3 &rhs ) { r /= CHANTRAIT<T>::convert( rhs.x ); g /= CHANTRAIT<T>::convert( rhs.y ); b /= CHANTRAIT<T>::convert( rhs.z ); return *this; }
 	ColorT<T>		operator+( T rhs ) const { return ColorT<T>( r + rhs, g + rhs, b + rhs ); }
 	ColorT<T>		operator-( T rhs ) const { return ColorT<T>( r - rhs, g - rhs, b - rhs ); }
 	ColorT<T>		operator*( T rhs ) const { return ColorT<T>( r * rhs, g * rhs, b * rhs ); }
@@ -199,7 +198,7 @@ class CI_API ColorAT {
 	{}
 	
 	ColorAT( const vec4 &src )
-		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) ), a( CHANTRAIT<T>::convert( src.a ) )
+		: r( CHANTRAIT<T>::convert( src.x ) ), g( CHANTRAIT<T>::convert( src.y ) ), b( CHANTRAIT<T>::convert( src.z ) ), a( CHANTRAIT<T>::convert( src.w ) )
 	{
 	}
 
@@ -238,27 +237,27 @@ class CI_API ColorAT {
 	T*  ptr() const { return &(const_cast<ColorAT*>( this )->r); }
 
 	ColorAT<T>	operator+( const ColorAT<T> &rhs ) const { return ColorAT<T>( r + rhs.r, g + rhs.g, b + rhs.b, a + rhs.a ); }
-	ColorAT<T>	operator+( const glm::vec4 &rhs ) const { return ColorAT<T>( r + CHANTRAIT<T>::convert( rhs.r ), g + CHANTRAIT<T>::convert( rhs.g ), b + CHANTRAIT<T>::convert( rhs.b ), a + CHANTRAIT<T>::convert( rhs.a ) ); }
+	ColorAT<T>	operator+( const glm::vec4 &rhs ) const { return ColorAT<T>( r + CHANTRAIT<T>::convert( rhs.x ), g + CHANTRAIT<T>::convert( rhs.y ), b + CHANTRAIT<T>::convert( rhs.z ), a + CHANTRAIT<T>::convert( rhs.w ) ); }
 	ColorAT<T>	operator-( const ColorAT<T> &rhs ) const { return ColorAT<T>( r - rhs.r, g - rhs.g, b - rhs.b, a - rhs.a ); }
-	ColorAT<T>	operator-( const glm::vec4 &rhs ) const { return ColorAT<T>( r - CHANTRAIT<T>::convert( rhs.r ), g - CHANTRAIT<T>::convert( rhs.g ), b - CHANTRAIT<T>::convert( rhs.b ), a - CHANTRAIT<T>::convert( rhs.a ) ); }
+	ColorAT<T>	operator-( const glm::vec4 &rhs ) const { return ColorAT<T>( r - CHANTRAIT<T>::convert( rhs.x ), g - CHANTRAIT<T>::convert( rhs.y ), b - CHANTRAIT<T>::convert( rhs.z ), a - CHANTRAIT<T>::convert( rhs.w ) ); }
 	ColorAT<T>	operator*( const ColorAT<T> &rhs ) const { return ColorAT<T>( r * rhs.r, g * rhs.g, b * rhs.b, a * rhs.a ); }
-	ColorAT<T>	operator*( const glm::vec4 &rhs ) const { return ColorAT<T>( r * CHANTRAIT<T>::convert( rhs.r ), g * CHANTRAIT<T>::convert( rhs.g ), b * CHANTRAIT<T>::convert( rhs.b ), a * CHANTRAIT<T>::convert( rhs.a ) ); }
+	ColorAT<T>	operator*( const glm::vec4 &rhs ) const { return ColorAT<T>( r * CHANTRAIT<T>::convert( rhs.x ), g * CHANTRAIT<T>::convert( rhs.y ), b * CHANTRAIT<T>::convert( rhs.z ), a * CHANTRAIT<T>::convert( rhs.w ) ); }
 	ColorAT<T>	operator/( const ColorAT<T> &rhs ) const { return ColorAT<T>( r / rhs.r, g / rhs.g, b / rhs.b, a / rhs.a ); }
-	ColorAT<T>	operator/( const glm::vec4 &rhs ) const { return ColorAT<T>( r / CHANTRAIT<T>::convert( rhs.r ), g / CHANTRAIT<T>::convert( rhs.g ), b / CHANTRAIT<T>::convert( rhs.b ), a / CHANTRAIT<T>::convert( rhs.a ) ); }
+	ColorAT<T>	operator/( const glm::vec4 &rhs ) const { return ColorAT<T>( r / CHANTRAIT<T>::convert( rhs.x ), g / CHANTRAIT<T>::convert( rhs.y ), b / CHANTRAIT<T>::convert( rhs.z ), a / CHANTRAIT<T>::convert( rhs.w ) ); }
 	const ColorAT<T>&	operator+=( const ColorAT<T> &rhs ) { r += rhs.r; g += rhs.g; b += rhs.b; a += rhs.a; return *this; }
-	const ColorAT<T>&	operator+=( const glm::vec4 &rhs ) { r += CHANTRAIT<T>::convert( rhs.r ); g += CHANTRAIT<T>::convert( rhs.g ); b += CHANTRAIT<T>::convert( rhs.b ); a += CHANTRAIT<T>::convert( rhs.a ); return *this; }
+	const ColorAT<T>&	operator+=( const glm::vec4 &rhs ) { r += CHANTRAIT<T>::convert( rhs.x ); g += CHANTRAIT<T>::convert( rhs.y ); b += CHANTRAIT<T>::convert( rhs.z ); a += CHANTRAIT<T>::convert( rhs.w ); return *this; }
 	const ColorAT<T>&	operator-=( const ColorAT<T> &rhs ) { r -= rhs.r;	g -= rhs.g;	b -= rhs.b;	a -= rhs.a;	return *this; }
-	const ColorAT<T>&	operator-=( const glm::vec4 &rhs ) { r -= CHANTRAIT<T>::convert( rhs.r ); g -= CHANTRAIT<T>::convert( rhs.g ); b -= CHANTRAIT<T>::convert( rhs.b ); a -= CHANTRAIT<T>::convert( rhs.a ); return *this; }
+	const ColorAT<T>&	operator-=( const glm::vec4 &rhs ) { r -= CHANTRAIT<T>::convert( rhs.x ); g -= CHANTRAIT<T>::convert( rhs.y ); b -= CHANTRAIT<T>::convert( rhs.z ); a -= CHANTRAIT<T>::convert( rhs.w ); return *this; }
 	const ColorAT<T>&	operator*=( const ColorAT<T> &rhs ) { r *= rhs.r; g *= rhs.g; b *= rhs.b; a *= rhs.a; return *this; }
-	const ColorAT<T>&	operator*=( const glm::vec4 &rhs ) { r *= CHANTRAIT<T>::convert( rhs.r ); g *= CHANTRAIT<T>::convert( rhs.g ); b *= CHANTRAIT<T>::convert( rhs.b ); a *= CHANTRAIT<T>::convert( rhs.a ); return *this; }
+	const ColorAT<T>&	operator*=( const glm::vec4 &rhs ) { r *= CHANTRAIT<T>::convert( rhs.x ); g *= CHANTRAIT<T>::convert( rhs.y ); b *= CHANTRAIT<T>::convert( rhs.z ); a *= CHANTRAIT<T>::convert( rhs.w ); return *this; }
 	const ColorAT<T>&	operator/=( const ColorAT<T> &rhs ) { r /= rhs.r; g /= rhs.g; b /= rhs.b; a /= rhs.a; return *this; }
-	const ColorAT<T>&	operator/=( const vec4 &rhs ) { r /= CHANTRAIT<T>::convert( rhs.r ); g /= CHANTRAIT<T>::convert( rhs.g ); b /= CHANTRAIT<T>::convert( rhs.b ); a /= CHANTRAIT<T>::convert( rhs.a ); return *this; }
+	const ColorAT<T>&	operator/=( const vec4 &rhs ) { r /= CHANTRAIT<T>::convert( rhs.x ); g /= CHANTRAIT<T>::convert( rhs.y ); b /= CHANTRAIT<T>::convert( rhs.z ); a /= CHANTRAIT<T>::convert( rhs.w ); return *this; }
 	ColorAT<T>	operator+( T rhs ) const { return ColorAT<T>( r + rhs, g + rhs, b + rhs, a + rhs ); }
 	ColorAT<T>	operator-( T rhs ) const { return ColorAT<T>( r - rhs, g - rhs, b - rhs, a - rhs ); }
 	ColorAT<T>	operator*( T rhs ) const { return ColorAT<T>( r * rhs, g * rhs, b * rhs, a * rhs ); }
 	ColorAT<T>	operator/( T rhs ) const { return ColorAT<T>( r / rhs, g / rhs, b / rhs, a / rhs ); }
-	const ColorAT<T>&	operator+=( T rhs ) {	r += rhs; g += rhs; b += rhs; a += rhs; return *this; }
-	const ColorAT<T>&	operator-=( T rhs ) {	r -= rhs; g -= rhs; b -= rhs; a -= rhs;	return * this; }
+	const ColorAT<T>&	operator+=( T rhs ) { r += rhs; g += rhs; b += rhs; a += rhs; return *this; }
+	const ColorAT<T>&	operator-=( T rhs ) { r -= rhs; g -= rhs; b -= rhs; a -= rhs;	return * this; }
 	const ColorAT<T>&	operator*=( T rhs ) { r *= rhs; g *= rhs; b *= rhs; a *= rhs; return * this; }
 	const ColorAT<T>&	operator/=( T rhs ) { r /= rhs; g /= rhs; b /= rhs; a /= rhs;	return * this; }
 
@@ -307,7 +306,7 @@ class CI_API ColorAT {
 	{
 		uint8_t red = ( hexValue >> 16 ) & 255;
 		uint8_t green = ( hexValue >> 8 ) & 255;
-		uint8_t blue = hexValue & 255;		
+		uint8_t blue = hexValue & 255;
 		return ColorAT<T>( CHANTRAIT<T>::convert( red ), CHANTRAIT<T>::convert( green ), CHANTRAIT<T>::convert( blue ), CHANTRAIT<T>::max() );
 	}
 
