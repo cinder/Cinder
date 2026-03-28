@@ -29,16 +29,6 @@
 #include "cinder/gl/Environment.h"
 #include "cinder/Log.h"
 
-#if defined( CINDER_GL_ES_2 )
-	#define GL_DEPTH_COMPONENT24						GL_DEPTH_COMPONENT24_OES
-	#define GL_DEPTH24_STENCIL8							GL_DEPTH24_STENCIL8_OES
-	#define GL_RGBA8									GL_RGBA8_OES
-	#define glRenderbufferStorageMultisample			glRenderbufferStorageMultisampleAPPLE
-	#define GL_READ_FRAMEBUFFER							GL_READ_FRAMEBUFFER_APPLE
-	#define GL_DRAW_FRAMEBUFFER							GL_DRAW_FRAMEBUFFER_APPLE
-	#define GL_MAX_SAMPLES								GL_MAX_SAMPLES_APPLE
-#endif
-
 @implementation RendererImplGlCocoaTouch
 
 - (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer
