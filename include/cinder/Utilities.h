@@ -97,11 +97,73 @@ inline double fromString( const std::string &s ) { return atof( s.c_str() ); }
 CI_API bool asciiCaseEqual( const std::string &a, const std::string &b );
 //! returns \c true if ASCII strings \a a and \a b are case-insensitively equal. Not Unicode-aware.
 CI_API bool asciiCaseEqual( const char *a, const char *b );
-//! returns equivalent of strcmp() using ASCII case-insensitive comparison
+//! returns equivalent of strcmp() using ASCII case-insensitive comparison. Not Unicode-aware.
 CI_API int asciiCaseCmp( const char *a, const char *b );
 
+//! removes all whitespace (as defined by std::isspace()) from the beginning of \a str. Unicode aware.
+CI_API void trimLeftInPlace( std::string &str );
+//! removes all whitespace (as defined by std::isspace()) from the beginning of \a str and returns a copy. Unicode aware.
+CI_API std::string trimLeft( std::string str );
+
+//! removes all whitespace (as defined by std::isspace()) from the end of \a str. Unicode aware.
+CI_API void trimRightInPlace( std::string &str );
+//! removes all whitespace (as defined by std::isspace()) from the end of \a str and returns a copy. Unicode aware.
+CI_API std::string trimRight( std::string str );
+
+//! removes all whitespace (as defined by std::isspace()) removed from beginning and end of \a str. Unicode aware.
+CI_API void trimInPlace( std::string &str );
 //! returns a copy of \a str with all whitespace (as defined by std::isspace()) removed from beginning and end. Unicode aware.
-CI_API std::string trim( const std::string &str );
+CI_API std::string trim( std::string str );
+
+//! removes all specified \a characters from the beginning of \a str. Not Unicode-aware.
+CI_API void trimLeftInPlace( std::string &str, const std::string &characters );
+//! removes all specified \a characters from the beginning of \a str. Not Unicode-aware.
+CI_API std::string trimLeft( std::string str, const std::string &characters );
+
+//! removes all specified \a characters from the end of \a str. Not Unicode-aware.
+CI_API void trimRightInPlace( std::string &str, const std::string &characters );
+//! removes all specified \a characters from the end of \a str. Not Unicode-aware.
+CI_API std::string trimRight( std::string str, const std::string &characters );
+
+//! removes all specified \a characters from \a str. Not Unicode-aware.
+CI_API void trimInPlace( std::string &str, const std::string &characters );
+//! removes all specified \a characters from \a str. Not Unicode-aware.
+CI_API std::string trim( std::string str, const std::string &characters );
+
+//! removes all occurrences of any of \a characters in \a str. Not Unicode-aware.
+CI_API void filterInPlace( std::string &str, const std::string &characters );
+//! returns a copy of \a str with all occurrences of any of \a characters removed. Not Unicode-aware.
+CI_API std::string filter( std::string str, const std::string &characters );
+
+//! Converts the character \a c to lowercase. Not Unicode-aware.
+CI_API char charToLower( const char c );
+//! Converts the character \a c to uppercase. Not Unicode-aware.
+CI_API char charToUpper( const char c );
+
+//! converts all characters to lowercase (using std::tolower()) in \a str. Not Unicode-aware.
+CI_API void toLowerInPlace( std::string &str );
+//! returns a copy of \a str with all characters converted to lowercase (using std::tolower()). Not Unicode-aware.
+CI_API std::string toLower( std::string str );
+//! converts all characters to uppercase (using std::toupper()) in \a str.Not Unicode-aware.
+CI_API void toUpperInPlace( std::string &str );
+//! returns a copy of \a str with all characters converted to uppercase (using std::toupper()). Not Unicode-aware.
+CI_API std::string toUpper( std::string str );
+
+//! replaces all instances of \a find with \a replace in \a str. Unicode-aware.
+CI_API void findReplaceInPlace( std::string &str, const std::string &find, const std::string &replace );
+//! replaces all instances of \a find with \a replace in \a str and returns a copy. Unicode-aware.
+CI_API std::string findReplace( std::string str, const std::string &find, const std::string &replace );
+
+//! returns whether character \a c is considered white space. Not Unicode-aware.
+CI_API bool isWhiteSpace( char c );
+//! returns whether character \a c is a digit (0-9). Not Unicode-aware.
+CI_API bool isDigit( char c );
+//! returns whether character \a c is a hexadecimal digit (0-9)+(a-f). Not Unicode-aware.
+CI_API bool isHexDigit( char c );
+//! returns whether character \a c is alphabetic (a-z). Not Unicode-aware.
+CI_API bool isAlpha( char c );
+//! returns whether character \a c is numeric (0-9)+(.+-eE). Not Unicode-aware.
+CI_API bool isNumeric( char c );
 
 //! Returns a stack trace (aka backtrace) where \c stackTrace()[0] == caller, \c stackTrace()[1] == caller's parent, etc
 CI_API std::vector<std::string> stackTrace();
