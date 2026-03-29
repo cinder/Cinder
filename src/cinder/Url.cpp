@@ -130,8 +130,17 @@ IStreamUrlRef IStreamUrl::create( const Url &url, const std::string &user, const
 IStreamUrl::IStreamUrl( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
 	: IStreamCinder()
 {
-	setFileName( url );
 	mImpl = std::shared_ptr<IStreamUrlImpl>( new IStreamUrlPlatformImpl( url, user, password, options ) );
+#if defined( CINDER_MSW )
+	if ( url.size() >= 260 )
+	{
+		// Workaround for MSVC++ 14.0/17.0 exceptions once fs::path length hits 260
+		const size_t start = url.rfind( '/' );
+		setFileName( url.substr( start == std::string::npos ? 0 : start, 259 ) );
+		return;
+	}
+#endif
+	setFileName( url );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,3 +163,4 @@ UrlLoadExc::UrlLoadExc( int code, const std::string &message )
 }
 
 } // namespace cinder
+
