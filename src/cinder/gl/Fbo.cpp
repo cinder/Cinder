@@ -749,15 +749,16 @@ void Fbo::setLabel( const std::string &label )
 	env()->objectLabel( GL_FRAMEBUFFER, mId, (GLsizei)label.size(), label.c_str() );
 }
 
-Surface8u Fbo::readPixels8u( const Area &area, GLenum attachment ) const
+Surface8u Fbo::readPixels8u( const Area &area, GLenum attachment, bool alpha ) const
 {
 	// resolve first, before our own bind so that we don't force a resolve unnecessarily
 	resolveTextures();
 	ScopedFramebuffer readScp( GL_FRAMEBUFFER, mId );
 
 	Area readArea = prepareReadPixels( area, attachment );
-	Surface8u result( readArea.getWidth(), readArea.getHeight(), true );
-	glReadPixels( readArea.x1, readArea.y1, readArea.getWidth(), readArea.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, result.getData() );
+	Surface8u result( readArea.getWidth(), readArea.getHeight(), alpha );
+	GLenum format = alpha ? GL_RGBA : GL_RGB;
+	glReadPixels( readArea.x1, readArea.y1, readArea.getWidth(), readArea.getHeight(), format, GL_UNSIGNED_BYTE, result.getData() );
 
 	if( result.getHeight() > 1 ) {
 		// glReadPixels returns pixels which are bottom-up
@@ -767,15 +768,16 @@ Surface8u Fbo::readPixels8u( const Area &area, GLenum attachment ) const
 	return result;
 }
 
-Surface32f Fbo::readPixels32f( const Area &area, GLenum attachment ) const
+Surface32f Fbo::readPixels32f( const Area &area, GLenum attachment, bool alpha ) const
 {
 	// resolve first, before our own bind so that we don't force a resolve unnecessarily
 	resolveTextures();
 	ScopedFramebuffer readScp( GL_FRAMEBUFFER, mId );
 
 	Area readArea = prepareReadPixels( area, attachment );
-	Surface32f result( readArea.getWidth(), readArea.getHeight(), true );
-	glReadPixels( readArea.x1, readArea.y1, readArea.getWidth(), readArea.getHeight(), GL_RGBA, GL_FLOAT, result.getData() );
+	Surface32f result( readArea.getWidth(), readArea.getHeight(), alpha );
+	GLenum format = alpha ? GL_RGBA : GL_RGB;
+	glReadPixels( readArea.x1, readArea.y1, readArea.getWidth(), readArea.getHeight(), format, GL_FLOAT, result.getData() );
 
 	if( result.getHeight() > 1 ) {
 		// glReadPixels returns pixels which are bottom-up
