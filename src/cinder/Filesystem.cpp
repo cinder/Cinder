@@ -29,5 +29,5 @@
 
 #if ! defined( GHC_USE_STD_FS )
 	#undef GHC_FILESYSTEM_H
-	#include <ghc/fs_impl.hpp>
+	#include <ghc/fs_std_impl.hpp>
 #endif
