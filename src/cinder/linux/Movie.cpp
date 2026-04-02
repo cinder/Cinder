@@ -232,6 +232,11 @@ void MovieBase::stop()
     mGstPlayer->stop();
 }
 
+signals::Signal<void()>& MovieBase::getSeekFinishedSignal()
+{ 
+    return mGstPlayer->getSeekFinishedSignal(); 
+}
+
 //! \class MovieGl
 //!
 //!

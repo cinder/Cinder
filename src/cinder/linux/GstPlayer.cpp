@@ -294,6 +294,7 @@ gboolean checkBusMessagesAsync( GstBus* bus, GstMessage* message, gpointer userD
 						}
 						else {
 							data.isSeeking = false;
+							data.player->getSeekFinishedSignal().emit();
 						}
 					}
 				}
