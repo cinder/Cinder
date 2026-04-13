@@ -202,6 +202,11 @@ void Context::disconnectAllNodes()
 
 	for( const auto& node : mAutoPulledNodes )
 		disconnectRecursive( node, traversedNodes );
+
+	// clear out all auto-pulled nodes
+	mAutoPulledNodes.clear();
+	mAutoPullCache.clear();
+	mAutoPullCacheDirty = false;
 }
 
 void Context::setOutput( const OutputNodeRef &output )
