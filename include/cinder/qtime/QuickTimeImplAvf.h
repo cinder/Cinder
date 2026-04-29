@@ -189,6 +189,7 @@ class MovieBase {
 	int32_t						mFrameCount;
 	float						mFrameRate;
 	float						mDuration;
+	float						mPlayRate;
 	std::atomic<bool>			mAssetLoaded;
 	bool						mLoaded, mPlayThroughOk, mPlayable, mProtected;
 	bool						mPlayingForward, mLoop, mPalindrome;

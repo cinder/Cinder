@@ -410,6 +410,7 @@ bool MovieBase::setRate( float rate )
 	else
 		success = [mPlayerItem canPlaySlowForward];
 	
+	mPlayRate = rate;
 	[mPlayer setRate:rate];
 	
 	return success;
@@ -516,6 +517,7 @@ void MovieBase::init()
 	mHeight = -1;
 	mDuration = -1;
 	mFrameCount = -1;
+	mPlayRate = 1;
 }
 	
 void MovieBase::initFromUrl( const Url& url )
@@ -758,6 +760,7 @@ void MovieBase::playerReady()
 {
 	mSignalReady.emit();
 	
+	setRate(mPlayRate);  // previous setRate calls fail while the player is not ready
 	if( mPlaying )
 		play();
 }
@@ -765,9 +768,9 @@ void MovieBase::playerReady()
 void MovieBase::playerItemEnded()
 {
 	if( mPalindrome ) {
-		float rate = -[mPlayer rate];
-		mPlayingForward = (rate >= 0);
-		this->setRate( rate );
+		mPlayRate = -mPlayRate;
+		mPlayingForward = (mPlayRate >= 0);
+		this->setRate( mPlayRate );
 	}
 	else if( mLoop ) {
 		this->seekToStart();
