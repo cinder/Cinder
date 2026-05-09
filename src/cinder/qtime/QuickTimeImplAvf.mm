@@ -198,6 +198,7 @@ MovieBase::~MovieBase()
 	// release resources for AVF objects.
 	if( mPlayer ) {
 		[mPlayer cancelPendingPrerolls];
+		[mPlayer replaceCurrentItemWithPlayerItem:nil];
 		[mPlayer release];
 	}
 	
