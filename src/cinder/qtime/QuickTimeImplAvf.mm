@@ -183,6 +183,7 @@ MovieBase::MovieBase()
 	mPlayerItem( nil ),
 	mAsset( nil ),
 	mPlayerVideoOutput( nil ),
+	mOutputQueue( nil ),
 	mPlayerDelegate( nil ),
 	mResponder( nullptr ),
 	mAssetLoaded( false )
@@ -192,6 +193,21 @@ MovieBase::MovieBase()
 
 MovieBase::~MovieBase()
 {
+	// Stop the output delegate first and drain any in-flight background callback,
+	// e.g. outputSequenceWasFlushed.
+	if( mPlayerVideoOutput ) {
+		[mPlayerVideoOutput setDelegate:nil queue:nil];
+		if( mOutputQueue ) {
+			dispatch_sync( mOutputQueue, ^{} );
+		}
+		[mPlayerVideoOutput release];
+		mPlayerVideoOutput = nil;
+	}
+	if( mOutputQueue ) {
+		dispatch_release( mOutputQueue );
+		mOutputQueue = nil;
+	}
+
 	// remove all observers
 	removeObservers();
 	
@@ -207,9 +223,13 @@ MovieBase::~MovieBase()
 		[mAsset release];
 	}
 
-	if( mPlayerVideoOutput ) {
-		[mPlayerVideoOutput release];
+	if( mPlayerDelegate ) {
+		[mPlayerDelegate release];
+		mPlayerDelegate = nil;
 	}
+
+	delete mResponder;
+	mResponder = nullptr;
 }
 	
 float MovieBase::getPixelAspectRatio() const
@@ -703,8 +723,8 @@ void MovieBase::processAssetTracks( AVAsset* asset )
 void MovieBase::createPlayerItemOutput( const AVPlayerItem* playerItem )
 {
 	mPlayerVideoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:avPlayerItemOutputDictionary()];
-	dispatch_queue_t outputQueue = dispatch_queue_create("movieVideoOutputQueue", DISPATCH_QUEUE_SERIAL);
-	[mPlayerVideoOutput setDelegate:mPlayerDelegate queue:outputQueue];
+	mOutputQueue = dispatch_queue_create("movieVideoOutputQueue", DISPATCH_QUEUE_SERIAL);
+	[mPlayerVideoOutput setDelegate:mPlayerDelegate queue:mOutputQueue];
 	mPlayerVideoOutput.suppressesPlayerRendering = YES;
 	[playerItem addOutput:mPlayerVideoOutput];
 }

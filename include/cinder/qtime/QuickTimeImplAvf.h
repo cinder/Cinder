@@ -32,6 +32,7 @@
 #include "cinder/Thread.h"
 #include "cinder/Url.h"
 
+#include <dispatch/dispatch.h>
 #include <string>
 
 typedef struct __CVBuffer *CVBufferRef;
@@ -200,6 +201,7 @@ class MovieBase {
 	AVPlayerItem*				mPlayerItem;
 	AVURLAsset*					mAsset;
 	AVPlayerItemVideoOutput*	mPlayerVideoOutput;
+	dispatch_queue_t			mOutputQueue;
 
 	std::mutex					mMutex;
 	
