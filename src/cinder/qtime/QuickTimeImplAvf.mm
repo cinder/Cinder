@@ -437,6 +437,14 @@ bool MovieBase::setRate( float rate )
 	return success;
 }
 
+float MovieBase::getRate() const
+{
+    if( ! mPlayer || ! mPlayerItem )
+        return 0.f;
+    
+    return mPlayer.rate;
+}
+
 void MovieBase::setVolume( float volume )
 {
 	if( ! mPlayer )

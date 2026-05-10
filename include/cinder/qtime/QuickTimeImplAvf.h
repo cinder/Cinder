@@ -137,6 +137,8 @@ class MovieBase {
 	 * Returns a boolean value indicating whether the rate value can be played (some media types cannot be played backwards)
 	 */
 	bool		setRate( float rate );
+    //! Gets the playback rate. It might be different from the one that was set because setRate failed or palindrome loop kicked off.
+    float       getRate() const;
 
 	//! Sets the audio playback volume ranging from [0 - 1.0]
 	void		setVolume( float volume );
