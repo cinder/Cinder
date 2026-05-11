@@ -32,6 +32,7 @@
 
 #if defined( CINDER_MAC )
 	#include "cinder/app/glfw/AppImplGlfwMac.h"
+	#include "cinder/app/cocoa/PlatformCocoa.h"
 #endif
 
 namespace cinder { namespace app {
@@ -75,10 +76,12 @@ WindowImplGlfw::WindowImplGlfw( const Window::Format &format, WindowImplGlfw *sh
 		auto windowSize = displayLinux->getSize();
 		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), displayLinux->getGlfwMonitor(), sharedGlfwWindow );
 #elif defined( CINDER_MAC )
-		// On macOS, get the primary monitor for fullscreen
-		GLFWmonitor* primaryMonitor = ::glfwGetPrimaryMonitor();
+		auto* displayMac = dynamic_cast<cinder::DisplayMac*>( mDisplay.get() );
+		GLFWmonitor* monitor = displayMac ? displayMac->getGlfwMonitor() : nullptr;
+		if( ! monitor )
+			monitor = ::glfwGetPrimaryMonitor();
 		auto windowSize = mDisplay->getSize();
-		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), primaryMonitor, sharedGlfwWindow );
+		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), monitor, sharedGlfwWindow );
 #endif
 		mWindowedSize = format.getSize();
 		mWindowedPos = format.getPos();
@@ -140,8 +143,11 @@ void WindowImplGlfw::setFullScreen( bool fullScreen, const app::FullScreenOption
 		cinder::app::DisplayLinux* displayLinux = dynamic_cast<cinder::app::DisplayLinux*>( mDisplay.get() );
 		::glfwSetWindowMonitor( mGlfwWindow, displayLinux->getGlfwMonitor(), 0, 0, mDisplay->getWidth(), mDisplay->getHeight(), GLFW_DONT_CARE );
 #elif defined( CINDER_MAC )
-		GLFWmonitor* primaryMonitor = ::glfwGetPrimaryMonitor();
-		::glfwSetWindowMonitor( mGlfwWindow, primaryMonitor, 0, 0, mDisplay->getWidth(), mDisplay->getHeight(), GLFW_DONT_CARE );
+		auto* displayMac = dynamic_cast<cinder::DisplayMac*>( mDisplay.get() );
+		GLFWmonitor* monitor = displayMac ? displayMac->getGlfwMonitor() : nullptr;
+		if( ! monitor )
+			monitor = ::glfwGetPrimaryMonitor();
+		::glfwSetWindowMonitor( mGlfwWindow, monitor, 0, 0, mDisplay->getWidth(), mDisplay->getHeight(), GLFW_DONT_CARE );
 #endif
 	}
 	else {
