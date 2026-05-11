@@ -32,6 +32,7 @@
 #include "cinder/Thread.h"
 #include "cinder/Url.h"
 
+#include <dispatch/dispatch.h>
 #include <string>
 
 typedef struct __CVBuffer *CVBufferRef;
@@ -136,6 +137,8 @@ class MovieBase {
 	 * Returns a boolean value indicating whether the rate value can be played (some media types cannot be played backwards)
 	 */
 	bool		setRate( float rate );
+    //! Gets the playback rate. It might be different from the one that was set because setRate failed or palindrome loop kicked off.
+    float       getRate() const;
 
 	//! Sets the audio playback volume ranging from [0 - 1.0]
 	void		setVolume( float volume );
@@ -189,6 +192,7 @@ class MovieBase {
 	int32_t						mFrameCount;
 	float						mFrameRate;
 	float						mDuration;
+	float						mPlayRate;
 	std::atomic<bool>			mAssetLoaded;
 	bool						mLoaded, mPlayThroughOk, mPlayable, mProtected;
 	bool						mPlayingForward, mLoop, mPalindrome;
@@ -199,6 +203,7 @@ class MovieBase {
 	AVPlayerItem*				mPlayerItem;
 	AVURLAsset*					mAsset;
 	AVPlayerItemVideoOutput*	mPlayerVideoOutput;
+	dispatch_queue_t			mOutputQueue;
 
 	std::mutex					mMutex;
 	

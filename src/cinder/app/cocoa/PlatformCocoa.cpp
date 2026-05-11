@@ -44,6 +44,12 @@
 #include <execinfo.h>
 #include <pthread.h>
 
+#if defined( CINDER_GLFW )
+	#define GLFW_EXPOSE_NATIVE_COCOA
+	#include "glfw/glfw3.h"
+	#include "glfw/glfw3native.h"
+#endif
+
 using namespace std;
 
 namespace cinder { namespace app {
@@ -437,6 +443,19 @@ std::string getDisplayName( CGDirectDisplayID displayId )
 NSScreen* DisplayMac::getNsScreen() const
 {
 	return findNsScreenForCgDirectDisplayId( mDirectDisplayId );
+}
+
+GLFWmonitor* DisplayMac::getGlfwMonitor() const
+{
+#if defined( CINDER_GLFW )
+	int count = 0;
+	GLFWmonitor** monitors = ::glfwGetMonitors( &count );
+	for( int i = 0; i < count; ++i ) {
+		if( ::glfwGetCocoaMonitor( monitors[i] ) == mDirectDisplayId )
+			return monitors[i];
+	}
+#endif
+	return nullptr;
 }
 
 DisplayRef app::PlatformCocoa::findFromCgDirectDisplayId( CGDirectDisplayID displayId )

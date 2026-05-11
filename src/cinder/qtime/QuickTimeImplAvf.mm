@@ -183,6 +183,7 @@ MovieBase::MovieBase()
 	mPlayerItem( nil ),
 	mAsset( nil ),
 	mPlayerVideoOutput( nil ),
+	mOutputQueue( nil ),
 	mPlayerDelegate( nil ),
 	mResponder( nullptr ),
 	mAssetLoaded( false )
@@ -192,12 +193,28 @@ MovieBase::MovieBase()
 
 MovieBase::~MovieBase()
 {
+	// Stop the output delegate first and drain any in-flight background callback,
+	// e.g. outputSequenceWasFlushed.
+	if( mPlayerVideoOutput ) {
+		[mPlayerVideoOutput setDelegate:nil queue:nil];
+		if( mOutputQueue ) {
+			dispatch_sync( mOutputQueue, ^{} );
+		}
+		[mPlayerVideoOutput release];
+		mPlayerVideoOutput = nil;
+	}
+	if( mOutputQueue ) {
+		dispatch_release( mOutputQueue );
+		mOutputQueue = nil;
+	}
+
 	// remove all observers
 	removeObservers();
 	
 	// release resources for AVF objects.
 	if( mPlayer ) {
 		[mPlayer cancelPendingPrerolls];
+		[mPlayer replaceCurrentItemWithPlayerItem:nil];
 		[mPlayer release];
 	}
 	
@@ -206,9 +223,13 @@ MovieBase::~MovieBase()
 		[mAsset release];
 	}
 
-	if( mPlayerVideoOutput ) {
-		[mPlayerVideoOutput release];
+	if( mPlayerDelegate ) {
+		[mPlayerDelegate release];
+		mPlayerDelegate = nil;
 	}
+
+	delete mResponder;
+	mResponder = nullptr;
 }
 	
 float MovieBase::getPixelAspectRatio() const
@@ -410,9 +431,18 @@ bool MovieBase::setRate( float rate )
 	else
 		success = [mPlayerItem canPlaySlowForward];
 	
+	mPlayRate = rate;
 	[mPlayer setRate:rate];
 	
 	return success;
+}
+
+float MovieBase::getRate() const
+{
+    if( ! mPlayer || ! mPlayerItem )
+        return 0.f;
+    
+    return mPlayer.rate;
 }
 
 void MovieBase::setVolume( float volume )
@@ -516,6 +546,7 @@ void MovieBase::init()
 	mHeight = -1;
 	mDuration = -1;
 	mFrameCount = -1;
+	mPlayRate = 1;
 }
 	
 void MovieBase::initFromUrl( const Url& url )
@@ -700,8 +731,8 @@ void MovieBase::processAssetTracks( AVAsset* asset )
 void MovieBase::createPlayerItemOutput( const AVPlayerItem* playerItem )
 {
 	mPlayerVideoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:avPlayerItemOutputDictionary()];
-	dispatch_queue_t outputQueue = dispatch_queue_create("movieVideoOutputQueue", DISPATCH_QUEUE_SERIAL);
-	[mPlayerVideoOutput setDelegate:mPlayerDelegate queue:outputQueue];
+	mOutputQueue = dispatch_queue_create("movieVideoOutputQueue", DISPATCH_QUEUE_SERIAL);
+	[mPlayerVideoOutput setDelegate:mPlayerDelegate queue:mOutputQueue];
 	mPlayerVideoOutput.suppressesPlayerRendering = YES;
 	[playerItem addOutput:mPlayerVideoOutput];
 }
@@ -758,6 +789,7 @@ void MovieBase::playerReady()
 {
 	mSignalReady.emit();
 	
+	setRate(mPlayRate);  // previous setRate calls fail while the player is not ready
 	if( mPlaying )
 		play();
 }
@@ -765,9 +797,9 @@ void MovieBase::playerReady()
 void MovieBase::playerItemEnded()
 {
 	if( mPalindrome ) {
-		float rate = -[mPlayer rate];
-		mPlayingForward = (rate >= 0);
-		this->setRate( rate );
+		mPlayRate = -mPlayRate;
+		mPlayingForward = (mPlayRate >= 0);
+		this->setRate( mPlayRate );
 	}
 	else if( mLoop ) {
 		this->seekToStart();

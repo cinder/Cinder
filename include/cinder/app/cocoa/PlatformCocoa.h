@@ -46,6 +46,8 @@
 typedef uint32_t CGDisplayChangeSummaryFlags;
 typedef uint32_t CGDirectDisplayID;
 
+struct GLFWmonitor;
+
 namespace cinder {
 #if defined( CINDER_MAC )
 	class DisplayMac;
@@ -151,6 +153,8 @@ class DisplayMac : public Display {
   public:
 	NSScreen*			getNsScreen() const;
 	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayId; }
+	//! Returns the GLFW monitor handle matching this display, or nullptr if none matches. Only meaningful when Cinder is built with the GLFW backend.
+	GLFWmonitor*		getGlfwMonitor() const;
 
 	std::string			getName() const override;
 
