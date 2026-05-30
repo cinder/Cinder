@@ -40,6 +40,8 @@ include( "${CINDER_PATH}/proj/cmake/modules/findCMakeDirs.cmake" )
 
 # Windows-only samples (D3D11, NVIDIA-specific, compute shaders)
 set( SAMPLES_MSW_ONLY
+	D3d12ImageBasic
+	D3d12Triangle
 	D3d11ImageBasic
 	D3d11Triangle
 	_opengl/LevelOfDetailIndirect
