@@ -23,6 +23,16 @@
 
 #pragma once
 
+// NOTE: this is not the place to configure ImGui from an application.
+// ImGui configuration macros (IMGUI_DISABLE_OBSOLETE_FUNCTIONS and friends) belong
+// in include/imgui/imconfig.h, which imgui.h includes in *every* translation unit.
+// CinderImGuiConfig.h below is only reached by code that goes through this header --
+// cinder's own imgui*.cpp never define IMGUI_USER_CONFIG and so never see it.
+// Defining such a macro in application code therefore changes the layout of
+// ImGuiIO/ImGuiContext for that application only, while cinder.lib keeps the
+// unmodified layout. That is an ODR violation which neither the compiler nor the
+// linker reports, and it silently corrupts ImGui state. Initialize() below calls
+// IMGUI_CHECKVERSION() from the caller's translation unit to catch it.
 #if ! defined( IMGUI_USER_CONFIG )
 #define IMGUI_USER_CONFIG "cinder/CinderImGuiConfig.h"
 #endif
@@ -112,7 +122,19 @@ namespace ImGui {
 	//! For D3D12 apps: auto-render is not supported since apps manage their own command lists.
 	//! Use GetD3D12SrvHeap() to get the descriptor heap, then call NewFrame(), your GUI code,
 	//! Render(), and ImGui_ImplDX12_RenderDrawData() manually.
-	CI_API bool Initialize( const Options& options = Options() );
+	CI_API bool InitializeImpl( const Options& options );
+
+	//! Deliberately inline: IMGUI_CHECKVERSION() compares the sizes of ImGuiIO,
+	//! ImGuiStyle, ImVec2/4 and ImDrawVert/Idx as seen by the *caller* against those
+	//! compiled into cinder.  Calling it from inside cinder would only ever compare
+	//! cinder against itself, so it must be instantiated in the application's
+	//! translation unit to detect a configuration mismatch across the library
+	//! boundary (see the note at the top of this header).
+	inline bool Initialize( const Options& options = Options() )
+	{
+		IMGUI_CHECKVERSION();
+		return InitializeImpl( options );
+	}
 
 	//! Returns true if ImGui is using the D3D12 backend
 	CI_API bool IsUsingD3D12();
