@@ -391,8 +391,16 @@ bool ListBox( const char* label, int* currIndex, const std::vector<std::string>&
 	if( values.empty() )
 		return false;
 
+	// 'height_in_items' is a count of rows, not a pixel size: passing it straight to
+	// BeginListBox() makes the default of -1 a negative size, which CalcItemSize() reads as
+	// "content region minus one line" and collapses the list inside an auto-sized popup.
+	if( height_in_items < 0 )
+		height_in_items = ( (int)values.size() < 7 ) ? (int)values.size() : 7;
+	const ImVec2 size( 0.0f, (float)(int)( ImGui::GetTextLineHeightWithSpacing() * ( height_in_items + 0.25f )
+		+ ImGui::GetStyle().FramePadding.y * 2.0f ) );
+
 	bool changed = false;
-	if( ImGui::BeginListBox( label, ImVec2( 0, height_in_items * ImGui::GetTextLineHeightWithSpacing() ) ) ) {
+	if( ImGui::BeginListBox( label, size ) ) {
 		for( int i = 0; i < (int)values.size(); ++i ) {
 			ImGui::PushID( (void*)(intptr_t)i );
 			bool selected = ( *currIndex == i );
