@@ -27,8 +27,19 @@
 //#define IMGUI_API __declspec(dllimport)                   // MSVC Windows: DLL import
 //#define IMGUI_API __attribute__((visibility("default")))  // GCC/Clang: override visibility when set is hidden
 
+// NOTE: this file is the ONLY correct place for macros like this one. imgui.h
+// includes imconfig.h in every translation unit, so both Cinder's bundled
+// imgui*.cpp and user application code see the same definition. Defining such a
+// macro in application code instead (e.g. before including CinderImGui.h) changes
+// the layout of ImGuiIO/ImGuiContext for that application only, while cinder.lib
+// keeps the unmodified layout. That is an ODR violation which neither the
+// compiler nor the linker reports: in debug builds, inline ImGui helpers are
+// emitted as out-of-line COMDATs and the linker keeps one copy arbitrarily, so
+// ImGui may read struct members at the wrong offsets. ImGui::Initialize() is
+// inline and calls IMGUI_CHECKVERSION() from the caller's translation unit, so
+// any such mismatch is detected automatically at startup.
 //---- Don't define obsolete functions/enums/behaviors. Consider enabling from time to time after updating to clean your code of obsolete function/names.
-//#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 
 //---- Disable all of Dear ImGui or don't implement standard windows/tools.
 // It is very strongly recommended to NOT disable the demo windows and debug tool during development. They are extremely useful in day to day work. Please read comments in imgui_demo.cpp.

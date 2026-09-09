@@ -23,6 +23,7 @@ void shutdownD3d12();
 #endif
 
 #include <unordered_map>
+#include <vector>
 
 static bool																   sInitialized = false;
 static bool																   sTriggerNewFrame = false;
@@ -34,6 +35,14 @@ static std::unordered_map<ci::app::WindowRef, ci::signals::ConnectionList> sWind
 static bool																   sUsingD3D12 = false;
 static ID3D12DescriptorHeap*											   sImGuiSrvHeap = nullptr;
 static const UINT														   kImGuiSrvHeapSize = 64;
+
+// Free list over sImGuiSrvHeap.  Since 1.91.5 ImGui's D3D12 backend allocates SRV
+// descriptors through callbacks rather than taking a single descriptor up front,
+// and from 1.92 it allocates more than one (one per texture).
+static D3D12_CPU_DESCRIPTOR_HANDLE										   sSrvHeapCpuStart = {};
+static D3D12_GPU_DESCRIPTOR_HANDLE										   sSrvHeapGpuStart = {};
+static UINT																   sSrvHeapHandleIncrement = 0;
+static std::vector<UINT>												   sSrvHeapFreeIndices;
 #endif
 
 namespace ImGui {
@@ -122,9 +131,9 @@ Options::Options()
 	mStyle.Colors[ImGuiCol_ResizeGripActive] = orangeActive;
 	mStyle.Colors[ImGuiCol_Tab] = grayInactive;
 	mStyle.Colors[ImGuiCol_TabHovered] = orangeDimmed;
-	mStyle.Colors[ImGuiCol_TabActive] = orangeActive; // orangeBright;
-	mStyle.Colors[ImGuiCol_TabUnfocused] = orangeDimmed;
-	mStyle.Colors[ImGuiCol_TabUnfocusedActive] = orangeActive;
+	mStyle.Colors[ImGuiCol_TabSelected] = orangeActive; // orangeBright;
+	mStyle.Colors[ImGuiCol_TabDimmed] = orangeDimmed;
+	mStyle.Colors[ImGuiCol_TabDimmedSelected] = orangeActive;
 	// mStyle.Colors[ImGuiCol_DockingPreview] = grayInactive;
 	// mStyle.Colors[ImGuiCol_DockingEmptyBg] = ImVec4( 0.20f, 0.20f, 0.20f, 1.00f );
 	mStyle.Colors[ImGuiCol_PlotLines] = ImVec4( 0.93f, 0.96f, 0.95f, 0.80f );
@@ -133,7 +142,7 @@ Options::Options()
 	mStyle.Colors[ImGuiCol_PlotHistogramHovered] = grayInactive;
 	mStyle.Colors[ImGuiCol_TextSelectedBg] = grayInactive;
 	mStyle.Colors[ImGuiCol_DragDropTarget] = grayInactive;
-	mStyle.Colors[ImGuiCol_NavHighlight] = grayInactive;
+	mStyle.Colors[ImGuiCol_NavCursor] = grayInactive;
 	mStyle.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4( 1.00f, 1.00f, 1.00f, 0.70f );
 	mStyle.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4( 0.80f, 0.80f, 0.80f, 0.20f );
 	mStyle.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4( 0.20f, 0.22f, 0.27f, 0.73f );
@@ -382,8 +391,16 @@ bool ListBox( const char* label, int* currIndex, const std::vector<std::string>&
 	if( values.empty() )
 		return false;
 
+	// 'height_in_items' is a count of rows, not a pixel size: passing it straight to
+	// BeginListBox() makes the default of -1 a negative size, which CalcItemSize() reads as
+	// "content region minus one line" and collapses the list inside an auto-sized popup.
+	if( height_in_items < 0 )
+		height_in_items = ( (int)values.size() < 7 ) ? (int)values.size() : 7;
+	const ImVec2 size( 0.0f, (float)(int)( ImGui::GetTextLineHeightWithSpacing() * ( height_in_items + 0.25f )
+		+ ImGui::GetStyle().FramePadding.y * 2.0f ) );
+
 	bool changed = false;
-	if( ImGui::BeginListBox( label, ImVec2( 0, height_in_items * ImGui::GetTextLineHeightWithSpacing() ) ) ) {
+	if( ImGui::BeginListBox( label, size ) ) {
 		for( int i = 0; i < (int)values.size(); ++i ) {
 			ImGui::PushID( (void*)(intptr_t)i );
 			bool selected = ( *currIndex == i );
@@ -402,7 +419,23 @@ bool ListBox( const char* label, int* currIndex, const std::vector<std::string>&
 
 void Image( const ci::gl::Texture2dRef& texture, const ci::vec2& size, const ci::vec2& uv0, const ci::vec2& uv1, const ci::vec4& tint_col, const ci::vec4& border_col )
 {
-	Image( (ImTextureID)(intptr_t)texture->getId(), size, uv0, uv1, tint_col, border_col );
+	// Mirrors ImGui's own obsolete Image() shim (see imgui_widgets.cpp), which is
+	// compiled out by IMGUI_DISABLE_OBSOLETE_FUNCTIONS.  Two things to note:
+	//  - ImageWithBg() takes (bg_col, tint_col), the opposite order to the old
+	//    Image()'s (tint_col, border_col), so they must not be forwarded
+	//    positionally.
+	//  - 'border_col' was removed in 1.91.9; the border is now drawn with the
+	//    ImGuiCol_Border style colour at ImGuiStyleVar_ImageBorderSize thickness.
+	//    Forcing a non-zero thickness whenever border_col has alpha preserves the
+	//    legacy behaviour of drawing a border purely because a colour was given.
+	const float borderSize = ( border_col.w > 0.0f )
+		? ( ( GetStyle().ImageBorderSize > 1.0f ) ? GetStyle().ImageBorderSize : 1.0f )
+		: 0.0f;
+	PushStyleVar( ImGuiStyleVar_ImageBorderSize, borderSize );
+	PushStyleColor( ImGuiCol_Border, border_col );
+	ImageWithBg( (ImTextureID)(intptr_t)texture->getId(), size, uv0, uv1, ImVec4( 0, 0, 0, 0 ), tint_col );
+	PopStyleColor();
+	PopStyleVar();
 }
 } // namespace ImGui
 
@@ -687,9 +720,15 @@ static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window )
 static void ImGui_ImplCinder_PostDraw()
 {
 #if defined( CINDER_MSW )
-	// Skip ImGui rendering when inside modal dialog loop, but reset trigger flag
+	// A modal dialog (file browser and friends) runs its own message loop, which
+	// repaints this window re-entrantly while the ImGui frame belonging to the draw
+	// that opened the dialog is still open.  Skip rendering, but leave sTriggerNewFrame
+	// alone: setting it here let the next re-entrant paint call NewFrame() on top of
+	// that still-open frame, tripping the "Forgot to call Render() or EndFrame()"
+	// assert once per repaint.  The open frame does not need reviving -- the outer
+	// draw finishes it as soon as the dialog returns, and this function then runs
+	// again with the modal loop over.
 	if( static_cast<ci::app::PlatformMsw*>( ci::app::Platform::get() )->isInsideModalLoop() ) {
-		sTriggerNewFrame = true;
 		return;
 	}
 #endif
@@ -715,9 +754,11 @@ static bool ImGui_ImplCinder_Init( const ci::app::WindowRef& window, const ImGui
 	imGuiStyle = options.getStyle();
 
 #ifndef CINDER_LINUX
-	// clipboard callbacks
-	io.SetClipboardTextFn = []( void* user_data, const char* text ) { ci::Clipboard::setString( std::string( text ) ); };
-	io.GetClipboardTextFn = []( void* user_data ) {
+	// Clipboard callbacks. These live in ImGuiPlatformIO since 1.91.1; the old
+	// ImGuiIO members are compiled out by IMGUI_DISABLE_OBSOLETE_FUNCTIONS.
+	ImGuiPlatformIO& platformIo = ImGui::GetPlatformIO();
+	platformIo.Platform_SetClipboardTextFn = []( ImGuiContext* ctx, const char* text ) { ci::Clipboard::setString( std::string( text ) ); };
+	platformIo.Platform_GetClipboardTextFn = []( ImGuiContext* ctx ) {
 		std::string				 str = ci::Clipboard::getString();
 		static std::vector<char> strCopy;
 		strCopy = std::vector<char>( str.begin(), str.end() );
@@ -764,6 +805,26 @@ static void ImGui_ImplCinder_Shutdown()
 }
 
 #if defined( CINDER_MSW )
+// SRV descriptor allocator callbacks used by ImGui's D3D12 backend. They hand out
+// descriptors from sImGuiSrvHeap via a simple free list; the backend needs one per
+// texture (including its own font atlas).
+static void ImGui_ImplCinder_SrvDescriptorAlloc( ImGui_ImplDX12_InitInfo* /*info*/, D3D12_CPU_DESCRIPTOR_HANDLE* outCpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE* outGpuHandle )
+{
+	CI_ASSERT_MSG( ! sSrvHeapFreeIndices.empty(), "ImGui SRV descriptor heap exhausted; increase kImGuiSrvHeapSize" );
+	const UINT index = sSrvHeapFreeIndices.back();
+	sSrvHeapFreeIndices.pop_back();
+	outCpuHandle->ptr = sSrvHeapCpuStart.ptr + index * sSrvHeapHandleIncrement;
+	outGpuHandle->ptr = sSrvHeapGpuStart.ptr + index * sSrvHeapHandleIncrement;
+}
+
+static void ImGui_ImplCinder_SrvDescriptorFree( ImGui_ImplDX12_InitInfo* /*info*/, D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle )
+{
+	const UINT cpuIndex = (UINT)( ( cpuHandle.ptr - sSrvHeapCpuStart.ptr ) / sSrvHeapHandleIncrement );
+	const UINT gpuIndex = (UINT)( ( gpuHandle.ptr - sSrvHeapGpuStart.ptr ) / sSrvHeapHandleIncrement );
+	CI_ASSERT( cpuIndex == gpuIndex && cpuIndex < kImGuiSrvHeapSize );
+	sSrvHeapFreeIndices.push_back( cpuIndex );
+}
+
 static bool initializeD3d12( ci::app::RendererD3d12* renderer )
 {
 	sUsingD3D12 = true;
@@ -781,15 +842,25 @@ static bool initializeD3d12( ci::app::RendererD3d12* renderer )
 		return false;
 	}
 
-	// Initialize D3D12 backend using legacy single descriptor API
+	// Prime the descriptor free list.  Indices are pushed in reverse so the first
+	// allocation hands out index 0.
+	sSrvHeapCpuStart = sImGuiSrvHeap->GetCPUDescriptorHandleForHeapStart();
+	sSrvHeapGpuStart = sImGuiSrvHeap->GetGPUDescriptorHandleForHeapStart();
+	sSrvHeapHandleIncrement = device->GetDescriptorHandleIncrementSize( D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV );
+	sSrvHeapFreeIndices.clear();
+	sSrvHeapFreeIndices.reserve( kImGuiSrvHeapSize );
+	for( UINT i = kImGuiSrvHeapSize; i > 0; --i )
+		sSrvHeapFreeIndices.push_back( i - 1 );
+
+	// Initialize D3D12 backend, providing the SRV descriptor allocator callbacks.
 	ImGui_ImplDX12_InitInfo initInfo = {};
 	initInfo.Device = device;
 	initInfo.CommandQueue = renderer->getCommandQueue();
 	initInfo.NumFramesInFlight = ci::app::RendererD3d12::MaxFrameCount;
 	initInfo.RTVFormat = renderer->getBackBufferFormat();
 	initInfo.SrvDescriptorHeap = sImGuiSrvHeap;
-	initInfo.LegacySingleSrvCpuDescriptor = sImGuiSrvHeap->GetCPUDescriptorHandleForHeapStart();
-	initInfo.LegacySingleSrvGpuDescriptor = sImGuiSrvHeap->GetGPUDescriptorHandleForHeapStart();
+	initInfo.SrvDescriptorAllocFn = ImGui_ImplCinder_SrvDescriptorAlloc;
+	initInfo.SrvDescriptorFreeFn = ImGui_ImplCinder_SrvDescriptorFree;
 
 	if( ! ImGui_ImplDX12_Init( &initInfo ) ) {
 		CI_LOG_E( "Failed to initialize ImGui D3D12 backend" );
@@ -811,10 +882,14 @@ static void shutdownD3d12()
 		sImGuiSrvHeap->Release();
 		sImGuiSrvHeap = nullptr;
 	}
+	sSrvHeapFreeIndices.clear();
+	sSrvHeapCpuStart = {};
+	sSrvHeapGpuStart = {};
+	sSrvHeapHandleIncrement = 0;
 }
 #endif
 
-bool ImGui::Initialize( const ImGui::Options& options )
+bool ImGui::InitializeImpl( const ImGui::Options& options )
 {
 	if( sInitialized )
 		return false;
@@ -825,7 +900,7 @@ bool ImGui::Initialize( const ImGui::Options& options )
 	ImGuiIO& io = ImGui::GetIO();
 	if( options.isKeyboardEnabled() ) {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;	 // Enable Keyboard Controls
-		io.ConfigFlags |= ImGuiConfigFlags_NavNoCaptureKeyboard; // Don't capture keyboard when navigation is active
+		io.ConfigNavCaptureKeyboard = false;					 // Don't capture keyboard when navigation is active
 	}
 	if( options.isGamepadEnabled() )
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
