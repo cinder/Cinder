@@ -720,9 +720,15 @@ static void ImGui_ImplCinder_NewFrameGuard( const ci::app::WindowRef& window )
 static void ImGui_ImplCinder_PostDraw()
 {
 #if defined( CINDER_MSW )
-	// Skip ImGui rendering when inside modal dialog loop, but reset trigger flag
+	// A modal dialog (file browser and friends) runs its own message loop, which
+	// repaints this window re-entrantly while the ImGui frame belonging to the draw
+	// that opened the dialog is still open.  Skip rendering, but leave sTriggerNewFrame
+	// alone: setting it here let the next re-entrant paint call NewFrame() on top of
+	// that still-open frame, tripping the "Forgot to call Render() or EndFrame()"
+	// assert once per repaint.  The open frame does not need reviving -- the outer
+	// draw finishes it as soon as the dialog returns, and this function then runs
+	// again with the modal loop over.
 	if( static_cast<ci::app::PlatformMsw*>( ci::app::Platform::get() )->isInsideModalLoop() ) {
-		sTriggerNewFrame = true;
 		return;
 	}
 #endif
