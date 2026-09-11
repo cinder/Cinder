@@ -33,6 +33,9 @@
     <ClCompile Include="..\src\RandTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\ResizeTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\SystemTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

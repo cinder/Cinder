@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C41D3E002026091100000001 /* ResizeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C41D3E002026091100000002 /* ResizeTest.cpp */; };
 		000703221DEB7DE00086D6CA /* Path2dTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 000703211DEB7DE00086D6CA /* Path2dTest.cpp */; };
 		AABB00011234567800CCDDEE /* CinderMathTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AABB00001234567800CCDDEE /* CinderMathTest.cpp */; };
 		00C7BBC024120160001D5238 /* MediaTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C7BBBF24120160001D5238 /* MediaTime.cpp */; };
@@ -51,6 +52,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C41D3E002026091100000002 /* ResizeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResizeTest.cpp; sourceTree = "<group>"; };
 		000703211DEB7DE00086D6CA /* Path2dTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Path2dTest.cpp; sourceTree = "<group>"; };
 		AABB00001234567800CCDDEE /* CinderMathTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CinderMathTest.cpp; sourceTree = "<group>"; };
 		006D720219952D00008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -217,6 +219,7 @@
 				00C7BBBF24120160001D5238 /* MediaTime.cpp */,
 				4989E06B1DB6889500503C9A /* PolyLineTest.cpp */,
 				9CA851BA1C1F74000049358B /* RandTest.cpp */,
+				C41D3E002026091100000002 /* ResizeTest.cpp */,
 				114CE0E71E2F03930002A384 /* ShaderPreprocessorTest.cpp */,
 				9CA851BD1C1F74000049358B /* SystemTest.cpp */,
 				9CA851BF1C1F74000049358B /* UnicodeTest.cpp */,
@@ -298,6 +301,7 @@
 				117BC7781E836FDF003D8F25 /* FileWatcherTest.cpp in Sources */,
 				9CA851C01C1F74000049358B /* Base64Test.cpp in Sources */,
 				9CA851C31C1F74000049358B /* RandTest.cpp in Sources */,
+				C41D3E002026091100000001 /* ResizeTest.cpp in Sources */,
 				00C7BBC024120160001D5238 /* MediaTime.cpp in Sources */,
 				11E4FC4D1C267DB70082A67E /* FftUnit.cpp in Sources */,
 				4989E06C1DB6889500503C9A /* PolyLineTest.cpp in Sources */,

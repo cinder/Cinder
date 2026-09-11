@@ -192,6 +192,8 @@ void resample( const vector<const ChannelT<T>*> &srcChannels, const FilterBase &
 	}
 
 	for( size_t chan = 0; chan < srcChannels.size(); ++chan ) {
+		for( auto &line : linesBuffer )
+			line.first = -1;
 		for ( int32_t dstY = 0; dstY < dstHeight; ++dstY ) {     // loop over dest scanlines
 			// prepare a weight table for dest y position by
 			makeWeightTable<T,typename SCALETRAIT<T>::SUMT>( MAP(dstY, m.sy, m.uy), filter, &filterParamsY, srcHeight, false, &yWeights );

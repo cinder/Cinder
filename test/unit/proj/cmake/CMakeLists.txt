@@ -14,6 +14,7 @@ set( SOURCES
 	${UNIT_DIR}/src/JsonTest.cpp
 	${UNIT_DIR}/src/ObjLoaderTest.cpp
 	${UNIT_DIR}/src/RandTest.cpp
+	${UNIT_DIR}/src/ResizeTest.cpp
 	${UNIT_DIR}/src/SystemTest.cpp
 	${UNIT_DIR}/src/ShaderPreprocessorTest.cpp
 	${UNIT_DIR}/src/TestMain.cpp
