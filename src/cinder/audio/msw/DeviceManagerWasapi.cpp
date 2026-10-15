@@ -36,6 +36,7 @@
 #include <mmdeviceapi.h>
 #include <Functiondiscoverykeys_devpkey.h>
 #include <Audioclient.h>
+#include <algorithm>
 
 #define ASSERT_HR_OK( hr ) CI_ASSERT_MSG( hr == S_OK, hresultToString( hr ) )
 
@@ -366,8 +367,11 @@ void DeviceManagerWasapi::parseDevices( DeviceInfo::Usage usage )
 			}
 		}
 
-		DeviceRef addedDevice = addDevice( devInfo.mKey );
-		auto result = mDeviceInfoSet.insert( make_pair( addedDevice, devInfo ) );
+		// Reuse the Device from an earlier rebuild, so DeviceRefs held elsewhere stay valid
+		// (search mDevices directly because getDevices() would rebuild while it's empty)
+		auto existing = find_if( mDevices.begin(), mDevices.end(), [&devInfo]( const DeviceRef &dev ) { return dev->getKey() == devInfo.mKey; } );
+		DeviceRef device = ( existing != mDevices.end() ? *existing : addDevice( devInfo.mKey ) );
+		mDeviceInfoSet.insert( make_pair( device, devInfo ) );
 	}
 }
 
@@ -423,14 +427,15 @@ STDMETHODIMP DeviceManagerWasapi::Impl::OnDeviceStateChanged( LPCWSTR device_id,
 	std::string stateStr = deviceStateToStr( new_state );
 
 	auto device = getDevice( device_id );
-	if( ! device ) {
-		// device may not be present if it was unplugged or disabled
+	if( ! device && new_state == DEVICE_STATE_ACTIVE ) {
+		// a device we don't know has become active; rebuilding only finds active devices,
+		// so there's no point doing it for one that was unplugged or disabled
 		CI_LOG_I( "device with id not present, rebuilding device set.." );
 		mParent->rebuildDeviceInfoSet();
+		device = getDevice( device_id );
 	}
 
-	device = getDevice( device_id );
-	string devName = ( (bool)device ? device->getName() : "(???)" );
+	string devName = ( (bool)device ? device->getName() : "(??? id: " + ci::msw::toUtf8String( device_id ) + ")" );
 	CI_LOG_I( "State changed to " << stateStr << " for device: " << devName );
 
 	return S_OK;
@@ -467,14 +472,23 @@ HRESULT DeviceManagerWasapi::Impl::OnDefaultDeviceChanged( EDataFlow flow, ERole
 
 HRESULT DeviceManagerWasapi::Impl::OnDeviceAdded( LPCWSTR device_id )
 {
-	auto devName = getDevice( device_id )->getName();
+	auto device = getDevice( device_id );
+	if( ! device ) {
+		// a new device isn't in our device set yet (e.g. an HMD was just plugged in)
+		CI_LOG_I( "device with id not present, rebuilding device set..." );
+		mParent->rebuildDeviceInfoSet();
+		device = getDevice( device_id );
+	}
+	string devName = ( (bool)device ? device->getName() : "(???)" );
 	CI_LOG_I( "device name: " << devName );
 	return S_OK;
 }
 
 HRESULT DeviceManagerWasapi::Impl::OnDeviceRemoved( LPCWSTR device_id )
 {
-	auto devName = getDevice( device_id )->getName();
+	// the device may already be gone from our device set (e.g. dropped by a rebuild)
+	auto device = getDevice( device_id );
+	string devName = ( (bool)device ? device->getName() : "(???)" );
 	CI_LOG_I( "device name: " << devName );
 	return S_OK;
 }
