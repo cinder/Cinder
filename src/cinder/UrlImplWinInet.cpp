@@ -161,7 +161,7 @@ bool IStreamUrlImplWinInet::isEof() const
 	return ( mBufferedBytes - mBufferOffset == 0 ) && ( mIsFinished );
 }
 
-void IStreamUrlImplWinInet::seekRelative( off_t relativeOffset )
+void IStreamUrlImplWinInet::seekRelative( StreamOffset relativeOffset )
 {
 	// if this move stays inside the current buffer, we're good
 	if( ( mBufferOffset + relativeOffset >= 0 ) && ( mBufferOffset + relativeOffset < mBufferedBytes ) ) {
@@ -176,17 +176,17 @@ void IStreamUrlImplWinInet::seekRelative( off_t relativeOffset )
 	}
 }
 
-void IStreamUrlImplWinInet::seekAbsolute( off_t absoluteOffset )
+void IStreamUrlImplWinInet::seekAbsolute( StreamOffset absoluteOffset )
 {
 	seekRelative( absoluteOffset - ( mBufferFileOffset + mBufferOffset ) );
 }
 
-off_t IStreamUrlImplWinInet::tell() const
+StreamOffset IStreamUrlImplWinInet::tell() const
 {
 	return mBufferFileOffset + mBufferOffset;
 }
 
-off_t IStreamUrlImplWinInet::size() const
+StreamOffset IStreamUrlImplWinInet::size() const
 {
 	return 0; // we don't know the size
 }
@@ -239,7 +239,7 @@ void IStreamUrlImplWinInet::IORead( void *dest, size_t size )
 		throw StreamExc();
 
 	memcpy( dest, mBuffer.data() + mBufferOffset, size );
-	mBufferOffset += static_cast<int>( size );
+	mBufferOffset += static_cast<StreamOffset>( size );
 }
 
 size_t IStreamUrlImplWinInet::readDataAvailable( void *dest, size_t maxSize )
@@ -251,7 +251,7 @@ size_t IStreamUrlImplWinInet::readDataAvailable( void *dest, size_t maxSize )
 
 	memcpy( dest, mBuffer.data() + mBufferOffset, maxSize );
 
-	mBufferOffset += static_cast<int>( maxSize );
+	mBufferOffset += static_cast<StreamOffset>( maxSize );
 	return maxSize;
 }
 

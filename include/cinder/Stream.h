@@ -35,6 +35,13 @@
 
 namespace cinder {
 
+#ifdef CINDER_MSW
+using StreamOffset = std::int64_t;
+#else
+using StreamOffset = off_t;
+static_assert( sizeof ( StreamOffset ) == 8 && "Streams assume a 64-bit offset type. Make sure _FILE_OFFSET_BITS=64 is defined" );
+#endif
+
 class CI_API StreamBase : private Noncopyable {
  public:
 	virtual ~StreamBase() {}
@@ -62,13 +69,13 @@ class CI_API StreamBase : private Noncopyable {
 	void		setDeleteOnDestroy( bool enable = true ) { mDeleteOnDestroy = enable; }
 
 	//! Returns the current position of the stream measured in bytes **/
-	virtual off_t		tell() const = 0;
+	virtual StreamOffset		tell() const = 0;
 
 	//! Sets the current position of the stream to byte \a absoluteOffset. A negative offset is relative to the end of the file.
-	virtual void		seekAbsolute( off_t absoluteOffset ) = 0;
+	virtual void		seekAbsolute( StreamOffset absoluteOffset ) = 0;
 	
 	//! Moves the current position of the stream by \a relativeOffset bytes
-	virtual void		seekRelative( off_t relativeOffset ) = 0;
+	virtual void		seekRelative( StreamOffset relativeOffset ) = 0;
  
  protected:
 	StreamBase() : mDeleteOnDestroy( false ) {}
@@ -127,7 +134,7 @@ class CI_API IStreamCinder : public virtual StreamBase {
 	void			readData( void *dest, size_t size );
 	virtual size_t	readDataAvailable( void *dest, size_t maxSize ) = 0;
 
-	virtual off_t		size() const = 0;	
+	virtual StreamOffset		size() const = 0;
 	virtual bool		isEof() const = 0;
 
  protected:
@@ -153,22 +160,22 @@ typedef std::shared_ptr<class IStreamFile>	IStreamFileRef;
 class CI_API IStreamFile : public IStreamCinder {
  public:
 	//! Creates a new IStreamFileRef from a C-style file pointer \a FILE as returned by fopen(). If \a ownsFile the returned stream will destroy the stream upon its own destruction.
-	static IStreamFileRef create( FILE *file, bool ownsFile = true, int32_t defaultBufferSize = 2048 );
+	static IStreamFileRef create( FILE *file, bool ownsFile = true, int64_t defaultBufferSize = 2048 );
 	~IStreamFile();
 
 	size_t		readDataAvailable( void *dest, size_t maxSize );
 	
-	void		seekAbsolute( off_t absoluteOffset );
-	void		seekRelative( off_t relativeOffset );
-	off_t		tell() const;
-	off_t		size() const;
+	void		seekAbsolute( StreamOffset absoluteOffset );
+	void		seekRelative( StreamOffset relativeOffset );
+	StreamOffset		tell() const;
+	StreamOffset		size() const;
 	
 	bool		isEof() const;
 	
 	FILE*		getFILE() { return mFile; }
 
  protected:
-	IStreamFile( FILE *aFile, bool aOwnsFile = true, int32_t aDefaultBufferSize = 2048 );
+	IStreamFile( FILE *aFile, bool aOwnsFile = true, int64_t aDefaultBufferSize = 2048 );
 
 	virtual void		IORead( void *t, size_t size );
 	size_t				readDataImpl( void *dest, size_t maxSize );
@@ -177,9 +184,9 @@ class CI_API IStreamFile : public IStreamCinder {
 	bool						mOwnsFile;
 	size_t						mBufferSize, mDefaultBufferSize;
 	std::shared_ptr<uint8_t>	mBuffer;
-	off_t						mBufferOffset; // actual offset to do IO from; incremented by IO
-	off_t						mBufferFileOffset; // beginning of the buffer in the file
-	mutable off_t				mSize;
+	StreamOffset				mBufferOffset; // actual offset to do IO from; incremented by IO
+	StreamOffset				mBufferFileOffset; // beginning of the buffer in the file
+	mutable StreamOffset		mSize;
 	mutable bool				mSizeCached;
 };
 
@@ -189,22 +196,22 @@ typedef std::shared_ptr<class IStreamAndroidAsset>	IStreamAndroidAssetRef;
 
 class IStreamAndroidAsset : public IStreamCinder {
  public:
-	static IStreamAndroidAssetRef create( AAsset *asset, bool ownsFile = true, int32_t defaultBufferSize = 2048 );
+	static IStreamAndroidAssetRef create( AAsset *asset, bool ownsFile = true, int64_t defaultBufferSize = 2048 );
 	~IStreamAndroidAsset();
 
 	size_t		readDataAvailable( void *dest, size_t maxSize );
 	
-	void		seekAbsolute( off_t absoluteOffset );
-	void		seekRelative( off_t relativeOffset );
-	off_t		tell() const;
-	off_t		size() const;
+	void		seekAbsolute( StreamOffset absoluteOffset );
+	void		seekRelative( StreamOffset relativeOffset );
+	StreamOffset		tell() const;
+	StreamOffset		size() const;
 	
 	bool		isEof() const;
 	
 	AAsset*		getAAsset() { return mAsset; }
 
  protected:
-	IStreamAndroidAsset( AAsset *aFile, bool aOwnsFile = true, int32_t aDefaultBufferSize = 2048 );
+	IStreamAndroidAsset( AAsset *aFile, bool aOwnsFile = true, int64_t aDefaultBufferSize = 2048 );
 
 	virtual void		IORead( void *t, size_t size );
 	size_t				readDataImpl( void *dest, size_t maxSize );
@@ -213,9 +220,9 @@ class IStreamAndroidAsset : public IStreamCinder {
 	bool						mOwnsFile;
 	size_t						mBufferSize, mDefaultBufferSize;
 	std::shared_ptr<uint8_t>	mBuffer;
-	off_t						mBufferOffset; // actual offset to do IO from; incremented by IO
-	off_t						mBufferFileOffset; // beginning of the buffer in the file
-	mutable off_t				mSize;
+	StreamOffset				mBufferOffset; // actual offset to do IO from; incremented by IO
+	StreamOffset				mBufferFileOffset; // beginning of the buffer in the file
+	mutable StreamOffset		mSize;
 	mutable bool				mSizeCached;
 };
 #endif
@@ -229,9 +236,9 @@ class CI_API OStreamFile : public OStream {
 	static OStreamFileRef	create( FILE *file, bool ownsFile = true );
 	~OStreamFile();
 
-	virtual off_t		tell() const;
-	virtual void		seekAbsolute( off_t absoluteOffset );
-	virtual void		seekRelative( off_t relativeOffset );
+	virtual StreamOffset		tell() const;
+	virtual void		seekAbsolute( StreamOffset absoluteOffset );
+	virtual void		seekRelative( StreamOffset relativeOffset );
 
 	FILE*				getFILE() { return mFile; }
 
@@ -251,22 +258,22 @@ typedef std::shared_ptr<class IoStreamFile>		IoStreamFileRef;
 class CI_API IoStreamFile : public IoStream {
  public:
 	//! Creates a new IoStreamFileRef from a C-style file pointer \a FILE as returned by fopen(). If \a ownsFile the returned stream will destroy the stream upon its own destruction.
-	static IoStreamFileRef create( FILE *file, bool ownsFile = true, int32_t defaultBufferSize = 2048 );
+	static IoStreamFileRef create( FILE *file, bool ownsFile = true, int64_t defaultBufferSize = 2048 );
 	~IoStreamFile();
 
 	size_t		readDataAvailable( void *dest, size_t maxSize );
 	
-	void		seekAbsolute( off_t absoluteOffset );
-	void		seekRelative( off_t relativeOffset );
-	off_t		tell() const;
-	off_t		size() const;
+	void		seekAbsolute( StreamOffset absoluteOffset );
+	void		seekRelative( StreamOffset relativeOffset );
+	StreamOffset		tell() const;
+	StreamOffset		size() const;
 	
 	bool		isEof() const;
 	
 	FILE*		getFILE() { return mFile; }
 
  protected:
-	IoStreamFile( FILE *aFile, bool aOwnsFile = true, int32_t aDefaultBufferSize = 2048 );
+	IoStreamFile( FILE *aFile, bool aOwnsFile = true, int64_t aDefaultBufferSize = 2048 );
 	
 	virtual void		IORead( void *t, size_t size );
 	size_t				readDataImpl( void *dest, size_t maxSize );
@@ -274,11 +281,11 @@ class CI_API IoStreamFile : public IoStream {
  
 	FILE						*mFile;
 	bool						mOwnsFile;
-	int32_t						mBufferSize, mDefaultBufferSize;
+	int64_t						mBufferSize, mDefaultBufferSize;
 	std::shared_ptr<uint8_t>	mBuffer;
-	off_t						mBufferOffset; // actual offset to do IO from; incremented by IO
-	off_t						mBufferFileOffset; // beginning of the buffer in the file
-	mutable off_t				mSize;
+	StreamOffset				mBufferOffset; // actual offset to do IO from; incremented by IO
+	StreamOffset				mBufferFileOffset; // beginning of the buffer in the file
+	mutable StreamOffset		mSize;
 	mutable bool				mSizeCached;
 };
 
@@ -291,12 +298,12 @@ class CI_API IStreamMem : public IStreamCinder {
 
 	size_t		readDataAvailable( void *dest, size_t maxSize );
 	
-	void		seekAbsolute( off_t absoluteOffset );
-	void		seekRelative( off_t relativeOffset );
+	void		seekAbsolute( StreamOffset absoluteOffset );
+	void		seekRelative( StreamOffset relativeOffset );
 	//! Returns the current offset into the stream in bytes
-	off_t		tell() const;
+	StreamOffset		tell() const;
 	//! Returns the total length of stream in bytes
-	off_t		size() const { return static_cast<off_t>( mDataSize ); }
+	StreamOffset		size() const { return static_cast<StreamOffset>( mDataSize ); }
 
 	//! Returns whether the stream is currently pointed at the end of the file	
 	bool		isEof() const;
@@ -323,9 +330,9 @@ class CI_API OStreamMem : public OStream {
 
 	~OStreamMem();
 
-	virtual off_t		tell() const { return static_cast<off_t>( mOffset ); }
-	virtual void		seekAbsolute( off_t absoluteOffset );
-	virtual void		seekRelative( off_t relativeOffset );
+	virtual StreamOffset		tell() const { return static_cast<StreamOffset>( mOffset ); }
+	virtual void		seekAbsolute( StreamOffset absoluteOffset );
+	virtual void		seekRelative( StreamOffset relativeOffset );
 
 	void*				getBuffer() { return mBuffer; }
 	
@@ -351,7 +358,7 @@ class CI_API IStreamStateRestore {
 	
  private:
 	IStreamCinder&	mStream;
-	off_t			mOffset;
+	StreamOffset	mOffset;
 };
 
 //! Opens the file lcoated at \a path for read access as a stream.

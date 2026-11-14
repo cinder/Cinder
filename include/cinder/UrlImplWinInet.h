@@ -33,10 +33,10 @@ class IStreamUrlImplWinInet : public IStreamUrlImpl {
 	~IStreamUrlImplWinInet();
 
 	virtual size_t		readDataAvailable( void *dest, size_t maxSize );
-	virtual void		seekAbsolute( off_t absoluteOffset );
-	virtual void		seekRelative( off_t relativeOffset );
-	virtual off_t		tell() const;
-	virtual off_t		size() const;
+	virtual void		seekAbsolute( StreamOffset absoluteOffset );
+	virtual void		seekRelative( StreamOffset relativeOffset );
+	virtual StreamOffset		tell() const;
+	virtual StreamOffset		size() const;
 	
 	virtual bool		isEof() const;
 	virtual void		IORead( void *t, size_t size );
@@ -49,8 +49,8 @@ class IStreamUrlImplWinInet : public IStreamUrlImpl {
 	
 	mutable bool			mIsFinished;
 	mutable std::vector<uint8_t> mBuffer;
-	mutable int				mBufferOffset, mBufferedBytes;
-	mutable off_t			mBufferFileOffset;	// where in the file the buffer starts
+	mutable StreamOffset	mBufferOffset, mBufferedBytes;
+	mutable StreamOffset	mBufferFileOffset;	// where in the file the buffer starts
 	static const int		DEFAULT_BUFFER_SIZE = 4096;
 };
 
