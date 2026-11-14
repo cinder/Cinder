@@ -38,6 +38,32 @@ using std::memcpy;
 namespace cinder {
 
 //////////////////////////////////////////////////////////////////////////
+	namespace detail
+	{
+		inline StreamOffset fseek64 ( FILE * file, StreamOffset offset, int origin )
+		{
+#if defined( CINDER_MSW )
+			return _fseeki64 ( file, offset, origin );
+#elif defined( CINDER_LINUX ) || defined( CINDER_MAC ) || defined( CINDER_ANDROID )
+			return fseeko ( file, static_cast<off_t>( offset ), origin );
+#else
+			return fseek ( file, static_cast<long>( offset ), origin );
+#endif
+		}
+
+		inline StreamOffset ftell64 ( FILE * file )
+		{
+#if defined( CINDER_MSW )
+			return _ftelli64 ( file );
+#elif defined( CINDER_LINUX ) || defined( CINDER_MAC ) || defined( CINDER_ANDROID )
+			return static_cast<StreamOffset>( ftello ( file ) );
+#else
+			return static_cast<StreamOffset>( ftell ( file ) );
+#endif
+		}
+	}
+
+//////////////////////////////////////////////////////////////////////////
 template<typename T>
 void OStream::writeBig( T t )
 {
@@ -157,16 +183,16 @@ void OStream::writeData( const void *src, size_t size )
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // IStreamFile
-IStreamFileRef IStreamFile::create( FILE *file, bool ownsFile, int32_t defaultBufferSize )
+IStreamFileRef IStreamFile::create( FILE *file, bool ownsFile, int64_t defaultBufferSize )
 {
 	return IStreamFileRef( new IStreamFile( file, ownsFile, defaultBufferSize ) );
 }
 
-IStreamFile::IStreamFile( FILE *aFile, bool aOwnsFile, int32_t aDefaultBufferSize )
+IStreamFile::IStreamFile( FILE *aFile, bool aOwnsFile, int64_t aDefaultBufferSize )
 	: IStreamCinder(), mFile( aFile ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
 {
 	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], std::default_delete<uint8_t[]>() );
-	mBufferFileOffset = std::numeric_limits<off_t>::min();
+	mBufferFileOffset = std::numeric_limits<StreamOffset>::min();
 	mBufferOffset = 0;
 	mBufferSize = 0;
 }
@@ -186,25 +212,25 @@ size_t IStreamFile::readDataAvailable( void *dest, size_t maxSize )
 
 size_t IStreamFile::readDataImpl( void *t, size_t size )
 {
-	if( ( mBufferOffset >= mBufferFileOffset ) && ( mBufferOffset + static_cast<int32_t>( size ) < mBufferFileOffset + (off_t)mBufferSize ) ) { // entirely inside the buffer
+	if( ( mBufferOffset >= mBufferFileOffset ) && ( mBufferOffset + static_cast<int64_t>( size ) < mBufferFileOffset + (StreamOffset)mBufferSize ) ) { // entirely inside the buffer
 		memcpy( t, mBuffer.get() + ( mBufferOffset - mBufferFileOffset ), size );
 		mBufferOffset += size;
 		return size;
 	}
-	else if ( ( mBufferFileOffset < mBufferOffset ) && ( mBufferOffset < mBufferFileOffset + (off_t)mBufferSize ) ) { // partially inside
+	else if ( ( mBufferFileOffset < mBufferOffset ) && ( mBufferOffset < mBufferFileOffset + (StreamOffset)mBufferSize ) ) { // partially inside
 		size_t amountInBuffer = static_cast<size_t>( ( mBufferFileOffset + mBufferSize ) - mBufferOffset );
 		memcpy( t, mBuffer.get() + ( mBufferOffset - mBufferFileOffset ), amountInBuffer );
 		mBufferOffset += amountInBuffer;
 		return amountInBuffer + readDataImpl( reinterpret_cast<uint8_t*>( t ) + amountInBuffer, size - amountInBuffer );
 	}
 	else if( size > mDefaultBufferSize ) { // entirely outside of buffer, and too big to buffer anyway
-		fseek( mFile, static_cast<long>( mBufferOffset ), SEEK_SET );
+		detail::fseek64( mFile, mBufferOffset, SEEK_SET );
 		size_t bytesRead = fread( t, 1, size, mFile );
 		mBufferOffset += bytesRead;
 		return bytesRead;
 	}
 	else { // outside the current buffer, but not too big
-		fseek( mFile, static_cast<long>( mBufferOffset ), SEEK_SET );
+		detail::fseek64( mFile, mBufferOffset, SEEK_SET );
 		mBufferFileOffset = mBufferOffset;
 		mBufferSize = fread( mBuffer.get(), 1, mDefaultBufferSize, mFile );
 		memcpy( t, mBuffer.get(), size );
@@ -213,35 +239,35 @@ size_t IStreamFile::readDataImpl( void *t, size_t size )
 	}
 }
 
-void IStreamFile::seekAbsolute( off_t absoluteOffset )
+void IStreamFile::seekAbsolute( StreamOffset absoluteOffset )
 {
 	int dir = ( absoluteOffset >= 0 ) ? SEEK_SET : SEEK_END;
 	absoluteOffset = std::abs( absoluteOffset );
-	if( fseek( mFile, static_cast<long>( absoluteOffset ), dir ) )
+	if( detail::fseek64( mFile, absoluteOffset, dir ) )
 		throw StreamExc();
 	mBufferOffset = absoluteOffset;
 }
 
-void IStreamFile::seekRelative( off_t relativeOffset )
+void IStreamFile::seekRelative( StreamOffset relativeOffset )
 {
-	if( fseek( mFile, static_cast<long>( mBufferOffset + relativeOffset ), SEEK_SET ) )
+	if( detail::fseek64( mFile, mBufferOffset + relativeOffset, SEEK_SET ) )
 		throw StreamExc();
-	mBufferOffset = ftell( mFile );
+	mBufferOffset = detail::ftell64( mFile );
 }
 
-off_t IStreamFile::tell() const
+StreamOffset IStreamFile::tell() const
 {
 	return mBufferOffset;
 }
 
-off_t IStreamFile::size() const
+StreamOffset IStreamFile::size() const
 {
 	if ( ! mSizeCached ) {
-		off_t curOff = ftell( mFile );
-		fseek( mFile, 0, SEEK_END );
-		mSize = ftell( mFile );
+		StreamOffset curOff = detail::ftell64( mFile );
+		detail::fseek64( mFile, 0, SEEK_END );
+		mSize = detail::ftell64( mFile );
 		mSizeCached = true;
-		fseek( mFile, static_cast<long>( curOff ), SEEK_SET );
+		detail::fseek64( mFile, curOff, SEEK_SET );
 	}
 	
 	return mSize;
@@ -249,7 +275,7 @@ off_t IStreamFile::size() const
 
 bool IStreamFile::isEof() const
 {
-	return ( ( mBufferOffset >= mBufferFileOffset + (off_t)mBufferSize ) && ( static_cast<bool>( feof( mFile ) != 0 ) ) );
+	return ( ( mBufferOffset >= mBufferFileOffset + (StreamOffset)mBufferSize ) && ( static_cast<bool>( feof( mFile ) != 0 ) ) );
 }
 
 void IStreamFile::IORead( void *t, size_t size )
@@ -277,16 +303,16 @@ void IStreamFile::IORead( void *t, size_t size )
 #define afs_feof      cinder::app::android::AssetFileSystem_feof
 #define afs_flength   cinder::app::android::AssetFileSystem_flength
 
-IStreamAndroidAssetRef IStreamAndroidAsset::create( AAsset *asset, bool ownsFile, int32_t defaultBufferSize )
+IStreamAndroidAssetRef IStreamAndroidAsset::create( AAsset *asset, bool ownsFile, int64_t defaultBufferSize )
 {
 	return IStreamAndroidAssetRef( new IStreamAndroidAsset( asset, ownsFile, defaultBufferSize ) );
 }
 
-IStreamAndroidAsset::IStreamAndroidAsset( AAsset *asset, bool aOwnsFile, int32_t aDefaultBufferSize )
+IStreamAndroidAsset::IStreamAndroidAsset( AAsset *asset, bool aOwnsFile, int64_t aDefaultBufferSize )
 	: IStreamCinder(), mAsset( asset ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
 {
 	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], std::default_delete<uint8_t[]>() );
-	mBufferFileOffset = std::numeric_limits<off_t>::min();
+	mBufferFileOffset = std::numeric_limits<StreamOffset>::min();
 	mBufferOffset = 0;
 	mBufferSize = 0;
 }
@@ -305,12 +331,12 @@ size_t IStreamAndroidAsset::readDataAvailable( void *dest, size_t maxSize )
 
 size_t IStreamAndroidAsset::readDataImpl( void *t, size_t size )
 {
-	if( ( mBufferOffset >= mBufferFileOffset ) && ( mBufferOffset + static_cast<int32_t>( size ) < mBufferFileOffset + (off_t)mBufferSize ) ) { // entirely inside the buffer
+	if( ( mBufferOffset >= mBufferFileOffset ) && ( mBufferOffset + static_cast<int64_t>( size ) < mBufferFileOffset + (StreamOffset)mBufferSize ) ) { // entirely inside the buffer
 		memcpy( t, mBuffer.get() + ( mBufferOffset - mBufferFileOffset ), size );
 		mBufferOffset += size;
 		return size;
 	}
-	else if ( ( mBufferFileOffset < mBufferOffset ) && ( mBufferOffset < mBufferFileOffset + (off_t)mBufferSize ) ) { // partially inside
+	else if ( ( mBufferFileOffset < mBufferOffset ) && ( mBufferOffset < mBufferFileOffset + (StreamOffset)mBufferSize ) ) { // partially inside
 		size_t amountInBuffer = ( mBufferFileOffset + mBufferSize ) - mBufferOffset;
 		memcpy( t, mBuffer.get() + ( mBufferOffset - mBufferFileOffset ), amountInBuffer );
 		mBufferOffset += amountInBuffer;
@@ -332,7 +358,7 @@ size_t IStreamAndroidAsset::readDataImpl( void *t, size_t size )
 	}
 }
 
-void IStreamAndroidAsset::seekAbsolute( off_t absoluteOffset )
+void IStreamAndroidAsset::seekAbsolute( StreamOffset absoluteOffset )
 {
 	int dir = ( absoluteOffset >= 0 ) ? SEEK_SET : SEEK_END;
 	absoluteOffset = std::abs( absoluteOffset );
@@ -342,7 +368,7 @@ void IStreamAndroidAsset::seekAbsolute( off_t absoluteOffset )
 	mBufferOffset = absoluteOffset;
 }
 
-void IStreamAndroidAsset::seekRelative( off_t relativeOffset )
+void IStreamAndroidAsset::seekRelative( StreamOffset relativeOffset )
 {
 	if( afs_fseek( mAsset, static_cast<long>( mBufferOffset + relativeOffset ), SEEK_SET ) < 0 ) {
 		throw StreamExc( "AAsset_seek failed" );
@@ -350,12 +376,12 @@ void IStreamAndroidAsset::seekRelative( off_t relativeOffset )
 	mBufferOffset = afs_ftell( mAsset );
 }
 
-off_t IStreamAndroidAsset::tell() const
+StreamOffset IStreamAndroidAsset::tell() const
 {
 	return mBufferOffset;
 }
 
-off_t IStreamAndroidAsset::size() const
+StreamOffset IStreamAndroidAsset::size() const
 {
 	if ( ! mSizeCached ) {
 		mSize = afs_flength( mAsset );
@@ -367,7 +393,7 @@ off_t IStreamAndroidAsset::size() const
 
 bool IStreamAndroidAsset::isEof() const
 {
-	bool result = ( ( mBufferOffset >= mBufferFileOffset + (off_t)mBufferSize ) && ( 0 != afs_feof( mAsset ) ) );
+	bool result = ( ( mBufferOffset >= mBufferFileOffset + (StreamOffset)mBufferSize ) && ( 0 != afs_feof( mAsset ) ) );
 	return result;
 }
 
@@ -410,22 +436,22 @@ OStreamFile::~OStreamFile()
 		fs::remove( mFileName );
 }
 
-off_t OStreamFile::tell() const
+StreamOffset OStreamFile::tell() const
 {
-	return ftell( mFile );
+	return detail::ftell64( mFile );
 }
 
-void OStreamFile::seekAbsolute( off_t absoluteOffset )
+void OStreamFile::seekAbsolute( StreamOffset absoluteOffset )
 {
 	int dir = ( absoluteOffset >= 0 ) ? SEEK_SET : SEEK_END;
 	absoluteOffset = std::abs( absoluteOffset );
-	if( fseek( mFile, static_cast<long>( absoluteOffset ), dir ) )
+	if( detail::fseek64( mFile, absoluteOffset, dir ) )
 		throw StreamExc();
 }
 
-void OStreamFile::seekRelative( off_t relativeOffset )
+void OStreamFile::seekRelative( StreamOffset relativeOffset )
 {
-	std::fseek( mFile, static_cast<long>( relativeOffset ), SEEK_CUR );
+	detail::fseek64( mFile, relativeOffset, SEEK_CUR );
 }
 
 void OStreamFile::IOWrite( const void *t, size_t size )
@@ -437,16 +463,16 @@ void OStreamFile::IOWrite( const void *t, size_t size )
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // IoStreamFile
-IoStreamFileRef IoStreamFile::create( FILE *file, bool ownsFile, int32_t defaultBufferSize )
+IoStreamFileRef IoStreamFile::create( FILE *file, bool ownsFile, int64_t defaultBufferSize )
 {
 	return IoStreamFileRef( new IoStreamFile( file, ownsFile, defaultBufferSize ) );
 }
 
-IoStreamFile::IoStreamFile( FILE *aFile, bool aOwnsFile, int32_t aDefaultBufferSize )
+IoStreamFile::IoStreamFile( FILE *aFile, bool aOwnsFile, int64_t aDefaultBufferSize )
 	: IoStream(), mFile( aFile ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
 {
 	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], std::default_delete<uint8_t[]>() );
-	mBufferFileOffset = std::numeric_limits<off_t>::min();
+	mBufferFileOffset = std::numeric_limits<StreamOffset>::min();
 	mBufferOffset = 0;
 	mBufferSize = 0;
 }
@@ -464,35 +490,35 @@ size_t IoStreamFile::readDataAvailable( void *dest, size_t maxSize )
 	return readDataImpl( dest, maxSize );
 }
 
-void IoStreamFile::seekAbsolute( off_t absoluteOffset )
+void IoStreamFile::seekAbsolute( StreamOffset absoluteOffset )
 {
 	int dir = ( absoluteOffset >= 0 ) ? SEEK_SET : SEEK_END;
 	absoluteOffset = std::abs( absoluteOffset );
-	if( fseek( mFile, static_cast<long>( absoluteOffset ), dir ) )
+	if( detail::fseek64( mFile, absoluteOffset, dir ) )
 		throw StreamExc();
 	mBufferOffset = absoluteOffset;
 }
 
-void IoStreamFile::seekRelative( off_t relativeOffset )
+void IoStreamFile::seekRelative( StreamOffset relativeOffset )
 {
-	if( fseek( mFile, static_cast<long>( mBufferOffset + relativeOffset ), SEEK_SET ) )
+	if( detail::fseek64( mFile, mBufferOffset + relativeOffset, SEEK_SET ) )
 		throw StreamExc();
-	mBufferOffset = ftell( mFile );
+	mBufferOffset = detail::ftell64( mFile );
 }
 
-off_t IoStreamFile::tell() const
+StreamOffset IoStreamFile::tell() const
 {
 	return mBufferOffset;
 }
 
-off_t IoStreamFile::size() const
+StreamOffset IoStreamFile::size() const
 {
 	if ( ! mSizeCached ) {
-		off_t curOff = ftell( mFile );
-		fseek( mFile, 0, SEEK_END );
-		mSize = ftell( mFile );
+		StreamOffset curOff = detail::ftell64( mFile );
+		detail::fseek64( mFile, 0, SEEK_END );
+		mSize = detail::ftell64( mFile );
 		mSizeCached = true;
-		fseek( mFile, static_cast<long>( curOff ), SEEK_SET );
+		detail::fseek64( mFile, curOff, SEEK_SET );
 	}
 	
 	return mSize;
@@ -512,27 +538,27 @@ void IoStreamFile::IORead( void *t, size_t size )
 
 size_t IoStreamFile::readDataImpl( void *t, size_t size )
 {
-	if( ( mBufferOffset >= mBufferFileOffset ) && ( mBufferOffset + static_cast<int32_t>( size ) < mBufferFileOffset + (off_t)mBufferSize ) ) { // entirely inside the buffer
+	if( ( mBufferOffset >= mBufferFileOffset ) && ( mBufferOffset + static_cast<int64_t>( size ) < mBufferFileOffset + (StreamOffset)mBufferSize ) ) { // entirely inside the buffer
 		memcpy( t, mBuffer.get() + ( mBufferOffset - mBufferFileOffset ), size );
 		mBufferOffset += size;
 		return size;
 	}
-	else if ( ( mBufferFileOffset < mBufferOffset ) && ( mBufferOffset < mBufferFileOffset + (off_t)mBufferSize ) ) { // partially inside
+	else if ( ( mBufferFileOffset < mBufferOffset ) && ( mBufferOffset < mBufferFileOffset + (StreamOffset)mBufferSize ) ) { // partially inside
 		size_t amountInBuffer = static_cast<size_t>( ( mBufferFileOffset + mBufferSize ) - mBufferOffset );
 		memcpy( t, mBuffer.get() + ( mBufferOffset - mBufferFileOffset ), amountInBuffer );
 		mBufferOffset += amountInBuffer;
 		return amountInBuffer + readDataImpl( reinterpret_cast<uint8_t*>( t ) + amountInBuffer, size - amountInBuffer );
 	}
 	else if( size > (size_t)mDefaultBufferSize ) { // entirely outside of buffer, and too big to buffer anyway
-		fseek( mFile, static_cast<long>( mBufferOffset ), SEEK_SET );
+		detail::fseek64( mFile, mBufferOffset, SEEK_SET );
 		size_t bytesRead = fread( t, 1, size, mFile );
 		mBufferOffset += bytesRead;
 		return bytesRead;
 	}
 	else { // outside the current buffer, but not too big
-		fseek( mFile, static_cast<long>( mBufferOffset ), SEEK_SET );
+		detail::fseek64( mFile, mBufferOffset, SEEK_SET );
 		mBufferFileOffset = mBufferOffset;
-		mBufferSize = (int32_t)fread( mBuffer.get(), 1, mDefaultBufferSize, mFile );
+		mBufferSize = (int64_t)fread( mBuffer.get(), 1, mDefaultBufferSize, mFile );
 		memcpy( t, mBuffer.get(), size );
 		mBufferOffset = mBufferFileOffset + size;
 		return size;
@@ -578,25 +604,25 @@ size_t IStreamMem::readDataAvailable( void *dest, size_t maxSize )
 	return maxSize;	
 }
 
-void IStreamMem::seekAbsolute( off_t absoluteOffset )
+void IStreamMem::seekAbsolute( StreamOffset absoluteOffset )
 {
 	if( absoluteOffset < 0 )
 		absoluteOffset = mDataSize + absoluteOffset;
 	mOffset = static_cast<size_t>( absoluteOffset );
-	if( absoluteOffset > static_cast<off_t>( mDataSize ) )
+	if( absoluteOffset > static_cast<StreamOffset>( mDataSize ) )
 		throw StreamExc();
 }
 
-void IStreamMem::seekRelative( off_t relativeOffset )
+void IStreamMem::seekRelative( StreamOffset relativeOffset )
 {
 	mOffset += relativeOffset;
 	if( mOffset > mDataSize )
 		throw StreamExc();
 }
 
-off_t IStreamMem::tell() const
+StreamOffset IStreamMem::tell() const
 {
-	return static_cast<off_t>( mOffset );
+	return static_cast<StreamOffset>( mOffset );
 }
 
 bool IStreamMem::isEof() const
@@ -626,17 +652,17 @@ OStreamMem::~OStreamMem()
 	free( mBuffer );
 }
 
-void OStreamMem::seekAbsolute( off_t absoluteOffset )
+void OStreamMem::seekAbsolute( StreamOffset absoluteOffset )
 {
-	if( absoluteOffset >= (off_t)mDataSize ) {
-		while( (off_t)mDataSize < absoluteOffset )
+	if( absoluteOffset >= (StreamOffset)mDataSize ) {
+		while( (StreamOffset)mDataSize < absoluteOffset )
 			mDataSize *= 2;
 		mBuffer = realloc( mBuffer, mDataSize );
 	}
 	mOffset = static_cast<size_t>( absoluteOffset );
 }
 
-void OStreamMem::seekRelative( off_t relativeOffset )
+void OStreamMem::seekRelative( StreamOffset relativeOffset )
 {
 	seekAbsolute( mOffset + relativeOffset );
 }
@@ -718,8 +744,8 @@ void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size
 	if( ! is )
 		throw StreamExc();
 
-	off_t fileSize = is->size();
-	if( fileSize > std::numeric_limits<off_t>::max() )
+	StreamOffset fileSize = is->size();
+	if( fileSize > std::numeric_limits<StreamOffset>::max() )
 		throw StreamExcOutOfMemory();
 	
 	*resultData = std::shared_ptr<uint8_t>( (uint8_t*)malloc( static_cast<size_t>( fileSize ) ), free );
@@ -736,8 +762,8 @@ BufferRef loadStreamBuffer( IStreamRef is )
 	if( ! is )
 		throw StreamExc();
 
-	off_t fileSize = is->size();
-	if( fileSize > std::numeric_limits<off_t>::max() )
+	StreamOffset fileSize = is->size();
+	if( fileSize > std::numeric_limits<StreamOffset>::max() )
 		throw StreamExcOutOfMemory();
 	
 	if( fileSize ) { // sometimes fileSize will be zero for a stream that doesn't know how big it is

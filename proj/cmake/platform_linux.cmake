@@ -190,6 +190,9 @@ list( APPEND CINDER_INCLUDE_USER_PRIVATE
 	${CINDER_INC_DIR}/glfw
 )
 
+# Make sure off_t is 64 bits for Streams 
+list( APPEND CINDER_DEFINES "_FILE_OFFSET_BITS=64")
+
 # Cinder GL defines depending on target GL.
 if( CINDER_GL_CORE )
 	list( APPEND CINDER_DEFINES "-DCINDER_GL_CORE" )

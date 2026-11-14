@@ -3,6 +3,9 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 
 set( CINDER_PLATFORM "Android" )
 
+# Make sure off_t is 64 bits for Streams 
+list( APPEND CINDER_DEFINES "_FILE_OFFSET_BITS=64")
+
 list( APPEND SRC_SET_CINDER_ANDROID
 	${CINDER_SRC_DIR}/cinder/CaptureImplJni.cpp
 	${CINDER_SRC_DIR}/cinder/UrlImplJni.cpp

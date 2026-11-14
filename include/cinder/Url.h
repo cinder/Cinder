@@ -98,10 +98,10 @@ class CI_API IStreamUrlImpl {
 	const UrlOptions&	getOptions() const { return mOptions; }
 
 	virtual size_t		readDataAvailable( void *dest, size_t maxSize ) = 0;
-	virtual void		seekAbsolute( off_t absoluteOffset ) = 0;
-	virtual void		seekRelative( off_t relativeOffset ) = 0;
-	virtual off_t		tell() const = 0;
-	virtual off_t		size() const = 0;
+	virtual void		seekAbsolute( StreamOffset absoluteOffset ) = 0;
+	virtual void		seekRelative( StreamOffset relativeOffset ) = 0;
+	virtual StreamOffset		tell() const = 0;
+	virtual StreamOffset		size() const = 0;
 	
 	virtual bool		isEof() const = 0;
 	virtual void		IORead( void *t, size_t size ) = 0;
@@ -122,10 +122,10 @@ class CI_API IStreamUrl : public IStreamCinder {
 	static IStreamUrlRef		create( const Url &url, const std::string &user = "", const std::string &password = "", const UrlOptions &options = UrlOptions() );
 	
 	virtual size_t		readDataAvailable( void *dest, size_t maxSize ) { return mImpl->readDataAvailable( dest, maxSize ); }
-	virtual void		seekAbsolute( off_t absoluteOffset ) { return mImpl->seekAbsolute( absoluteOffset ); }
-	virtual void		seekRelative( off_t relativeOffset ) { return mImpl->seekRelative( relativeOffset ); }
-	virtual off_t		tell() const { return mImpl->tell(); }
-	virtual off_t		size() const { return mImpl->size(); }
+	virtual void		seekAbsolute( StreamOffset absoluteOffset ) { return mImpl->seekAbsolute( absoluteOffset ); }
+	virtual void		seekRelative( StreamOffset relativeOffset ) { return mImpl->seekRelative( relativeOffset ); }
+	virtual StreamOffset		tell() const { return mImpl->tell(); }
+	virtual StreamOffset		size() const { return mImpl->size(); }
 	
 	virtual bool		isEof() const { return mImpl->isEof(); }
 
